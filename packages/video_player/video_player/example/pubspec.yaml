@@ -22,6 +22,8 @@ dependencies:
 dependency_overrides:
   video_player_platform_interface:
     path: ../../video_player_platform_interface
+  video_player_web:
+    path: ../../video_player_web
 
 dev_dependencies:
   flutter_test:

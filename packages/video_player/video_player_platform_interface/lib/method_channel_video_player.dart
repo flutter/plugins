@@ -104,14 +104,13 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     TrackSelectionsMessage response =
         await _api.trackSelections(TextureMessage()..textureId = textureId);
     final List<TrackSelection> trackSelections = [];
-    for (Object? trackSelectionObject in response.trackSelections!) {
-      final trackSelectionMap = trackSelectionObject as Map<Object?, Object?>;
+    for (dynamic? trackSelectionMap in response.trackSelections!) {
       final trackSelectionType =
           _intTrackSelectionTypeMap[trackSelectionMap['trackType']]!;
-      final isUnknown = trackSelectionMap['isUnknown'] as bool;
-      final isAuto = trackSelectionMap['isAuto'] as bool;
-      final trackId = trackSelectionMap['trackId'] as String;
-      final isSelected = trackSelectionMap['isSelected'] as bool;
+      final bool isUnknown = trackSelectionMap['isUnknown'];
+      final bool isAuto = trackSelectionMap['isAuto'];
+      final String trackId = trackSelectionMap['trackId'];
+      final bool isSelected = trackSelectionMap['isSelected'];
       if (isUnknown || isAuto) {
         trackSelections.add(TrackSelection(
           trackId: trackId,
@@ -125,10 +124,10 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
         switch (trackSelectionType) {
           case TrackSelectionType.video:
             {
-              final rolesFlag = trackSelectionMap['rolesFlag'] as int;
-              final bitrate = trackSelectionMap['bitrate'] as int;
-              final width = trackSelectionMap['width'] as int;
-              final height = trackSelectionMap['height'] as int;
+              final int rolesFlag = trackSelectionMap['rolesFlag'];
+              final int bitrate = trackSelectionMap['bitrate'];
+              final int width = trackSelectionMap['width'];
+              final int height = trackSelectionMap['height'];
               final trackSelectionName = _joinWithSeparator([
                 _buildRoleString(rolesFlag, trackSelectionNameResource),
                 _buildVideoQualityOrResolutionString(
@@ -151,11 +150,11 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
             }
           case TrackSelectionType.audio:
             {
-              final rolesFlag = trackSelectionMap['rolesFlag'] as int;
-              final language = trackSelectionMap['language'] as String;
-              final label = trackSelectionMap['label'] as String;
-              final channelCount = trackSelectionMap['channelCount'] as int;
-              final bitrate = trackSelectionMap['bitrate'] as int;
+              final int rolesFlag = trackSelectionMap['rolesFlag'];
+              final String language = trackSelectionMap['language'];
+              final String label = trackSelectionMap['label'];
+              final int channelCount = trackSelectionMap['channelCount'];
+              final int bitrate = trackSelectionMap['bitrate'];
               final trackSelectionName = _joinWithSeparator([
                 _buildLanguageOrLabelString(
                     language, rolesFlag, label, trackSelectionNameResource),
@@ -180,9 +179,9 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
             }
           case TrackSelectionType.text:
             {
-              final rolesFlag = trackSelectionMap['rolesFlag'] as int;
-              final language = trackSelectionMap['language'] as String;
-              final label = trackSelectionMap['label'] as String;
+              final int rolesFlag = trackSelectionMap['rolesFlag'];
+              final String language = trackSelectionMap['language'];
+              final String label = trackSelectionMap['label'];
               final trackSelectionName = _buildLanguageOrLabelString(
                   language, rolesFlag, label, trackSelectionNameResource);
               trackSelections.add(TrackSelection(
