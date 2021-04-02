@@ -63,12 +63,6 @@ class PublishPluginCommand extends PluginCommand {
       // Flutter convention is to use "upstream" for the single source of truth, and "origin" for personal forks.
       defaultsTo: 'upstream',
     );
-    argParser.addOption(
-      _allOption,
-      help:
-          'Based the diff between $_kBaseShaOption and HEAD, publish all the plugins that has pubspec change in this diff.\n'
-          'The --package option is ignored if this flag is on. (This is currently under construction)' ,
-    );
   }
 
   static const String _packageOption = 'package';
@@ -76,8 +70,6 @@ class PublishPluginCommand extends PluginCommand {
   static const String _pushTagsOption = 'push-tags';
   static const String _pubFlagsOption = 'pub-publish-flags';
   static const String _remoteOption = 'remote';
-  static const String _allOption = 'all';
-  static const String _kBaseShaOption = 'base-sha';
 
   // Version tags should follow <package-name>-v<semantic-version>. For example,
   // `flutter_plugin_tools-v0.0.24`.
@@ -119,9 +111,15 @@ class PublishPluginCommand extends PluginCommand {
     }
     _print('Local repo is ready!');
 
-    final Directory packageDir = _checkPackageDir(package);
+    final Directory packageDir = _getPackageDir(package);
     await _publishPlugin(packageDir: packageDir);
-    await _tagRelease(packageDir: packageDir, remote: remote, remoteUrl: remoteUrl, shouldPushTag: shouldPushTag);
+    if (argResults[_tagReleaseOption] as bool) {
+      await _tagRelease(
+          packageDir: packageDir,
+          remote: remote,
+          remoteUrl: remoteUrl,
+          shouldPushTag: shouldPushTag);
+    }
     await _finishSuccesfully();
   }
 
@@ -131,13 +129,15 @@ class PublishPluginCommand extends PluginCommand {
     _print('Package published!');
   }
 
-  Future<void> _tagRelease({@required Directory packageDir, @required String remote, @required String remoteUrl, @required bool shouldPushTag}) async {
-    if (!argResults[_tagReleaseOption]) {
-      return;
-    }
-    _print('Tagging release...');
+  Future<void> _tagRelease(
+      {@required Directory packageDir,
+      @required String remote,
+      @required String remoteUrl,
+      @required bool shouldPushTag}) async {
     final String tag = _getTag(packageDir);
-    await processRunner.runAndExitOnError('git', <String>['tag', tag], workingDir: packageDir);
+    _print('Tagging release $tag...');
+    await processRunner.runAndExitOnError('git', <String>['tag', tag],
+        workingDir: packageDir);
     if (!shouldPushTag) {
       return;
     }
@@ -151,7 +151,9 @@ class PublishPluginCommand extends PluginCommand {
     _print('Done!');
   }
 
-  Directory _checkPackageDir(String package) {
+  // Returns the packageDirectory based on the package name.
+  // Throws ToolExit if the `package` doesn't exist.
+  Directory _getPackageDir(String package) {
     final Directory packageDir = packagesDir.childDirectory(package);
     if (!packageDir.existsSync()) {
       _print('${packageDir.absolute.path} does not exist.');
@@ -161,12 +163,15 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<void> _checkGitStatus(Directory packageDir) async {
-    final ProcessResult statusResult = await processRunner.runAndExitOnError('git', <String>[
+    final ProcessResult statusResult = await processRunner.runAndExitOnError(
+        'git',
+        <String>[
           'status',
           '--porcelain',
           '--ignored',
           packageDir.absolute.path
-        ], workingDir: packageDir);
+        ],
+        workingDir: packageDir);
 
     final String statusOutput = statusResult.stdout;
     if (statusOutput.isNotEmpty) {
@@ -180,7 +185,8 @@ class PublishPluginCommand extends PluginCommand {
 
   Future<String> _verifyRemote(String remote) async {
     final ProcessResult remoteInfo = await processRunner.runAndExitOnError(
-        'git', <String>['remote', 'get-url', remote], workingDir: packagesDir);
+        'git', <String>['remote', 'get-url', remote],
+        workingDir: packagesDir);
     return remoteInfo.stdout;
   }
 
