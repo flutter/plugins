@@ -1,6 +1,10 @@
+## 0.7.3
+
+* Implemented pickMultiImage() for Android and iOS14+.
+
 ## 0.7.2
 
-* Run CocoaPods iOS tests in RunnerUITests target
+* Run CocoaPods iOS tests in RunnerUITests target.
 
 ## 0.7.1
 
