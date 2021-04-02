@@ -15,18 +15,25 @@
 
 // Private API needed for tests.
 @interface FLTLocalAuthPlugin (Test)
-@property(nonatomic, nullable) LAContext* authContextOverride;
+- (void)setAuthContextOverrides:(NSArray<LAContext*>*)authContexts;
 @end
+
+// Set a long timeout to avoid flake due to slow CI.
+static const NSTimeInterval kTimeout = 30.0;
 
 @interface FLTLocalAuthPluginTests : XCTestCase
 @end
 
 @implementation FLTLocalAuthPluginTests
 
+- (void)setUp {
+  self.continueAfterFailure = NO;
+}
+
 - (void)testSuccessfullAuthWithBiometrics {
   FLTLocalAuthPlugin* plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
-  plugin.authContextOverride = mockAuthContext;
+  plugin.authContextOverrides = @[ mockAuthContext ];
 
   const LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
   NSString* reason = @"a reason";
@@ -55,17 +62,17 @@
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      [expectation fulfill];
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                       XCTAssertTrue([result boolValue]);
+                      [expectation fulfill];
                     }];
-  [self waitForExpectationsWithTimeout:1.0 handler:nil];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
 - (void)testSuccessfullAuthWithoutBiometrics {
   FLTLocalAuthPlugin* plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
-  plugin.authContextOverride = mockAuthContext;
+  plugin.authContextOverrides = @[ mockAuthContext ];
 
   const LAPolicy policy = LAPolicyDeviceOwnerAuthentication;
   NSString* reason = @"a reason";
@@ -94,17 +101,17 @@
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      [expectation fulfill];
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                       XCTAssertTrue([result boolValue]);
+                      [expectation fulfill];
                     }];
-  [self waitForExpectationsWithTimeout:1.0 handler:nil];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
 - (void)testFailedAuthWithBiometrics {
   FLTLocalAuthPlugin* plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
-  plugin.authContextOverride = mockAuthContext;
+  plugin.authContextOverrides = @[ mockAuthContext ];
 
   const LAPolicy policy = LAPolicyDeviceOwnerAuthenticationWithBiometrics;
   NSString* reason = @"a reason";
@@ -133,17 +140,17 @@
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      [expectation fulfill];
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                       XCTAssertFalse([result boolValue]);
+                      [expectation fulfill];
                     }];
-  [self waitForExpectationsWithTimeout:1.0 handler:nil];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
 - (void)testFailedAuthWithoutBiometrics {
   FLTLocalAuthPlugin* plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
-  plugin.authContextOverride = mockAuthContext;
+  plugin.authContextOverrides = @[ mockAuthContext ];
 
   const LAPolicy policy = LAPolicyDeviceOwnerAuthentication;
   NSString* reason = @"a reason";
@@ -172,11 +179,11 @@
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
-                      [expectation fulfill];
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
                       XCTAssertFalse([result boolValue]);
+                      [expectation fulfill];
                     }];
-  [self waitForExpectationsWithTimeout:1.0 handler:nil];
+  [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
 @end

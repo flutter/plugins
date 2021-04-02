@@ -8,11 +8,15 @@
 @interface FLTLocalAuthPlugin ()
 @property(nonatomic, copy, nullable) NSDictionary<NSString *, NSNumber *> *lastCallArgs;
 @property(nonatomic, nullable) FlutterResult lastResult;
-// For unit tests to inject a dummy LAContext instance.
-@property(nonatomic, nullable) LAContext *authContextOverride;
+// For unit tests to inject dummy LAContext instances that will be used when a new context would
+// normally be created. Each call to createAuthContext will remove the current first element from
+// the array.
+- (void)setAuthContextOverrides:(NSArray<LAContext *> *)authContexts;
 @end
 
-@implementation FLTLocalAuthPlugin
+@implementation FLTLocalAuthPlugin {
+  NSMutableArray<LAContext *> *_authContextOverrides;
+}
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -42,9 +46,15 @@
 
 #pragma mark Private Methods
 
-- (LAContext *)authContext {
-  if (_authContextOverride != nil) {
-    return _authContextOverride;
+- (void)setAuthContextOverrides:(NSArray<LAContext *> *)authContexts {
+  _authContextOverrides = [authContexts mutableCopy];
+}
+
+- (LAContext *)createAuthContext {
+  if ([_authContextOverrides count] > 0) {
+    LAContext *context = [_authContextOverrides firstObject];
+    [_authContextOverrides removeObjectAtIndex:0];
+    return context;
   }
   return [[LAContext alloc] init];
 }
@@ -84,7 +94,7 @@
 }
 
 - (void)getAvailableBiometrics:(FlutterResult)result {
-  LAContext *context = self.authContext;
+  LAContext *context = self.createAuthContext;
   NSError *authError = nil;
   NSMutableArray<NSString *> *biometrics = [[NSMutableArray<NSString *> alloc] init];
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
@@ -108,7 +118,7 @@
 
 - (void)authenticateWithBiometrics:(NSDictionary *)arguments
                  withFlutterResult:(FlutterResult)result {
-  LAContext *context = self.authContext;
+  LAContext *context = self.createAuthContext;
   NSError *authError = nil;
   self.lastCallArgs = nil;
   self.lastResult = nil;
@@ -132,7 +142,7 @@
 }
 
 - (void)authenticate:(NSDictionary *)arguments withFlutterResult:(FlutterResult)result {
-  LAContext *context = self.authContext;
+  LAContext *context = self.createAuthContext;
   NSError *authError = nil;
   _lastCallArgs = nil;
   _lastResult = nil;
