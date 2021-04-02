@@ -26,14 +26,14 @@ guides:
 * [In-App Purchase (App Store)](https://developer.apple.com/in-app-purchase/)
 * [Google Play Billing Overview](https://developer.android.com/google/play/billing/billing_overview)
 
-You can check out the [example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/example/README.md) for steps on how
+You can check out the [example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/example/README.md) for steps on how
 to configure in app purchases in both stores.
 
 Once you've configured your in app purchases in their respective stores, you're
 able to start using the plugin. There's two basic options available to you to
 use.
 
-1. [in_app_purchase.dart](https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/lib/src/in_app_purchase),
+1. [in_app_purchase.dart](https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase/lib/src/in_app_purchase),
    the generic idiomatic Flutter API. This exposes the most basic IAP-related
    functionality. The goal is that Flutter apps should be able to use this API
    surface on its own for the vast majority of cases. If you use this you should
@@ -42,8 +42,8 @@ use.
    below.
 
 2. Dart APIs exposing the underlying platform APIs as directly as possible:
-   [store_kit_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/src/store_kit_wrappers) and
-   [billing_client_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/lib/src/billing_client_wrappers). These
+   [store_kit_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/lib/src/store_kit_wrappers) and
+   [billing_client_wrappers.dart](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/lib/src/billing_client_wrappers). These
    API surfaces should expose all the platform-specific behavior and allow for
    more fine-tuned control when needed. However if you use this you'll need to
    code your purchase handling logic significantly differently depending on
