@@ -105,6 +105,7 @@ class PublishPluginCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
+    _print('Checking local repo...');
     if (!await GitDir.isGitDir(packagesDir.path)) {
       _print('$packagesDir is not a valid Git repository.');
       throw ToolExit(1);
@@ -116,6 +117,7 @@ class PublishPluginCommand extends PluginCommand {
     if (shouldPushTag) {
       remoteUrl = await _verifyRemote(remote);
     }
+    _print('Local repo is ready!');
 
     final Directory packageDir = _checkPackageDir(package);
     await _publishPlugin(packageDir: packagesDir);
@@ -124,9 +126,7 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<void> _publishPlugin({@required Directory packageDir}) async {
-    _print('Checking local repo...');
     await _checkGitStatus(packageDir);
-    _print('Local repo is ready!');
     await _publish(packageDir);
     _print('Package published!');
   }

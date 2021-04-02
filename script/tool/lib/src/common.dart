@@ -527,8 +527,6 @@ class ProcessRunner {
   }) async {
     final io.ProcessResult result = await io.Process.run(executable, args,
         workingDirectory: workingDir?.path, runInShell: true);
-    print(result.stderr);
-    print(result.stdout);
     if (result.exitCode != 0) {
       final String error =
           _getErrorString(executable, args, workingDir: workingDir);

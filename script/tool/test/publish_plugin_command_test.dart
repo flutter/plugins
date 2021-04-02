@@ -42,8 +42,8 @@ void main() {
     assert(pluginDir != null && pluginDir.existsSync());
     createFakePubspec(pluginDir, includeVersion: true);
     io.Process.runSync('git', <String>['init'],
-        workingDirectory: parentDir.path);
-    gitDir = await GitDir.fromExisting(parentDir.path);
+        workingDirectory: mockPackagesDir.path);
+    gitDir = await GitDir.fromExisting(mockPackagesDir.path);
     await gitDir.runCommand(<String>['add', '-A']);
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
