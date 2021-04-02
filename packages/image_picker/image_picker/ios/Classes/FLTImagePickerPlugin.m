@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -69,7 +69,6 @@ static const int SOURCE_GALLERY = 1;
 
     PHPickerViewController *pickerViewController =
         [[PHPickerViewController alloc] initWithConfiguration:config];
-    // No clue what this is supposed to do, it was in the guide but doesnt work
     pickerViewController.delegate = self;
     [[self viewControllerWithWindow:nil] presentViewController:pickerViewController
                                                       animated:YES
@@ -95,7 +94,19 @@ static const int SOURCE_GALLERY = 1;
                   [NSString stringWithFormat:@"image%lu.png", (unsigned long)pathList.count];
               NSString *path = [documentsDirectory stringByAppendingPathComponent:filename];
               NSData *data = UIImagePNGRepresentation(object);
-              [data writeToFile:path atomically:YES];
+                NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
+                NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
+                NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+                
+                if(maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                    path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
+                                                                            image:object
+                                                                         maxWidth:maxWidth
+                                                                        maxHeight:maxHeight
+                                                                     imageQuality:imageQuality];
+                } else {
+                    [data writeToFile:path atomically:YES];
+                }
               [pathList addObject:path];
               if (pathList.count == results.count) {
                 if (results.count == 1) {
@@ -154,11 +165,11 @@ static const int SOURCE_GALLERY = 1;
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
-      NSLog(@"pickImage has been called on iOS14+");
       self.result = result;
       _arguments = call.arguments;
-      NSLog(@"Result and arguments have been set");
       [self pickImage:false];
+    } else {
+        NSLog(@"pickMultiImage is not supported on versions below iOS14");
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
