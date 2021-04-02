@@ -1,3 +1,8 @@
+## 2.0.4
+
+* Preserve the `TileProvider` when copying `TileOverlay`, fixing a
+  regression with tile overlays introduced in the null safety migration.
+
 ## 2.0.3
 
 * Fix type issues in `isMarkerInfoWindowShown` and `getZoomLevel` introduced

@@ -1,3 +1,8 @@
+## 1.1.1
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
 ## 1.1.0
 
 * Migrate to null safety.
