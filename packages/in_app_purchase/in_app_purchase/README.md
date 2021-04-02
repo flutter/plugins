@@ -36,7 +36,7 @@ your app with each store. Both stores have extensive guides:
 * [Google Play documentation](https://developer.android.com/google/play/billing/billing_overview)
 
 For a list of steps for configuring in-app purchases in both stores, see the
-[example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/example/README.md).
+[example app README](https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/example/README.md).
 
 Once you've configured your in-app purchases in their respective stores, you
 can start using the plugin. Two basic options are available:
