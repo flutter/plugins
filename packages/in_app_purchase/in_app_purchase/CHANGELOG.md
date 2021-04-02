@@ -1,3 +1,7 @@
+## 0.5.1+1
+
+* Fix error message when trying to consume purchase on iOS.
+
 ## 0.5.1
 
 * [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 

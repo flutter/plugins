@@ -4,11 +4,10 @@
 
 part of google_maps_flutter_web;
 
-final _nullLatLng = LatLng(0, 0);
-final _nullLatLngBounds = LatLngBounds(
-  northeast: _nullLatLng,
-  southwest: _nullLatLng,
-);
+// Default values for when the gmaps objects return null/undefined values.
+final _nullGmapsLatLng = gmaps.LatLng(0, 0);
+final _nullGmapsLatLngBounds =
+    gmaps.LatLngBounds(_nullGmapsLatLng, _nullGmapsLatLng);
 
 // Defaults taken from the Google Maps Platform SDK documentation.
 final _defaultCssColor = '#000000';
@@ -115,80 +114,6 @@ bool _isTrafficLayerEnabled(Map<String, dynamic> rawOptions) {
   return rawOptions['trafficEnabled'] ?? false;
 }
 
-// Coverts the incoming JSON object into a List of MapTypeStyler objects.
-List<gmaps.MapTypeStyler> _parseStylers(List stylerJsons) {
-  return stylerJsons?.map((styler) {
-    return gmaps.MapTypeStyler()
-      ..color = styler['color']
-      ..gamma = styler['gamma']
-      ..hue = styler['hue']
-      ..invertLightness = styler['invertLightness']
-      ..lightness = styler['lightness']
-      ..saturation = styler['saturation']
-      ..visibility = styler['visibility']
-      ..weight = styler['weight'];
-  })?.toList();
-}
-
-// Converts a String to its corresponding MapTypeStyleElementType enum value.
-final _elementTypeToEnum = <String, gmaps.MapTypeStyleElementType>{
-  'all': gmaps.MapTypeStyleElementType.ALL,
-  'geometry': gmaps.MapTypeStyleElementType.GEOMETRY,
-  'geometry.fill': gmaps.MapTypeStyleElementType.GEOMETRY_FILL,
-  'geometry.stroke': gmaps.MapTypeStyleElementType.GEOMETRY_STROKE,
-  'labels': gmaps.MapTypeStyleElementType.LABELS,
-  'labels.icon': gmaps.MapTypeStyleElementType.LABELS_ICON,
-  'labels.text': gmaps.MapTypeStyleElementType.LABELS_TEXT,
-  'labels.text.fill': gmaps.MapTypeStyleElementType.LABELS_TEXT_FILL,
-  'labels.text.stroke': gmaps.MapTypeStyleElementType.LABELS_TEXT_STROKE,
-};
-
-// Converts a String to its corresponding MapTypeStyleFeatureType enum value.
-final _featureTypeToEnum = <String, gmaps.MapTypeStyleFeatureType>{
-  'administrative': gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE,
-  'administrative.country':
-      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_COUNTRY,
-  'administrative.land_parcel':
-      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LAND_PARCEL,
-  'administrative.locality':
-      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_LOCALITY,
-  'administrative.neighborhood':
-      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_NEIGHBORHOOD,
-  'administrative.province':
-      gmaps.MapTypeStyleFeatureType.ADMINISTRATIVE_PROVINCE,
-  'all': gmaps.MapTypeStyleFeatureType.ALL,
-  'landscape': gmaps.MapTypeStyleFeatureType.LANDSCAPE,
-  'landscape.man_made': gmaps.MapTypeStyleFeatureType.LANDSCAPE_MAN_MADE,
-  'landscape.natural': gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL,
-  'landscape.natural.landcover':
-      gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_LANDCOVER,
-  'landscape.natural.terrain':
-      gmaps.MapTypeStyleFeatureType.LANDSCAPE_NATURAL_TERRAIN,
-  'poi': gmaps.MapTypeStyleFeatureType.POI,
-  'poi.attraction': gmaps.MapTypeStyleFeatureType.POI_ATTRACTION,
-  'poi.business': gmaps.MapTypeStyleFeatureType.POI_BUSINESS,
-  'poi.government': gmaps.MapTypeStyleFeatureType.POI_GOVERNMENT,
-  'poi.medical': gmaps.MapTypeStyleFeatureType.POI_MEDICAL,
-  'poi.park': gmaps.MapTypeStyleFeatureType.POI_PARK,
-  'poi.place_of_worship': gmaps.MapTypeStyleFeatureType.POI_PLACE_OF_WORSHIP,
-  'poi.school': gmaps.MapTypeStyleFeatureType.POI_SCHOOL,
-  'poi.sports_complex': gmaps.MapTypeStyleFeatureType.POI_SPORTS_COMPLEX,
-  'road': gmaps.MapTypeStyleFeatureType.ROAD,
-  'road.arterial': gmaps.MapTypeStyleFeatureType.ROAD_ARTERIAL,
-  'road.highway': gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY,
-  'road.highway.controlled_access':
-      gmaps.MapTypeStyleFeatureType.ROAD_HIGHWAY_CONTROLLED_ACCESS,
-  'road.local': gmaps.MapTypeStyleFeatureType.ROAD_LOCAL,
-  'transit': gmaps.MapTypeStyleFeatureType.TRANSIT,
-  'transit.line': gmaps.MapTypeStyleFeatureType.TRANSIT_LINE,
-  'transit.station': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION,
-  'transit.station.airport':
-      gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_AIRPORT,
-  'transit.station.bus': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_BUS,
-  'transit.station.rail': gmaps.MapTypeStyleFeatureType.TRANSIT_STATION_RAIL,
-  'water': gmaps.MapTypeStyleFeatureType.WATER,
-};
-
 // The keys we'd expect to see in a serialized MapTypeStyle JSON object.
 final _mapStyleKeys = {
   'elementType',
@@ -202,37 +127,36 @@ bool _isJsonMapStyle(Map value) {
 }
 
 // Converts an incoming JSON-encoded Style info, into the correct gmaps array.
-List<gmaps.MapTypeStyle> _mapStyles(String mapStyleJson) {
+List<gmaps.MapTypeStyle> _mapStyles(String? mapStyleJson) {
   List<gmaps.MapTypeStyle> styles = [];
   if (mapStyleJson != null) {
-    styles = json.decode(mapStyleJson, reviver: (key, value) {
-      if (value is Map && _isJsonMapStyle(value)) {
-        return gmaps.MapTypeStyle()
-          ..elementType = _elementTypeToEnum[value['elementType']]
-          ..featureType = _featureTypeToEnum[value['featureType']]
-          ..stylers = _parseStylers(value['stylers']);
-      }
-      return value;
-    }).cast<gmaps.MapTypeStyle>();
+    styles = json
+        .decode(mapStyleJson, reviver: (key, value) {
+          if (value is Map && _isJsonMapStyle(value)) {
+            return gmaps.MapTypeStyle()
+              ..elementType = value['elementType']
+              ..featureType = value['featureType']
+              ..stylers =
+                  (value['stylers'] as List).map((e) => jsify(e)).toList();
+          }
+          return value;
+        })
+        .cast<gmaps.MapTypeStyle>()
+        .toList();
+    // .toList calls are required so the JS API understands the underlying data structure.
   }
   return styles;
 }
 
 gmaps.LatLng _latLngToGmLatLng(LatLng latLng) {
-  if (latLng == null) return null;
   return gmaps.LatLng(latLng.latitude, latLng.longitude);
 }
 
 LatLng _gmLatLngToLatLng(gmaps.LatLng latLng) {
-  if (latLng == null) return _nullLatLng;
-  return LatLng(latLng.lat, latLng.lng);
+  return LatLng(latLng.lat.toDouble(), latLng.lng.toDouble());
 }
 
 LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
-  if (latLngBounds == null) {
-    return _nullLatLngBounds;
-  }
-
   return LatLngBounds(
     southwest: _gmLatLngToLatLng(latLngBounds.southWest),
     northeast: _gmLatLngToLatLng(latLngBounds.northEast),
@@ -241,10 +165,10 @@ LatLngBounds _gmLatLngBoundsTolatLngBounds(gmaps.LatLngBounds latLngBounds) {
 
 CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
   return CameraPosition(
-    target: _gmLatLngToLatLng(map.center),
-    bearing: map.heading ?? 0,
-    tilt: map.tilt ?? 0,
-    zoom: map.zoom?.toDouble() ?? 10,
+    target: _gmLatLngToLatLng(map.center ?? _nullGmapsLatLng),
+    bearing: map.heading?.toDouble() ?? 0,
+    tilt: map.tilt?.toDouble() ?? 0,
+    zoom: map.zoom?.toDouble() ?? 0,
   );
 }
 
@@ -252,9 +176,13 @@ CameraPosition _gmViewportToCameraPosition(gmaps.GMap map) {
 // TODO: Move to their appropriate objects, maybe make these copy constructors:
 // Marker.fromMarker(anotherMarker, moreOptions);
 
-gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
-  if ((marker.infoWindow?.title?.isEmpty ?? true) &&
-      (marker.infoWindow?.snippet?.isEmpty ?? true)) {
+gmaps.InfoWindowOptions? _infoWindowOptionsFromMarker(Marker marker) {
+  final markerTitle = marker.infoWindow.title ?? '';
+  final markerSnippet = marker.infoWindow.snippet ?? '';
+
+  // If both the title and snippet of an infowindow are empty, we don't really
+  // want an infowindow...
+  if ((markerTitle.isEmpty) && (markerSnippet.isEmpty)) {
     return null;
   }
 
@@ -262,17 +190,18 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
   // to click events...
   final HtmlElement container = DivElement()
     ..id = 'gmaps-marker-${marker.markerId.value}-infowindow';
-  if (marker.infoWindow.title?.isNotEmpty ?? false) {
+
+  if (markerTitle.isNotEmpty) {
     final HtmlElement title = HeadingElement.h3()
       ..className = 'infowindow-title'
-      ..innerText = marker.infoWindow.title;
+      ..innerText = markerTitle;
     container.children.add(title);
   }
-  if (marker.infoWindow.snippet?.isNotEmpty ?? false) {
+  if (markerSnippet.isNotEmpty) {
     final HtmlElement snippet = DivElement()
       ..className = 'infowindow-snippet'
       ..setInnerHtml(
-        sanitizeHtml(marker.infoWindow.snippet),
+        sanitizeHtml(markerSnippet),
         treeSanitizer: NodeTreeSanitizer.trusted,
       );
     container.children.add(snippet);
@@ -290,10 +219,10 @@ gmaps.InfoWindowOptions _infoWindowOptionsFromMarker(Marker marker) {
 // Preserves the position from the [currentMarker], if set.
 gmaps.MarkerOptions _markerOptionsFromMarker(
   Marker marker,
-  gmaps.Marker currentMarker,
+  gmaps.Marker? currentMarker,
 ) {
-  final iconConfig = marker.icon?.toJson() as List;
-  gmaps.Icon icon;
+  final iconConfig = marker.icon.toJson() as List;
+  gmaps.Icon? icon;
 
   if (iconConfig != null) {
     if (iconConfig[0] == 'fromAssetImage') {
@@ -324,7 +253,7 @@ gmaps.MarkerOptions _markerOptionsFromMarker(
           marker.position.latitude,
           marker.position.longitude,
         )
-    ..title = sanitizeHtml(marker.infoWindow?.title ?? "")
+    ..title = sanitizeHtml(marker.infoWindow.title ?? "")
     ..zIndex = marker.zIndex
     ..visible = marker.visible
     ..opacity = marker.alpha
@@ -356,7 +285,7 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
   final polygonDirection = _isPolygonClockwise(path);
   List<List<gmaps.LatLng>> paths = [path];
   int holeIndex = 0;
-  polygon.holes?.forEach((hole) {
+  polygon.holes.forEach((hole) {
     List<gmaps.LatLng> holePath =
         hole.map((point) => _latLngToGmLatLng(point)).toList();
     if (_isPolygonClockwise(holePath) == polygonDirection) {
@@ -387,6 +316,13 @@ gmaps.PolygonOptions _polygonOptionsFromPolygon(
 /// based on: https://stackoverflow.com/a/1165943
 ///
 /// returns [true] if clockwise [false] if counterclockwise
+///
+/// This method expects that the incoming [path] is a `List` of well-formed,
+/// non-null [gmaps.LatLng] objects.
+///
+/// Currently, this method is only called from [_polygonOptionsFromPolygon], and
+/// the `path` is a transformed version of [Polygon.points] or each of the
+/// [Polygon.holes], guaranteeing that `lat` and `lng` can be accessed with `!`.
 bool _isPolygonClockwise(List<gmaps.LatLng> path) {
   var direction = 0.0;
   for (var i = 0; i < path.length; i++) {
@@ -447,7 +383,7 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
       map.panBy(json[1], json[2]);
       break;
     case 'zoomBy':
-      gmaps.LatLng focusLatLng;
+      gmaps.LatLng? focusLatLng;
       double zoomDelta = json[1] ?? 0;
       // Web only supports integer changes...
       int newZoomDelta = zoomDelta < 0 ? zoomDelta.floor() : zoomDelta.ceil();
@@ -460,16 +396,16 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
           // print('Error computing new focus LatLng. JS Error: ' + e.toString());
         }
       }
-      map.zoom = map.zoom + newZoomDelta;
+      map.zoom = (map.zoom ?? 0) + newZoomDelta;
       if (focusLatLng != null) {
         map.panTo(focusLatLng);
       }
       break;
     case 'zoomIn':
-      map.zoom++;
+      map.zoom = (map.zoom ?? 0) + 1;
       break;
     case 'zoomOut':
-      map.zoom--;
+      map.zoom = (map.zoom ?? 0) - 1;
       break;
     case 'zoomTo':
       map.zoom = json[1];
@@ -481,17 +417,27 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
 
 // original JS by: Byron Singh (https://stackoverflow.com/a/30541162)
 gmaps.LatLng _pixelToLatLng(gmaps.GMap map, int x, int y) {
-  final ne = map.bounds.northEast;
-  final sw = map.bounds.southWest;
+  final bounds = map.bounds;
   final projection = map.projection;
+  final zoom = map.zoom;
 
-  final topRight = projection.fromLatLngToPoint(ne);
-  final bottomLeft = projection.fromLatLngToPoint(sw);
+  assert(
+      bounds != null, 'Map Bounds required to compute LatLng of screen x/y.');
+  assert(projection != null,
+      'Map Projection required to compute LatLng of screen x/y');
+  assert(zoom != null,
+      'Current map zoom level required to compute LatLng of screen x/y');
 
-  final scale = 1 << map.zoom; // 2 ^ zoom
+  final ne = bounds!.northEast;
+  final sw = bounds.southWest;
+
+  final topRight = projection!.fromLatLngToPoint!(ne)!;
+  final bottomLeft = projection.fromLatLngToPoint!(sw)!;
+
+  final scale = 1 << (zoom!.toInt()); // 2 ^ zoom
 
   final point =
-      gmaps.Point((x / scale) + bottomLeft.x, (y / scale) + topRight.y);
+      gmaps.Point((x / scale) + bottomLeft.x!, (y / scale) + topRight.y!);
 
-  return projection.fromPointToLatLng(point);
+  return projection.fromPointToLatLng!(point)!;
 }

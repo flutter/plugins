@@ -24,6 +24,7 @@ import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import javax.net.ssl.HttpsURLConnection;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
@@ -140,8 +141,11 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               handle,
               "asset:///" + assetLookupKey,
               null,
+              null,
               options);
     } else {
+      @SuppressWarnings("unchecked")
+      Map<String, String> httpHeaders = arg.getHttpHeaders();
       player =
           new VideoPlayer(
               flutterState.applicationContext,
@@ -149,6 +153,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
               handle,
               arg.getUri(),
               arg.getFormatHint(),
+              httpHeaders,
               options);
     }
     videoPlayers.put(handle.id(), player);
