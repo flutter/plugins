@@ -18,6 +18,7 @@ void main() {
     dynamic returnValue = '';
 
     setUp(() {
+      returnValue = '';
       picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
         return returnValue;
