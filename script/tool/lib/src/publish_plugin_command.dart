@@ -120,7 +120,7 @@ class PublishPluginCommand extends PluginCommand {
     _print('Local repo is ready!');
 
     final Directory packageDir = _checkPackageDir(package);
-    await _publishPlugin(packageDir: packagesDir);
+    await _publishPlugin(packageDir: packageDir);
     await _tagRelease(packageDir: packageDir, remote: remote, remoteUrl: remoteUrl, shouldPushTag: shouldPushTag);
     await _finishSuccesfully();
   }
