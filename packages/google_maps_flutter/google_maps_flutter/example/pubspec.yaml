@@ -17,7 +17,7 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  flutter_plugin_android_lifecycle: ^2.0.0-nullsafety.2
+  flutter_plugin_android_lifecycle: ^2.0.1
 
 dev_dependencies:
   flutter_driver:

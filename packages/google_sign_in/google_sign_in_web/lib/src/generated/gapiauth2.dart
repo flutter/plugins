@@ -68,7 +68,7 @@ class GoogleAuth {
 
   /// Attaches the sign-in flow to the specified container's click handler.
   external dynamic attachClickHandler(
-      dynamic? container,
+      dynamic container,
       SigninOptions options,
       dynamic onsuccess(GoogleUser googleUser),
       dynamic onfailure(String reason));

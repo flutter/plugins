@@ -14,8 +14,8 @@ class PolygonsController extends GeometryController {
 
   /// Initializes the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   PolygonsController({
-    @required StreamController<MapEvent> stream,
-  })  : _streamController = stream,
+    required StreamController<MapEvent> stream,
+  })   : _streamController = stream,
         _polygonIdToController = Map<PolygonId, PolygonController>();
 
   /// Returns the cache of [PolygonController]s. Test only.
@@ -60,15 +60,15 @@ class PolygonsController extends GeometryController {
   }
 
   void _changePolygon(Polygon polygon) {
-    PolygonController polygonController =
-        _polygonIdToController[polygon?.polygonId];
+    PolygonController? polygonController =
+        _polygonIdToController[polygon.polygonId];
     polygonController?.update(_polygonOptionsFromPolygon(googleMap, polygon));
   }
 
   /// Removes a set of [PolygonId]s from the cache.
   void removePolygons(Set<PolygonId> polygonIdsToRemove) {
-    polygonIdsToRemove?.forEach((polygonId) {
-      final PolygonController polygonController =
+    polygonIdsToRemove.forEach((polygonId) {
+      final PolygonController? polygonController =
           _polygonIdToController[polygonId];
       polygonController?.remove();
       _polygonIdToController.remove(polygonId);
