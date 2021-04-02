@@ -81,9 +81,13 @@ void main() {
 }
 ```
 
+### Listening to purchase updates
+
 In your app's `initState` method, subscribe to any incoming purchases. These
-can propagate from either underlying store, so it's important to listen as
-soon as possible to avoid losing events.
+can propagate from either underlying store.
+You should always start listening to purchase update as early as possible to be able
+to catch all purchase updates, including the ones from the previous app session.
+To listen to the update:
 
 ```dart
 class _MyAppState extends State<MyApp> {
@@ -91,10 +95,14 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void initState() {
-    final Stream purchaseUpdates =
+    final Stream purchaseUpdated =
         InAppPurchaseConnection.instance.purchaseUpdatedStream;
-    _subscription = purchaseUpdates.listen((purchases) {
-      _listenToPurchaseUpdated(purchases);
+    _subscription = purchaseUpdated.listen((purchaseDetailsList) {
+      _listenToPurchaseUpdated(purchaseDetailsList);
+    }, onDone: () {
+      _subscription.cancel();
+    }, onError: (error) {
+      // handle error here.
     });
     super.initState();
   }
@@ -104,6 +112,34 @@ class _MyAppState extends State<MyApp> {
     _subscription.cancel();
     super.dispose();
   }
+```
+
+Here is an example of how to handle purchase updates:
+
+```dart
+void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
+  purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
+    if (purchaseDetails.status == PurchaseStatus.pending) {
+      _showPendingUI();
+    } else {
+      if (purchaseDetails.status == PurchaseStatus.error) {
+        _handleError(purchaseDetails.error!);
+      } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+        bool valid = await _verifyPurchase(purchaseDetails);
+        if (valid) {
+          _deliverProduct(purchaseDetails);
+        } else {
+          _handleInvalidPurchase(purchaseDetails);
+          return;
+        }
+      }
+      if (purchaseDetails.pendingCompletePurchase) {
+        await InAppPurchaseConnection.instance
+            .completePurchase(purchaseDetails);
+      }
+    }
+  });
+}
 ```
 
 ### Connecting to the underlying store
@@ -161,54 +197,6 @@ products, and Google Play considers consumable products to no longer be owned
 once they're marked as consumed and fails to return them here. For restoring
 these across devices you'll need to persist them on your own server and query
 that as well.
-
-### Listening to purchase updates
-
-You should always start listening to purchase update as early as possible to be able
-to catch all purchase updates, including the ones from the previous app session.
-To listen to the update:
-***[PENDING: We already showed code like this above (except the handler was called
-`_listenToPurchaseUpdated`). Copy this up there and remove from here?]***
-
-```dart
-  Stream purchaseUpdated =
-      InAppPurchaseConnection.instance.purchaseUpdatedStream;
-  _subscription = purchaseUpdated.listen((purchaseDetailsList) {
-    _listenToPurchaseUpdated(purchaseDetailsList);
-  }, onDone: () {
-    _subscription.cancel();
-  }, onError: (error) {
-    // handle error here.
-  });
-```
-
-Here is an example of how to handle purchase updates:
-
-```dart
-void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
-  purchaseDetailsList.forEach((PurchaseDetails purchaseDetails) async {
-    if (purchaseDetails.status == PurchaseStatus.pending) {
-      _showPendingUI();
-    } else {
-      if (purchaseDetails.status == PurchaseStatus.error) {
-        _handleError(purchaseDetails.error!);
-      } else if (purchaseDetails.status == PurchaseStatus.purchased) {
-        bool valid = await _verifyPurchase(purchaseDetails);
-        if (valid) {
-          _deliverProduct(purchaseDetails);
-        } else {
-          _handleInvalidPurchase(purchaseDetails);
-          return;
-        }
-      }
-      if (purchaseDetails.pendingCompletePurchase) {
-        await InAppPurchaseConnection.instance
-            .completePurchase(purchaseDetails);
-      }
-    }
-  });
-}
-```
 
 ### Making a purchase
 
