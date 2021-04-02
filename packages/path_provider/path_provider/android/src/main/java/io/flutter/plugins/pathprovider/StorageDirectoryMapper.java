@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.pathprovider;
 
 import android.os.Build.VERSION;
@@ -6,7 +10,6 @@ import android.os.Environment;
 
 /** Helps to map the Dart `StorageDirectory` enum to a Android system constant. */
 class StorageDirectoryMapper {
-
   /**
    * Return a Android Environment constant for a Dart Index.
    *

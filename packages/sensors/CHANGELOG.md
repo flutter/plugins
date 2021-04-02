@@ -1,3 +1,11 @@
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.2+8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
 ## 0.4.2+7
 
 * Update Flutter SDK constraint.

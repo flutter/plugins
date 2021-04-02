@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,11 @@ enum CameraLensDirection {
 /// Properties of a camera device.
 class CameraDescription {
   /// Creates a new camera description with the given properties.
-  CameraDescription({this.name, this.lensDirection, this.sensorOrientation});
+  CameraDescription({
+    required this.name,
+    required this.lensDirection,
+    required this.sensorOrientation,
+  });
 
   /// The name of the camera device.
   final String name;

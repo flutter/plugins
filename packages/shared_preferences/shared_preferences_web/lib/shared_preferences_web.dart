@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 /// This class implements the `package:shared_preferences` functionality for the web.
 class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
   /// Registers this class as the default instance of [SharedPreferencesStorePlatform].
-  static void registerWith(Registrar registrar) {
+  static void registerWith(Registrar? registrar) {
     SharedPreferencesStorePlatform.instance = SharedPreferencesPlugin();
   }
 
@@ -31,9 +31,9 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
 
   @override
   Future<Map<String, Object>> getAll() async {
-    final Map<String, Object> allData = <String, Object>{};
+    final Map<String, Object> allData = {};
     for (String key in _storedFlutterKeys) {
-      allData[key] = _decodeValue(html.window.localStorage[key]);
+      allData[key] = _decodeValue(html.window.localStorage[key]!);
     }
     return allData;
   }
@@ -46,7 +46,7 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) async {
+  Future<bool> setValue(String valueType, String key, Object? value) async {
     _checkPrefix(key);
     html.window.localStorage[key] = _encodeValue(value);
     return true;
@@ -62,17 +62,12 @@ class SharedPreferencesPlugin extends SharedPreferencesStorePlatform {
     }
   }
 
-  List<String> get _storedFlutterKeys {
-    final List<String> keys = <String>[];
-    for (String key in html.window.localStorage.keys) {
-      if (key.startsWith('flutter.')) {
-        keys.add(key);
-      }
-    }
-    return keys;
+  Iterable<String> get _storedFlutterKeys {
+    return html.window.localStorage.keys
+        .where((key) => key.startsWith('flutter.'));
   }
 
-  String _encodeValue(Object value) {
+  String _encodeValue(Object? value) {
     return json.encode(value);
   }
 

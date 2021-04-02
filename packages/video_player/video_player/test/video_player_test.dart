@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,6 +12,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/messages.dart';
+import 'package:video_player_platform_interface/test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 
 class FakeController extends ValueNotifier<VideoPlayerValue>
@@ -28,6 +29,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
+  @override
+  Map<String, String> get httpHeaders => {};
 
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
@@ -199,22 +203,60 @@ void main() {
         );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-            'https://127.0.0.1');
         expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint, null);
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          null,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
       });
 
       test('network with hint', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
-            'https://127.0.0.1',
-            formatHint: VideoFormat.dash);
+          'https://127.0.0.1',
+          formatHint: VideoFormat.dash,
+        );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-            'https://127.0.0.1');
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
-            'dash');
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          'dash',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
+      });
+
+      test('network with some headers', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          httpHeaders: {'Authorization': 'Bearer token'},
+        );
+        await controller.initialize();
+
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          null,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {'Authorization': 'Bearer token'},
+        );
       });
 
       test('init errors', () async {
@@ -567,7 +609,7 @@ void main() {
           'VideoPlayerValue(duration: 0:00:05.000000, '
           'size: Size(400.0, 300.0), '
           'position: 0:00:01.000000, '
-          'caption: Caption(number: null, start: null, end: null, text: foo), '
+          'caption: Caption(number: 0, start: 0:00:00.000000, end: 0:00:00.000000, text: foo), '
           'buffered: [DurationRange(start: 0:00:00.000000, end: 0:00:04.000000)], '
           'isInitialized: true, '
           'isPlaying: true, '
@@ -795,11 +837,7 @@ class FakeEventsChannel {
   }
 
   void _sendMessage(ByteData data) {
-    // TODO(jackson): This has been deprecated and should be replaced
-    // with `ServicesBinding.instance.defaultBinaryMessenger` when it's
-    // available on all the versions of Flutter that we test.
-    // ignore: deprecated_member_use
-    defaultBinaryMessenger.handlePlatformMessage(
+    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
         eventsMethodChannel.name, data, (ByteData? data) {});
   }
 }

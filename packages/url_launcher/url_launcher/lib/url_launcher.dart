@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -62,7 +62,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// is set to true and the universal link failed to launch.
 Future<bool> launch(
   String urlString, {
-  bool forceSafariVC = true,
+  bool? forceSafariVC,
   bool forceWebView = false,
   bool enableJavaScript = false,
   bool enableDomStorage = false,
@@ -95,7 +95,7 @@ Future<bool> launch(
 
   final bool result = await UrlLauncherPlatform.instance.launch(
     urlString,
-    useSafariVC: forceSafariVC,
+    useSafariVC: forceSafariVC ?? isWebURL,
     useWebView: forceWebView,
     enableJavaScript: enableJavaScript,
     enableDomStorage: enableDomStorage,

@@ -1,11 +1,13 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 // This is a basic Flutter widget test.
 //
 // To perform an interaction with a widget in your test, use the WidgetTester
 // utility that Flutter provides. For example, you can send tap and scroll
 // gestures. You can also use WidgetTester to find child widgets in the widget
 // tree, read text, and verify that the values of widget properties are correct.
-
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,14 +17,14 @@ import 'package:pathproviderexample/main.dart';
 void main() {
   group('Test linux path provider example', () {
     setUpAll(() async {
-      await WidgetsFlutterBinding.ensureInitialized();
+      WidgetsFlutterBinding.ensureInitialized();
     });
 
     testWidgets('Finds tmp directory', (WidgetTester tester) async {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that temporary directory is retrieved.
@@ -30,7 +32,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Temp Directory: /tmp'),
+                widget.data!.startsWith('Temp Directory: /tmp'),
           ),
           findsOneWidget,
         );
@@ -40,7 +42,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that documents directory is retrieved.
@@ -48,7 +50,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Documents Directory: /'),
+                widget.data!.startsWith('Documents Directory: /'),
           ),
           findsOneWidget,
         );
@@ -58,7 +60,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that downloads directory is retrieved.
@@ -66,7 +68,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Downloads Directory: /'),
+                widget.data!.startsWith('Downloads Directory: /'),
           ),
           findsOneWidget,
         );
@@ -77,7 +79,7 @@ void main() {
       // Build our app and trigger a frame.
       await tester.runAsync(() async {
         await tester.pumpWidget(MyApp());
-        await Future.delayed(Duration(milliseconds: 20));
+        await Future<void>.delayed(const Duration(milliseconds: 20));
         await tester.pump();
 
         // Verify that Application Support Directory is retrieved.
@@ -85,7 +87,7 @@ void main() {
           find.byWidgetPredicate(
             (Widget widget) =>
                 widget is Text &&
-                widget.data.startsWith('Application Support Directory: /'),
+                widget.data!.startsWith('Application Support Directory: /'),
           ),
           findsOneWidget,
         );

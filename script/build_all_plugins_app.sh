@@ -1,58 +1,49 @@
 #!/bin/bash
+# Copyright 2013 The Flutter Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+#  Usage:
+#
+#   ./script/build_all_plugins_app.sh apk
+#   ./script/build_all_plugins_app.sh ios
 
 # This script builds the app in flutter/plugins/example/all_plugins to make
 # sure all first party plugins can be compiled together.
 
 # So that users can run this script from anywhere and it will work as expected.
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
+
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
-source "$SCRIPT_DIR/nnbd_plugins.sh"
 
 check_changed_packages > /dev/null
 
+# This list should be kept as short as possible, and things should remain here
+# only as long as necessary, since in general the goal is for all of the latest
+# versions of plugins to be mutually compatible.
+#
+# An example use case for this list would be to temporarily add plugins while
+# updating multiple plugins for a breaking change in a common dependency in
+# cases where using a relaxed version constraint isn't possible.
 readonly EXCLUDED_PLUGINS_LIST=(
-  "connectivity_macos"
-  "connectivity_platform_interface"
-  "connectivity_web"
-  "extension_google_sign_in_as_googleapis_auth"
-  "flutter_plugin_android_lifecycle"
-  "google_maps_flutter_platform_interface"
-  "google_maps_flutter_web"
-  "google_sign_in_platform_interface"
-  "google_sign_in_web"
-  "image_picker_platform_interface"
-  "instrumentation_adapter"
-  "path_provider_linux"
-  "path_provider_macos"
-  "path_provider_platform_interface"
-  "path_provider_web"
-  "plugin_platform_interface"
-  "shared_preferences_linux"
-  "shared_preferences_macos"
-  "shared_preferences_platform_interface"
-  "shared_preferences_web"
-  "shared_preferences_windows"
-  "url_launcher_linux"
-  "url_launcher_macos"
-  "url_launcher_platform_interface"
-  "url_launcher_web"
-  "video_player_platform_interface"
-  "video_player_web"
+  "plugin_platform_interface" # This should never be a direct app dependency.
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
 
 ALL_EXCLUDED=($EXCLUDED)
-# Exclude nnbd plugins from stable.
-if [[ "$CHANNEL" -eq "stable" ]]; then
-  ALL_EXCLUDED=("$EXCLUDED,$EXCLUDED_PLUGINS_FROM_STABLE")
-fi
 
 echo "Excluding the following plugins: $ALL_EXCLUDED"
 
-(cd "$REPO_DIR" && pub global run flutter_plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
+(cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
+
+# Master now creates null-safe app code by default; migrate stable so both
+# branches are building in the same mode.
+if [[ "${CHANNEL}" == "stable" ]]; then
+  (cd $REPO_DIR/all_plugins && dart migrate --apply-changes)
+fi
 
 function error() {
   echo "$@" 1>&2
@@ -60,7 +51,14 @@ function error() {
 
 failures=0
 
-for version in "debug" "release"; do
+BUILD_MODES=("debug" "release")
+# Web doesn't support --debug for builds.
+if [[ "$1" == "web" ]]; then
+  BUILD_MODES=("release")
+fi
+
+for version in "${BUILD_MODES[@]}"; do
+  echo "Building $version..."
   (cd $REPO_DIR/all_plugins && flutter build $@ --$version)
 
   if [ $? -eq 0 ]; then

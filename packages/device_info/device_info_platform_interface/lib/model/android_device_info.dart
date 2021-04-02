@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,39 +38,63 @@ class AndroidDeviceInfo {
   final AndroidBuildVersion version;
 
   /// The name of the underlying board, like "goldfish".
+  ///
+  /// The value is an empty String if it is not available.
   final String board;
 
   /// The system bootloader version number.
+  ///
+  /// The value is an empty String if it is not available.
   final String bootloader;
 
   /// The consumer-visible brand with which the product/hardware will be associated, if any.
+  ///
+  /// The value is an empty String if it is not available.
   final String brand;
 
   /// The name of the industrial design.
+  ///
+  /// The value is an empty String if it is not available.
   final String device;
 
   /// A build ID string meant for displaying to the user.
+  ///
+  /// The value is an empty String if it is not available.
   final String display;
 
   /// A string that uniquely identifies this build.
+  ///
+  /// The value is an empty String if it is not available.
   final String fingerprint;
 
   /// The name of the hardware (from the kernel command line or /proc).
+  ///
+  /// The value is an empty String if it is not available.
   final String hardware;
 
   /// Hostname.
+  ///
+  /// The value is an empty String if it is not available.
   final String host;
 
   /// Either a changelist number, or a label like "M4-rc20".
+  ///
+  /// The value is an empty String if it is not available.
   final String id;
 
   /// The manufacturer of the product/hardware.
+  ///
+  /// The value is an empty String if it is not available.
   final String manufacturer;
 
   /// The end-user-visible name for the end product.
+  ///
+  /// The value is an empty String if it is not available.
   final String model;
 
   /// The name of the overall product.
+  ///
+  /// The value is an empty String if it is not available.
   final String product;
 
   /// An ordered list of 32 bit ABIs supported by this device.
@@ -83,15 +107,23 @@ class AndroidDeviceInfo {
   final List<String> supportedAbis;
 
   /// Comma-separated tags describing the build, like "unsigned,debug".
+  ///
+  /// The value is an empty String if it is not available.
   final String tags;
 
   /// The type of build, like "user" or "eng".
+  ///
+  /// The value is an empty String if it is not available.
   final String type;
 
-  /// `false` if the application is running in an emulator, `true` otherwise.
+  /// The value is `true` if the application is running on a physical device.
+  ///
+  /// The value is `false` when the application is running on a emulator, or the value is unavailable.
   final bool isPhysicalDevice;
 
   /// The Android hardware device ID that is unique between the device + user and app signing.
+  ///
+  /// The value is an empty String if it is not available.
   final String androidId;
 
   /// Describes what features are available on the current device.
@@ -113,35 +145,41 @@ class AndroidDeviceInfo {
   /// Deserializes from the message received from [_kChannel].
   static AndroidDeviceInfo fromMap(Map<String, dynamic> map) {
     return AndroidDeviceInfo(
-      version:
-          AndroidBuildVersion._fromMap(map['version']!.cast<String, dynamic>()),
-      board: map['board']!,
-      bootloader: map['bootloader']!,
-      brand: map['brand']!,
-      device: map['device']!,
-      display: map['display']!,
-      fingerprint: map['fingerprint']!,
-      hardware: map['hardware']!,
-      host: map['host']!,
-      id: map['id']!,
-      manufacturer: map['manufacturer']!,
-      model: map['model']!,
-      product: map['product']!,
-      supported32BitAbis: _fromList(map['supported32BitAbis']!),
-      supported64BitAbis: _fromList(map['supported64BitAbis']!),
-      supportedAbis: _fromList(map['supportedAbis']!),
-      tags: map['tags']!,
-      type: map['type']!,
-      isPhysicalDevice: map['isPhysicalDevice']!,
-      androidId: map['androidId']!,
-      systemFeatures: _fromList(map['systemFeatures']!),
+      version: AndroidBuildVersion._fromMap(map['version'] != null
+          ? map['version'].cast<String, dynamic>()
+          : <String, dynamic>{}),
+      board: map['board'] ?? '',
+      bootloader: map['bootloader'] ?? '',
+      brand: map['brand'] ?? '',
+      device: map['device'] ?? '',
+      display: map['display'] ?? '',
+      fingerprint: map['fingerprint'] ?? '',
+      hardware: map['hardware'] ?? '',
+      host: map['host'] ?? '',
+      id: map['id'] ?? '',
+      manufacturer: map['manufacturer'] ?? '',
+      model: map['model'] ?? '',
+      product: map['product'] ?? '',
+      supported32BitAbis: _fromList(map['supported32BitAbis']),
+      supported64BitAbis: _fromList(map['supported64BitAbis']),
+      supportedAbis: _fromList(map['supportedAbis']),
+      tags: map['tags'] ?? '',
+      type: map['type'] ?? '',
+      isPhysicalDevice: map['isPhysicalDevice'] ?? false,
+      androidId: map['androidId'] ?? '',
+      systemFeatures: _fromList(map['systemFeatures']),
     );
   }
 
   /// Deserializes message as List<String>
   static List<String> _fromList(dynamic message) {
-    final List<dynamic> list = message;
-    return List<String>.from(list);
+    if (message == null) {
+      return <String>[];
+    }
+    assert(message is List<dynamic>);
+    final List<dynamic> list = List<dynamic>.from(message)
+      ..removeWhere((value) => value == null);
+    return list.cast<String>();
   }
 }
 
@@ -173,17 +211,25 @@ class AndroidBuildVersion {
   final String? securityPatch;
 
   /// The current development codename, or the string "REL" if this is a release build.
+  ///
+  /// The value is an empty String if it is not available.
   final String codename;
 
   /// The internal value used by the underlying source control to represent this build.
+  ///
+  /// The value is an empty String if it is not available.
   final String incremental;
 
   /// The user-visible version string.
+  ///
+  /// The value is an empty String if it is not available.
   final String release;
 
   /// The user-visible SDK version of the framework.
   ///
   /// Possible values are defined in: https://developer.android.com/reference/android/os/Build.VERSION_CODES.html
+  ///
+  /// The value is -1 if it is unavailable.
   final int sdkInt;
 
   /// Deserializes from the map message received from [_kChannel].
@@ -192,10 +238,10 @@ class AndroidBuildVersion {
       baseOS: map['baseOS'],
       previewSdkInt: map['previewSdkInt'],
       securityPatch: map['securityPatch'],
-      codename: map['codename']!,
-      incremental: map['incremental']!,
-      release: map['release']!,
-      sdkInt: map['sdkInt']!,
+      codename: map['codename'] ?? '',
+      incremental: map['incremental'] ?? '',
+      release: map['release'] ?? '',
+      sdkInt: map['sdkInt'] ?? -1,
     );
   }
 }

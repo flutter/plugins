@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,6 +16,7 @@ const int kElementWaitingTime = 30;
 @implementation ImagePickerFromGalleryUITests
 
 - (void)setUp {
+  [super setUp];
   // Delete the app if already exists, to test permission popups
 
   self.continueAfterFailure = NO;
@@ -31,7 +32,7 @@ const int kElementWaitingTime = 30;
                                             if (![allPhotoPermission waitForExistenceWithTimeout:
                                                                          kElementWaitingTime]) {
                                               os_log_error(OS_LOG_DEFAULT, "%@",
-                                                           self.app.debugDescription);
+                                                           weakSelf.app.debugDescription);
                                               XCTFail(@"Failed due to not able to find "
                                                       @"allPhotoPermission button with %@ seconds",
                                                       @(kElementWaitingTime));
@@ -42,7 +43,7 @@ const int kElementWaitingTime = 30;
                                             if (![ok waitForExistenceWithTimeout:
                                                          kElementWaitingTime]) {
                                               os_log_error(OS_LOG_DEFAULT, "%@",
-                                                           self.app.debugDescription);
+                                                           weakSelf.app.debugDescription);
                                               XCTFail(@"Failed due to not able to find ok button "
                                                       @"with %@ seconds",
                                                       @(kElementWaitingTime));
@@ -53,9 +54,17 @@ const int kElementWaitingTime = 30;
                                         }];
 }
 
+- (void)tearDown {
+  [super tearDown];
+  [self.app terminate];
+}
+
 - (void)testPickingFromGallery {
-  [self launchPickerAndCancel];
   [self launchPickerAndPick];
+}
+
+- (void)testCancel {
+  [self launchPickerAndCancel];
 }
 
 - (void)launchPickerAndCancel {
@@ -112,17 +121,6 @@ const int kElementWaitingTime = 30;
                                    predicateWithFormat:@"label == %@",
                                                        @"You have not yet picked an image."]];
   if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
-    // Before https://github.com/flutter/engine/pull/22811 the label's a11y type was otherElements.
-    // TODO(cyanglaz): Remove this after
-    // https://github.com/flutter/flutter/commit/057e8230743ec96f33b73948ccd6b80081e3615e rolled to
-    // stable.
-    // https://github.com/flutter/flutter/issues/71927
-    imageNotPickedText = [self.app.otherElements
-        elementMatchingPredicate:[NSPredicate
-                                     predicateWithFormat:@"label == %@",
-                                                         @"You have not yet picked an image."]];
-  }
-  if (![imageNotPickedText waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find imageNotPickedText with %@ seconds",
             @(kElementWaitingTime));
@@ -160,6 +158,10 @@ const int kElementWaitingTime = 30;
   XCTAssertTrue(pickButton.exists);
   [pickButton tap];
 
+  // There is a known bug where the permission popups interruption won't get fired until a tap
+  // happened in the app. We expect a permission popup so we do a tap here.
+  [self.app tap];
+
   // Find an image and tap on it. (IOS 14 UI, images are showing directly)
   XCUIElement* aImage;
   if (@available(iOS 14, *)) {
@@ -177,6 +179,7 @@ const int kElementWaitingTime = 30;
                                                 identifier:@"PhotosGridView"]
                  .cells.firstMatch;
   }
+  os_log_error(OS_LOG_DEFAULT, "description before picking image %@", self.app.debugDescription);
   if (![aImage waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", self.app.debugDescription);
     XCTFail(@"Failed due to not able to find an image with %@ seconds", @(kElementWaitingTime));

@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:camera/camera.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/widgets.dart';
@@ -22,12 +26,21 @@ void main() {
         ResolutionPreset.max);
 
     expect(
-        () => cameraController.startImageStream((image) => null),
-        throwsA(isA<CameraException>().having(
-          (error) => error.description,
-          'Uninitialized CameraController.',
-          'startImageStream was called on uninitialized CameraController.',
-        )));
+      () => cameraController.startImageStream((image) => null),
+      throwsA(
+        isA<CameraException>()
+            .having(
+              (error) => error.code,
+              'code',
+              'Uninitialized CameraController',
+            )
+            .having(
+              (error) => error.description,
+              'description',
+              'startImageStream() was called on an uninitialized CameraController.',
+            ),
+      ),
+    );
   });
 
   test('startImageStream() throws $CameraException when recording videos',
@@ -107,12 +120,21 @@ void main() {
         ResolutionPreset.max);
 
     expect(
-        cameraController.stopImageStream,
-        throwsA(isA<CameraException>().having(
-          (error) => error.description,
-          'Uninitialized CameraController.',
-          'stopImageStream was called on uninitialized CameraController.',
-        )));
+      cameraController.stopImageStream,
+      throwsA(
+        isA<CameraException>()
+            .having(
+              (error) => error.code,
+              'code',
+              'Uninitialized CameraController',
+            )
+            .having(
+              (error) => error.description,
+              'description',
+              'stopImageStream() was called on an uninitialized CameraController.',
+            ),
+      ),
+    );
   });
 
   test('stopImageStream() throws $CameraException when recording videos',

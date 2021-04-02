@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -64,6 +64,7 @@ public class ConnectivityBroadcastReceiver extends BroadcastReceiver
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       if (networkCallback != null) {
         connectivity.getConnectivityManager().unregisterNetworkCallback(networkCallback);
+        networkCallback = null;
       }
     } else {
       context.unregisterReceiver(this);

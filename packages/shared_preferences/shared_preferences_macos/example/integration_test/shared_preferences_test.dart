@@ -1,12 +1,18 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// @dart=2.9
+
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$SharedPreferences', () {
+  group('SharedPreferencesMacOS', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
@@ -23,67 +29,81 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferences preferences;
+    SharedPreferencesStorePlatform preferences;
 
     setUp(() async {
-      preferences = await SharedPreferences.getInstance();
+      preferences = SharedPreferencesStorePlatform.instance;
     });
 
     tearDown(() {
       preferences.clear();
     });
 
-    test('reading', () async {
-      expect(preferences.get('String'), isNull);
-      expect(preferences.get('bool'), isNull);
-      expect(preferences.get('int'), isNull);
-      expect(preferences.get('double'), isNull);
-      expect(preferences.get('List'), isNull);
-      expect(preferences.getString('String'), isNull);
-      expect(preferences.getBool('bool'), isNull);
-      expect(preferences.getInt('int'), isNull);
-      expect(preferences.getDouble('double'), isNull);
-      expect(preferences.getStringList('List'), isNull);
+    // Normally the app-facing package adds the prefix, but since this test
+    // bypasses the app-facing package it needs to be manually added.
+    String _prefixedKey(String key) {
+      return 'flutter.$key';
+    }
+
+    testWidgets('reading', (WidgetTester _) async {
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values[_prefixedKey('String')], isNull);
+      expect(values[_prefixedKey('bool')], isNull);
+      expect(values[_prefixedKey('int')], isNull);
+      expect(values[_prefixedKey('double')], isNull);
+      expect(values[_prefixedKey('List')], isNull);
     });
 
-    test('writing', () async {
+    testWidgets('writing', (WidgetTester _) async {
       await Future.wait(<Future<bool>>[
-        preferences.setString('String', kTestValues2['flutter.String']),
-        preferences.setBool('bool', kTestValues2['flutter.bool']),
-        preferences.setInt('int', kTestValues2['flutter.int']),
-        preferences.setDouble('double', kTestValues2['flutter.double']),
-        preferences.setStringList('List', kTestValues2['flutter.List'])
+        preferences.setValue(
+            'String', _prefixedKey('String'), kTestValues2['flutter.String']),
+        preferences.setValue(
+            'Bool', _prefixedKey('bool'), kTestValues2['flutter.bool']),
+        preferences.setValue(
+            'Int', _prefixedKey('int'), kTestValues2['flutter.int']),
+        preferences.setValue(
+            'Double', _prefixedKey('double'), kTestValues2['flutter.double']),
+        preferences.setValue(
+            'StringList', _prefixedKey('List'), kTestValues2['flutter.List'])
       ]);
-      expect(preferences.getString('String'), kTestValues2['flutter.String']);
-      expect(preferences.getBool('bool'), kTestValues2['flutter.bool']);
-      expect(preferences.getInt('int'), kTestValues2['flutter.int']);
-      expect(preferences.getDouble('double'), kTestValues2['flutter.double']);
-      expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values[_prefixedKey('String')], kTestValues2['flutter.String']);
+      expect(values[_prefixedKey('bool')], kTestValues2['flutter.bool']);
+      expect(values[_prefixedKey('int')], kTestValues2['flutter.int']);
+      expect(values[_prefixedKey('double')], kTestValues2['flutter.double']);
+      expect(values[_prefixedKey('List')], kTestValues2['flutter.List']);
     });
 
-    test('removing', () async {
-      const String key = 'testKey';
-      await preferences.setString(key, kTestValues['flutter.String']);
-      await preferences.setBool(key, kTestValues['flutter.bool']);
-      await preferences.setInt(key, kTestValues['flutter.int']);
-      await preferences.setDouble(key, kTestValues['flutter.double']);
-      await preferences.setStringList(key, kTestValues['flutter.List']);
+    testWidgets('removing', (WidgetTester _) async {
+      final String key = _prefixedKey('testKey');
+      await preferences.setValue('String', key, kTestValues['flutter.String']);
+      await preferences.setValue('Bool', key, kTestValues['flutter.bool']);
+      await preferences.setValue('Int', key, kTestValues['flutter.int']);
+      await preferences.setValue('Double', key, kTestValues['flutter.double']);
+      await preferences.setValue(
+          'StringList', key, kTestValues['flutter.List']);
       await preferences.remove(key);
-      expect(preferences.get('testKey'), isNull);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values[key], isNull);
     });
 
-    test('clearing', () async {
-      await preferences.setString('String', kTestValues['flutter.String']);
-      await preferences.setBool('bool', kTestValues['flutter.bool']);
-      await preferences.setInt('int', kTestValues['flutter.int']);
-      await preferences.setDouble('double', kTestValues['flutter.double']);
-      await preferences.setStringList('List', kTestValues['flutter.List']);
+    testWidgets('clearing', (WidgetTester _) async {
+      await preferences.setValue(
+          'String', 'String', kTestValues['flutter.String']);
+      await preferences.setValue('Bool', 'bool', kTestValues['flutter.bool']);
+      await preferences.setValue('Int', 'int', kTestValues['flutter.int']);
+      await preferences.setValue(
+          'Double', 'double', kTestValues['flutter.double']);
+      await preferences.setValue(
+          'StringList', 'List', kTestValues['flutter.List']);
       await preferences.clear();
-      expect(preferences.getString('String'), null);
-      expect(preferences.getBool('bool'), null);
-      expect(preferences.getInt('int'), null);
-      expect(preferences.getDouble('double'), null);
-      expect(preferences.getStringList('List'), null);
+      final Map<String, Object> values = await preferences.getAll();
+      expect(values['String'], null);
+      expect(values['bool'], null);
+      expect(values['int'], null);
+      expect(values['double'], null);
+      expect(values['List'], null);
     });
   });
 }

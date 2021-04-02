@@ -1,4 +1,4 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -38,37 +38,40 @@ abstract class FileSelectorPlatform extends PlatformInterface {
   }
 
   /// Open file dialog for loading files and return a file path
-  Future<XFile> openFile({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+  /// Returns `null` if user cancels the operation.
+  Future<XFile?> openFile({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('openFile() has not been implemented.');
   }
 
   /// Open file dialog for loading files and return a list of file paths
   Future<List<XFile>> openFiles({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String confirmButtonText,
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('openFiles() has not been implemented.');
   }
 
   /// Open file dialog for saving files and return a file path at which to save
-  Future<String> getSavePath({
-    List<XTypeGroup> acceptedTypeGroups,
-    String initialDirectory,
-    String suggestedName,
-    String confirmButtonText,
+  /// Returns `null` if user cancels the operation.
+  Future<String?> getSavePath({
+    List<XTypeGroup>? acceptedTypeGroups,
+    String? initialDirectory,
+    String? suggestedName,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('getSavePath() has not been implemented.');
   }
 
   /// Open file dialog for loading directories and return a directory path
-  Future<String> getDirectoryPath({
-    String initialDirectory,
-    String confirmButtonText,
+  /// Returns `null` if user cancels the operation.
+  Future<String?> getDirectoryPath({
+    String? initialDirectory,
+    String? confirmButtonText,
   }) {
     throw UnimplementedError('getDirectoryPath() has not been implemented.');
   }

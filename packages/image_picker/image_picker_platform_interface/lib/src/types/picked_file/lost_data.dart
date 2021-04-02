@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class LostData {
   /// The file that was lost in a previous [pickImage] or [pickVideo] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
-  final PickedFile file;
+  final PickedFile? file;
 
   /// The exception of the last [pickImage] or [pickVideo].
   ///
@@ -40,10 +40,12 @@ class LostData {
   /// You should handle this exception as if the [pickImage] or [pickVideo] got an exception when the MainActivity was not destroyed.
   ///
   /// Note that it is not the exception that caused the destruction of the MainActivity.
-  final PlatformException exception;
+  final PlatformException? exception;
 
   /// Can either be [RetrieveType.image] or [RetrieveType.video];
-  final RetrieveType type;
+  ///
+  /// If the lost data is empty, this will be null.
+  final RetrieveType? type;
 
   bool _empty = false;
 }

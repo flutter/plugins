@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,12 +13,12 @@ import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 final String expectedStringContents = "Hello, world!";
-final Uint8List bytes = utf8.encode(expectedStringContents);
+final Uint8List bytes = utf8.encode(expectedStringContents) as Uint8List;
 final html.File textFile = html.File([bytes], "hello.txt");
 
 void main() {
   // Under test...
-  ImagePickerPlugin plugin;
+  late ImagePickerPlugin plugin;
 
   setUp(() {
     plugin = ImagePickerPlugin();

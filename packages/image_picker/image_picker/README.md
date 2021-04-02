@@ -1,13 +1,13 @@
 # Image Picker plugin for Flutter
 
-[![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dartlang.org/packages/image_picker)
+[![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dev/packages/image_picker)
 
 A Flutter plugin for iOS and Android for picking images from the image library,
 and taking new pictures with the camera.
 
 ## Installation
 
-First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 ### iOS
 
@@ -19,10 +19,10 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-#### API 29+
+#### API < 29
 No configuration required - the plugin should work out of the box.
 
-#### API < 29
+#### API 29+
 
 Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml. The [attribute](https://developer.android.com/training/data-storage/compatibility) is `false` by default on apps targeting Android Q. 
 
