@@ -221,7 +221,7 @@ class WebView extends StatefulWidget {
     this.javascriptChannels,
     this.navigationDelegate,
     this.gestureRecognizers,
-    this.bouncesEnabled,
+    this.bouncesEnabled = true,
     this.onPageStarted,
     this.onPageFinished,
     this.onProgress,
