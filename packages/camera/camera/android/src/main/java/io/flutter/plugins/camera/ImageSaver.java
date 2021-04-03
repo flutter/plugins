@@ -52,7 +52,13 @@ public class ImageSaver implements Runnable {
           });
 
     } catch (IOException e) {
-      mPictureCaptureRequest.error("IOError", "Failed saving image", null);
+      handler.post(
+        new Runnable() {
+          @Override
+          public void run() {
+            mPictureCaptureRequest.error("IOError", "Failed saving image", null);
+          }
+        });
     } finally {
       mImage.close();
       if (null != output) {
