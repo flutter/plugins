@@ -32,9 +32,6 @@ public class ImageSaver implements Runnable {
 
   @Override
   public void run() {
-    // We need to call the method channel stuff on main thread
-    final Handler handler = new Handler(Looper.getMainLooper());
-
     ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
     byte[] bytes = new byte[buffer.remaining()];
     buffer.get(bytes);
@@ -43,35 +40,17 @@ public class ImageSaver implements Runnable {
       output = new FileOutputStream(mFile);
       output.write(bytes);
 
-      handler.post(
-          new Runnable() {
-            @Override
-            public void run() {
-              mPictureCaptureRequest.finish(mFile.getAbsolutePath());
-            }
-          });
+      mPictureCaptureRequest.finish(mFile.getAbsolutePath());
 
     } catch (IOException e) {
-      handler.post(
-        new Runnable() {
-          @Override
-          public void run() {
-            mPictureCaptureRequest.error("IOError", "Failed saving image", null);
-          }
-        });
+        mPictureCaptureRequest.error("IOError", "Failed saving image", null);
     } finally {
       mImage.close();
       if (null != output) {
         try {
           output.close();
         } catch (IOException e) {
-          handler.post(
-              new Runnable() {
-                @Override
-                public void run() {
-                  mPictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
-                }
-              });
+          mPictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
         }
       }
     }

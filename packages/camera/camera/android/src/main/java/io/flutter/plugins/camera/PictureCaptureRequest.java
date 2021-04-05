@@ -1,5 +1,8 @@
 package io.flutter.plugins.camera;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import androidx.annotation.Nullable;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
@@ -60,7 +63,7 @@ public class PictureCaptureRequest {
    * @param absolutePath
    */
   public void finish(String absolutePath) {
-    result.success(absolutePath);
+    new Handler(Looper.getMainLooper()).post(() -> result.success(absolutePath));
   }
 
   /**
@@ -72,6 +75,6 @@ public class PictureCaptureRequest {
    */
   public void error(
       String errorCode, @Nullable String errorMessage, @Nullable Object errorDetails) {
-    result.error(errorCode, errorMessage, errorDetails);
+    new Handler(Looper.getMainLooper()).post(() -> result.error(errorCode, errorMessage, errorDetails));
   }
 }
