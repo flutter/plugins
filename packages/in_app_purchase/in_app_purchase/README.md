@@ -20,11 +20,11 @@ which can be the App Store (on iOS) or Google Play (on Android).
 
 Use this plugin in your Flutter app to:
 
-1. Show in-app products that are available for sale from the underlying store.
+* Show in-app products that are available for sale from the underlying store.
    Products can include consumables, permanent upgrades, and subscriptions.
-2. Load in-app products that the user owns.
-3. Send the user to the underlying store to purchase products.
-4. Present a UI for redeeming subscription offer codes. (iOS 14 only)
+* Load in-app products that the user owns.
+* Send the user to the underlying store to purchase products.
+* Present a UI for redeeming subscription offer codes. (iOS 14 only)
 
 ## Getting started
 
@@ -56,10 +56,10 @@ can start using the plugin. Two basic options are available:
 This section has examples of code for the following tasks:
 
 * [Initializing the plugin](#initializing-the-plugin)
+* [Listening to purchase updates](#listening-to-purchase-updates)
 * [Connecting to the underlying store](#connecting-to-the-underlying-store)
 * [Loading products for sale](#loading-products-for-sale)
 * [Loading previous purchases](#loading-previous-purchases)
-* [Listening to purchase updates](#listening-to-purchase-updates)
 * [Making a purchase](#making-a-purchase)
 * [Completing a purchase](#completing-a-purchase)
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
