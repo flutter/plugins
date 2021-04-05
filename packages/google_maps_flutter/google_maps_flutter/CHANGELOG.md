@@ -1,3 +1,7 @@
+## 2.0.4-dev
+
+* Fix english wording in instructions.
+
 ## 2.0.3-dev
 
 * Fix incorrect typecast in TileOverlay example.
