@@ -1,3 +1,7 @@
+## 1.1.3
+
+* Fix crashes due to threading issues in iOS implementation.
+
 ## 1.1.2
 
 * Update Jetpack dependencies to latest stable versions.
