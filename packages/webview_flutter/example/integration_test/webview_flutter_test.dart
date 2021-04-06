@@ -348,8 +348,8 @@ void main() {
               video.addEventListener('durationchange', videoPausePlayHandler, false);
               video.addEventListener('loadeddata', videoPausePlayHandler, false);
               video.addEventListener('timeupdate', videoPausePlayHandler, false);
-               video.addEventListener('loadstart', videoPausePlayHandler, false);
-                video.addEventListener('canplay', videoPausePlayHandler, false);
+              video.addEventListener('loadstart', videoPausePlayHandler, false);
+              video.addEventListener('canplay', videoPausePlayHandler, false);
             }
             function videoPausePlayHandler(e) {
               VideoTest.postMessage(e.type);
@@ -567,7 +567,7 @@ void main() {
               pageLoaded.complete(null);
             },
             initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-            allowsInlineMediaPlayback: true,
+            allowsInlineMediaPlayback: false,
           ),
         ),
       );
@@ -601,13 +601,30 @@ void main() {
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
+            javascriptChannels: <JavascriptChannel>{
+              JavascriptChannel(
+                name: 'VideoTest',
+                onMessageReceived: (JavascriptMessage message) {
+                  print(message.message);
+                  if (message.message == 'playing'){
+                    messagesReceived.complete(message.message);
+                  }
+                  // message1 = message.message;
+                },
+              ),},
             initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-            allowsInlineMediaPlayback: true,
+            allowsInlineMediaPlayback: false,
           ),
         ),
       );
       controller = await controllerCompleter.future;
       await pageLoaded.future;
+      await messagesReceived.future;
+
+
+      String fullScreen =
+          await controller.evaluateJavascript('isFullScreen();');
+      expect(fullScreen, _webviewBool(true));
     });
   // });
 
