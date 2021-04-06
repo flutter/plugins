@@ -1,5 +1,6 @@
 name: url_launcher_example
 description: Demonstrates the Windows implementation of the url_launcher plugin.
+publish_to: none
 
 dependencies:
   flutter:

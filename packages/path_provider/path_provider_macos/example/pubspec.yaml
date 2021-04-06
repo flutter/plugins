@@ -1,7 +1,8 @@
 name: path_provider_example
 description: Demonstrates how to use the path_provider plugin.
+publish_to: none
 
-dependencies:
+dependencie:
   flutter:
     sdk: flutter
   path_provider_macos:
