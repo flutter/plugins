@@ -1,4 +1,4 @@
-## 2.0.3-dev
+## 2.0.3
 
 * Fix incorrect typecast in TileOverlay example.
 * Fix english wording in instructions.
