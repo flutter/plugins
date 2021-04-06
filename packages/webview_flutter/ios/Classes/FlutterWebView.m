@@ -89,9 +89,11 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    [self applyConfigurationSetting:settings inConfiguration:configuration];
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
+    NSLog(@"configuration %@", @(configuration.allowsInlineMediaPlayback));
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
@@ -347,9 +349,6 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
-    } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
-      NSNumber* allowsInlineMediaPlayback = settings[key];
-      _webView.configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
     } else {
       [unknownKeys addObject:key];
     }
@@ -359,6 +358,16 @@
   }
   return [NSString stringWithFormat:@"webview_flutter: unknown setting keys: {%@}",
                                     [unknownKeys componentsJoinedByString:@", "]];
+}
+
+- (void)applyConfigurationSetting:(NSDictionary<NSString*, id>*)settings inConfiguration:(WKWebViewConfiguration*)configuration {
+  NSAssert(configuration != _webView.configuration, @"configuration needs to be updated before webView.configuration.");
+  for (NSString* key in settings) {
+    if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
+      NSNumber* allowsInlineMediaPlayback = settings[key];
+      configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
+    }
+  }
 }
 
 - (void)updateJsMode:(NSNumber*)mode {
