@@ -50,7 +50,7 @@ void main() {
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(
-          mockPackagesDir, const LocalFileSystem(),
+          mockPackagesDir, mockPackagesDir.fileSystem,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
           stdinput: mockStdin));
@@ -65,15 +65,18 @@ void main() {
     test('requires a package flag', () async {
       await expectLater(() => commandRunner.run(<String>['publish-plugin']),
           throwsA(const TypeMatcher<ToolExit>()));
-
       expect(
           printedMessages.last, contains('Must specify a package to publish.'));
     });
 
     test('requires an existing flag', () async {
       await expectLater(
-          () => commandRunner
-              .run(<String>['publish-plugin', '--package', 'iamerror']),
+          () => commandRunner.run(<String>[
+                'publish-plugin',
+                '--package',
+                'iamerror',
+                '--no-push-tags'
+              ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(printedMessages.last, contains('iamerror does not exist'));
@@ -83,8 +86,12 @@ void main() {
       pluginDir.childFile('tmp').createSync();
 
       await expectLater(
-          () => commandRunner
-              .run(<String>['publish-plugin', '--package', testPluginName]),
+          () => commandRunner.run(<String>[
+                'publish-plugin',
+                '--package',
+                testPluginName,
+                '--no-push-tags'
+              ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(
@@ -98,7 +105,6 @@ void main() {
           () => commandRunner
               .run(<String>['publish-plugin', '--package', testPluginName]),
           throwsA(const TypeMatcher<ToolExit>()));
-
       expect(processRunner.results.last.stderr, contains('No such remote'));
     });
 
