@@ -26,6 +26,7 @@ import 'common.dart';
 ///
 /// [processRunner], [print], and [stdin] can be overriden for easier testing.
 class PublishPluginCommand extends PluginCommand {
+  /// Creates an instance of the publish command.
   PublishPluginCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -88,9 +89,8 @@ class PublishPluginCommand extends PluginCommand {
   StreamSubscription<String> _stdinSubscription;
 
   @override
-  Future<Null> run() async {
-    checkSharding();
-    final String package = argResults[_packageOption];
+  Future<void> run() async {
+    final String package = argResults[_packageOption] as String;
     if (package == null) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
@@ -103,8 +103,8 @@ class PublishPluginCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
-    final bool shouldPushTag = argResults[_pushTagsOption];
-    final String remote = argResults[_remoteOption];
+    final bool shouldPushTag = argResults[_pushTagsOption] == true;
+    final String remote = argResults[_remoteOption] as String;
     String remoteUrl;
     if (shouldPushTag) {
       remoteUrl = await _verifyRemote(remote);
@@ -173,7 +173,7 @@ class PublishPluginCommand extends PluginCommand {
         ],
         workingDir: packageDir);
 
-    final String statusOutput = statusResult.stdout;
+    final String statusOutput = statusResult.stdout as String;
     if (statusOutput.isNotEmpty) {
       _print(
           "There are files in the package directory that haven't been saved in git. Refusing to publish these files:\n\n"
@@ -187,11 +187,12 @@ class PublishPluginCommand extends PluginCommand {
     final ProcessResult remoteInfo = await processRunner.runAndExitOnError(
         'git', <String>['remote', 'get-url', remote],
         workingDir: packagesDir);
-    return remoteInfo.stdout;
+    return remoteInfo.stdout as String;
   }
 
   Future<void> _publish(Directory packageDir) async {
-    final List<String> publishFlags = argResults[_pubFlagsOption];
+    final List<String> publishFlags =
+        argResults[_pubFlagsOption] as List<String>;
     _print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
     final Process publish = await processRunner.start(
@@ -216,9 +217,10 @@ class PublishPluginCommand extends PluginCommand {
   String _getTag(Directory packageDir) {
     final File pubspecFile =
         fileSystem.file(p.join(packageDir.path, 'pubspec.yaml'));
-    final YamlMap pubspecYaml = loadYaml(pubspecFile.readAsStringSync());
-    final String name = pubspecYaml['name'];
-    final String version = pubspecYaml['version'];
+    final YamlMap pubspecYaml =
+        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+    final String name = pubspecYaml['name'] as String;
+    final String version = pubspecYaml['version'] as String;
     // We should have failed to publish if these were unset.
     assert(name.isNotEmpty && version.isNotEmpty);
     return _tagFormat

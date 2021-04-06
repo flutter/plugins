@@ -15,47 +15,32 @@ import 'common.dart';
 
 const String _kBaseSha = 'base-sha';
 
+/// Categories of version change types.
 enum NextVersionType {
+  /// A breaking change.
   BREAKING_MAJOR,
-  MAJOR_NULLSAFETY_PRE_RELEASE,
-  MINOR_NULLSAFETY_PRE_RELEASE,
+
+  /// A minor change (e.g., added feature).
   MINOR,
+
+  /// A bugfix change.
   PATCH,
+
+  /// The release of an existing prerelease version.
   RELEASE,
 }
 
-Version getNextNullSafetyPreRelease(Version current, Version next) {
-  String nextNullsafetyPrerelease = 'nullsafety';
-  if (current.isPreRelease &&
-      current.preRelease.first is String &&
-      current.preRelease.first == 'nullsafety') {
-    if (current.preRelease.length == 1) {
-      nextNullsafetyPrerelease = 'nullsafety.1';
-    } else if (current.preRelease.length == 2 &&
-        current.preRelease.last is int) {
-      nextNullsafetyPrerelease = 'nullsafety.${current.preRelease.last + 1}';
-    }
-  }
-  return Version(
-    next.major,
-    next.minor,
-    next.patch,
-    pre: nextNullsafetyPrerelease,
-  );
-}
-
+/// Returns the set of allowed next versions, with their change type, for
+/// [masterVersion].
+///
+/// [headVerison] is used to check whether this is a pre-1.0 version bump, as
+/// those have different semver rules.
 @visibleForTesting
 Map<Version, NextVersionType> getAllowedNextVersions(
     Version masterVersion, Version headVersion) {
-  final Version nextNullSafetyMajor =
-      getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMajor);
-  final Version nextNullSafetyMinor =
-      getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMinor);
   final Map<Version, NextVersionType> allowedNextVersions =
       <Version, NextVersionType>{
     masterVersion.nextMajor: NextVersionType.BREAKING_MAJOR,
-    nextNullSafetyMajor: NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE,
-    nextNullSafetyMinor: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE,
     masterVersion.nextMinor: NextVersionType.MINOR,
     masterVersion.nextPatch: NextVersionType.PATCH,
   };
@@ -65,7 +50,7 @@ Map<Version, NextVersionType> getAllowedNextVersions(
     if (masterVersion.build.isEmpty) {
       nextBuildNumber = 1;
     } else {
-      final int currentBuildNumber = masterVersion.build.first;
+      final int currentBuildNumber = masterVersion.build.first as int;
       nextBuildNumber = currentBuildNumber + 1;
     }
     final Version preReleaseVersion = Version(
@@ -80,21 +65,13 @@ Map<Version, NextVersionType> getAllowedNextVersions(
         NextVersionType.BREAKING_MAJOR;
     allowedNextVersions[masterVersion.nextPatch] = NextVersionType.MINOR;
     allowedNextVersions[preReleaseVersion] = NextVersionType.PATCH;
-
-    final Version nextNullSafetyMajor =
-        getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMinor);
-    final Version nextNullSafetyMinor =
-        getNextNullSafetyPreRelease(masterVersion, masterVersion.nextPatch);
-
-    allowedNextVersions[nextNullSafetyMajor] =
-        NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE;
-    allowedNextVersions[nextNullSafetyMinor] =
-        NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE;
   }
   return allowedNextVersions;
 }
 
+/// A command to validate version changes to packages.
 class VersionCheckCommand extends PluginCommand {
+  /// Creates an instance of the version check command.
   VersionCheckCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -113,14 +90,13 @@ class VersionCheckCommand extends PluginCommand {
       'This command requires "pub" and "flutter" to be in your path.';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
-    final String baseSha = argResults[_kBaseSha];
+    final String baseSha = argResults[_kBaseSha] as String;
     for (final String pubspecPath in changedPubspecs) {
       try {
         final File pubspecFile = fileSystem.file(pubspecPath);
@@ -150,7 +126,8 @@ class VersionCheckCommand extends PluginCommand {
           printErrorAndExit(errorMessage: error);
         }
 
-        bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
+        final bool isPlatformInterface =
+            pubspec.name.endsWith('_platform_interface');
         if (isPlatformInterface &&
             allowedNextVersions[headVersion] ==
                 NextVersionType.BREAKING_MAJOR) {
@@ -164,7 +141,7 @@ class VersionCheckCommand extends PluginCommand {
       }
     }
 
-    await for (Directory plugin in getPlugins()) {
+    await for (final Directory plugin in getPlugins()) {
       await _checkVersionsMatch(plugin);
     }
 
@@ -180,7 +157,7 @@ class VersionCheckCommand extends PluginCommand {
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
-      final String error = 'Cannot parse version from pubspec.yaml';
+      const String error = 'Cannot parse version from pubspec.yaml';
       printErrorAndExit(errorMessage: error);
     }
     final Version fromPubspec = pubspec.version;
@@ -189,16 +166,16 @@ class VersionCheckCommand extends PluginCommand {
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     String firstLineWithText;
-    final Iterator iterator = lines.iterator;
+    final Iterator<String> iterator = lines.iterator;
     while (iterator.moveNext()) {
-      if ((iterator.current as String).trim().isNotEmpty) {
+      if (iterator.current.trim().isNotEmpty) {
         firstLineWithText = iterator.current;
         break;
       }
     }
     // Remove all leading mark down syntax from the version line.
     final String versionString = firstLineWithText.split(' ').last;
-    Version fromChangeLog = Version.parse(versionString);
+    final Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error =
           'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md';
@@ -213,14 +190,14 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
 ''';
       printErrorAndExit(errorMessage: error);
     }
-    print('${packageName} passed version check');
+    print('$packageName passed version check');
   }
 
   Pubspec _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
     try {
-      Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
         final String error =
             'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';

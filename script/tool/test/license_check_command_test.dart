@@ -11,7 +11,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('$LicenseCheckCommand', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     FileSystem fileSystem;
     List<String> printedMessages;
     Directory root;
@@ -29,7 +29,7 @@ void main() {
         print: (Object message) => printedMessages.add(message.toString()),
       );
       runner =
-          CommandRunner<Null>('license_test', 'Test for $LicenseCheckCommand');
+          CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');
       runner.addCommand(command);
     });
 
@@ -51,15 +51,15 @@ void main() {
         'found in the LICENSE file.',
       ],
     }) {
-      List<String> lines = ['$prefix$comment$copyright'];
-      for (String line in license) {
+      final List<String> lines = <String>['$prefix$comment$copyright'];
+      for (final String line in license) {
         lines.add('$comment$line');
       }
       file.writeAsStringSync(lines.join('\n') + suffix + '\n');
     }
 
     test('looks at only expected extensions', () async {
-      Map<String, bool> extensions = <String, bool>{
+      final Map<String, bool> extensions = <String, bool>{
         'c': true,
         'cc': true,
         'cpp': true,
@@ -98,7 +98,7 @@ void main() {
     });
 
     test('ignore list overrides extension matches', () async {
-      List<String> ignoredFiles = <String>[
+      final List<String> ignoredFiles = <String>[
         // Ignored base names.
         'flutter_export_environment.sh',
         'GeneratedPluginRegistrant.java',
@@ -124,11 +124,11 @@ void main() {
     });
 
     test('passes if all checked files have license blocks', () async {
-      File checked = root.childFile('checked.cc');
+      final File checked = root.childFile('checked.cc');
       checked.createSync();
       _writeLicense(checked);
-      File not_checked = root.childFile('not_checked.md');
-      not_checked.createSync();
+      final File notChecked = root.childFile('not_checked.md');
+      notChecked.createSync();
 
       await runner.run(<String>['license-check']);
 
@@ -138,15 +138,15 @@ void main() {
     });
 
     test('handles the comment styles for all supported languages', () async {
-      File file_a = root.childFile('file_a.cc');
-      file_a.createSync();
-      _writeLicense(file_a, comment: '// ');
-      File file_b = root.childFile('file_b.sh');
-      file_b.createSync();
-      _writeLicense(file_b, comment: '# ');
-      File file_c = root.childFile('file_c.html');
-      file_c.createSync();
-      _writeLicense(file_c, comment: '', prefix: '<!-- ', suffix: ' -->');
+      final File fileA = root.childFile('file_a.cc');
+      fileA.createSync();
+      _writeLicense(fileA, comment: '// ');
+      final File fileB = root.childFile('file_b.sh');
+      fileB.createSync();
+      _writeLicense(fileB, comment: '# ');
+      final File fileC = root.childFile('file_c.html');
+      fileC.createSync();
+      _writeLicense(fileC, comment: '', prefix: '<!-- ', suffix: ' -->');
 
       await runner.run(<String>['license-check']);
 
@@ -158,12 +158,12 @@ void main() {
     });
 
     test('fails if any checked files are missing license blocks', () async {
-      File good_a = root.childFile('good.cc');
-      good_a.createSync();
-      _writeLicense(good_a);
-      File good_b = root.childFile('good.h');
-      good_b.createSync();
-      _writeLicense(good_b);
+      final File goodA = root.childFile('good.cc');
+      goodA.createSync();
+      _writeLicense(goodA);
+      final File goodB = root.childFile('good.h');
+      goodB.createSync();
+      _writeLicense(goodB);
       root.childFile('bad.cc').createSync();
       root.childFile('bad.h').createSync();
 
@@ -183,10 +183,10 @@ void main() {
     });
 
     test('fails if any checked files are missing just the copyright', () async {
-      File good = root.childFile('good.cc');
+      final File good = root.childFile('good.cc');
       good.createSync();
       _writeLicense(good);
-      File bad = root.childFile('bad.cc');
+      final File bad = root.childFile('bad.cc');
       bad.createSync();
       _writeLicense(bad, copyright: '');
 
@@ -205,10 +205,10 @@ void main() {
     });
 
     test('fails if any checked files are missing just the license', () async {
-      File good = root.childFile('good.cc');
+      final File good = root.childFile('good.cc');
       good.createSync();
       _writeLicense(good);
-      File bad = root.childFile('bad.cc');
+      final File bad = root.childFile('bad.cc');
       bad.createSync();
       _writeLicense(bad, license: <String>[]);
 
@@ -228,7 +228,7 @@ void main() {
 
     test('fails if any third-party code is not in a third_party directory',
         () async {
-      File thirdPartyFile = root.childFile('third_party.cc');
+      final File thirdPartyFile = root.childFile('third_party.cc');
       thirdPartyFile.createSync();
       _writeLicense(thirdPartyFile, copyright: 'Copyright 2017 Someone Else');
 
@@ -247,7 +247,7 @@ void main() {
     });
 
     test('succeeds for third-party code in a third_party directory', () async {
-      File thirdPartyFile = root
+      final File thirdPartyFile = root
           .childDirectory('a_plugin')
           .childDirectory('lib')
           .childDirectory('src')
@@ -270,10 +270,10 @@ void main() {
     });
 
     test('fails for licenses that the tool does not expect', () async {
-      File good = root.childFile('good.cc');
+      final File good = root.childFile('good.cc');
       good.createSync();
       _writeLicense(good);
-      File bad = root.childDirectory('third_party').childFile('bad.cc');
+      final File bad = root.childDirectory('third_party').childFile('bad.cc');
       bad.createSync(recursive: true);
       _writeLicense(bad, license: <String>[
         'This program is free software: you can redistribute it and/or modify',
@@ -296,26 +296,28 @@ void main() {
 
     test('Apache is not recognized for new authors without validation changes',
         () async {
-      File good = root.childFile('good.cc');
+      final File good = root.childFile('good.cc');
       good.createSync();
       _writeLicense(good);
-      File bad = root.childDirectory('third_party').childFile('bad.cc');
+      final File bad = root.childDirectory('third_party').childFile('bad.cc');
       bad.createSync(recursive: true);
       _writeLicense(
         bad,
         copyright: 'Copyright 2017 Some New Authors.',
-          license: <String>[
-            'Licensed under the Apache License, Version 2.0 (the "License");',
-            'you may not use this file except in compliance with the License.'
-          ],
+        license: <String>[
+          'Licensed under the Apache License, Version 2.0 (the "License");',
+          'you may not use this file except in compliance with the License.'
+        ],
       );
 
       await expectLater(() => runner.run(<String>['license-check']),
           throwsA(const TypeMatcher<ToolExit>()));
 
       // Failure should give information about the problematic files.
-      expect(printedMessages,
-          contains('No recognized license was found for the following third-party files:'));
+      expect(
+          printedMessages,
+          contains(
+              'No recognized license was found for the following third-party files:'));
       expect(printedMessages, contains('  third_party/bad.cc'));
       // Failure shouldn't print the success message.
       expect(printedMessages,
@@ -324,7 +326,7 @@ void main() {
 
     test('passes if all first-party LICENSE files are correctly formatted',
         () async {
-      File license = root.childFile('LICENSE');
+      final File license = root.childFile('LICENSE');
       license.createSync();
       license.writeAsStringSync(_correctLicenseFileText);
 
@@ -337,7 +339,7 @@ void main() {
 
     test('fails if any first-party LICENSE files are incorrectly formatted',
         () async {
-      File license = root.childFile('LICENSE');
+      final File license = root.childFile('LICENSE');
       license.createSync();
       license.writeAsStringSync(_incorrectLicenseFileText);
 
@@ -349,7 +351,8 @@ void main() {
     });
 
     test('ignores third-party LICENSE format', () async {
-      File license = root.childDirectory('third_party').childFile('LICENSE');
+      final File license =
+          root.childDirectory('third_party').childFile('LICENSE');
       license.createSync(recursive: true);
       license.writeAsStringSync(_incorrectLicenseFileText);
 
@@ -362,8 +365,8 @@ void main() {
   });
 }
 
-const String _correctLicenseFileText =
-    '''Copyright 2013 The Flutter Authors. All rights reserved.
+const String _correctLicenseFileText = '''
+Copyright 2013 The Flutter Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -392,8 +395,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 // A common incorrect version created by copying text intended for a code file,
 // with comment markers.
-const String _incorrectLicenseFileText =
-    '''// Copyright 2013 The Flutter Authors. All rights reserved.
+const String _incorrectLicenseFileText = '''
+// Copyright 2013 The Flutter Authors. All rights reserved.
 //
 // Redistribution and use in source and binary forms, with or without
 // modification, are permitted provided that the following conditions are
