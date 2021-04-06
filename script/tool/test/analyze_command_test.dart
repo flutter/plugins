@@ -13,7 +13,7 @@ import 'util.dart';
 
 void main() {
   RecordingProcessRunner processRunner;
-  CommandRunner runner;
+  CommandRunner<void> runner;
 
   setUp(() {
     initializeFakePackages();
@@ -22,7 +22,7 @@ void main() {
         mockPackagesDir, mockFileSystem,
         processRunner: processRunner);
 
-    runner = CommandRunner<Null>('analyze_command', 'Test for analyze_command');
+    runner = CommandRunner<void>('analyze_command', 'Test for analyze_command');
     runner.addCommand(analyzeCommand);
   });
 
@@ -31,8 +31,8 @@ void main() {
   });
 
   test('analyzes all packages', () async {
-    final Directory plugin1Dir = await createFakePlugin('a');
-    final Directory plugin2Dir = await createFakePlugin('b');
+    final Directory plugin1Dir = createFakePlugin('a');
+    final Directory plugin2Dir = createFakePlugin('b');
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
@@ -42,20 +42,22 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('pub', <String>['global', 'activate', 'tuneup'],
+          ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
               mockPackagesDir.path),
-          ProcessCall('flutter', <String>['packages', 'get'], plugin1Dir.path),
-          ProcessCall('flutter', <String>['packages', 'get'], plugin2Dir.path),
-          ProcessCall('pub', <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
+          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
               plugin1Dir.path),
-          ProcessCall('pub', <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
               plugin2Dir.path),
         ]));
   });
 
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
-      await createFakePlugin('foo', withExtraFiles: <List<String>>[
+      createFakePlugin('foo', withExtraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 
@@ -64,7 +66,7 @@ void main() {
     });
 
     test('fails .analysis_options', () async {
-      await createFakePlugin('foo', withExtraFiles: <List<String>>[
+      createFakePlugin('foo', withExtraFiles: <List<String>>[
         <String>['.analysis_options']
       ]);
 
@@ -74,7 +76,7 @@ void main() {
 
     test('takes an allow list', () async {
       final Directory pluginDir =
-          await createFakePlugin('foo', withExtraFiles: <List<String>>[
+          createFakePlugin('foo', withExtraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 
@@ -86,17 +88,20 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('pub', <String>['global', 'activate', 'tuneup'],
+            ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
                 mockPackagesDir.path),
-            ProcessCall('flutter', <String>['packages', 'get'], pluginDir.path),
-            ProcessCall('pub', <String>['global', 'run', 'tuneup', 'check'],
+            ProcessCall(
+                'flutter', const <String>['packages', 'get'], pluginDir.path),
+            ProcessCall(
+                'pub',
+                const <String>['global', 'run', 'tuneup', 'check'],
                 pluginDir.path),
           ]));
     });
 
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
-      await createFakePlugin('foo', withExtraFiles: <List<String>>[
+      createFakePlugin('foo', withExtraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 

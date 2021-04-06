@@ -15,7 +15,7 @@ import 'util.dart';
 void main() {
   group('$FirebaseTestLabCommand', () {
     final List<String> printedMessages = <String>[];
-    CommandRunner<FirebaseTestLabCommand> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
@@ -26,7 +26,7 @@ void main() {
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()));
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'firebase_test_lab_command', 'Test for $FirebaseTestLabCommand');
       runner.addCommand(command);
     });
@@ -60,7 +60,7 @@ void main() {
       expect(
           printedMessages,
           contains(
-              "\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway."));
+              '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.'));
     });
 
     test('runs e2e tests', () async {
@@ -86,7 +86,7 @@ void main() {
         ],
       ]);
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
+      await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
         'model=flame,version=29',
