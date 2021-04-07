@@ -123,7 +123,7 @@ try {
 
 ## iOS Integration
 
-Note that this plugin works with both TouchID and FaceID. However, to use the latter,
+Note that this plugin works with both Touch ID and Face ID. However, to use the latter,
 you need to also add:
 
 ```xml
