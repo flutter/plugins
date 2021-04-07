@@ -94,37 +94,37 @@ class VersionCheckCommand extends PluginCommand {
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
+    const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
       print('Checking versions for $pubspecPath...');
       final File pubspecFile = fileSystem.file(pubspecPath);
       if (!pubspecFile.existsSync()) {
-        print('  Deleted; skipping.');
+        print('${indentation}Deleted; skipping.');
         continue;
       }
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec.publishTo == 'none') {
-        print('  Found "publish_to: none"; skipping.');
+        print('${indentation}Found "publish_to: none"; skipping.');
         continue;
       }
 
-      Version masterVersion;
-      try {
-        masterVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
-      } on io.ProcessException {
-        print('  Unable to find pubspec in master. '
-            'Safe to ignore if the project is new.');
-      }
       final Version headVersion =
           await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
       if (headVersion == null) {
         printErrorAndExit(
-            errorMessage: 'No version found. A package that '
+            errorMessage: '${indentation}No version found. A package that '
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
+      final Version masterVersion =
+          await gitVersionFinder.getPackageVersion(pubspecPath);
+      if (masterVersion == null) {
+        print('${indentation}Unable to find pubspec in master. '
+            'Safe to ignore if the project is new.');
+      }
 
       if (masterVersion == headVersion) {
-        print('  No version change.');
+        print('${indentation}No version change.');
         continue;
       }
 
@@ -132,12 +132,12 @@ class VersionCheckCommand extends PluginCommand {
           getAllowedNextVersions(masterVersion, headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
-        final String error = '$pubspecPath incorrectly updated version.\n'
-            'HEAD: $headVersion, master: $masterVersion.\n'
-            'Allowed versions: $allowedNextVersions';
+        final String error = '${indentation}Incorrectly updated version.\n'
+            '${indentation}HEAD: $headVersion, master: $masterVersion.\n'
+            '${indentation}Allowed versions: $allowedNextVersions';
         printErrorAndExit(errorMessage: error);
       } else {
-        print('  $headVersion -> $masterVersion');
+        print('$indentation$headVersion -> $masterVersion');
       }
 
       final bool isPlatformInterface =
@@ -178,18 +178,27 @@ class VersionCheckCommand extends PluginCommand {
     final Iterator<String> iterator = lines.iterator;
     while (iterator.moveNext()) {
       if (iterator.current.trim().isNotEmpty) {
-        firstLineWithText = iterator.current;
+        firstLineWithText = iterator.current.trim();
         break;
       }
     }
     // Remove all leading mark down syntax from the version line.
-    final String versionString = firstLineWithText.split(' ').last;
+    String versionString = firstLineWithText.split(' ').last;
 
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
-    if (versionString == 'NEXT') {
-      print('Skipping validation for NEXT.');
-      return;
+    bool hasNextSection = versionString == 'NEXT';
+    if (hasNextSection) {
+      print('Found NEXT; validating next version in the CHANGELOG.');
+      // Ensure that the version in pubspec hasn't changed without updating
+      // CHANGELOG. That means the next version entry in the CHANGELOG pass the
+      // normal validation.
+      while (iterator.moveNext()) {
+        if (iterator.current.trim().startsWith('## ')) {
+          versionString = iterator.current.trim().split(' ').last;
+          break;
+        }
+      }
     }
 
     final Version fromChangeLog = Version.parse(versionString);
@@ -208,12 +217,15 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
       printErrorAndExit(errorMessage: error);
     }
 
-    final RegExp nextRegex = RegExp(r'^#*\s*NEXT\s*$');
-    if (lines.any((String line) => nextRegex.hasMatch(line))) {
-      printErrorAndExit(errorMessage: '''
+    // If NEXT wasn't the first section, it should not exist at all.
+    if (!hasNextSection) {
+      final RegExp nextRegex = RegExp(r'^#+\s*NEXT\s*$');
+      if (lines.any((String line) => nextRegex.hasMatch(line))) {
+        printErrorAndExit(errorMessage: '''
 When bumping the version for release, the NEXT section should be incorporated
 into the new version's release notes.
       ''');
+      }
     }
 
     print('$packageName passed version check');

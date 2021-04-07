@@ -600,8 +600,14 @@ class GitVersionFinder {
   /// at the revision of `gitRef` (defaulting to the base if not provided).
   Future<Version> getPackageVersion(String pubspecPath, {String gitRef}) async {
     final String ref = gitRef ?? (await _getBaseSha());
-    final io.ProcessResult gitShow =
-        await baseGitDir.runCommand(<String>['show', '$ref:$pubspecPath']);
+
+    io.ProcessResult gitShow;
+    try {
+      gitShow =
+          await baseGitDir.runCommand(<String>['show', '$ref:$pubspecPath']);
+    } on io.ProcessException {
+      return null;
+    }
     final String fileContent = gitShow.stdout as String;
     final String versionString = loadYaml(fileContent)['version'] as String;
     return versionString == null ? null : Version.parse(versionString);
