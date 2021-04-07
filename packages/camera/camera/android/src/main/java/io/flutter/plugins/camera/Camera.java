@@ -713,6 +713,10 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private void unlockAutoFocus() {
     Log.i(TAG, "unlockAutoFocus");
     try {
+      if (captureSession == null) {
+        Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+        return;
+      }
       // Cancel existing AF state
       previewRequestBuilder.set(
           CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
