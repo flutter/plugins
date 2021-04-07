@@ -89,7 +89,7 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
-    [self applyConfigurationSetting:settings inConfiguration:configuration];
+    [self applyConfigurationSettings:settings toConfiguration:configuration];
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
