@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io';
-
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
