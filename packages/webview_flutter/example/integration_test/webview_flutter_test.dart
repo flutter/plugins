@@ -489,7 +489,6 @@ void main() {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
-      // String message1;
       Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
@@ -541,7 +540,6 @@ void main() {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
-      // String message1;
       Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(

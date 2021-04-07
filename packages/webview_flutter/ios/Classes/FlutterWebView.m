@@ -359,8 +359,8 @@
                                     [unknownKeys componentsJoinedByString:@", "]];
 }
 
-- (void)applyConfigurationSetting:(NSDictionary<NSString*, id>*)settings
-                  inConfiguration:(WKWebViewConfiguration*)configuration {
+- (void)applyConfigurationSettings:(NSDictionary<NSString*, id>*)settings
+                  toConfiguration:(WKWebViewConfiguration*)configuration {
   NSAssert(configuration != _webView.configuration,
            @"configuration needs to be updated before webView.configuration.");
   for (NSString* key in settings) {
