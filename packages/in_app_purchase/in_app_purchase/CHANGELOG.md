@@ -1,3 +1,7 @@
+## 0.5.2
+
+* Added `rawPrice` and `currencyCode` to the ProductDetails model.
+
 ## 0.5.1+2
 
 * Update README to provide a better instruction of the plugin.
