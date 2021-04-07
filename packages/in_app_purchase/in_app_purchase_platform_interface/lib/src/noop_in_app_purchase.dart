@@ -4,4 +4,7 @@
 
 import 'in_app_purchase_platform.dart';
 
+/// Temporary no-operation implementation of the [InAppPurchasePlatform] which
+/// was added to return as default implementation for  the [InAppPurchasePlatform.instance]
+/// property.
 class NoopInAppPurchase extends InAppPurchasePlatform {}
