@@ -1,3 +1,94 @@
+## 0.7.4
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
+## 0.7.3
+
+* Endorse image_picker_for_web
+
+## 0.7.2+1
+
+* Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
+
+## 0.7.2
+
+* Run CocoaPods iOS tests in RunnerUITests target
+
+## 0.7.1
+
+* Update platform_plugin_interface version requirement.
+
+## 0.7.0
+
+* Migrate to nullsafety
+* Breaking Changes:
+    * Removed the deprecated methods: `ImagePicker.pickImage`, `ImagePicker.pickVideo`,
+`ImagePicker.retrieveLostData`
+
+## 0.6.7+22
+
+* iOS: update XCUITests to separate each test session.
+
+## 0.6.7+21
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.7+20
+
+* Updated README.md to show the new Android API requirements.
+
+## 0.6.7+19
+
+* Do not copy static field to another static field.
+
+## 0.6.7+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.6.7+17
+
+* iOS: fix `User-facing text should use localized string macro` warning.
+
+## 0.6.7+16
+
+* Update Flutter SDK constraint.
+
+## 0.6.7+15
+
+* Fix element type in XCUITests to look for staticText type when searching for texts.
+  * See https://github.com/flutter/flutter/issues/71927
+* Minor update in XCUITests to search for different elements on iOS 14 and above.
+
+## 0.6.7+14
+
+* Set up XCUITests.
+
+## 0.6.7+13
+
+* Update documentation of `getImage()` about HEIC images.
+
+## 0.6.7+12
+
+* Update android compileSdkVersion to 29.
+
+## 0.6.7+11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.6.7+10
+
+* Updated documentation with code that does not throw an error when image is not picked.
+
+## 0.6.7+9
+
+* Updated the ExifInterface to the AndroidX version to support more file formats;
+* Update documentation of `getImage()` regarding compression support for specific image types.
+
+## 0.6.7+8
+
+* Update documentation of getImage() about Android's disability to preference front/rear camera.
+
 ## 0.6.7+7
 
 * Updating documentation to use isEmpty check.

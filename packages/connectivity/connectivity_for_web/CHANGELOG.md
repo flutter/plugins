@@ -1,3 +1,16 @@
+## 0.4.0
+
+* Migrate to null-safety
+* Run tests using flutter driver
+
+## 0.3.1+4
+
+* Remove unused `test` dependency.
+
+## 0.3.1+3
+
+* Fix homepage in `pubspec.yaml`.
+
 ## 0.3.1+2
 
 * Update package:e2e to use package:integration_test

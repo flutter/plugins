@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -71,6 +71,7 @@ public final class DartVmServiceUtil {
   }
 
   /** Gets the Dart executor for the given {@code flutterView}. */
+  @SuppressWarnings("deprecation")
   public static DartExecutor getDartExecutor(View flutterView) {
     checkNotNull(flutterView, "The Flutter View instance cannot be null.");
     // Flutter's embedding is in the phase of rewriting/refactoring. Let's be compatible with both

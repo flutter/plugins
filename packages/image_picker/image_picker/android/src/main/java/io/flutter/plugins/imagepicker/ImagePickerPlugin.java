@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -111,7 +111,8 @@ public class ImagePickerPlugin
   private Lifecycle lifecycle;
   private LifeCycleObserver observer;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
       // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
       // we stop the registering process immediately because the ImagePicker requires an activity.

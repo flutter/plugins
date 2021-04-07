@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,7 +108,7 @@ class _ButterFlyAssetVideoInList extends StatelessWidget {
 
 /// A filler card to show the video in a list of scrolling contents.
 class _ExampleCard extends StatelessWidget {
-  const _ExampleCard({Key key, this.title}) : super(key: key);
+  const _ExampleCard({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -124,13 +124,13 @@ class _ExampleCard extends StatelessWidget {
           ),
           ButtonBar(
             children: <Widget>[
-              FlatButton(
+              TextButton(
                 child: const Text('BUY TICKETS'),
                 onPressed: () {
                   /* ... */
                 },
               ),
-              FlatButton(
+              TextButton(
                 child: const Text('SELL TICKETS'),
                 onPressed: () {
                   /* ... */
@@ -150,7 +150,7 @@ class _ButterFlyAssetVideo extends StatefulWidget {
 }
 
 class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   @override
   void initState() {
@@ -188,7 +188,7 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
                 alignment: Alignment.bottomCenter,
                 children: <Widget>[
                   VideoPlayer(_controller),
-                  _PlayPauseOverlay(controller: _controller),
+                  _ControlsOverlay(controller: _controller),
                   VideoProgressIndicator(_controller, allowScrubbing: true),
                 ],
               ),
@@ -206,7 +206,7 @@ class _BumbleBeeRemoteVideo extends StatefulWidget {
 }
 
 class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
-  VideoPlayerController _controller;
+  late VideoPlayerController _controller;
 
   Future<ClosedCaptionFile> _loadCaptions() async {
     final String fileContents = await DefaultAssetBundle.of(context)
@@ -252,7 +252,7 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
                 children: <Widget>[
                   VideoPlayer(_controller),
                   ClosedCaption(text: _controller.value.caption.text),
-                  _PlayPauseOverlay(controller: _controller),
+                  _ControlsOverlay(controller: _controller),
                   VideoProgressIndicator(_controller, allowScrubbing: true),
                 ],
               ),
@@ -264,8 +264,20 @@ class _BumbleBeeRemoteVideoState extends State<_BumbleBeeRemoteVideo> {
   }
 }
 
-class _PlayPauseOverlay extends StatelessWidget {
-  const _PlayPauseOverlay({Key key, this.controller}) : super(key: key);
+class _ControlsOverlay extends StatelessWidget {
+  const _ControlsOverlay({Key? key, required this.controller})
+      : super(key: key);
+
+  static const _examplePlaybackRates = [
+    0.25,
+    0.5,
+    1.0,
+    1.5,
+    2.0,
+    3.0,
+    5.0,
+    10.0,
+  ];
 
   final VideoPlayerController controller;
 
@@ -294,6 +306,35 @@ class _PlayPauseOverlay extends StatelessWidget {
             controller.value.isPlaying ? controller.pause() : controller.play();
           },
         ),
+        Align(
+          alignment: Alignment.topRight,
+          child: PopupMenuButton<double>(
+            initialValue: controller.value.playbackSpeed,
+            tooltip: 'Playback speed',
+            onSelected: (speed) {
+              controller.setPlaybackSpeed(speed);
+            },
+            itemBuilder: (context) {
+              return [
+                for (final speed in _examplePlaybackRates)
+                  PopupMenuItem(
+                    value: speed,
+                    child: Text('${speed}x'),
+                  )
+              ];
+            },
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                // Using less vertical padding as the text is also longer
+                // horizontally, so it feels like it would need more spacing
+                // horizontally (matching the aspect ratio of the video).
+                vertical: 12,
+                horizontal: 16,
+              ),
+              child: Text('${controller.value.playbackSpeed}x'),
+            ),
+          ),
+        ),
       ],
     );
   }
@@ -305,7 +346,7 @@ class _PlayerVideoAndPopPage extends StatefulWidget {
 }
 
 class _PlayerVideoAndPopPageState extends State<_PlayerVideoAndPopPage> {
-  VideoPlayerController _videoPlayerController;
+  late VideoPlayerController _videoPlayerController;
   bool startedPlaying = false;
 
   @override

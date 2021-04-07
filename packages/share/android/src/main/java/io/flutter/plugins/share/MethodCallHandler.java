@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,19 +25,21 @@ class MethodCallHandler implements MethodChannel.MethodCallHandler {
       case "share":
         expectMapArguments(call);
         // Android does not support showing the share sheet at a particular point on screen.
-        share.share((String) call.argument("text"), (String) call.argument("subject"));
+        String text = call.argument("text");
+        String subject = call.argument("subject");
+        share.share(text, subject);
         result.success(null);
         break;
       case "shareFiles":
         expectMapArguments(call);
 
+        List<String> paths = call.argument("paths");
+        List<String> mimeTypes = call.argument("mimeTypes");
+        text = call.argument("text");
+        subject = call.argument("subject");
         // Android does not support showing the share sheet at a particular point on screen.
         try {
-          share.shareFiles(
-              (List<String>) call.argument("paths"),
-              (List<String>) call.argument("mimeTypes"),
-              (String) call.argument("text"),
-              (String) call.argument("subject"));
+          share.shareFiles(paths, mimeTypes, text, subject);
           result.success(null);
         } catch (IOException e) {
           result.error(e.getMessage(), null, null);

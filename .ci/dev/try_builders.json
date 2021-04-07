@@ -1,0 +1,9 @@
+{
+   "builders":[
+      {
+         "name":"Windows Plugins",
+         "repo":"plugins",
+         "enabled":true
+      }
+   ]
+}

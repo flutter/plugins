@@ -1,9 +1,10 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:developer' as developer;
+import 'dart:ui';
 
 import 'package:flutter/rendering.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -15,13 +16,15 @@ import 'package:vm_service/vm_service_io.dart' as vm_io;
 
 import 'common.dart';
 import '_extension_io.dart' if (dart.library.html) '_extension_web.dart';
+import '_callback_io.dart' if (dart.library.html) '_callback_web.dart'
+    as driver_actions;
 
 const String _success = 'success';
 
 /// A subclass of [LiveTestWidgetsFlutterBinding] that reports tests results
 /// on a channel to adapt them to native instrumentation test format.
-class IntegrationTestWidgetsFlutterBinding
-    extends LiveTestWidgetsFlutterBinding {
+class IntegrationTestWidgetsFlutterBinding extends LiveTestWidgetsFlutterBinding
+    implements IntegrationTestResults {
   /// Sets up a listener to report that the tests are finished when everything is
   /// torn down.
   IntegrationTestWidgetsFlutterBinding() {
@@ -36,6 +39,7 @@ class IntegrationTestWidgetsFlutterBinding
             _allTestsPassed.complete(true);
           }
         }
+        callbackManager.cleanup();
         await _channel.invokeMethod<void>(
           'allTestsFinished',
           <String, dynamic>{
@@ -78,6 +82,10 @@ class IntegrationTestWidgetsFlutterBinding
 
   Size _surfaceSize;
 
+  // This flag is used to print warning messages when tracking performance
+  // under debug mode.
+  static bool _firstRun = false;
+
   /// Artificially changes the surface size to `size` on the Widget binding,
   /// then flushes microtasks.
   ///
@@ -104,7 +112,12 @@ class IntegrationTestWidgetsFlutterBinding
     );
   }
 
+  @override
+  Completer<bool> get allTestsPassed => _allTestsPassed;
   final Completer<bool> _allTestsPassed = Completer<bool>();
+
+  @override
+  List<Failure> get failureMethodsDetails => _failures;
 
   /// Similar to [WidgetsFlutterBinding.ensureInitialized].
   ///
@@ -136,35 +149,27 @@ class IntegrationTestWidgetsFlutterBinding
   /// If it's `null`, no extra data is attached to the result.
   ///
   /// The default value is `null`.
-  Map<String, dynamic> reportData;
+  @override
+  Map<String, dynamic> get reportData => _reportData;
+  Map<String, dynamic> _reportData;
+  set reportData(Map<String, dynamic> data) => this._reportData = data;
 
-  /// the callback function to response the driver side input.
+  /// Manages callbacks received from driver side and commands send to driver
+  /// side.
+  final CallbackManager callbackManager = driver_actions.callbackManager;
+
+  /// Taking a screenshot.
+  ///
+  /// Called by test methods. Implementation differs for each platform.
+  Future<void> takeScreenshot(String screenshotName) async {
+    await callbackManager.takeScreenshot(screenshotName);
+  }
+
+  /// The callback function to response the driver side input.
   @visibleForTesting
   Future<Map<String, dynamic>> callback(Map<String, String> params) async {
-    final String command = params['command'];
-    Map<String, String> response;
-    switch (command) {
-      case 'request_data':
-        final bool allTestsPassed = await _allTestsPassed.future;
-        response = <String, String>{
-          'message': allTestsPassed
-              ? Response.allTestsPassed(data: reportData).toJson()
-              : Response.someTestsFailed(
-                  _failures,
-                  data: reportData,
-                ).toJson(),
-        };
-        break;
-      case 'get_health':
-        response = <String, String>{'status': 'ok'};
-        break;
-      default:
-        throw UnimplementedError('$command is not implemented');
-    }
-    return <String, dynamic>{
-      'isError': false,
-      'response': response,
-    };
+    return await callbackManager.callback(
+        params, this /* as IntegrationTestResults */);
   }
 
   // Emulates the Flutter driver extension, returning 'pass' or 'fail'.
@@ -281,5 +286,44 @@ class IntegrationTestWidgetsFlutterBinding
     );
     reportData ??= <String, dynamic>{};
     reportData[reportKey] = timeline.toJson();
+  }
+
+  /// Watches the [FrameTiming] during `action` and report it to the binding
+  /// with key `reportKey`.
+  ///
+  /// This can be used to implement performance tests previously using
+  /// [traceAction] and [TimelineSummary] from [flutter_driver]
+  Future<void> watchPerformance(
+    Future<void> action(), {
+    String reportKey = 'performance',
+  }) async {
+    assert(() {
+      if (_firstRun) {
+        debugPrint(kDebugWarning);
+        _firstRun = false;
+      }
+      return true;
+    }());
+
+    // The engine could batch FrameTimings and send them only once per second.
+    // Delay for a sufficient time so either old FrameTimings are flushed and not
+    // interfering our measurements here, or new FrameTimings are all reported.
+    // TODO(CareF): remove this when flush FrameTiming is readly in engine.
+    //              See https://github.com/flutter/flutter/issues/64808
+    //              and https://github.com/flutter/flutter/issues/67593
+    Future<void> delayForFrameTimings() =>
+        Future<void>.delayed(const Duration(seconds: 2));
+
+    await delayForFrameTimings(); // flush old FrameTimings
+    final List<FrameTiming> frameTimings = <FrameTiming>[];
+    final TimingsCallback watcher = frameTimings.addAll;
+    addTimingsCallback(watcher);
+    await action();
+    await delayForFrameTimings(); // make sure all FrameTimings are reported
+    removeTimingsCallback(watcher);
+    final FrameTimingSummarizer frameTimes =
+        FrameTimingSummarizer(frameTimings);
+    reportData ??= <String, dynamic>{};
+    reportData[reportKey] = frameTimes.summary;
   }
 }

@@ -1,12 +1,16 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.androidalarmmanagerexample;
 
 import io.flutter.app.FlutterApplication;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import io.flutter.plugins.androidalarmmanager.AlarmService;
 import io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin;
 
-public class Application extends FlutterApplication implements PluginRegistrantCallback {
+@SuppressWarnings("deprecation")
+public class Application extends FlutterApplication
+    implements io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback {
   @Override
   public void onCreate() {
     super.onCreate();
@@ -14,7 +18,8 @@ public class Application extends FlutterApplication implements PluginRegistrantC
   }
 
   @Override
-  public void registerWith(PluginRegistry registry) {
+  @SuppressWarnings("deprecation")
+  public void registerWith(io.flutter.plugin.common.PluginRegistry registry) {
     AndroidAlarmManagerPlugin.registerWith(
         registry.registrarFor("io.flutter.plugins.androidalarmmanager.AndroidAlarmManagerPlugin"));
   }

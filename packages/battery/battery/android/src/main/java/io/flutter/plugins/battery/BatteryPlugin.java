@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,7 +21,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
 
 /** BatteryPlugin */
 public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterPlugin {
@@ -32,7 +31,8 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterP
   private EventChannel eventChannel;
 
   /** Plugin registration. */
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     final BatteryPlugin instance = new BatteryPlugin();
     instance.onAttachedToEngine(registrar.context(), registrar.messenger());
   }

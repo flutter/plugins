@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.imagepicker;
 
 import static org.junit.Assert.assertTrue;
@@ -11,7 +15,6 @@ import android.app.Activity;
 import android.app.Application;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -29,7 +32,10 @@ public class ImagePickerPluginTest {
 
   @Rule public ExpectedException exception = ExpectedException.none();
 
-  @Mock PluginRegistry.Registrar mockRegistrar;
+  @SuppressWarnings("deprecation")
+  @Mock
+  io.flutter.plugin.common.PluginRegistry.Registrar mockRegistrar;
+
   @Mock Activity mockActivity;
   @Mock Application mockApplication;
   @Mock ImagePickerDelegate mockImagePickerDelegate;

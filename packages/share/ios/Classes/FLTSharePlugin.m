@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -168,9 +168,8 @@ static NSString *const PLATFORM_CHANNEL = @"plugins.flutter.io/share";
   UIActivityViewController *activityViewController =
       [[UIActivityViewController alloc] initWithActivityItems:shareItems applicationActivities:nil];
   activityViewController.popoverPresentationController.sourceView = controller.view;
-  if (!CGRectIsEmpty(origin)) {
-    activityViewController.popoverPresentationController.sourceRect = origin;
-  }
+  activityViewController.popoverPresentationController.sourceRect = origin;
+
   [controller presentViewController:activityViewController animated:YES completion:nil];
 }
 

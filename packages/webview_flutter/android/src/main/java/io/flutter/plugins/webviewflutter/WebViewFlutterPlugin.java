@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,6 @@ package io.flutter.plugins.webviewflutter;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -41,7 +40,8 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
    * <p>Calling this automatically initializes the plugin. However plugins initialized this way
    * won't react to changes in activity or context, unlike {@link CameraPlugin}.
    */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     registrar
         .platformViewRegistry()
         .registerViewFactory(
@@ -54,9 +54,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     BinaryMessenger messenger = binding.getBinaryMessenger();
     binding
-        .getFlutterEngine()
-        .getPlatformViewsController()
-        .getRegistry()
+        .getPlatformViewRegistry()
         .registerViewFactory(
             "plugins.flutter.io/webview", new WebViewFactory(messenger, /*containerView=*/ null));
     flutterCookieManager = new FlutterCookieManager(messenger);

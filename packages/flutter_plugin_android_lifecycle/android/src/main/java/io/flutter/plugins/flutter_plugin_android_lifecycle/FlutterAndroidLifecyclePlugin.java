@@ -1,10 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
 package io.flutter.plugins.flutter_plugin_android_lifecycle;
 
-import io.flutter.plugin.common.PluginRegistry.Registrar;
+import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.plugins.FlutterPlugin;
 
 /**
  * Plugin class that exists because the Flutter tool expects such a class to exist for every Android
@@ -12,8 +13,19 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
  *
  * <p><strong>DO NOT USE THIS CLASS.</strong>
  */
-public class FlutterAndroidLifecyclePlugin {
-  public static void registerWith(Registrar registrar) {
+public class FlutterAndroidLifecyclePlugin implements FlutterPlugin {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    // no-op
+  }
+
+  @Override
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    // no-op
+  }
+
+  @Override
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
     // no-op
   }
 }

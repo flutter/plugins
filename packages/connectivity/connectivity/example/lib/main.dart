@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -40,7 +40,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -51,7 +51,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   String _connectionStatus = 'Unknown';
   final Connectivity _connectivity = Connectivity();
-  StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override
   void initState() {
@@ -69,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   // Platform messages are asynchronous, so we initialize in an async method.
   Future<void> initConnectivity() async {
-    ConnectivityResult result;
+    ConnectivityResult result = ConnectivityResult.none;
     // Platform messages may fail, so we use a try/catch PlatformException.
     try {
       result = await _connectivity.checkConnectivity();
@@ -100,66 +100,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _updateConnectionStatus(ConnectivityResult result) async {
     switch (result) {
       case ConnectivityResult.wifi:
-        String wifiName, wifiBSSID, wifiIP;
-
-        try {
-          if (!kIsWeb && Platform.isIOS) {
-            LocationAuthorizationStatus status =
-                await _connectivity.getLocationServiceAuthorization();
-            if (status == LocationAuthorizationStatus.notDetermined) {
-              status =
-                  await _connectivity.requestLocationServiceAuthorization();
-            }
-            if (status == LocationAuthorizationStatus.authorizedAlways ||
-                status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiName = await _connectivity.getWifiName();
-            } else {
-              wifiName = await _connectivity.getWifiName();
-            }
-          } else {
-            wifiName = await _connectivity.getWifiName();
-          }
-        } on PlatformException catch (e) {
-          print(e.toString());
-          wifiName = "Failed to get Wifi Name";
-        }
-
-        try {
-          if (!kIsWeb && Platform.isIOS) {
-            LocationAuthorizationStatus status =
-                await _connectivity.getLocationServiceAuthorization();
-            if (status == LocationAuthorizationStatus.notDetermined) {
-              status =
-                  await _connectivity.requestLocationServiceAuthorization();
-            }
-            if (status == LocationAuthorizationStatus.authorizedAlways ||
-                status == LocationAuthorizationStatus.authorizedWhenInUse) {
-              wifiBSSID = await _connectivity.getWifiBSSID();
-            } else {
-              wifiBSSID = await _connectivity.getWifiBSSID();
-            }
-          } else {
-            wifiBSSID = await _connectivity.getWifiBSSID();
-          }
-        } on PlatformException catch (e) {
-          print(e.toString());
-          wifiBSSID = "Failed to get Wifi BSSID";
-        }
-
-        try {
-          wifiIP = await _connectivity.getWifiIP();
-        } on PlatformException catch (e) {
-          print(e.toString());
-          wifiIP = "Failed to get Wifi IP";
-        }
-
-        setState(() {
-          _connectionStatus = '$result\n'
-              'Wifi Name: $wifiName\n'
-              'Wifi BSSID: $wifiBSSID\n'
-              'Wifi IP: $wifiIP\n';
-        });
-        break;
       case ConnectivityResult.mobile:
       case ConnectivityResult.none:
         setState(() => _connectionStatus = result.toString());

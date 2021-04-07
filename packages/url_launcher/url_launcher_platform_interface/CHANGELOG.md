@@ -1,3 +1,23 @@
+## 2.0.2
+
+* Update platform_plugin_interface version requirement.
+
+## 2.0.1
+
+* Fix SDK range.
+
+## 2.0.0
+
+* Migrate to null safety.
+
+## 1.0.10
+
+* Update Flutter SDK constraint.
+
+## 1.0.9
+
+* Laid the groundwork for introducing a Link widget.
+
 ## 1.0.8
 
 * Added webOnlyWindowName parameter

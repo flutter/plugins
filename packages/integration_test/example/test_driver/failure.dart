@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 import 'package:integration_test_example/main.dart' as app;
+
+/// This file is placed in `test_driver/` instead of `integration_test/`, so
+/// that the CI tooling of flutter/plugins only uses this together with
+/// `failure_test.dart` as the driver. It is only used for testing of
+/// `package:integration_test` – do not follow the conventions here if you are a
+/// user of `package:integration_test`.
 
 // Tests the failure behavior of the IntegrationTestWidgetsFlutterBinding
 //

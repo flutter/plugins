@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,7 +8,6 @@ import android.content.Context;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** DeviceInfoPlugin */
 public class DeviceInfoPlugin implements FlutterPlugin {
@@ -16,7 +15,8 @@ public class DeviceInfoPlugin implements FlutterPlugin {
   MethodChannel channel;
 
   /** Plugin registration. */
-  public static void registerWith(Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     DeviceInfoPlugin plugin = new DeviceInfoPlugin();
     plugin.setupMethodChannel(registrar.messenger(), registrar.context());
   }
