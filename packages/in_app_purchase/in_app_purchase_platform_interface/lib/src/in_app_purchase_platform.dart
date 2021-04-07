@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-import 'noop_in_app_purchase.dart';
 import 'types/types.dart';
 
 /// The interface that implementations of in_app_purchase must implement.
@@ -22,10 +21,18 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static InAppPurchasePlatform _instance = NoopInAppPurchase();
+  static InAppPurchasePlatform? _instance;
 
   /// The default instance of [InAppPurchasePlatform] to use.
-  static InAppPurchasePlatform get instance => _instance;
+  static InAppPurchasePlatform get instance {
+    final InAppPurchasePlatform? platform = _instance;
+    if (platform == null) {
+      throw UnimplementedError(
+          'No platform specific implementation set. Please make sure you set the `instance` with a valid platform specific implementation of the `InAppPurchasePlatform` class.');
+    }
+
+    return platform;
+  }
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [InAppPurchasePlatform] when they register themselves.

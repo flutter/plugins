@@ -4,7 +4,6 @@
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:in_app_purchase_platform_interface/src/noop_in_app_purchase.dart';
 import 'package:mockito/mockito.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -12,8 +11,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$InAppPurchasePlatform', () {
-    test('$NoopInAppPurchase is the default instance', () {
-      expect(InAppPurchasePlatform.instance, isA<NoopInAppPurchase>());
+    test('default instance is null and throws unimplemented exception', () {
+      expect(() => InAppPurchasePlatform.instance, throwsUnimplementedError);
     });
 
     test('Cannot be implemented with `implements`', () {
