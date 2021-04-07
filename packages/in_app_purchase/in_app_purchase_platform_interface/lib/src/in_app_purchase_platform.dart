@@ -17,7 +17,7 @@ import 'types/types.dart';
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [InAppPurchasePlatform] methods.
 abstract class InAppPurchasePlatform extends PlatformInterface {
-  /// Constructs a UrlLauncherPlatform.
+  /// Constructs a InAppPurchasePlatform.
   InAppPurchasePlatform() : super(token: _token);
 
   static final Object _token = Object();
