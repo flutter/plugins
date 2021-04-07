@@ -33,13 +33,13 @@ void main() {
 
     test(
         // ignore: lines_longer_than_80_chars
-        'Default implementation of purchaseUpdatedStream should throw unimplemented error',
+        'Default implementation of purchaseStream should throw unimplemented error',
         () {
       final ExtendsInAppPurchasePlatform inAppPurchasePlatform =
           ExtendsInAppPurchasePlatform();
 
       expect(
-        () => inAppPurchasePlatform.purchaseUpdatedStream,
+        () => inAppPurchasePlatform.purchaseStream,
         throwsUnimplementedError,
       );
     });
@@ -102,13 +102,26 @@ void main() {
 
     test(
         // ignore: lines_longer_than_80_chars
-        'Default implementation of queryPastPurchases should throw unimplemented error',
+        'Default implementation of finishPurchase should throw unimplemented error',
         () {
       final ExtendsInAppPurchasePlatform inAppPurchasePlatform =
           ExtendsInAppPurchasePlatform();
 
       expect(
-        () => inAppPurchasePlatform.queryPastPurchases(),
+        () => inAppPurchasePlatform.finishPurchase(MockPurchaseDetails()),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        // ignore: lines_longer_than_80_chars
+        'Default implementation of restorePurchases should throw unimplemented error',
+        () {
+      final ExtendsInAppPurchasePlatform inAppPurchasePlatform =
+          ExtendsInAppPurchasePlatform();
+
+      expect(
+        () => inAppPurchasePlatform.restorePurchases(),
         throwsUnimplementedError,
       );
     });
@@ -130,3 +143,5 @@ class MockInAppPurchasePlatform extends Mock
 class ExtendsInAppPurchasePlatform extends InAppPurchasePlatform {}
 
 class MockPurchaseParam extends Mock implements PurchaseParam {}
+
+class MockPurchaseDetails extends Mock implements PurchaseDetails {}

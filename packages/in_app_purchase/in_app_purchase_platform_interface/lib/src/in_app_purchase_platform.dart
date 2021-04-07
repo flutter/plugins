@@ -43,6 +43,7 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   /// Purchase updates can happen in several situations:
   /// * When a purchase is triggered by user in the app.
   /// * When a purchase is triggered by user from App Store or Google Play.
+  /// * When a purchase is restored on the device by the user in the app.
   /// * If a purchase is not completed ([completePurchase] is not called on the
   ///   purchase object) from the last app session. Purchase updates will happen
   ///   when a new app session starts instead.
@@ -55,9 +56,8 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   /// time. If you choose to have multiple subscription at the same time, you
   /// should be careful at the fact that each subscription will receive all the
   /// events after they start to listen.
-  Stream<List<PurchaseDetails>> get purchaseUpdatedStream =>
-      throw UnimplementedError(
-          'purchaseUpdatedStream has not been implemented.');
+  Stream<List<PurchaseDetails>> get purchaseStream =>
+      throw UnimplementedError('purchaseStream has not been implemented.');
 
   /// Returns true if the payment platform is ready and available.
   Future<bool> isAvailable() =>
@@ -175,15 +175,39 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   }) =>
       throw UnimplementedError('buyConsumable() has not been implemented.');
 
-  // TODO(mvanbeusekom): Add definition for the `completePurchase` method. The
-  // current definition uses the Android specific `BillingResultWrapper` class
-  // which is not really platform generic and needs a solution.
+  /// Mark that purchased content has been delivered to the user.
+  ///
+  /// You are responsible for completing every [PurchaseDetails] whose
+  /// [PurchaseDetails.status] is [PurchaseStatus.purchased]. Additionally on iOS,
+  /// the purchase needs to be completed if the [PurchaseDetails.status] is
+  /// [PurchaseStatus.error] or [PurchaseStatus.restored].
+  /// Completing a [PurchaseStatus.pending] purchase will cause an exception.
+  /// For convenience, [PurchaseDetails.pendingCompletePurchase] indicates if a purchase is pending for completion.
+  ///
+  /// The method will throw a [PurchaseException] when the purchase could not be
+  /// finished. If the [PurchaseException.shouldRetry] is `true` the developer
+  /// should try to finish the purchase via this method again, or retry the [finishPurchase]
+  /// method at a later time. If the [PurchaseException.shouldRetry] is `false`
+  /// there might be some issue with the app's code or the configuration of the
+  /// app in the respective store. The developer is responsible to fix this issue.
+  /// The [PurchaseException.code] and [PurchaseException.message] fields might
+  /// provide more information on what went wrong.
+  ///
+  /// Warning! Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
+  /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
+  Future<void> finishPurchase(PurchaseDetails purchase) =>
+      throw UnimplementedError('finishPurchase() has not been implemented.');
 
-  /// Query all previous purchases.
+  /// Restore all previous purchases.
   ///
   /// The `applicationUserName` should match whatever was sent in the initial
   /// `PurchaseParam`, if anything. If no `applicationUserName` was specified in the initial
   /// `PurchaseParam`, use `null`.
+  ///
+  /// Restored purchases are delivered through the [purchaseStream] with a
+  /// status of [PurchaseStatus.restored]. You should listen for these purchases,
+  /// validate their receipts, deliver the content and mark the purchase complete
+  /// by calling the [finishPurchase] method for each purchase.
   ///
   /// This does not return consumed products. If you want to restore unused
   /// consumable products, you need to persist consumable product information
@@ -193,7 +217,6 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///
   ///  * [refreshPurchaseVerificationData], for reloading failed
   ///    [PurchaseDetails.verificationData].
-  Future<QueryPurchaseDetailsResponse> queryPastPurchases(
-          {String? applicationUserName}) =>
+  Future<void> restorePurchases({String? applicationUserName}) =>
       throw UnimplementedError('queryPastPurchase() has not been implemented.');
 }

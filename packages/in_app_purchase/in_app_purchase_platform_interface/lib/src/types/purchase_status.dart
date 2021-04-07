@@ -19,5 +19,12 @@ enum PurchaseStatus {
   purchased,
 
   /// Some error occurred in the purchase. The purchasing process if aborted.
-  error
+  error,
+
+  /// The purchase has been restored to the device.
+  ///
+  /// You should validate the receipt and if valid deliver the content. Once the
+  /// content has been delivered or if the receipt is invalid you should finish
+  /// the purchase by calling the `finishPurchase` method.
+  restored,
 }
