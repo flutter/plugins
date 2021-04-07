@@ -25,7 +25,7 @@ void main() {
     });
 
     test('fromSkuDetails should correctly parse the price data', () {
-      final SkuDetailsWrapper dummyDetailWRapper = SkuDetailsWrapper(
+      final SkuDetailsWrapper dummyDetailWrapper = SkuDetailsWrapper(
         description: 'description',
         freeTrialPeriod: 'freeTrialPeriod',
         introductoryPrice: 'introductoryPrice',
@@ -44,7 +44,7 @@ void main() {
       );
 
       ProductDetails productDetails =
-          ProductDetails.fromSkuDetails(dummyDetailWRapper);
+          ProductDetails.fromSkuDetails(dummyDetailWrapper);
       expect(productDetails.rawPrice, equals(13.37));
     });
   });
