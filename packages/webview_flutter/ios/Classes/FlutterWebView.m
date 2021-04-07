@@ -359,8 +359,10 @@
                                     [unknownKeys componentsJoinedByString:@", "]];
 }
 
-- (void)applyConfigurationSetting:(NSDictionary<NSString*, id>*)settings inConfiguration:(WKWebViewConfiguration*)configuration {
-  NSAssert(configuration != _webView.configuration, @"configuration needs to be updated before webView.configuration.");
+- (void)applyConfigurationSetting:(NSDictionary<NSString*, id>*)settings
+                  inConfiguration:(WKWebViewConfiguration*)configuration {
+  NSAssert(configuration != _webView.configuration,
+           @"configuration needs to be updated before webView.configuration.");
   for (NSString* key in settings) {
     if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
       NSNumber* allowsInlineMediaPlayback = settings[key];
