@@ -62,6 +62,8 @@ void main() {
           final String response =
               gitShowResponses[invocation.positionalArguments[0][1]];
           when<String>(mockProcessResult.stdout as String).thenReturn(response);
+        } else if (invocation.positionalArguments[0][0] == 'merge-base') {
+          when<String>(mockProcessResult.stdout as String).thenReturn('abc123');
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
@@ -117,7 +119,7 @@ void main() {
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       expect(gitDirCommands.length, equals(3));
       expect(
@@ -126,6 +128,40 @@ void main() {
           equals('show master:packages/plugin/pubspec.yaml'));
       expect(gitDirCommands[2].join(' '),
           equals('show HEAD:packages/plugin/pubspec.yaml'));
+    });
+
+    test('allows valid version without explicit base-sha', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['version-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          'No version check errors found!',
+        ]),
+      );
+    });
+
+    test('denies invalid version without explicit base-sha', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 0.0.1',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.2.0',
+      };
+      final Future<List<String>> result =
+          runCapturingPrint(runner, <String>['version-check']);
+
+      await expectLater(
+        result,
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
@@ -196,7 +232,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       expect(gitDirCommands.length, equals(3));
       expect(
@@ -257,7 +293,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       try {
         final List<String> outputValue = await output;
@@ -324,7 +360,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       try {
         final List<String> outputValue = await output;
@@ -398,7 +434,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       try {
         final List<String> outputValue = await output;
