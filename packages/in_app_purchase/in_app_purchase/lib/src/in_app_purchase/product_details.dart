@@ -35,11 +35,11 @@ class ProductDetails {
   /// Formatted with currency symbol ("$0.99").
   final String price;
 
-  // The unformatted price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
+  /// The unformatted price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
   final double rawPrice;
 
-  // The currency code for the price of the product.
-  // Based on the price specified in the App Store Connect or Sku in Google Play console based on the platform.
+  /// The currency code for the price of the product.
+  /// Based on the price specified in the App Store Connect or Sku in Google Play console based on the platform.
   final String currencyCode;
 
   /// Points back to the `StoreKits`'s [SKProductWrapper] object that generated this [ProductDetails] object.
