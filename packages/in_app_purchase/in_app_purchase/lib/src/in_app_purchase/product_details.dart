@@ -58,7 +58,7 @@ class ProductDetails {
         this.title = product.localizedTitle,
         this.description = product.localizedDescription,
         this.price = product.priceLocale.currencySymbol + product.price,
-        this.rawPrice = double.tryParse(product.price) ?? 0,
+        this.rawPrice = double.parse(product.price),
         this.currencyCode = product.priceLocale.currencyCode,
         this.skProduct = product,
         this.skuDetail = null;
