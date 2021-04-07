@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:in_app_purchase/store_kit_wrappers.dart';
 import 'package:in_app_purchase/billing_client_wrappers.dart';
 import 'in_app_purchase_connection.dart';
@@ -17,6 +19,8 @@ class ProductDetails {
       required this.title,
       required this.description,
       required this.price,
+      required this.rawPrice,
+      required this.currencyCode,
       this.skProduct,
       this.skuDetail});
 
@@ -32,6 +36,13 @@ class ProductDetails {
   /// The price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
   /// Formatted with currency symbol ("$0.99").
   final String price;
+
+  // The unformatted price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
+  final double rawPrice;
+
+  // The currency code for the price of the product.
+  // Based on the price specified in the App Store Connect or Sku in Google Play console based on the platform.
+  final String currencyCode;
 
   /// Points back to the `StoreKits`'s [SKProductWrapper] object that generated this [ProductDetails] object.
   ///
@@ -49,6 +60,8 @@ class ProductDetails {
         this.title = product.localizedTitle,
         this.description = product.localizedDescription,
         this.price = product.priceLocale.currencySymbol + product.price,
+        this.rawPrice = double.tryParse(product.price) ?? 0,
+        this.currencyCode = product.priceLocale.currencyCode,
         this.skProduct = product,
         this.skuDetail = null;
 
@@ -58,6 +71,8 @@ class ProductDetails {
         this.title = skuDetails.title,
         this.description = skuDetails.description,
         this.price = skuDetails.price,
+        this.rawPrice = ((skuDetails.priceAmountMicros) / 1000000.0).toDouble(),
+        this.currencyCode = skuDetails.priceCurrencyCode,
         this.skProduct = null,
         this.skuDetail = skuDetails;
 }
