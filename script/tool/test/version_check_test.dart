@@ -143,6 +143,8 @@ void main() {
         output,
         orderedEquals(<String>[
           'Determine diff with base sha: master',
+          'Checking versions for packages/plugin/pubspec.yaml...',
+          '  Deleted; skipping.',
           'No version check errors found!',
         ]),
       );
@@ -230,7 +232,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
+          'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for plugin.',
           'plugin passed version check',
           'No version check errors found!'
         ]),
@@ -291,7 +293,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
+          'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for plugin.',
           'plugin passed version check',
           'No version check errors found!'
         ]),
@@ -312,6 +314,80 @@ void main() {
 ## 1.0.1
 
 * Some changes.
+
+## 1.0.0
+
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final Future<List<String>> output = runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=master']);
+      await expectLater(
+        output,
+        throwsA(const TypeMatcher<Error>()),
+      );
+      try {
+        final List<String> outputValue = await output;
+        await expectLater(
+          outputValue,
+          containsAllInOrder(<String>[
+            '''
+  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+  The version in pubspec.yaml is 1.0.0.
+  The first version listed in CHANGELOG.md is 1.0.1.
+  ''',
+          ]),
+        );
+      } on ToolExit catch (_) {}
+    });
+
+    test('Allow NEXT as a placeholder for gathering CHANGELOG entries',
+        () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.0');
+      const String changelog = '''
+## NEXT
+
+* Some changes that won't be published until the next time there's a release.
+
+## 1.0.0
+
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=master']);
+      await expectLater(
+        output,
+        containsAllInOrder(<String>[
+          'Skipping validation for NEXT.',
+          'No version check errors found!',
+        ]),
+      );
+    });
+
+    test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
+        () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.1');
+      const String changelog = '''
+## 1.0.1
+
+* Some changes.
+
+## NEXT
+
+* Some changes that should have been folded in 1.0.1.
 
 ## 1.0.0
 
