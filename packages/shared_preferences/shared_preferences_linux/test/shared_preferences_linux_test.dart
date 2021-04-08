@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'package:file/memory.dart';
@@ -7,9 +7,9 @@ import 'package:path/path.dart' as path;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 
-MemoryFileSystem fs;
-
 void main() {
+  late MemoryFileSystem fs;
+
   setUp(() {
     fs = MemoryFileSystem.test();
   });
@@ -19,7 +19,7 @@ void main() {
   Future<String> _getFilePath() async {
     final pathProvider = PathProviderLinux();
     final directory = await pathProvider.getApplicationSupportPath();
-    return path.join(directory, 'shared_preferences.json');
+    return path.join(directory!, 'shared_preferences.json');
   }
 
   _writeTestFile(String value) async {

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -86,7 +86,7 @@ class Response {
 
   /// Create a list of Strings from [_failureDetails].
   List<String> _failureDetailsAsString() {
-    final List<String> list = List<String>();
+    final List<String> list = <String>[];
     if (_failureDetails == null || _failureDetails.isEmpty) {
       return list;
     }
@@ -100,7 +100,7 @@ class Response {
 
   /// Creates a [Failure] list using a json response.
   static List<Failure> _failureDetailsFromJson(List<dynamic> list) {
-    final List<Failure> failureList = List<Failure>();
+    final List<Failure> failureList = <Failure>[];
     list.forEach((s) {
       final String failure = s as String;
       failureList.add(Failure.fromJsonString(failure));

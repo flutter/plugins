@@ -1,6 +1,7 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 @TestOn('browser')
 
 import 'dart:async';
@@ -8,22 +9,21 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:video_player/video_player.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
 void main() {
   group('VideoPlayer for Web', () {
-    int textureId;
+    late int textureId;
 
     setUp(() async {
       VideoPlayerPlatform.instance = VideoPlayerPlugin();
-      textureId = await VideoPlayerPlatform.instance.create(
+      textureId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
             uri:
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
-      );
+      ))!;
     });
 
     test('$VideoPlayerPlugin is the live instance', () {
@@ -84,12 +84,12 @@ void main() {
     });
 
     test('throws PlatformException when playing bad media', () async {
-      int videoPlayerId = await VideoPlayerPlatform.instance.create(
+      int videoPlayerId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
             uri:
                 'https://flutter.github.io/assets-for-api-docs/assets/videos/_non_existent_video.mp4'),
-      );
+      ))!;
 
       Stream<VideoEvent> eventStream =
           VideoPlayerPlatform.instance.videoEventsFor(videoPlayerId);
@@ -98,7 +98,9 @@ void main() {
       await VideoPlayerPlatform.instance.setVolume(videoPlayerId, 0);
       await VideoPlayerPlatform.instance.play(videoPlayerId);
 
-      expect(eventStream, emitsError(isA<PlatformException>()));
+      expect(() async {
+        await eventStream.last;
+      }, throwsA(isA<PlatformException>()));
     });
 
     test('can pause', () {
@@ -135,6 +137,11 @@ void main() {
     test('can build view', () {
       expect(VideoPlayerPlatform.instance.buildView(textureId),
           isInstanceOf<Widget>());
+    });
+
+    test('ignores setting mixWithOthers', () {
+      expect(VideoPlayerPlatform.instance.setMixWithOthers(true), completes);
+      expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
     });
   });
 }

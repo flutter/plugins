@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,6 +23,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
+import com.google.android.gms.maps.model.Tile;
 import io.flutter.view.FlutterMain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,9 @@ import java.util.Map;
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
 
+  // TODO(hamdikahloun): FlutterMain has been deprecated and should be replaced with FlutterLoader
+  //  when it's available in Stable channel: https://github.com/flutter/flutter/issues/70923.
+  @SuppressWarnings("deprecation")
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
@@ -75,7 +79,8 @@ class Convert {
       }
     } else {
       throw new IllegalArgumentException(
-          "fromBytes should have exactly one argument, the bytes. Got: " + data.size());
+          "fromBytes should have exactly one argument, interpretTileOverlayOptions the bytes. Got: "
+              + data.size());
     }
   }
 
@@ -197,6 +202,20 @@ class Convert {
     return data;
   }
 
+  static Map<String, Object> tileOverlayArgumentsToJson(
+      String tileOverlayId, int x, int y, int zoom) {
+
+    if (tileOverlayId == null) {
+      return null;
+    }
+    final Map<String, Object> data = new HashMap<>(4);
+    data.put("tileOverlayId", tileOverlayId);
+    data.put("x", x);
+    data.put("y", y);
+    data.put("zoom", zoom);
+    return data;
+  }
+
   static Object latLngToJson(LatLng latLng) {
     return Arrays.asList(latLng.latitude, latLng.longitude);
   }
@@ -207,8 +226,9 @@ class Convert {
   }
 
   static Point toPoint(Object o) {
-    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
-    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
+    Object x = toMap(o).get("x");
+    Object y = toMap(o).get("y");
+    return new Point((int) x, (int) y);
   }
 
   static Map<String, Integer> pointToJson(Point point) {
@@ -232,6 +252,18 @@ class Convert {
 
   private static Map<?, ?> toMap(Object o) {
     return (Map<?, ?>) o;
+  }
+
+  private static Map<String, Object> toObjectMap(Object o) {
+    Map<String, Object> hashMap = new HashMap<>();
+    Map<?, ?> map = (Map<?, ?>) o;
+    for (Object key : map.keySet()) {
+      Object object = map.get(key);
+      if (object != null) {
+        hashMap.put((String) key, object);
+      }
+    }
+    return hashMap;
   }
 
   private static float toFractionalPixels(Object o, float density) {
@@ -377,7 +409,7 @@ class Convert {
 
     final Object infoWindow = data.get("infoWindow");
     if (infoWindow != null) {
-      interpretInfoWindowOptions(sink, (Map<String, Object>) infoWindow);
+      interpretInfoWindowOptions(sink, toObjectMap(infoWindow));
     }
     final Object position = data.get("position");
     if (position != null) {
@@ -451,6 +483,10 @@ class Convert {
     final Object points = data.get("points");
     if (points != null) {
       sink.setPoints(toPoints(points));
+    }
+    final Object holes = data.get("holes");
+    if (holes != null) {
+      sink.setHoles(toHoles(holes));
     }
     final String polygonId = (String) data.get("polygonId");
     if (polygonId == null) {
@@ -560,11 +596,21 @@ class Convert {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
 
-    for (Object ob : data) {
-      final List<?> point = toList(ob);
+    for (Object rawPoint : data) {
+      final List<?> point = toList(rawPoint);
       points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
     }
     return points;
+  }
+
+  private static List<List<LatLng>> toHoles(Object o) {
+    final List<?> data = toList(o);
+    final List<List<LatLng>> holes = new ArrayList<>(data.size());
+
+    for (Object rawHole : data) {
+      holes.add(toPoints(rawHole));
+    }
+    return holes;
   }
 
   private static List<PatternItem> toPattern(Object o) {
@@ -614,5 +660,40 @@ class Convert {
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
     }
+  }
+
+  static String interpretTileOverlayOptions(Map<String, ?> data, TileOverlaySink sink) {
+    final Object fadeIn = data.get("fadeIn");
+    if (fadeIn != null) {
+      sink.setFadeIn(toBoolean(fadeIn));
+    }
+    final Object transparency = data.get("transparency");
+    if (transparency != null) {
+      sink.setTransparency(toFloat(transparency));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final String tileOverlayId = (String) data.get("tileOverlayId");
+    if (tileOverlayId == null) {
+      throw new IllegalArgumentException("tileOverlayId was null");
+    } else {
+      return tileOverlayId;
+    }
+  }
+
+  static Tile interpretTile(Map<String, ?> data) {
+    int width = toInt(data.get("width"));
+    int height = toInt(data.get("height"));
+    byte[] dataArray = null;
+    if (data.get("data") != null) {
+      dataArray = (byte[]) data.get("data");
+    }
+    return new Tile(width, height, dataArray);
   }
 }

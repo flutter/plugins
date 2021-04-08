@@ -1,7 +1,11 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:html';
 
 /// Create anchor element with download attribute
-AnchorElement createAnchorElement(String href, String suggestedName) {
+AnchorElement createAnchorElement(String href, String? suggestedName) {
   final element = AnchorElement(href: href);
 
   if (suggestedName == null) {
@@ -27,7 +31,7 @@ Element ensureInitialized(String id) {
   if (target == null) {
     final Element targetElement = Element.tag('flt-x-file')..id = id;
 
-    querySelector('body').children.add(targetElement);
+    querySelector('body')!.children.add(targetElement);
     target = targetElement;
   }
   return target;

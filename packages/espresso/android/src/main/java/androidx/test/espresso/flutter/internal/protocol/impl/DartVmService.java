@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,6 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -360,10 +359,9 @@ public final class DartVmService implements FlutterTestingProtocol {
                 isolateId, isolateInfoResp.getError()));
         return false;
       }
-      Iterator<JsonElement> extensions =
-          isolateInfoResp.getResult().get(EXTENSION_RPCS_TAG).getAsJsonArray().iterator();
-      while (extensions.hasNext()) {
-        String extensionApi = extensions.next().getAsString();
+      for (JsonElement jsonElement :
+          isolateInfoResp.getResult().get(EXTENSION_RPCS_TAG).getAsJsonArray()) {
+        String extensionApi = jsonElement.getAsString();
         if (TESTING_EXTENSION_METHOD.equals(extensionApi)) {
           Log.d(
               TAG,

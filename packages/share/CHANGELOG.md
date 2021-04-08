@@ -1,3 +1,27 @@
+## 2.0.1
+
+* Migrate unit tests to sound null safety.
+
+## 2.0.0
+
+* Migrate to null safety.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update README with the new documentation urls.
+
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
+## 0.6.5+4
+
+* Fix iPad share window not showing when `origin` is null.
+
+## 0.6.5+3
+
+* Replace deprecated `Environment.getExternalStorageDirectory()` call on Android.
+* Upgrade to Android Gradle plugin 3.5.0 & target API level 29.
+
 ## 0.6.5+2
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
