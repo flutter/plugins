@@ -17,40 +17,40 @@ import io.flutter.plugins.camera.CameraProperties;
  * @param <T>
  */
 public abstract class CameraFeature<T> {
-    protected final CameraProperties cameraProperties;
+  protected final CameraProperties cameraProperties;
 
-    protected CameraFeature(@NonNull CameraProperties cameraProperties) {
-        this.cameraProperties = cameraProperties;
-    }
+  protected CameraFeature(@NonNull CameraProperties cameraProperties) {
+    this.cameraProperties = cameraProperties;
+  }
 
-    /** Debug name for this feature. */
-    public abstract String getDebugName();
+  /** Debug name for this feature. */
+  public abstract String getDebugName();
 
-    /**
-     * Get the current value of this feature's setting.
-     *
-     * @return
-     */
-    public abstract T getValue();
+  /**
+   * Get the current value of this feature's setting.
+   *
+   * @return
+   */
+  public abstract T getValue();
 
-    /**
-     * Set a new value for this feature's setting.
-     *
-     * @param value
-     */
-    public abstract void setValue(T value);
+  /**
+   * Set a new value for this feature's setting.
+   *
+   * @param value
+   */
+  public abstract void setValue(T value);
 
-    /**
-     * Returns whether or not this feature is supported.
-     *
-     * @return
-     */
-    public abstract boolean checkIsSupported();
+  /**
+   * Returns whether or not this feature is supported.
+   *
+   * @return
+   */
+  public abstract boolean checkIsSupported();
 
-    /**
-     * Update the setting in a provided request builder.
-     *
-     * @param requestBuilder
-     */
-    public abstract void updateBuilder(CaptureRequest.Builder requestBuilder);
+  /**
+   * Update the setting in a provided request builder.
+   *
+   * @param requestBuilder
+   */
+  public abstract void updateBuilder(CaptureRequest.Builder requestBuilder);
 }
