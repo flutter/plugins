@@ -8,7 +8,7 @@
 
 - [ ] I read the [Contributor Guide] and followed the process outlined there for submitting PRs.
 - [ ] I read the [Tree Hygiene] wiki page, which explains my responsibilities.
-- [ ] I read and followed the [Flutter Style Guide] and the [C++, Objective-C, Java style guides]. (Note that not like the flutter/flutter repo, we do use dart formatter in the flutter/plugins repo.)
+- [ ] I read and followed the [Flutter Style Guide] and the [C++, Objective-C, Java style guides]. (Note that not like the flutter/flutter repo, we do use dart formatter in the flutter/plugins repo. Run `dart run ./script/tool/lib/src/main.dart format` under plugins/ to auto format all source code.)
 - [ ] I signed the [CLA].
 - [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. `[shared_preferences]`
 - [ ] I listed at least one issue that this PR fixes in the description above.
