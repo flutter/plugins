@@ -100,7 +100,6 @@ class LocalAuthentication {
     bool sensitiveTransaction = true,
     bool biometricOnly = false,
   }) async {
-    assert(localizedReason != null);
     assert(localizedReason.isNotEmpty);
 
     final Map<String, Object> args = <String, Object>{
