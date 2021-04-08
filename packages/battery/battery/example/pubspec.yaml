@@ -1,5 +1,6 @@
 name: battery_example
 description: Demonstrates how to use the battery plugin.
+publish_to: none
 
 dependencies:
   flutter:

@@ -1,10 +1,18 @@
+## 0.5.1+3
+
+* Configured the iOS example App to make use of StoreKit Testing on iOS 14 and higher.
+
+## 0.5.1+2
+
+* Update README to provide a better instruction of the plugin.
+
 ## 0.5.1+1
 
 * Fix error message when trying to consume purchase on iOS.
 
 ## 0.5.1
 
-* [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet` 
+* [iOS] Introduce `SKPaymentQueueWrapper.presentCodeRedemptionSheet`
 
 ## 0.5.0
 

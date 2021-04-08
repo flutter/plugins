@@ -12,7 +12,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
+/// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {
+  /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -36,7 +38,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   String get name => 'all-plugins-app';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     final int exitCode = await _createApp();
     if (exitCode != 0) {
       throw ToolExit(exitCode);
@@ -76,7 +78,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     }
 
     final StringBuffer newGradle = StringBuffer();
-    for (String line in gradleFile.readAsLinesSync()) {
+    for (final String line in gradleFile.readAsLinesSync()) {
       newGradle.writeln(line);
       if (line.contains('defaultConfig {')) {
         newGradle.writeln('        multiDexEnabled true');
@@ -105,7 +107,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     }
 
     final StringBuffer newManifest = StringBuffer();
-    for (String line in manifestFile.readAsLinesSync()) {
+    for (final String line in manifestFile.readAsLinesSync()) {
       if (line.contains('package="com.example.all_plugins"')) {
         newManifest
           ..writeln('package="com.example.all_plugins"')
@@ -149,7 +151,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (Directory package in getPlugins()) {
+    await for (final Directory package in getPlugins()) {
       final String pluginName = package.path.split('/').last;
       final File pubspecFile =
           fileSystem.file(p.join(package.path, 'pubspec.yaml'));
@@ -183,15 +185,15 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
   String _pubspecMapString(Map<String, dynamic> values) {
     final StringBuffer buffer = StringBuffer();
 
-    for (MapEntry<String, dynamic> entry in values.entries) {
+    for (final MapEntry<String, dynamic> entry in values.entries) {
       buffer.writeln();
       if (entry.value is VersionConstraint) {
         buffer.write('  ${entry.key}: ${entry.value}');
       } else if (entry.value is SdkDependency) {
-        final SdkDependency dep = entry.value;
+        final SdkDependency dep = entry.value as SdkDependency;
         buffer.write('  ${entry.key}: \n    sdk: ${dep.sdk}');
       } else if (entry.value is PathDependency) {
-        final PathDependency dep = entry.value;
+        final PathDependency dep = entry.value as PathDependency;
         buffer.write('  ${entry.key}: \n    path: ${dep.path}');
       } else {
         throw UnimplementedError(

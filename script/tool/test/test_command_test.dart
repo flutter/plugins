@@ -11,7 +11,7 @@ import 'util.dart';
 
 void main() {
   group('$TestCommand', () {
-    CommandRunner<TestCommand> runner;
+    CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {
@@ -19,7 +19,7 @@ void main() {
       final TestCommand command = TestCommand(mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>('test_test', 'Test for $TestCommand');
+      runner = CommandRunner<void>('test_test', 'Test for $TestCommand');
       runner.addCommand(command);
     });
 
@@ -43,8 +43,10 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', <String>['test', '--color'], plugin1Dir.path),
-          ProcessCall('flutter', <String>['test', '--color'], plugin2Dir.path),
+          ProcessCall(
+              'flutter', const <String>['test', '--color'], plugin1Dir.path),
+          ProcessCall(
+              'flutter', const <String>['test', '--color'], plugin2Dir.path),
         ]),
       );
 
@@ -63,7 +65,8 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter', <String>['test', '--color'], plugin2Dir.path),
+          ProcessCall(
+              'flutter', const <String>['test', '--color'], plugin2Dir.path),
         ]),
       );
 
@@ -89,12 +92,12 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
               'flutter',
-              <String>['test', '--color', '--enable-experiment=exp1'],
+              const <String>['test', '--color', '--enable-experiment=exp1'],
               plugin1Dir.path),
-          ProcessCall('pub', <String>['get'], plugin2Dir.path),
+          ProcessCall('pub', const <String>['get'], plugin2Dir.path),
           ProcessCall(
               'pub',
-              <String>['run', '--enable-experiment=exp1', 'test'],
+              const <String>['run', '--enable-experiment=exp1', 'test'],
               plugin2Dir.path),
         ]),
       );
@@ -117,8 +120,10 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('flutter',
-              <String>['test', '--color', '--platform=chrome'], pluginDir.path),
+          ProcessCall(
+              'flutter',
+              const <String>['test', '--color', '--platform=chrome'],
+              pluginDir.path),
         ]),
       );
     });
@@ -142,12 +147,12 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
               'flutter',
-              <String>['test', '--color', '--enable-experiment=exp1'],
+              const <String>['test', '--color', '--enable-experiment=exp1'],
               plugin1Dir.path),
-          ProcessCall('pub', <String>['get'], plugin2Dir.path),
+          ProcessCall('pub', const <String>['get'], plugin2Dir.path),
           ProcessCall(
               'pub',
-              <String>['run', '--enable-experiment=exp1', 'test'],
+              const <String>['run', '--enable-experiment=exp1', 'test'],
               plugin2Dir.path),
         ]),
       );

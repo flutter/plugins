@@ -1,6 +1,14 @@
-## 1.1.2
+## 1.1.4
 
 * Fixed iOS app crash when fill `localizedReason` with an empty string
+
+## 1.1.3
+
+* Fix crashes due to threading issues in iOS implementation.
+
+## 1.1.2
+
+* Update Jetpack dependencies to latest stable versions.
 
 ## 1.1.1
 
