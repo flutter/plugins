@@ -59,7 +59,8 @@ class LocalAuthentication {
   ///
   /// [localizedReason] is the message to show to user while prompting them
   /// for authentication. This is typically along the lines of: 'Please scan
-  /// your finger to access MyApp.'
+  /// your finger to access MyApp.'. If the given value is an empty string
+  /// an [AssertionError] will be thrown.
   ///
   /// [useErrorDialogs] = true means the system will attempt to handle user
   /// fixable issues encountered while authenticating. For instance, if
