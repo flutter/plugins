@@ -1,3 +1,3 @@
 ## 1.0.0
 
-- Initial open-source release.
+* Initial open-source release.

@@ -23,8 +23,9 @@ enum PurchaseStatus {
 
   /// The purchase has been restored to the device.
   ///
-  /// You should validate the receipt and if valid deliver the content. Once the
+  /// You should validate the purchase and if valid deliver the content. Once the
   /// content has been delivered or if the receipt is invalid you should finish
-  /// the purchase by calling the `finishPurchase` method.
+  /// the purchase by calling the `finishPurchase` method. More information on
+  /// verifying purchases can be found [here](https://pub.dev/packages/in_app_purchase#loading-previous-purchases).
   restored,
 }

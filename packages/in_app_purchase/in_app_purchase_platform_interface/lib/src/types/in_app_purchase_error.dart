@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'in_app_purchase_source.dart';
-
 /// Captures an error from the underlying purchase platform.
 ///
 /// The error can happen during the purchase, restoring a purchase, or querying product.
@@ -20,7 +18,7 @@ class IAPError {
       this.details});
 
   /// Which source is the error on.
-  final IAPSource source;
+  final String source;
 
   /// The error code.
   final String code;

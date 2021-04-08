@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'in_app_purchase_source.dart';
-
 /// Represents the data that is used to verify purchases.
 ///
 /// The property [source] helps you to determine the method to verify purchases.
@@ -44,5 +42,5 @@ class PurchaseVerificationData {
   final String serverVerificationData;
 
   /// Indicates the source of the purchase.
-  final IAPSource source;
+  final String source;
 }

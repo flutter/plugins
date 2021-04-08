@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 export 'in_app_purchase_error.dart';
-export 'in_app_purchase_source.dart';
 export 'product_details.dart';
 export 'product_details_response.dart';
 export 'purchase_details.dart';

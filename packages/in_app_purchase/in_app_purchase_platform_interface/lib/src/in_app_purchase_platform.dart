@@ -21,26 +21,13 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static InAppPurchasePlatform? _instance;
-
-  /// The default instance of [InAppPurchasePlatform] to use.
-  static InAppPurchasePlatform get instance {
-    final InAppPurchasePlatform? platform = _instance;
-    if (platform == null) {
-      throw UnimplementedError(
-          'No platform specific implementation set. Please make sure you set the `instance` with a valid platform specific implementation of the `InAppPurchasePlatform` class.');
-    }
-
-    return platform;
-  }
-
-  /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [InAppPurchasePlatform] when they register themselves.
-  // TODO(amirh): Extract common platform interface logic.
-  // https://github.com/flutter/flutter/issues/43368
-  static set instance(InAppPurchasePlatform instance) {
+  //// Ensures that implementers are using `extends` rather than
+  /// `implements` and throws [AssertionError] if not.
+  ///
+  /// This is implemented as a static method so that it cannot be overridden
+  /// with `noSuchMethod`.
+  static void verifyToken(InAppPurchasePlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
-    _instance = instance;
   }
 
   /// Listen to this broadcast stream to get real time update for purchases.
