@@ -1,3 +1,7 @@
+## 1.1.4
+
+* Updated grammatical errors and inaccurate information in README .
+
 ## 1.1.3
 
 * Fix crashes due to threading issues in iOS implementation.
