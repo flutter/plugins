@@ -1,5 +1,6 @@
 name: package_info_example
 description: Demonstrates how to use the package_info plugin.
+publish_to: none
 
 dependencies:
   flutter:
