@@ -455,6 +455,7 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.allowFileAccess,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -488,9 +489,12 @@ class CreationParams {
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
+  /// The value if it allows file access.
+  final bool? allowFileAccess;
+
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, allowFileAccess: $allowFileAccess)';
   }
 }
 
