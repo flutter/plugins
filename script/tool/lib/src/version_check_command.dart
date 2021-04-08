@@ -13,8 +13,6 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
-const String _kBaseSha = 'base-sha';
-
 /// Categories of version change types.
 enum NextVersionType {
   /// A breaking change.
@@ -96,48 +94,59 @@ class VersionCheckCommand extends PluginCommand {
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
-    final String baseSha = argResults[_kBaseSha] as String;
+    const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
-      try {
-        final File pubspecFile = fileSystem.file(pubspecPath);
-        if (!pubspecFile.existsSync()) {
-          continue;
-        }
-        final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
-        if (pubspec.publishTo == 'none') {
-          continue;
-        }
+      print('Checking versions for $pubspecPath...');
+      final File pubspecFile = fileSystem.file(pubspecPath);
+      if (!pubspecFile.existsSync()) {
+        print('${indentation}Deleted; skipping.');
+        continue;
+      }
+      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      if (pubspec.publishTo == 'none') {
+        print('${indentation}Found "publish_to: none"; skipping.');
+        continue;
+      }
 
-        final Version masterVersion =
-            await gitVersionFinder.getPackageVersion(pubspecPath, baseSha);
-        final Version headVersion =
-            await gitVersionFinder.getPackageVersion(pubspecPath, 'HEAD');
-        if (headVersion == null) {
-          continue; // Example apps don't have versions
-        }
+      final Version headVersion =
+          await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
+      if (headVersion == null) {
+        printErrorAndExit(
+            errorMessage: '${indentation}No version found. A package that '
+                'intentionally has no version should be marked '
+                '"publish_to: none".');
+      }
+      final Version masterVersion =
+          await gitVersionFinder.getPackageVersion(pubspecPath);
+      if (masterVersion == null) {
+        print('${indentation}Unable to find pubspec in master. '
+            'Safe to ignore if the project is new.');
+      }
 
-        final Map<Version, NextVersionType> allowedNextVersions =
-            getAllowedNextVersions(masterVersion, headVersion);
+      if (masterVersion == headVersion) {
+        print('${indentation}No version change.');
+        continue;
+      }
 
-        if (!allowedNextVersions.containsKey(headVersion)) {
-          final String error = '$pubspecPath incorrectly updated version.\n'
-              'HEAD: $headVersion, master: $masterVersion.\n'
-              'Allowed versions: $allowedNextVersions';
-          printErrorAndExit(errorMessage: error);
-        }
+      final Map<Version, NextVersionType> allowedNextVersions =
+          getAllowedNextVersions(masterVersion, headVersion);
 
-        final bool isPlatformInterface =
-            pubspec.name.endsWith('_platform_interface');
-        if (isPlatformInterface &&
-            allowedNextVersions[headVersion] ==
-                NextVersionType.BREAKING_MAJOR) {
-          final String error = '$pubspecPath breaking change detected.\n'
-              'Breaking changes to platform interfaces are strongly discouraged.\n';
-          printErrorAndExit(errorMessage: error);
-        }
-      } on io.ProcessException {
-        print('Unable to find pubspec in master for $pubspecPath.'
-            ' Safe to ignore if the project is new.');
+      if (!allowedNextVersions.containsKey(headVersion)) {
+        final String error = '${indentation}Incorrectly updated version.\n'
+            '${indentation}HEAD: $headVersion, master: $masterVersion.\n'
+            '${indentation}Allowed versions: $allowedNextVersions';
+        printErrorAndExit(errorMessage: error);
+      } else {
+        print('$indentation$headVersion -> $masterVersion');
+      }
+
+      final bool isPlatformInterface =
+          pubspec.name.endsWith('_platform_interface');
+      if (isPlatformInterface &&
+          allowedNextVersions[headVersion] == NextVersionType.BREAKING_MAJOR) {
+        final String error = '$pubspecPath breaking change detected.\n'
+            'Breaking changes to platform interfaces are strongly discouraged.\n';
+        printErrorAndExit(errorMessage: error);
       }
     }
 
@@ -153,7 +162,7 @@ class VersionCheckCommand extends PluginCommand {
     final String packageName = plugin.basename;
     print('-----------------------------------------');
     print(
-        'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for $packageName.');
+        'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for $packageName.');
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
@@ -169,12 +178,29 @@ class VersionCheckCommand extends PluginCommand {
     final Iterator<String> iterator = lines.iterator;
     while (iterator.moveNext()) {
       if (iterator.current.trim().isNotEmpty) {
-        firstLineWithText = iterator.current;
+        firstLineWithText = iterator.current.trim();
         break;
       }
     }
     // Remove all leading mark down syntax from the version line.
-    final String versionString = firstLineWithText.split(' ').last;
+    String versionString = firstLineWithText.split(' ').last;
+
+    // Skip validation for the special NEXT version that's used to accumulate
+    // changes that don't warrant publishing on their own.
+    bool hasNextSection = versionString == 'NEXT';
+    if (hasNextSection) {
+      print('Found NEXT; validating next version in the CHANGELOG.');
+      // Ensure that the version in pubspec hasn't changed without updating
+      // CHANGELOG. That means the next version entry in the CHANGELOG pass the
+      // normal validation.
+      while (iterator.moveNext()) {
+        if (iterator.current.trim().startsWith('## ')) {
+          versionString = iterator.current.trim().split(' ').last;
+          break;
+        }
+      }
+    }
+
     final Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error =
@@ -190,6 +216,18 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
 ''';
       printErrorAndExit(errorMessage: error);
     }
+
+    // If NEXT wasn't the first section, it should not exist at all.
+    if (!hasNextSection) {
+      final RegExp nextRegex = RegExp(r'^#+\s*NEXT\s*$');
+      if (lines.any((String line) => nextRegex.hasMatch(line))) {
+        printErrorAndExit(errorMessage: '''
+When bumping the version for release, the NEXT section should be incorporated
+into the new version's release notes.
+      ''');
+      }
+    }
+
     print('$packageName passed version check');
   }
 

@@ -62,6 +62,8 @@ void main() {
           final String response =
               gitShowResponses[invocation.positionalArguments[0][1]];
           when<String>(mockProcessResult.stdout as String).thenReturn(response);
+        } else if (invocation.positionalArguments[0][0] == 'merge-base') {
+          when<String>(mockProcessResult.stdout as String).thenReturn('abc123');
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
@@ -98,11 +100,12 @@ void main() {
       );
       expect(gitDirCommands.length, equals(3));
       expect(
-          gitDirCommands[0].join(' '), equals('diff --name-only master HEAD'));
-      expect(gitDirCommands[1].join(' '),
-          equals('show master:packages/plugin/pubspec.yaml'));
-      expect(gitDirCommands[2].join(' '),
-          equals('show HEAD:packages/plugin/pubspec.yaml'));
+          gitDirCommands,
+          containsAll(<Matcher>[
+            equals(<String>['diff', '--name-only', 'master', 'HEAD']),
+            equals(<String>['show', 'master:packages/plugin/pubspec.yaml']),
+            equals(<String>['show', 'HEAD:packages/plugin/pubspec.yaml']),
+          ]));
     });
 
     test('denies invalid version', () async {
@@ -117,15 +120,50 @@ void main() {
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       expect(gitDirCommands.length, equals(3));
       expect(
-          gitDirCommands[0].join(' '), equals('diff --name-only master HEAD'));
-      expect(gitDirCommands[1].join(' '),
-          equals('show master:packages/plugin/pubspec.yaml'));
-      expect(gitDirCommands[2].join(' '),
-          equals('show HEAD:packages/plugin/pubspec.yaml'));
+          gitDirCommands,
+          containsAll(<Matcher>[
+            equals(<String>['diff', '--name-only', 'master', 'HEAD']),
+            equals(<String>['show', 'master:packages/plugin/pubspec.yaml']),
+            equals(<String>['show', 'HEAD:packages/plugin/pubspec.yaml']),
+          ]));
+    });
+
+    test('allows valid version without explicit base-sha', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['version-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          'No version check errors found!',
+        ]),
+      );
+    });
+
+    test('denies invalid version without explicit base-sha', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 0.0.1',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.2.0',
+      };
+      final Future<List<String>> result =
+          runCapturingPrint(runner, <String>['version-check']);
+
+      await expectLater(
+        result,
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
@@ -143,6 +181,8 @@ void main() {
         output,
         orderedEquals(<String>[
           'Determine diff with base sha: master',
+          'Checking versions for packages/plugin/pubspec.yaml...',
+          '  Deleted; skipping.',
           'No version check errors found!',
         ]),
       );
@@ -171,13 +211,18 @@ void main() {
       );
       expect(gitDirCommands.length, equals(3));
       expect(
-          gitDirCommands[0].join(' '), equals('diff --name-only master HEAD'));
-      expect(
-          gitDirCommands[1].join(' '),
-          equals(
-              'show master:packages/plugin_platform_interface/pubspec.yaml'));
-      expect(gitDirCommands[2].join(' '),
-          equals('show HEAD:packages/plugin_platform_interface/pubspec.yaml'));
+          gitDirCommands,
+          containsAll(<Matcher>[
+            equals(<String>['diff', '--name-only', 'master', 'HEAD']),
+            equals(<String>[
+              'show',
+              'master:packages/plugin_platform_interface/pubspec.yaml'
+            ]),
+            equals(<String>[
+              'show',
+              'HEAD:packages/plugin_platform_interface/pubspec.yaml'
+            ]),
+          ]));
     });
 
     test('disallows breaking changes to platform interfaces', () async {
@@ -194,17 +239,22 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       expect(gitDirCommands.length, equals(3));
       expect(
-          gitDirCommands[0].join(' '), equals('diff --name-only master HEAD'));
-      expect(
-          gitDirCommands[1].join(' '),
-          equals(
-              'show master:packages/plugin_platform_interface/pubspec.yaml'));
-      expect(gitDirCommands[2].join(' '),
-          equals('show HEAD:packages/plugin_platform_interface/pubspec.yaml'));
+          gitDirCommands,
+          containsAll(<Matcher>[
+            equals(<String>['diff', '--name-only', 'master', 'HEAD']),
+            equals(<String>[
+              'show',
+              'master:packages/plugin_platform_interface/pubspec.yaml'
+            ]),
+            equals(<String>[
+              'show',
+              'HEAD:packages/plugin_platform_interface/pubspec.yaml'
+            ]),
+          ]));
     });
 
     test('Allow empty lines in front of the first version in CHANGELOG',
@@ -230,7 +280,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
+          'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for plugin.',
           'plugin passed version check',
           'No version check errors found!'
         ]),
@@ -255,7 +305,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       try {
         final List<String> outputValue = await output;
@@ -291,7 +341,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for plugin.',
+          'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for plugin.',
           'plugin passed version check',
           'No version check errors found!'
         ]),
@@ -322,7 +372,121 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<Error>()),
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
+      try {
+        final List<String> outputValue = await output;
+        await expectLater(
+          outputValue,
+          containsAllInOrder(<String>[
+            '''
+  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+  The version in pubspec.yaml is 1.0.0.
+  The first version listed in CHANGELOG.md is 1.0.1.
+  ''',
+          ]),
+        );
+      } on ToolExit catch (_) {}
+    });
+
+    test('Allow NEXT as a placeholder for gathering CHANGELOG entries',
+        () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.0');
+      const String changelog = '''
+## NEXT
+
+* Some changes that won't be published until the next time there's a release.
+
+## 1.0.0
+
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=master']);
+      await expectLater(
+        output,
+        containsAllInOrder(<String>[
+          'Found NEXT; validating next version in the CHANGELOG.',
+          'plugin passed version check',
+          'No version check errors found!',
+        ]),
+      );
+    });
+
+    test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
+        () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.1');
+      const String changelog = '''
+## 1.0.1
+
+* Some changes.
+
+## NEXT
+
+* Some changes that should have been folded in 1.0.1.
+
+## 1.0.0
+
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final Future<List<String>> output = runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=master']);
+      await expectLater(
+        output,
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
+      try {
+        final List<String> outputValue = await output;
+        await expectLater(
+          outputValue,
+          containsAllInOrder(<String>[
+            '''
+  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+  The version in pubspec.yaml is 1.0.0.
+  The first version listed in CHANGELOG.md is 1.0.1.
+  ''',
+          ]),
+        );
+      } on ToolExit catch (_) {}
+    });
+
+    test('Fail if the version changes without replacing NEXT', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+
+      final Directory pluginDirectory =
+          mockPackagesDir.childDirectory('plugin');
+
+      createFakePubspec(pluginDirectory,
+          isFlutter: true, includeVersion: true, version: '1.0.1');
+      const String changelog = '''
+## NEXT
+
+* Some changes that should be listed as part of 1.0.1.
+
+## 1.0.0
+
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      final Future<List<String>> output = runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=master']);
+      await expectLater(
+        output,
+        throwsA(const TypeMatcher<ToolExit>()),
       );
       try {
         final List<String> outputValue = await output;

@@ -1,5 +1,6 @@
 name: shared_preferences_linux_example
 description: Demonstrates how to use the shared_preferences_linux plugin.
+publish_to: none
 
 dependencies:
   flutter:

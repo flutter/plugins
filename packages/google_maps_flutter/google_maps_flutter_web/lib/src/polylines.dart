@@ -15,7 +15,7 @@ class PolylinesController extends GeometryController {
   /// Initializes the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   PolylinesController({
     required StreamController<MapEvent> stream,
-  })   : _streamController = stream,
+  })  : _streamController = stream,
         _polylineIdToController = Map<PolylineId, PolylineController>();
 
   /// Returns the cache of [PolylineContrller]s. Test only.
