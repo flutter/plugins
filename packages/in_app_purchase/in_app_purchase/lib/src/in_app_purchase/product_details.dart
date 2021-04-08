@@ -37,6 +37,7 @@ class ProductDetails {
 
   /// The unformatted price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
   /// The currency unit for this value can be found in the [currencyCode] property.
+  /// The value always describes full units of the currency. (e.g. 2.45 in the case of $2.45)
   final double rawPrice;
 
   /// The currency code for the price of the product.
