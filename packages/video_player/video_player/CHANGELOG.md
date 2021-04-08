@@ -1,3 +1,70 @@
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
+
+## 2.0.2
+
+* Fix `VideoPlayerValue` size and aspect ratio documentation
+
+## 2.0.1
+
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
+
+## 2.0.0
+
+* Migrate to null safety.
+* Fix an issue where `isBuffering` was not updating on Android.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Fix `VideoPlayerValue toString()` test.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate from deprecated `defaultBinaryMessenger`.
+* Fix an issue where a crash can occur after a closing a video player view on iOS.
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
+
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
+## 1.0.1
+
+* Android: Dispose video players when app is closed.
+
+## 1.0.0
+
+* Announce 1.0.0.
+
+## 0.11.1+5
+
+* Update Dart SDK constraint in example.
+* Remove `test` dependency.
+* Convert disabled driver test to integration_test.
+
+## 0.11.1+4
+
+* Add `toString()` to `Caption`.
+* Fix a bug on Android when loading videos from assets would crash.
+
+## 0.11.1+3
+
+* Android: Upgrade ExoPlayer to 2.12.1.
+
+## 0.11.1+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.11.1+1
+
+* Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
+  caused value listeners to be called indefinitely (after `pause`) and more often than needed.
+
+## 0.11.1
+
+* Enable TLSv1.1 & TLSv1.2 for API 19 and below.
+
 ## 0.11.0
 
 * Added option to set the video playback speed on the video controller.

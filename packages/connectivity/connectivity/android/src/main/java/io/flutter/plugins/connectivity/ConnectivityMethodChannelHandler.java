@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,15 +30,6 @@ class ConnectivityMethodChannelHandler implements MethodChannel.MethodCallHandle
     switch (call.method) {
       case "check":
         result.success(connectivity.getNetworkType());
-        break;
-      case "wifiName":
-        result.success(connectivity.getWifiName());
-        break;
-      case "wifiBSSID":
-        result.success(connectivity.getWifiBSSID());
-        break;
-      case "wifiIPAddress":
-        result.success(connectivity.getWifiIPAddress());
         break;
       default:
         result.notImplemented();

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
 }
 
 class SharedPreferencesDemo extends StatefulWidget {
-  SharedPreferencesDemo({Key key}) : super(key: key);
+  SharedPreferencesDemo({Key? key}) : super(key: key);
 
   @override
   SharedPreferencesDemoState createState() => SharedPreferencesDemoState();
@@ -32,7 +32,7 @@ class SharedPreferencesDemo extends StatefulWidget {
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<int> _counter;
+  late Future<int> _counter;
 
   Future<void> _incrementCounter() async {
     final SharedPreferences prefs = await _prefs;

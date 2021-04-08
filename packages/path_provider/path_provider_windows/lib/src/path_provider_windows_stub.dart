@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,12 +14,10 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 class PathProviderWindows extends PathProviderPlatform {
   /// Errors on attempted instantiation of the stub. It exists only to satisfy
   /// compile-time dependencies, and should never actually be created.
-  PathProviderWindows() {
-    assert(false);
-  }
+  PathProviderWindows() : assert(false);
 
   /// Stub; see comment on VersionInfoQuerier.
-  VersionInfoQuerier versionInfoQuerier;
+  VersionInfoQuerier versionInfoQuerier = VersionInfoQuerier();
 
   /// Match PathProviderWindows so that the analyzer won't report invalid
   /// overrides if tests provide fake PathProviderWindows implementations.

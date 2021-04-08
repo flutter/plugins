@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('SharedPreferences', () {
-    const Map<String, dynamic> kTestValues = <String, dynamic>{
+    const Map<String, Object> kTestValues = <String, Object>{
       'flutter.String': 'hello world',
       'flutter.bool': true,
       'flutter.int': 42,
@@ -27,8 +27,8 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    FakeSharedPreferencesStore store;
-    SharedPreferences preferences;
+    late FakeSharedPreferencesStore store;
+    late SharedPreferences preferences;
 
     setUp(() async {
       store = FakeSharedPreferencesStore(kTestValues);
@@ -39,6 +39,7 @@ void main() {
 
     tearDown(() async {
       await preferences.clear();
+      await store.clear();
     });
 
     test('reading', () async {
@@ -105,16 +106,11 @@ void main() {
 
     test('removing', () async {
       const String key = 'testKey';
-      await preferences.setString(key, null);
-      await preferences.setBool(key, null);
-      await preferences.setInt(key, null);
-      await preferences.setDouble(key, null);
-      await preferences.setStringList(key, null);
       await preferences.remove(key);
       expect(
           store.log,
           List<Matcher>.filled(
-            6,
+            1,
             isMethodCall(
               'remove',
               arguments: 'flutter.$key',
@@ -143,10 +139,12 @@ void main() {
     });
 
     test('reloading', () async {
-      await preferences.setString('String', kTestValues['flutter.String']);
+      await preferences.setString(
+          'String', kTestValues['flutter.String'] as String);
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
-      SharedPreferences.setMockInitialValues(kTestValues2);
+      SharedPreferences.setMockInitialValues(
+          kTestValues2.cast<String, Object>());
       expect(preferences.getString('String'), kTestValues['flutter.String']);
 
       await preferences.reload();
@@ -159,23 +157,32 @@ void main() {
       expect(await first, await second);
     });
 
+    test('string list type is dynamic (usually from method channel)', () async {
+      SharedPreferences.setMockInitialValues(<String, Object>{
+        'dynamic_list': <dynamic>['1', '2']
+      });
+      final SharedPreferences prefs = await SharedPreferences.getInstance();
+      final List<String>? value = prefs.getStringList('dynamic_list');
+      expect(value, <String>['1', '2']);
+    });
+
     group('mocking', () {
       const String _key = 'dummy';
       const String _prefixedKey = 'flutter.' + _key;
 
       test('test 1', () async {
         SharedPreferences.setMockInitialValues(
-            <String, dynamic>{_prefixedKey: 'my string'});
+            <String, Object>{_prefixedKey: 'my string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        final String value = prefs.getString(_key);
+        final String? value = prefs.getString(_key);
         expect(value, 'my string');
       });
 
       test('test 2', () async {
         SharedPreferences.setMockInitialValues(
-            <String, dynamic>{_prefixedKey: 'my other string'});
+            <String, Object>{_prefixedKey: 'my other string'});
         final SharedPreferences prefs = await SharedPreferences.getInstance();
-        final String value = prefs.getString(_key);
+        final String? value = prefs.getString(_key);
         expect(value, 'my other string');
       });
     });
@@ -185,7 +192,7 @@ void main() {
       await preferences.setStringList("myList", myList);
       myList.add("foobar");
 
-      final List<String> cachedList = preferences.getStringList('myList');
+      final List<String> cachedList = preferences.getStringList('myList')!;
       expect(cachedList, <String>[]);
 
       cachedList.add("foobar2");
@@ -195,11 +202,11 @@ void main() {
   });
 
   test('calling mock initial values with non-prefixed keys succeeds', () async {
-    SharedPreferences.setMockInitialValues(<String, String>{
+    SharedPreferences.setMockInitialValues(<String, Object>{
       'test': 'foo',
     });
     final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String value = prefs.getString('test');
+    final String? value = prefs.getString('test');
     expect(value, 'foo');
   });
 }

@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.androidintent;
 
 import android.content.ComponentName;
@@ -15,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Map;
 
 /** Forwards incoming {@link MethodCall}s to {@link IntentSender#send}. */
@@ -75,14 +80,19 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     String action = convertAction((String) call.argument("action"));
     Integer flags = call.argument("flags");
     String category = call.argument("category");
-    Uri data = call.argument("data") != null ? Uri.parse((String) call.argument("data")) : null;
-    Bundle arguments = convertArguments((Map<String, ?>) call.argument("arguments"));
+    String stringData = call.argument("data");
+    Uri data = call.argument("data") != null ? Uri.parse(stringData) : null;
+    Map<String, ?> stringMap = call.argument("arguments");
+    Bundle arguments = convertArguments(stringMap);
     String packageName = call.argument("package");
-    ComponentName componentName =
-        (!TextUtils.isEmpty(packageName)
-                && !TextUtils.isEmpty((String) call.argument("componentName")))
-            ? new ComponentName(packageName, (String) call.argument("componentName"))
-            : null;
+    String component = call.argument("componentName");
+    ComponentName componentName = null;
+    if (packageName != null
+        && component != null
+        && !TextUtils.isEmpty(packageName)
+        && !TextUtils.isEmpty(component)) {
+      componentName = new ComponentName(packageName, component);
+    }
     String type = call.argument("type");
 
     Intent intent =
@@ -128,6 +138,9 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     }
     for (String key : arguments.keySet()) {
       Object value = arguments.get(key);
+      ArrayList<String> stringArrayList = isStringArrayList(value);
+      ArrayList<Integer> integerArrayList = isIntegerArrayList(value);
+      Map<String, ?> stringMap = isStringKeyedMap(value);
       if (value instanceof Integer) {
         bundle.putInt(key, (Integer) value);
       } else if (value instanceof String) {
@@ -146,12 +159,12 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
         bundle.putLongArray(key, (long[]) value);
       } else if (value instanceof double[]) {
         bundle.putDoubleArray(key, (double[]) value);
-      } else if (isTypedArrayList(value, Integer.class)) {
-        bundle.putIntegerArrayList(key, (ArrayList<Integer>) value);
-      } else if (isTypedArrayList(value, String.class)) {
-        bundle.putStringArrayList(key, (ArrayList<String>) value);
-      } else if (isStringKeyedMap(value)) {
-        bundle.putBundle(key, convertArguments((Map<String, ?>) value));
+      } else if (integerArrayList != null) {
+        bundle.putIntegerArrayList(key, integerArrayList);
+      } else if (stringArrayList != null) {
+        bundle.putStringArrayList(key, stringArrayList);
+      } else if (stringMap != null) {
+        bundle.putBundle(key, convertArguments(stringMap));
       } else {
         throw new UnsupportedOperationException("Unsupported type " + value);
       }
@@ -159,29 +172,54 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     return bundle;
   }
 
-  private static boolean isTypedArrayList(Object value, Class<?> type) {
+  private static ArrayList<Integer> isIntegerArrayList(Object value) {
+    ArrayList<Integer> integerArrayList = new ArrayList<>();
     if (!(value instanceof ArrayList)) {
-      return false;
+      return null;
     }
-    ArrayList list = (ArrayList) value;
-    for (Object o : list) {
-      if (!(o == null || type.isInstance(o))) {
-        return false;
+    ArrayList<?> intList = (ArrayList<?>) value;
+    for (Object o : intList) {
+      if (!(o instanceof Integer)) {
+        return null;
+      } else {
+        integerArrayList.add((Integer) o);
       }
     }
-    return true;
+    return integerArrayList;
   }
 
-  private static boolean isStringKeyedMap(Object value) {
-    if (!(value instanceof Map)) {
-      return false;
+  private static ArrayList<String> isStringArrayList(Object value) {
+    ArrayList<String> stringArrayList = new ArrayList<>();
+    if (!(value instanceof ArrayList)) {
+      return null;
     }
-    Map map = (Map) value;
-    for (Object key : map.keySet()) {
-      if (!(key == null || key instanceof String)) {
-        return false;
+    ArrayList<?> stringList = (ArrayList<?>) value;
+    for (Object o : stringList) {
+      if (!(o instanceof String)) {
+        return null;
+      } else {
+        stringArrayList.add((String) o);
       }
     }
-    return true;
+    return stringArrayList;
+  }
+
+  private static Map<String, ?> isStringKeyedMap(Object value) {
+    Map<String, Object> stringMap = new HashMap<>();
+    if (!(value instanceof Map)) {
+      return null;
+    }
+    Map<?, ?> mapValue = (Map<?, ?>) value;
+    for (Object key : mapValue.keySet()) {
+      if (!(key instanceof String)) {
+        return null;
+      } else {
+        Object o = mapValue.get(key);
+        if (o != null) {
+          stringMap.put((String) key, o);
+        }
+      }
+    }
+    return stringMap;
   }
 }

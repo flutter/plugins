@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ void _alarmManagerCallbackDispatcher() {
 
     // PluginUtilities.getCallbackFromHandle performs a lookup based on the
     // callback handle and returns a tear-off of the original callback.
-    final Function closure = PluginUtilities.getCallbackFromHandle(handle);
+    final Function? closure = PluginUtilities.getCallbackFromHandle(handle);
 
     if (closure == null) {
       print('Fatal: could not find callback');
@@ -56,7 +56,7 @@ void _alarmManagerCallbackDispatcher() {
 // A lambda that returns the current instant in the form of a [DateTime].
 typedef DateTime _Now();
 // A lambda that gets the handle for the given [callback].
-typedef CallbackHandle _GetCallbackHandle(Function callback);
+typedef CallbackHandle? _GetCallbackHandle(Function callback);
 
 /// A Flutter plugin for registering Dart callbacks with the Android
 /// AlarmManager service.
@@ -77,7 +77,7 @@ class AndroidAlarmManager {
   /// the plugin.
   @visibleForTesting
   static void setTestOverides(
-      {_Now now, _GetCallbackHandle getCallbackHandle}) {
+      {_Now? now, _GetCallbackHandle? getCallbackHandle}) {
     _now = (now ?? _now);
     _getCallbackHandle = (getCallbackHandle ?? _getCallbackHandle);
   }
@@ -88,12 +88,12 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> initialize() async {
-    final CallbackHandle handle =
+    final CallbackHandle? handle =
         _getCallbackHandle(_alarmManagerCallbackDispatcher);
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>(
+    final bool? r = await _channel.invokeMethod<bool>(
         'AlarmService.start', <dynamic>[handle.toRawHandle()]);
     return r ?? false;
   }
@@ -207,11 +207,11 @@ class AndroidAlarmManager {
     assert(callback is Function() || callback is Function(int));
     assert(id.bitLength < 32);
     final int startMillis = time.millisecondsSinceEpoch;
-    final CallbackHandle handle = _getCallbackHandle(callback);
+    final CallbackHandle? handle = _getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
-    final bool r =
+    final bool? r =
         await _channel.invokeMethod<bool>('Alarm.oneShotAt', <dynamic>[
       id,
       alarmClock,
@@ -222,7 +222,7 @@ class AndroidAlarmManager {
       rescheduleOnReboot,
       handle.toRawHandle(),
     ]);
-    return (r == null) ? false : r;
+    return r ?? false;
   }
 
   /// Schedules a repeating timer to run `callback` with period `duration`.
@@ -262,7 +262,7 @@ class AndroidAlarmManager {
     Duration duration,
     int id,
     Function callback, {
-    DateTime startAt,
+    DateTime? startAt,
     bool exact = false,
     bool wakeup = false,
     bool rescheduleOnReboot = false,
@@ -274,11 +274,11 @@ class AndroidAlarmManager {
     final int period = duration.inMilliseconds;
     final int first =
         startAt != null ? startAt.millisecondsSinceEpoch : now + period;
-    final CallbackHandle handle = _getCallbackHandle(callback);
+    final CallbackHandle? handle = _getCallbackHandle(callback);
     if (handle == null) {
       return false;
     }
-    final bool r = await _channel.invokeMethod<bool>(
+    final bool? r = await _channel.invokeMethod<bool>(
         'Alarm.periodic', <dynamic>[
       id,
       exact,
@@ -288,7 +288,7 @@ class AndroidAlarmManager {
       rescheduleOnReboot,
       handle.toRawHandle()
     ]);
-    return (r == null) ? false : r;
+    return r ?? false;
   }
 
   /// Cancels a timer.
@@ -299,8 +299,8 @@ class AndroidAlarmManager {
   /// Returns a [Future] that resolves to `true` on success and `false` on
   /// failure.
   static Future<bool> cancel(int id) async {
-    final bool r =
+    final bool? r =
         await _channel.invokeMethod<bool>('Alarm.cancel', <dynamic>[id]);
-    return (r == null) ? false : r;
+    return r ?? false;
   }
 }

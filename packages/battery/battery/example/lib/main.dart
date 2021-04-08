@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -36,10 +36,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Battery _battery = Battery();
+  final Battery _battery = Battery();
 
-  BatteryState _batteryState;
-  StreamSubscription<BatteryState> _batteryStateSubscription;
+  BatteryState? _batteryState;
+  late StreamSubscription<BatteryState> _batteryStateSubscription;
 
   @override
   void initState() {
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
             builder: (_) => AlertDialog(
               content: Text('Battery: $batteryLevel%'),
               actions: <Widget>[
-                FlatButton(
+                TextButton(
                   child: const Text('OK'),
                   onPressed: () {
                     Navigator.pop(context);

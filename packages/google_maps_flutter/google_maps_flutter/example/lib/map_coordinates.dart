@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,7 +31,7 @@ class _MapCoordinatesBody extends StatefulWidget {
 class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
   _MapCoordinatesBodyState();
 
-  GoogleMapController mapController;
+  GoogleMapController? mapController;
   LatLngBounds _visibleRegion = LatLngBounds(
     southwest: const LatLng(0, 0),
     northeast: const LatLng(0, 0),
@@ -83,11 +83,11 @@ class _MapCoordinatesBodyState extends State<_MapCoordinatesBody> {
   Widget _getVisibleRegionButton() {
     return Padding(
       padding: const EdgeInsets.all(8.0),
-      child: RaisedButton(
+      child: ElevatedButton(
         child: const Text('Get Visible Region Bounds'),
         onPressed: () async {
           final LatLngBounds visibleRegion =
-              await mapController.getVisibleRegion();
+              await mapController!.getVisibleRegion();
           setState(() {
             _visibleRegion = visibleRegion;
           });

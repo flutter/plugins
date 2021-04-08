@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.urllauncher;
 
 import android.os.Bundle;
@@ -92,6 +96,11 @@ final class MethodCallHandlerImpl implements MethodCallHandler {
 
     if (launchStatus == LaunchStatus.NO_ACTIVITY) {
       result.error("NO_ACTIVITY", "Launching a URL requires a foreground activity.", null);
+    } else if (launchStatus == LaunchStatus.ACTIVITY_NOT_FOUND) {
+      result.error(
+          "ACTIVITY_NOT_FOUND",
+          String.format("No Activity found to handle intent { %s }", url),
+          null);
     } else {
       result.success(true);
     }

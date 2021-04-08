@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.urllauncher;
 
 import android.annotation.TargetApi;
@@ -86,6 +90,11 @@ public class WebViewActivity extends Activity {
               return true;
             }
 
+            /*
+             * This method is deprecated in API 24. Still overridden to support
+             * earlier Android versions.
+             */
+            @SuppressWarnings("deprecation")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
               webview.loadUrl(url);

@@ -1,3 +1,24 @@
+## 2.0.0
+
+* Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.1
+
+* Update Flutter SDK constraint.
+
+## 1.0.0
+
+* Announce 1.0.0.
+
+## 0.4.2+10
+
+* Update Dart SDK constraint in example.
+
+## 0.4.2+9
+
+* Update android compileSdkVersion to 29.
+
 ## 0.4.2+8
 
 * Keep handling deprecated Android v1 classes for backward compatibility.
