@@ -1,10 +1,8 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // ignore_for_file: public_member_api_docs
-
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -79,7 +77,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(
-            children: [
+            children: <Widget>[
               Text('Temp Directory: $_tempDirectory\n'),
               Text('Documents Directory: $_documentsDirectory\n'),
               Text('Downloads Directory: $_downloadsDirectory\n'),

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,7 +42,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    List<String>? paths = await _pickMultiImagePath(
+    List<dynamic>? paths = await _pickMultiImagePath(
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
@@ -50,7 +50,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     if (paths == null) return null;
 
     List<PickedFile> files = [];
-    for (final path in paths!) {
+    for (final path in paths) {
       files.add(PickedFile(path));
     }
     return files;

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,11 +31,12 @@ class Caption {
   ///
   /// This is not recommended for direct use unless you are writing a parser for
   /// a new closed captioning file type.
-  const Caption(
-      {required this.number,
-      required this.start,
-      required this.end,
-      required this.text});
+  const Caption({
+    required this.number,
+    required this.start,
+    required this.end,
+    required this.text,
+  });
 
   /// The number that this caption was assigned.
   final int number;
@@ -52,8 +53,12 @@ class Caption {
 
   /// A no caption object. This is a caption with [start] and [end] durations of zero,
   /// and an empty [text] string.
-  static const Caption none =
-      Caption(number: 0, start: Duration.zero, end: Duration.zero, text: '');
+  static const Caption none = Caption(
+    number: 0,
+    start: Duration.zero,
+    end: Duration.zero,
+    text: '',
+  );
 
   @override
   String toString() {

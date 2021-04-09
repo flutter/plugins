@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -8,6 +12,9 @@ import 'package:platform/platform.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:quiver/collection.dart';
 
+// TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
+// for each test, to eliminate the chance of files from one test interfering
+// with another test.
 FileSystem mockFileSystem = MemoryFileSystem(
     style: LocalPlatform().isWindows
         ? FileSystemStyle.windows
@@ -24,7 +31,8 @@ void initializeFakePackages({Directory parentDir}) {
   mockPackagesDir.createSync();
 }
 
-/// Creates a plugin package with the given [name] in [mockPackagesDir].
+/// Creates a plugin package with the given [name] in [packagesDirectory],
+/// defaulting to [mockPackagesDir].
 Directory createFakePlugin(
   String name, {
   bool withSingleExample = false,
@@ -37,14 +45,19 @@ Directory createFakePlugin(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  bool includeChangeLog = false,
+  bool includeVersion = false,
   String parentDirectoryName = '',
+  Directory packagesDirectory,
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
       'cannot pass withSingleExample and withExamples simultaneously');
 
-  final Directory pluginDirectory = (parentDirectoryName != '')
-      ? mockPackagesDir.childDirectory(parentDirectoryName).childDirectory(name)
-      : mockPackagesDir.childDirectory(name);
+  Directory parentDirectory = packagesDirectory ?? mockPackagesDir;
+  if (parentDirectoryName != '') {
+    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
+  }
+  final Directory pluginDirectory = parentDirectory.childDirectory(name);
   pluginDirectory.createSync(recursive: true);
 
   createFakePubspec(
@@ -57,7 +70,14 @@ Directory createFakePlugin(
     isLinuxPlugin: isLinuxPlugin,
     isMacOsPlugin: isMacOsPlugin,
     isWindowsPlugin: isWindowsPlugin,
+    includeVersion: includeVersion,
   );
+  if (includeChangeLog) {
+    createFakeCHANGELOG(pluginDirectory, '''
+## 0.0.1
+  * Some changes.
+  ''');
+  }
 
   if (withSingleExample) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
@@ -85,6 +105,11 @@ Directory createFakePlugin(
   return pluginDirectory;
 }
 
+void createFakeCHANGELOG(Directory parent, String texts) {
+  parent.childFile('CHANGELOG.md').createSync();
+  parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
+}
+
 /// Creates a `pubspec.yaml` file with a flutter dependency.
 void createFakePubspec(
   Directory parent, {
@@ -97,6 +122,7 @@ void createFakePubspec(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  String version = '0.0.1',
 }) {
   parent.childFile('pubspec.yaml').createSync();
   String yaml = '''
@@ -152,8 +178,8 @@ dependencies:
   }
   if (includeVersion) {
     yaml += '''
-version: 0.0.1
-publish_to: none # Hardcoded safeguard to prevent this from somehow being published by a broken test.
+version: $version
+publish_to: http://no_pub_server.com # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
