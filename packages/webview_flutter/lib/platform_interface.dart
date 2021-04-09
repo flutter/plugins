@@ -490,6 +490,8 @@ class CreationParams {
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   /// The value if it allows file access.
+  ///
+  /// This setting only applies to Android
   final bool? allowFileAccess;
 
   @override
