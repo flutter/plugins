@@ -1,6 +1,6 @@
 ## 1.1.4
 
-* Fixed iOS app crash when fill `localizedReason` with an empty string
+* Add debug assertion that `localizedReason` in `LocalAuthentication.authenticateWithBiometrics`  must not be empty.
 
 ## 1.1.3
 
