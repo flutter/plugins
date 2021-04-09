@@ -1,5 +1,6 @@
 name: connectivity_example
 description: Demonstrates how to use the connectivity plugin.
+publish_to: none
 
 dependencies:
   flutter:

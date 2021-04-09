@@ -2,6 +2,10 @@
 
 * Added `rawPrice` and `currencyCode` to the ProductDetails model.
 
+## 0.5.1+3
+
+* Configured the iOS example App to make use of StoreKit Testing on iOS 14 and higher.
+
 ## 0.5.1+2
 
 * Update README to provide a better instruction of the plugin.
