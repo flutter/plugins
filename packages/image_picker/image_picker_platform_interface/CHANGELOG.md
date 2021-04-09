@@ -1,6 +1,6 @@
 ## 2.1.0
 
-* Added pickMultiImage method
+* Add `pickMultiImage` method.
 
 ## 2.0.1
 

@@ -141,6 +141,29 @@ void main() {
         );
       });
 
+      test('does not accept a invalid imageQuality argument', () {
+        expect(
+              () => picker.pickImage(imageQuality: -1, source: ImageSource.gallery),
+          throwsArgumentError,
+        );
+
+        expect(
+              () => picker.pickImage(imageQuality: 101, source: ImageSource.gallery),
+          throwsArgumentError,
+        );
+
+        expect(
+              () => picker.pickImage(imageQuality: -1, source: ImageSource.camera),
+          throwsArgumentError,
+        );
+
+        expect(
+              () => picker.pickImage(imageQuality: 101, source: ImageSource.camera),
+          throwsArgumentError,
+        );
+      });
+
+
       test('does not accept a negative width or height argument', () {
         expect(
           () => picker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
@@ -293,6 +316,19 @@ void main() {
 
         expect(
           () => picker.pickMultiImage(maxHeight: -1.0),
+          throwsArgumentError,
+        );
+      });
+
+    test('does not accept a invalid imageQuality argument', () {
+      returnValue = ['0', '1'];
+      expect(
+          () => picker.pickMultiImage(imageQuality: -1),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.pickMultiImage(imageQuality: 101),
           throwsArgumentError,
         );
       });
