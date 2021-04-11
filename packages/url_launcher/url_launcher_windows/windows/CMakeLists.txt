@@ -4,9 +4,17 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 
-add_library(${PLUGIN_NAME} SHARED
+if (${CMAKE_SYSTEM_NAME} STREQUAL "WindowsStore")
+  add_library(${PLUGIN_NAME} SHARED
   "url_launcher_plugin.cpp"
+  "url_launcher_winuwp.cpp"
 )
+else()
+  add_library(${PLUGIN_NAME} SHARED
+  "url_launcher_plugin.cpp"
+  "url_launcher_win32.cpp"
+)
+endif()
 apply_standard_settings(${PLUGIN_NAME})
 set_target_properties(${PLUGIN_NAME} PROPERTIES
   CXX_VISIBILITY_PRESET hidden)
