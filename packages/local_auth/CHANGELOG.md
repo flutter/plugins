@@ -1,3 +1,7 @@
+## 1.1.5
+
+* Add support `localizedFallbackTitle` in authenticateWithBiometrics on iOS.
+
 ## 1.1.4
 
 * Add debug assertion that `localizedReason` in `LocalAuthentication.authenticateWithBiometrics`  must not be empty.
