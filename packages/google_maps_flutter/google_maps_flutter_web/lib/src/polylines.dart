@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -14,7 +14,7 @@ class PolylinesController extends GeometryController {
 
   /// Initializes the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   PolylinesController({
-    @required StreamController<MapEvent> stream,
+    required StreamController<MapEvent> stream,
   })  : _streamController = stream,
         _polylineIdToController = Map<PolylineId, PolylineController>();
 
@@ -26,7 +26,7 @@ class PolylinesController extends GeometryController {
   ///
   /// Wraps each line into its corresponding [PolylineController].
   void addPolylines(Set<Polyline> polylinesToAdd) {
-    polylinesToAdd?.forEach((polyline) {
+    polylinesToAdd.forEach((polyline) {
       _addPolyline(polyline);
     });
   }
@@ -50,22 +50,22 @@ class PolylinesController extends GeometryController {
 
   /// Updates a set of [Polyline] objects with new options.
   void changePolylines(Set<Polyline> polylinesToChange) {
-    polylinesToChange?.forEach((polylineToChange) {
+    polylinesToChange.forEach((polylineToChange) {
       _changePolyline(polylineToChange);
     });
   }
 
   void _changePolyline(Polyline polyline) {
-    PolylineController polylineController =
-        _polylineIdToController[polyline?.polylineId];
+    PolylineController? polylineController =
+        _polylineIdToController[polyline.polylineId];
     polylineController
         ?.update(_polylineOptionsFromPolyline(googleMap, polyline));
   }
 
   /// Removes a set of [PolylineId]s from the cache.
   void removePolylines(Set<PolylineId> polylineIdsToRemove) {
-    polylineIdsToRemove?.forEach((polylineId) {
-      final PolylineController polylineController =
+    polylineIdsToRemove.forEach((polylineId) {
+      final PolylineController? polylineController =
           _polylineIdToController[polylineId];
       polylineController?.remove();
       _polylineIdToController.remove(polylineId);

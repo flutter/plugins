@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/build_examples_command.dart';
@@ -9,10 +13,10 @@ import 'util.dart';
 
 void main() {
   group('test build_example_command', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     final String flutterCommand =
-        LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     setUp(() {
       initializeFakePackages();
@@ -21,7 +25,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');
       runner.addCommand(command);
       cleanupPackages();
@@ -98,7 +102,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
                 flutterCommand,
-                <String>[
+                const <String>[
                   'build',
                   'ios',
                   '--no-codesign',
@@ -175,7 +179,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, <String>['build', 'linux'],
+            ProcessCall(flutterCommand, const <String>['build', 'linux'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
@@ -245,7 +249,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, <String>['build', 'macos'],
+            ProcessCall(flutterCommand, const <String>['build', 'macos'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
@@ -314,7 +318,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, <String>['build', 'web'],
+            ProcessCall(flutterCommand, const <String>['build', 'web'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
@@ -386,7 +390,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, <String>['build', 'windows'],
+            ProcessCall(flutterCommand, const <String>['build', 'windows'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
@@ -462,7 +466,7 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, <String>['build', 'apk'],
+            ProcessCall(flutterCommand, const <String>['build', 'apk'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
@@ -494,7 +498,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
                 flutterCommand,
-                <String>['build', 'apk', '--enable-experiment=exp1'],
+                const <String>['build', 'apk', '--enable-experiment=exp1'],
                 pluginExampleDirectory.path),
           ]));
       cleanupPackages();
@@ -524,7 +528,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
                 flutterCommand,
-                <String>[
+                const <String>[
                   'build',
                   'ios',
                   '--no-codesign',

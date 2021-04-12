@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
+/// A command to check that packages are publishable via 'dart publish'.
 class PublishCheckCommand extends PluginCommand {
+  /// Creates an instance of the publish command.
   PublishCheckCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -26,12 +28,13 @@ class PublishCheckCommand extends PluginCommand {
       'Checks to make sure that a plugin *could* be published.';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final List<Directory> failedPackages = <Directory>[];
 
-    await for (Directory plugin in getPlugins()) {
-      if (!(await passesPublishCheck(plugin))) failedPackages.add(plugin);
+    await for (final Directory plugin in getPlugins()) {
+      if (!(await _passesPublishCheck(plugin))) {
+        failedPackages.add(plugin);
+      }
     }
 
     if (failedPackages.isNotEmpty) {
@@ -51,7 +54,7 @@ class PublishCheckCommand extends PluginCommand {
     print(passedMessage);
   }
 
-  Pubspec tryParsePubspec(Directory package) {
+  Pubspec _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
     try {
@@ -64,11 +67,11 @@ class PublishCheckCommand extends PluginCommand {
     }
   }
 
-  Future<bool> hasValidPublishCheckRun(Directory package) async {
-    final io.Process process = await io.Process.start(
+  Future<bool> _hasValidPublishCheckRun(Directory package) async {
+    final io.Process process = await processRunner.start(
       'flutter',
       <String>['pub', 'publish', '--', '--dry-run'],
-      workingDirectory: package.path,
+      workingDirectory: package,
     );
 
     final StringBuffer outputBuffer = StringBuffer();
@@ -91,7 +94,9 @@ class PublishCheckCommand extends PluginCommand {
       onDone: () => stdInCompleter.complete(),
     );
 
-    if (await process.exitCode == 0) return true;
+    if (await process.exitCode == 0) {
+      return true;
+    }
 
     await stdOutCompleter.future;
     await stdInCompleter.future;
@@ -102,11 +107,11 @@ class PublishCheckCommand extends PluginCommand {
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
   }
 
-  Future<bool> passesPublishCheck(Directory package) async {
+  Future<bool> _passesPublishCheck(Directory package) async {
     final String packageName = package.basename;
     print('Checking that $packageName can be published.');
 
-    final Pubspec pubspec = tryParsePubspec(package);
+    final Pubspec pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       return false;
     } else if (pubspec.publishTo == 'none') {
@@ -114,8 +119,8 @@ class PublishCheckCommand extends PluginCommand {
       return true;
     }
 
-    if (await hasValidPublishCheckRun(package)) {
-      print("Package $packageName is able to be published.");
+    if (await _hasValidPublishCheckRun(package)) {
+      print('Package $packageName is able to be published.');
       return true;
     } else {
       print('Unable to publish $packageName');

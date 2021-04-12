@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
@@ -10,10 +14,10 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     final String flutterCommand =
-        LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
     setUp(() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
@@ -21,7 +25,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
       runner.addCommand(command);
     });
@@ -56,8 +60,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -101,8 +105,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -169,7 +173,8 @@ void main() {
         ]),
       );
 
-      String driverTestPath = p.join('test_driver', 'integration_test.dart');
+      final String driverTestPath =
+          p.join('test_driver', 'integration_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -255,8 +260,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -332,8 +337,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -353,13 +358,94 @@ void main() {
           ]));
     });
 
-    test('driving when plugin does not suppport windows is a no-op', () async {
+    test('driving when plugin does not suppport web is a no-op', () async {
       createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
           ],
-          isMacOsPlugin: false);
+          isWebPlugin: false);
+
+      final Directory pluginExampleDirectory =
+          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'drive-examples',
+        '--web',
+      ]);
+
+      expect(
+        output,
+        orderedEquals(<String>[
+          '\n\n',
+          'All driver tests successful!',
+        ]),
+      );
+
+      print(processRunner.recordedCalls);
+      // Output should be empty since running drive-examples --web on a non-web
+      // plugin is a no-op.
+      expect(processRunner.recordedCalls, <ProcessCall>[]);
+    });
+
+    test('driving a web plugin', () async {
+      createFakePlugin('plugin',
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test_driver', 'plugin_test.dart'],
+            <String>['example', 'test_driver', 'plugin.dart'],
+          ],
+          isWebPlugin: true);
+
+      final Directory pluginExampleDirectory =
+          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'drive-examples',
+        '--web',
+      ]);
+
+      expect(
+        output,
+        orderedEquals(<String>[
+          '\n\n',
+          'All driver tests successful!',
+        ]),
+      );
+
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      print(processRunner.recordedCalls);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                flutterCommand,
+                <String>[
+                  'drive',
+                  '-d',
+                  'web-server',
+                  '--web-port=7357',
+                  '--browser-name=chrome',
+                  '--driver',
+                  driverTestPath,
+                  '--target',
+                  deviceTestPath
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('driving when plugin does not suppport Windows is a no-op', () async {
+      createFakePlugin('plugin',
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test_driver', 'plugin_test.dart'],
+            <String>['example', 'test_driver', 'plugin.dart'],
+          ],
+          isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
           mockPackagesDir.childDirectory('plugin').childDirectory('example');
@@ -380,8 +466,8 @@ void main() {
       );
 
       print(processRunner.recordedCalls);
-      // Output should be empty since running drive-examples --windows on a non-windows
-      // plugin is a no-op.
+      // Output should be empty since running drive-examples --windows on a
+      // non-Windows plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
 
@@ -411,8 +497,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -482,8 +568,8 @@ void main() {
         '--enable-experiment=exp1',
       ]);
 
-      String deviceTestPath = p.join('test', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,

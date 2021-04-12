@@ -1,3 +1,17 @@
+## 2.0.4
+
+* Fix a bug where `allowsInlineMediaPlayback` is not respected on iOS.
+
+## 2.0.3
+
+* Fixes bug where scroll bars on the Android non-hybrid WebView are rendered on
+the wrong side of the screen.
+
+## 2.0.2
+
+* Fixes bug where text fields are hidden behind the keyboard
+when hybrid composition is used [flutter/issues/75667](https://github.com/flutter/flutter/issues/75667).
+
 ## 2.0.1
 
 * Run CocoaPods iOS tests in RunnerUITests target

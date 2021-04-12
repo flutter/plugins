@@ -1,5 +1,6 @@
 name: flutter_plugin_android_lifecycle_example
 description: Demonstrates how to use the flutter_plugin_android_lifecycle plugin.
+publish_to: none
 
 dependencies:
   flutter:
@@ -14,7 +15,7 @@ dependencies:
 
 dev_dependencies:
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
   flutter_test:
     sdk: flutter
   pedantic: ^1.8.0

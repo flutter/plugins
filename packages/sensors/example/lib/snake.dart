@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -99,10 +99,10 @@ class SnakeState extends State<Snake> {
     final math.Point<int>? newDirection = currentAcceleration == null
         ? null
         : currentAcceleration.x.abs() < 1.0 && currentAcceleration.y.abs() < 1.0
-            ? null
-            : (currentAcceleration.x.abs() < currentAcceleration.y.abs())
-                ? math.Point<int>(0, currentAcceleration.y.sign.toInt())
-                : math.Point<int>(-currentAcceleration.x.sign.toInt(), 0);
+        ? null
+        : (currentAcceleration.x.abs() < currentAcceleration.y.abs())
+        ? math.Point<int>(0, currentAcceleration.y.sign.toInt())
+        : math.Point<int>(-currentAcceleration.x.sign.toInt(), 0);
     state.step(newDirection);
   }
 }
