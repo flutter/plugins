@@ -157,11 +157,12 @@
   FlutterMethodCall *methodCall =
       [FlutterMethodCall methodCallWithMethodName:@"init"
                                         arguments:@{
-                                            @"signInOption" : @"SignInOption.standard"},
-                                            @"hostedDomain" : [NSNull null],
-                                        ];
+                                          @"signInOption" : @"SignInOption.standard",
+                                          @"hostedDomain" : [NSNull null],
+                                        }];
 
-  XCTestExpectation *expectation = [self expectationWithDescription:@"expect hostedDomain equals nil"];
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"expect hostedDomain equals nil"];
   [self.plugin handleMethodCall:methodCall
                          result:^(id r) {
                            [expectation fulfill];
