@@ -12,67 +12,67 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
-final _kDeviceListMap = {
-  "runtimes": [
-    {
-      "bundlePath":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime",
-      "buildversion": "17A577",
-      "runtimeRoot":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime/Contents/Resources/RuntimeRoot",
-      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-0",
-      "version": "13.0",
-      "isAvailable": true,
-      "name": "iOS 13.0"
+final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
+  'runtimes': <Map<String, dynamic>>[
+    <String, dynamic>{
+      'bundlePath':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime',
+      'buildversion': '17A577',
+      'runtimeRoot':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime/Contents/Resources/RuntimeRoot',
+      'identifier': 'com.apple.CoreSimulator.SimRuntime.iOS-13-0',
+      'version': '13.0',
+      'isAvailable': true,
+      'name': 'iOS 13.0'
     },
-    {
-      "bundlePath":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime",
-      "buildversion": "17L255",
-      "runtimeRoot":
-          "/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime/Contents/Resources/RuntimeRoot",
-      "identifier": "com.apple.CoreSimulator.SimRuntime.iOS-13-4",
-      "version": "13.4",
-      "isAvailable": true,
-      "name": "iOS 13.4"
+    <String, dynamic>{
+      'bundlePath':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime',
+      'buildversion': '17L255',
+      'runtimeRoot':
+          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime/Contents/Resources/RuntimeRoot',
+      'identifier': 'com.apple.CoreSimulator.SimRuntime.iOS-13-4',
+      'version': '13.4',
+      'isAvailable': true,
+      'name': 'iOS 13.4'
     },
-    {
-      "bundlePath":
-          "/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime",
-      "buildversion": "17T531",
-      "runtimeRoot":
-          "/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime/Contents/Resources/RuntimeRoot",
-      "identifier": "com.apple.CoreSimulator.SimRuntime.watchOS-6-2",
-      "version": "6.2.1",
-      "isAvailable": true,
-      "name": "watchOS 6.2"
+    <String, dynamic>{
+      'bundlePath':
+          '/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime',
+      'buildversion': '17T531',
+      'runtimeRoot':
+          '/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime/Contents/Resources/RuntimeRoot',
+      'identifier': 'com.apple.CoreSimulator.SimRuntime.watchOS-6-2',
+      'version': '6.2.1',
+      'isAvailable': true,
+      'name': 'watchOS 6.2'
     }
   ],
-  "devices": {
-    "com.apple.CoreSimulator.SimRuntime.iOS-13-4": [
-      {
-        "dataPath":
-            "/Users/xxx/Library/Developer/CoreSimulator/Devices/2706BBEB-1E01-403E-A8E9-70E8E5A24774/data",
-        "logPath":
-            "/Users/xxx/Library/Logs/CoreSimulator/2706BBEB-1E01-403E-A8E9-70E8E5A24774",
-        "udid": "2706BBEB-1E01-403E-A8E9-70E8E5A24774",
-        "isAvailable": true,
-        "deviceTypeIdentifier":
-            "com.apple.CoreSimulator.SimDeviceType.iPhone-8",
-        "state": "Shutdown",
-        "name": "iPhone 8"
+  'devices': <String, dynamic>{
+    'com.apple.CoreSimulator.SimRuntime.iOS-13-4': <Map<String, dynamic>>[
+      <String, dynamic>{
+        'dataPath':
+            '/Users/xxx/Library/Developer/CoreSimulator/Devices/2706BBEB-1E01-403E-A8E9-70E8E5A24774/data',
+        'logPath':
+            '/Users/xxx/Library/Logs/CoreSimulator/2706BBEB-1E01-403E-A8E9-70E8E5A24774',
+        'udid': '2706BBEB-1E01-403E-A8E9-70E8E5A24774',
+        'isAvailable': true,
+        'deviceTypeIdentifier':
+            'com.apple.CoreSimulator.SimDeviceType.iPhone-8',
+        'state': 'Shutdown',
+        'name': 'iPhone 8'
       },
-      {
-        "dataPath":
-            "/Users/xxx/Library/Developer/CoreSimulator/Devices/1E76A0FD-38AC-4537-A989-EA639D7D012A/data",
-        "logPath":
-            "/Users/xxx/Library/Logs/CoreSimulator/1E76A0FD-38AC-4537-A989-EA639D7D012A",
-        "udid": "1E76A0FD-38AC-4537-A989-EA639D7D012A",
-        "isAvailable": true,
-        "deviceTypeIdentifier":
-            "com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus",
-        "state": "Shutdown",
-        "name": "iPhone 8 Plus"
+      <String, dynamic>{
+        'dataPath':
+            '/Users/xxx/Library/Developer/CoreSimulator/Devices/1E76A0FD-38AC-4537-A989-EA639D7D012A/data',
+        'logPath':
+            '/Users/xxx/Library/Logs/CoreSimulator/1E76A0FD-38AC-4537-A989-EA639D7D012A',
+        'udid': '1E76A0FD-38AC-4537-A989-EA639D7D012A',
+        'isAvailable': true,
+        'deviceTypeIdentifier':
+            'com.apple.CoreSimulator.SimDeviceType.iPhone-8-Plus',
+        'state': 'Shutdown',
+        'name': 'iPhone 8 Plus'
       }
     ]
   }
@@ -83,7 +83,7 @@ void main() {
   const String _kSkip = '--skip';
 
   group('test xctest_command', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
@@ -93,7 +93,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>('xctest_command', 'Test for xctest_command');
+      runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
       cleanupPackages();
     });
@@ -113,19 +113,15 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'xctest',
-        _kDestination,
-        'foo_destination'
-      ]);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['xctest', _kDestination, 'foo_destination']);
       expect(output, contains('iOS is not supported by this plugin.'));
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
 
       cleanupPackages();
     });
 
-    test('running with correct destination, skip 1 plugin',
-        () async {
+    test('running with correct destination, skip 1 plugin', () async {
       createFakePlugin('plugin1',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
@@ -149,7 +145,7 @@ void main() {
       processRunner.processToReturn = mockProcess;
       processRunner.resultStdout =
           '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
-      List<String> output = await runCapturingPrint(runner, <String>[
+      final List<String> output = await runCapturingPrint(runner, <String>[
         'xctest',
         _kDestination,
         'foo_destination',
@@ -165,7 +161,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
                 'xcrun',
-                <String>[
+                const <String>[
                   'xcodebuild',
                   'test',
                   'analyze',
@@ -203,9 +199,9 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
-      final Map<String, dynamic> schemeCommandResult = {
-        "project": {
-          "targets": ["bar_scheme", "foo_scheme"]
+      final Map<String, dynamic> schemeCommandResult = <String, dynamic>{
+        'project': <String, dynamic>{
+          'targets': <String>['bar_scheme', 'foo_scheme']
         }
       };
       // For simplicity of the test, we combine all the mock results into a single mock result, each internal command
@@ -219,10 +215,11 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('xcrun', <String>['simctl', 'list', '--json'], null),
+            const ProcessCall(
+                'xcrun', <String>['simctl', 'list', '--json'], null),
             ProcessCall(
                 'xcrun',
-                <String>[
+                const <String>[
                   'xcodebuild',
                   'test',
                   'analyze',

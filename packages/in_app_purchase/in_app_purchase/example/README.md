@@ -4,8 +4,7 @@ Demonstrates how to use the In App Purchase (IAP) Plugin.
 
 ## Getting Started
 
-This plugin is in beta. Please use with caution and file any potential issues
-you see on our [issue tracker](https://github.com/flutter/flutter/issues/new/choose).
+### Preparation
 
 There's a significant amount of setup required for testing in app purchases
 successfully, including registering new app IDs and store entries to use for
@@ -60,6 +59,28 @@ below.
    `flutter run` to install the app to the device and test like normal.
 
 ### iOS
+
+When using Xcode 12 and iOS 14 or higher you can run the example in the simulator or on a device without 
+having to configure an App in App Store Connect. The example app is set up to use StoreKit Testing configured
+in the `example/ios/Runner/Configuration.storekit` file (as documented in the article [Setting Up StoreKit Testing in Xcode](https://developer.apple.com/documentation/xcode/setting_up_storekit_testing_in_xcode?language=objc)).
+To run the application take the following steps (note that it will only work when running from Xcode):
+
+1. Open the example app with Xcode, `File > Open File` `example/ios/Runner.xcworkspace`;
+
+2. Within Xcode edit the current scheme, `Product > Scheme > Edit Scheme...` (or press `Command + Shift + ,`);
+
+3. Enable StoreKit testing:
+  a. Select the `Run` action;
+  b. Click `Options` in the action settings;
+  c. Select the `Configuration.storekit` for the StoreKit Configuration option.
+
+4. Click the `Close` button to close the scheme editor;
+
+5. Select the device you want to run the example App on;
+
+6. Run the application using `Product > Run` (or hit the run button).
+
+When testing on pre-iOS 14 you can't run the example app on a simulator and you will need to configure an app in App Store Connect. You can do so by following the steps below:
 
 1. Follow ["Workflow for configuring in-app
    purchases"](https://help.apple.com/app-store-connect/#/devb57be10e7), a

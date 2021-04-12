@@ -1,5 +1,6 @@
 name: google_maps_flutter_example
 description: Demonstrates how to use the google_maps_flutter plugin.
+publish_to: none
 
 environment:
   sdk: '>=2.12.0-259.9.beta <3.0.0'

@@ -1,5 +1,6 @@
 name: quick_actions_example
 description: Demonstrates how to use the quick_actions plugin.
+publish_to: none
 
 dependencies:
   flutter:
