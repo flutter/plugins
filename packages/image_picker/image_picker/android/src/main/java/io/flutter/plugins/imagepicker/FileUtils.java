@@ -51,6 +51,7 @@ class FileUtils {
         success = true;
       }
     } catch (IOException ignored) {
+    } catch (IllegalStateException ignored) {
     } finally {
       try {
         if (inputStream != null) inputStream.close();
@@ -62,6 +63,8 @@ class FileUtils {
         // If closing the output stream fails, we cannot be sure that the
         // target file was written in full. Flushing the stream merely moves
         // the bytes into the OS, not necessarily to the file.
+        success = false;
+      } catch (IllegalStateException ignored) {
         success = false;
       }
     }
