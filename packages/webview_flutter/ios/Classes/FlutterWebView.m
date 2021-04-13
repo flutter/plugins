@@ -7,6 +7,11 @@
 #import "FLTWKProgressionDelegate.h"
 #import "JavaScriptChannelHandler.h"
 #import "WebViewManager.h"
+#if __has_include("webview_flutter-Swift.h")
+#import <webview_flutter-Swift.h>
+#else
+#import <webview_flutter/webview_flutter-Swift.h>
+#endif
 #import <webview_flutter/webview_flutter-Swift.h>   
 
 @implementation FLTWebViewFactory {
