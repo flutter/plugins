@@ -104,7 +104,7 @@ static const int SOURCE_GALLERY = 1;
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
     if (@available(iOS 11.0, *)) {
-      NSLog(@"enable passthrough mode in video-picking mode.");
+      // Enable passthrough mode in video-picking mode.
       _imagePickerController.videoExportPreset = AVAssetExportPresetPassthrough;
     }
     self.result = result;
@@ -269,7 +269,6 @@ static const int SOURCE_GALLERY = 1;
     if (videoURL == nil) {
       videoURL = (NSURL *) info[UIImagePickerControllerReferenceURL];
     }
-    NSLog(@"has video URL? %@", videoURL);
   }
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
@@ -281,11 +280,9 @@ static const int SOURCE_GALLERY = 1;
   }
   if (videoURL != nil) {
     if (@available(iOS 11.0, *)) {
-      NSLog(@"will try to copy resource at asset URL: %@", videoURL);
       NSString *fileName = [videoURL lastPathComponent];
       NSURL *destination =
           [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
-      NSLog(@"copy detination: %@", destination);
 
       // Two different code paths exist for getting accessible real file path,
       // even with the same OS version( on iOS 14.3).
@@ -301,32 +298,16 @@ static const int SOURCE_GALLERY = 1;
           [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:&error];
 
           if (error) {
-            NSLog(@"failed to copy resource, error: %@", error);
             self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
                                             message:@"Could not cache the video file."
                                             details:nil]);
             self.result = nil;
             return;
-          } else {
-            NSLog(@"ok with copying resource, destination: %@", destination);
           }
-        } else {
-          NSLog(@"no need to copy resource, destination = srouce.");
         }
         videoURL = destination;
-        
-//        NSNumber *fileSizeValue = nil;
-//        NSError *fileSizeError = nil;
-//        [videoURL getResourceValue:&fileSizeValue
-//                           forKey:NSURLFileSizeKey
-//                            error:&fileSizeError];
-//        if (fileSizeValue) {
-//            NSLog(@"file size for %@ is %@", videoURL, fileSizeValue);
-//        } else {
-//            NSLog(@"error getting size for url %@ error was %@", videoURL, fileSizeError);
-//        }
       } else {
-        NSLog(@"source not readable, using PhotoKit for acccesing: %@", destination);
+        // PhotoKit for "assets-library://" schema handling.
         
         PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
         
@@ -349,11 +330,14 @@ static const int SOURCE_GALLERY = 1;
           if ([[NSFileManager defaultManager] copyItemAtURL:avAsset.URL
                                                      toURL:destination
                                                      error:&error]) {
-            NSLog(@"successfully copy asset from PhotoKit correctly from %@ to %@", avAsset.URL, destination);
             weakSelf.result(destination.path);
             weakSelf.result = nil;
           } else {
-            NSLog(@"copy asset from PhotoKit from %@ to %@ failed: %@", videoURL, destination, error);
+            self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
+                                            message:@"Could not cache the video file."
+                                            details:nil]);
+            self.result = nil;
+            return;
           }
         }];
         
