@@ -49,7 +49,7 @@ for any of the following plugins, we encourage you to submit it
    et al.)
 
 
-## Setting up toolings
+## Setting up tools
 
 
 We use a range of tooling script to do varies of things on CI. (testing, formatting, etc.)
