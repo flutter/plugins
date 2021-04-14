@@ -14,7 +14,7 @@ class PurchaseParam {
 
   /// The product to create payment for.
   ///
-  /// It has to match one of the valid [ProductDetails] objects that you get from [ProductDetailsResponse] after calling [InAppPurchaseConnection.queryProductDetails].
+  /// It has to match one of the valid [ProductDetails] objects that you get from [ProductDetailsResponse] after calling [InAppPurchasePlatform.queryProductDetails].
   final ProductDetails productDetails;
 
   /// An opaque id for the user's account that's unique to your app. (Optional)

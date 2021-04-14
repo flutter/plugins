@@ -21,7 +21,7 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  /// The default instance of [InAppPurchasePlatform] to use.
+  /// The instance of [InAppPurchasePlatform] to use.
   ///
   /// Defaults to `null`.
   static InAppPurchasePlatform? get instance => _instance;

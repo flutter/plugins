@@ -12,7 +12,7 @@ To implement a new platform-specific implementation of `in_app_purchase`, extend
 [`InAppPurchasePlatform`][2] with an implementation that performs the
 platform-specific behavior, and when you register your plugin, set the default
 `InAppPurchasePlatform` by calling
-`InAppPurchasePlatform.instance = MyPlatformInAppPurchase()`.
+`InAppPurchasePlatform.setInstance(MyPlatformInAppPurchase())`.
 
 # Note on breaking changes
 
