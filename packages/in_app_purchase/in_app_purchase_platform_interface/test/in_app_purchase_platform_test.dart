@@ -11,21 +11,22 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$InAppPurchasePlatform', () {
+    test('Default instance should return null', () {
+      expect(InAppPurchasePlatform.instance, null);
+    });
+
     test('Cannot be implemented with `implements`', () {
-      final InAppPurchasePlatform instance = ImplementsInAppPurchasePlatform();
       expect(() {
-        InAppPurchasePlatform.verifyToken(instance);
+        InAppPurchasePlatform.setInstance(ImplementsInAppPurchasePlatform());
       }, throwsNoSuchMethodError);
     });
 
     test('Can be extended', () {
-      final InAppPurchasePlatform instance = ExtendsInAppPurchasePlatform();
-      InAppPurchasePlatform.verifyToken(instance);
+      InAppPurchasePlatform.setInstance(ExtendsInAppPurchasePlatform());
     });
 
     test('Can be mocked with `implements`', () {
-      final MockInAppPurchasePlatform mock = MockInAppPurchasePlatform();
-      InAppPurchasePlatform.verifyToken(mock);
+      InAppPurchasePlatform.setInstance(MockInAppPurchasePlatform());
     });
 
     test(
