@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
@@ -70,7 +71,7 @@ enum NavigationDecision {
 }
 
 /// Helper class to construct the rule map for content blocking
-class BlockingRule {
+class BlockingRule extends Equatable {
   /// Rule to pass to platforms
   final Map<String, dynamic> rule;
 
@@ -87,6 +88,9 @@ class BlockingRule {
       BlockingRule._({"type": "hosts", "hosts": hosts.toList(growable: false)});
 
   BlockingRule._(this.rule);
+
+  @override
+  List<Object?> get props => [rule];
 }
 
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
