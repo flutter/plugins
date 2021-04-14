@@ -95,7 +95,7 @@ class _MyAppState extends State<MyApp> {
         () => _authorized = authenticated ? 'Authorized' : 'Not Authorized');
   }
 
-  Future<void> _authenticateWithBiometrics() async {
+  Future<void> _authenticateWithBiometrics({bool strongOnly = true}) async {
     bool authenticated = false;
     try {
       setState(() {
@@ -103,11 +103,13 @@ class _MyAppState extends State<MyApp> {
         _authorized = 'Authenticating';
       });
       authenticated = await auth.authenticate(
-          localizedReason:
-              'Scan your fingerprint (or face or whatever) to authenticate',
-          useErrorDialogs: true,
-          stickyAuth: true,
-          biometricOnly: true);
+        localizedReason:
+            'Scan your fingerprint (or face or whatever) to authenticate',
+        useErrorDialogs: true,
+        stickyAuth: true,
+        biometricOnly: true,
+        strongAuthenticatorsOnly: strongOnly,
+      );
       setState(() {
         _isAuthenticating = false;
         _authorized = 'Authenticating';
@@ -199,7 +201,23 @@ class _MyAppState extends State<MyApp> {
                                 Icon(Icons.fingerprint),
                               ],
                             ),
-                            onPressed: _authenticateWithBiometrics,
+                            onPressed: () => _authenticateWithBiometrics(
+                              strongOnly: false,
+                            ),
+                          ),
+                          ElevatedButton(
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(_isAuthenticating
+                                    ? 'Cancel'
+                                    : 'Authenticate: strong biometrics only'),
+                                Icon(Icons.fingerprint),
+                              ],
+                            ),
+                            onPressed: () => _authenticateWithBiometrics(
+                              strongOnly: true,
+                            ),
                           ),
                         ],
                       ),

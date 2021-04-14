@@ -47,6 +47,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
                   'biometricOnly': true,
+                  'strongAuthenticatorsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -68,6 +69,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
                   'biometricOnly': true,
+                  'strongAuthenticatorsOnly': false,
                 }..addAll(const IOSAuthMessages().args)),
           ],
         );
@@ -102,6 +104,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': false,
                   'biometricOnly': true,
+                  'strongAuthenticatorsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -124,6 +127,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
                   'biometricOnly': false,
+                  'strongAuthenticatorsOnly': false,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );
@@ -144,6 +148,7 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': true,
                   'biometricOnly': false,
+                  'strongAuthenticatorsOnly': false,
                 }..addAll(const IOSAuthMessages().args)),
           ],
         );
@@ -166,6 +171,31 @@ void main() {
                   'stickyAuth': false,
                   'sensitiveTransaction': false,
                   'biometricOnly': false,
+                  'strongAuthenticatorsOnly': false,
+                }..addAll(const AndroidAuthMessages().args)),
+          ],
+        );
+      });
+
+      test('authenticate with strong authenticators.', () async {
+        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
+        await localAuthentication.authenticate(
+          localizedReason: 'Insecure',
+          sensitiveTransaction: false,
+          useErrorDialogs: false,
+          strongAuthenticatorsOnly: true,
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate',
+                arguments: <String, dynamic>{
+                  'localizedReason': 'Insecure',
+                  'useErrorDialogs': false,
+                  'stickyAuth': false,
+                  'sensitiveTransaction': false,
+                  'biometricOnly': false,
+                  'strongAuthenticatorsOnly': true,
                 }..addAll(const AndroidAuthMessages().args)),
           ],
         );

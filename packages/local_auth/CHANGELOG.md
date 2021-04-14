@@ -1,3 +1,7 @@
+## 1.1.5
+
+* Add `strongAuthenticatorsOnly` flag to prevent authentication with weak biometric systems on Android.
+
 ## 1.1.4
 
 * Add debug assertion that `localizedReason` in `LocalAuthentication.authenticateWithBiometrics`  must not be empty.
