@@ -5,7 +5,7 @@
 import 'in_app_purchase_error.dart';
 import 'product_details.dart';
 
-/// The response returned by [InAppPurchaseConnection.queryProductDetails].
+/// The response returned by [InAppPurchasePlatform.queryProductDetails].
 ///
 /// A list of [ProductDetails] can be obtained from the this response.
 class ProductDetailsResponse {
@@ -13,10 +13,10 @@ class ProductDetailsResponse {
   ProductDetailsResponse(
       {required this.productDetails, required this.notFoundIDs, this.error});
 
-  /// Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchaseConnection.queryProductDetails].
+  /// Each [ProductDetails] uniquely matches one valid identifier in [identifiers] of [InAppPurchasePlatform.queryProductDetails].
   final List<ProductDetails> productDetails;
 
-  /// The list of identifiers that are in the `identifiers` of [InAppPurchaseConnection.queryProductDetails] but failed to be fetched.
+  /// The list of identifiers that are in the `identifiers` of [InAppPurchasePlatform.queryProductDetails] but failed to be fetched.
   ///
   /// There's multiple platform specific reasons that product information could fail to be fetched,
   /// ranging from products not being correctly configured in the storefront to the queried IDs not existing.

@@ -7,9 +7,6 @@ import 'purchase_status.dart';
 import 'purchase_verification_data.dart';
 
 /// Represents the transaction details of a purchase.
-///
-/// This class unifies the BillingClient's [PurchaseWrapper] and StoreKit's [SKPaymentTransactionWrapper]. You can use the common attributes in
-/// This class for simple operations. If you would like to see the detailed representation of the product, instead,  use [PurchaseWrapper] on Android and [SKPaymentTransactionWrapper] on iOS.
 class PurchaseDetails {
   /// Creates a new PurchaseDetails object with the provided data.
   PurchaseDetails({
@@ -20,8 +17,6 @@ class PurchaseDetails {
   });
 
   /// A unique identifier of the purchase.
-  ///
-  /// The `value` is null on iOS if it is not a successful purchase.
   final String? purchaseID;
 
   /// The product identifier of the purchase.
@@ -32,9 +27,6 @@ class PurchaseDetails {
   /// Use this to verify the purchase. See [PurchaseVerificationData] for
   /// details on how to verify purchase use this data. You should never use any
   /// purchase data until verified.
-  ///
-  /// On iOS, [InAppPurchaseConnection.refreshPurchaseVerificationData] can be used to get a new
-  /// [PurchaseVerificationData] object for further validation.
   final PurchaseVerificationData verificationData;
 
   /// The timestamp of the transaction.
@@ -52,10 +44,10 @@ class PurchaseDetails {
   /// The value is `null` if [status] is not [PurchaseStatus.error].
   IAPError? error;
 
-  /// The developer has to call [InAppPurchaseConnection.completePurchase] if the value is `true`
+  /// The developer has to call [InAppPurchasePlatform.completePurchase] if the value is `true`
   /// and the product has been delivered to the user.
   ///
   /// The initial value is `false`.
-  /// * See also [InAppPurchaseConnection.completePurchase] for more details on completing purchases.
+  /// * See also [InAppPurchasePlatform.completePurchase] for more details on completing purchases.
   bool pendingCompletePurchase = false;
 }

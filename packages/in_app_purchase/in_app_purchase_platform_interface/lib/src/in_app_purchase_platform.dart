@@ -36,7 +36,7 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///
   /// Purchase updates can happen in several situations:
   /// * When a purchase is triggered by user in the app.
-  /// * When a purchase is triggered by user from App Store or Google Play.
+  /// * When a purchase is triggered by user from the platform specific store front.
   /// * When a purchase is restored on the device by the user in the app.
   /// * If a purchase is not completed ([completePurchase] is not called on the
   ///   purchase object) from the last app session. Purchase updates will happen
@@ -53,19 +53,15 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   Stream<List<PurchaseDetails>> get purchaseStream =>
       throw UnimplementedError('purchaseStream has not been implemented.');
 
-  /// Returns true if the payment platform is ready and available.
+  /// Returns `true` if the payment platform is ready and available.
   Future<bool> isAvailable() =>
       throw UnimplementedError('isAvailable() has not been implemented.');
 
   /// Query product details for the given set of IDs.
   ///
-  /// The [identifiers] need to exactly match existing configured product
-  /// identifiers in the underlying payment platform, whether that's [App Store
-  /// Connect](https://appstoreconnect.apple.com/) or [Google Play
-  /// Console](https://play.google.com/).
-  ///
-  /// See the [example readme](../../../../example/README.md) for steps on how
-  /// to initialize products on both payment platforms.
+ /// Identifiers in the underlying payment platform, for example, [App Store
+ /// Connect](https://appstoreconnect.apple.com/) for iOS and [Google Play
+ /// Console](https://play.google.com/) for Android.
   Future<ProductDetailsResponse> queryProductDetails(Set<String> identifiers) =>
       throw UnimplementedError(
           'queryProductDetails() had not been implemented.');
@@ -81,33 +77,24 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///
   /// This method does not return the result of the purchase. Instead, after
   /// triggering this method, purchase updates will be sent to
-  /// [purchaseUpdatedStream]. You should [Stream.listen] to
-  /// [purchaseUpdatedStream] to get [PurchaseDetails] objects in different
-  /// [PurchaseDetails.status] and update your UI accordingly. When the
-  /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or
-  /// [PurchaseStatus.error], you should deliver the content or handle the
-  /// error, then call [completePurchase] to finish the purchasing process.
+  /// [purchaseStream]. You should [Stream.listen] to [purchaseStream] to get 
+  /// [PurchaseDetails] objects in different [PurchaseDetails.status] and update
+  ///  your UI accordingly. When the [PurchaseDetails.status] is 
+  /// [PurchaseStatus.purchased], [PurchaseStatus.restored] or 
+  /// [PurchaseStatus.error] you should deliver the content or handle the error,
+  /// then call [completePurchase] to finish the purchasing process.
   ///
   /// This method does return whether or not the purchase request was initially
   /// sent successfully.
   ///
   /// Consumable items are defined differently by the different underlying
   /// payment platforms, and there's no way to query for whether or not the
-  /// [ProductDetail] is a consumable at runtime. On iOS, products are defined
-  /// as non consumable items in the [App Store
-  /// Connect](https://appstoreconnect.apple.com/). [Google Play
-  /// Console](https://play.google.com/) products are considered consumable if
-  /// and when they are actively consumed manually.
-  ///
-  /// You can find more details on testing payments on iOS
-  /// [here](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/StoreKitGuide/Chapters/ShowUI.html#//apple_ref/doc/uid/TP40008267-CH3-SW11).
-  /// You can find more details on testing payments on Android
-  /// [here](https://developer.android.com/google/play/billing/billing_testing).
-  ///
+  /// [ProductDetail] is a consumable at runtime.
+  /// 
   /// See also:
   ///
   ///  * [buyConsumable], for buying a consumable product.
-  ///  * [queryPastPurchases], for restoring non consumable products.
+  ///  * [restorePurchases], for restoring non consumable products.
   ///
   /// Calling this method for consumable items will cause unwanted behaviors!
   Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) =>
@@ -121,31 +108,21 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   /// To restore consumable purchases across devices, you should keep track of
   /// those purchase on your own server and restore the purchase for your users.
   /// Consumed products are no longer considered to be "owned" by payment
-  /// platforms and will not be delivered by calling [queryPastPurchases].
+  /// platforms and will not be delivered by calling [restorePurchases].
   ///
   /// Consumable items are defined differently by the different underlying
   /// payment platforms, and there's no way to query for whether or not the
-  /// [ProductDetail] is a consumable at runtime. On iOS, products are defined
-  /// as consumable items in the [App Store
-  /// Connect](https://appstoreconnect.apple.com/). [Google Play
-  /// Console](https://play.google.com/) products are considered consumable if
-  /// and when they are actively consumed manually.
+  /// [ProductDetail] is a consumable at runtime.
   ///
-  /// `autoConsume` is provided as a utility for Android only. It's meaningless
-  /// on iOS because the App Store automatically considers all potentially
-  /// consumable purchases "consumed" once the initial transaction is complete.
-  /// `autoConsume` is `true` by default, and we will call [consumePurchase]
-  /// after a successful purchase for you so that Google Play considers a
-  /// purchase consumed after the initial transaction, like iOS. If you'd like
-  /// to manually consume purchases in Play, you should set it to `false` and
-  /// manually call [consumePurchase] instead. Failing to consume a purchase
-  /// will cause user never be able to buy the same item again. Manually setting
-  /// this to `false` on iOS will throw an `Exception`.
+  /// `autoConsume` is provided as a utility and will instruct the plugin to 
+  /// automatically consume the product after a succesful purchase. 
+  /// `autoConsume` is `true` by default. On iOS comsumable products are 
+  /// consumed automatically by the App Store and this parameter is ignored. 
   ///
   /// This method does not return the result of the purchase. Instead, after
   /// triggering this method, purchase updates will be sent to
-  /// [purchaseUpdatedStream]. You should [Stream.listen] to
-  /// [purchaseUpdatedStream] to get [PurchaseDetails] objects in different
+  /// [purchaseStream]. You should [Stream.listen] to
+  /// [purchaseStream] to get [PurchaseDetails] objects in different
   /// [PurchaseDetails.status] and update your UI accordingly. When the
   /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or
   /// [PurchaseStatus.error], you should deliver the content or handle the
@@ -158,7 +135,7 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///
   ///  * [buyNonConsumable], for buying a non consumable product or
   ///    subscription.
-  ///  * [queryPastPurchases], for restoring non consumable products.
+  ///  * [restorePurchases], for restoring non consumable products.
   ///  * [consumePurchase], for manually consuming products on Android.
   ///
   /// Calling this method for non consumable items will cause unwanted
@@ -172,25 +149,23 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   /// Mark that purchased content has been delivered to the user.
   ///
   /// You are responsible for completing every [PurchaseDetails] whose
-  /// [PurchaseDetails.status] is [PurchaseStatus.purchased]. Additionally on iOS,
-  /// the purchase needs to be completed if the [PurchaseDetails.status] is
-  /// [PurchaseStatus.error] or [PurchaseStatus.restored].
+  /// [PurchaseDetails.status] is [PurchaseStatus.purchased] or 
+  /// [PurchaseStatus.restored].
   /// Completing a [PurchaseStatus.pending] purchase will cause an exception.
-  /// For convenience, [PurchaseDetails.pendingCompletePurchase] indicates if a purchase is pending for completion.
+  /// For convenience, [PurchaseDetails.pendingCompletePurchase] indicates if a 
+  /// purchase is pending for completion.
   ///
   /// The method will throw a [PurchaseException] when the purchase could not be
-  /// finished. If the [PurchaseException.shouldRetry] is `true` the developer
-  /// should try to finish the purchase via this method again, or retry the [finishPurchase]
-  /// method at a later time. If the [PurchaseException.shouldRetry] is `false`
-  /// there might be some issue with the app's code or the configuration of the
-  /// app in the respective store. The developer is responsible to fix this issue.
-  /// The [PurchaseException.code] and [PurchaseException.message] fields might
-  /// provide more information on what went wrong.
-  ///
-  /// Warning! Failure to call this method and get a successful response within 3 days of the purchase will result a refund on Android.
-  /// The [consumePurchase] acts as an implicit [completePurchase] on Android.
-  Future<void> finishPurchase(PurchaseDetails purchase) =>
-      throw UnimplementedError('finishPurchase() has not been implemented.');
+  /// finished. Depending on the [PurchaseException.errorCode] the developer
+  /// should try to complete the purchase via this method again, or retry the 
+  /// [completePurchase] method at a later time. If the 
+  /// [PurchaseException.errorCode] indicates you should not retry there might 
+  /// be some issue with the app's code or the configuration of the app in the 
+  /// respective store. The developer is responsible to fix this issue. The 
+  /// [PurchaseException.message] field might provide more information on what 
+  /// went wrong.
+  Future<void> completePurchase(PurchaseDetails purchase) =>
+      throw UnimplementedError('completePurchase() has not been implemented.');
 
   /// Restore all previous purchases.
   ///
@@ -212,5 +187,5 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///  * [refreshPurchaseVerificationData], for reloading failed
   ///    [PurchaseDetails.verificationData].
   Future<void> restorePurchases({String? applicationUserName}) =>
-      throw UnimplementedError('queryPastPurchase() has not been implemented.');
+      throw UnimplementedError('restorePurchases() has not been implemented.');
 }

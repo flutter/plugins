@@ -99,13 +99,13 @@ void main() {
 
     test(
         // ignore: lines_longer_than_80_chars
-        'Default implementation of finishPurchase should throw unimplemented error',
+        'Default implementation of completePurchase should throw unimplemented error',
         () {
       final ExtendsInAppPurchasePlatform inAppPurchasePlatform =
           ExtendsInAppPurchasePlatform();
 
       expect(
-        () => inAppPurchasePlatform.finishPurchase(MockPurchaseDetails()),
+        () => inAppPurchasePlatform.completePurchase(MockPurchaseDetails()),
         throwsUnimplementedError,
       );
     });

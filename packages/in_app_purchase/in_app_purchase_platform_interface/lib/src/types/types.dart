@@ -9,4 +9,3 @@ export 'purchase_details.dart';
 export 'purchase_param.dart';
 export 'purchase_status.dart';
 export 'purchase_verification_data.dart';
-export 'query_purchase_details_response.dart';

@@ -14,8 +14,6 @@ enum PurchaseStatus {
   /// The purchase is finished and successful.
   ///
   /// Update your UI to indicate the purchase is finished and deliver the product.
-  /// On Android, the google play store is handling the purchase, so we set the status to
-  /// `purchased` as long as we can successfully launch play store purchase flow.
   purchased,
 
   /// Some error occurred in the purchase. The purchasing process if aborted.
@@ -25,7 +23,7 @@ enum PurchaseStatus {
   ///
   /// You should validate the purchase and if valid deliver the content. Once the
   /// content has been delivered or if the receipt is invalid you should finish
-  /// the purchase by calling the `finishPurchase` method. More information on
+  /// the purchase by calling the `completePurchase` method. More information on
   /// verifying purchases can be found [here](https://pub.dev/packages/in_app_purchase#loading-previous-purchases).
   restored,
 }
