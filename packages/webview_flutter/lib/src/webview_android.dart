@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -47,10 +47,7 @@ class AndroidWebView implements WebViewPlatform {
               id, webViewPlatformCallbacksHandler));
         },
         gestureRecognizers: gestureRecognizers,
-        // WebView content is not affected by the Android view's layout direction,
-        // we explicitly set it here so that the widget doesn't require an ambient
-        // directionality.
-        layoutDirection: TextDirection.rtl,
+        layoutDirection: Directionality.maybeOf(context) ?? TextDirection.rtl,
         creationParams:
             MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
         creationParamsCodec: const StandardMessageCodec(),

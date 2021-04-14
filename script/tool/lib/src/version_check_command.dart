@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,43 +6,14 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:meta/meta.dart';
-import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
-import 'package:yaml/yaml.dart';
 
 import 'common.dart';
 
-const String _kBaseSha = 'base_sha';
-
-class GitVersionFinder {
-  GitVersionFinder(this.baseGitDir, this.baseSha);
-
-  final GitDir baseGitDir;
-  final String baseSha;
-
-  static bool isPubspec(String file) {
-    return file.trim().endsWith('pubspec.yaml');
-  }
-
-  Future<List<String>> getChangedPubSpecs() async {
-    final io.ProcessResult changedFilesCommand = await baseGitDir
-        .runCommand(<String>['diff', '--name-only', '$baseSha', 'HEAD']);
-    final List<String> changedFiles =
-        changedFilesCommand.stdout.toString().split('\n');
-    return changedFiles.where(isPubspec).toList();
-  }
-
-  Future<Version> getPackageVersion(String pubspecPath, String gitRef) async {
-    final io.ProcessResult gitShow =
-        await baseGitDir.runCommand(<String>['show', '$gitRef:$pubspecPath']);
-    final String fileContent = gitShow.stdout;
-    final String versionString = loadYaml(fileContent)['version'];
-    return versionString == null ? null : Version.parse(versionString);
-  }
-}
+const String _kBaseSha = 'base-sha';
 
 enum NextVersionType {
   BREAKING_MAJOR,
@@ -128,46 +99,28 @@ class VersionCheckCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-    this.gitDir,
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
-    argParser.addOption(_kBaseSha);
-  }
-
-  /// The git directory to use. By default it uses the parent directory.
-  ///
-  /// This can be mocked for testing.
-  final GitDir gitDir;
+    GitDir gitDir,
+  }) : super(packagesDir, fileSystem,
+            processRunner: processRunner, gitDir: gitDir);
 
   @override
   final String name = 'version-check';
 
   @override
   final String description =
-      'Checks if the versions of the plugins have been incremented per pub specification.\n\n'
+      'Checks if the versions of the plugins have been incremented per pub specification.\n'
+      'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
   @override
   Future<Null> run() async {
     checkSharding();
-
-    final String rootDir = packagesDir.parent.absolute.path;
-    final String baseSha = argResults[_kBaseSha];
-
-    GitDir baseGitDir = gitDir;
-    if (baseGitDir == null) {
-      if (!await GitDir.isGitDir(rootDir)) {
-        print('$rootDir is not a valid Git repository.');
-        throw ToolExit(2);
-      }
-      baseGitDir = await GitDir.fromExisting(rootDir);
-    }
-
-    final GitVersionFinder gitVersionFinder =
-        GitVersionFinder(baseGitDir, baseSha);
+    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
+    final String baseSha = argResults[_kBaseSha];
     for (final String pubspecPath in changedPubspecs) {
       try {
         final File pubspecFile = fileSystem.file(pubspecPath);
@@ -194,9 +147,7 @@ class VersionCheckCommand extends PluginCommand {
           final String error = '$pubspecPath incorrectly updated version.\n'
               'HEAD: $headVersion, master: $masterVersion.\n'
               'Allowed versions: $allowedNextVersions';
-          final Colorize redError = Colorize(error)..red();
-          print(redError);
-          throw ToolExit(1);
+          printErrorAndExit(errorMessage: error);
         }
 
         bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
@@ -205,9 +156,7 @@ class VersionCheckCommand extends PluginCommand {
                 NextVersionType.BREAKING_MAJOR) {
           final String error = '$pubspecPath breaking change detected.\n'
               'Breaking changes to platform interfaces are strongly discouraged.\n';
-          final Colorize redError = Colorize(error)..red();
-          print(redError);
-          throw ToolExit(1);
+          printErrorAndExit(errorMessage: error);
         }
       } on io.ProcessException {
         print('Unable to find pubspec in master for $pubspecPath.'
@@ -215,6 +164,74 @@ class VersionCheckCommand extends PluginCommand {
       }
     }
 
+    await for (Directory plugin in getPlugins()) {
+      await _checkVersionsMatch(plugin);
+    }
+
     print('No version check errors found!');
+  }
+
+  Future<void> _checkVersionsMatch(Directory plugin) async {
+    // get version from pubspec
+    final String packageName = plugin.basename;
+    print('-----------------------------------------');
+    print(
+        'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for $packageName.');
+
+    final Pubspec pubspec = _tryParsePubspec(plugin);
+    if (pubspec == null) {
+      final String error = 'Cannot parse version from pubspec.yaml';
+      printErrorAndExit(errorMessage: error);
+    }
+    final Version fromPubspec = pubspec.version;
+
+    // get first version from CHANGELOG
+    final File changelog = plugin.childFile('CHANGELOG.md');
+    final List<String> lines = changelog.readAsLinesSync();
+    String firstLineWithText;
+    final Iterator iterator = lines.iterator;
+    while (iterator.moveNext()) {
+      if ((iterator.current as String).trim().isNotEmpty) {
+        firstLineWithText = iterator.current;
+        break;
+      }
+    }
+    // Remove all leading mark down syntax from the version line.
+    final String versionString = firstLineWithText.split(' ').last;
+    Version fromChangeLog = Version.parse(versionString);
+    if (fromChangeLog == null) {
+      final String error =
+          'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md';
+      printErrorAndExit(errorMessage: error);
+    }
+
+    if (fromPubspec != fromChangeLog) {
+      final String error = '''
+versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.
+The version in pubspec.yaml is $fromPubspec.
+The first version listed in CHANGELOG.md is $fromChangeLog.
+''';
+      printErrorAndExit(errorMessage: error);
+    }
+    print('${packageName} passed version check');
+  }
+
+  Pubspec _tryParsePubspec(Directory package) {
+    final File pubspecFile = package.childFile('pubspec.yaml');
+
+    try {
+      Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      if (pubspec == null) {
+        final String error =
+            'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
+        printErrorAndExit(errorMessage: error);
+      }
+      return pubspec;
+    } on Exception catch (exception) {
+      final String error =
+          'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
+      printErrorAndExit(errorMessage: error);
+    }
+    return null;
   }
 }

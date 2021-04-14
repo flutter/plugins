@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,11 +19,11 @@ import 'package:js/js.dart';
 
 // Module gapi
 typedef void LoadCallback(
-    [dynamic? args1,
-    dynamic? args2,
-    dynamic? args3,
-    dynamic? args4,
-    dynamic? args5]);
+    [dynamic args1,
+    dynamic args2,
+    dynamic args3,
+    dynamic args4,
+    dynamic args5]);
 
 @anonymous
 @JS()

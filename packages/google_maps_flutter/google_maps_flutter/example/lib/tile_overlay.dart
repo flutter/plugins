@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -67,8 +67,8 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
 
   @override
   Widget build(BuildContext context) {
-    Set<TileOverlay?> overlays = <TileOverlay?>{
-      if (_tileOverlay != null) _tileOverlay,
+    Set<TileOverlay> overlays = <TileOverlay>{
+      if (_tileOverlay != null) _tileOverlay!,
     };
     return Column(
       mainAxisSize: MainAxisSize.min,
@@ -84,7 +84,7 @@ class TileOverlayBodyState extends State<TileOverlayBody> {
                 target: LatLng(59.935460, 30.325177),
                 zoom: 7.0,
               ),
-              tileOverlays: overlays as Set<TileOverlay>,
+              tileOverlays: overlays,
               onMapCreated: _onMapCreated,
             ),
           ),
