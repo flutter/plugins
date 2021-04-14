@@ -80,7 +80,6 @@ class _MyAppState extends State<MyApp> {
           stickyAuth: true);
       setState(() {
         _isAuthenticating = false;
-        _authorized = 'Authenticating';
       });
     } on PlatformException catch (e) {
       print(e);

@@ -11,13 +11,13 @@ import 'util.dart';
 
 void main() {
   group('$ListCommand', () {
-    CommandRunner<ListCommand> runner;
+    CommandRunner<void> runner;
 
     setUp(() {
       initializeFakePackages();
       final ListCommand command = ListCommand(mockPackagesDir, mockFileSystem);
 
-      runner = CommandRunner<Null>('list_test', 'Test for $ListCommand');
+      runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
       runner.addCommand(command);
     });
 

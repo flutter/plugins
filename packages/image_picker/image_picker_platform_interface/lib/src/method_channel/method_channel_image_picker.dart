@@ -42,14 +42,14 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    List<dynamic>? paths = await _pickMultiImagePath(
+    final List<dynamic>? paths = await _pickMultiImagePath(
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
     );
     if (paths == null) return null;
 
-    List<PickedFile> files = [];
+    final List<PickedFile> files = [];
     for (final path in paths) {
       files.add(PickedFile(path));
     }
@@ -122,7 +122,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
   }) async {
-    String? path = await _pickVideoPath(
+    final String? path = await _pickVideoPath(
       source: source,
       maxDuration: maxDuration,
       preferredCameraDevice: preferredCameraDevice,

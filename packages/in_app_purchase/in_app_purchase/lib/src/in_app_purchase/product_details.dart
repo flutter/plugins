@@ -17,6 +17,8 @@ class ProductDetails {
       required this.title,
       required this.description,
       required this.price,
+      required this.rawPrice,
+      required this.currencyCode,
       this.skProduct,
       this.skuDetail});
 
@@ -32,6 +34,15 @@ class ProductDetails {
   /// The price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
   /// Formatted with currency symbol ("$0.99").
   final String price;
+
+  /// The unformatted price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
+  /// The currency unit for this value can be found in the [currencyCode] property.
+  /// The value always describes full units of the currency. (e.g. 2.45 in the case of $2.45)
+  final double rawPrice;
+
+  /// The currency code for the price of the product.
+  /// Based on the price specified in the App Store Connect or Sku in Google Play console based on the platform.
+  final String currencyCode;
 
   /// Points back to the `StoreKits`'s [SKProductWrapper] object that generated this [ProductDetails] object.
   ///
@@ -49,6 +60,8 @@ class ProductDetails {
         this.title = product.localizedTitle,
         this.description = product.localizedDescription,
         this.price = product.priceLocale.currencySymbol + product.price,
+        this.rawPrice = double.parse(product.price),
+        this.currencyCode = product.priceLocale.currencyCode,
         this.skProduct = product,
         this.skuDetail = null;
 
@@ -58,6 +71,8 @@ class ProductDetails {
         this.title = skuDetails.title,
         this.description = skuDetails.description,
         this.price = skuDetails.price,
+        this.rawPrice = ((skuDetails.priceAmountMicros) / 1000000.0).toDouble(),
+        this.currencyCode = skuDetails.priceCurrencyCode,
         this.skProduct = null,
         this.skuDetail = skuDetails;
 }

@@ -1,6 +1,6 @@
 name: integration_test_example
 description: Demonstrates how to use the integration_test plugin.
-publish_to: 'none'
+publish_to: none
 
 environment:
   sdk: ">=2.1.0 <3.0.0"

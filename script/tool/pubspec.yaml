@@ -1,6 +1,6 @@
 name: flutter_plugin_tools
 description: Productivity utils for hosting multiple plugins within one repository.
-publish_to: 'none'
+publish_to: none
 
 dependencies:
   args: "^1.4.3"
