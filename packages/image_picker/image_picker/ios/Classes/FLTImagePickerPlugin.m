@@ -94,19 +94,19 @@ static const int SOURCE_GALLERY = 1;
                   [NSString stringWithFormat:@"image%lu.png", (unsigned long)pathList.count];
               NSString *path = [documentsDirectory stringByAppendingPathComponent:filename];
               NSData *data = UIImagePNGRepresentation(object);
-                NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-                NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
-                NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+              NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
+              NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
+              NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
                 
-                if(maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                    path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
-                                                                            image:object
-                                                                         maxWidth:maxWidth
-                                                                        maxHeight:maxHeight
-                                                                     imageQuality:imageQuality];
-                } else {
-                    [data writeToFile:path atomically:YES];
-                }
+              if(maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                  path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
+                                                                          image:object
+                                                                       maxWidth:maxWidth
+                                                                      maxHeight:maxHeight
+                                                                   imageQuality:imageQuality];
+              } else {
+                  [data writeToFile:path atomically:YES];
+              }
               [pathList addObject:path];
               if (pathList.count == results.count) {
                 if (results.count == 1) {
@@ -169,7 +169,7 @@ static const int SOURCE_GALLERY = 1;
       _arguments = call.arguments;
       [self pickImage:false];
     } else {
-        NSLog(@"pickMultiImage is not supported on versions below iOS14");
+      NSLog(@"pickMultiImage is not supported on versions below iOS14");
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
