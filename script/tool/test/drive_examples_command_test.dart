@@ -14,10 +14,10 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     final String flutterCommand =
-        LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
     setUp(() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
@@ -25,7 +25,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
       runner.addCommand(command);
     });
@@ -60,8 +60,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -105,8 +105,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -173,7 +173,8 @@ void main() {
         ]),
       );
 
-      String driverTestPath = p.join('test_driver', 'integration_test.dart');
+      final String driverTestPath =
+          p.join('test_driver', 'integration_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -259,8 +260,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -336,8 +337,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -415,8 +416,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -496,8 +497,8 @@ void main() {
         ]),
       );
 
-      String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
@@ -567,8 +568,8 @@ void main() {
         '--enable-experiment=exp1',
       ]);
 
-      String deviceTestPath = p.join('test', 'plugin.dart');
-      String driverTestPath = p.join('test_driver', 'plugin_test.dart');
+      final String deviceTestPath = p.join('test', 'plugin.dart');
+      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
