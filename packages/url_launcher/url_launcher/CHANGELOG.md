@@ -1,3 +1,7 @@
+## 6.0.3
+
+* Updat README notes about URL schemes on iOS
+
 ## 6.0.2
 
 * Update platform_plugin_interface version requirement.

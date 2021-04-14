@@ -1,6 +1,14 @@
-## 2.0.3
+## 2.1.2
 
 * Refactor `FLTCMTimeToMillis` to support indefinite streams - fixes [flutter/flutter#48670](Fixes https://github.com/flutter/flutter/issues/48670).
+
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
 
 ## 2.0.2
 

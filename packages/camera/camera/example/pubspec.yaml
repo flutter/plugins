@@ -1,5 +1,6 @@
 name: camera_example
 description: Demonstrates how to use the camera plugin.
+publish_to: none
 
 dependencies:
   camera:
@@ -20,7 +21,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
 
 flutter:

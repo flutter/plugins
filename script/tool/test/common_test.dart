@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -11,7 +15,7 @@ import 'util.dart';
 
 void main() {
   RecordingProcessRunner processRunner;
-  CommandRunner runner;
+  CommandRunner<void> runner;
   List<String> plugins;
   List<List<String>> gitDirCommands;
   String gitDiffResponse;
@@ -21,16 +25,17 @@ void main() {
     gitDiffResponse = '';
     final MockGitDir gitDir = MockGitDir();
     when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-      gitDirCommands.add(invocation.positionalArguments[0]);
+      gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
       final MockProcessResult mockProcessResult = MockProcessResult();
       if (invocation.positionalArguments[0][0] == 'diff') {
-        when<String>(mockProcessResult.stdout).thenReturn(gitDiffResponse);
+        when<String>(mockProcessResult.stdout as String)
+            .thenReturn(gitDiffResponse);
       }
       return Future<ProcessResult>.value(mockProcessResult);
     });
     initializeFakePackages();
     processRunner = RecordingProcessRunner();
-    plugins = [];
+    plugins = <String>[];
     final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
       plugins,
       mockPackagesDir,
@@ -39,7 +44,7 @@ void main() {
       gitDir: gitDir,
     );
     runner =
-        CommandRunner<Null>('common_command', 'Test for common functionality');
+        CommandRunner<void>('common_command', 'Test for common functionality');
     runner.addCommand(samplePluginCommand);
   });
 
@@ -104,7 +109,7 @@ void main() {
 
     test('all plugins should be tested if there are no plugin related changes.',
         () async {
-      gitDiffResponse = ".cirrus";
+      gitDiffResponse = '.cirrus';
       final Directory plugin1 = createFakePlugin('plugin1');
       final Directory plugin2 = createFakePlugin('plugin2');
       await runner.run(
@@ -114,7 +119,7 @@ void main() {
     });
 
     test('Only changed plugin should be tested.', () async {
-      gitDiffResponse = "packages/plugin1/plugin1.dart";
+      gitDiffResponse = 'packages/plugin1/plugin1.dart';
       final Directory plugin1 = createFakePlugin('plugin1');
       createFakePlugin('plugin2');
       await runner.run(
@@ -222,12 +227,14 @@ packages/plugin3/plugin3.dart
       gitDiffResponse = '';
       gitDir = MockGitDir();
       when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-        gitDirCommands.add(invocation.positionalArguments[0]);
+        gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {
-          when<String>(mockProcessResult.stdout).thenReturn(gitDiffResponse);
+          when<String>(mockProcessResult.stdout as String)
+              .thenReturn(gitDiffResponse);
         } else if (invocation.positionalArguments[0][0] == 'merge-base') {
-          when<String>(mockProcessResult.stdout).thenReturn(mergeBaseResponse);
+          when<String>(mockProcessResult.stdout as String)
+              .thenReturn(mergeBaseResponse);
         }
         return Future<ProcessResult>.value(mockProcessResult);
       });
@@ -241,7 +248,7 @@ packages/plugin3/plugin3.dart
 
     test('No git diff should result no files changed', () async {
       final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
-      List<String> changedFiles = await finder.getChangedFiles();
+      final List<String> changedFiles = await finder.getChangedFiles();
 
       expect(changedFiles, isEmpty);
     });
@@ -252,7 +259,7 @@ file1/file1.cc
 file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
-      List<String> changedFiles = await finder.getChangedFiles();
+      final List<String> changedFiles = await finder.getChangedFiles();
 
       expect(
           changedFiles, equals(<String>['file1/file1.cc', 'file2/file2.cc']));
@@ -264,7 +271,7 @@ file1/pubspec.yaml
 file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, 'some base sha');
-      List<String> changedFiles = await finder.getChangedPubSpecs();
+      final List<String> changedFiles = await finder.getChangedPubSpecs();
 
       expect(changedFiles, equals(<String>['file1/pubspec.yaml']));
     });
@@ -277,26 +284,27 @@ file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, null);
       await finder.getChangedFiles();
-      verify(gitDir
-          .runCommand(['diff', '--name-only', mergeBaseResponse, 'HEAD']));
+      verify(gitDir.runCommand(
+          <String>['diff', '--name-only', mergeBaseResponse, 'HEAD']));
     });
 
     test('use correct base sha if specified', () async {
-      final String customBaseSha = 'aklsjdcaskf12312';
+      const String customBaseSha = 'aklsjdcaskf12312';
       gitDiffResponse = '''
 file1/pubspec.yaml
 file2/file2.cc
 ''';
       final GitVersionFinder finder = GitVersionFinder(gitDir, customBaseSha);
       await finder.getChangedFiles();
-      verify(gitDir.runCommand(['diff', '--name-only', customBaseSha, 'HEAD']));
+      verify(gitDir
+          .runCommand(<String>['diff', '--name-only', customBaseSha, 'HEAD']));
     });
   });
 }
 
 class SamplePluginCommand extends PluginCommand {
   SamplePluginCommand(
-    this.plugins_,
+    this._plugins,
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
@@ -304,7 +312,7 @@ class SamplePluginCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem,
             processRunner: processRunner, gitDir: gitDir);
 
-  List<String> plugins_;
+  final List<String> _plugins;
 
   @override
   final String name = 'sample';
@@ -313,9 +321,9 @@ class SamplePluginCommand extends PluginCommand {
   final String description = 'sample command';
 
   @override
-  Future<Null> run() async {
-    await for (Directory package in getPlugins()) {
-      this.plugins_.add(package.path);
+  Future<void> run() async {
+    await for (final Directory package in getPlugins()) {
+      _plugins.add(package.path);
     }
   }
 }

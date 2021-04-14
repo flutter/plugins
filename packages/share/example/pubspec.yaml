@@ -1,5 +1,6 @@
 name: share_example
 description: Demonstrates how to use the share plugin.
+publish_to: none
 
 dependencies:
   flutter:
@@ -17,7 +18,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
 
 flutter:
