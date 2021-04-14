@@ -8,8 +8,8 @@
 /// Different source of purchase has different methods of verifying purchases.
 ///
 /// Both platforms have 2 ways to verify purchase data. You can either choose to
-/// verify the data locally using [localVerificationData] or verify the data 
-/// using your own server with [serverVerificationData]. It is preferable to 
+/// verify the data locally using [localVerificationData] or verify the data
+/// using your own server with [serverVerificationData]. It is preferable to
 /// verify purchases using a server with [serverVerificationData].
 ///
 /// You should never use any purchase data until verified.
