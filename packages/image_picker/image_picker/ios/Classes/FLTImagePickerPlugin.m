@@ -97,15 +97,15 @@ static const int SOURCE_GALLERY = 1;
               NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
               NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
               NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
-                
-              if(maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                  path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
-                                                                          image:object
-                                                                       maxWidth:maxWidth
-                                                                      maxHeight:maxHeight
-                                                                   imageQuality:imageQuality];
+
+              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
+                                                                              image:object
+                                                                           maxWidth:maxWidth
+                                                                          maxHeight:maxHeight
+                                                                       imageQuality:imageQuality];
               } else {
-                  [data writeToFile:path atomically:YES];
+                [data writeToFile:path atomically:YES];
               }
               [pathList addObject:path];
               if (pathList.count == results.count) {
