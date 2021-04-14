@@ -84,7 +84,7 @@ void main() {
       'live stream duration != 0',
       (WidgetTester tester) async {
         VideoPlayerController networkController = VideoPlayerController.network(
-          'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+          'https://storage.googleapis.com/shaka-live-assets/player-source.m3u8',
         );
         await networkController.initialize();
 
