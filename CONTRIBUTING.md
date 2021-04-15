@@ -1,6 +1,5 @@
 # Contributing to Flutter Plugins
 
-
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
 _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
@@ -26,13 +25,11 @@ for any of the following plugins, we encourage you to submit it
 
 ## Things you will need
 
-
  * Linux, Mac OS X, or Windows.
  * git (used for source version control).
  * An ssh client (used to authenticate with GitHub).
 
 ## Getting the code and configuring your environment
-
 
  * Ensure all the dependencies described in the previous section are installed.
  * Fork `https://github.com/flutter/plugins` into your own GitHub account. If
@@ -51,13 +48,11 @@ for any of the following plugins, we encourage you to submit it
 
 ## Setting up tools
 
-
 We use a range of tooling script to do varies of things on CI. (testing, formatting, etc.)
 Your are likely to use some of the tooling script locally in your contributing journey.
-See [plugin_tools](./script/tool/README.MD) for more details
+See [plugin_tools](./script/tool/README.MD) for more details.
 
 ## Running the examples
-
 
 To run an example with a prebuilt binary from the cloud, switch to that
 example's directory, run `pub get` to make sure its dependencies have been
@@ -162,11 +157,11 @@ To start working on a patch:
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
  * Verify changes with [plugin_tools](./script/tool/README.MD).
-```
-$ cd script/tool & pub get
-$ dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
-$ pub run ./script/tool/lib/src/main.dart analyze --plugins plugin_name
-$ pub run ./script/tool/lib/src/main.dart test --plugins plugin_name
+```sh
+cd script/tool & pub get
+dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
+pub run ./script/tool/lib/src/main.dart analyze --plugins plugin_name
+pub run ./script/tool/lib/src/main.dart test --plugins plugin_name
 ```
  * `git commit -a -m "<your informative commit message>"`
  * `git push origin <name_of_your_branch>`

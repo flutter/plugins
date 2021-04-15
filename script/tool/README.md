@@ -41,11 +41,11 @@ dart run lib/src/main.dart xctest --target RunnerUITests --skip <plugins_to_skip
 
 ``sh
 cd <path_to_plugins>/packages
-dart run ./script/tool/lib/src/main.dart publish-plugin --package $package
+dart run ./script/tool/lib/src/main.dart publish-plugin --package <package>
 ``
 
-By default the tool tries to push tags to the `upstream` remote, but that and
-some additional settings can be configured. Run `dart run ./script/tool/lib/src/main.dart publish-plugin --help` for more usage information.
+By default the tool tries to push tags to the `upstream` remote, but some
+additional settings can be configured. Run `dart run ./script/tool/lib/src/main.dart publish-plugin --help` for more usage information.
 
 The tool wraps `pub publish` for pushing the package to pub, and then will
 automatically use git to try and create and push tags. It has some additional
