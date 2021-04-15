@@ -29,7 +29,7 @@ class AndroidDeviceInfo {
     required this.isPhysicalDevice,
     required this.androidId,
     required List<String> systemFeatures,
-  })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
+  })   : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = List<String>.unmodifiable(supportedAbis),
         systemFeatures = List<String>.unmodifiable(systemFeatures);
