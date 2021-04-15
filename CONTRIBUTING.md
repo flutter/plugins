@@ -158,7 +158,7 @@ To start working on a patch:
  * Hack away.
  * Verify changes with [plugin_tools](./script/tool/README.MD).
 ```sh
-cd script/tool & pub get
+cd script/tool && pub get
 dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
 pub run ./script/tool/lib/src/main.dart analyze --plugins plugin_name
 pub run ./script/tool/lib/src/main.dart test --plugins plugin_name
