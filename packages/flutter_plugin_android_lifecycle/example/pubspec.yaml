@@ -1,5 +1,6 @@
 name: flutter_plugin_android_lifecycle_example
 description: Demonstrates how to use the flutter_plugin_android_lifecycle plugin.
+publish_to: none
 
 dependencies:
   flutter:

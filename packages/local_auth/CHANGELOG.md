@@ -1,6 +1,7 @@
 ## 1.1.4
 
-* Updated grammatical errors and inaccurate information in README .
+* Add debug assertion that `localizedReason` in `LocalAuthentication.authenticateWithBiometrics`  must not be empty.
+* Updated grammatical errors and inaccurate information in README.
 
 ## 1.1.3
 
