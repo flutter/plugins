@@ -1,3 +1,21 @@
+## 2.0.0
+
+* Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.3.7+8
+
+* Update Flutter SDK constraint.
+
+## 0.3.7+7
+
+* Update Dart SDK constraint in example.
+
+## 0.3.7+6
+
+* Update android compileSdkVersion to 29.
+
 ## 0.3.7+5
 
 * Android Code Inspection and Clean up.

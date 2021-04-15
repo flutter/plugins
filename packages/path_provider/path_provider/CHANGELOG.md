@@ -1,3 +1,52 @@
+## 2.0.1
+
+* Update platform_plugin_interface version requirement.
+
+## 2.0.0
+
+* Migrate to null safety.
+* BREAKING CHANGE: Path accessors that return non-nullable results will throw
+  a `MissingPlatformDirectoryException` if the platform implementation is unable
+  to get the corresponding directory (except on platforms where the method is
+  explicitly unsupported, where they will continue to throw `UnsupportedError`).
+
+## 1.6.28
+
+* Drop unused UUID dependency for tests.
+
+## 1.6.27
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 1.6.26
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.6.25
+
+* Update Flutter SDK constraint.
+
+## 1.6.24
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 1.6.23
+
+* Check in windows/ directory for example/
+
+## 1.6.22
+
+* Switch to guava-android dependency instead of full guava.
+
+## 1.6.21
+
+* Update android compileSdkVersion to 29.
+
+## 1.6.20
+
+* Check in linux/ directory for example/
+
 ## 1.6.19
 
 * Android implementation does path queries in the background thread rather than UI thread.

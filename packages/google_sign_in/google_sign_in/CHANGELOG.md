@@ -1,3 +1,36 @@
+## 5.0.2
+
+* Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
+
+## 5.0.1
+
+* Update platforms `init` function to prioritize `clientId` property when available;
+* Updates `google_sign_in_platform_interface` version.
+
+## 5.0.0
+
+* Migrate to null safety.
+
+## 4.5.9
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 4.5.8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
+## 4.5.6
+
+* Fix deprecated member warning in tests.
+
+## 4.5.5
+
+* Update android compileSdkVersion to 29.
+
 ## 4.5.4
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

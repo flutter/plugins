@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -146,10 +146,10 @@ static const int SOURCE_GALLERY = 1;
                                                       animated:YES
                                                     completion:nil];
   } else {
-    [[[UIAlertView alloc] initWithTitle:@"Error"
-                                message:@"Camera not available."
+    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
+                                message:NSLocalizedString(@"Camera not available.", nil)
                                delegate:nil
-                      cancelButtonTitle:@"OK"
+                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
                       otherButtonTitles:nil] show];
     self.result(nil);
     self.result = nil;

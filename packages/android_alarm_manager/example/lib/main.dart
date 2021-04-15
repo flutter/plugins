@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,7 +22,7 @@ const String isolateName = 'isolate';
 final ReceivePort port = ReceivePort();
 
 /// Global [SharedPreferences] object.
-SharedPreferences prefs;
+late SharedPreferences prefs;
 
 Future<void> main() async {
   // TODO(bkonyi): uncomment
@@ -54,7 +54,7 @@ class AlarmManagerExampleApp extends StatelessWidget {
 }
 
 class _AlarmHomePage extends StatefulWidget {
-  _AlarmHomePage({Key key, this.title}) : super(key: key);
+  _AlarmHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -86,7 +86,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
   }
 
   // The background
-  static SendPort uiSendPort;
+  static SendPort? uiSendPort;
 
   // The callback for our alarm
   static Future<void> callback() async {
@@ -94,7 +94,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
 
     // Get the previous cached count and increment it.
     final prefs = await SharedPreferences.getInstance();
-    int currentCount = prefs.getInt(countKey);
+    int currentCount = prefs.getInt(countKey) ?? 0;
     await prefs.setInt(countKey, currentCount + 1);
 
     // This will be null if we're running in the background.
@@ -104,11 +104,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO(jackson): This has been deprecated and should be replaced
-    // with `headline4` when it's available on all the versions of
-    // Flutter that we test.
-    // ignore: deprecated_member_use
-    final textStyle = Theme.of(context).textTheme.display1;
+    final textStyle = Theme.of(context).textTheme.headline4;
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -135,7 +131,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
                 ),
               ],
             ),
-            RaisedButton(
+            ElevatedButton(
               child: Text(
                 'Schedule OneShot Alarm',
               ),
@@ -144,7 +140,7 @@ class _AlarmHomePageState extends State<_AlarmHomePage> {
                 await AndroidAlarmManager.oneShot(
                   const Duration(seconds: 5),
                   // Ensure we have a unique alarm ID.
-                  Random().nextInt(pow(2, 31)),
+                  Random().nextInt(pow(2, 31).toInt()),
                   callback,
                   exact: true,
                   wakeup: true,

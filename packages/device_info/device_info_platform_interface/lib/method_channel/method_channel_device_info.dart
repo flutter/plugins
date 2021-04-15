@@ -1,8 +1,11 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
-
 import 'package:device_info_platform_interface/device_info_platform_interface.dart';
 
 /// An implementation of [DeviceInfoPlatform] that uses method channels.
@@ -13,16 +16,15 @@ class MethodChannelDeviceInfo extends DeviceInfoPlatform {
 
   // Method channel for Android devices
   Future<AndroidDeviceInfo> androidInfo() async {
-    return AndroidDeviceInfo.fromMap(
-      (await channel.invokeMethod('getAndroidDeviceInfo'))
-          .cast<String, dynamic>(),
-    );
+    return AndroidDeviceInfo.fromMap((await channel
+            .invokeMapMethod<String, dynamic>('getAndroidDeviceInfo')) ??
+        <String, dynamic>{});
   }
 
   // Method channel for iOS devices
   Future<IosDeviceInfo> iosInfo() async {
     return IosDeviceInfo.fromMap(
-      (await channel.invokeMethod('getIosDeviceInfo')).cast<String, dynamic>(),
-    );
+        (await channel.invokeMapMethod<String, dynamic>('getIosDeviceInfo')) ??
+            <String, dynamic>{});
   }
 }

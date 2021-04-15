@@ -1,3 +1,9 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// @dart=2.9
+
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -33,7 +39,7 @@ void main() {
       preferences.clear();
     });
 
-    test('reading', () async {
+    testWidgets('reading', (WidgetTester _) async {
       expect(preferences.get('String'), isNull);
       expect(preferences.get('bool'), isNull);
       expect(preferences.get('int'), isNull);
@@ -46,7 +52,7 @@ void main() {
       expect(preferences.getStringList('List'), isNull);
     });
 
-    test('writing', () async {
+    testWidgets('writing', (WidgetTester _) async {
       await Future.wait(<Future<bool>>[
         preferences.setString('String', kTestValues2['flutter.String']),
         preferences.setBool('bool', kTestValues2['flutter.bool']),
@@ -61,7 +67,7 @@ void main() {
       expect(preferences.getStringList('List'), kTestValues2['flutter.List']);
     });
 
-    test('removing', () async {
+    testWidgets('removing', (WidgetTester _) async {
       const String key = 'testKey';
       await preferences.setString(key, kTestValues['flutter.String']);
       await preferences.setBool(key, kTestValues['flutter.bool']);
@@ -72,7 +78,7 @@ void main() {
       expect(preferences.get('testKey'), isNull);
     });
 
-    test('clearing', () async {
+    testWidgets('clearing', (WidgetTester _) async {
       await preferences.setString('String', kTestValues['flutter.String']);
       await preferences.setBool('bool', kTestValues['flutter.bool']);
       await preferences.setInt('int', kTestValues['flutter.int']);
@@ -84,6 +90,19 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
+    });
+
+    testWidgets('simultaneous writes', (WidgetTester _) async {
+      final List<Future<bool>> writes = <Future<bool>>[];
+      final int writeCount = 100;
+      for (int i = 1; i <= writeCount; i++) {
+        writes.add(preferences.setInt('int', i));
+      }
+      List<bool> result = await Future.wait(writes, eagerError: true);
+      // All writes should succeed.
+      expect(result.where((element) => !element), isEmpty);
+      // The last write should win.
+      expect(preferences.getInt('int'), writeCount);
     });
   });
 }

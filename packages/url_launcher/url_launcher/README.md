@@ -1,12 +1,28 @@
 # url_launcher
 
-[![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dartlang.org/packages/url_launcher)
+[![pub package](https://img.shields.io/pub/v/url_launcher.svg)](https://pub.dev/packages/url_launcher)
 
-A Flutter plugin for launching a URL in the mobile platform. Supports
+A Flutter plugin for launching a URL. Supports
 iOS, Android, web, Windows, macOS, and Linux.
 
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
+
+## Installation
+
+### iOS 
+Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
+
+Example:  
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+```
+
+See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
 
 ### Example
 
@@ -14,31 +30,28 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-void main() {
-  runApp(Scaffold(
-    body: Center(
-      child: RaisedButton(
-        onPressed: _launchURL,
-        child: Text('Show Flutter homepage'),
+const _url = 'https://flutter.dev';
+
+void main() => runApp(
+      const MaterialApp(
+        home: Material(
+          child: Center(
+            child: RaisedButton(
+              onPressed: _launchURL,
+              child: Text('Show Flutter homepage'),
+            ),
+          ),
+        ),
       ),
-    ),
-  ));
-}
+    );
 
-_launchURL() async {
-  const url = 'https://flutter.dev';
-  if (await canLaunch(url)) {
-    await launch(url);
-  } else {
-    throw 'Could not launch $url';
-  }
-}
-
+void _launchURL() async =>
+    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 ```
 
 ## Supported URL schemes
 
-The [`launch`](https://www.dartdocs.org/documentation/url_launcher/latest/url_launcher/launch.html) method
+The [`launch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/launch.html) method
 takes a string argument containing a URL. This URL
 can be formatted using a number of different URL schemes. The supported
 URL schemes depend on the underlying platform and installed apps.
@@ -53,6 +66,10 @@ Common schemes supported by both iOS and Android:
 | `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
+
+**Note**: URL schemes are only supported if there are apps installed on the device that can
+support them. For example, iOS simulators don't have a default email or phone
+apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Encoding URLs
 
@@ -83,7 +100,7 @@ launching a URL using the `sms` scheme, or a device may not have an email app
 and thus no support for launching a URL using the `email` scheme.
 
 We recommend checking which URL schemes are supported using the
-[`canLaunch`](https://www.dartdocs.org/documentation/url_launcher/latest/url_launcher/canLaunch.html)
+[`canLaunch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunch.html)
 method prior to calling `launch`. If the `canLaunch` method returns false, as a
 best practice we suggest adjusting the application UI so that the unsupported
 URL is never triggered; for example, if the `email` scheme is not supported, a

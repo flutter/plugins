@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,11 +15,13 @@ void main() {
     MethodChannelImagePicker picker = MethodChannelImagePicker();
 
     final List<MethodCall> log = <MethodCall>[];
+    dynamic returnValue = '';
 
     setUp(() {
+      returnValue = '';
       picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
         log.add(methodCall);
-        return '';
+        return returnValue;
       });
 
       log.clear();
@@ -139,6 +141,29 @@ void main() {
         );
       });
 
+      test('does not accept a invalid imageQuality argument', () {
+        expect(
+          () => picker.pickImage(imageQuality: -1, source: ImageSource.gallery),
+          throwsArgumentError,
+        );
+
+        expect(
+          () =>
+              picker.pickImage(imageQuality: 101, source: ImageSource.gallery),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.pickImage(imageQuality: -1, source: ImageSource.camera),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.pickImage(imageQuality: 101, source: ImageSource.camera),
+          throwsArgumentError,
+        );
+      });
+
       test('does not accept a negative width or height argument', () {
         expect(
           () => picker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
@@ -193,6 +218,127 @@ void main() {
             }),
           ],
         );
+      });
+    });
+
+    group('#pickMultiImage', () {
+      test('calls the method correctly', () async {
+        returnValue = ['0', '1'];
+        await picker.pickMultiImage();
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+          ],
+        );
+      });
+
+      test('passes the width and height arguments correctly', () async {
+        returnValue = ['0', '1'];
+        await picker.pickMultiImage();
+        await picker.pickMultiImage(
+          maxWidth: 10.0,
+        );
+        await picker.pickMultiImage(
+          maxHeight: 10.0,
+        );
+        await picker.pickMultiImage(
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+        );
+        await picker.pickMultiImage(
+          maxWidth: 10.0,
+          imageQuality: 70,
+        );
+        await picker.pickMultiImage(
+          maxHeight: 10.0,
+          imageQuality: 70,
+        );
+        await picker.pickMultiImage(
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+          imageQuality: 70,
+        );
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': 70,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': 70,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': 70,
+            }),
+          ],
+        );
+      });
+
+      test('does not accept a negative width or height argument', () {
+        returnValue = ['0', '1'];
+        expect(
+          () => picker.pickMultiImage(maxWidth: -1.0),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.pickMultiImage(maxHeight: -1.0),
+          throwsArgumentError,
+        );
+      });
+
+      test('does not accept a invalid imageQuality argument', () {
+        returnValue = ['0', '1'];
+        expect(
+          () => picker.pickMultiImage(imageQuality: -1),
+          throwsArgumentError,
+        );
+
+        expect(
+          () => picker.pickMultiImage(imageQuality: 101),
+          throwsArgumentError,
+        );
+      });
+
+      test('handles a null image path response gracefully', () async {
+        picker.channel
+            .setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(await picker.pickMultiImage(), isNull);
+        expect(await picker.pickMultiImage(), isNull);
       });
     });
 
@@ -312,7 +458,8 @@ void main() {
         // ignore: deprecated_member_use_from_same_package
         final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.image);
-        expect(response.file.path, '/example/path');
+        expect(response.file, isNotNull);
+        expect(response.file!.path, '/example/path');
       });
 
       test('retrieveLostData get error response', () async {
@@ -326,8 +473,9 @@ void main() {
         // ignore: deprecated_member_use_from_same_package
         final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.video);
-        expect(response.exception.code, 'test_error_code');
-        expect(response.exception.message, 'test_error_message');
+        expect(response.exception, isNotNull);
+        expect(response.exception!.code, 'test_error_code');
+        expect(response.exception!.message, 'test_error_message');
       });
 
       test('retrieveLostData get null response', () async {

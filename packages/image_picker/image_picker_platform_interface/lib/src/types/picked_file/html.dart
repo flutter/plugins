@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -10,21 +14,21 @@ import './base.dart';
 /// It wraps the bytes of a selected file.
 class PickedFile extends PickedFileBase {
   final String path;
-  final Uint8List _initBytes;
+  final Uint8List? _initBytes;
 
   /// Construct a PickedFile object from its ObjectUrl.
   ///
   /// Optionally, this can be initialized with `bytes`
   /// so no http requests are performed to retrieve files later.
-  PickedFile(this.path, {Uint8List bytes})
+  PickedFile(this.path, {Uint8List? bytes})
       : _initBytes = bytes,
         super(path);
 
   Future<Uint8List> get _bytes async {
     if (_initBytes != null) {
-      return Future.value(UnmodifiableUint8ListView(_initBytes));
+      return Future.value(UnmodifiableUint8ListView(_initBytes!));
     }
-    return http.readBytes(path);
+    return http.readBytes(Uri.parse(path));
   }
 
   @override
@@ -38,7 +42,7 @@ class PickedFile extends PickedFileBase {
   }
 
   @override
-  Stream<Uint8List> openRead([int start, int end]) async* {
+  Stream<Uint8List> openRead([int? start, int? end]) async* {
     final bytes = await _bytes;
     yield bytes.sublist(start ?? 0, end ?? bytes.length);
   }
