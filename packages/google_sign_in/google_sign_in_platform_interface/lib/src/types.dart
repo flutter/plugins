@@ -31,6 +31,7 @@ class GoogleSignInUserData {
     this.displayName,
     this.photoUrl,
     this.idToken,
+    this.serverAuthCode,
   });
 
   /// The display name of the signed in user.
@@ -66,9 +67,13 @@ class GoogleSignInUserData {
   /// data.
   String? idToken;
 
+  /// Authorization code required to make API calls from the server.
+  /// Read more on <https://developers.google.com/identity/sign-in/android/offline-access>
+  String? serverAuthCode;
+
   @override
   int get hashCode =>
-      hashObjects(<String?>[displayName, email, id, photoUrl, idToken]);
+      hashObjects(<String?>[displayName, email, id, photoUrl, idToken, serverAuthCode]);
 
   @override
   bool operator ==(dynamic other) {
@@ -79,7 +84,8 @@ class GoogleSignInUserData {
         otherUserData.email == email &&
         otherUserData.id == id &&
         otherUserData.photoUrl == photoUrl &&
-        otherUserData.idToken == idToken;
+        otherUserData.idToken == idToken &&
+        otherUserData.serverAuthCode == serverAuthCode;
   }
 }
 
