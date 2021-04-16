@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:typed_data';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -67,6 +67,26 @@ enum NavigationDecision {
 
   /// Allow the navigation to take place.
   navigate,
+}
+
+/// Helper class to construct the rule map for content blocking
+class BlockingRule {
+  /// Rule to pass to platforms
+  final Map<String, dynamic> rule;
+
+  /// Create a rust dat rule (is not applicable in iOS)
+  factory BlockingRule.dat({required String filePath}) =>
+      BlockingRule._({"type": "dat", "file_path": filePath});
+
+  /// Create a json Conent Blocking rule (only for iOS)
+  factory BlockingRule.json({required String filePath}) =>
+      BlockingRule._({"type": "json", "file_path": filePath});
+
+  /// Create a hosts list rule
+  factory BlockingRule.hosts({required Set<String> hosts}) =>
+      BlockingRule._({"type": "hosts", "hosts": hosts.toList(growable: false)});
+
+  BlockingRule._(this.rule);
 }
 
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
@@ -232,7 +252,7 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
-    this.hostsToBlock,
+    this.blockingRules,
     this.tabId,
     this.maxCachedTabs = 0,
   })  : assert(javascriptMode != null),
@@ -419,8 +439,22 @@ class WebView extends StatefulWidget {
   /// The default policy is [AutoMediaPlaybackPolicy.require_user_action_for_all_media_types].
   final AutoMediaPlaybackPolicy initialMediaPlaybackPolicy;
 
-  /// Provides a list of hosts which will be blocked.
-  final Set<String>? hostsToBlock;
+  /// Provides a Map of Content blocking rules.
+  /// Format
+  /// ```
+  /// {
+  ///   unique_id : {
+  ///     type : [hosts, json, dat]
+  ///     (required for json and dat) file_path : ABSOLUTE_PATH
+  ///     (required for hosts) hosts : [LIST_OF_HOST_TO_BLOCK]
+  ///   },
+  ///   ...
+  /// }
+  /// ```
+  /// Where:
+  ///  - dat is the serialized rust adblocking rules
+  ///  - json the content blocking rules for iOS
+  final Map<String, BlockingRule>? blockingRules;
 
   /// Used for restoring previous WebView state.
   final String? tabId;
@@ -493,7 +527,8 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
-    hostsToBlock: _formatHostsToBlock(widget.hostsToBlock),
+    blockingRules:
+        widget.blockingRules?.map((key, value) => MapEntry(key, value.rule)),
     tabId: widget.tabId,
     maxCachedTabs: widget.maxCachedTabs,
   );
@@ -559,10 +594,6 @@ Set<String> _extractChannelNames(Set<JavascriptChannel>? channels) {
       ? <String>{}
       : channels.map((JavascriptChannel channel) => channel.name).toSet();
   return channelNames;
-}
-
-Set<String> _formatHostsToBlock(Set<String>? hosts) {
-  return hosts == null ? <String>{} : hosts;
 }
 
 class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
@@ -669,7 +700,7 @@ class WebViewController {
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
   }
-  
+
   /// Load html file from assets
   ///
   /// `url` must not be null.

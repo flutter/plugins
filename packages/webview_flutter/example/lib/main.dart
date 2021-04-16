@@ -7,7 +7,10 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show rootBundle;
+import 'package:path_provider/path_provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() => runApp(MaterialApp(home: WebViewExample()));
@@ -35,15 +38,36 @@ class WebViewExample extends StatefulWidget {
 class _WebViewExampleState extends State<WebViewExample> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
+  String? pathToAdblockerJsonFile;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
     if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
+
+    if (Platform.isIOS) {
+      getFileFromAssets('adblocker.json').then((value) {
+        setState(() {
+          pathToAdblockerJsonFile = value.absolute.path;
+          isLoading = false;
+          print("Loaded temp adblocker file: $pathToAdblockerJsonFile");
+        });
+      });
+    } else {
+      isLoading = false;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return MaterialApp(
+          home: Center(
+        child: CircularProgressIndicator(),
+      ));
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
@@ -57,7 +81,7 @@ class _WebViewExampleState extends State<WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialUrl: 'https://google.com',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
@@ -83,10 +107,35 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('Page finished loading: $url');
           },
           gestureNavigationEnabled: true,
+          blockingRules: {
+            'trackers': BlockingRule.hosts(hosts: {
+              "lb.usemaxserver.de",
+              "tracking.klickthru.com",
+              "gsmtop.net",
+              "click.buzzcity.net",
+              "ads.admoda.com",
+              "stats.pflexads.com",
+            }),
+            if (pathToAdblockerJsonFile != null)
+              'adblocker': BlockingRule.json(filePath: pathToAdblockerJsonFile!)
+          },
         );
       }),
       floatingActionButton: favoriteButton(),
     );
+  }
+
+  Future<File> getFileFromAssets(String path) async {
+    final byteData = await rootBundle.load('assets/$path');
+
+    final file =
+        File('${(await getApplicationDocumentsDirectory()).path}/$path');
+    if (!await file.exists()) {
+      await file.writeAsBytes(byteData.buffer
+          .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes));
+    }
+
+    return file;
   }
 
   JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
