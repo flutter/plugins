@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,22 +8,26 @@ import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'common.dart';
 
+/// A command to run the example applications for packages via Flutter driver.
 class DriveExamplesCommand extends PluginCommand {
+  /// Creates an instance of the drive command.
   DriveExamplesCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+    argParser.addFlag(kAndroid,
+        help: 'Runs the Android implementation of the examples');
+    argParser.addFlag(kIos,
+        help: 'Runs the iOS implementation of the examples');
     argParser.addFlag(kLinux,
         help: 'Runs the Linux implementation of the examples');
     argParser.addFlag(kMacos,
         help: 'Runs the macOS implementation of the examples');
+    argParser.addFlag(kWeb,
+        help: 'Runs the web implementation of the examples');
     argParser.addFlag(kWindows,
         help: 'Runs the Windows implementation of the examples');
-    argParser.addFlag(kIos,
-        help: 'Runs the iOS implementation of the examples');
-    argParser.addFlag(kAndroid,
-        help: 'Runs the Android implementation of the examples');
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
@@ -46,19 +50,19 @@ class DriveExamplesCommand extends PluginCommand {
       'integration_test/*_test.dart.';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final List<String> failingTests = <String>[];
-    final bool isLinux = argResults[kLinux];
-    final bool isMacos = argResults[kMacos];
-    final bool isWindows = argResults[kWindows];
-    await for (Directory plugin in getPlugins()) {
+    final bool isLinux = argResults[kLinux] == true;
+    final bool isMacos = argResults[kMacos] == true;
+    final bool isWeb = argResults[kWeb] == true;
+    final bool isWindows = argResults[kWindows] == true;
+    await for (final Directory plugin in getPlugins()) {
       final String flutterCommand =
-          LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
-      for (Directory example in getExamplesForPlugin(plugin)) {
+          const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+      for (final Directory example in getExamplesForPlugin(plugin)) {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
-        if (!(await pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
+        if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
           continue;
         }
         final Directory driverTests =
@@ -68,7 +72,7 @@ class DriveExamplesCommand extends PluginCommand {
           continue;
         }
         // Look for driver tests ending in _test.dart in test_driver/
-        await for (FileSystemEntity test in driverTests.list()) {
+        await for (final FileSystemEntity test in driverTests.list()) {
           final String driverTestName =
               p.relative(test.path, from: driverTests.path);
           if (!driverTestName.endsWith('_test.dart')) {
@@ -97,7 +101,7 @@ class DriveExamplesCommand extends PluginCommand {
                 fileSystem.directory(p.join(example.path, 'integration_test'));
 
             if (await integrationTests.exists()) {
-              await for (FileSystemEntity integration_test
+              await for (final FileSystemEntity integration_test
                   in integrationTests.list()) {
                 if (!integration_test.basename.endsWith('_test.dart')) {
                   continue;
@@ -122,7 +126,8 @@ Tried searching for the following:
 
           final List<String> driveArgs = <String>['drive'];
 
-          final String enableExperiment = argResults[kEnableExperiment];
+          final String enableExperiment =
+              argResults[kEnableExperiment] as String;
           if (enableExperiment.isNotEmpty) {
             driveArgs.add('--enable-experiment=$enableExperiment');
           }
@@ -139,6 +144,14 @@ Tried searching for the following:
               'macos',
             ]);
           }
+          if (isWeb && isWebPlugin(plugin, fileSystem)) {
+            driveArgs.addAll(<String>[
+              '-d',
+              'web-server',
+              '--web-port=7357',
+              '--browser-name=chrome',
+            ]);
+          }
           if (isWindows && isWindowsPlugin(plugin, fileSystem)) {
             driveArgs.addAll(<String>[
               '-d',
@@ -146,10 +159,10 @@ Tried searching for the following:
             ]);
           }
 
-          for (final targetPath in targetPaths) {
+          for (final String targetPath in targetPaths) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
-                [
+                <String>[
                   ...driveArgs,
                   '--driver',
                   p.join('test_driver', driverTestName),
@@ -169,7 +182,7 @@ Tried searching for the following:
 
     if (failingTests.isNotEmpty) {
       print('The following driver tests are failing (see above for details):');
-      for (String test in failingTests) {
+      for (final String test in failingTests) {
         print(' * $test');
       }
       throw ToolExit(1);
@@ -178,32 +191,36 @@ Tried searching for the following:
     print('All driver tests successful!');
   }
 
-  Future<bool> pluginSupportedOnCurrentPlatform(
+  Future<bool> _pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin, FileSystem fileSystem) async {
-    final bool isLinux = argResults[kLinux];
-    final bool isMacos = argResults[kMacos];
-    final bool isWindows = argResults[kWindows];
-    final bool isIOS = argResults[kIos];
-    final bool isAndroid = argResults[kAndroid];
+    final bool isAndroid = argResults[kAndroid] == true;
+    final bool isIOS = argResults[kIos] == true;
+    final bool isLinux = argResults[kLinux] == true;
+    final bool isMacos = argResults[kMacos] == true;
+    final bool isWeb = argResults[kWeb] == true;
+    final bool isWindows = argResults[kWindows] == true;
+    if (isAndroid) {
+      return isAndroidPlugin(plugin, fileSystem);
+    }
+    if (isIOS) {
+      return isIosPlugin(plugin, fileSystem);
+    }
     if (isLinux) {
       return isLinuxPlugin(plugin, fileSystem);
     }
     if (isMacos) {
       return isMacOsPlugin(plugin, fileSystem);
     }
+    if (isWeb) {
+      return isWebPlugin(plugin, fileSystem);
+    }
     if (isWindows) {
       return isWindowsPlugin(plugin, fileSystem);
     }
-    if (isIOS) {
-      return isIosPlugin(plugin, fileSystem);
-    }
-    if (isAndroid) {
-      return (isAndroidPlugin(plugin, fileSystem));
-    }
     // When we are here, no flags are specified. Only return true if the plugin
-    // supports Android for legacy command support. TODO(cyanglaz): Make Android
-    // flag also required like other platforms (breaking change).
-    // https://github.com/flutter/flutter/issues/58285
+    // supports Android for legacy command support.
+    // TODO(cyanglaz): Make Android flag also required like other platforms
+    // (breaking change). https://github.com/flutter/flutter/issues/58285
     return isAndroidPlugin(plugin, fileSystem);
   }
 }

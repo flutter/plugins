@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -23,7 +27,7 @@ void main() {
   Directory pluginDir;
   GitDir gitDir;
   TestProcessRunner processRunner;
-  CommandRunner<Null> commandRunner;
+  CommandRunner<void> commandRunner;
   MockStdin mockStdin;
 
   setUp(() async {
@@ -44,9 +48,9 @@ void main() {
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
-    commandRunner = CommandRunner<Null>('tester', '')
+    commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(
-          mockPackagesDir, const LocalFileSystem(),
+          mockPackagesDir, mockPackagesDir.fileSystem,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
           stdinput: mockStdin));
@@ -61,15 +65,18 @@ void main() {
     test('requires a package flag', () async {
       await expectLater(() => commandRunner.run(<String>['publish-plugin']),
           throwsA(const TypeMatcher<ToolExit>()));
-
       expect(
-          printedMessages.last, contains("Must specify a package to publish."));
+          printedMessages.last, contains('Must specify a package to publish.'));
     });
 
     test('requires an existing flag', () async {
       await expectLater(
-          () => commandRunner
-              .run(<String>['publish-plugin', '--package', 'iamerror']),
+          () => commandRunner.run(<String>[
+                'publish-plugin',
+                '--package',
+                'iamerror',
+                '--no-push-tags'
+              ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(printedMessages.last, contains('iamerror does not exist'));
@@ -79,8 +86,12 @@ void main() {
       pluginDir.childFile('tmp').createSync();
 
       await expectLater(
-          () => commandRunner
-              .run(<String>['publish-plugin', '--package', testPluginName]),
+          () => commandRunner.run(<String>[
+                'publish-plugin',
+                '--package',
+                testPluginName,
+                '--no-push-tags'
+              ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(
@@ -94,8 +105,7 @@ void main() {
           () => commandRunner
               .run(<String>['publish-plugin', '--package', testPluginName]),
           throwsA(const TypeMatcher<ToolExit>()));
-
-      expect(processRunner.results.last.stderr, contains("No such remote"));
+      expect(processRunner.results.last.stderr, contains('No such remote'));
     });
 
     test("doesn't validate the remote if it's not pushing tags", () async {
@@ -200,7 +210,7 @@ void main() {
               ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(printedMessages, contains("Publish failed. Exiting."));
+      expect(printedMessages, contains('Publish failed. Exiting.'));
     });
   });
 
@@ -216,7 +226,7 @@ void main() {
 
       final String tag =
           (await gitDir.runCommand(<String>['show-ref', 'fake_package-v0.0.1']))
-              .stdout;
+              .stdout as String;
       expect(tag, isNotEmpty);
     });
 
@@ -231,11 +241,11 @@ void main() {
               ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(printedMessages, contains("Publish failed. Exiting."));
+      expect(printedMessages, contains('Publish failed. Exiting.'));
       final String tag = (await gitDir.runCommand(
               <String>['show-ref', 'fake_package-v0.0.1'],
               throwOnError: false))
-          .stdout;
+          .stdout as String;
       expect(tag, isEmpty);
     });
   });
@@ -357,7 +367,7 @@ class MockStdin extends Mock implements io.Stdin {
   String readLineOutput;
 
   @override
-  Stream<S> transform<S>(StreamTransformer<dynamic, S> streamTransformer) {
+  Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
     return controller.stream.transform(streamTransformer);
   }
 

@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -22,6 +26,7 @@ import 'common.dart';
 ///
 /// [processRunner], [print], and [stdin] can be overriden for easier testing.
 class PublishPluginCommand extends PluginCommand {
+  /// Creates an instance of the publish command.
   PublishPluginCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -81,40 +86,64 @@ class PublishPluginCommand extends PluginCommand {
   final Print _print;
   final Stdin _stdin;
   // The directory of the actual package that we are publishing.
-  Directory _packageDir;
   StreamSubscription<String> _stdinSubscription;
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
+    final String package = argResults[_packageOption] as String;
+    if (package == null) {
+      _print(
+          'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
+      throw ToolExit(1);
+    }
+
     _print('Checking local repo...');
-    _packageDir = _checkPackageDir();
-    await _checkGitStatus();
-    final bool shouldPushTag = argResults[_pushTagsOption];
-    final String remote = argResults[_remoteOption];
+    if (!await GitDir.isGitDir(packagesDir.path)) {
+      _print('$packagesDir is not a valid Git repository.');
+      throw ToolExit(1);
+    }
+
+    final bool shouldPushTag = argResults[_pushTagsOption] == true;
+    final String remote = argResults[_remoteOption] as String;
     String remoteUrl;
     if (shouldPushTag) {
       remoteUrl = await _verifyRemote(remote);
     }
     _print('Local repo is ready!');
 
-    await _publish();
-    _print('Package published!');
-    if (!argResults[_tagReleaseOption]) {
-      return await _finishSuccesfully();
+    final Directory packageDir = _getPackageDir(package);
+    await _publishPlugin(packageDir: packageDir);
+    if (argResults[_tagReleaseOption] as bool) {
+      await _tagRelease(
+          packageDir: packageDir,
+          remote: remote,
+          remoteUrl: remoteUrl,
+          shouldPushTag: shouldPushTag);
     }
+    await _finishSuccesfully();
+  }
 
-    _print('Tagging release...');
-    final String tag = _getTag();
+  Future<void> _publishPlugin({@required Directory packageDir}) async {
+    await _checkGitStatus(packageDir);
+    await _publish(packageDir);
+    _print('Package published!');
+  }
+
+  Future<void> _tagRelease(
+      {@required Directory packageDir,
+      @required String remote,
+      @required String remoteUrl,
+      @required bool shouldPushTag}) async {
+    final String tag = _getTag(packageDir);
+    _print('Tagging release $tag...');
     await processRunner.runAndExitOnError('git', <String>['tag', tag],
-        workingDir: _packageDir);
+        workingDir: packageDir);
     if (!shouldPushTag) {
-      return await _finishSuccesfully();
+      return;
     }
 
     _print('Pushing tag to $remote...');
     await _pushTagToRemote(remote: remote, tag: tag, remoteUrl: remoteUrl);
-    await _finishSuccesfully();
   }
 
   Future<void> _finishSuccesfully() async {
@@ -122,37 +151,29 @@ class PublishPluginCommand extends PluginCommand {
     _print('Done!');
   }
 
-  Directory _checkPackageDir() {
-    final String package = argResults[_packageOption];
-    if (package == null) {
-      _print(
-          'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
+  // Returns the packageDirectory based on the package name.
+  // Throws ToolExit if the `package` doesn't exist.
+  Directory _getPackageDir(String package) {
+    final Directory packageDir = packagesDir.childDirectory(package);
+    if (!packageDir.existsSync()) {
+      _print('${packageDir.absolute.path} does not exist.');
       throw ToolExit(1);
     }
-    final Directory _packageDir = packagesDir.childDirectory(package);
-    if (!_packageDir.existsSync()) {
-      _print('${_packageDir.absolute.path} does not exist.');
-      throw ToolExit(1);
-    }
-    return _packageDir;
+    return packageDir;
   }
 
-  Future<void> _checkGitStatus() async {
-    if (!await GitDir.isGitDir(packagesDir.path)) {
-      _print('$packagesDir is not a valid Git repository.');
-      throw ToolExit(1);
-    }
-
+  Future<void> _checkGitStatus(Directory packageDir) async {
     final ProcessResult statusResult = await processRunner.runAndExitOnError(
         'git',
         <String>[
           'status',
           '--porcelain',
           '--ignored',
-          _packageDir.absolute.path
+          packageDir.absolute.path
         ],
-        workingDir: _packageDir);
-    final String statusOutput = statusResult.stdout;
+        workingDir: packageDir);
+
+    final String statusOutput = statusResult.stdout as String;
     if (statusOutput.isNotEmpty) {
       _print(
           "There are files in the package directory that haven't been saved in git. Refusing to publish these files:\n\n"
@@ -165,17 +186,18 @@ class PublishPluginCommand extends PluginCommand {
   Future<String> _verifyRemote(String remote) async {
     final ProcessResult remoteInfo = await processRunner.runAndExitOnError(
         'git', <String>['remote', 'get-url', remote],
-        workingDir: _packageDir);
-    return remoteInfo.stdout;
+        workingDir: packagesDir);
+    return remoteInfo.stdout as String;
   }
 
-  Future<void> _publish() async {
-    final List<String> publishFlags = argResults[_pubFlagsOption];
+  Future<void> _publish(Directory packageDir) async {
+    final List<String> publishFlags =
+        argResults[_pubFlagsOption] as List<String>;
     _print(
-        'Running `pub publish ${publishFlags.join(' ')}` in ${_packageDir.absolute.path}...\n');
+        'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
     final Process publish = await processRunner.start(
         'flutter', <String>['pub', 'publish'] + publishFlags,
-        workingDirectory: _packageDir);
+        workingDirectory: packageDir);
     publish.stdout
         .transform(utf8.decoder)
         .listen((String data) => _print(data));
@@ -192,12 +214,13 @@ class PublishPluginCommand extends PluginCommand {
     }
   }
 
-  String _getTag() {
+  String _getTag(Directory packageDir) {
     final File pubspecFile =
-        fileSystem.file(p.join(_packageDir.path, 'pubspec.yaml'));
-    final YamlMap pubspecYaml = loadYaml(pubspecFile.readAsStringSync());
-    final String name = pubspecYaml['name'];
-    final String version = pubspecYaml['version'];
+        fileSystem.file(p.join(packageDir.path, 'pubspec.yaml'));
+    final YamlMap pubspecYaml =
+        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+    final String name = pubspecYaml['name'] as String;
+    final String version = pubspecYaml['version'] as String;
     // We should have failed to publish if these were unset.
     assert(name.isNotEmpty && version.isNotEmpty);
     return _tagFormat
@@ -216,7 +239,6 @@ class PublishPluginCommand extends PluginCommand {
       _print('Tag push canceled.');
       throw ToolExit(1);
     }
-
     await processRunner.runAndExitOnError('git', <String>['push', remote, tag],
         workingDir: packagesDir);
   }

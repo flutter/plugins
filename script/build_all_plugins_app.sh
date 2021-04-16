@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copyright 2013 The Flutter Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
 
 #  Usage:
 #
@@ -26,8 +29,6 @@ check_changed_packages > /dev/null
 # cases where using a relaxed version constraint isn't possible.
 readonly EXCLUDED_PLUGINS_LIST=(
   "plugin_platform_interface" # This should never be a direct app dependency.
-  "extension_google_sign_in_as_googleapis_auth" # Transitive dependency issues
-      # with integration_test.
 )
 # Comma-separated string of the list above
 readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
@@ -37,6 +38,12 @@ ALL_EXCLUDED=($EXCLUDED)
 echo "Excluding the following plugins: $ALL_EXCLUDED"
 
 (cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
+
+# Master now creates null-safe app code by default; migrate stable so both
+# branches are building in the same mode.
+if [[ "${CHANNEL}" == "stable" ]]; then
+  (cd $REPO_DIR/all_plugins && dart migrate --apply-changes)
+fi
 
 function error() {
   echo "$@" 1>&2
