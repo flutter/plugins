@@ -41,7 +41,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
-  private final ArrayList<String> hostsToBlock = new ArrayList<String>();
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -146,8 +145,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
-    if (params.containsKey("hostsToBlock")) {
-      hostsToBlock.addAll((ArrayList<String>) params.get("hostsToBlock"));
+    if (params.containsKey("blockingRules") && !ContentBlocker.INSTANCE.isReady()) {
+      ContentBlocker.INSTANCE.setupContentBlocking((Map<String, Map<String, Object>>) params.get("blockingRules"));
     }
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
@@ -481,7 +480,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);
           final WebViewClient webViewClient =
-                  flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
+                  flutterWebViewClient.createWebViewClient(hasNavigationDelegate);
           webView.setWebViewClient(webViewClient);
           break;
         case "debuggingEnabled":

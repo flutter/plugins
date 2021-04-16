@@ -9,7 +9,7 @@ import androidx.collection.LruCache;
 public enum WebViewManager {
     INSTANCE;
 
-    private WebViewCache cache = new WebViewCache();
+    private final WebViewCache cache = new WebViewCache();
 
     public WebViewManager getInstance() {
         return INSTANCE;
