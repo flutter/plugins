@@ -10,7 +10,9 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 @property(nonatomic, retain) FlutterMethodChannel *channel;
 @end
 
-@implementation FLTQuickActionsPlugin
+@implementation FLTQuickActionsPlugin {
+  NSString *shortcutType;
+}
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -50,11 +52,35 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(9.0)) {
-  [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
+  [self _handleShortcut:shortcutItem.type];
   return YES;
 }
 
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  if (@available(iOS 9.0, *)) {
+    UIApplicationShortcutItem *shortcutItem =
+        launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+    if (shortcutItem) {
+      shortcutType = shortcutItem.type;
+      return NO;
+    }
+  }
+  return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  if (shortcutType) {
+    [self _handleShortcut:shortcutType];
+    shortcutType = nil;
+  }
+}
+
 #pragma mark Private functions
+
+- (void)_handleShortcut:(NSString *)shortcut {
+  [self.channel invokeMethod:@"launch" arguments:shortcut];
+}
 
 NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
   NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];
