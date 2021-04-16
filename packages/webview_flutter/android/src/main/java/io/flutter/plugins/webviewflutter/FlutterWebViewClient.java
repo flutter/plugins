@@ -38,7 +38,6 @@ class FlutterWebViewClient {
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
   boolean hasProgressTracking;
-  private ArrayList<String> hostsToBlock;
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
@@ -169,12 +168,26 @@ class FlutterWebViewClient {
     }
   }
 
+  @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+  @Nullable
+  private WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
+    Uri requestUri = request.getUrl();
+    Uri hostUri = Uri.parse(view.getUrl());
+    if (ContentBlocker.INSTANCE.isReady()) {
+      String requestHeaders = request.getRequestHeaders().get("Content-Type");
+      BlockResult result = ContentBlocker.INSTANCE.shouldBlock(hostUri, requestUri, ContentType.SCRIPT);
+      if (result == BlockResult.BLOCK) {
+        return createEmptyResource();
+      }
+    }
+    return null;
+  }
+
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
   // https://github.com/flutter/flutter/issues/29446.
-  WebViewClient createWebViewClient(boolean hasNavigationDelegate, ArrayList<String> hostsToBlock) {
+  WebViewClient createWebViewClient(boolean hasNavigationDelegate) {
     this.hasNavigationDelegate = hasNavigationDelegate;
-    this.hostsToBlock = hostsToBlock;
 
     if (!hasNavigationDelegate || android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
       return internalCreateWebViewClient();
@@ -205,15 +218,8 @@ class FlutterWebViewClient {
       @Nullable
       @Override
       public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        String uriString = request.getUrl().toString();
-        if (hostsToBlock != null && !hostsToBlock.isEmpty()) {
-          for (String host: hostsToBlock) {
-            if (uriString.contains(host)) {
-              return createEmptyResource();
-            }
-          }
-        }
-        return super.shouldInterceptRequest(view, request);
+        WebResourceResponse response = FlutterWebViewClient.this.shouldInterceptRequest(view, request);
+        return response == null ? super.shouldInterceptRequest(view, request) : response;
       }
 
       @TargetApi(Build.VERSION_CODES.M)
@@ -265,15 +271,8 @@ class FlutterWebViewClient {
       @Nullable
       @Override
       public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
-        String uriString = request.getUrl().toString();
-        if (hostsToBlock != null && !hostsToBlock.isEmpty()) {
-          for (String host: hostsToBlock) {
-            if (uriString.contains(host)) {
-              return createEmptyResource();
-            }
-          }
-        }
-        return super.shouldInterceptRequest(view, request);
+        WebResourceResponse response = FlutterWebViewClient.this.shouldInterceptRequest(view, request);
+        return response == null ? super.shouldInterceptRequest(view, request) : response;
       }
 
       // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is
