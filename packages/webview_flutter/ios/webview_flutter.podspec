@@ -25,4 +25,11 @@ Downloaded by pub (not CocoaPods).
     test_spec.source_files = 'Tests/**/*'
     test_spec.dependency 'OCMock','3.5'
   end
+
+  s.swift_version = '5.0'
+  s.xcconfig = {
+     'LIBRARY_SEARCH_PATHS' => '$(TOOLCHAIN_DIR)/usr/lib/swift/$(PLATFORM_NAME)/ $(SDKROOT)/usr/lib/swift',
+     'LD_RUNPATH_SEARCH_PATHS' => '/usr/lib/swift',
+
+     }
 end

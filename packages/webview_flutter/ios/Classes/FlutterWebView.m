@@ -7,6 +7,7 @@
 #import "FLTWKProgressionDelegate.h"
 #import "JavaScriptChannelHandler.h"
 #import "WebViewManager.h"
+#import <webview_flutter/webview_flutter-Swift.h>   
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -224,6 +225,11 @@
 }
 
 - (void)setupContentBlockers:(NSArray<NSString *> *)hosts completion:(void (^)(void))completion {
+    
+
+    [HelperFunctions accessSecret];
+    [HelperFunctions accessSecret];
+    
     if ([hosts count] == 0) {
         completion();
         return;
