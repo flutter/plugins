@@ -8,11 +8,10 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) NSString *shortcutType;
 @end
 
-@implementation FLTQuickActionsPlugin {
-  NSString *shortcutType;
-}
+@implementation FLTQuickActionsPlugin
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
@@ -52,7 +51,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(9.0)) {
-  [self _handleShortcut:shortcutItem.type];
+  [self handleShortcut:shortcutItem.type];
   return YES;
 }
 
@@ -62,7 +61,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
     UIApplicationShortcutItem *shortcutItem =
         launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
     if (shortcutItem) {
-      shortcutType = shortcutItem.type;
+      self.shortcutType = shortcutItem.type;
       return NO;
     }
   }
@@ -70,15 +69,15 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application {
-  if (shortcutType) {
-    [self _handleShortcut:shortcutType];
-    shortcutType = nil;
+  if (self.shortcutType) {
+    [self handleShortcut:self.shortcutType];
+    self.shortcutType = nil;
   }
 }
 
 #pragma mark Private functions
 
-- (void)_handleShortcut:(NSString *)shortcut {
+- (void)handleShortcut:(NSString *)shortcut {
   [self.channel invokeMethod:@"launch" arguments:shortcut];
 }
 
