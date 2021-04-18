@@ -61,7 +61,15 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
     UIApplicationShortcutItem *shortcutItem =
         launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
     if (shortcutItem) {
+      // Keep hold of the shortcut type and handle it in the
+      // `applicationDidBecomeActure:` method once the Dart MethodChannel
+      // is initialized.
       self.shortcutType = shortcutItem.type;
+
+      // Return NO to indicate we handled the quick action to ensure
+      // the `application:performActionFor:` method is not called (as
+      // per Apple's documentation:
+      // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622935-application?language=objc).
       return NO;
     }
   }
