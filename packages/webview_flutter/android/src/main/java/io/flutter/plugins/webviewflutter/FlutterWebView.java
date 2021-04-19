@@ -479,14 +479,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           if (mode != null) updateJsMode(mode);
           break;
         case "hasNavigationDelegate":
-          if (shouldLoad) {
-            final boolean hasNavigationDelegate = (boolean) settings.get(key);
-
-            final WebViewClient webViewClient =
-                    flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
-
-            webView.setWebViewClient(webViewClient);
-          }
+          final boolean hasNavigationDelegate = (boolean) settings.get(key);
+          final WebViewClient webViewClient =
+                  flutterWebViewClient.createWebViewClient(hasNavigationDelegate, hostsToBlock);
+          webView.setWebViewClient(webViewClient);
           break;
         case "debuggingEnabled":
           final boolean debuggingEnabled = (boolean) settings.get(key);
