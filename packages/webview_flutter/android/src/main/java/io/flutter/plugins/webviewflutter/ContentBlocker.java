@@ -3,12 +3,13 @@ package io.flutter.plugins.webviewflutter;
 
 import android.net.Uri;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import io.flutter.plugins.webviewflutter.content_type.ContentType;
 
 import static io.flutter.plugins.webviewflutter.ContentBlockingRuleTypes.*;
 
@@ -69,9 +70,10 @@ public enum ContentBlocker implements ContentBlockEngine {
                     engines.put(rule.getKey(), new HashBlockEngine(hosts));
                     break;
                 case DAT:
+                    break;
                 case JSON:
                 default:
-                    throw new UnsupportedOperationException("Rules type");
+                    throw new UnsupportedOperationException("Rules type " + type);
             }
         }
 
@@ -99,11 +101,6 @@ enum BlockResult {
     BLOCK
 }
 
-enum ContentType {
-    IMAGE,
-    SCRIPT,
-    // TODO add all remaining types
-}
 
 interface ContentBlockEngine {
     /**
