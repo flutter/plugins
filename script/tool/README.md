@@ -1,46 +1,47 @@
 # Flutter Plugin Tools
 
-Note: The commands in tools are designed to run under plugins/ or plugins/packages/.
+Note: The commands in tools are designed to run at the root of the repository or `<repository-root>/packages/`.
 
 To run the tool:
 
 ```sh
-dart pub get
-dart run lib/src/main.dart <args>
+cd <path_to_plugins>/script/tool && dart pub get && cd ../../
+dart run ./script/tool/lib/src/main.dart <args>
 ```
 
 ## Format Code
 
 ```sh
-cd <path_to_plugins>/packages
-dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
+cd <path_to_plugins>
+dart run /script/tool/lib/src/main.dart format --plugins plugin_name
 ```
 
 ## Run static analyzer
 
 ```sh
-cd <path_to_plugins>/packages
+cd <path_to_plugins>
 pub run ./script/tool/lib/src/main.dart analyze --plugins plugin_name
 ```
 
-## Run dart unit tests
+## Run Dart unit tests
 
 ```sh
-cd <path_to_plugins>/packages
+cd <path_to_plugins>
 pub run ./script/tool/lib/src/main.dart test --plugins plugin_name
 ```
 
 ## Run XCTests
 
 ```sh
-cd <path_to_plugins>/packages
+cd <path_to_plugins>
 dart run lib/src/main.dart xctest --target RunnerUITests --skip <plugins_to_skip>
 ```
 
 ## Publish and tag release
 
 ``sh
-cd <path_to_plugins>/packages
+cd <path_to_plugins>
+git checkout <commit_hash_need_to_publish>
 dart run ./script/tool/lib/src/main.dart publish-plugin --package <package>
 ``
 

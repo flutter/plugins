@@ -49,7 +49,7 @@ for any of the following plugins, we encourage you to submit it
 ## Setting up tools
 
 We use a range of tooling script to do varies of things on CI. (testing, formatting, etc.)
-Your are likely to use some of the tooling script locally in your contributing journey.
+There are scripts for many common tasks (testing, formatting, etc.) that will likely be useful in preparing a PR.
 See [plugin_tools](./script/tool/README.MD) for more details.
 
 ## Running the examples
@@ -158,10 +158,10 @@ To start working on a patch:
  * Hack away.
  * Verify changes with [plugin_tools](./script/tool/README.MD).
 ```sh
-cd script/tool && pub get
-dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
-pub run ./script/tool/lib/src/main.dart analyze --plugins plugin_name
-pub run ./script/tool/lib/src/main.dart test --plugins plugin_name
+cd script/tool && pub get && cd ../../
+dart ./script/tool/lib/src/main.dart format --plugins plugin_name
+dart ./script/tool/lib/src/main.dart analyze --plugins plugin_name
+dart ./script/tool/lib/src/main.dart test --plugins plugin_name
 ```
  * `git commit -a -m "<your informative commit message>"`
  * `git push origin <name_of_your_branch>`
@@ -190,8 +190,6 @@ your organization's) name and contact info to the AUTHORS file for the plugin.
 You may also add it to the AUTHORS file for [the repository](AUTHORS).
 
 ### The review process
-
-* This is a new process we are currently experimenting with, feedback on the process is welcomed at the Gitter contributors channel. *
 
 Reviewing PRs often requires a non trivial amount of time. We prioritize issues, not PRs, so that we use our maintainers' time in the most impactful way. Issues pertaining to this repository are managed in the [flutter/flutter issue tracker and are labeled with "plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin+sort%3Areactions-%2B1-desc). Non trivial PRs should have an associated issue that will be used for prioritization. See the [prioritization section](https://github.com/flutter/flutter/wiki/Issue-hygiene#prioritization) in the Flutter wiki to understand how issues are prioritized.
 
@@ -234,12 +232,12 @@ Some things to keep in mind before publishing the release:
   from people that immediately adopt it, and uncovering and resolving those
   support issues will take more time if you're unavailable.
 
-Releasing a package is a two-step process.
+To release a package, a [publish-plugin](./script/tool/README.MD#publish-and-tag-release) tool script should be used. This command publishes the new version to pub.dev, and tags the commit in the format of `<package_name>-v<package_version>` then pushes it to upstream.
+
+Alternatively, one can release a package in the below 2-step process.
 
 1. Push the package update to [pub.dev](https://pub.dev) using `pub publish`.
 2. Tag the commit with git in the format of `<package_name>-v<package_version>`,
    and then push the tag to the `flutter/plugins` master branch. This can be
    done manually with `git tag $tagname && git push upstream $tagname` while
    checked out on the commit that updated `version` in `pubspec.yaml`.
-
-For convenience, a [publish-plugin](./script/tool/README.MD#publish-and-tag-release) tool script could be used to do both step at once.
