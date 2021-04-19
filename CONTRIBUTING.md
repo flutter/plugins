@@ -48,7 +48,6 @@ for any of the following plugins, we encourage you to submit it
 
 ## Setting up tools
 
-We use a range of tooling script to do varies of things on CI. (testing, formatting, etc.)
 There are scripts for many common tasks (testing, formatting, etc.) that will likely be useful in preparing a PR.
 See [plugin_tools](./script/tool/README.MD) for more details.
 
