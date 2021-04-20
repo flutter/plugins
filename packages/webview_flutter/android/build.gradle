@@ -33,6 +33,7 @@ android {
     }
 
     dependencies {
+        implementation 'com.xayn.adblockeraar:adblocker:0.1.4'
         implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.webkit:webkit:1.0.0'
     }
