@@ -102,7 +102,7 @@ class LocalAuthentication {
   }) async {
     assert(localizedReason.isNotEmpty);
 
-    final Map<String, Object> args = <String, Object>{
+    final Map<String, Object?> args = <String, Object?>{
       'localizedReason': localizedReason,
       'useErrorDialogs': useErrorDialogs,
       'stickyAuth': stickyAuth,
