@@ -1,17 +1,16 @@
-package io.flutter.plugins.webviewflutter;
+package io.flutter.plugins.webviewflutter.adblock;
 
 
 import android.net.Uri;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.flutter.plugins.webviewflutter.content_type.ContentType;
 
-import static io.flutter.plugins.webviewflutter.ContentBlockingRuleTypes.*;
+import static io.flutter.plugins.webviewflutter.adblock.ContentBlockingRuleTypes.*;
 
 enum ContentBlockerOperationResult {
     SUCCESS,
@@ -115,18 +114,3 @@ interface ContentBlockEngine {
     BlockResult shouldBlock(Uri hostedUrl, Uri requestedUrl, ContentType type);
 }
 
-class HashBlockEngine implements ContentBlockEngine {
-
-    final HashSet<String> hosts;
-
-    HashBlockEngine(Collection<String> hosts) {
-        this.hosts = new HashSet<>(hosts);
-    }
-
-
-    @Override
-    public BlockResult shouldBlock(Uri hostedUrl, Uri requestedUrl, ContentType type) {
-        String host = requestedUrl.getHost();
-        return hosts.contains(host) ? BlockResult.BLOCK : BlockResult.OK;
-    }
-}
