@@ -19,13 +19,14 @@ import io.flutter.plugins.webviewflutter.content_type.ContentType;
 
 class RustAdblockeEngine implements ContentBlockEngine {
 
-    private static final String TAG = "RustAdblockeEngine";
     final String pathToDatFile;
+    final String TAG;
     private final AdblockEngine engine;
     private final AtomicBoolean ready = new AtomicBoolean(false);
 
-    public RustAdblockeEngine(final String pathToDatFile, @WorkerThread final Function<RustAdblockeEngine, Void> onEngineInit) {
+    public RustAdblockeEngine(final String pathToDatFile, String logName, @WorkerThread final Function<RustAdblockeEngine, Void> onEngineInit) {
         this.pathToDatFile = pathToDatFile;
+        this.TAG = "RustAdblockeEngine:"+ logName;
 
         this.engine = Adblock.INSTANCE.createEngine();
 
@@ -47,8 +48,13 @@ class RustAdblockeEngine implements ContentBlockEngine {
     @Override
     public BlockResult shouldBlock(Uri hostedUrl, Uri requestedUrl, ContentType type) {
         if (isReady()) {
+            final long start = System.currentTimeMillis();
+            if (Thread.holdsLock(ready)) {
+                Log.d(TAG, "should block HIT.");
+            }
             synchronized (ready) {
                 AdblockResult result = engine.match(requestedUrl.toString(), hostedUrl.toString(), type.rawName);
+                Log.d(TAG, "shouldBlock(" +Thread.currentThread().getName()+ "): matched "+ result.isMatched() + " in "+ (System.currentTimeMillis() - start) + ", msec");
                 return result.isMatched() ? BlockResult.BLOCK : BlockResult.OK;
             }
         }

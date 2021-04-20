@@ -74,7 +74,7 @@ public enum ContentBlocker implements ContentBlockEngine {
                     break;
                 case DAT:
                     final String pathToDatFile = (String) rule.getValue().get(ContentBlockingKeys.FILE_PATH.rawName);
-                    new RustAdblockeEngine(pathToDatFile, new Function<RustAdblockeEngine, Void>() {
+                    new RustAdblockeEngine(pathToDatFile, rule.getKey(), new Function<RustAdblockeEngine, Void>() {
                         // Careful: apply is called on a Worker Thread
                         @Override
                         public Void apply(RustAdblockeEngine engine) {
