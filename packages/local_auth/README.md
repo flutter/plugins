@@ -136,7 +136,7 @@ try {
 
 ## iOS Integration
 
-Note that this plugin works with both TouchID and FaceID. However, to use the latter,
+Note that this plugin works with both Touch ID and Face ID. However, to use the latter,
 you need to also add:
 
 ```xml
@@ -145,7 +145,7 @@ you need to also add:
 ```
 
 to your Info.plist file. Failure to do so results in a dialog that tells the user your
-app has not been updated to use TouchID.
+app has not been updated to use Face ID.
 
 ## Android Integration
 
