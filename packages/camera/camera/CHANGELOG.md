@@ -1,6 +1,6 @@
 ## 0.8.2
 
-* Fixed camera example
+* Fixed example
 
 ## 0.8.1
 
