@@ -2,12 +2,15 @@ package io.flutter.plugins.webviewflutter.adblock;
 
 
 import android.net.Uri;
+import android.util.Log;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import androidx.arch.core.util.Function;
 import io.flutter.plugins.webviewflutter.content_type.ContentType;
 
 import static io.flutter.plugins.webviewflutter.adblock.ContentBlockingRuleTypes.*;
@@ -52,15 +55,16 @@ enum ContentBlockingRuleTypes {
 public enum ContentBlocker implements ContentBlockEngine {
     INSTANCE;
 
-    private final Map<String, ContentBlockEngine> engines = new LinkedHashMap<>();
+    private final Map<String, ContentBlockEngine> engines = Collections.synchronizedMap(new LinkedHashMap<String, ContentBlockEngine>());
     private final AtomicBoolean isReady = new AtomicBoolean(false);
+    private static final String TAG = "ContentBlocker";
 
     public boolean isReady() {
         return isReady.get();
     }
 
     public void setupContentBlocking(Map<String, Map<String, Object>> rules) {
-        for (Map.Entry<String, Map<String, Object>> rule : rules.entrySet()) {
+        for (final Map.Entry<String, Map<String, Object>> rule : rules.entrySet()) {
             ContentBlockingRuleTypes type = forRawName((String) rule.getValue().get(ContentBlockingKeys.TYPE.rawName));
             switch (type) {
                 case HOSTS:
@@ -69,6 +73,21 @@ public enum ContentBlocker implements ContentBlockEngine {
                     engines.put(rule.getKey(), new HashBlockEngine(hosts));
                     break;
                 case DAT:
+                    final String pathToDatFile = (String) rule.getValue().get(ContentBlockingKeys.FILE_PATH.rawName);
+                    new RustAdblockeEngine(pathToDatFile, new Function<RustAdblockeEngine, Void>() {
+                        // Careful: apply is called on a Worker Thread
+                        @Override
+                        public Void apply(RustAdblockeEngine engine) {
+                            if (engine != null) {
+                                engines.put(rule.getKey(), engine);
+                            } else {
+                                // TODO Throw error so that Flutter understands that this resource is not valid
+                                Log.d(TAG, "Could not init rust adblock engine:  " + pathToDatFile);
+                            }
+                            return null;
+                        }
+                    });
+
                     break;
                 case JSON:
                 default:
@@ -95,11 +114,6 @@ public enum ContentBlocker implements ContentBlockEngine {
     }
 }
 
-enum BlockResult {
-    OK,
-    BLOCK
-}
-
 
 interface ContentBlockEngine {
     /**
@@ -108,7 +122,7 @@ interface ContentBlockEngine {
      *
      * @param hostedUrl    (i.e. https://heise.de)
      * @param requestedUrl (i.e. https://heise.de/ads/script)
-     * @param type
+     * @param type (The types of content that is requested)
      * @return The decision if the requestedUrl should be blocked.
      */
     BlockResult shouldBlock(Uri hostedUrl, Uri requestedUrl, ContentType type);
