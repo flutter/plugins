@@ -40,7 +40,8 @@ void logError(String code, String? message) {
   }
 }
 
-class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindingObserver, TickerProviderStateMixin {
+class _CameraExampleHomeState extends State<CameraExampleHome>
+    with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
   XFile? imageFile;
   XFile? videoFile;
@@ -212,7 +213,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
     if (controller == null || _pointers != 2) {
       return;
     }
-    _currentScale = (_baseScale * details.scale).clamp(_minAvailableZoom, _maxAvailableZoom);
+    _currentScale = (_baseScale * details.scale)
+        .clamp(_minAvailableZoom, _maxAvailableZoom);
     await controller!.setZoomLevel(_currentScale);
   }
 
@@ -239,9 +241,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
                       ),
                       child: Center(
                         child: AspectRatio(
-                          aspectRatio: localVideoController.value.aspectRatio,
-                          child: VideoPlayer(localVideoController)
-                        ),
+                            aspectRatio: localVideoController.value.aspectRatio,
+                            child: VideoPlayer(localVideoController)),
                       ),
                     ),
             ),
@@ -377,7 +378,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
                     child: Text('AUTO'),
                     style: styleAuto,
                     onPressed: controller != null
-                        ? () => onSetExposureModeButtonPressed(ExposureMode.auto)
+                        ? () =>
+                            onSetExposureModeButtonPressed(ExposureMode.auto)
                         : null,
                     onLongPress: () {
                       if (controller != null) {
@@ -390,7 +392,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
                     child: const Text('LOCKED'),
                     style: styleLocked,
                     onPressed: controller != null
-                        ? () => onSetExposureModeButtonPressed(ExposureMode.locked)
+                        ? () =>
+                            onSetExposureModeButtonPressed(ExposureMode.locked)
                         : null,
                   ),
                 ],
@@ -408,7 +411,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
                     min: _minAvailableExposureOffset,
                     max: _maxAvailableExposureOffset,
                     label: _currentExposureOffset.toString(),
-                    onChanged: _minAvailableExposureOffset == _maxAvailableExposureOffset
+                    onChanged: _minAvailableExposureOffset ==
+                            _maxAvailableExposureOffset
                         ? null
                         : setExposureOffset,
                   ),
@@ -570,7 +574,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
 
   void showInSnackBar(String message) {
     ScaffoldMessenger.of(context).hideCurrentSnackBar();
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   void onViewFinderTap(TapDownDetails details, BoxConstraints constraints) {
@@ -592,7 +597,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
     if (controller != null) {
       await controller!.dispose();
     }
-    
+
     final CameraController localController = CameraController(
       cameraDescription,
       ResolutionPreset.max,
@@ -604,21 +609,30 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
     localController.addListener(() {
       if (mounted) {
         setState(() {
-           // If the controller is updated then update the UI.
+          // If the controller is updated then update the UI.
         });
       }
       if (localController.value.hasError) {
-        showInSnackBar('Camera error ${localController.value.errorDescription}');
+        showInSnackBar(
+            'Camera error ${localController.value.errorDescription}');
       }
     });
 
     try {
       await localController.initialize();
       await Future.wait([
-        localController.getMinExposureOffset().then((value) => _minAvailableExposureOffset = value),
-        localController.getMaxExposureOffset().then((value) => _maxAvailableExposureOffset = value),
-        localController.getMaxZoomLevel().then((value) => _maxAvailableZoom = value),
-        localController.getMinZoomLevel().then((value) => _minAvailableZoom = value),
+        localController
+            .getMinExposureOffset()
+            .then((value) => _minAvailableExposureOffset = value),
+        localController
+            .getMaxExposureOffset()
+            .then((value) => _maxAvailableExposureOffset = value),
+        localController
+            .getMaxZoomLevel()
+            .then((value) => _maxAvailableZoom = value),
+        localController
+            .getMinZoomLevel()
+            .then((value) => _minAvailableZoom = value),
       ]);
     } on CameraException catch (e) {
       _showCameraException(e);
@@ -686,7 +700,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
         showInSnackBar('Capture orientation unlocked');
       } else {
         await cameraController.lockCaptureOrientation();
-        showInSnackBar('Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}');
+        showInSnackBar(
+            'Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}');
       }
     }
   }
@@ -878,7 +893,9 @@ class _CameraExampleHomeState extends State<CameraExampleHome> with WidgetsBindi
         videoController!.removeListener(videoPlayerListener);
       }
     }
-    final localVideoController = VideoPlayerController.file(File(videoFile!.path));
+
+    final localVideoController =
+        VideoPlayerController.file(File(videoFile!.path));
     localVideoController.addListener(videoPlayerListener);
     await localVideoController.setLooping(true);
     await localVideoController.initialize();
