@@ -13,6 +13,14 @@ allprojects {
     repositories {
         google()
         jcenter()
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/xaynetwork/adblock-rust-jni")
+            credentials {
+                username = project.findProperty("github.username") ?: System.getenv("GITHUB_USERNAME")
+                password = project.findProperty("github.token") ?: System.getenv("GITHUB_TOKEN")
+            }
+        }
     }
 }
 
