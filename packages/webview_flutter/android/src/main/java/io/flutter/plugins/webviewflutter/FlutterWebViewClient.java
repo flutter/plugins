@@ -22,10 +22,10 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.webviewflutter.adblock.BlockResult;
+import io.flutter.plugins.webviewflutter.adblock.ContentBlocker;
 import io.flutter.plugins.webviewflutter.content_type.ContentType;
-import io.flutter.plugins.webviewflutter.content_type.HttpConstants;
 
-import java.io.ByteArrayInputStream;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
