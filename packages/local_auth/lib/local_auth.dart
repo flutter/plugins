@@ -87,6 +87,11 @@ class LocalAuthentication {
   /// Setting [biometricOnly] to true prevents authenticates from using non-biometric
   /// local authentication such as pin, passcode, and passcode.
   ///
+  /// Setting [strongAuthenticatorsOnly] to true disables biometric authentication
+  /// mechanisms on Android that are not deemed secure. For instance, many Android
+  /// facial recognition systems are easily fooled, and should not be considered
+  /// secure.
+  ///
   /// Throws an [PlatformException] if there were technical problems with local
   /// authentication (e.g. lack of relevant hardware). This might throw
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
@@ -98,6 +103,7 @@ class LocalAuthentication {
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
     IOSAuthMessages iOSAuthStrings = const IOSAuthMessages(),
     bool sensitiveTransaction = true,
+    bool strongAuthenticatorsOnly = false,
     bool biometricOnly = false,
   }) async {
     assert(localizedReason.isNotEmpty);
@@ -107,6 +113,7 @@ class LocalAuthentication {
       'useErrorDialogs': useErrorDialogs,
       'stickyAuth': stickyAuth,
       'sensitiveTransaction': sensitiveTransaction,
+      'strongAuthenticatorsOnly': strongAuthenticatorsOnly,
       'biometricOnly': biometricOnly,
     };
     if (_platform.isIOS) {

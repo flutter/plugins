@@ -20,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
+import androidx.biometric.BiometricManager.Authenticators;
 import androidx.biometric.BiometricPrompt;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.DefaultLifecycleObserver;
@@ -87,8 +88,11 @@ class AuthenticationHelper extends BiometricPrompt.AuthenticationCallback
             .setDescription((String) call.argument("localizedReason"))
             .setTitle((String) call.argument("signInTitle"))
             .setSubtitle((String) call.argument("biometricHint"))
-            .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"))
             .setConfirmationRequired((Boolean) call.argument("sensitiveTransaction"));
+
+    if ((boolean) call.argument("strongAuthenticatorsOnly")) {
+      promptBuilder.setAllowedAuthenticators(Authenticators.BIOMETRIC_STRONG);
+    }
 
     if (allowCredentials) {
       promptBuilder.setDeviceCredentialAllowed(true);

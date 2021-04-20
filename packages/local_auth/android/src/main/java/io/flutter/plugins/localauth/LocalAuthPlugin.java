@@ -16,6 +16,7 @@ import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import androidx.annotation.NonNull;
 import androidx.biometric.BiometricManager;
+import androidx.biometric.BiometricManager.Authenticators;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -167,8 +168,9 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     // if is biometricOnly try biometric prompt - might not work
     boolean isBiometricOnly = call.argument("biometricOnly");
     if (isBiometricOnly) {
-      if (!canAuthenticateWithBiometrics()) {
-        if (!hasBiometricHardware()) {
+      boolean strongAuthenticatorsOnly = call.argument("strongAuthenticatorsOnly");
+      if (!canAuthenticateWithBiometrics(strongAuthenticatorsOnly)) {
+        if (!hasBiometricHardware(strongAuthenticatorsOnly)) {
           completionHandler.onError("NoHardware", "No biometric hardware found");
         }
         completionHandler.onError("NotEnrolled", "No biometrics enrolled on this device.");
@@ -291,14 +293,23 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     return (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && keyguardManager.isDeviceSecure());
   }
 
-  private boolean canAuthenticateWithBiometrics() {
+  private boolean canAuthenticateWithBiometrics(boolean strongAuthenticatorsOnly) {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate() == BiometricManager.BIOMETRIC_SUCCESS;
+    int authenticators = getAuthenticators(strongAuthenticatorsOnly);
+    return biometricManager.canAuthenticate(authenticators) == BiometricManager.BIOMETRIC_SUCCESS;
   }
 
-  private boolean hasBiometricHardware() {
+  private boolean hasBiometricHardware(boolean strongAuthenticatorsOnly) {
     if (biometricManager == null) return false;
-    return biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+    int authenticators = getAuthenticators(strongAuthenticatorsOnly);
+    return biometricManager.canAuthenticate(authenticators)
+        != BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE;
+  }
+
+  private int getAuthenticators(boolean strongAuthenticatorsOnly) {
+    return strongAuthenticatorsOnly
+        ? Authenticators.BIOMETRIC_STRONG
+        : Authenticators.BIOMETRIC_WEAK;
   }
 
   private void isDeviceSupported(Result result) {
