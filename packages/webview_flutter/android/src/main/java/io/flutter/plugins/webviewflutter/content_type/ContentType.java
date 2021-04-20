@@ -24,7 +24,7 @@ public enum ContentType {
     SUBDOCUMENT("subdocument"),
     XMLHTTPREQUEST("xml_dtd");
 
-    final String rawName;
+    public final String rawName;
 
     static ContentTypeDetector contentTypeDetector;
 
