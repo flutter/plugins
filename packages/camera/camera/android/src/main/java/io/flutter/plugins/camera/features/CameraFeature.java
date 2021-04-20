@@ -27,30 +27,33 @@ public abstract class CameraFeature<T> {
   public abstract String getDebugName();
 
   /**
-   * Get the current value of this feature's setting.
+   * Gets the current value of this feature's setting.
    *
-   * @return
+   * @return <T> Current value of this feature's setting.
    */
   public abstract T getValue();
 
   /**
-   * Set a new value for this feature's setting.
+   * Sets a new value for this feature's setting.
    *
-   * @param value
+   * @param value New value for this feature's setting.
    */
   public abstract void setValue(T value);
 
   /**
    * Returns whether or not this feature is supported.
    *
-   * @return
+   * <p>When the feature is not supported any {@see #value} is simply ignored by the camera plugin.
+   *
+   * @return boolean Whether or not this feature is supported.
    */
   public abstract boolean checkIsSupported();
 
   /**
-   * Update the setting in a provided request builder.
+   * Updates the setting in a provided {@see android.hardware.camera2.CaptureRequest.Builder}.
    *
-   * @param requestBuilder
+   * @param requestBuilder A {@see android.hardware.camera2.CaptureRequest.Builder} instance used to
+   *     configure the settings and outputs needed to capture a single image from the camera device.
    */
   public abstract void updateBuilder(CaptureRequest.Builder requestBuilder);
 }
