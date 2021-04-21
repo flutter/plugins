@@ -6,23 +6,23 @@ package io.flutter.plugins.camera.features.exposureoffset;
 
 import android.hardware.camera2.CaptureRequest;
 import android.util.Range;
+import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-/** Exposure offset makes the image brighter or darker. */
-public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
-  private ExposureOffsetValue currentSetting;
-  private final double min;
-  private final double max;
+/**
+ * Controls the exposure offset making the resulting image brighter or darker.
+ */
+public class ExposureOffsetFeature extends CameraFeature<Double> {
+  private double currentSetting = 0;
 
+  /**
+   * Creates a new instance of the {@see ExposureOffsetFeature}.
+   *
+   * @param cameraProperties Collection of the characteristics for the current camera device.
+   */
   public ExposureOffsetFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
-
-    this.min = getMinExposureOffset();
-    this.max = getMaxExposureOffset();
-
-    // Initial offset of 0
-    this.currentSetting = new ExposureOffsetValue(this.min, this.max, 0);
   }
 
   @Override
@@ -31,14 +31,14 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
   }
 
   @Override
-  public ExposureOffsetValue getValue() {
+  public Double getValue() {
     return currentSetting;
   }
 
   @Override
-  public void setValue(ExposureOffsetValue value) {
+  public void setValue(@NonNull Double value) {
     double stepSize = getExposureOffsetStepSize();
-    this.currentSetting = new ExposureOffsetValue(min, max, (value.value / stepSize));
+    this.currentSetting = value / stepSize;
   }
 
   // Available on all devices.
@@ -53,15 +53,15 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
       return;
     }
 
-    requestBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, (int) currentSetting.value);
+    requestBuilder.set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, (int) currentSetting);
   }
 
   /**
-   * Return the minimum exposure offset double value.
+   * Returns the minimum exposure offset value, in counts of {@see #getExposureOffsetStepSize}.
    *
-   * @return
+   * @return double Minimum exposure offset value.
    */
-  private double getMinExposureOffset() {
+  public double getMinExposureOffset() {
     Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
     double minStepped = range == null ? 0 : range.getLower();
     double stepSize = getExposureOffsetStepSize();
@@ -69,11 +69,11 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
   }
 
   /**
-   * Return the max exposure offset double value.
+   * Returns the maximum exposure offset value, in counts of {@see #getExposureOffsetStepSize}.
    *
-   * @return
+   * @return double Maximum exposure offset value.
    */
-  private double getMaxExposureOffset() {
+  public double getMaxExposureOffset() {
     Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
     double maxStepped = range == null ? 0 : range.getUpper();
     double stepSize = getExposureOffsetStepSize();
@@ -81,13 +81,13 @@ public class ExposureOffsetFeature extends CameraFeature<ExposureOffsetValue> {
   }
 
   /**
-   * Returns the exposure offset step size. This is the smallest amount which the exposure offset
-   * can be changed.
+   * Returns the smallest step by which the exposure compensation can be changed.
    *
    * <p>Example: if this has a value of 0.5, then an aeExposureCompensation setting of -2 means that
-   * the actual AE offset is -1.
+   * the actual AE offset is -1. More details can be found in the official Android documentation:
+   * https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics.html#CONTROL_AE_COMPENSATION_STEP
    *
-   * @return
+   * @return double Smallest step by which the exposure compensation can be changed.
    */
   public double getExposureOffsetStepSize() {
     return cameraProperties.getControlAutoExposureCompensationStep();

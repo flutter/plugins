@@ -64,14 +64,15 @@ public class ExposurePointFeature extends CameraFeature<Point> {
       return;
     }
 
-    MeteringRectangle aeRect;
+    MeteringRectangle aeRect = null;
     try {
       aeRect = getCameraRegions.call().getAEMeteringRectangle();
-      requestBuilder.set(
-          CaptureRequest.CONTROL_AE_REGIONS,
-          aeRect == null ? null : new MeteringRectangle[] {aeRect});
     } catch (Exception e) {
       Log.w("Camera", "Unable to retrieve the Auto Exposure metering rectangle.", e);
     }
+
+    requestBuilder.set(
+        CaptureRequest.CONTROL_AE_REGIONS,
+        aeRect == null ? null : new MeteringRectangle[] {aeRect});
   }
 }

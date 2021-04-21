@@ -9,11 +9,16 @@ import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
 /**
- * Exposure lock controls whether or not exposure mode is currenty locked or automatically metering.
+ * Controls whether or not the exposure mode is currently locked or automatically metering.
  */
 public class ExposureLockFeature extends CameraFeature<ExposureMode> {
   private ExposureMode currentSetting = ExposureMode.auto;
 
+  /**
+   * Creates a new instance of the {@see ExposureLockFeature}.
+   *
+   * @param cameraProperties Collection of the characteristics for the current camera device.
+   */
   public ExposureLockFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
   }
@@ -45,14 +50,6 @@ public class ExposureLockFeature extends CameraFeature<ExposureMode> {
       return;
     }
 
-    switch (currentSetting) {
-      case locked:
-        requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, true);
-        break;
-      case auto:
-      default:
-        requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, false);
-        break;
-    }
+    requestBuilder.set(CaptureRequest.CONTROL_AE_LOCK, currentSetting == ExposureMode.locked);
   }
 }

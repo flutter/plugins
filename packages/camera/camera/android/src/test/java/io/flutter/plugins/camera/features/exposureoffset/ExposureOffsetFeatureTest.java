@@ -16,9 +16,6 @@ import io.flutter.plugins.camera.CameraProperties;
 import org.junit.Test;
 
 public class ExposureOffsetFeatureTest {
-  private static final ExposureOffsetValue DEFAULT_EXPOSURE_OFFSET_VALUE =
-      new ExposureOffsetValue(0, 0, 0);
-
   @Test
   public void getDebugName_should_return_the_name_of_the_feature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
@@ -28,31 +25,27 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_auto_if_not_set() {
+  public void getValue_should_return_zero_if_not_set() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
 
-    final ExposureOffsetValue actualValue = exposureOffsetFeature.getValue();
+    final double actualValue = exposureOffsetFeature.getValue();
 
-    assertEquals(DEFAULT_EXPOSURE_OFFSET_VALUE.min, actualValue.min, 0);
-    assertEquals(DEFAULT_EXPOSURE_OFFSET_VALUE.max, actualValue.max, 0);
-    assertEquals(DEFAULT_EXPOSURE_OFFSET_VALUE.value, actualValue.value, 0);
+    assertEquals(0.0, actualValue, 0);
   }
 
   @Test
   public void getValue_should_echo_the_set_value() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
-    ExposureOffsetValue expectedValue = new ExposureOffsetValue(1, 2, 4);
+    double expectedValue = 4.0;
 
     when(mockCameraProperties.getControlAutoExposureCompensationStep()).thenReturn(0.5);
 
-    exposureOffsetFeature.setValue(expectedValue);
-    ExposureOffsetValue actualValue = exposureOffsetFeature.getValue();
+    exposureOffsetFeature.setValue(2.0);
+    double actualValue = exposureOffsetFeature.getValue();
 
-    assertEquals(expectedValue.min, actualValue.min, 1);
-    assertEquals(expectedValue.max, actualValue.max, 2);
-    assertEquals(expectedValue.value, actualValue.value, 8);
+    assertEquals(expectedValue, actualValue, 0);
   }
 
   @Test
@@ -79,13 +72,12 @@ public class ExposureOffsetFeatureTest {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
-    ExposureOffsetValue expectedValue = new ExposureOffsetValue(1, 2, 4);
 
     when(mockCameraProperties.getControlAutoExposureCompensationStep()).thenReturn(0.5);
 
-    exposureOffsetFeature.setValue(expectedValue);
+    exposureOffsetFeature.setValue(2.0);
     exposureOffsetFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, 8);
+    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_EXPOSURE_COMPENSATION, 4);
   }
 }

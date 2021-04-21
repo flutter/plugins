@@ -183,13 +183,13 @@ public class ExposurePointFeatureTest {
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     ExposurePointFeature exposurePointFeature =
         new ExposurePointFeature(mockCameraProperties, () -> mockCameraRegions);
-    MeteringRectangle meteringRectangle = new MeteringRectangle(0, 0, 0, 0, 0);
 
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
     when(mockCameraRegions.getAEMeteringRectangle()).thenThrow(new IllegalArgumentException());
 
     exposurePointFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, never()).set(any(), any());
+    verify(mockBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AE_REGIONS, null);
   }
 }
