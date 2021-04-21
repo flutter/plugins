@@ -123,8 +123,7 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///
   /// `autoConsume` is provided as a utility and will instruct the plugin to
   /// automatically consume the product after a succesful purchase.
-  /// `autoConsume` is `true` by default. On iOS comsumable products are
-  /// consumed automatically by the App Store and this parameter is ignored.
+  /// `autoConsume` is `true` by default.
   ///
   /// This method does not return the result of the purchase. Instead, after
   /// triggering this method, purchase updates will be sent to
@@ -143,7 +142,6 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///  * [buyNonConsumable], for buying a non consumable product or
   ///    subscription.
   ///  * [restorePurchases], for restoring non consumable products.
-  ///  * [consumePurchase], for manually consuming products on Android.
   ///
   /// Calling this method for non consumable items will cause unwanted
   /// behaviors!
