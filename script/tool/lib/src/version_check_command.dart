@@ -122,7 +122,6 @@ class VersionCheckCommand extends PluginCommand {
         masterVersion = Version.none;
         print('${indentation}Unable to find pubspec in master. '
             'Safe to ignore if the project is new.');
-        print(masterVersion);
       }
 
       if (masterVersion == headVersion) {
