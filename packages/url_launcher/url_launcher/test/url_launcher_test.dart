@@ -282,4 +282,58 @@ void main() {
       expect(binding.renderView.automaticSystemUiAdjustment, true);
     });
   });
+
+  group('encodeQueryParameters', () {
+    test('handles empty dictionary', () async {
+      final String? result = encodeQueryParameters(<String, String>{});
+
+      expect(result, isNull);
+    });
+
+    test('handles parameters without special characters', () async {
+      final Map<String, String> parameters = <String, String>{
+        'key1': 'value1',
+        'key2': 'value2',
+      };
+      final String? result = encodeQueryParameters(parameters);
+
+      expect(Uri.splitQueryString(result!), parameters);
+    });
+
+    test('handles & correctly', () async {
+      final Map<String, String> parameters = <String, String>{
+        'key1': 'this & that',
+        'key&': 'foo & bar',
+      };
+      final String? result = encodeQueryParameters(parameters);
+
+      expect(Uri.splitQueryString(result!), parameters);
+      // There should be exactly one unencoded & in the string, joining the
+      // two parameters.
+      expect(result.split('&').length, 2);
+    });
+
+    test('handles spaces correctly', () async {
+      final Map<String, String> parameters = <String, String>{
+        'a key': 'a value',
+      };
+      final String? result = encodeQueryParameters(parameters);
+
+      expect(Uri.splitQueryString(result!), parameters);
+      // Spaces should be encoded as %20, not +.
+      expect(result.contains('+'), isFalse);
+      expect(result.contains('%20'), isTrue);
+    });
+
+    test('handles + correctly', () async {
+      final Map<String, String> parameters = <String, String>{
+        'key+': 'value+',
+      };
+      final String? result = encodeQueryParameters(parameters);
+
+      expect(Uri.splitQueryString(result!), parameters);
+      // + should be encoded.
+      expect(result.contains('+'), isFalse);
+    });
+  });
 }

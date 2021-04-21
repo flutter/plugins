@@ -1,6 +1,12 @@
+## 6.1.0
+
+* Add a utility method for query encoding when constructing
+  URIs, and update the README accordingly, to work around limitations
+  in `Uri` behavior.
+
 ## 6.0.3
 
-* Updat README notes about URL schemes on iOS
+* Update README notes about URL schemes on iOS
 
 ## 6.0.2
 

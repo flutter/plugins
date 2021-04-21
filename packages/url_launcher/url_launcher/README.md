@@ -10,10 +10,10 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 
 ## Installation
 
-### iOS 
+### iOS
 Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
 
-Example:  
+Example:
 ```
 <key>LSApplicationQueriesSchemes</key>
 <array>
@@ -73,24 +73,36 @@ apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Encoding URLs
 
-URLs must be properly encoded, especially when including spaces or other special characters. This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
+URLs must be properly encoded, especially when including spaces or other special
+characters. This can be done using the
+[`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html).
+For example:
 ```dart
-import 'dart:core';
-import 'package:url_launcher/url_launcher.dart';
-
-final Uri _emailLaunchUri = Uri(
+final Uri emailLaunchUri = Uri(
   scheme: 'mailto',
   path: 'smith@example.com',
-  queryParameters: {
+  query: encodeQueryParameters(<String, String>{
     'subject': 'Example Subject & Symbols are allowed!'
-  }
+  }),
 );
 
-// ...
-
-// mailto:smith@example.com?subject=Example+Subject+%26+Symbols+are+allowed%21
-launch(_emailLaunchUri.toString());
+launch(emailLaunchUri.toString());
 ```
+
+**Warning**: For any scheme other than `http` or `https`, you should use this
+package's utility method for query parameters:
+
+```dart
+Uri(
+  // ...
+  query: encodeQueryParameters(yourParameters),
+);
+```
+
+rather than `Uri`'s `queryParameters` constructor argument, due to
+[a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
+encodes query parameters. Using `queryParameters` will result in spaces being
+converted to `+` in many cases.
 
 ## Handling missing URL receivers
 

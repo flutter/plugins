@@ -9,6 +9,24 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
+/// Encodes [params] as a query parameter string suitable to be passed as the
+/// 'query' parameter to a [Uri] constructor.
+///
+/// This exists to work around the fact that the 'queryParameters' argument of
+/// the [Uri] constructor does encoding as HTML form parameters rather than
+/// generic URI query parameters, and thus does not work correctly for schemes
+/// other than http(s). See https://github.com/dart-lang/sdk/issues/43838 for
+/// details.
+String? encodeQueryParameters(Map<String, String> params) {
+  if (params.isEmpty) {
+    return null;
+  }
+  return params.entries
+      .map((MapEntry<String, String> e) =>
+          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+}
+
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
 ///
