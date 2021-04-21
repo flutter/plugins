@@ -115,13 +115,12 @@ class VersionCheckCommand extends PluginCommand {
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
-      Version masterVersion =
+      final Version masterVersion =
           await gitVersionFinder.getPackageVersion(pubspecPath);
       if (masterVersion == null) {
-        // If no masterVersion, set it to 0.0.0 so new package can calculate valid versions.
-        masterVersion = Version.none;
         print('${indentation}Unable to find pubspec in master. '
             'Safe to ignore if the project is new.');
+        continue;
       }
 
       if (masterVersion == headVersion) {
