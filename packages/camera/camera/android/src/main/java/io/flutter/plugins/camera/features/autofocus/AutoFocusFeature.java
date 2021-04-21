@@ -9,13 +9,19 @@ import android.hardware.camera2.CaptureRequest;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
+/** Controls the auto focus configuration on the {@see anddroid.hardware.camera2} API. */
 public class AutoFocusFeature extends CameraFeature<FocusMode> {
   private FocusMode currentSetting = FocusMode.auto;
 
-  // When we switch recording modes we re-create this feature with
-  // the appropriate setting here.
+  // When switching recording modes this feature is re-created with the appropriate setting here.
   private final boolean recordingVideo;
 
+  /**
+   * Creates a new instance of the {@see AutoFocusFeature}.
+   *
+   * @param cameraProperties Collection of the characteristics for the current camera device.
+   * @param recordingVideo Indicates whether the camera is currently recording video.
+   */
   public AutoFocusFeature(CameraProperties cameraProperties, boolean recordingVideo) {
     super(cameraProperties);
     this.recordingVideo = recordingVideo;
@@ -40,19 +46,11 @@ public class AutoFocusFeature extends CameraFeature<FocusMode> {
   public boolean checkIsSupported() {
     int[] modes = cameraProperties.getControlAutoFocusAvailableModes();
 
-    // Check if fixed focal length lens. If LENS_INFO_MINIMUM_FOCUS_DISTANCE=0, then this is fixed.
-    // Can be null on some devices.
     final Float minFocus = cameraProperties.getLensInfoMinimumFocusDistance();
-    // final Float maxFocus = cameraCharacteristics.get(CameraCharacteristics.LENS_INFO_HYPERFOCAL_DISTANCE);
 
-    // Value can be null on some devices:
-    // https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#LENS_INFO_MINIMUM_FOCUS_DISTANCE
-    boolean isFixedLength;
-    if (minFocus == null) {
-      isFixedLength = true;
-    } else {
-      isFixedLength = minFocus == 0;
-    }
+    // Check if the focal length of the lens is fixed. If the minimum focus distance == 0, then the
+    // focal length  is fixed. The minimum focus distance can be null on some devices: https://developer.android.com/reference/android/hardware/camera2/CameraCharacteristics#LENS_INFO_MINIMUM_FOCUS_DISTANCE
+    boolean isFixedLength = minFocus == null || minFocus == 0;
 
     return !isFixedLength
         && !(modes.length == 0
@@ -67,10 +65,11 @@ public class AutoFocusFeature extends CameraFeature<FocusMode> {
 
     switch (currentSetting) {
       case locked:
-        /** If we're locking AF we should do a one-time focus, then set the AF to idle */
+        // When locking the auto-focus the camera device should do a one-time focus and afterwards
+        // set the auto-focus to idle. This is accomplished by setting the CONTROL_AF_MODE to
+        // CONTROL_AF_MODE_AUTO.
         requestBuilder.set(CaptureRequest.CONTROL_AF_MODE, CaptureRequest.CONTROL_AF_MODE_AUTO);
         break;
-
       case auto:
         requestBuilder.set(
             CaptureRequest.CONTROL_AF_MODE,
