@@ -12,7 +12,6 @@
 #else
 #import <webview_flutter/webview_flutter-Swift.h>
 #endif
-#import <webview_flutter/webview_flutter-Swift.h>   
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -154,9 +153,9 @@
       }
     };
 
-    if ([args[@"hostsToBlock"] isKindOfClass:[NSArray class]]) {
-      NSArray *hosts = args[@"hostsToBlock"];
-      [self setupContentBlockers:hosts completion:loadBlock];
+    if ([args[@"blockingRules"] isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *rules = args[@"blockingRules"];
+      [ContentBlocker.shared setupContentBlockingWithRules:rules webview:_webView completion:loadBlock];
     } else {
       loadBlock();
     }
@@ -231,10 +230,6 @@
 
 - (void)setupContentBlockers:(NSArray<NSString *> *)hosts completion:(void (^)(void))completion {
     
-
-    [HelperFunctions accessSecret];
-    [HelperFunctions accessSecret];
-    
     if ([hosts count] == 0) {
         completion();
         return;
@@ -249,7 +244,7 @@
     
     NSString *hostsString = [formattedHosts componentsJoinedByString:@","];
     NSString *jsonString = [NSString stringWithFormat:jsonStringFormat, hostsString];
-    
+
     if (@available(iOS 11.0, *)) {
         [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:contentBlockersIdentifier encodedContentRuleList:jsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
             

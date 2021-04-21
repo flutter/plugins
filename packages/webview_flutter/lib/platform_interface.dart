@@ -187,7 +187,7 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
   }
-  
+
   /// Load html file from local path
   ///
   /// `url` must not be null.
@@ -482,7 +482,7 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
-    this.hostsToBlock,
+    this.blockingRules,
     this.tabId,
     this.maxCachedTabs = 0,
   }) : assert(autoMediaPlaybackPolicy != null);
@@ -518,8 +518,22 @@ class CreationParams {
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
-  /// Which hosts will be blocked from loading.
-  final Set<String>? hostsToBlock;
+  /// Provides a Map of Content blocking rules.
+  /// Format
+  /// ```
+  /// {
+  ///   unique_id : {
+  ///     type : [hosts, json, dat]
+  ///     (required for json and dat) file_path : ABSOLUTE_PATH
+  ///     (required for hosts) hosts : [LIST_OF_HOST_TO_BLOCK]
+  ///   },
+  ///   ...
+  /// }
+  /// ```
+  /// Where:
+  ///  - dat is the serialized rust adblocking rules
+  ///  - json the content blocking rules for iOS
+  final Map<String, Map>? blockingRules;
 
   /// Open a WebView with cached tab if exists.
   final String? tabId;
@@ -529,7 +543,7 @@ class CreationParams {
 
   @override
   String toString() {
-    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, hostsToBlock: $hostsToBlock, tabId: $tabId, maxCachedTabs: $maxCachedTabs)';
+    return '$runtimeType(initialUrl: $initialUrl, settings: $webSettings, javascriptChannelNames: $javascriptChannelNames, UserAgent: $userAgent, hostsToBlock: $blockingRules, tabId: $tabId, maxCachedTabs: $maxCachedTabs)';
   }
 }
 

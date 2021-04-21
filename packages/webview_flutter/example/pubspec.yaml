@@ -7,6 +7,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  path_provider: 2.0.1
   webview_flutter:
     # When depending on this package from a real application you should use:
     #   webview_flutter: ^x.y.z
@@ -29,3 +30,4 @@ flutter:
   assets:
     - assets/sample_audio.ogg
     - assets/sample_video.mp4
+    - assets/adblocker.json

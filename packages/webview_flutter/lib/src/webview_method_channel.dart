@@ -84,7 +84,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'headers': headers,
     });
   }
-  
+
   @override
   Future<void> loadAssetHtmlFile(String url) =>
       _channel.invokeMethod<String>('loadAssetHtmlFile', url);
@@ -224,7 +224,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
-      'hostsToBlock': creationParams.hostsToBlock?.toList(),
+      'blockingRules': creationParams.blockingRules,
       'tabId': creationParams.tabId,
       'maxCachedTabs': creationParams.maxCachedTabs,
     };
