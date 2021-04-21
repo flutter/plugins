@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' as io;
 
 import 'package:meta/meta.dart';
 import 'package:file/file.dart';
@@ -116,11 +115,14 @@ class VersionCheckCommand extends PluginCommand {
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
-      final Version masterVersion =
+      Version masterVersion =
           await gitVersionFinder.getPackageVersion(pubspecPath);
       if (masterVersion == null) {
+        // If no masterVersion, set it to 0.0.0 so new package can calculate valid versions.
+        masterVersion = Version.none;
         print('${indentation}Unable to find pubspec in master. '
             'Safe to ignore if the project is new.');
+        print(masterVersion);
       }
 
       if (masterVersion == headVersion) {

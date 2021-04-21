@@ -609,6 +609,7 @@ class GitVersionFinder {
       return null;
     }
     final String fileContent = gitShow.stdout as String;
+    print('xx $fileContent');
     final String versionString = loadYaml(fileContent)['version'] as String;
     return versionString == null ? null : Version.parse(versionString);
   }
