@@ -99,8 +99,10 @@ static const int SOURCE_GALLERY = 1;
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
-      (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
-      (NSString *)kUTTypeMPEG4
+      (NSString *)kUTTypeMovie,
+      (NSString *)kUTTypeAVIMovie,
+      (NSString *)kUTTypeVideo,
+      (NSString *)kUTTypeMPEG4,
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
     if (@available(iOS 11.0, *)) {
@@ -259,15 +261,14 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  
-  NSString * mediaType = info[ UIImagePickerControllerMediaType];
+  NSString *mediaType = info[UIImagePickerControllerMediaType];
   NSURL *videoURL = nil;
-  
-  if (CFStringCompare ((__bridge CFStringRef) mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
+
+  if (CFStringCompare((__bridge CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
     videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
-    
+
     if (videoURL == nil) {
-      videoURL = (NSURL *) info[UIImagePickerControllerReferenceURL];
+      videoURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
     }
   }
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
@@ -308,43 +309,43 @@ static const int SOURCE_GALLERY = 1;
         videoURL = destination;
       } else {
         // PhotoKit for "assets-library://" schema handling.
-        
+
         PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
-        
+
         PHVideoRequestOptions *options = [PHVideoRequestOptions new];
         options.version = PHVideoRequestOptionsVersionOriginal;
-        
+
         __weak typeof(self) weakSelf = self;
-        [[PHImageManager defaultManager] requestAVAssetForVideo:originalAsset
-                                                        options:options
-                                                  resultHandler:^(AVAsset * _Nullable avasset,
-                                                                  AVAudioMix * _Nullable audioMix,
-                                                                  NSDictionary * _Nullable info)
-        {
-          NSError *error;
-          AVURLAsset *avAsset = (AVURLAsset*) avasset;
-          
-          // Destination is a tmp file, reset/drop it before copy operation anyway.
-          [[NSFileManager defaultManager] removeItemAtURL:destination error:&error];
-          // Write to app tmp folder.
-          if ([[NSFileManager defaultManager] copyItemAtURL:avAsset.URL
-                                                     toURL:destination
-                                                     error:&error]) {
-            weakSelf.result(destination.path);
-            weakSelf.result = nil;
-          } else {
-            self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
-                                            message:@"Could not cache the video file."
-                                            details:nil]);
-            self.result = nil;
-            return;
-          }
-        }];
-        
+        [[PHImageManager defaultManager]
+            requestAVAssetForVideo:originalAsset
+                           options:options
+                     resultHandler:^(AVAsset *_Nullable avasset, AVAudioMix *_Nullable audioMix,
+                                     NSDictionary *_Nullable info) {
+                       NSError *error;
+                       AVURLAsset *avAsset = (AVURLAsset *)avasset;
+
+                       // Destination is a tmp file, reset/drop it before copy operation anyway.
+                       [[NSFileManager defaultManager] removeItemAtURL:destination error:&error];
+                       // Write to app tmp folder.
+                       if ([[NSFileManager defaultManager] copyItemAtURL:avAsset.URL
+                                                                   toURL:destination
+                                                                   error:&error]) {
+                         weakSelf.result(destination.path);
+                         weakSelf.result = nil;
+                       } else {
+                         self.result([FlutterError
+                             errorWithCode:@"flutter_image_picker_copy_video_error"
+                                   message:@"Could not cache the video file."
+                                   details:nil]);
+                         self.result = nil;
+                         return;
+                       }
+                     }];
+
         return;
       }
     }
-    
+
     self.result(videoURL.path);
     self.result = nil;
     _arguments = nil;
