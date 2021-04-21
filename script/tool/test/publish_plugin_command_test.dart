@@ -96,9 +96,11 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(
-          printedMessages.last,
-          contains(
-              "There are files in the package directory that haven't been saved in git."));
+          printedMessages,
+          containsAllInOrder(<String>[
+            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
+            'Failed, see above for details.',
+          ]));
     });
 
     test('fails immediately if the remote doesn\'t exist', () async {
@@ -111,7 +113,7 @@ void main() {
 
     test("doesn't validate the remote if it's not pushing tags", () async {
       // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
 
       await commandRunner.run(<String>[
         'publish-plugin',
@@ -132,7 +134,7 @@ void main() {
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
       // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
@@ -153,9 +155,10 @@ void main() {
         '--no-push-tags',
         '--no-tag-release'
       ]);
-      processRunner.mockPublishProcess.stdoutController.add(utf8.encode('Foo'));
-      processRunner.mockPublishProcess.stderrController.add(utf8.encode('Bar'));
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+
+      processRunner.mockPublishStdout = 'Foo';
+      processRunner.mockPublishStderr = 'Bar';
+      processRunner.mockPublishCompleteCode = 0;
 
       await publishCommand;
 
@@ -171,8 +174,8 @@ void main() {
         '--no-push-tags',
         '--no-tag-release'
       ]);
-      mockStdin.controller.add(utf8.encode('user input'));
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      mockStdin.mockUserInputs.add(utf8.encode('user input'));
+      processRunner.mockPublishCompleteCode = 0;
 
       await publishCommand;
 
@@ -181,7 +184,7 @@ void main() {
     });
 
     test('forwards --pub-publish-flags to pub publish', () async {
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
@@ -200,7 +203,7 @@ void main() {
     });
 
     test('throws if pub publish fails', () async {
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(128);
+      processRunner.mockPublishCompleteCode = 128;
       await expectLater(
           () => commandRunner.run(<String>[
                 'publish-plugin',
@@ -211,12 +214,12 @@ void main() {
               ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(printedMessages, contains('Publish failed. Exiting.'));
+      expect(printedMessages, contains('Publish foo failed.'));
     });
 
     test('publish, dry run', () async {
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(1);
+      processRunner.mockPublishCompleteCode = 1;
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
@@ -230,7 +233,8 @@ void main() {
       expect(
           printedMessages,
           containsAllInOrder(<String>[
-            'DRY RUN: Running `pub publish ` in ${pluginDir.path}...\n',
+            '===============  DRY RUN ===============',
+            'Running `pub publish ` in ${pluginDir.path}...\n',
             'Done!'
           ]));
     });
@@ -238,7 +242,7 @@ void main() {
 
   group('Tags release', () {
     test('with the version and name from the pubspec.yaml', () async {
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
@@ -253,7 +257,7 @@ void main() {
     });
 
     test('only if publishing succeeded', () async {
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(128);
+      processRunner.mockPublishCompleteCode = 128;
       await expectLater(
           () => commandRunner.run(<String>[
                 'publish-plugin',
@@ -263,7 +267,7 @@ void main() {
               ]),
           throwsA(const TypeMatcher<ToolExit>()));
 
-      expect(printedMessages, contains('Publish failed. Exiting.'));
+      expect(printedMessages, contains('Publish foo failed.'));
       final String tag = (await gitDir.runCommand(
               <String>['show-ref', 'fake_package-v0.0.1'],
               throwOnError: false))
@@ -279,7 +283,7 @@ void main() {
     });
 
     test('requires user confirmation', () async {
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'help';
       await expectLater(
           () => commandRunner.run(<String>[
@@ -294,7 +298,7 @@ void main() {
 
     test('to upstream by default', () async {
       await gitDir.runCommand(<String>['tag', 'garbage']);
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
       await commandRunner.run(<String>[
         'publish-plugin',
@@ -311,7 +315,7 @@ void main() {
     test('to upstream by default, dry run', () async {
       await gitDir.runCommand(<String>['tag', 'garbage']);
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(1);
+      processRunner.mockPublishCompleteCode = 1;
       mockStdin.readLineOutput = 'y';
       await commandRunner.run(
           <String>['publish-plugin', '--package', testPluginName, '--dry-run']);
@@ -320,9 +324,10 @@ void main() {
       expect(
           printedMessages,
           containsAllInOrder(<String>[
-            'DRY RUN: Running `pub publish ` in ${pluginDir.path}...\n',
-            'DRY RUN: Tagging release fake_package-v0.0.1...',
-            'DRY RUN: Pushing tag to upstream...',
+            '===============  DRY RUN ===============',
+            'Running `pub publish ` in ${pluginDir.path}...\n',
+            'Tagging release fake_package-v0.0.1...',
+            'Pushing tag to upstream...',
             'Done!'
           ]));
     });
@@ -330,7 +335,7 @@ void main() {
     test('to different remotes based on a flag', () async {
       await gitDir.runCommand(
           <String>['remote', 'add', 'origin', 'http://localhost:8001']);
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
       await commandRunner.run(<String>[
         'publish-plugin',
@@ -347,7 +352,7 @@ void main() {
     });
 
     test('only if tagging and pushing to remotes are both enabled', () async {
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
@@ -360,7 +365,7 @@ void main() {
     });
   });
 
-  group('Auto release (all flag)', () {
+  group('Auto release (all-changed flag)', () {
     setUp(() async {
       io.Process.runSync('git', <String>['init'],
           workingDirectory: mockPackagesDir.path);
@@ -391,10 +396,72 @@ void main() {
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
       await commandRunner
-          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
+      expect(processRunner.pushTagsArgs[3], 'push');
+      expect(processRunner.pushTagsArgs[4], 'upstream');
+      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
+    });
+
+    test('can release newly created plugins, while there are existing plugins',
+        () async {
+      // Prepare an exiting plugin and tag it
+      final Directory pluginDir0 = createFakePlugin('plugin0',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir0,
+          name: 'plugin0',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishCompleteCode = 0;
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      processRunner.pushTagsArgs.clear();
+
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      await commandRunner
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
@@ -437,22 +504,27 @@ void main() {
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(1);
+      processRunner.mockPublishCompleteCode = 1;
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(
-          <String>['publish-plugin', '--all', '--base-sha=HEAD~', '--dry-run']);
+      await commandRunner.run(<String>[
+        'publish-plugin',
+        '--all-changed',
+        '--base-sha=HEAD~',
+        '--dry-run'
+      ]);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
+            '===============  DRY RUN ===============',
             'Getting existing tags...',
-            'DRY RUN: Running `pub publish ` in ${pluginDir1.path}...\n',
-            'DRY RUN: Tagging release plugin1-v0.0.1...',
-            'DRY RUN: Pushing tag to upstream...',
-            'DRY RUN: Running `pub publish ` in ${pluginDir2.path}...\n',
-            'DRY RUN: Tagging release plugin2-v0.0.1...',
-            'DRY RUN: Pushing tag to upstream...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Tagging release plugin1-v0.0.1...',
+            'Pushing tag to upstream...',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Tagging release plugin2-v0.0.1...',
+            'Pushing tag to upstream...',
             'Packages released: plugin1, plugin2',
             'Done!'
           ]));
@@ -481,10 +553,10 @@ void main() {
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
       await commandRunner
-          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
@@ -526,7 +598,7 @@ void main() {
           .runCommand(<String>['commit', '-m', 'Update versions to 0.0.2']);
 
       await commandRunner
-          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
@@ -546,6 +618,94 @@ void main() {
       expect(processRunner.pushTagsArgs[3], 'push');
       expect(processRunner.pushTagsArgs[4], 'upstream');
       expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.2');
+    });
+
+    test(
+        'delete package will not trigger publish but exit the command successfully.',
+        () async {
+      // Non-federated
+      final Directory pluginDir1 = createFakePlugin('plugin1',
+          withSingleExample: true, packagesDirectory: mockPackagesDir);
+      // federated
+      final Directory pluginDir2 = createFakePlugin('plugin2',
+          withSingleExample: true,
+          parentDirectoryName: 'plugin2',
+          packagesDirectory: mockPackagesDir);
+      createFakePubspec(pluginDir1,
+          name: 'plugin1',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      createFakePubspec(pluginDir2,
+          name: 'plugin2',
+          includeVersion: true,
+          isFlutter: false,
+          version: '0.0.1');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishCompleteCode = 0;
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'Running `pub publish ` in ${pluginDir2.path}...\n',
+            'Packages released: plugin1, plugin2',
+            'Done!'
+          ]));
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
+      expect(processRunner.pushTagsArgs[3], 'push');
+      expect(processRunner.pushTagsArgs[4], 'upstream');
+      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
+
+      processRunner.pushTagsArgs.clear();
+      printedMessages.clear();
+
+      final List<String> plugin1Pubspec =
+          pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
+      plugin1Pubspec[plugin1Pubspec.indexWhere(
+          (element) => element.contains('version:'))] = 'version: 0.0.2';
+      pluginDir1
+          .childFile('pubspec.yaml')
+          .writeAsStringSync(plugin1Pubspec.join('\n'));
+
+      pluginDir2.deleteSync(recursive: true);
+
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>[
+        'commit',
+        '-m',
+        'Update plugin1 versions to 0.0.2, delete plugin2'
+      ]);
+
+      await commandRunner
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Getting existing tags...',
+            'Running `pub publish ` in ${pluginDir1.path}...\n',
+            'The file at The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n',
+            'Packages released: plugin1',
+            'Done!'
+          ]));
+
+      expect(processRunner.pushTagsArgs, isNotEmpty);
+      expect(processRunner.pushTagsArgs.length, 3);
+      expect(processRunner.pushTagsArgs[0], 'push');
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.2');
     });
 
     test(
@@ -572,10 +732,10 @@ void main() {
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
       await commandRunner
-          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
@@ -617,7 +777,7 @@ void main() {
           .runCommand(<String>['commit', '-m', 'Update versions to 0.0.1']);
 
       await commandRunner
-          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
@@ -664,16 +824,16 @@ void main() {
       await gitDir.runCommand(<String>['commit', '-m', 'Add dart files']);
 
       // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishProcess.exitCodeCompleter.complete(0);
+      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
       await commandRunner
-          .run(<String>['publish-plugin', '--all', '--base-sha=HEAD~']);
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           printedMessages,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
-            'No version updates in this commit, exiting...',
+            'No version updates in this commit.',
             'Done!'
           ]));
       expect(processRunner.pushTagsArgs, isEmpty);
@@ -683,10 +843,15 @@ void main() {
 
 class TestProcessRunner extends ProcessRunner {
   final List<io.ProcessResult> results = <io.ProcessResult>[];
-  final MockProcess mockPublishProcess = MockProcess();
+  // Most recent returned publish process.
+  MockProcess mockPublishProcess;
   final List<String> mockPublishArgs = <String>[];
   final MockProcessResult mockPushTagsResult = MockProcessResult();
   final List<String> pushTagsArgs = <String>[];
+
+  String mockPublishStdout;
+  String mockPublishStderr;
+  int mockPublishCompleteCode;
 
   @override
   Future<io.ProcessResult> runAndExitOnError(
@@ -719,23 +884,42 @@ class TestProcessRunner extends ProcessRunner {
         args[0] == 'pub' &&
         args[1] == 'publish');
     mockPublishArgs.addAll(args);
+    mockPublishProcess = MockProcess();
+    if (mockPublishStdout != null) {
+      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout));
+    }
+    if (mockPublishStderr != null) {
+      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr));
+    }
+    if (mockPublishCompleteCode != null) {
+      mockPublishProcess.exitCodeCompleter.complete(mockPublishCompleteCode);
+    }
+
     return mockPublishProcess;
   }
 }
 
 class MockStdin extends Mock implements io.Stdin {
-  final StreamController<List<int>> controller = StreamController<List<int>>();
+  List<List<int>> mockUserInputs = <List<int>>[];
+  StreamController<List<int>> _controller;
   String readLineOutput;
 
   @override
   Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
-    return controller.stream.transform(streamTransformer);
+    // In the test context, only one `PublishPluginCommand` object is created for a single test case.
+    // However, sometimes, we need to run multiple commands in a single test case.
+    // In such situation, this `MockStdin`'s StreamController might be listened to more than once, which is not allowed.
+    //
+    // Create a new controller every time so this Stdin could be listened to multiple times.
+    _controller = StreamController<List<int>>();
+    mockUserInputs.forEach((List<int> element) => _controller.add(element));
+    return _controller.stream.transform(streamTransformer);
   }
 
   @override
   StreamSubscription<List<int>> listen(void onData(List<int> event),
       {Function onError, void onDone(), bool cancelOnError}) {
-    return controller.stream.listen(onData,
+    return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
