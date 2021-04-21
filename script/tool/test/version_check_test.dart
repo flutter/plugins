@@ -61,6 +61,9 @@ void main() {
         } else if (invocation.positionalArguments[0][0] == 'show') {
           final String response =
               gitShowResponses[invocation.positionalArguments[0][1]];
+          if (response == null) {
+            throw const io.ProcessException('git', <String>['show']);
+          }
           when<String>(mockProcessResult.stdout as String).thenReturn(response);
         } else if (invocation.positionalArguments[0][0] == 'merge-base') {
           when<String>(mockProcessResult.stdout as String).thenReturn('abc123');
@@ -138,6 +141,23 @@ void main() {
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 1.0.0',
         'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['version-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          'No version check errors found!',
+        ]),
+      );
+    });
+
+    test('allows valid version for new package.', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
       final List<String> output =
           await runCapturingPrint(runner, <String>['version-check']);

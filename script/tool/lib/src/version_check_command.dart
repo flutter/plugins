@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' as io;
 
 import 'package:meta/meta.dart';
 import 'package:file/file.dart';
@@ -121,6 +120,7 @@ class VersionCheckCommand extends PluginCommand {
       if (masterVersion == null) {
         print('${indentation}Unable to find pubspec in master. '
             'Safe to ignore if the project is new.');
+        continue;
       }
 
       if (masterVersion == headVersion) {
