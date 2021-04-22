@@ -24,21 +24,6 @@ class PathProviderLinux extends PathProviderPlatform {
     return Future.value("/tmp");
   }
 
-  // Gets the name of this executable.
-  Future<String> _getExecutableName() async {
-    return path.basenameWithoutExtension(
-        await File('/proc/self/exe').resolveSymbolicLinks());
-  }
-
-  // Gets the unique ID for this application.
-  Future<String> _getId() async {
-    var appId = getApplicationId();
-    if (appId != null) return appId;
-
-    // Fall back to using the executable name.
-    return await _getExecutableName();
-  }
-
   @override
   Future<String?> getApplicationSupportPath() async {
     // This plugin originally used the executable name as a directory.
@@ -65,5 +50,20 @@ class PathProviderLinux extends PathProviderPlatform {
   @override
   Future<String?> getDownloadsPath() {
     return Future.value(xdg.getUserDirectory('DOWNLOAD')?.path);
+  }
+
+  // Gets the name of this executable.
+  Future<String> _getExecutableName() async {
+    return path.basenameWithoutExtension(
+        await File('/proc/self/exe').resolveSymbolicLinks());
+  }
+
+  // Gets the unique ID for this application.
+  Future<String> _getId() async {
+    var appId = getApplicationId();
+    if (appId != null) return appId;
+
+    // Fall back to using the executable name.
+    return await _getExecutableName();
   }
 }
