@@ -19,6 +19,7 @@
                                     PHPickerViewControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult result;
+@property(nonatomic) bool single;
 
 @end
 
@@ -64,7 +65,8 @@ static const int SOURCE_GALLERY = 1;
 - (void)pickImage:(bool)single {
   if (@available(iOS 14, *)) {
     PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
-    if (!single) config.selectionLimit = 1000;
+    self->_single = single;
+    if (!single) config.selectionLimit = 0;
     config.filter = [PHPickerFilter imagesFilter];
 
     PHPickerViewController *pickerViewController =
@@ -81,43 +83,40 @@ static const int SOURCE_GALLERY = 1;
   [picker dismissViewControllerAnimated:YES completion:nil];
   NSMutableArray *pathList = [NSMutableArray new];
   for (PHPickerResult *result in results) {
-    [result.itemProvider
-        loadObjectOfClass:[UIImage class]
-        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable object,
-                            NSError *_Nullable error) {
-          if ([object isKindOfClass:[UIImage class]]) {
-            if (object != nil) {
-              NSArray *paths =
-                  NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-              NSString *documentsDirectory = [paths objectAtIndex:0];
-              NSString *filename =
-                  [NSString stringWithFormat:@"image%lu.png", (unsigned long)pathList.count];
-              NSString *path = [documentsDirectory stringByAppendingPathComponent:filename];
-              NSData *data = UIImagePNGRepresentation(object);
-              NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-              NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
-              NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+    [result.itemProvider loadDataRepresentationForTypeIdentifier:@"public.image"
+                                               completionHandler:^(NSData * _Nullable data, NSError * _Nullable error) {
+      NSLog(@"data: %lu", (unsigned long)data.length);
+      if (data != nil) {
+        NSArray *paths =
+            NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
 
-              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
-                                                                              image:object
-                                                                           maxWidth:maxWidth
-                                                                          maxHeight:maxHeight
-                                                                       imageQuality:imageQuality];
-              } else {
-                [data writeToFile:path atomically:YES];
-              }
-              [pathList addObject:path];
-              if (pathList.count == results.count) {
-                if (results.count == 1) {
-                  self.result(pathList[0]);
-                } else {
-                  self.result(pathList);
-                }
-              }
-            }
+        NSString *filename =
+            [NSString stringWithFormat:@"%@.png", result.itemProvider.suggestedName];
+        NSString *path = [documentsDirectory stringByAppendingPathComponent:filename];
+        NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
+        NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
+        NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+
+        if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+          path = [FLTImagePickerPhotoAssetUtil saveImageWithOriginalImageData:data
+                                                                        image:[UIImage imageWithData:data]
+                                                                     maxWidth:maxWidth
+                                                                    maxHeight:maxHeight
+                                                                 imageQuality:imageQuality];
+        } else {
+          [data writeToFile:path atomically:YES];
+        }
+        [pathList addObject:path];
+        if (pathList.count == results.count) {
+          if (self->_single) {
+            self.result(pathList[0]);
+          } else {
+            self.result(pathList);
           }
-        }];
+        }
+      }
+    }];
   }
 }
 
