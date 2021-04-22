@@ -12,7 +12,7 @@ import 'get_application_id.dart';
 
 /// The linux implementation of [PathProviderPlatform]
 ///
-/// This class implements the `package:path_provider` functionality for linux
+/// This class implements the `package:path_provider` functionality for Linux.
 class PathProviderLinux extends PathProviderPlatform {
   /// Registers this class as the default instance of [PathProviderPlatform]
   static void register() {
@@ -35,7 +35,7 @@ class PathProviderLinux extends PathProviderPlatform {
     }
 
     final directory = Directory(path.join(xdg.dataHome.path, await _getId()));
-    // Creating the directory if it doesn't exist, because mobile implementations assume the directory exists
+    // Creating the directory if it doesn't exist, because mobile implementations assume the directory exists.
     if (!await directory.exists()) {
       await directory.create(recursive: true);
     }
