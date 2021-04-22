@@ -14,6 +14,12 @@ platform-specific behavior, and when you register your plugin, set the default
 `InAppPurchasePlatform` by calling
 `InAppPurchasePlatform.setInstance(MyPlatformInAppPurchase())`.
 
+To implement functionality that is specific to the platform and is not covered 
+by the [`InAppPurchasePlatform`][2] idiomatic API, extend 
+[`InAppPurchasePlatformAddition`][3] with the platform-specific functionality, 
+and when the plugin is registered, set the addition instance by calling the
+`InAppPurchasePlatformAddition.instance = MyPlatformInAppPurchaseAddition()`.
+
 # Note on breaking changes
 
 Strongly prefer non-breaking changes (such as adding a method to the interface)
@@ -24,3 +30,4 @@ on why a less-clean interface is preferable to a breaking change.
 
 [1]: ../in_app_purchase
 [2]: lib/in_app_purchase_platform_interface.dart
+[3]: lib/in_app_purchase_platform_addition.dart

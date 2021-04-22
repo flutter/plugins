@@ -5,7 +5,7 @@
 // ignore: avoid_classes_with_only_static_members
 /// The interface that platform implementations must implement when they want to
 /// provide platform specific in_app_purchase features.
-abstract class InAppPurchaseAddition {
+abstract class InAppPurchasePlatformAddition {
   /// The instance containing the platform specific in_app_purchase features.
-  static InAppPurchaseAddition? instance;
+  static InAppPurchasePlatformAddition? instance;
 }
