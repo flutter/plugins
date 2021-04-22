@@ -2,10 +2,27 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// ignore: avoid_classes_with_only_static_members
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+
 /// The interface that platform implementations must implement when they want to
 /// provide platform specific in_app_purchase features.
-abstract class InAppPurchasePlatformAddition {
+///
+/// Platform implementations should extend this class rather than implement it as `in_app_purchase`
+/// does not consider newly added methods to be breaking changes. Extending this class
+/// (using `extends`) ensures that the subclass will get the default implementation, while
+/// platform implementations that `implements` this interface will be broken by newly added
+/// [InAppPurchasePlatformAddition] methods.
+abstract class InAppPurchasePlatformAddition extends PlatformInterface {
+
+  /// Constructs a InAppPurchasePlatform.
+  InAppPurchasePlatformAddition() : super(token: _token);
+
+  static final Object _token = Object();
+
+  // Should only be accessed after setter is called.
+  static late InAppPurchasePlatformAddition _instance;
+
   /// The instance containing the platform-specific in_app_purchase
   /// functionality.
   ///
@@ -13,7 +30,7 @@ abstract class InAppPurchasePlatformAddition {
   /// [`InAppPurchasePlatformAddition`][3] with the platform-specific
   /// functionality, and when the plugin is registered, set the
   /// `InAppPurchasePlatformAddition.instance` with the new addition
-  /// implementationinstance.
+  /// implementation instance.
   ///
   /// Example implementation might look like this:
   /// ```dart
@@ -22,7 +39,7 @@ abstract class InAppPurchasePlatformAddition {
   /// }
   /// ```
   ///
-  /// The following snippit shows how to register the `InAppPurchaseMyPlatformAddition`:
+  /// The following snippet shows how to register the `InAppPurchaseMyPlatformAddition`:
   /// ```dart
   /// class InAppPurchaseMyPlatformPlugin {
   ///   static void registerWith(Registrar registrar) {
@@ -36,5 +53,13 @@ abstract class InAppPurchasePlatformAddition {
   ///   }
   /// }
   /// ```
-  static InAppPurchasePlatformAddition? instance;
+  static InAppPurchasePlatformAddition get instance => _instance;
+
+  /// Platform-specific plugins should set this with their own platform-specific
+  /// class that extends [InAppPurchasePlatformAddition] when they register themselves.
+  static set instance(InAppPurchasePlatformAddition instance) {
+    PlatformInterface.verifyToken(instance, _token);
+    assert(instance.runtimeType is! InAppPurchasePlatform);
+    _instance = instance;
+  }
 }

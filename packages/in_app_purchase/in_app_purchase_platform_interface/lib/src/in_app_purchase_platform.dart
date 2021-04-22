@@ -24,15 +24,16 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   /// The instance of [InAppPurchasePlatform] to use.
   ///
   /// Defaults to `null`.
-  static InAppPurchasePlatform? get instance => _instance;
+  static InAppPurchasePlatform get instance => _instance;
 
-  static InAppPurchasePlatform? _instance;
+  // Should only be accessed after setter is called.
+  static late InAppPurchasePlatform _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [InAppPurchasePlatform] when they register themselves.
   // TODO(amirh): Extract common platform interface logic.
   // https://github.com/flutter/flutter/issues/43368
-  static void setInstance(InAppPurchasePlatform instance) {
+  static set instance(InAppPurchasePlatform instance) {
     PlatformInterface.verifyToken(instance, _token);
     _instance = instance;
   }
