@@ -6,6 +6,8 @@
 if pgrep -lf chromedriver > /dev/null; then
   echo "chromedriver is running."
 
+  ./regen_mocks.sh
+
   if [ $# -eq 0 ]; then
     echo "No target specified, running all tests..."
     find integration_test/ -iname *_test.dart | xargs -n1 -i -t flutter drive -d web-server --web-port=7357 --browser-name=chrome --driver=test_driver/integration_test.dart --target='{}'

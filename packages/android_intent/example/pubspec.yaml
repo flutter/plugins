@@ -1,5 +1,6 @@
 name: android_intent_example
 description: Demonstrates how to use the android_intent plugin.
+publish_to: none
 
 dependencies:
   flutter:

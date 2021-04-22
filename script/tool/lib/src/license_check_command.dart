@@ -62,8 +62,8 @@ final List<RegExp> _thirdPartyLicenseBlockRegexes = <RegExp>[
 // Slight variants are not accepted because they may prevent consolidation in
 // tools that assemble all licenses used in distributed applications.
 // standardized.
-final String _fullBsdLicenseText =
-    '''Copyright 2013 The Flutter Authors. All rights reserved.
+const String _fullBsdLicenseText = '''
+Copyright 2013 The Flutter Authors. All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
@@ -110,7 +110,7 @@ class LicenseCheckCommand extends PluginCommand {
       'Ensures that all code files have copyright/license blocks.';
 
   @override
-  Future<Null> run() async {
+  Future<void> run() async {
     final Iterable<File> codeFiles = (await _getAllFiles()).where((File file) =>
         _codeFileExtensions.contains(p.extension(file.path)) &&
         !_shouldIgnoreFile(file));
@@ -160,7 +160,7 @@ class LicenseCheckCommand extends PluginCommand {
 
       if (_isThirdParty(file)) {
         if (!_thirdPartyLicenseBlockRegexes
-            .any((regex) => regex.hasMatch(content))) {
+            .any((RegExp regex) => regex.hasMatch(content))) {
           unrecognizedThirdPartyFiles.add(file);
         }
       } else {
@@ -175,7 +175,8 @@ class LicenseCheckCommand extends PluginCommand {
     _print('\n');
 
     // Sort by path for more usable output.
-    final pathCompare = (File a, File b) => a.path.compareTo(b.path);
+    final int Function(File, File) pathCompare =
+        (File a, File b) => a.path.compareTo(b.path);
     incorrectFirstPartyFiles.sort(pathCompare);
     unrecognizedThirdPartyFiles.sort(pathCompare);
 
@@ -200,7 +201,7 @@ class LicenseCheckCommand extends PluginCommand {
           'the new third-party license block.\n');
     }
 
-    bool succeeded =
+    final bool succeeded =
         incorrectFirstPartyFiles.isEmpty && unrecognizedThirdPartyFiles.isEmpty;
     if (succeeded) {
       _print('All source files passed validation!');
@@ -230,7 +231,7 @@ class LicenseCheckCommand extends PluginCommand {
           'Please ensure that they use the exact format used in this repository".\n');
     }
 
-    bool succeeded = incorrectLicenseFiles.isEmpty;
+    final bool succeeded = incorrectLicenseFiles.isEmpty;
     if (succeeded) {
       _print('All LICENSE files passed validation!');
     }

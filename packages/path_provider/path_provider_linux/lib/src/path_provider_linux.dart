@@ -4,9 +4,9 @@
 import 'dart:io';
 import 'dart:async';
 
-import 'package:xdg_directories/xdg_directories.dart' as xdg;
 import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
+import 'package:xdg_directories/xdg_directories.dart' as xdg;
 
 import 'get_application_id.dart';
 
@@ -21,13 +21,13 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() {
-    return Future.value("/tmp");
+    return Future<String?>.value('/tmp');
   }
 
   @override
   Future<String?> getApplicationSupportPath() async {
     final directory = Directory(path.join(xdg.dataHome.path, await _getId()));
-    if (await directory.exists()) {
+    if (directory.existsSync()) {
       return directory.path;
     }
 
@@ -35,7 +35,7 @@ class PathProviderLinux extends PathProviderPlatform {
     // Use that if it exists for backwards compatibility.
     final legacyDirectory =
         Directory(path.join(xdg.dataHome.path, await _getExecutableName()));
-    if (await legacyDirectory.exists()) {
+    if (legacyDirectory.existsSync()) {
       return legacyDirectory.path;
     }
 
@@ -46,12 +46,12 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getApplicationDocumentsPath() {
-    return Future.value(xdg.getUserDirectory('DOCUMENTS')?.path);
+    return Future<String?>.value(xdg.getUserDirectory('DOCUMENTS')?.path);
   }
 
   @override
   Future<String?> getDownloadsPath() {
-    return Future.value(xdg.getUserDirectory('DOWNLOAD')?.path);
+    return Future<String?>.value(xdg.getUserDirectory('DOWNLOAD')?.path);
   }
 
   // Gets the name of this executable.
@@ -63,7 +63,9 @@ class PathProviderLinux extends PathProviderPlatform {
   // Gets the unique ID for this application.
   Future<String> _getId() async {
     var appId = getApplicationId();
-    if (appId != null) return appId;
+    if (appId != null) {
+      return appId;
+    }
 
     // Fall back to using the executable name.
     return await _getExecutableName();

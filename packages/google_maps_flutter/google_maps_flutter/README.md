@@ -21,7 +21,7 @@ To use this plugin, add `google_maps_flutter` as a [dependency in your pubspec.y
   * To enable Google Maps for iOS, select "Maps SDK for iOS" in the "Additional APIs" section, then select "ENABLE".
   * Make sure the APIs you enabled are under the "Enabled APIs" section.
 
-* You can also find detailed steps to get start with Google Maps Platform [here](https://developers.google.com/maps/gmp-get-started).
+For more details, see [Getting started with Google Maps Platform](https://developers.google.com/maps/gmp-get-started).
 
 ### Android
 

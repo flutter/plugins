@@ -1,5 +1,6 @@
 name: local_auth_example
 description: Demonstrates how to use the local_auth plugin.
+publish_to: none
 
 dependencies:
   flutter:

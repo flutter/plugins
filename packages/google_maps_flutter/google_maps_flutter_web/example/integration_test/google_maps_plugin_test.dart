@@ -2,36 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:async';
+import 'dart:js_util' show getProperty;
 
 import 'package:integration_test/integration_test.dart';
 import 'package:flutter/widgets.dart';
 import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
-class _MockGoogleMapController extends Mock implements GoogleMapController {}
+import 'google_maps_plugin_test.mocks.dart';
+
+@GenerateMocks([], customMocks: [
+  MockSpec<GoogleMapController>(returnNullOnMissingStub: true),
+])
 
 /// Test GoogleMapsPlugin
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('GoogleMapsPlugin', () {
-    _MockGoogleMapController controller;
-    GoogleMapsPlugin plugin;
-    int reportedMapId;
+    late MockGoogleMapController controller;
+    late GoogleMapsPlugin plugin;
+    int? reportedMapId;
 
     void onPlatformViewCreated(int id) {
       reportedMapId = id;
     }
 
     setUp(() {
-      controller = _MockGoogleMapController();
+      controller = MockGoogleMapController();
       plugin = GoogleMapsPlugin();
       reportedMapId = null;
     });
@@ -72,34 +76,21 @@ void main() {
       final testMapId = 33930;
       final initialCameraPosition = CameraPosition(target: LatLng(0, 0));
 
-      testWidgets('throws without _webOnlyMapCreationId',
-          (WidgetTester tester) async {
-        expect(
-          () => plugin.buildView(
-            null,
-            onPlatformViewCreated,
-            initialCameraPosition: initialCameraPosition,
-          ),
-          throwsAssertionError,
-          reason:
-              '_webOnlyMapCreationId is mandatory to prevent unnecessary reloads in web.',
-        );
-      });
-
       testWidgets(
           'returns an HtmlElementView and caches the controller for later',
           (WidgetTester tester) async {
         final Map<int, GoogleMapController> cache = {};
         plugin.debugSetMapById(cache);
 
-        final HtmlElementView widget = plugin.buildView(
+        final Widget widget = plugin.buildView(
           testMapId,
           onPlatformViewCreated,
           initialCameraPosition: initialCameraPosition,
         );
 
+        expect(widget, isA<HtmlElementView>());
         expect(
-          widget.viewType,
+          (widget as HtmlElementView).viewType,
           contains('$testMapId'),
           reason:
               'view type should contain the mapId passed when creating the map.',
@@ -160,11 +151,10 @@ void main() {
         expect(styles.length, 1);
         // Let's peek inside the styles...
         var style = styles[0] as gmaps.MapTypeStyle;
-        expect(style.featureType, gmaps.MapTypeStyleFeatureType.POI_PARK);
-        expect(
-            style.elementType, gmaps.MapTypeStyleElementType.LABELS_TEXT_FILL);
-        expect(style.stylers.length, 1);
-        expect(style.stylers[0].color, '#6b9a76');
+        expect(style.featureType, 'poi.park');
+        expect(style.elementType, 'labels.text.fill');
+        expect(style.stylers?.length, 1);
+        expect(getProperty(style.stylers![0]!, 'color'), '#6b9a76');
       });
     });
 
@@ -247,31 +237,50 @@ void main() {
 
         verify(controller.moveCamera(expectedUpdates));
       });
+
       // Viewport
       testWidgets('getVisibleRegion', (WidgetTester tester) async {
+        when(controller.getVisibleRegion())
+            .thenAnswer((_) async => LatLngBounds(
+                  northeast: LatLng(47.2359634, -68.0192019),
+                  southwest: LatLng(34.5019594, -120.4974629),
+                ));
         await plugin.getVisibleRegion(mapId: mapId);
 
         verify(controller.getVisibleRegion());
       });
+
       testWidgets('getZoomLevel', (WidgetTester tester) async {
+        when(controller.getZoomLevel()).thenAnswer((_) async => 10);
         await plugin.getZoomLevel(mapId: mapId);
 
         verify(controller.getZoomLevel());
       });
+
       testWidgets('getScreenCoordinate', (WidgetTester tester) async {
+        when(controller.getScreenCoordinate(any)).thenAnswer(
+            (_) async => ScreenCoordinate(x: 320, y: 240) // fake return
+            );
+
         final latLng = LatLng(43.3613, -5.8499);
 
         await plugin.getScreenCoordinate(latLng, mapId: mapId);
 
         verify(controller.getScreenCoordinate(latLng));
       });
+
       testWidgets('getLatLng', (WidgetTester tester) async {
+        when(controller.getLatLng(any))
+            .thenAnswer((_) async => LatLng(43.3613, -5.8499) // fake return
+                );
+
         final coordinates = ScreenCoordinate(x: 19, y: 26);
 
         await plugin.getLatLng(coordinates, mapId: mapId);
 
         verify(controller.getLatLng(coordinates));
       });
+
       // InfoWindows
       testWidgets('showMarkerInfoWindow', (WidgetTester tester) async {
         final markerId = MarkerId('testing-123');
@@ -280,6 +289,7 @@ void main() {
 
         verify(controller.showInfoWindow(markerId));
       });
+
       testWidgets('hideMarkerInfoWindow', (WidgetTester tester) async {
         final markerId = MarkerId('testing-123');
 
@@ -287,7 +297,10 @@ void main() {
 
         verify(controller.hideInfoWindow(markerId));
       });
+
       testWidgets('isMarkerInfoWindowShown', (WidgetTester tester) async {
+        when(controller.isInfoWindowShown(any)).thenReturn(true);
+
         final markerId = MarkerId('testing-123');
 
         await plugin.isMarkerInfoWindowShown(markerId, mapId: mapId);
@@ -299,7 +312,7 @@ void main() {
     // Verify all event streams are filtered correctly from the main one...
     group('Event Streams', () {
       int mapId = 0;
-      StreamController<MapEvent> streamController;
+      late StreamController<MapEvent> streamController;
       setUp(() {
         streamController = StreamController<MapEvent>.broadcast();
         when(controller.events)
@@ -308,7 +321,8 @@ void main() {
       });
 
       // Dispatches a few events in the global streamController, and expects *only* the passed event to be there.
-      void _testStreamFiltering(Stream<MapEvent> stream, MapEvent event) async {
+      Future<void> _testStreamFiltering(
+          Stream<MapEvent> stream, MapEvent event) async {
         Timer.run(() {
           streamController.add(_OtherMapEvent(mapId));
           streamController.add(event);

@@ -4,8 +4,6 @@
 
 // @dart=2.9
 
-import 'dart:async';
-
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
@@ -55,7 +53,7 @@ void main() {
       expect(result, throwsA(isInstanceOf<UnsupportedError>()));
     } else if (Platform.isAndroid) {
       final List<Directory> directories = await getExternalCacheDirectories();
-      for (Directory result in directories) {
+      for (final Directory result in directories) {
         _verifySampleFile(result, 'externalCache');
       }
     }
@@ -72,7 +70,7 @@ void main() {
     StorageDirectory.movies,
   ];
 
-  for (StorageDirectory type in _allDirs) {
+  for (final StorageDirectory type in _allDirs) {
     test('getExternalStorageDirectories (type: $type)', () async {
       if (Platform.isIOS) {
         final Future<List<Directory>> result =
@@ -81,7 +79,7 @@ void main() {
       } else if (Platform.isAndroid) {
         final List<Directory> directories =
             await getExternalStorageDirectories(type: type);
-        for (Directory result in directories) {
+        for (final Directory result in directories) {
           _verifySampleFile(result, '$type');
         }
       }

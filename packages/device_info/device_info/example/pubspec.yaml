@@ -1,5 +1,6 @@
 name: device_info_example
 description: Demonstrates how to use the device_info plugin.
+publish_to: none
 
 dependencies:
   flutter:

@@ -1,5 +1,6 @@
 name: android_alarm_manager_example
 description: Demonstrates how to use the android_alarm_manager plugin.
+publish_to: none
 
 dependencies:
   flutter:

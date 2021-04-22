@@ -1,3 +1,7 @@
+## 0.6.0+1
+
+* Correctly handle iOS Application lifecycle events on cold start of the App.
+
 ## 0.6.0
 
 * Migrate to federated architecture.

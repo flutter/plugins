@@ -6,7 +6,22 @@ import 'package:path_provider_linux/path_provider_linux.dart';
 
 void main() {
   test('getTemporaryPath', () async {
-    final plugin = PathProviderLinux();
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
     expect(await plugin.getTemporaryPath(), '/tmp');
+  });
+
+  test('getApplicationSupportPath', () async {
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    expect(await plugin.getApplicationSupportPath(), startsWith('/'));
+  });
+
+  test('getApplicationDocumentsPath', () async {
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    expect(await plugin.getApplicationDocumentsPath(), startsWith('/'));
+  });
+
+  test('getDownloadsPath', () async {
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    expect(await plugin.getDownloadsPath(), startsWith('/'));
   });
 }

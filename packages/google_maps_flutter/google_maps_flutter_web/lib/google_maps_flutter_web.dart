@@ -6,6 +6,7 @@ library google_maps_flutter_web;
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:js_util';
 import 'src/shims/dart_ui.dart' as ui; // Conditionally imports dart:ui in web
 import 'dart:convert';
 

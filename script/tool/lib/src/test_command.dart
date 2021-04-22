@@ -9,7 +9,9 @@ import 'package:path/path.dart' as p;
 
 import 'common.dart';
 
+/// A command to run Dart unit tests for packages.
 class TestCommand extends PluginCommand {
+  /// Creates an instance of the test command.
   TestCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -30,10 +32,9 @@ class TestCommand extends PluginCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final List<String> failingPackages = <String>[];
-    await for (Directory packageDir in getPackages()) {
+    await for (final Directory packageDir in getPackages()) {
       final String packageName =
           p.relative(packageDir.path, from: packagesDir.path);
       if (!fileSystem.directory(p.join(packageDir.path, 'test')).existsSync()) {
@@ -43,7 +44,7 @@ class TestCommand extends PluginCommand {
 
       print('RUNNING $packageName tests...');
 
-      final String enableExperiment = argResults[kEnableExperiment];
+      final String enableExperiment = argResults[kEnableExperiment] as String;
 
       // `flutter test` automatically gets packages.  `pub run test` does not.  :(
       int exitCode = 0;
@@ -90,9 +91,9 @@ class TestCommand extends PluginCommand {
     print('\n\n');
     if (failingPackages.isNotEmpty) {
       print('Tests for the following packages are failing (see above):');
-      failingPackages.forEach((String package) {
+      for (final String package in failingPackages) {
         print(' * $package');
-      });
+      }
       throw ToolExit(1);
     }
 

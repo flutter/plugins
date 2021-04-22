@@ -17,7 +17,7 @@ import 'util.dart';
 void main() {
   group('$PublishCheckProcessRunner tests', () {
     PublishCheckProcessRunner processRunner;
-    CommandRunner runner;
+    CommandRunner<void> runner;
 
     setUp(() {
       initializeFakePackages();
@@ -26,7 +26,7 @@ void main() {
           mockPackagesDir, mockFileSystem,
           processRunner: processRunner);
 
-      runner = CommandRunner<Null>(
+      runner = CommandRunner<void>(
         'publish_check_command',
         'Test for publish-check command.',
       );
@@ -38,8 +38,8 @@ void main() {
     });
 
     test('publish check all packages', () async {
-      final Directory plugin1Dir = await createFakePlugin('a');
-      final Directory plugin2Dir = await createFakePlugin('b');
+      final Directory plugin1Dir = createFakePlugin('a');
+      final Directory plugin2Dir = createFakePlugin('b');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -52,15 +52,19 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('flutter',
-                <String>['pub', 'publish', '--', '--dry-run'], plugin1Dir.path),
-            ProcessCall('flutter',
-                <String>['pub', 'publish', '--', '--dry-run'], plugin2Dir.path),
+            ProcessCall(
+                'flutter',
+                const <String>['pub', 'publish', '--', '--dry-run'],
+                plugin1Dir.path),
+            ProcessCall(
+                'flutter',
+                const <String>['pub', 'publish', '--', '--dry-run'],
+                plugin2Dir.path),
           ]));
     });
 
     test('fail on negative test', () async {
-      await createFakePlugin('a');
+      createFakePlugin('a');
 
       final MockProcess process = MockProcess();
       process.stdoutController.close(); // ignore: unawaited_futures
@@ -76,7 +80,7 @@ void main() {
     });
 
     test('fail on bad pubspec', () async {
-      final Directory dir = await createFakePlugin('c');
+      final Directory dir = createFakePlugin('c');
       await dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
       final MockProcess process = MockProcess();
@@ -87,9 +91,9 @@ void main() {
     });
 
     test('pass on prerelease', () async {
-      await createFakePlugin('d');
+      createFakePlugin('d');
 
-      final String preReleaseOutput = 'Package has 1 warning.'
+      const String preReleaseOutput = 'Package has 1 warning.'
           'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
 
       final MockProcess process = MockProcess();

@@ -2,43 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:async';
+import 'dart:html' as html;
 
-import 'package:integration_test/integration_test.dart';
-import 'package:google_maps/google_maps.dart' as gmaps;
-import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps/google_maps.dart' as gmaps;
+import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
-import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
+import 'google_maps_controller_test.mocks.dart';
 
-class _MockCirclesController extends Mock implements CirclesController {}
+// This value is used when comparing long~num, like
+// LatLng values.
+const _acceptableDelta = 0.0000000001;
 
-class _MockPolygonsController extends Mock implements PolygonsController {}
-
-class _MockPolylinesController extends Mock implements PolylinesController {}
-
-class _MockMarkersController extends Mock implements MarkersController {}
-
-class _MockGMap extends Mock implements gmaps.GMap {
-  final onClickController = StreamController<gmaps.MouseEvent>.broadcast();
-  @override
-  Stream<gmaps.MouseEvent> get onClick => onClickController.stream;
-
-  final onRightclickController = StreamController<gmaps.MouseEvent>.broadcast();
-  @override
-  Stream<gmaps.MouseEvent> get onRightclick => onRightclickController.stream;
-
-  final onBoundsChangedController = StreamController<dynamic>.broadcast();
-  @override
-  Stream<dynamic> get onBoundsChanged => onBoundsChangedController.stream;
-
-  final onIdleController = StreamController<dynamic>.broadcast();
-  @override
-  Stream<dynamic> get onIdle => onIdleController.stream;
-}
+@GenerateMocks([], customMocks: [
+  MockSpec<CirclesController>(returnNullOnMissingStub: true),
+  MockSpec<PolygonsController>(returnNullOnMissingStub: true),
+  MockSpec<PolylinesController>(returnNullOnMissingStub: true),
+  MockSpec<MarkersController>(returnNullOnMissingStub: true),
+])
 
 /// Test Google Map Controller
 void main() {
@@ -46,8 +33,8 @@ void main() {
 
   group('GoogleMapController', () {
     final int mapId = 33930;
-    GoogleMapController controller;
-    StreamController<MapEvent> stream;
+    late GoogleMapController controller;
+    late StreamController<MapEvent> stream;
 
     // Creates a controller with the default mapId and stream controller, and any `options` needed.
     GoogleMapController _createController({
@@ -57,17 +44,18 @@ void main() {
       Set<Polygon> polygons = const <Polygon>{},
       Set<Polyline> polylines = const <Polyline>{},
       Set<Circle> circles = const <Circle>{},
-      Map<String, dynamic> options,
+      Map<String, dynamic> options = const <String, dynamic>{},
     }) {
       return GoogleMapController(
-          mapId: mapId,
-          streamController: stream,
-          initialCameraPosition: initialCameraPosition,
-          markers: markers,
-          polygons: polygons,
-          polylines: polylines,
-          circles: circles,
-          mapOptions: options ?? <String, dynamic>{});
+        mapId: mapId,
+        streamController: stream,
+        initialCameraPosition: initialCameraPosition,
+        markers: markers,
+        polygons: polygons,
+        polylines: polylines,
+        circles: circles,
+        mapOptions: options,
+      );
     }
 
     setUp(() {
@@ -81,7 +69,9 @@ void main() {
 
       testWidgets('constructor creates widget', (WidgetTester tester) async {
         expect(controller.widget, isNotNull);
-        expect(controller.widget.viewType, endsWith('$mapId'));
+        expect(controller.widget, isA<HtmlElementView>());
+        expect((controller.widget as HtmlElementView).viewType,
+            endsWith('$mapId'));
       });
 
       testWidgets('widget is cached when reused', (WidgetTester tester) async {
@@ -90,27 +80,130 @@ void main() {
         expect(identical(first, again), isTrue);
       });
 
-      testWidgets('dispose closes the stream and removes the widget',
-          (WidgetTester tester) async {
-        controller.dispose();
-        expect(stream.isClosed, isTrue);
-        expect(controller.widget, isNull);
+      group('dispose', () {
+        testWidgets('closes the stream and removes the widget',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(stream.isClosed, isTrue);
+          expect(controller.widget, isNull);
+        });
+
+        testWidgets('cannot call getVisibleRegion after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getVisibleRegion();
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call getScreenCoordinate after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getScreenCoordinate(
+              LatLng(43.3072465, -5.6918241),
+            );
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call getLatLng after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getLatLng(
+              ScreenCoordinate(x: 640, y: 480),
+            );
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call moveCamera after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.moveCamera(CameraUpdate.zoomIn());
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot call getZoomLevel after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() async {
+            await controller.getZoomLevel();
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updateCircles after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updateCircles(CircleUpdates.from({}, {}));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updatePolygons after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updatePolygons(PolygonUpdates.from({}, {}));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updatePolylines after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updatePolylines(PolylineUpdates.from({}, {}));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('cannot updateMarkers after dispose',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(() {
+            controller.updateMarkers(MarkerUpdates.from({}, {}));
+          }, throwsAssertionError);
+
+          expect(() {
+            controller.showInfoWindow(MarkerId('any'));
+          }, throwsAssertionError);
+
+          expect(() {
+            controller.hideInfoWindow(MarkerId('any'));
+          }, throwsAssertionError);
+        });
+
+        testWidgets('isInfoWindowShown defaults to false',
+            (WidgetTester tester) async {
+          controller.dispose();
+
+          expect(controller.isInfoWindowShown(MarkerId('any')), false);
+        });
       });
     });
 
     group('init', () {
-      _MockCirclesController circles;
-      _MockMarkersController markers;
-      _MockPolygonsController polygons;
-      _MockPolylinesController polylines;
-      _MockGMap map;
+      late MockCirclesController circles;
+      late MockMarkersController markers;
+      late MockPolygonsController polygons;
+      late MockPolylinesController polylines;
+      late gmaps.GMap map;
 
       setUp(() {
-        circles = _MockCirclesController();
-        markers = _MockMarkersController();
-        polygons = _MockPolygonsController();
-        polylines = _MockPolylinesController();
-        map = _MockGMap();
+        circles = MockCirclesController();
+        markers = MockMarkersController();
+        polygons = MockPolygonsController();
+        polylines = MockPolylinesController();
+        map = gmaps.GMap(html.DivElement());
       });
 
       testWidgets('listens to map events', (WidgetTester tester) async {
@@ -123,17 +216,25 @@ void main() {
           polylines: polylines,
         );
 
-        expect(map.onClickController.hasListener, isFalse);
-        expect(map.onRightclickController.hasListener, isFalse);
-        expect(map.onBoundsChangedController.hasListener, isFalse);
-        expect(map.onIdleController.hasListener, isFalse);
-
         controller.init();
 
-        expect(map.onClickController.hasListener, isTrue);
-        expect(map.onRightclickController.hasListener, isTrue);
-        expect(map.onBoundsChangedController.hasListener, isTrue);
-        expect(map.onIdleController.hasListener, isTrue);
+        // Trigger events on the map, and verify they've been broadcast to the stream
+        final capturedEvents = stream.stream.take(5);
+
+        gmaps.Event.trigger(
+            map, 'click', [gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
+        gmaps.Event.trigger(map, 'rightclick',
+            [gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
+        gmaps.Event.trigger(map, 'bounds_changed', []); // Causes 2 events
+        gmaps.Event.trigger(map, 'idle', []);
+
+        final events = await capturedEvents.toList();
+
+        expect(events[0], isA<MapTapEvent>());
+        expect(events[1], isA<MapLongPressEvent>());
+        expect(events[2], isA<CameraMoveStartedEvent>());
+        expect(events[3], isA<CameraMoveEvent>());
+        expect(events[4], isA<CameraIdleEvent>());
       });
 
       testWidgets('binds geometry controllers to map\'s',
@@ -227,7 +328,7 @@ void main() {
       testWidgets('empty infoWindow does not create InfoWindow instance.',
           (WidgetTester tester) async {
         controller = _createController(markers: {
-          Marker(markerId: MarkerId('marker-1'), infoWindow: null),
+          Marker(markerId: MarkerId('marker-1')),
         });
 
         controller.debugSetOverrides(
@@ -239,11 +340,11 @@ void main() {
         final capturedMarkers =
             verify(markers.addMarkers(captureAny)).captured[0] as Set<Marker>;
 
-        expect(capturedMarkers.first.infoWindow, isNull);
+        expect(capturedMarkers.first.infoWindow, InfoWindow.noText);
       });
 
       group('Initialization options', () {
-        gmaps.MapOptions capturedOptions;
+        gmaps.MapOptions? capturedOptions;
         setUp(() {
           capturedOptions = null;
         });
@@ -260,9 +361,9 @@ void main() {
           controller.init();
 
           expect(capturedOptions, isNotNull);
-          expect(capturedOptions.mapTypeId, gmaps.MapTypeId.SATELLITE);
-          expect(capturedOptions.zoomControl, true);
-          expect(capturedOptions.gestureHandling, 'auto',
+          expect(capturedOptions!.mapTypeId, gmaps.MapTypeId.SATELLITE);
+          expect(capturedOptions!.zoomControl, true);
+          expect(capturedOptions!.gestureHandling, 'auto',
               reason:
                   'by default the map handles zoom/pan gestures internally');
         });
@@ -280,7 +381,7 @@ void main() {
           controller.init();
 
           expect(capturedOptions, isNotNull);
-          expect(capturedOptions.gestureHandling, 'none',
+          expect(capturedOptions!.gestureHandling, 'none',
               reason:
                   'disabling scroll gestures disables all gesture handling');
         });
@@ -298,27 +399,9 @@ void main() {
           controller.init();
 
           expect(capturedOptions, isNotNull);
-          expect(capturedOptions.gestureHandling, 'none',
+          expect(capturedOptions!.gestureHandling, 'none',
               reason:
                   'disabling scroll gestures disables all gesture handling');
-        });
-
-        testWidgets('does not set initial position if absent',
-            (WidgetTester tester) async {
-          controller = _createController(
-            initialCameraPosition: null,
-          );
-
-          controller.debugSetOverrides(createMap: (_, options) {
-            capturedOptions = options;
-            return map;
-          });
-
-          controller.init();
-
-          expect(capturedOptions, isNotNull);
-          expect(capturedOptions.zoom, isNull);
-          expect(capturedOptions.center, isNull);
         });
 
         testWidgets('sets initial position when passed',
@@ -340,8 +423,8 @@ void main() {
           controller.init();
 
           expect(capturedOptions, isNotNull);
-          expect(capturedOptions.zoom, 12);
-          expect(capturedOptions.center, isNotNull);
+          expect(capturedOptions!.zoom, 12);
+          expect(capturedOptions!.center, isNotNull);
         });
       });
 
@@ -366,10 +449,15 @@ void main() {
 
     // These are the methods that are delegated to the gmaps.GMap object, that we can mock...
     group('Map control methods', () {
-      _MockGMap map;
+      late gmaps.GMap map;
 
       setUp(() {
-        map = _MockGMap();
+        map = gmaps.GMap(
+          html.DivElement(),
+          gmaps.MapOptions()
+            ..zoom = 10
+            ..center = gmaps.LatLng(0, 0),
+        );
         controller = _createController();
         controller.debugSetOverrides(createMap: (_, __) => map);
         controller.init();
@@ -380,9 +468,8 @@ void main() {
           controller.updateRawOptions({
             'mapType': 2,
           });
-          final options = verify(map.options = captureAny).captured[0];
 
-          expect(options.mapTypeId, gmaps.MapTypeId.SATELLITE);
+          expect(map.mapTypeId, gmaps.MapTypeId.SATELLITE);
         });
 
         testWidgets('can turn on/off traffic', (WidgetTester tester) async {
@@ -404,17 +491,19 @@ void main() {
 
       group('viewport getters', () {
         testWidgets('getVisibleRegion', (WidgetTester tester) async {
-          await controller.getVisibleRegion();
+          final gmCenter = map.center!;
+          final center =
+              LatLng(gmCenter.lat.toDouble(), gmCenter.lng.toDouble());
 
-          verify(map.bounds);
+          final bounds = await controller.getVisibleRegion();
+
+          expect(bounds.contains(center), isTrue,
+              reason:
+                  'The computed visible region must contain the center of the created map.');
         });
 
         testWidgets('getZoomLevel', (WidgetTester tester) async {
-          when(map.zoom).thenReturn(10);
-
-          await controller.getZoomLevel();
-
-          verify(map.zoom);
+          expect(await controller.getZoomLevel(), map.zoom);
         });
       });
 
@@ -423,10 +512,11 @@ void main() {
           await (controller
               .moveCamera(CameraUpdate.newLatLngZoom(LatLng(19, 26), 12)));
 
-          verify(map.zoom = 12);
-          final captured = verify(map.panTo(captureAny)).captured[0];
-          expect(captured.lat, 19);
-          expect(captured.lng, 26);
+          final gmCenter = map.center!;
+
+          expect(map.zoom, 12);
+          expect(gmCenter.lat, closeTo(19, _acceptableDelta));
+          expect(gmCenter.lng, closeTo(26, _acceptableDelta));
         });
       });
 
@@ -445,7 +535,7 @@ void main() {
       });
 
       testWidgets('updateCircles', (WidgetTester tester) async {
-        final mock = _MockCirclesController();
+        final mock = MockCirclesController();
         controller.debugSetOverrides(circles: mock);
 
         final previous = {
@@ -472,7 +562,7 @@ void main() {
       });
 
       testWidgets('updateMarkers', (WidgetTester tester) async {
-        final mock = _MockMarkersController();
+        final mock = MockMarkersController();
         controller.debugSetOverrides(markers: mock);
 
         final previous = {
@@ -499,7 +589,7 @@ void main() {
       });
 
       testWidgets('updatePolygons', (WidgetTester tester) async {
-        final mock = _MockPolygonsController();
+        final mock = MockPolygonsController();
         controller.debugSetOverrides(polygons: mock);
 
         final previous = {
@@ -526,7 +616,7 @@ void main() {
       });
 
       testWidgets('updatePolylines', (WidgetTester tester) async {
-        final mock = _MockPolylinesController();
+        final mock = MockPolylinesController();
         controller.debugSetOverrides(polylines: mock);
 
         final previous = {
@@ -553,9 +643,10 @@ void main() {
       });
 
       testWidgets('infoWindow visibility', (WidgetTester tester) async {
-        final mock = _MockMarkersController();
-        controller.debugSetOverrides(markers: mock);
+        final mock = MockMarkersController();
         final markerId = MarkerId('marker-with-infowindow');
+        when(mock.isInfoWindowShown(markerId)).thenReturn(true);
+        controller.debugSetOverrides(markers: mock);
 
         controller.showInfoWindow(markerId);
 

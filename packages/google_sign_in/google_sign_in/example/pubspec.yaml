@@ -1,5 +1,6 @@
 name: google_sign_in_example
 description: Example of Google Sign-In plugin.
+publish_to: none
 
 dependencies:
   flutter:

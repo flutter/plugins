@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add `pickMultiImage` method.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.

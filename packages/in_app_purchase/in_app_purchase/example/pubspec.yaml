@@ -1,6 +1,6 @@
 name: in_app_purchase_example
 description: Demonstrates how to use the in_app_purchase plugin.
-author: Flutter Team <flutter-dev@googlegroups.com>
+publish_to: none
 
 dependencies:
   flutter:

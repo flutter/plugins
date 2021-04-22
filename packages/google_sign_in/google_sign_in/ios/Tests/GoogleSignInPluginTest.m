@@ -153,4 +153,22 @@
   XCTAssertTrue([result boolValue]);
 }
 
+- (void)testHostedDomainIfMissed {
+  FlutterMethodCall *methodCall =
+      [FlutterMethodCall methodCallWithMethodName:@"init"
+                                        arguments:@{
+                                          @"signInOption" : @"SignInOption.standard",
+                                          @"hostedDomain" : [NSNull null],
+                                        }];
+
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"expect hostedDomain equals nil"];
+  [self.plugin handleMethodCall:methodCall
+                         result:^(id r) {
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertTrue([self.mockSharedInstance.hostedDomain == nil]);
+}
+
 @end

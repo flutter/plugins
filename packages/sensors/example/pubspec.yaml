@@ -1,5 +1,6 @@
 name: sensors_example
 description: Demonstrates how to use the sensors plugin.
+publish_to: none
 
 dependencies:
   flutter:
