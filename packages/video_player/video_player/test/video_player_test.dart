@@ -277,23 +277,6 @@ void main() {
       expect(fakeVideoPlayerPlatform.calls.last, 'setPlaybackSpeed');
     });
 
-    test('play restarts from beginning if video is at end', () async {
-      final VideoPlayerController controller = VideoPlayerController.network(
-        'https://127.0.0.1',
-      );
-      await controller.initialize();
-      const Duration nonzeroDuration = Duration(milliseconds: 100);
-      controller.value = controller.value.copyWith(duration: nonzeroDuration);
-      await controller.seekTo(nonzeroDuration);
-      expect(controller.value.isPlaying, isFalse);
-      expect(controller.value.position, nonzeroDuration);
-
-      await controller.play();
-
-      expect(controller.value.isPlaying, isTrue);
-      expect(controller.value.position, Duration.zero);
-    });
-
     test('setLooping', () async {
       final VideoPlayerController controller = VideoPlayerController.network(
         'https://127.0.0.1',
@@ -435,8 +418,6 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
-        const Duration nonzeroDuration = Duration(milliseconds: 100);
-        controller.value = controller.value.copyWith(duration: nonzeroDuration);
         expect(controller.value.isPlaying, isFalse);
         await controller.play();
         expect(controller.value.isPlaying, isTrue);
@@ -448,7 +429,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(controller.value.isPlaying, isFalse);
-        expect(controller.value.position, nonzeroDuration);
+        expect(controller.value.position, controller.value.duration);
       });
 
       testWidgets('buffering status', (WidgetTester tester) async {
