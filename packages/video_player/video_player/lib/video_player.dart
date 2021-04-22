@@ -314,7 +314,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           _applyPlayPause();
           break;
         case VideoEventType.completed:
-          pause().then((void pauseResult) => seekTo(value.duration));
+          value = value.copyWith(isPlaying: false, position: value.duration);
+          _timer?.cancel();
           break;
         case VideoEventType.bufferingUpdate:
           value = value.copyWith(buffered: event.buffered);
@@ -374,9 +375,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// has been sent to the platform, not when playback itself is totally
   /// finished.
   Future<void> play() async {
-    if (value.position == value.duration) {
-      await seekTo(const Duration());
-    }
     value = value.copyWith(isPlaying: true);
     await _applyPlayPause();
   }
