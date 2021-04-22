@@ -9,7 +9,7 @@
 
 ## 0.7.3
 
-* Endorse image_picker_for_web
+* Endorse image_picker_for_web.
 
 ## 0.7.2+1
 

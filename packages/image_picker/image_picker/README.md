@@ -11,6 +11,9 @@ First, add `image_picker` as a [dependency in your pubspec.yaml file](https://fl
 
 ### iOS
 
+Starting with version **0.7.5** the iOS implementation uses PHPicker to pick (multiple) images on iOS14 or higher. The multiple images implementation does NOT support iOS versions lower than 14.
+As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue. 
+
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
 * `NSPhotoLibraryUsageDescription` - describe why your app needs permission for the photo library. This is called _Privacy - Photo Library Usage Description_ in the visual editor.
