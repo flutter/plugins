@@ -300,6 +300,9 @@ final class VideoPlayer {
           width = exoPlayer.getVideoFormat().height;
           height = exoPlayer.getVideoFormat().width;
         }
+        if (rotationDegrees == 180) {
+          event.put("rotation", Math.PI);
+        }
         event.put("width", width);
         event.put("height", height);
 

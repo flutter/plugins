@@ -48,6 +48,7 @@ class VideoPlayerValue {
     this.isBuffering = false,
     this.volume = 1.0,
     this.playbackSpeed = 1.0,
+    this.rotation = 0.0,
     this.errorDescription,
   });
 
@@ -111,6 +112,9 @@ class VideoPlayerValue {
   /// The [size] of the currently loaded video.
   final Size size;
 
+  /// The [rotation] of the video.
+  final double rotation;
+
   /// Indicates whether or not the video has been loaded and is ready to play.
   final bool isInitialized;
 
@@ -136,7 +140,7 @@ class VideoPlayerValue {
   }
 
   /// Returns a new instance that has the same values as this current instance,
-  /// except for any overrides passed in as arguments to [copyWidth].
+  /// except for any overrides passed in as arguments to [copyWith].
   VideoPlayerValue copyWith({
     Duration? duration,
     Size? size,
@@ -368,6 +372,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
           value = value.copyWith(
             duration: event.duration,
             size: event.size,
+            rotation: event.rotation,
             isInitialized: event.duration != null,
             errorDescription: null,
           );
@@ -756,7 +761,10 @@ class _VideoPlayerState extends State<VideoPlayer> {
   Widget build(BuildContext context) {
     return _textureId == VideoPlayerController.kUninitializedTextureId
         ? Container()
-        : _videoPlayerPlatform.buildView(_textureId);
+        : Transform.rotate(
+            angle: widget.controller.value.rotation,
+            child: _videoPlayerPlatform.buildView(_textureId),
+          );
   }
 }
 
