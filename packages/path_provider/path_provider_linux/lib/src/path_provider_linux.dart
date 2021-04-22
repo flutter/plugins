@@ -26,6 +26,11 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getApplicationSupportPath() async {
+    final directory = Directory(path.join(xdg.dataHome.path, await _getId()));
+    if (await directory.exists()) {
+      return directory.path;
+    }
+
     // This plugin originally used the executable name as a directory.
     // Use that if it exists for backwards compatibility.
     final legacyDirectory =
@@ -34,11 +39,8 @@ class PathProviderLinux extends PathProviderPlatform {
       return legacyDirectory.path;
     }
 
-    final directory = Directory(path.join(xdg.dataHome.path, await _getId()));
-    // Creating the directory if it doesn't exist, because mobile implementations assume the directory exists.
-    if (!await directory.exists()) {
-      await directory.create(recursive: true);
-    }
+    // Create the directory, because mobile implementations assume the directory exists.
+    await directory.create(recursive: true);
     return directory.path;
   }
 
