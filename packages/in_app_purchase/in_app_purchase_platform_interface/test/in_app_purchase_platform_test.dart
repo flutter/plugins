@@ -11,7 +11,6 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('$InAppPurchasePlatform', () {
-
     test('Cannot be implemented with `implements`', () {
       expect(() {
         InAppPurchasePlatform.instance = ImplementsInAppPurchasePlatform();
@@ -123,28 +122,31 @@ void main() {
   });
 
   group('$InAppPurchasePlatformAddition', () {
-
     test('Cannot be implemented with `implements`', () {
       expect(() {
-        InAppPurchasePlatformAddition.instance = ImplementsInAppPurchasePlatformAddition();
+        InAppPurchasePlatformAddition.instance =
+            ImplementsInAppPurchasePlatformAddition();
       }, throwsNoSuchMethodError);
     });
 
     test('InAppPurchasePlatformAddition Can be extended', () {
-      InAppPurchasePlatformAddition.instance = ExtendsInAppPurchasePlatformAddition();
+      InAppPurchasePlatformAddition.instance =
+          ExtendsInAppPurchasePlatformAddition();
     });
 
     test('Can be mocked with `implements`', () {
-      InAppPurchasePlatformAddition.instance = MockInAppPurchasePlatformAddition();
+      InAppPurchasePlatformAddition.instance =
+          MockInAppPurchasePlatformAddition();
     });
 
     test('Provider can provide', () {
       ImplementsInAppPurchasePlatformAdditionProvider.register();
-      final ImplementsInAppPurchasePlatformAdditionProvider provider = ImplementsInAppPurchasePlatformAdditionProvider();
-      final InAppPurchasePlatformAddition addition = provider.getPlatformAddition();
+      final ImplementsInAppPurchasePlatformAdditionProvider provider =
+          ImplementsInAppPurchasePlatformAdditionProvider();
+      final InAppPurchasePlatformAddition addition =
+          provider.getPlatformAddition();
       expect(addition.runtimeType, ExtendsInAppPurchasePlatformAddition);
     });
-
   });
 }
 
@@ -166,7 +168,8 @@ class MockPurchaseParam extends Mock implements PurchaseParam {}
 
 class MockPurchaseDetails extends Mock implements PurchaseDetails {}
 
-class ImplementsInAppPurchasePlatformAddition implements InAppPurchasePlatformAddition {
+class ImplementsInAppPurchasePlatformAddition
+    implements InAppPurchasePlatformAddition {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
@@ -178,12 +181,14 @@ class MockInAppPurchasePlatformAddition extends Mock
     implements
         InAppPurchasePlatformAddition {}
 
-class ExtendsInAppPurchasePlatformAddition extends InAppPurchasePlatformAddition {}
+class ExtendsInAppPurchasePlatformAddition
+    extends InAppPurchasePlatformAddition {}
 
-class ImplementsInAppPurchasePlatformAdditionProvider implements InAppPurchasePlatformAdditionProvider {
-
+class ImplementsInAppPurchasePlatformAdditionProvider
+    implements InAppPurchasePlatformAdditionProvider {
   static void register() {
-    InAppPurchasePlatformAddition.instance = ExtendsInAppPurchasePlatformAddition();
+    InAppPurchasePlatformAddition.instance =
+        ExtendsInAppPurchasePlatformAddition();
   }
 
   @override

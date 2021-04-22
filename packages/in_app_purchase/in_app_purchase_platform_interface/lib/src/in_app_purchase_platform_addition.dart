@@ -14,7 +14,6 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 /// platform implementations that `implements` this interface will be broken by newly added
 /// [InAppPurchasePlatformAddition] methods.
 abstract class InAppPurchasePlatformAddition extends PlatformInterface {
-
   /// Constructs a InAppPurchasePlatform.
   InAppPurchasePlatformAddition() : super(token: _token);
 
