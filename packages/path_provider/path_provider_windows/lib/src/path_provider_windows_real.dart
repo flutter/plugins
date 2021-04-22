@@ -88,7 +88,11 @@ class PathProviderWindows extends PathProviderPlatform {
 
   @override
   Future<String?> getApplicationSupportPath() async {
-    final String appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
+    final String? appDataRoot =
+        await getPath(WindowsKnownFolder.RoamingAppData);
+    if (appDataRoot == null) {
+      return null;
+    }
     final Directory directory = Directory(
         path.join(appDataRoot, _getApplicationSpecificSubdirectory()));
     // Ensure that the directory exists if possible, since it will on other
@@ -114,7 +118,7 @@ class PathProviderWindows extends PathProviderPlatform {
   ///
   /// folderID is a GUID that represents a specific known folder ID, drawn from
   /// [WindowsKnownFolder].
-  Future<String> getPath(String folderID) {
+  Future<String?> getPath(String folderID) {
     final Pointer<Pointer<Utf16>> pathPtrPtr = calloc<Pointer<Utf16>>();
     final Pointer<GUID> knownFolderID = calloc<GUID>()..ref.setGUID(folderID);
 
@@ -130,6 +134,7 @@ class PathProviderWindows extends PathProviderPlatform {
         if (hr == E_INVALIDARG || hr == E_FAIL) {
           throw WindowsException(hr);
         }
+        return Future<String?>.value(null);
       }
 
       final String path = pathPtrPtr.value.toDartString();
