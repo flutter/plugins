@@ -714,8 +714,6 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
-        const Duration nonzeroDuration = Duration(milliseconds: 100);
-        controller.value = controller.value.copyWith(duration: nonzeroDuration);
         expect(controller.value.isPlaying, isFalse);
         await controller.play();
         expect(controller.value.isPlaying, isTrue);
@@ -727,7 +725,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(controller.value.isPlaying, isFalse);
-        expect(controller.value.position, nonzeroDuration);
+        expect(controller.value.position, controller.value.duration);
       });
 
       testWidgets('buffering status', (WidgetTester tester) async {
