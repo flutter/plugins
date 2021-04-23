@@ -18,7 +18,7 @@ class ProductDetailsResponse {
 
   /// The list of identifiers that are in the `identifiers` of [InAppPurchasePlatform.queryProductDetails] but failed to be fetched.
   ///
-  /// There's multiple platform specific reasons that product information could fail to be fetched,
+  /// There's multiple platform-specific reasons that product information could fail to be fetched,
   /// ranging from products not being correctly configured in the storefront to the queried IDs not existing.
   final List<String> notFoundIDs;
 

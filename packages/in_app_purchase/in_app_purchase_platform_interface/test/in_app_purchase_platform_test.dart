@@ -122,6 +122,15 @@ void main() {
   });
 
   group('$InAppPurchasePlatformAddition', () {
+
+    setUp(() {
+      InAppPurchasePlatformAddition.instance = null;
+    });
+
+    test('Cannot be implemented with `implements`', () {
+      expect(InAppPurchasePlatformAddition.instance, isNull);
+    });
+
     test('Cannot be implemented with `implements`', () {
       expect(() {
         InAppPurchasePlatformAddition.instance =
@@ -143,9 +152,17 @@ void main() {
       ImplementsInAppPurchasePlatformAdditionProvider.register();
       final ImplementsInAppPurchasePlatformAdditionProvider provider =
           ImplementsInAppPurchasePlatformAdditionProvider();
-      final InAppPurchasePlatformAddition addition =
+      final InAppPurchasePlatformAddition? addition =
           provider.getPlatformAddition();
       expect(addition.runtimeType, ExtendsInAppPurchasePlatformAddition);
+    });
+
+    test('Provider can provide `null`', () {
+      final ImplementsInAppPurchasePlatformAdditionProvider provider =
+          ImplementsInAppPurchasePlatformAdditionProvider();
+      final InAppPurchasePlatformAddition? addition =
+          provider.getPlatformAddition();
+      expect(addition, isNull);
     });
   });
 }
@@ -192,7 +209,7 @@ class ImplementsInAppPurchasePlatformAdditionProvider
   }
 
   @override
-  T getPlatformAddition<T extends InAppPurchasePlatformAddition>() {
+  T getPlatformAddition<T extends InAppPurchasePlatformAddition?>() {
     return InAppPurchasePlatformAddition.instance as T;
   }
 }

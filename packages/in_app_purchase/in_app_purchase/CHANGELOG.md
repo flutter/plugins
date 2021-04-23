@@ -354,7 +354,7 @@ Beta release.
 
 * Ability to list products, load previous purchases, and make purchases.
 * Simplified Dart API that's been unified for ease of use.
-* Platform specific APIs more directly exposing `StoreKit` and `BillingClient`.
+* Platform-specific APIs more directly exposing `StoreKit` and `BillingClient`.
 
 Includes:
 

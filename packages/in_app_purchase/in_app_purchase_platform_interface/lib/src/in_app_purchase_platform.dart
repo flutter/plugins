@@ -23,11 +23,8 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
 
   /// The instance of [InAppPurchasePlatform] to use.
   ///
-  /// Defaults to `null`.
+  /// Must be set before accessing.
   static InAppPurchasePlatform get instance => _instance;
-
-  // Should only be accessed after setter is called.
-  static late InAppPurchasePlatform _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific
   /// class that extends [InAppPurchasePlatform] when they register themselves.
@@ -38,13 +35,16 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  // Should only be accessed after setter is called.
+  static late InAppPurchasePlatform _instance;
+
   /// Listen to this broadcast stream to get real time update for purchases.
   ///
   /// This stream will never close as long as the app is active.
   ///
   /// Purchase updates can happen in several situations:
   /// * When a purchase is triggered by user in the app.
-  /// * When a purchase is triggered by user from the platform specific store front.
+  /// * When a purchase is triggered by user from the platform-specific store front.
   /// * When a purchase is restored on the device by the user in the app.
   /// * If a purchase is not completed ([completePurchase] is not called on the
   ///   purchase object) from the last app session. Purchase updates will happen
