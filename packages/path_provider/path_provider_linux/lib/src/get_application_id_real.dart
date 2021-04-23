@@ -6,12 +6,12 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 // GApplication* g_application_get_default();
-typedef _gApplicationGetDefaultC = IntPtr Function();
-typedef _gApplicationGetDefaultDart = int Function();
+typedef _GApplicationGetDefaultC = IntPtr Function();
+typedef _GApplicationGetDefaultDart = int Function();
 
 // const gchar* g_application_get_application_id(GApplication* application);
-typedef _gApplicationGetApplicationIdC = Pointer<Utf8> Function(IntPtr);
-typedef _gApplicationGetApplicationIdDart = Pointer<Utf8> Function(int);
+typedef _GApplicationGetApplicationIdC = Pointer<Utf8> Function(IntPtr);
+typedef _GApplicationGetApplicationIdDart = Pointer<Utf8> Function(int);
 
 /// Gets the application ID for this app.
 String? getApplicationId() {
@@ -21,17 +21,17 @@ String? getApplicationId() {
   } on ArgumentError {
     return null;
   }
-  final _gApplicationGetDefaultDart gApplicationGetDefault =
-      gio.lookupFunction<_gApplicationGetDefaultC, _gApplicationGetDefaultDart>(
+  final _GApplicationGetDefaultDart gApplicationGetDefault =
+      gio.lookupFunction<_GApplicationGetDefaultC, _GApplicationGetDefaultDart>(
           'g_application_get_default');
   final int app = gApplicationGetDefault();
   if (app == 0) {
     return null;
   }
 
-  final _gApplicationGetApplicationIdDart gApplicationGetApplicationId =
-      gio.lookupFunction<_gApplicationGetApplicationIdC,
-              _gApplicationGetApplicationIdDart>(
+  final _GApplicationGetApplicationIdDart gApplicationGetApplicationId =
+      gio.lookupFunction<_GApplicationGetApplicationIdC,
+              _GApplicationGetApplicationIdDart>(
           'g_application_get_application_id');
   final Pointer<Utf8> appId = gApplicationGetApplicationId(app);
   if (appId == null) {
