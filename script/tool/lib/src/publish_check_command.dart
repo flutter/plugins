@@ -18,7 +18,17 @@ class PublishCheckCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner);
+  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+    argParser.addFlag(
+      _allowPrereleaseFlag,
+      help: 'Allows the pre-release SDK warning to pass.\n'
+          'When enabled, a pub warning, which asks to publish the package as a pre-release version when '
+          'the SDK constraint is a pre-release version, is ignored.',
+      defaultsTo: false,
+    );
+  }
+
+  static const String _allowPrereleaseFlag = 'allow-pre-release';
 
   @override
   final String name = 'publish-check';
@@ -96,6 +106,10 @@ class PublishCheckCommand extends PluginCommand {
 
     if (await process.exitCode == 0) {
       return true;
+    }
+
+    if (!(argResults[_allowPrereleaseFlag] as bool)) {
+      return false;
     }
 
     await stdOutCompleter.future;
