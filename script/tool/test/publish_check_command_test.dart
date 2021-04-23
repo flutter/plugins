@@ -89,6 +89,24 @@ void main() {
       expect(() => runner.run(<String>['publish-check']),
           throwsA(isA<ToolExit>()));
     });
+
+    test('fail on prerelease', () async {
+      createFakePlugin('d');
+
+      const String preReleaseOutput = 'Package has 1 warning.'
+          'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
+
+      final MockProcess process = MockProcess();
+      process.stdoutController.add(preReleaseOutput.codeUnits);
+      process.stdoutController.close(); // ignore: unawaited_futures
+      process.stderrController.close(); // ignore: unawaited_futures
+
+      process.exitCodeCompleter.complete(1);
+
+      processRunner.processesToReturn.add(process);
+
+      expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+    });
   });
 }
 
