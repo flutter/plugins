@@ -90,7 +90,7 @@ void main() {
           throwsA(isA<ToolExit>()));
     });
 
-    test('fail on prerelease', () async {
+    test('pass on prerelease is --allow-pre-release flag is on', () async {
       createFakePlugin('d');
 
       const String preReleaseOutput = 'Package has 1 warning.'
@@ -105,7 +105,8 @@ void main() {
 
       processRunner.processesToReturn.add(process);
 
-      expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+      expect(runner.run(<String>['publish-check', '--allow-pre-release']),
+          completes);
     });
   });
 }
