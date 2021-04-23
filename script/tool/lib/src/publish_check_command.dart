@@ -22,7 +22,7 @@ class PublishCheckCommand extends PluginCommand {
     argParser.addFlag(
       _allowPrereleaseFlag,
       help: 'Allows the pre-release SDK warning to pass.\n'
-          'When enabled, a pub warning, which asks to publish the package as a pre-release version when'
+          'When enabled, a pub warning, which asks to publish the package as a pre-release version when '
           'the SDK constraint is a pre-release version, is ignored.',
       defaultsTo: false,
     );
