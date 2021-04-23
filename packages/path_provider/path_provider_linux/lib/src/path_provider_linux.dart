@@ -1,8 +1,8 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import 'dart:io';
 import 'dart:async';
+import 'dart:io';
 
 import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -26,14 +26,15 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getApplicationSupportPath() async {
-    final directory = Directory(path.join(xdg.dataHome.path, await _getId()));
+    final Directory directory =
+        Directory(path.join(xdg.dataHome.path, await _getId()));
     if (directory.existsSync()) {
       return directory.path;
     }
 
     // This plugin originally used the executable name as a directory.
     // Use that if it exists for backwards compatibility.
-    final legacyDirectory =
+    final Directory legacyDirectory =
         Directory(path.join(xdg.dataHome.path, await _getExecutableName()));
     if (legacyDirectory.existsSync()) {
       return legacyDirectory.path;
@@ -62,7 +63,7 @@ class PathProviderLinux extends PathProviderPlatform {
 
   // Gets the unique ID for this application.
   Future<String> _getId() async {
-    var appId = getApplicationId();
+    final String? appId = getApplicationId();
     if (appId != null) {
       return appId;
     }

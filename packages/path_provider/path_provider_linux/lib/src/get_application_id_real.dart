@@ -6,12 +6,12 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 
 // GApplication* g_application_get_default();
-typedef g_application_get_default_c = IntPtr Function();
-typedef g_application_get_default_dart = int Function();
+typedef _gApplicationGetDefaultC = IntPtr Function();
+typedef _gApplicationGetDefaultDart = int Function();
 
 // const gchar* g_application_get_application_id(GApplication* application);
-typedef g_application_get_application_id_c = Pointer<Utf8> Function(IntPtr);
-typedef g_application_get_application_id_dart = Pointer<Utf8> Function(int);
+typedef _gApplicationGetApplicationIdC = Pointer<Utf8> Function(IntPtr);
+typedef _gApplicationGetApplicationIdDart = Pointer<Utf8> Function(int);
 
 /// Gets the application ID for this app.
 String? getApplicationId() {
@@ -21,18 +21,22 @@ String? getApplicationId() {
   } on ArgumentError {
     return null;
   }
-  var g_application_get_default = gio.lookupFunction<
-      g_application_get_default_c,
-      g_application_get_default_dart>('g_application_get_default');
-  var app = g_application_get_default();
-  if (app == 0) return null;
+  final _gApplicationGetDefaultDart gApplicationGetDefault =
+      gio.lookupFunction<_gApplicationGetDefaultC, _gApplicationGetDefaultDart>(
+          'g_application_get_default');
+  final int app = gApplicationGetDefault();
+  if (app == 0) {
+    return null;
+  }
 
-  var g_application_get_application_id = gio.lookupFunction<
-          g_application_get_application_id_c,
-          g_application_get_application_id_dart>(
-      'g_application_get_application_id');
-  var app_id = g_application_get_application_id(app);
-  if (app_id == null) return null;
+  final _gApplicationGetApplicationIdDart gApplicationGetApplicationId =
+      gio.lookupFunction<_gApplicationGetApplicationIdC,
+              _gApplicationGetApplicationIdDart>(
+          'g_application_get_application_id');
+  final Pointer<Utf8> appId = gApplicationGetApplicationId(app);
+  if (appId == null) {
+    return null;
+  }
 
-  return app_id.toDartString();
+  return appId.toDartString();
 }
