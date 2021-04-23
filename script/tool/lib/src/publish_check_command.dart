@@ -21,7 +21,7 @@ class PublishCheckCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addFlag(
       _allowPrereleaseFlag,
-      help: 'Allows the pre-release SDK warning to pass.'
+      help: 'Allows the pre-release SDK warning to pass.\n'
           'When enabled, a pub warning, which asks to publish the package as a pre-release version when'
           'the SDK constraint is a pre-release version, is ignored.',
       defaultsTo: false,
