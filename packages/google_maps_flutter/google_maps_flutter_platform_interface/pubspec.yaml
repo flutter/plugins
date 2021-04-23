@@ -20,5 +20,5 @@ dev_dependencies:
   pedantic: ^1.10.0
 
 environment:
-  sdk: '>=2.12.0-259.9.beta <3.0.0'
+  sdk: '>=2.12.0 <3.0.0'
   flutter: ">=1.9.1+hotfix.4"
