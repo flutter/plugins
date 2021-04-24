@@ -25,7 +25,6 @@ public class CustomSSLSocketFactory extends SSLSocketFactory {
     if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
       sslSocketFactory = new TLSSocketFactory(context.getSocketFactory());
     }
-    connection.setSSLSocketFactory(sslSocketFactory);
   }
 
   @Override
@@ -79,7 +78,7 @@ public class CustomSSLSocketFactory extends SSLSocketFactory {
   }
 }
 
-public static class TLSSocketFactory extends SSLSocketFactory {
+class TLSSocketFactory extends SSLSocketFactory {
 
     private SSLSocketFactory internalSSLSocketFactory;
 
