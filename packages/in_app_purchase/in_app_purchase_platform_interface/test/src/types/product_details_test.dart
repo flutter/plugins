@@ -11,13 +11,12 @@ void main() {
         'fromSkProduct should correctly parse data from a SKProductWrapper instance.',
         () {
       final ProductDetails productDetails = ProductDetails(
-        id: 'id',
-        title: 'title',
-        description: 'description',
-        price: '13.37',
-        currencyCode: 'USD',
-        rawPrice: 13.37
-      );
+          id: 'id',
+          title: 'title',
+          description: 'description',
+          price: '13.37',
+          currencyCode: 'USD',
+          rawPrice: 13.37);
 
       expect(productDetails.id, 'id');
       expect(productDetails.title, 'title');
