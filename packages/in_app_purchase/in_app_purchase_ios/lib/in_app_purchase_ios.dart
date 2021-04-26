@@ -3,4 +3,4 @@
 // found in the LICENSE file.
 
 export 'src/in_app_purchase_ios_platform.dart';
-export 'src/models/models.dart';
+export 'src/types/types.dart';

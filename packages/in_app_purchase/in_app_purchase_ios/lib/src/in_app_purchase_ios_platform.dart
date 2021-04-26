@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../in_app_purchase_ios.dart';
-import '../in_app_purchase_ios.dart';
 import '../store_kit_wrappers.dart';
 
 /// [IAPError.code] code for failed purchases.

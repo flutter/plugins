@@ -13,22 +13,39 @@ import '../store_kit_wrappers/enum_converters.dart';
 class AppStorePurchaseDetails extends PurchaseDetails {
   /// Creates a new AppStore specific purchase details object with the provided
   /// details.
-  AppStorePurchaseDetails({
-    String? purchaseID,
-    required String productID,
-    required PurchaseVerificationData verificationData,
-    required String? transactionDate,
-    required this.skPaymentTransaction,
-  }) : super(
-          productID: productID,
-          purchaseID: purchaseID,
-          transactionDate: transactionDate,
-          verificationData: verificationData,
-        );
+  AppStorePurchaseDetails(
+      {String? purchaseID,
+      required String productID,
+      required PurchaseVerificationData verificationData,
+      required String? transactionDate,
+      required this.skPaymentTransaction,
+      required PurchaseStatus status})
+      : super(
+            productID: productID,
+            purchaseID: purchaseID,
+            transactionDate: transactionDate,
+            verificationData: verificationData,
+            status: status) {
+    this.status = status;
+  }
 
   /// Points back to the [SKPaymentTransactionWrapper] which was used to
   /// generate this [AppStorePurchaseDetails] object.
   final SKPaymentTransactionWrapper skPaymentTransaction;
+
+  late PurchaseStatus _status;
+
+  /// The status that this [PurchaseDetails] is currently on.
+  PurchaseStatus get status => _status;
+  set status(PurchaseStatus status) {
+    if (status == PurchaseStatus.purchased || status == PurchaseStatus.error) {
+      _pendingCompletePurchase = true;
+    }
+    _status = status;
+  }
+
+  bool _pendingCompletePurchase = false;
+  bool get pendingCompletePurchase => _pendingCompletePurchase;
 
   /// Generate a [AppStorePurchaseDetails] object based on an iOS
   /// [SKPaymentTransactionWrapper] object.
@@ -40,6 +57,8 @@ class AppStorePurchaseDetails extends PurchaseDetails {
       productID: transaction.payment.productIdentifier,
       purchaseID: transaction.transactionIdentifier,
       skPaymentTransaction: transaction,
+      status: SKTransactionStatusConverter()
+          .toPurchaseStatus(transaction.transactionState),
       transactionDate: transaction.transactionTimeStamp != null
           ? (transaction.transactionTimeStamp! * 1000).toInt().toString()
           : null,
@@ -48,9 +67,6 @@ class AppStorePurchaseDetails extends PurchaseDetails {
           serverVerificationData: base64EncodedReceipt,
           source: kIAPSource),
     );
-
-    purchaseDetails.status = SKTransactionStatusConverter()
-        .toPurchaseStatus(transaction.transactionState);
 
     if (purchaseDetails.status == PurchaseStatus.error) {
       purchaseDetails.error = IAPError(
