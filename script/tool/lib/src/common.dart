@@ -502,7 +502,7 @@ class ProcessRunner {
   /// the [executable] terminates with a non-zero exit code.
   /// Defaults to `false`.
   ///
-  /// If [lonOnError] is set to `true`, it will print a formatted message about the error.
+  /// If [logOnError] is set to `true`, it will print a formatted message about the error.
   /// Defaults to `false`
   ///
   /// Returns the [io.ProcessResult] of the [executable].
