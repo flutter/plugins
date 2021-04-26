@@ -136,8 +136,13 @@ class PublishPluginCommand extends PluginCommand {
       @required bool shouldPushTag}) async {
     final String tag = _getTag(packageDir);
     _print('Tagging release $tag...');
-    await processRunner.runAndExitOnError('git', <String>['tag', tag],
-        workingDir: packageDir);
+    await processRunner.run(
+      'git',
+      <String>['tag', tag],
+      workingDir: packageDir,
+      exitOnError: true,
+      logOnError: true,
+    );
     if (!shouldPushTag) {
       return;
     }
@@ -163,15 +168,13 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<void> _checkGitStatus(Directory packageDir) async {
-    final ProcessResult statusResult = await processRunner.runAndExitOnError(
-        'git',
-        <String>[
-          'status',
-          '--porcelain',
-          '--ignored',
-          packageDir.absolute.path
-        ],
-        workingDir: packageDir);
+    final ProcessResult statusResult = await processRunner.run(
+      'git',
+      <String>['status', '--porcelain', '--ignored', packageDir.absolute.path],
+      workingDir: packageDir,
+      logOnError: true,
+      exitOnError: true,
+    );
 
     final String statusOutput = statusResult.stdout as String;
     if (statusOutput.isNotEmpty) {
@@ -184,9 +187,13 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<String> _verifyRemote(String remote) async {
-    final ProcessResult remoteInfo = await processRunner.runAndExitOnError(
-        'git', <String>['remote', 'get-url', remote],
-        workingDir: packagesDir);
+    final ProcessResult remoteInfo = await processRunner.run(
+      'git',
+      <String>['remote', 'get-url', remote],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
     return remoteInfo.stdout as String;
   }
 
@@ -239,7 +246,12 @@ class PublishPluginCommand extends PluginCommand {
       _print('Tag push canceled.');
       throw ToolExit(1);
     }
-    await processRunner.runAndExitOnError('git', <String>['push', remote, tag],
-        workingDir: packagesDir);
+    await processRunner.run(
+      'git',
+      <String>['push', remote, tag],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
   }
 }
