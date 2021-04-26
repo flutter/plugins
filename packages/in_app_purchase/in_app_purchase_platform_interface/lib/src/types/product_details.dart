@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 /// The class represents the information of a product.
+/// 
+/// 
 class ProductDetails {
   /// Creates a new product details object with the provided details.
   ProductDetails({
@@ -10,6 +12,8 @@ class ProductDetails {
     required this.title,
     required this.description,
     required this.price,
+    required this.rawPrice,
+    required this.currencyCode,
   });
 
   /// The identifier of the product.
@@ -31,4 +35,13 @@ class ProductDetails {
   ///
   /// For example, on iOS it is specified in App Store Connect; on Android, it is specified in Google Play Console.
   final String price;
+
+  /// The unformatted price of the product, specified in the App Store Connect or Sku in Google Play console based on the platform.
+  /// The currency unit for this value can be found in the [currencyCode] property.
+  /// The value always describes full units of the currency. (e.g. 2.45 in the case of $2.45)
+  final double rawPrice;
+
+  /// The currency code for the price of the product.
+  /// Based on the price specified in the App Store Connect or Sku in Google Play console based on the platform.
+  final String currencyCode;
 }

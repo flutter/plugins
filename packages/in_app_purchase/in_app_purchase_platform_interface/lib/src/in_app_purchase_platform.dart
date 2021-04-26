@@ -104,7 +104,9 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   ///  * [restorePurchases], for restoring non consumable products.
   ///
   /// Calling this method for consumable items will cause unwanted behaviors!
-  Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) =>
+  Future<bool> buyNonConsumable({
+    required PurchaseParam purchaseParam,
+  }) =>
       throw UnimplementedError('buyNonConsumable() has not been implemented.');
 
   /// Buy a consumable product.
@@ -169,7 +171,9 @@ abstract class InAppPurchasePlatform extends PlatformInterface {
   /// respective store. The developer is responsible to fix this issue. The
   /// [PurchaseException.message] field might provide more information on what
   /// went wrong.
-  Future<void> completePurchase(PurchaseDetails purchase) =>
+  Future<void> completePurchase(
+    PurchaseDetails purchase,
+  ) =>
       throw UnimplementedError('completePurchase() has not been implemented.');
 
   /// Restore all previous purchases.
