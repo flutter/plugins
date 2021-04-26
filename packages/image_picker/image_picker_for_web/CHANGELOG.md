@@ -1,10 +1,7 @@
-# 2.0.0-nullsafety.1
-
-* Add doc comments to point out that some arguments aren't supported on the web.
-
-# 2.0.0-nullsafety
+# 2.0.0
 
 * Migrate to null safety.
+* Add doc comments to point out that some arguments aren't supported on the web.
 
 # 0.1.0+3
 

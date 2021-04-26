@@ -1,8 +1,9 @@
 name: shared_preferences_windows_example
 description: Demonstrates how to use the shared_preferences_windows plugin.
+publish_to: none
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
@@ -24,7 +25,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
 
 flutter:

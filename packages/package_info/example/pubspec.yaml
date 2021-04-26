@@ -1,5 +1,6 @@
 name: package_info_example
 description: Demonstrates how to use the package_info plugin.
+publish_to: none
 
 dependencies:
   flutter:
@@ -12,7 +13,7 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
 
 dev_dependencies:
   flutter_driver:
@@ -23,5 +24,5 @@ flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"

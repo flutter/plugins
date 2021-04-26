@@ -1,7 +1,11 @@
-## 2.0.1
+## 2.0.2
 
 * Add `implements` to pubspec.yaml.
 * Add `registerWith()` to the Dart main class.
+
+## 2.0.1
+
+* Fix a crash when a known folder can't be located.
 
 ## 2.0.0
 

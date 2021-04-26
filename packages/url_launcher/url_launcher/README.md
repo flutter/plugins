@@ -8,6 +8,22 @@ iOS, Android, web, Windows, macOS, and Linux.
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
+## Installation
+
+### iOS 
+Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
+
+Example:  
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+```
+
+See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
+
 ### Example
 
 ``` dart
@@ -50,6 +66,10 @@ Common schemes supported by both iOS and Android:
 | `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
+
+**Note**: URL schemes are only supported if there are apps installed on the device that can
+support them. For example, iOS simulators don't have a default email or phone
+apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Encoding URLs
 

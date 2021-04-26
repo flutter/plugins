@@ -1,31 +1,37 @@
-## 1.1.0-nullsafety
+## 1.1.5
 
-* Allow pin, passcode, and pattern authentication with `authenticate` method
+* Updated grammatical errors and inaccurate information in README.
+
+## 1.1.4
+
+* Add debug assertion that `localizedReason` in `LocalAuthentication.authenticateWithBiometrics`  must not be empty.
+
+## 1.1.3
+
+* Fix crashes due to threading issues in iOS implementation.
+
+## 1.1.2
+
+* Update Jetpack dependencies to latest stable versions.
+
+## 1.1.1
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
+## 1.1.0
+
+* Migrate to null safety.
+* Allow pin, passcode, and pattern authentication with `authenticate` method.
+* Fix incorrect error handling switch case fallthrough.
+* Update README for Android Integration.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276)).
 * **Breaking change**. Parameter names refactored to use the generic `biometric` prefix in place of `fingerprint` in the `AndroidAuthMessages` class
   * `fingerprintHint` is now `biometricHint`
   * `fingerprintNotRecognized`is now `biometricNotRecognized`
   * `fingerprintSuccess`is now `biometricSuccess`
   * `fingerprintRequiredTitle` is now `biometricRequiredTitle`
-
-## 1.0.0-nullsafety.4
-
-* Fix incorrect error handling switch case fallthrough.
-
-## 1.0.0-nullsafety.3
-
-* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
-
-## 1.0.0-nullsafety.2
-
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
-
-## 1.0.0-nullsafety.1
-
-* Update README for Android Integration.
-
-## 1.0.0-nullsafety
-
-* Migrate to null safety.
 
 ## 0.6.3+5
 

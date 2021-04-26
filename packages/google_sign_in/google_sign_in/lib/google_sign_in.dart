@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:ui' show hashValues;
@@ -108,6 +108,8 @@ class GoogleSignInAccount implements GoogleIdentity {
     final String? token = (await authentication).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
+      // TODO(kevmoo): Use the correct value once it's available from authentication
+      // See https://github.com/flutter/flutter/issues/80905
       "X-Goog-AuthUser": "0",
     };
   }

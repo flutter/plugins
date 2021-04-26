@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,8 +6,8 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter/services.dart';
-import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:google_sign_in_platform_interface/google_sign_in_platform_interface.dart';
 import 'package:js/js.dart';
 import 'package:meta/meta.dart';
 
@@ -37,8 +37,8 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     _isGapiInitialized = gapi.inject(gapiUrl).then((_) => gapi.init());
   }
 
-  Future<void> _isGapiInitialized;
-  Future<void> _isAuthInitialized;
+  late Future<void> _isGapiInitialized;
+  late Future<void> _isAuthInitialized;
   bool _isInitCalled = false;
 
   // This method throws if init hasn't been called at some point in the past.
@@ -58,7 +58,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     return Future.wait([_isGapiInitialized, _isAuthInitialized]);
   }
 
-  String _autoDetectedClientId;
+  String? _autoDetectedClientId;
 
   /// Factory method that initializes the plugin with [GoogleSignInPlatform].
   static void registerWith(Registrar registrar) {
@@ -66,12 +66,13 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   @override
-  Future<void> init(
-      {@required String hostedDomain,
-      List<String> scopes = const <String>[],
-      SignInOption signInOption = SignInOption.standard,
-      String clientId}) async {
-    final String appClientId = clientId ?? _autoDetectedClientId;
+  Future<void> init({
+    List<String> scopes = const <String>[],
+    SignInOption signInOption = SignInOption.standard,
+    String? hostedDomain,
+    String? clientId,
+  }) async {
+    final String? appClientId = clientId ?? _autoDetectedClientId;
     assert(
         appClientId != null,
         'ClientID not set. Either set it on a '
@@ -90,7 +91,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
       hosted_domain: hostedDomain,
       // The js lib wants a space-separated list of values
       scope: scopes.join(' '),
-      client_id: appClientId,
+      client_id: appClientId!,
     ));
 
     Completer<void> isAuthInitialized = Completer<void>();
@@ -119,18 +120,18 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   }
 
   @override
-  Future<GoogleSignInUserData> signInSilently() async {
+  Future<GoogleSignInUserData?> signInSilently() async {
     await initialized;
 
     return gapiUserToPluginUserData(
-        await auth2.getAuthInstance().currentUser.get());
+        await auth2.getAuthInstance()?.currentUser?.get());
   }
 
   @override
-  Future<GoogleSignInUserData> signIn() async {
+  Future<GoogleSignInUserData?> signIn() async {
     await initialized;
     try {
-      return gapiUserToPluginUserData(await auth2.getAuthInstance().signIn());
+      return gapiUserToPluginUserData(await auth2.getAuthInstance()?.signIn());
     } on auth2.GoogleAuthSignInError catch (reason) {
       throw PlatformException(
         code: reason.error,
@@ -143,30 +144,33 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
   @override
   Future<GoogleSignInTokenData> getTokens(
-      {@required String email, bool shouldRecoverAuth}) async {
+      {required String email, bool? shouldRecoverAuth}) async {
     await initialized;
 
-    final auth2.GoogleUser currentUser =
+    final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
-    final auth2.AuthResponse response = currentUser.getAuthResponse();
+    final auth2.AuthResponse? response = currentUser?.getAuthResponse();
 
     return GoogleSignInTokenData(
-        idToken: response.id_token, accessToken: response.access_token);
+        idToken: response?.id_token, accessToken: response?.access_token);
   }
 
   @override
   Future<void> signOut() async {
     await initialized;
 
-    return auth2.getAuthInstance().signOut();
+    return auth2.getAuthInstance()?.signOut();
   }
 
   @override
   Future<void> disconnect() async {
     await initialized;
 
-    final auth2.GoogleUser currentUser =
+    final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
+
+    if (currentUser == null) return;
+
     return currentUser.disconnect();
   }
 
@@ -174,16 +178,19 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
   Future<bool> isSignedIn() async {
     await initialized;
 
-    final auth2.GoogleUser currentUser =
+    final auth2.GoogleUser? currentUser =
         auth2.getAuthInstance()?.currentUser?.get();
+
+    if (currentUser == null) return false;
+
     return currentUser.isSignedIn();
   }
 
   @override
-  Future<void> clearAuthCache({String token}) async {
+  Future<void> clearAuthCache({required String token}) async {
     await initialized;
 
-    return auth2.getAuthInstance().disconnect();
+    return auth2.getAuthInstance()?.disconnect();
   }
 
   @override
@@ -194,14 +201,15 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
 
     if (currentUser == null) return false;
 
-    final grantedScopes = currentUser.getGrantedScopes();
+    final grantedScopes = currentUser.getGrantedScopes() ?? '';
     final missingScopes =
         scopes.where((scope) => !grantedScopes.contains(scope));
 
     if (missingScopes.isEmpty) return true;
 
-    return currentUser
-            .grant(auth2.SigninOptions(scope: missingScopes.join(" "))) ??
-        false;
+    final response = await currentUser
+        .grant(auth2.SigninOptions(scope: missingScopes.join(' ')));
+
+    return response != null;
   }
 }

@@ -1,6 +1,5 @@
 # Contributing to Flutter Plugins
 
-
 [![Build Status](https://api.cirrus-ci.com/github/flutter/plugins.svg)](https://cirrus-ci.com/github/flutter/plugins/master)
 
 _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/master/CODE_OF_CONDUCT.md)_
@@ -26,13 +25,11 @@ for any of the following plugins, we encourage you to submit it
 
 ## Things you will need
 
-
  * Linux, Mac OS X, or Windows.
  * git (used for source version control).
  * An ssh client (used to authenticate with GitHub).
 
 ## Getting the code and configuring your environment
-
 
  * Ensure all the dependencies described in the previous section are installed.
  * Fork `https://github.com/flutter/plugins` into your own GitHub account. If
@@ -48,8 +45,13 @@ for any of the following plugins, we encourage you to submit it
    fetch from the master repository, not your clone, when running `git fetch`
    et al.)
 
-## Running the examples
 
+## Setting up tools
+
+There are scripts for many common tasks (testing, formatting, etc.) that will likely be useful in preparing a PR.
+See [plugin_tools](./script/tool/README.md) for more details.
+
+## Running the examples
 
 To run an example with a prebuilt binary from the cloud, switch to that
 example's directory, run `pub get` to make sure its dependencies have been
@@ -61,7 +63,7 @@ USB and debugging enabled on that device.
 
 ## Setting up XCUITests
 
-Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using [integration_test](https://pub.dev/packages/integration_test) if the tests are not focused on iOS system UI.
+Sometimes, XCUITests are useful when integration testing a plugin that has native UI on iOS (e.g image_picker, in_app_purchase, camera, share, local_auth etc). Most of the time, XCUITests are not necessary, consider using `integration_test` if the tests are not focused on iOS system UI.
 
 If XCUITests has always been set up for the plugin, a RunnerUITests folder under `<the_plugin>/example/ios` directory can be found.
 If XCUITests has not been set up for the plugin, follow these steps to set it up:
@@ -69,7 +71,7 @@ If XCUITests has not been set up for the plugin, follow these steps to set it up
 1. Open <path_to_plugin>/example/ios/Runner.xcworkspace using XCode.
 1. Create a new "UI Testing Bundle".
 1. In the target options window, populate details as following, then click on "Finish".
-  * In the "product name" field, type in "RunnerUITests" (this is the test target name our CI looks for.).
+  * In the "product name" field, type in "RunnerUITests".
   * In the "Team" field, select "None".
   * In the Organization Name field, type in "Flutter". This should usually be pre-populated.
   * In the organization identifer field, type in "com.google". This should usually be pre-populated.
@@ -137,13 +139,7 @@ pod lib lint --allow-warnings
 XCUITests aren't usually configured with cocoapods in this repo. They are configured in a xcode workspace target named RunnerUITests.
 To run all the XCUITests in a plugin, follow the steps in a regular iOS development workflow [here](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html)
 
-For convenience, a [flutter_plugin_tools](https://pub.dev/packages/flutter_plugin_tools) command `xctest` could also be used to run all the XCUITests in the repo:
-
-```console
-pub global activate flutter_plugin_tools
-cd <path_to_plugins>/packages
-pub global run flutter_plugin_tools xctest --target RunnerUITests --skip <plugins_to_skip>
-```
+For convenience, a [plugin_tools](./script/tool/README.md) command [xctest](./script/tool/README.md#run-xctests) could also be used to run all the XCUITests in the repo.
 
 ## Contributing code
 
@@ -159,12 +155,12 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
- * Verify changes with [flutter_plugin_tools](https://pub.dev/packages/flutter_plugin_tools)
-```
-pub global activate flutter_plugin_tools
-pub global run flutter_plugin_tools format --plugins plugin_name
-pub global run flutter_plugin_tools analyze --plugins plugin_name
-pub global run flutter_plugin_tools test --plugins plugin_name
+ * Verify changes with [plugin_tools](./script/tool/README.md).
+```sh
+cd script/tool && pub get && cd ../../
+dart ./script/tool/lib/src/main.dart format --plugins plugin_name
+dart ./script/tool/lib/src/main.dart analyze --plugins plugin_name
+dart ./script/tool/lib/src/main.dart test --plugins plugin_name
 ```
  * `git commit -a -m "<your informative commit message>"`
  * `git push origin <name_of_your_branch>`
@@ -188,12 +184,11 @@ to merge the pull request and `pub submit` any affected packages.
 You must complete the
 [Contributor License Agreement](https://cla.developers.google.com/clas).
 You can do this online, and it only takes a minute.
-If you've never submitted code before, you must add your (or your
-organization's) name and contact info to the [AUTHORS](AUTHORS) file.
+If you've never submitted code for that plugin before, you may also add your (or
+your organization's) name and contact info to the AUTHORS file for the plugin.
+You may also add it to the AUTHORS file for [the repository](AUTHORS).
 
 ### The review process
-
-* This is a new process we are currently experimenting with, feedback on the process is welcomed at the Gitter contributors channel. *
 
 Reviewing PRs often requires a non trivial amount of time. We prioritize issues, not PRs, so that we use our maintainers' time in the most impactful way. Issues pertaining to this repository are managed in the [flutter/flutter issue tracker and are labeled with "plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin+sort%3Areactions-%2B1-desc). Non trivial PRs should have an associated issue that will be used for prioritization. See the [prioritization section](https://github.com/flutter/flutter/wiki/Issue-hygiene#prioritization) in the Flutter wiki to understand how issues are prioritized.
 
@@ -236,45 +231,12 @@ Some things to keep in mind before publishing the release:
   from people that immediately adopt it, and uncovering and resolving those
   support issues will take more time if you're unavailable.
 
-Releasing a package is a two-step process.
+To release a package, a [publish-plugin](./script/tool/README.md#publish-and-tag-release) tool script should be used. This command publishes the new version to pub.dev, and tags the commit in the format of `<package_name>-v<package_version>` then pushes it to upstream.
+
+Alternatively, one can release a package in the below 2-step process.
 
 1. Push the package update to [pub.dev](https://pub.dev) using `pub publish`.
 2. Tag the commit with git in the format of `<package_name>-v<package_version>`,
    and then push the tag to the `flutter/plugins` master branch. This can be
    done manually with `git tag $tagname && git push upstream $tagname` while
    checked out on the commit that updated `version` in `pubspec.yaml`.
-
-We've recently updated
-[flutter_plugin_tools](https://github.com/flutter/plugin_tools) to wrap both of
-those steps into one command to make it a little easier. This new tool is
-experimental. Feel free to fall back on manually running `pub publish` and
-creating and pushing the tag in git if there are issues with it.
-
-Install the tool by running:
-
-```terminal
-$ pub global activate flutter_plugin_tools
-```
-
-Then, from the root of your local `flutter/plugins` repo, use the tool to
-publish a release.
-
-```terminal
-$ pub global run flutter_plugin_tools publish-plugin --package $package
-```
-
-By default the tool tries to push tags to the `upstream` remote, but that and
-some additional settings can be configured. Run `pub global activate
-flutter_plugin_tools --help` for more usage information.
-
-The tool wraps `pub publish` for pushing the package to pub, and then will
-automatically use git to try and create and push tags. It has some additional
-safety checking around `pub publish` too. By default `pub publish` publishes
-_everything_, including untracked or uncommitted files in version control.
-`flutter_plugin_tools publish-plugin` will first check the status of the local
-directory and refuse to publish if there are any mismatched files with version
-control present.
-
-There is a lot about this process that is still to be desired. Some top level
-items are being tracked in
-[flutter/flutter#27258](https://github.com/flutter/flutter/issues/27258).

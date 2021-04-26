@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,16 +16,18 @@ import 'common.dart';
 const String _googleFormatterUrl =
     'https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar';
 
+/// A command to format all package code.
 class FormatCommand extends PluginCommand {
+  /// Creates an instance of the format command.
   FormatCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
-    argParser.addFlag('travis', hide: true);
+    argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
         defaultsTo: 'clang-format',
-        help: 'Path to executable of clang-format v5.');
+        help: 'Path to executable of clang-format.');
   }
 
   @override
@@ -38,15 +40,14 @@ class FormatCommand extends PluginCommand {
       'your path.';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final String googleFormatterPath = await _getGoogleFormatterPath();
 
     await _formatDart();
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['travis']) {
+    if (argResults['fail-on-change'] == true) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);
@@ -61,15 +62,14 @@ class FormatCommand extends PluginCommand {
 
     print('\n\n');
 
-    if (modifiedFiles.stdout.isEmpty) {
+    final String stdout = modifiedFiles.stdout as String;
+    if (stdout.isEmpty) {
       print('All files formatted correctly.');
       return false;
     }
 
     print('These files are not formatted correctly (see diff below):');
-    LineSplitter.split(modifiedFiles.stdout)
-        .map((String line) => '  $line')
-        .forEach(print);
+    LineSplitter.split(stdout).map((String line) => '  $line').forEach(print);
 
     print('\nTo fix run "pub global activate flutter_plugin_tools && '
         'pub global run flutter_plugin_tools format" or copy-paste '
@@ -83,33 +83,34 @@ class FormatCommand extends PluginCommand {
     return true;
   }
 
-  Future<Null> _formatCppAndObjectiveC() async {
+  Future<void> _formatCppAndObjectiveC() async {
     print('Formatting all .cc, .cpp, .mm, .m, and .h files...');
-    final Iterable<String> allFiles = <String>[]
-      ..addAll(await _getFilesWithExtension('.h'))
-      ..addAll(await _getFilesWithExtension('.m'))
-      ..addAll(await _getFilesWithExtension('.mm'))
-      ..addAll(await _getFilesWithExtension('.cc'))
-      ..addAll(await _getFilesWithExtension('.cpp'));
+    final Iterable<String> allFiles = <String>[
+      ...await _getFilesWithExtension('.h'),
+      ...await _getFilesWithExtension('.m'),
+      ...await _getFilesWithExtension('.mm'),
+      ...await _getFilesWithExtension('.cc'),
+      ...await _getFilesWithExtension('.cpp'),
+    ];
     // Split this into multiple invocations to avoid a
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
-    for (List<String> batch in batches) {
-      await processRunner.runAndStream(argResults['clang-format'],
-          <String>['-i', '--style=Google']..addAll(batch),
+    for (final List<String> batch in batches) {
+      await processRunner.runAndStream(argResults['clang-format'] as String,
+          <String>['-i', '--style=Google', ...batch],
           workingDir: packagesDir, exitOnError: true);
     }
   }
 
-  Future<Null> _formatJava(String googleFormatterPath) async {
+  Future<void> _formatJava(String googleFormatterPath) async {
     print('Formatting all .java files...');
     final Iterable<String> javaFiles = await _getFilesWithExtension('.java');
     await processRunner.runAndStream('java',
-        <String>['-jar', googleFormatterPath, '--replace']..addAll(javaFiles),
+        <String>['-jar', googleFormatterPath, '--replace', ...javaFiles],
         workingDir: packagesDir, exitOnError: true);
   }
 
-  Future<Null> _formatDart() async {
+  Future<void> _formatDart() async {
     // This actually should be fine for non-Flutter Dart projects, no need to
     // specifically shell out to dartfmt -w in that case.
     print('Formatting all .dart files...');
@@ -119,7 +120,7 @@ class FormatCommand extends PluginCommand {
           'No .dart files to format. If you set the `--exclude` flag, most likey they were skipped');
     } else {
       await processRunner.runAndStream(
-          'flutter', <String>['format']..addAll(dartFiles),
+          'flutter', <String>['format', ...dartFiles],
           workingDir: packagesDir, exitOnError: true);
     }
   }

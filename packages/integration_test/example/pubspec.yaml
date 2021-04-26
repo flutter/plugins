@@ -1,6 +1,6 @@
 name: integration_test_example
 description: Demonstrates how to use the integration_test plugin.
-publish_to: 'none'
+publish_to: none
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
@@ -24,8 +24,6 @@ dev_dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  integration_test_macos:
-    path: ../integration_test_macos
   test: any
   pedantic: ^1.8.0
 

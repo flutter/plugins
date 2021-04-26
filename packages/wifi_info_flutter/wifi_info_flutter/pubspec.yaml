@@ -1,20 +1,20 @@
 name: wifi_info_flutter
 description: A new flutter plugin project.
-version: 2.0.0-nullsafety
 homepage: https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter
+version: 2.0.0
 
 environment:
-  sdk: ">=2.12.0-0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  wifi_info_flutter_platform_interface: ^2.0.0-nullsafety
+  wifi_info_flutter_platform_interface: ^2.0.0
 
 dev_dependencies:
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
   flutter_test:
     sdk: flutter
 

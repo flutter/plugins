@@ -1,5 +1,6 @@
 name: url_launcher_example
 description: Demonstrates how to use the url_launcher plugin.
+publish_to: none
 
 dependencies:
   flutter:
@@ -14,16 +15,16 @@ dependencies:
 
 dev_dependencies:
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
   flutter_driver:
     sdk: flutter
-  pedantic: ^1.10.0-nullsafety.1
-  mockito: ^4.1.1
-  plugin_platform_interface: ^1.1.0-nullsafety.1
+  pedantic: ^1.10.0
+  mockito: ^5.0.0-nullsafety.7
+  plugin_platform_interface: ^2.0.0
 
 flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.12.0-0 <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"

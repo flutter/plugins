@@ -1,5 +1,6 @@
 name: shared_preferences_example
 description: Demonstrates how to use the shared_preferences plugin.
+publish_to: none
 
 dependencies:
   flutter:
@@ -16,7 +17,7 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
 
 # TODO(egarciad): Bump dependencies above and remove the overrides.
@@ -32,5 +33,5 @@ flutter:
   uses-material-design: true
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.9.1+hotfix.2"

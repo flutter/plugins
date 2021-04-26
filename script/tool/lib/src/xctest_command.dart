@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,18 +12,17 @@ import 'package:path/path.dart' as p;
 import 'common.dart';
 
 const String _kiOSDestination = 'ios-destination';
-const String _kTarget = 'target';
 const String _kSkip = 'skip';
 const String _kXcodeBuildCommand = 'xcodebuild';
 const String _kXCRunCommand = 'xcrun';
 const String _kFoundNoSimulatorsMessage =
     'Cannot find any available simulators, tests failed';
 
-/// The command to run iOS' XCTests in plugins, this should work for both XCUnitTest and XCUITest targets.
-/// The tests target have to be added to the xcode project of the example app. Usually at "example/ios/Runner.xcodeproj".
-/// The command takes a "-target" argument which has to match the target of the test target.
-/// For information on how to add test target in an xcode project, see https://developer.apple.com/library/archive/documentation/ToolsLanguages/Conceptual/Xcode_Overview/UnitTesting.html
+/// The command to run iOS XCTests in plugins, this should work for both XCUnitTest and XCUITest targets.
+/// The tests target have to be added to the xcode project of the example app. Usually at "example/ios/Runner.xcworkspace".
+/// The static analyzer is also run.
 class XCTestCommand extends PluginCommand {
+  /// Creates an instance of the test command.
   XCTestCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -36,10 +35,6 @@ class XCTestCommand extends PluginCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
-    argParser.addOption(_kTarget,
-        help: 'The test target.\n'
-            'This is the xcode project test target. This is passed to the `-scheme` argument in the xcodebuild command. \n'
-            'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the scheme');
     argParser.addMultiOption(_kSkip,
         help: 'Plugins to skip while running this command. \n');
   }
@@ -49,20 +44,13 @@ class XCTestCommand extends PluginCommand {
 
   @override
   final String description = 'Runs the xctests in the iOS example apps.\n\n'
-      'This command requires "flutter" to be in your path.';
+      'This command requires "flutter" and "xcrun" to be in your path.';
 
   @override
-  Future<Null> run() async {
-    if (argResults[_kTarget] == null) {
-      // TODO(cyanglaz): Automatically find all the available testing schemes if this argument is not specified.
-      // https://github.com/flutter/flutter/issues/68419
-      print('--$_kTarget must be specified');
-      throw ToolExit(1);
-    }
-
-    String destination = argResults[_kiOSDestination];
+  Future<void> run() async {
+    String destination = argResults[_kiOSDestination] as String;
     if (destination == null) {
-      String simulatorId = await _findAvailableIphoneSimulator();
+      final String simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
         print(_kFoundNoSimulatorsMessage);
         throw ToolExit(1);
@@ -70,13 +58,10 @@ class XCTestCommand extends PluginCommand {
       destination = 'id=$simulatorId';
     }
 
-    checkSharding();
+    final List<String> skipped = argResults[_kSkip] as List<String>;
 
-    final String target = argResults[_kTarget];
-    final List<String> skipped = argResults[_kSkip];
-
-    List<String> failingPackages = <String>[];
-    await for (Directory plugin in getPlugins()) {
+    final List<String> failingPackages = <String>[];
+    await for (final Directory plugin in getPlugins()) {
       // Start running for package.
       final String packageName =
           p.relative(plugin.path, from: packagesDir.path);
@@ -91,58 +76,15 @@ class XCTestCommand extends PluginCommand {
         print('\n\n');
         continue;
       }
-      for (Directory example in getExamplesForPlugin(plugin)) {
-        // Look for the test scheme in the example app.
-        print('Look for target named: $_kTarget ...');
-        final List<String> findSchemeArgs = <String>[
-          '-project',
-          'ios/Runner.xcodeproj',
-          '-list',
-          '-json'
-        ];
-        final String completeFindSchemeCommand =
-            '$_kXcodeBuildCommand ${findSchemeArgs.join(' ')}';
-        print(completeFindSchemeCommand);
-        final io.ProcessResult xcodeprojListResult = await processRunner
-            .run(_kXcodeBuildCommand, findSchemeArgs, workingDir: example);
-        if (xcodeprojListResult.exitCode != 0) {
-          print('Error occurred while running "$completeFindSchemeCommand":\n'
-              '${xcodeprojListResult.stderr}');
-          failingPackages.add(packageName);
-          print('\n\n');
-          continue;
+      for (final Directory example in getExamplesForPlugin(plugin)) {
+        // Running tests and static analyzer.
+        print('Running tests and analyzer for $packageName ...');
+        int exitCode = await _runTests(true, destination, example);
+        // 66 = there is no test target (this fails fast). Try again with just the analyzer.
+        if (exitCode == 66) {
+          print('Tests not found for $packageName, running analyzer only...');
+          exitCode = await _runTests(false, destination, example);
         }
-
-        final String xcodeprojListOutput = xcodeprojListResult.stdout;
-        Map<String, dynamic> xcodeprojListOutputJson =
-            jsonDecode(xcodeprojListOutput);
-        if (!xcodeprojListOutputJson['project']['targets'].contains(target)) {
-          failingPackages.add(packageName);
-          print('$target not configured for $packageName, test failed.');
-          print(
-              'Please check the scheme for the test target if it matches the name $target.\n'
-              'If this plugin does not have an XCTest target, use the $_kSkip flag in the $name command to skip the plugin.');
-          print('\n\n');
-          continue;
-        }
-        // Found the scheme, running tests
-        print('Running XCTests:$target for $packageName ...');
-        final List<String> xctestArgs = <String>[
-          'test',
-          '-workspace',
-          'ios/Runner.xcworkspace',
-          '-scheme',
-          target,
-          '-destination',
-          destination,
-          'CODE_SIGN_IDENTITY=""',
-          'CODE_SIGNING_REQUIRED=NO'
-        ];
-        final String completeTestCommand =
-            '$_kXcodeBuildCommand ${xctestArgs.join(' ')}';
-        print(completeTestCommand);
-        final int exitCode = await processRunner
-            .runAndStream(_kXcodeBuildCommand, xctestArgs, workingDir: example);
         if (exitCode == 0) {
           print('Successfully ran xctest for $packageName');
         } else {
@@ -153,15 +95,39 @@ class XCTestCommand extends PluginCommand {
 
     // Command end, print reports.
     if (failingPackages.isEmpty) {
-      print("All XCTests have passed!");
+      print('All XCTests have passed!');
     } else {
       print(
           'The following packages are failing XCTests (see above for details):');
-      for (String package in failingPackages) {
+      for (final String package in failingPackages) {
         print(' * $package');
       }
       throw ToolExit(1);
     }
+  }
+
+  Future<int> _runTests(bool runTests, String destination, Directory example) {
+    final List<String> xctestArgs = <String>[
+      _kXcodeBuildCommand,
+      if (runTests) 'test',
+      'analyze',
+      '-workspace',
+      'ios/Runner.xcworkspace',
+      '-configuration',
+      'Debug',
+      '-scheme',
+      'Runner',
+      '-destination',
+      destination,
+      'CODE_SIGN_IDENTITY=""',
+      'CODE_SIGNING_REQUIRED=NO',
+      'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+    ];
+    final String completeTestCommand =
+        '$_kXCRunCommand ${xctestArgs.join(' ')}';
+    print(completeTestCommand);
+    return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
+        workingDir: example, exitOnError: false);
   }
 
   Future<String> _findAvailableIphoneSimulator() async {
@@ -183,30 +149,35 @@ class XCTestCommand extends PluginCommand {
       throw ToolExit(1);
     }
     final Map<String, dynamic> simulatorListJson =
-        jsonDecode(findSimulatorsResult.stdout);
-    final List<dynamic> runtimes = simulatorListJson['runtimes'];
-    final Map<String, dynamic> devices = simulatorListJson['devices'];
+        jsonDecode(findSimulatorsResult.stdout as String)
+            as Map<String, dynamic>;
+    final List<Map<String, dynamic>> runtimes =
+        (simulatorListJson['runtimes'] as List<dynamic>)
+            .cast<Map<String, dynamic>>();
+    final Map<String, dynamic> devices =
+        simulatorListJson['devices'] as Map<String, dynamic>;
     if (runtimes.isEmpty || devices.isEmpty) {
       return null;
     }
     String id;
     // Looking for runtimes, trying to find one with highest OS version.
-    for (Map<String, dynamic> runtimeMap in runtimes.reversed) {
-      if (!runtimeMap['name'].contains('iOS')) {
+    for (final Map<String, dynamic> runtimeMap in runtimes.reversed) {
+      if (!(runtimeMap['name'] as String).contains('iOS')) {
         continue;
       }
-      final String runtimeID = runtimeMap['identifier'];
-      final List<dynamic> devicesForRuntime = devices[runtimeID];
+      final String runtimeID = runtimeMap['identifier'] as String;
+      final List<Map<String, dynamic>> devicesForRuntime =
+          (devices[runtimeID] as List<dynamic>).cast<Map<String, dynamic>>();
       if (devicesForRuntime.isEmpty) {
         continue;
       }
       // Looking for runtimes, trying to find latest version of device.
-      for (Map<String, dynamic> device in devicesForRuntime.reversed) {
+      for (final Map<String, dynamic> device in devicesForRuntime.reversed) {
         if (device['availabilityError'] != null ||
             (device['isAvailable'] as bool == false)) {
           continue;
         }
-        id = device['udid'];
+        id = device['udid'] as String;
         print('device selected: $device');
         return id;
       }

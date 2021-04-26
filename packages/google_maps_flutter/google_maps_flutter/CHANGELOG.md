@@ -1,4 +1,18 @@
-## 2.0.0-nullsafety
+## 2.0.3
+
+* Fix incorrect typecast in TileOverlay example.
+* Fix english wording in instructions.
+
+## 2.0.2
+
+* Update flutter\_plugin\_android\_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
+## 2.0.1
+
+* Update platform\_plugin\_interface version requirement.
+
+## 2.0.0
 
 * Migrate to null-safety
 * BREAKING CHANGE: Passing an unknown map object ID (e.g., MarkerId) to a

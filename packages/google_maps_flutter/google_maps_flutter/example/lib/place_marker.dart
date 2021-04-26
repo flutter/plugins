@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,10 +53,11 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
       setState(() {
-        if (markers.containsKey(markerId)) {
-          final Marker resetOld = markers[markerId]!
+        final MarkerId? previousMarkerId = selectedMarker;
+        if (previousMarkerId != null && markers.containsKey(previousMarkerId)) {
+          final Marker resetOld = markers[previousMarkerId]!
               .copyWith(iconParam: BitmapDescriptor.defaultMarker);
-          markers[markerId] = resetOld;
+          markers[previousMarkerId] = resetOld;
         }
         selectedMarker = markerId;
         final Marker newMarker = tappedMarker.copyWith(

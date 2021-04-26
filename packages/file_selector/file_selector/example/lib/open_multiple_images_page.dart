@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:file_selector/file_selector.dart';
@@ -18,6 +22,10 @@ class OpenMultipleImagesPage extends StatelessWidget {
       jpgsTypeGroup,
       pngTypeGroup,
     ]);
+    if (files.isEmpty) {
+      // Operation was canceled by the user.
+      return;
+    }
     await showDialog(
       context: context,
       builder: (context) => MultipleImagesDisplay(files),
