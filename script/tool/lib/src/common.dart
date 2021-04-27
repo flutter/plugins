@@ -500,17 +500,33 @@ class ProcessRunner {
   ///
   /// If [exitOnError] is set to `true`, then this will throw an error if
   /// the [executable] terminates with a non-zero exit code.
+  /// Defaults to `false`.
+  ///
+  /// If [logOnError] is set to `true`, it will print a formatted message about the error.
+  /// Defaults to `false`
   ///
   /// Returns the [io.ProcessResult] of the [executable].
   Future<io.ProcessResult> run(String executable, List<String> args,
       {Directory workingDir,
       bool exitOnError = false,
+      bool logOnError = false,
       Encoding stdoutEncoding = io.systemEncoding,
       Encoding stderrEncoding = io.systemEncoding}) async {
-    return io.Process.run(executable, args,
+    final io.ProcessResult result = await io.Process.run(executable, args,
         workingDirectory: workingDir?.path,
         stdoutEncoding: stdoutEncoding,
         stderrEncoding: stderrEncoding);
+    if (result.exitCode != 0) {
+      if (logOnError) {
+        final String error =
+            _getErrorString(executable, args, workingDir: workingDir);
+        print('$error Stderr:\n${result.stdout}');
+      }
+      if (exitOnError) {
+        throw ToolExit(result.exitCode);
+      }
+    }
+    return result;
   }
 
   /// Starts the [executable] with [args].
@@ -524,31 +540,6 @@ class ProcessRunner {
     final io.Process process = await io.Process.start(executable, args,
         workingDirectory: workingDirectory?.path);
     return process;
-  }
-
-  /// Run the [executable] with [args], throwing an error on non-zero exit code.
-  ///
-  /// Unlike [runAndStream], this does not stream the process output to stdout.
-  /// It also unconditionally throws an error on a non-zero exit code.
-  ///
-  /// The current working directory of [executable] can be overridden by
-  /// passing [workingDir].
-  ///
-  /// Returns the [io.ProcessResult] of running the [executable].
-  Future<io.ProcessResult> runAndExitOnError(
-    String executable,
-    List<String> args, {
-    Directory workingDir,
-  }) async {
-    final io.ProcessResult result = await io.Process.run(executable, args,
-        workingDirectory: workingDir?.path);
-    if (result.exitCode != 0) {
-      final String error =
-          _getErrorString(executable, args, workingDir: workingDir);
-      print('$error Stderr:\n${result.stdout}');
-      throw ToolExit(result.exitCode);
-    }
-    return result;
   }
 
   String _getErrorString(String executable, List<String> args,

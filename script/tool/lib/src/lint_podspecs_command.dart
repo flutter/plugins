@@ -58,8 +58,13 @@ class LintPodspecsCommand extends PluginCommand {
       return;
     }
 
-    await processRunner.runAndExitOnError('which', <String>['pod'],
-        workingDir: packagesDir);
+    await processRunner.run(
+      'which',
+      <String>['pod'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
 
     _print('Starting podspec lint test');
 
