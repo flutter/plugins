@@ -5,7 +5,7 @@ homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/c
 
 flutter:
   plugin:
-    implements: connectivity
+    implements: connectivity_platform_interface
     platforms:
       macos:
         pluginClass: ConnectivityPlugin
