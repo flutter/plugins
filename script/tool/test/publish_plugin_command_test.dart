@@ -582,14 +582,14 @@ void main() {
       final List<String> plugin1Pubspec =
           pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
       plugin1Pubspec[plugin1Pubspec.indexWhere(
-          (element) => element.contains('version:'))] = 'version: 0.0.2';
+          (String element) => element.contains('version:'))] = 'version: 0.0.2';
       pluginDir1
           .childFile('pubspec.yaml')
           .writeAsStringSync(plugin1Pubspec.join('\n'));
       final List<String> plugin2Pubspec =
           pluginDir2.childFile('pubspec.yaml').readAsLinesSync();
       plugin2Pubspec[plugin2Pubspec.indexWhere(
-          (element) => element.contains('version:'))] = 'version: 0.0.2';
+          (String element) => element.contains('version:'))] = 'version: 0.0.2';
       pluginDir2
           .childFile('pubspec.yaml')
           .writeAsStringSync(plugin2Pubspec.join('\n'));
@@ -673,7 +673,7 @@ void main() {
       final List<String> plugin1Pubspec =
           pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
       plugin1Pubspec[plugin1Pubspec.indexWhere(
-          (element) => element.contains('version:'))] = 'version: 0.0.2';
+          (String element) => element.contains('version:'))] = 'version: 0.0.2';
       pluginDir1
           .childFile('pubspec.yaml')
           .writeAsStringSync(plugin1Pubspec.join('\n'));
@@ -761,14 +761,14 @@ void main() {
       final List<String> plugin1Pubspec =
           pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
       plugin1Pubspec[plugin1Pubspec.indexWhere(
-          (element) => element.contains('version:'))] = 'version: 0.0.1';
+          (String element) => element.contains('version:'))] = 'version: 0.0.1';
       pluginDir1
           .childFile('pubspec.yaml')
           .writeAsStringSync(plugin1Pubspec.join('\n'));
       final List<String> plugin2Pubspec =
           pluginDir2.childFile('pubspec.yaml').readAsLinesSync();
       plugin2Pubspec[plugin2Pubspec.indexWhere(
-          (element) => element.contains('version:'))] = 'version: 0.0.1';
+          (String element) => element.contains('version:'))] = 'version: 0.0.1';
       pluginDir2
           .childFile('pubspec.yaml')
           .writeAsStringSync(plugin2Pubspec.join('\n'));
@@ -854,10 +854,14 @@ class TestProcessRunner extends ProcessRunner {
   int mockPublishCompleteCode;
 
   @override
-  Future<io.ProcessResult> runAndExitOnError(
+  Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
     Directory workingDir,
+    bool exitOnError = false,
+    bool logOnError = false,
+    Encoding stdoutEncoding = io.systemEncoding,
+    Encoding stderrEncoding = io.systemEncoding,
   }) async {
     // Don't ever really push tags.
     if (executable == 'git' && args.isNotEmpty && args[0] == 'push') {
@@ -912,7 +916,7 @@ class MockStdin extends Mock implements io.Stdin {
     //
     // Create a new controller every time so this Stdin could be listened to multiple times.
     _controller = StreamController<List<int>>();
-    mockUserInputs.forEach((List<int> element) => _controller.add(element));
+    mockUserInputs.forEach(_addUserInputsToSteam);
     return _controller.stream.transform(streamTransformer);
   }
 
@@ -928,6 +932,15 @@ class MockStdin extends Mock implements io.Stdin {
           {Encoding encoding = io.systemEncoding,
           bool retainNewlines = false}) =>
       readLineOutput;
+
+  void _addUserInputsToSteam(List<int> input) => _controller.add(input);
 }
 
-class MockProcessResult extends Mock implements io.ProcessResult {}
+class MockProcessResult extends Mock implements io.ProcessResult {
+  MockProcessResult({int exitCode = 0}) : _exitCode = exitCode;
+
+  final int _exitCode;
+
+  @override
+  int get exitCode => _exitCode;
+}

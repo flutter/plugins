@@ -56,9 +56,13 @@ class FormatCommand extends PluginCommand {
   }
 
   Future<bool> _didModifyAnything() async {
-    final io.ProcessResult modifiedFiles = await processRunner
-        .runAndExitOnError('git', <String>['ls-files', '--modified'],
-            workingDir: packagesDir);
+    final io.ProcessResult modifiedFiles = await processRunner.run(
+      'git',
+      <String>['ls-files', '--modified'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
 
     print('\n\n');
 
@@ -76,8 +80,13 @@ class FormatCommand extends PluginCommand {
         'this command into your terminal:');
 
     print('patch -p1 <<DONE');
-    final io.ProcessResult diff = await processRunner
-        .runAndExitOnError('git', <String>['diff'], workingDir: packagesDir);
+    final io.ProcessResult diff = await processRunner.run(
+      'git',
+      <String>['diff'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
     print(diff.stdout);
     print('DONE');
     return true;

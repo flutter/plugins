@@ -49,7 +49,7 @@ for any of the following plugins, we encourage you to submit it
 ## Setting up tools
 
 There are scripts for many common tasks (testing, formatting, etc.) that will likely be useful in preparing a PR.
-See [plugin_tools](./script/tool/README.MD) for more details.
+See [plugin_tools](./script/tool/README.md) for more details.
 
 ## Running the examples
 
@@ -139,7 +139,7 @@ pod lib lint --allow-warnings
 XCUITests aren't usually configured with cocoapods in this repo. They are configured in a xcode workspace target named RunnerUITests.
 To run all the XCUITests in a plugin, follow the steps in a regular iOS development workflow [here](https://developer.apple.com/library/archive/documentation/DeveloperTools/Conceptual/testing_with_xcode/chapters/05-running_tests.html)
 
-For convenience, a [plugin_tools](./script/tool/README.MD) command [xctest](./script/tool/README.MD#run-xctests) could also be used to run all the XCUITests in the repo.
+For convenience, a [plugin_tools](./script/tool/README.md) command [xctest](./script/tool/README.md#run-xctests) could also be used to run all the XCUITests in the repo.
 
 ## Contributing code
 
@@ -155,7 +155,7 @@ To start working on a patch:
  * `git fetch upstream`
  * `git checkout upstream/master -b <name_of_your_branch>`
  * Hack away.
- * Verify changes with [plugin_tools](./script/tool/README.MD).
+ * Verify changes with [plugin_tools](./script/tool/README.md).
 ```sh
 cd script/tool && pub get && cd ../../
 dart ./script/tool/lib/src/main.dart format --plugins plugin_name
@@ -231,7 +231,7 @@ Some things to keep in mind before publishing the release:
   from people that immediately adopt it, and uncovering and resolving those
   support issues will take more time if you're unavailable.
 
-To release a package, a [publish-plugin](./script/tool/README.MD#publish-and-tag-release) tool script should be used. This command publishes the new version to pub.dev, and tags the commit in the format of `<package_name>-v<package_version>` then pushes it to upstream.
+To release a package, a [publish-plugin](./script/tool/README.md#publish-and-tag-release) tool script should be used. This command publishes the new version to pub.dev, and tags the commit in the format of `<package_name>-v<package_version>` then pushes it to upstream.
 
 Alternatively, one can release a package in the below 2-step process.
 

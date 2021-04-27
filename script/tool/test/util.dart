@@ -242,32 +242,18 @@ class RecordingProcessRunner extends ProcessRunner {
 
   /// Returns [io.ProcessResult] created from [processToReturn], [resultStdout], and [resultStderr].
   @override
-  Future<io.ProcessResult> run(String executable, List<String> args,
-      {Directory workingDir,
-      bool exitOnError = false,
-      Encoding stdoutEncoding = io.systemEncoding,
-      Encoding stderrEncoding = io.systemEncoding}) async {
-    recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    io.ProcessResult result;
-
-    if (processToReturn != null) {
-      result = io.ProcessResult(
-          processToReturn.pid,
-          await processToReturn.exitCode,
-          resultStdout ?? processToReturn.stdout,
-          resultStderr ?? processToReturn.stderr);
-    }
-    return Future<io.ProcessResult>.value(result);
-  }
-
-  @override
-  Future<io.ProcessResult> runAndExitOnError(
+  Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
     Directory workingDir,
+    bool exitOnError = false,
+    bool logOnError = false,
+    Encoding stdoutEncoding = io.systemEncoding,
+    Encoding stderrEncoding = io.systemEncoding,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
     io.ProcessResult result;
+
     if (processToReturn != null) {
       result = io.ProcessResult(
           processToReturn.pid,

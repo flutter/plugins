@@ -175,7 +175,7 @@ class PublishPluginCommand extends PluginCommand {
         await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
     final List<String> existingTags = (existingTagsResult.stdout as String)
         .split('\n')
-          ..removeWhere((element) => element.isEmpty);
+          ..removeWhere((String element) => element.isEmpty);
 
     final List<String> packagesReleased = <String>[];
     final List<String> packagesFailed = <String>[];
@@ -323,18 +323,19 @@ Safe to ignore if the package is deleted in this commit.
   }) async {
     final String tag = _getTag(packageDir);
     _print('Tagging release $tag...');
-    try {
-      if (!(argResults[_dryRunFlag] as bool)) {
-        await processRunner.runAndExitOnError(
-          'git',
-          <String>['tag', tag],
-          workingDir: packageDir,
-        );
+    if (!(argResults[_dryRunFlag] as bool)) {
+      final io.ProcessResult result = await processRunner.run(
+        'git',
+        <String>['tag', tag],
+        workingDir: packageDir,
+        exitOnError: false,
+        logOnError: true,
+      );
+      if (result.exitCode != 0) {
+        return false;
       }
-    } on ToolExit catch (e) {
-      _print(e);
-      return false;
     }
+
     if (!shouldPushTag) {
       return true;
     }
@@ -372,20 +373,14 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<bool> _checkGitStatus(Directory packageDir) async {
-    io.ProcessResult statusResult;
-    try {
-      statusResult = await processRunner.runAndExitOnError(
-        'git',
-        <String>[
-          'status',
-          '--porcelain',
-          '--ignored',
-          packageDir.absolute.path
-        ],
-        workingDir: packageDir,
-      );
-    } on ToolExit catch (e) {
-      _print(e);
+    final io.ProcessResult statusResult = await processRunner.run(
+      'git',
+      <String>['status', '--porcelain', '--ignored', packageDir.absolute.path],
+      workingDir: packageDir,
+      logOnError: true,
+      exitOnError: false,
+    );
+    if (statusResult.exitCode != 0) {
       return false;
     }
 
@@ -400,9 +395,13 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<String> _verifyRemote(String remote) async {
-    final io.ProcessResult remoteInfo = await processRunner.runAndExitOnError(
-        'git', <String>['remote', 'get-url', remote],
-        workingDir: packagesDir);
+    final io.ProcessResult remoteInfo = await processRunner.run(
+      'git',
+      <String>['remote', 'get-url', remote],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
     return remoteInfo.stdout as String;
   }
 
@@ -462,15 +461,17 @@ Safe to ignore if the package is deleted in this commit.
       _print('Tag push canceled.');
       return false;
     }
-    try {
-      if (!(argResults[_dryRunFlag] as bool)) {
-        await processRunner.runAndExitOnError(
-            'git', <String>['push', remote, tag],
-            workingDir: packagesDir);
+    if (!(argResults[_dryRunFlag] as bool)) {
+      final io.ProcessResult result = await processRunner.run(
+        'git',
+        <String>['push', remote, tag],
+        workingDir: packagesDir,
+        exitOnError: false,
+        logOnError: true,
+      );
+      if (result.exitCode != 0) {
+        return false;
       }
-    } on ToolExit catch (e) {
-      _print(e);
-      return false;
     }
     return true;
   }
