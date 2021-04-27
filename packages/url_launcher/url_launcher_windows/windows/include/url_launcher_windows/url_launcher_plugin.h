@@ -4,15 +4,14 @@
 #ifndef PACKAGES_URL_LAUNCHER_URL_LAUNCHER_WINDOWS_WINDOWS_INCLUDE_URL_LAUNCHER_WINDOWS_URL_LAUNCHER_PLUGIN_H_
 #define PACKAGES_URL_LAUNCHER_URL_LAUNCHER_WINDOWS_WINDOWS_INCLUDE_URL_LAUNCHER_WINDOWS_URL_LAUNCHER_PLUGIN_H_
 
-#include <memory>
-#include <string>
-
-
-#include <flutter_plugin_registrar.h>
-#include <winrt/Windows.Foundation.h>
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
+#include <flutter_plugin_registrar.h>
+#include <winrt/Windows.Foundation.h>
+
+#include <memory>
+#include <string>
 
 #ifdef FLUTTER_PLUGIN_IMPL
 #define FLUTTER_PLUGIN_EXPORT __declspec(dllexport)
@@ -31,8 +30,12 @@ FLUTTER_PLUGIN_EXPORT void UrlLauncherPluginRegisterWithRegistrar(
 }  // extern "C"
 #endif
 
-void OpenLink(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> value, std::string url_string);
+void OpenLink(
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> value,
+    std::string url_string);
 
-void CanLaunch(std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> value, std::string url_string);
+void CanLaunch(
+    std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> value,
+    std::string url_string);
 
 #endif  // PACKAGES_URL_LAUNCHER_URL_LAUNCHER_WINDOWS_WINDOWS_INCLUDE_URL_LAUNCHER_WINDOWS_URL_LAUNCHER_PLUGIN_H_

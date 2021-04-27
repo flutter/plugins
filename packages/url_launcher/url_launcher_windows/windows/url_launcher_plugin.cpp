@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "include/url_launcher_windows/url_launcher_plugin.h"
 
-
 #include <windows.h>
 
 #include <memory>
@@ -14,8 +13,6 @@ namespace {
 
 using flutter::EncodableMap;
 using flutter::EncodableValue;
-
-
 
 // Returns the URL argument from |method_call| if it is present, otherwise
 // returns an empty string.
@@ -76,8 +73,8 @@ void UrlLauncherPlugin::HandleMethodCall(
       res->Error("argument_error", "No URL provided");
       return;
     }
-       
-    OpenLink(std::move(res), std::move(url)); 
+
+    OpenLink(std::move(res), std::move(url));
 
   } else if (method_call.method_name().compare("canLaunch") == 0) {
     std::string url = GetUrlArgument(method_call);
@@ -86,7 +83,7 @@ void UrlLauncherPlugin::HandleMethodCall(
       return;
     }
 
-    CanLaunch(std::move(res), std::move(url));   
+    CanLaunch(std::move(res), std::move(url));
   } else {
     res->NotImplemented();
   }
