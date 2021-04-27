@@ -178,7 +178,7 @@ cost constraints, pull requests from non-committers may not run all the tests
 automatically.
 
 Once you've gotten an LGTM from a project maintainer and once your PR has received
-the green light from all our automated testing, wait for one the package maintainers
+the green light from all our automated testing, wait for one of the package maintainers
 to merge the pull request and `pub submit` any affected packages.
 
 You must complete the
