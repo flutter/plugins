@@ -44,7 +44,8 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data.email,
         id = data.id,
         photoUrl = data.photoUrl,
-        _idToken = data.idToken {
+        _idToken = data.idToken,
+        _serverAuthCode = data.serverAuthCode {
     assert(id != null);
   }
 
@@ -70,6 +71,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   final String? _idToken;
   final GoogleSignIn _googleSignIn;
+  final String _serverAuthCode;
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
@@ -96,6 +98,9 @@ class GoogleSignInAccount implements GoogleIdentity {
     // the one we obtained on login.
     if (response.idToken == null) {
       response.idToken = _idToken;
+    }
+    if (response.serverAuthCode == null) {
+      response.serverAuthCode = _serverAuthCode;
     }
     return GoogleSignInAuthentication._(response);
   }
