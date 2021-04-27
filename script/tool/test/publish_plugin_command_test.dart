@@ -328,10 +328,14 @@ class TestProcessRunner extends ProcessRunner {
   final List<String> pushTagsArgs = <String>[];
 
   @override
-  Future<io.ProcessResult> runAndExitOnError(
+  Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
     Directory workingDir,
+    bool exitOnError = false,
+    bool logOnError = false,
+    Encoding stdoutEncoding = io.systemEncoding,
+    Encoding stderrEncoding = io.systemEncoding,
   }) async {
     // Don't ever really push tags.
     if (executable == 'git' && args.isNotEmpty && args[0] == 'push') {
