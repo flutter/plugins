@@ -31,7 +31,7 @@ void main() {
 
     SharedPreferencesStorePlatform preferences;
 
-    setUp(() async {
+    setUp(() {
       preferences = SharedPreferencesStorePlatform.instance;
     });
 

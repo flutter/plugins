@@ -8,7 +8,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:shared_preferences_linux/shared_preferences_linux.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -30,10 +30,12 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferencesLinux preferences;
+
+    SharedPreferencesStorePlatform preferences;
 
     setUp(() {
-      preferences = SharedPreferencesLinux();
+      preferences = SharedPreferencesStorePlatform.instance;
+      expect(preferences.runtimeType.toString(), equals('SharedPreferencesLinux'));
     });
 
     tearDown(() async {

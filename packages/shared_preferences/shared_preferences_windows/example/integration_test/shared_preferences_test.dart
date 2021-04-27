@@ -5,8 +5,8 @@
 // @dart=2.9
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -28,10 +28,11 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferencesWindows preferences;
+    SharedPreferencesStorePlatform preferences;
 
     setUp(() {
-      preferences = SharedPreferencesWindows();
+      preferences = SharedPreferencesStorePlatform.instance;
+      expect(preferences.runtimeType.toString(), equals('SharedPreferencesWindows'));
     });
 
     tearDown(() async {
