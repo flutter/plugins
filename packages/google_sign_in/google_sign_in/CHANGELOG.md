@@ -1,3 +1,7 @@
+## 5.0.3
+
+* Add `force_code_for_refresh_token` option for Android, returns the right serverAuthCode
+
 ## 5.0.2
 
 * Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
