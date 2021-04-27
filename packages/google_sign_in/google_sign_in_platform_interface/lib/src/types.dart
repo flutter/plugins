@@ -31,7 +31,11 @@ class GoogleSignInUserData {
     this.displayName,
     this.photoUrl,
     this.idToken,
+    this.serverAuthCode
   });
+
+  /// Used to perform server-side actions with Google API
+  String? serverAuthCode;
 
   /// The display name of the signed in user.
   ///

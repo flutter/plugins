@@ -71,7 +71,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   final String? _idToken;
   final GoogleSignIn _googleSignIn;
-  final String _serverAuthCode;
+  final String? _serverAuthCode;
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
   ///
