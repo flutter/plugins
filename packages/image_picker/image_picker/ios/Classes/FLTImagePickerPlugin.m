@@ -250,8 +250,19 @@ static const int SOURCE_GALLERY = 1;
           dispatch_async(dispatch_get_main_queue(), ^{
             [self showPhotoLibrary];
           });
+        } else if (@available(iOS 14, *)) {
+            if (status == PHAuthorizationStatusLimited) {
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    // Add PHPhotoLibraryPreventAutomaticLimitedAccessAlert = YES into the Info.plist
+                    // Check status == PHAuthorizationStatusLimited then call showLimitedPhotoLibrary function
+                    // Use presentLimitedLibraryPickerFromViewController in showLimitedPhotoLibrary function
+                    [self showLimitedPhotoLibrary]; // Implemented limited access to the photo library by above instructions
+                });
+            } else {
+                [self errorNoPhotoAccess:status];
+            }
         } else {
-          [self errorNoPhotoAccess:status];
+            [self errorNoPhotoAccess:status];
         }
       }];
       break;
@@ -312,6 +323,10 @@ static const int SOURCE_GALLERY = 1;
                                                         completion:nil];
     }
 }
+
+// Limited access to photo library
+- (void)showLimitedPhotoLibrary {
+    [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:_pickerViewController];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
