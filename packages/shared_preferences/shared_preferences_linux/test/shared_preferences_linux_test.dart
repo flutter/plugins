@@ -18,7 +18,7 @@ void main() {
   });
 
   Future<String> _getFilePath() async {
-    final pathProvider = SharedPreferencesStorePlatform.instance;
+    final pathProvider = PathProviderLinux();
     final directory = await pathProvider.getApplicationSupportPath();
     return path.join(directory!, 'shared_preferences.json');
   }

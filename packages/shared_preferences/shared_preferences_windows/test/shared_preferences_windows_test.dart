@@ -35,7 +35,7 @@ void main() {
   }
 
   SharedPreferencesWindows _getPreferences() {
-    var prefs = SharedPreferencesStorePlatform.instance;
+    var prefs = SharedPreferencesWindows.instance;
     prefs.fs = fileSystem;
     prefs.pathProvider = pathProvider;
     return prefs;
