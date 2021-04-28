@@ -10,7 +10,6 @@
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
 		5C9513011EC38BD300040975 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C9513001EC38BD300040975 /* GeneratedPluginRegistrant.m */; };
 		680049262280D736006DD6AB /* MetaDataUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 680049252280D736006DD6AB /* MetaDataUtilTests.m */; };
-		680049272280D79A006DD6AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		680049382280F2B9006DD6AB /* pngImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 680049352280F2B8006DD6AB /* pngImage.png */; };
 		680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
 		6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */; };
@@ -90,7 +89,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F10E2DB84567A50A8721C9C7 /* libPods-RunnerUITests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
