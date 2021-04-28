@@ -108,6 +108,45 @@ static const int SOURCE_GALLERY = 1;
                                    details:nil]);
         break;
     }
+}
+
+
+
+- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  if (self.result) {
+    self.result([FlutterError errorWithCode:@"multiple_request"
+                                    message:@"Cancelled by a second request"
+                                    details:nil]);
+    self.result = nil;
+  }
+
+  if ([@"pickImage" isEqualToString:call.method]) {
+      
+      _phPickerFlag = NO;
+      self.result = result;
+      _arguments = call.arguments;
+      int imageSource = [[_arguments objectForKey:@"source"] intValue];
+      
+      if (imageSource == SOURCE_GALLERY) { // Capture is not possible with PHPicker
+          if (@available(iOS 14, *)) {
+              //PHPicker is used
+              _phPickerFlag = YES;
+              [self pickImageWithPHPicker:true];
+          } else {
+              //UIImagePicker is used
+              [self pickImageWithUIImagePicker];
+          }
+      } else {
+          [self pickImageWithUIImagePicker];
+      }
+  } else if ([@"pickMultiImage" isEqualToString:call.method]) {
+      if (@available(iOS 14, *)) {
+             NSLog(@"pickImage has been called on iOS14+");
+             self.result = result;
+             _arguments = call.arguments;
+             NSLog(@"Result and arguments have been set");
+             [self pickImageWithPHPicker:false];
+           }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
