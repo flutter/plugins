@@ -36,10 +36,7 @@ class MissingPlatformDirectoryException implements Exception {
   }
 }
 
-void main() {
-  
-}
-
+void main() {}
 
 /// Path to the temporary directory on the device that is not backed up and is
 /// suitable for storing caches of downloaded files.
