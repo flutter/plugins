@@ -38,9 +38,7 @@ class AppStorePurchaseDetails extends PurchaseDetails {
   /// The status that this [PurchaseDetails] is currently on.
   PurchaseStatus get status => _status;
   set status(PurchaseStatus status) {
-    if (status == PurchaseStatus.purchased || status == PurchaseStatus.error) {
-      _pendingCompletePurchase = true;
-    }
+    _pendingCompletePurchase = status != PurchaseStatus.pending;
     _status = status;
   }
 

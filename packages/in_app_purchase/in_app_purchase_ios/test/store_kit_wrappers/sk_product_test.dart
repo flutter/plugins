@@ -79,7 +79,8 @@ void main() {
     test('toProductDetails() should return correct Product object', () {
       final SKProductWrapper wrapper =
           SKProductWrapper.fromJson(buildProductMap(dummyProductWrapper));
-      final AppStoreProductDetails product = AppStoreProductDetails.fromSKProduct(wrapper);
+      final AppStoreProductDetails product =
+          AppStoreProductDetails.fromSKProduct(wrapper);
       expect(product.title, wrapper.localizedTitle);
       expect(product.description, wrapper.localizedDescription);
       expect(product.id, wrapper.productIdentifier);
@@ -134,7 +135,8 @@ void main() {
 
     test('toPurchaseDetails() should return correct PurchaseDetail object', () {
       AppStorePurchaseDetails details =
-          AppStorePurchaseDetails.fromSKTransaction(dummyTransaction, 'receipt data');
+          AppStorePurchaseDetails.fromSKTransaction(
+              dummyTransaction, 'receipt data');
       expect(dummyTransaction.transactionIdentifier, details.purchaseID);
       expect(dummyTransaction.payment.productIdentifier, details.productID);
       expect(dummyTransaction.transactionTimeStamp, isNotNull);

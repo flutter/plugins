@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 /// The class represents the information of a product.
-/// 
-/// 
+///
+///
 class ProductDetails {
   /// Creates a new product details object with the provided details.
   ProductDetails({

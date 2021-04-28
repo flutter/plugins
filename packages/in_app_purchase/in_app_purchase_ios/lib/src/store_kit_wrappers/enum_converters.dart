@@ -36,8 +36,9 @@ class SKTransactionStatusConverter
       case SKPaymentTransactionStateWrapper.deferred:
         return PurchaseStatus.pending;
       case SKPaymentTransactionStateWrapper.purchased:
-      case SKPaymentTransactionStateWrapper.restored:
         return PurchaseStatus.purchased;
+      case SKPaymentTransactionStateWrapper.restored:
+        return PurchaseStatus.restored;
       case SKPaymentTransactionStateWrapper.failed:
       case SKPaymentTransactionStateWrapper.unspecified:
         return PurchaseStatus.error;

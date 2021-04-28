@@ -179,13 +179,15 @@ class InAppPurchaseIosPlatform implements InAppPurchasePlatform {
 class _TransactionObserver implements SKTransactionObserverWrapper {
   final StreamController<List<PurchaseDetails>> purchaseUpdatedController;
 
-  Completer<List<SKPaymentTransactionWrapper>>? _restoreCompleter;
+  Completer? _restoreCompleter;
   late String _receiptData;
 
   _TransactionObserver(this.purchaseUpdatedController);
 
-  Future<void> restoreTransactions(
-      {required SKPaymentQueueWrapper queue, String? applicationUserName}) {
+  Future<void> restoreTransactions({
+    required SKPaymentQueueWrapper queue,
+    String? applicationUserName,
+  }) {
     _restoreCompleter = Completer();
     queue.restoreTransactions(applicationUserName: applicationUserName);
     return _restoreCompleter!.future;
@@ -198,12 +200,12 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   void updatedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) async {
     String receiptData = await getReceiptData();
-    purchaseUpdatedController
-        .add(transactions.map((SKPaymentTransactionWrapper transaction) {
-      AppStorePurchaseDetails purchaseDetails =
-          AppStorePurchaseDetails.fromSKTransaction(transaction, receiptData);
-      return purchaseDetails;
-    }).toList());
+    List<PurchaseDetails> purchases = transactions
+        .map((SKPaymentTransactionWrapper transaction) =>
+            AppStorePurchaseDetails.fromSKTransaction(transaction, receiptData))
+        .toList();
+
+    purchaseUpdatedController.add(purchases);
   }
 
   void removedTransactions(

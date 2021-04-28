@@ -224,7 +224,8 @@ class SKPaymentQueueWrapper {
 @JsonSerializable()
 class SKError {
   /// Creates a new [SKError] object with the provided information.
-  const SKError({required this.code, required this.domain, required this.userInfo});
+  const SKError(
+      {required this.code, required this.domain, required this.userInfo});
 
   /// Constructs an instance of this from a key-value map of data.
   ///
