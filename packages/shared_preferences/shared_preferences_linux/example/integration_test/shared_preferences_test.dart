@@ -30,12 +30,12 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-
     SharedPreferencesStorePlatform preferences;
 
     setUp(() {
       preferences = SharedPreferencesStorePlatform.instance;
-      expect(preferences.runtimeType.toString(), equals('SharedPreferencesLinux'));
+      expect(
+          preferences.runtimeType.toString(), equals('SharedPreferencesLinux'));
     });
 
     tearDown(() async {

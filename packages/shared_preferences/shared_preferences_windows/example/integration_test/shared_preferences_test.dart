@@ -32,7 +32,8 @@ void main() {
 
     setUp(() {
       preferences = SharedPreferencesStorePlatform.instance;
-      expect(preferences.runtimeType.toString(), equals('SharedPreferencesWindows'));
+      expect(preferences.runtimeType.toString(),
+          equals('SharedPreferencesWindows'));
     });
 
     tearDown(() async {
