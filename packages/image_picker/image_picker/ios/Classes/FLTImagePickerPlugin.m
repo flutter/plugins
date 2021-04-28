@@ -81,13 +81,13 @@ static const int SOURCE_GALLERY = 1;
     
     [self checkPhotoAuthorization];
 }
+
+- (void)pickImageWithUIImagePicker {
+    
     _imagePickerController = [[UIImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
-
-    self.result = result;
-    _arguments = call.arguments;
 
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
@@ -103,7 +103,7 @@ static const int SOURCE_GALLERY = 1;
         [self checkPhotoAuthorization];
         break;
       default:
-        result([FlutterError errorWithCode:@"invalid_source"
+        self.result([FlutterError errorWithCode:@"invalid_source"
                                    message:@"Invalid image source."
                                    details:nil]);
         break;
