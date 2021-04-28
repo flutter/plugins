@@ -35,13 +35,14 @@ void main() {
   }
 
   SharedPreferencesWindows _getPreferences() {
-    var prefs = SharedPreferencesWindows.instance;
+    var prefs = SharedPreferencesWindows();
     prefs.fs = fileSystem;
     prefs.pathProvider = pathProvider;
     return prefs;
   }
 
   test('registered instance', () {
+    SharedPreferencesWindows.registerWith();
     expect(SharedPreferencesStorePlatform.instance,
         isA<SharedPreferencesWindows>());
   });
