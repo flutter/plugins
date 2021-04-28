@@ -5,6 +5,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 
 // A fake VersionInfoQuerier that just returns preset responses.
@@ -18,13 +19,19 @@ class FakeVersionInfoQuerier implements VersionInfoQuerier {
 }
 
 void main() {
+  PathProviderWindows.registerWith();
+
+  test('registered instance', () {
+    expect(PathProviderPlatform.instance, isA<PathProviderWindows>());
+  });
+
   test('getTemporaryPath', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     expect(await pathProvider.getTemporaryPath(), contains(r'C:\'));
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with no version info', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     pathProvider.versionInfoQuerier =
         FakeVersionInfoQuerier(<String, String>{});
     final String? path = await pathProvider.getApplicationSupportPath();
@@ -35,7 +42,7 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with full version info', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
@@ -49,7 +56,7 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with missing company', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'ProductName': 'Amazing App',
     });
@@ -62,7 +69,7 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with problematic values', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': r'A <Bad> Company: Name.',
       'ProductName': r'A"/Terrible\|App?*Name',
@@ -80,7 +87,7 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with a completely invalid company', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': r'..',
       'ProductName': r'Amazing App',
@@ -94,7 +101,7 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with very long app name', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     final String truncatedName = 'A' * 255;
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
@@ -107,14 +114,14 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationDocumentsPath', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     final String? path = await pathProvider.getApplicationDocumentsPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'Documents'));
   }, skip: !Platform.isWindows);
 
   test('getDownloadsPath', () async {
-    final PathProviderWindows pathProvider = PathProviderWindows();
+    final PathProviderPlatform pathProvider = PathProviderPlatform.instance;
     final String? path = await pathProvider.getDownloadsPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'Downloads'));
