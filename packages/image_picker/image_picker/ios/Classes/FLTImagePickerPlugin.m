@@ -67,15 +67,20 @@ static const int SOURCE_GALLERY = 1;
   return topController;
 }
 
-- (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
-  if (self.result) {
-    self.result([FlutterError errorWithCode:@"multiple_request"
-                                    message:@"Cancelled by a second request"
-                                    details:nil]);
-    self.result = nil;
-  }
+- (void)pickImageWithPHPicker:(bool)single {
+    PHPhotoLibrary *photoLibrary = PHPhotoLibrary.sharedPhotoLibrary; // This step is required to fetch PHAsset
+    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] initWithPhotoLibrary:photoLibrary];
+    if (!single) {
+        config.selectionLimit = 0; // Setting to zero allow us to pick unlimited photos
+    }
+    config.filter = [PHPickerFilter imagesFilter];
 
-  if ([@"pickImage" isEqualToString:call.method]) {
+    _pickerViewController =
+        [[PHPickerViewController alloc] initWithConfiguration:config];
+    _pickerViewController.delegate = self;
+    
+    [self checkPhotoAuthorization];
+}
     _imagePickerController = [[UIImagePickerController alloc] init];
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
