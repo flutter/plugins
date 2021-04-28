@@ -20,7 +20,7 @@ dependencies:
   ...
 ```
 
-If you wish to use the iOS package only, you can add  `url_launcher_ios` as a
+If you wish to use the iOS package only, you can add  `in_app_purchase_ios` as a
 dependency:
 
 ```yaml
