@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase_ios/src/in_app_purchase_ios_platform_addition.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../in_app_purchase_ios.dart';
@@ -27,7 +28,7 @@ final String kIAPSource = 'app_store';
 ///
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
-class InAppPurchaseIosPlatform implements InAppPurchasePlatform {
+class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
   /// Returns the singleton instance of the [InAppPurchaseIosPlatform] that should be
   /// used across the app.
   static InAppPurchaseIosPlatform get instance => _getOrCreateInstance();
@@ -54,6 +55,12 @@ class InAppPurchaseIosPlatform implements InAppPurchasePlatform {
       return _instance!;
     }
 
+    // Register the [InAppPurchaseIosPlatformAddition] containing iOS
+    // platform-specific functionality.
+    InAppPurchasePlatformAddition.instance = InAppPurchaseIosPlatformAddition();
+
+    // Register the platform-specific implementation of the idiomatic
+    // InAppPurchase API.
     _instance = InAppPurchaseIosPlatform();
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
     _observer = _TransactionObserver(StreamController.broadcast());
