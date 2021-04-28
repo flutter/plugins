@@ -153,27 +153,6 @@ class InAppPurchaseIosPlatform implements InAppPurchasePlatform {
     );
     return productDetailsResponse;
   }
-
-  // TODO(mvanbeusekom): Move into `InAppPurchaseIosAddition` class...
-  /*
-  @override
-  Future<PurchaseVerificationData?> refreshPurchaseVerificationData() async {
-    await SKRequestMaker().startRefreshReceiptRequest();
-    final String? receipt = await SKReceiptManager.retrieveReceiptData();
-    if (receipt == null) {
-      return null;
-    }
-    return PurchaseVerificationData(
-        localVerificationData: receipt,
-        serverVerificationData: receipt,
-        source: kIAPSource);
-  }
-
-  @override
-  Future presentCodeRedemptionSheet() {
-    return _skPaymentQueueWrapper.presentCodeRedemptionSheet();
-  }
-  */
 }
 
 class _TransactionObserver implements SKTransactionObserverWrapper {

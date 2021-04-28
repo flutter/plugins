@@ -178,20 +178,6 @@ void main() {
     });
   });
 
-  /*
-  group('refresh receipt data', () {
-    test('should refresh receipt data', () async {
-      PurchaseVerificationData? receiptData = await InAppPurchaseIosPlatform
-          .instance
-          .refreshPurchaseVerificationData();
-      expect(receiptData, isNotNull);
-      expect(receiptData!.source, IAPSource.AppStore);
-      expect(receiptData.localVerificationData, 'refreshed receipt data');
-      expect(receiptData.serverVerificationData, 'refreshed receipt data');
-    });
-  });
-  */
-
   group('make payment', () {
     test(
         'buying non consumable, should get purchase objects in the purchase update callback',
@@ -323,16 +309,6 @@ void main() {
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });
-
-  /*
-  group('present code redemption sheet', () {
-    test('null', () async {
-      expect(
-          await InAppPurchaseIosPlatform.instance.presentCodeRedemptionSheet(),
-          null);
-    });
-  });
-  */
 }
 
 class FakeIOSPlatform {
