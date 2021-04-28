@@ -42,7 +42,8 @@ void main() {
   }
 
   test('registered instance', () {
-    expect(SharedPreferencesStorePlatform.instance, isA<SharedPreferencesWindows>());
+    expect(SharedPreferencesStorePlatform.instance,
+        isA<SharedPreferencesWindows>());
   });
 
   test('getAll', () async {

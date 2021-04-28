@@ -40,7 +40,8 @@ void main() {
   }
 
   test('registered instance', () {
-    expect(SharedPreferencesStorePlatform.instance, isA<SharedPreferencesLinux>());
+    expect(
+        SharedPreferencesStorePlatform.instance, isA<SharedPreferencesLinux>());
   });
 
   test('getAll', () async {
