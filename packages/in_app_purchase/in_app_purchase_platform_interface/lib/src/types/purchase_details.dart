@@ -14,6 +14,7 @@ class PurchaseDetails {
     required this.productID,
     required this.verificationData,
     required this.transactionDate,
+    required this.status,
   });
 
   /// A unique identifier of the purchase.
@@ -37,7 +38,7 @@ class PurchaseDetails {
   final String? transactionDate;
 
   /// The status that this [PurchaseDetails] is currently on.
-  PurchaseStatus? status;
+  PurchaseStatus status;
 
   /// The error details when the [status] is [PurchaseStatus.error].
   ///
