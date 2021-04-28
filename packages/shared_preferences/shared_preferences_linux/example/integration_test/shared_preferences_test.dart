@@ -8,6 +8,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:shared_preferences_linux/shared_preferences_linux.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
@@ -34,12 +35,14 @@ void main() {
 
     setUp(() {
       preferences = SharedPreferencesStorePlatform.instance;
-      expect(
-          preferences.runtimeType.toString(), equals('SharedPreferencesLinux'));
     });
 
     tearDown(() async {
       await preferences.clear();
+    });
+
+    test('instance is Linux implementation', () {
+      expect(preferences, isA<SharedPreferencesLinux>());
     });
 
     testWidgets('reading', (WidgetTester _) async {
