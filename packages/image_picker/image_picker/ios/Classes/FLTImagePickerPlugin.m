@@ -8,12 +8,15 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
 #import <UIKit/UIKit.h>
+#import <PhotosUI/PHPhotoLibrary+PhotosUISupport.h>
+#import <Photos/Photos.h>
+#import <PhotosUI/PhotosUI.h>
 
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
-@interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface FLTImagePickerPlugin () <UINavigationControllerDelegate, UIImagePickerControllerDelegate, PHPickerViewControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult result;
 
@@ -25,7 +28,9 @@ static const int SOURCE_GALLERY = 1;
 @implementation FLTImagePickerPlugin {
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
+  PHPickerViewController *_pickerViewController;
   UIImagePickerControllerCameraDevice _device;
+  BOOL _phPickerFlag;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -38,6 +43,10 @@ static const int SOURCE_GALLERY = 1;
 
 - (UIImagePickerController *)getImagePickerController {
   return _imagePickerController;
+}
+
+- (PHPickerViewController *)getPickerViewController {
+  return _pickerViewController;
 }
 
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window {

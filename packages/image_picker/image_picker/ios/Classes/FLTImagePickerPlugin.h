@@ -3,11 +3,14 @@
 // found in the LICENSE file.
 
 #import <Flutter/Flutter.h>
+#import <PhotosUI/PhotosUI.h>
 
+API_AVAILABLE(ios(14))
 @interface FLTImagePickerPlugin : NSObject <FlutterPlugin>
 
 // For testing only.
 - (UIImagePickerController *)getImagePickerController;
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window;
+- (PHPickerViewController *)getPickerViewController;
 
 @end
