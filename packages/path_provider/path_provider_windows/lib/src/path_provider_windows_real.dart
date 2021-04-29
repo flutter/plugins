@@ -47,6 +47,11 @@ class VersionInfoQuerier {
 ///
 /// This class implements the `package:path_provider` functionality for Windows.
 class PathProviderWindows extends PathProviderPlatform {
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    PathProviderPlatform.instance = PathProviderWindows();
+  }
+
   /// The object to use for performing VerQueryValue calls.
   @visibleForTesting
   VersionInfoQuerier versionInfoQuerier = VersionInfoQuerier();

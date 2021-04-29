@@ -13,7 +13,7 @@ import 'package:xdg_directories/xdg_directories.dart' as xdg;
 /// This class implements the `package:path_provider` functionality for linux
 class PathProviderLinux extends PathProviderPlatform {
   /// Registers this class as the default instance of [PathProviderPlatform]
-  static void register() {
+  static void registerWith() {
     PathProviderPlatform.instance = PathProviderLinux();
   }
 

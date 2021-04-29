@@ -16,6 +16,11 @@ class PathProviderWindows extends PathProviderPlatform {
   /// compile-time dependencies, and should never actually be created.
   PathProviderWindows() : assert(false);
 
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    PathProviderPlatform.instance = PathProviderWindows();
+  }
+
   /// Stub; see comment on VersionInfoQuerier.
   VersionInfoQuerier versionInfoQuerier = VersionInfoQuerier();
 

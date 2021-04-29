@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Add `implements` to the pubspec.
+
 ## 2.0.0
 
 * Migrate to null safety.

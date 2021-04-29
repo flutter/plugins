@@ -3,14 +3,9 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' show Platform;
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meta/meta.dart';
-import 'package:shared_preferences_linux/shared_preferences_linux.dart';
-import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
-import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -21,29 +16,6 @@ class SharedPreferences {
 
   static const String _prefix = 'flutter.';
   static Completer<SharedPreferences>? _completer;
-  static bool _manualDartRegistrationNeeded = true;
-
-  static SharedPreferencesStorePlatform get _store {
-    // This is to manually endorse the Linux implementation until automatic
-    // registration of dart plugins is implemented. For details see
-    // https://github.com/flutter/flutter/issues/52267.
-    if (_manualDartRegistrationNeeded) {
-      // Only do the initial registration if it hasn't already been overridden
-      // with a non-default instance.
-      if (!kIsWeb &&
-          SharedPreferencesStorePlatform.instance
-              is MethodChannelSharedPreferencesStore) {
-        if (Platform.isLinux) {
-          SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
-        } else if (Platform.isWindows) {
-          SharedPreferencesStorePlatform.instance = SharedPreferencesWindows();
-        }
-      }
-      _manualDartRegistrationNeeded = false;
-    }
-
-    return SharedPreferencesStorePlatform.instance;
-  }
 
   /// Loads and parses the [SharedPreferences] for this app from disk.
   ///
@@ -140,7 +112,7 @@ class SharedPreferences {
   Future<bool> remove(String key) {
     final String prefixedKey = '$_prefix$key';
     _preferenceCache.remove(key);
-    return _store.remove(prefixedKey);
+    return SharedPreferencesStorePlatform.instance.remove(prefixedKey);
   }
 
   Future<bool> _setValue(String valueType, String key, Object value) {
@@ -152,7 +124,8 @@ class SharedPreferences {
     } else {
       _preferenceCache[key] = value;
     }
-    return _store.setValue(valueType, prefixedKey, value);
+    return SharedPreferencesStorePlatform.instance
+        .setValue(valueType, prefixedKey, value);
   }
 
   /// Always returns true.
@@ -163,7 +136,7 @@ class SharedPreferences {
   /// Completes with true once the user preferences for the app has been cleared.
   Future<bool> clear() {
     _preferenceCache.clear();
-    return _store.clear();
+    return SharedPreferencesStorePlatform.instance.clear();
   }
 
   /// Fetches the latest values from the host platform.
@@ -178,7 +151,8 @@ class SharedPreferences {
   }
 
   static Future<Map<String, Object>> _getSharedPreferencesMap() async {
-    final Map<String, Object> fromSystem = await _store.getAll();
+    final Map<String, Object> fromSystem =
+        await SharedPreferencesStorePlatform.instance.getAll();
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};

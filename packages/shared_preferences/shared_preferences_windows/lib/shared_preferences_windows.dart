@@ -15,8 +15,10 @@ import 'package:path_provider_windows/path_provider_windows.dart';
 ///
 /// This class implements the `package:shared_preferences` functionality for Windows.
 class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
-  /// The default instance of [SharedPreferencesWindows] to use.
-  static SharedPreferencesWindows instance = SharedPreferencesWindows();
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    SharedPreferencesStorePlatform.instance = SharedPreferencesWindows();
+  }
 
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting

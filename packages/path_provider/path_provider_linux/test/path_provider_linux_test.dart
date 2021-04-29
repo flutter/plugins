@@ -7,7 +7,7 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  PathProviderLinux.register();
+  PathProviderLinux.registerWith();
 
   setUp(() {});
 
