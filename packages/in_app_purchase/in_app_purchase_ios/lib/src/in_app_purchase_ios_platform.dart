@@ -13,16 +13,10 @@ import '../in_app_purchase_ios.dart';
 import '../store_kit_wrappers.dart';
 
 /// [IAPError.code] code for failed purchases.
-final String kPurchaseErrorCode = 'purchase_error';
-
-/// [IAPError.code] code used when a query for previouys transaction has failed.
-final String kRestoredPurchaseErrorCode = 'restore_transactions_failed';
-
-/// [IAPError.code] code used when a consuming a purchased item fails.
-final String kConsumptionFailedErrorCode = 'consume_purchase_failed';
+const String kPurchaseErrorCode = 'purchase_error';
 
 /// Indicates store front is Apple AppStore.
-final String kIAPSource = 'app_store';
+const String kIAPSource = 'app_store';
 
 /// An [InAppPurchasePlatform] that wraps StoreKit.
 ///
@@ -73,17 +67,13 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
 
   @override
   Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) async {
-    if (!(purchaseParam is AppStorePurchaseParam)) {
-      throw ArgumentError(
-        'On iOS, the `purchaseParam` should always be of type `AppStorePurchaseParam`.',
-      );
-    }
-
     await _skPaymentQueueWrapper.addPayment(SKPaymentWrapper(
         productIdentifier: purchaseParam.productDetails.id,
         quantity: 1,
         applicationUsername: purchaseParam.applicationUserName,
-        simulatesAskToBuyInSandbox: purchaseParam.simulatesAskToBuyInSandbox,
+        simulatesAskToBuyInSandbox: (purchaseParam is AppStorePurchaseParam)
+            ? purchaseParam.simulatesAskToBuyInSandbox
+            : false,
         requestData: null));
 
     return true; // There's no error feedback from iOS here to return.
@@ -98,14 +88,13 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
 
   @override
   Future<void> completePurchase(PurchaseDetails purchase) {
-    if (!(purchase is AppStorePurchaseDetails)) {
-      throw ArgumentError(
-        'On iOS, the `purchase` should always be of type `AppStorePurchaseDetails`.',
-      );
-    }
+    assert(
+      purchase is AppStorePurchaseDetails,
+      'On iOS, the `purchase` should always be of type `AppStorePurchaseDetails`.',
+    );
 
     return _skPaymentQueueWrapper.finishTransaction(
-      purchase.skPaymentTransaction,
+      (purchase as AppStorePurchaseDetails).skPaymentTransaction,
     );
   }
 

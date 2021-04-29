@@ -12,8 +12,8 @@ Downloaded by pub (not CocoaPods).
   s.homepage         = 'https://github.com/flutter/plugins'
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/in_app_purchase' }
-  s.documentation_url = 'https://pub.dev/packages/in_app_purchase'
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase_ios' }
+  s.documentation_url = 'https://pub.dev/packages/in_app_purchase_ios'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'

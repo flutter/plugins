@@ -21,6 +21,11 @@ class AppStorePurchaseParam extends PurchaseParam {
   /// Set it to `true` to produce an "ask to buy" flow for this payment in the
   /// sandbox.
   ///
+  /// If you want to test [simulatesAskToBuyInSandbox], you should ensure that
+  /// you create an instance of the [AppStorePurchaseParam] class and set its
+  /// [simulateAskToBuyInSandbox] field to `true` and use it with the
+  /// `buyNonConsumable` or `buyConsumable` methods.
+  ///
   /// See also [SKPaymentWrapper.simulatesAskToBuyInSandbox].
   final bool simulatesAskToBuyInSandbox;
 }

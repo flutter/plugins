@@ -1,7 +1,7 @@
 name: in_app_purchase_ios
 description: An implementation for the iOS platform of the Flutter `in_app_purchase` plugin. This uses the iOS StoreKit Framework.
 repository: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase_ios
-version: 1.0.0
+version: 0.1.0
 
 # TODO(mvanbeusekom): Remove when in_app_purchase_platform_interface is published
 publish_to: 'none'
