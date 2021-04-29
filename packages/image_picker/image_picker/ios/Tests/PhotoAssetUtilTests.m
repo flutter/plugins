@@ -12,15 +12,20 @@
 
 @implementation PhotoAssetUtilTests
 
-- (void)getAssetFromImagePickerInfoShouldReturnNilIfNotAvailable {
+- (void)testGetAssetFromImagePickerInfoShouldReturnNilIfNotAvailable {
   NSDictionary *mockData = @{};
   XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:mockData]);
 }
 
-- (void)getAssetFromPHPickerResultShouldReturnNilIfNotAvailable {
+- (void)testGetAssetFromPHPickerResultShouldReturnNilIfNotAvailable {
   if (@available(iOS 14, *)) {
-    PHPickerResult *mockData = nil;
-    XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:mockData]);
+    PHPickerResult *mockData;
+    [mockData.itemProvider
+        loadObjectOfClass:[UIImage class]
+        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
+                            NSError *_Nullable error) {
+          XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:mockData]);
+        }];
   }
 }
 
