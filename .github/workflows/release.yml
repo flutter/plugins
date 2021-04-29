@@ -1,3 +1,7 @@
+# This workflow is to automatically publish and tag packages
+#
+# It waits until all other ci tasks to pass before running the critical section.
+
 name: release
 on:
   push:
@@ -28,7 +32,7 @@ jobs:
           check-name: 'release'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10 # seconds
-          # Github actions does not have a re-run flag, so we can't skip this wait for re-run,
+          # Github actions does not have a re-run flag, so we can't skip this wait for re-run.
           # In order to not get stuck into a failure loop, we allow failure conclusion for this wait.
           # We will let the plugin_tool to make sure this workflow doesn't mistakenly skip a package version
           # because of this. Details in below issue:
