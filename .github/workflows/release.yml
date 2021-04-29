@@ -48,6 +48,7 @@ jobs:
           echo "$HOME/_flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
           flutter doctor -v
           cd $GITHUB_WORKSPACE
+      # TODO(cyanglaz): add real publish command.
       - name: run release
         run: echo "replace this command with release command"
 
