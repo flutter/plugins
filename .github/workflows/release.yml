@@ -1,0 +1,56 @@
+name: release
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait on tests
+        uses: lewagon/wait-on-check-action@1b1630e169116b58a4b933d5ad7effc46d3d312d
+        with:
+          ref: ${{ github.sha }} # can be commit SHA or tag too
+          running-workflow-name: 'release'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10 # seconds
+      - name: Wait on last commit
+        uses: lewagon/wait-on-check-action@1b1630e169116b58a4b933d5ad7effc46d3d312d
+        with:
+          ref: ${{ github.sha }}~ # can be commit SHA or tag too
+          check-name: 'release'
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          wait-interval: 10 # seconds
+          # Github actions does not have a re-run flag, so we can't skip this wait for re-run,
+          # In order to not get stuck into a failure loop, we allow failure conclusion for this wait.
+          # We will let the plugin_tool to make sure this workflow doesn't mistakenly skip a package version
+          # because of this. Details in below issue:
+          # https://github.com/flutter/flutter/issues/81444
+          allowed-conclusions: success,skipped,cancelled,failure
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - name: Checkout code
+        uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+        with:
+          fetch-depth: 0 #fetch all history so the tool can get all the tag to determine version.
+
+      - name: "Install Flutter"
+        # Github aciont doesn't support templates so it is hard to share this snippet with another action
+        # If we eventually need to use this in more workflow, we could create a shell script that contains this
+        # snippet.
+        run: |
+          cd $HOME
+          git clone https://github.com/flutter/flutter.git --depth 1 -b stable _flutter
+          echo "$HOME/_flutter/bin" >> $GITHUB_PATH
+          echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
+          echo "$HOME/_flutter/.pub-cache/bin" >> $GITHUB_PATH
+          echo "$HOME/_flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
+          flutter doctor -v
+          cd $GITHUB_WORKSPACE
+      - name: run release
+        run: echo "replace this command with release command"
+
+        env:
+          DEFAULT_BRANCH: master
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
