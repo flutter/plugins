@@ -9,14 +9,19 @@ jobs:
     name: release
     runs-on: ubuntu-latest
     steps:
-      - name: Wait on tests
+      # This workflow should be the last to run. So wait for all the other tests to succeed.
+      - name: Wait on all tests
         uses: lewagon/wait-on-check-action@1b1630e169116b58a4b933d5ad7effc46d3d312d
         with:
           ref: ${{ github.sha }} # can be commit SHA or tag too
           running-workflow-name: 'release'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10 # seconds
-      - name: Wait on last commit
+          allowed-conclusions: success
+      # The release process should be synchronized to avoid child commit release before the parent commit,
+      # which might cause issue when child commit and parent commit both contain version updates for the same
+      # plugin.
+      - name: Wait on "release" workflow at last commit
         uses: lewagon/wait-on-check-action@1b1630e169116b58a4b933d5ad7effc46d3d312d
         with:
           ref: ${{ github.sha }}~ # can be commit SHA or tag too
@@ -29,7 +34,7 @@ jobs:
           # because of this. Details in below issue:
           # https://github.com/flutter/flutter/issues/81444
           allowed-conclusions: success,skipped,cancelled,failure
-      # Checks out a copy of your repository on the ubuntu-latest machine
+      # Checks out a copy of the repo.
       - name: Checkout code
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
         with:
