@@ -22,6 +22,7 @@
 		9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */; };
+		BECB773E26399EE7007FFBB3 /* ImagePickerFromLimitedGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BECB773D26399EE7007FFBB3 /* ImagePickerFromLimitedGalleryUITests.m */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
 		F78AF3192342D9D7008449C7 /* ImagePickerTestImages.m in Sources */ = {isa = PBXBuildFile; fileRef = F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */; };
 /* End PBXBuildFile section */
@@ -79,6 +80,7 @@
 		9FC8F0E8229FA49E00C8D58F /* gifImage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gifImage.gif; sourceTree = "<group>"; };
 		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImageUtilTests.m; path = ../../../ios/Tests/ImageUtilTests.m; sourceTree = "<group>"; };
 		A908FAEEA2A9B26D903C09C5 /* libPods-RunnerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RunnerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		BECB773D26399EE7007FFBB3 /* ImagePickerFromLimitedGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromLimitedGalleryUITests.m; sourceTree = "<group>"; };
 		EC32F6993F4529982D9519F1 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImagePickerTestImages.h; path = ../../../ios/Tests/ImagePickerTestImages.h; sourceTree = "<group>"; };
 		F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImagePickerTestImages.m; path = ../../../ios/Tests/ImagePickerTestImages.m; sourceTree = "<group>"; };
@@ -124,6 +126,7 @@
 				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
 				68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */,
 				6801C83A2555D726009DAF8D /* Info.plist */,
+				BECB773D26399EE7007FFBB3 /* ImagePickerFromLimitedGalleryUITests.m */,
 			);
 			path = RunnerUITests;
 			sourceTree = "<group>";
@@ -393,6 +396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */,
+				BECB773E26399EE7007FFBB3 /* ImagePickerFromLimitedGalleryUITests.m in Sources */,
 				9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */,
 				F78AF3192342D9D7008449C7 /* ImagePickerTestImages.m in Sources */,
 				680049262280D736006DD6AB /* MetaDataUtilTests.m in Sources */,
