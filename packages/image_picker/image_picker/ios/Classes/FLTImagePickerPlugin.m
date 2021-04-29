@@ -253,9 +253,6 @@ static const int SOURCE_GALLERY = 1;
         } else if (@available(iOS 14, *)) {
             if (status == PHAuthorizationStatusLimited) {
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    // Add PHPhotoLibraryPreventAutomaticLimitedAccessAlert = YES into the Info.plist
-                    // Check status == PHAuthorizationStatusLimited then call showLimitedPhotoLibrary function
-                    // Use presentLimitedLibraryPickerFromViewController in showLimitedPhotoLibrary function
                     [self showLimitedPhotoLibrary]; // Implemented limited access to the photo library by above instructions
                 });
             } else {
@@ -324,7 +321,7 @@ static const int SOURCE_GALLERY = 1;
     }
 }
 
-// Limited access to photo library
+// Limited access to the photo library
 - (void)showLimitedPhotoLibrary {
     [[PHPhotoLibrary sharedPhotoLibrary] presentLimitedLibraryPickerFromViewController:_pickerViewController];
 }
@@ -358,8 +355,7 @@ static const int SOURCE_GALLERY = 1;
                    image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
                  }
                  
-                 PHFetchResult* fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[result.assetIdentifier] options:nil];
-                 PHAsset *originalAsset = fetchResult.firstObject;
+                 PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
                  
                  if (!originalAsset) {
                    // Image picked without an original asset (e.g. User took a photo directly)

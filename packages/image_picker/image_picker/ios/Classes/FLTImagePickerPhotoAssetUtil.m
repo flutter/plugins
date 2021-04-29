@@ -23,6 +23,14 @@
   return result.firstObject;
 }
 
++ (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result {
+    if (@available(iOS 14, *)) {
+        PHFetchResult* fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[result.assetIdentifier] options:nil];
+        return fetchResult.firstObject;
+    }
+    return nil;
+}
+
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
                                        image:(UIImage *)image
                                     maxWidth:(NSNumber *)maxWidth
