@@ -18,10 +18,10 @@
 }
 
 - (void)getAssetFromPHPickerResultShouldReturnNilIfNotAvailable {
-    if (@available(iOS 14, *)) {
-        PHPickerResult *mockData = nil;
-        XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:mockData]);
-    }
+  if (@available(iOS 14, *)) {
+    PHPickerResult *mockData = nil;
+    XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:mockData]);
+  }
 }
 
 - (void)testSaveImageWithOriginalImageData_ShouldSaveWithTheCorrectExtentionAndMetaData {
