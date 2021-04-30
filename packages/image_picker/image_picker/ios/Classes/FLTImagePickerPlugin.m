@@ -67,9 +67,8 @@ static const int SOURCE_GALLERY = 1;
 }
 
 - (void)pickImageWithPHPicker:(bool)single API_AVAILABLE(ios(14)) {
-  PHPhotoLibrary *photoLibrary =
-      PHPhotoLibrary.sharedPhotoLibrary;  // This step is required to fetch PHAsset
-  PHPickerConfiguration *config = [[PHPickerConfiguration alloc] initWithPhotoLibrary:photoLibrary];
+  PHPickerConfiguration *config =
+      [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
   if (!single) {
     config.selectionLimit = 0;  // Setting to zero allow us to pick unlimited photos
   }
