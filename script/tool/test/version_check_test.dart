@@ -3,12 +3,15 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 import 'package:flutter_plugin_tools/src/version_check_command.dart';
@@ -40,18 +43,20 @@ class MockGitDir extends Mock implements GitDir {}
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
 void main() {
+  const String indentation = '  ';
   group('$VersionCheckCommand', () {
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     List<List<String>> gitDirCommands;
     String gitDiffResponse;
     Map<String, String> gitShowResponses;
+    MockGitDir gitDir;
 
     setUp(() {
       gitDirCommands = <List<String>>[];
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};
-      final MockGitDir gitDir = MockGitDir();
+      gitDir = MockGitDir();
       when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
         gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
@@ -521,6 +526,150 @@ void main() {
           ]),
         );
       } on ToolExit catch (_) {}
+    });
+
+    test('allows valid against pub', () async {
+      const Map<String, dynamic> httpResponse = <String, dynamic>{
+        'name': 'some_package',
+        'versions': <String>[
+          '0.0.1',
+          '0.0.2',
+          '1.0.0',
+        ],
+      };
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(httpResponse), 200);
+      });
+      final VersionCheckCommand command = VersionCheckCommand(
+          mockPackagesDir, mockFileSystem,
+          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
+
+      runner = CommandRunner<void>(
+          'version_check_command', 'Test for $VersionCheckCommand');
+      runner.addCommand(command);
+
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['version-check', '--base-sha=master', '--against-pub']);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          'No version check errors found!',
+        ]),
+      );
+      expect(gitDirCommands.length, equals(2));
+    });
+
+    test('denies invalid against pub', () async {
+      const Map<String, dynamic> httpResponse = <String, dynamic>{
+        'name': 'some_package',
+        'versions': <String>[
+          '0.0.1',
+          '0.0.2',
+        ],
+      };
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(httpResponse), 200);
+      });
+      final VersionCheckCommand command = VersionCheckCommand(
+          mockPackagesDir, mockFileSystem,
+          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
+
+      runner = CommandRunner<void>(
+          'version_check_command', 'Test for $VersionCheckCommand');
+      runner.addCommand(command);
+
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final Future<List<String>> result = runCapturingPrint(runner,
+          <String>['version-check', '--base-sha=master', '--against-pub']);
+
+      await expectLater(
+        result,
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
+    });
+
+    test(
+        'throw and print error message if http request failed when checking against pub',
+        () async {
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response('xx', 400);
+      });
+      final VersionCheckCommand command = VersionCheckCommand(
+          mockPackagesDir, mockFileSystem,
+          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
+
+      runner = CommandRunner<void>(
+          'version_check_command', 'Test for $VersionCheckCommand');
+      runner.addCommand(command);
+
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final Future<List<String>> result = runCapturingPrint(runner,
+          <String>['version-check', '--base-sha=master', '--against-pub']);
+
+      await expectLater(
+        result,
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
+      try {
+        final List<String> outputValue = await result;
+        await expectLater(
+          outputValue,
+          containsAllInOrder(<String>[
+            '''
+${indentation}Error fetching version on pub for plugin}.
+${indentation}HTTP Status 404}
+${indentation}HTTP response: xx}
+''',
+          ]),
+        );
+      } on ToolExit catch (_) {}
+    });
+
+    test('when checking against pub, allow any version if http status is 404.',
+        () async {
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response('xx', 404);
+      });
+      final VersionCheckCommand command = VersionCheckCommand(
+          mockPackagesDir, mockFileSystem,
+          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
+
+      runner = CommandRunner<void>(
+          'version_check_command', 'Test for $VersionCheckCommand');
+      runner.addCommand(command);
+
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+      final List<String> result = await runCapturingPrint(runner,
+          <String>['version-check', '--base-sha=master', '--against-pub']);
+
+      expect(
+        result,
+        containsAllInOrder(<String>[
+          'No version check errors found!',
+        ]),
+      );
     });
   });
 

@@ -11,6 +11,7 @@ import 'package:args/command_runner.dart';
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
@@ -547,6 +548,98 @@ class ProcessRunner {
     final String workdir = workingDir == null ? '' : ' in ${workingDir.path}';
     return 'ERROR: Unable to execute "$executable ${args.join(' ')}"$workdir.';
   }
+}
+
+/// Finding version of [package] that is published on pub.
+class PubVersionFinder {
+
+  /// Constructor.
+  PubVersionFinder({@required this.package, this.pubHost = defaultPubHost, @required this.httpClient});
+
+  /// The default pub host to use.
+  static const String defaultPubHost = 'https://pub.dev';
+
+  /// The package name.
+  final String package;
+
+  /// The pub host url, defaults to `https://pub.dev`.
+  final String pubHost;
+
+  /// The http client, can override for testing.
+  final http.Client httpClient;
+
+  /// Get the package version on pub.
+  Future<PubVersionFinderResponse> getPackageVersion() async {
+    final Uri pubHostUri = Uri.parse(pubHost);
+    final Uri url = pubHostUri.replace(path: '/packages/$package.json');
+    final http.Response response = await httpClient.get(url);
+
+    if (response.statusCode == 404) {
+      return PubVersionFinderResponse(
+          versions: null,
+          result: PubVersionFinderResult.noPackageFound,
+          httpResponse: response);
+    } else if (response.statusCode != 200) {
+      print('''
+Error fetching version on pub for $package.
+HTTP Status ${response.statusCode}
+HTTP response: ${response.body}
+''');
+      return PubVersionFinderResponse(
+          versions: null,
+          result: PubVersionFinderResult.fail,
+          httpResponse: response);
+    }
+    final List<Version> versions =
+        (json.decode(response.body)['versions'] as List<dynamic>)
+            .map<Version>(
+                (final dynamic versionString) => Version.parse(versionString as String))
+            .toList();
+
+    versions.sort((Version a, Version b) {
+      /// TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
+      return b.compareTo(a);
+    });
+
+    return PubVersionFinderResponse(
+        versions: versions,
+        result: PubVersionFinderResult.success,
+        httpResponse: response);
+  }
+}
+
+/// Represents a response for [PubVersionFinder].
+class PubVersionFinderResponse {
+  /// Constructor.
+  const PubVersionFinderResponse({this.versions, this.result, this.httpResponse});
+
+  /// The versions found in [PubVersionFinder].
+  ///
+  /// This is sorted by largest to smallest, so the first element in the list is the largest version.
+  /// Might be `null` if the [result] is not [PubVersionFinderResult.success].
+  final List<Version> versions;
+
+  /// The result of the version finder.
+  final PubVersionFinderResult result;
+
+  /// The response object of the http request.
+  final http.Response httpResponse;
+}
+
+/// An enum represents the result of [PubVersionFinder].
+enum PubVersionFinderResult {
+  /// The version finder successfully found a version.
+  success,
+
+  /// The version finder failed to find a valid version.
+  ///
+  /// This might due to http connection errors or user errors.
+  fail,
+
+  /// The version finder failed to locate the package.
+  ///
+  /// This is usually OK when the package is new.
+  noPackageFound,
 }
 
 /// Finding diffs based on `baseGitDir` and `baseSha`.

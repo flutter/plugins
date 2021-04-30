@@ -7,6 +7,7 @@ import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -74,8 +75,19 @@ class VersionCheckCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
+    this.httpClient,
   }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+            processRunner: processRunner, gitDir: gitDir) {
+    argParser.addFlag(
+      _againstPubFlag,
+      help: 'Whether the version check should run against the version on pub.\n'
+          'Defaults to false, which means the version check only run against the previous version in code.',
+      defaultsTo: false,
+      negatable: true,
+    );
+  }
+
+  static const String _againstPubFlag = 'against-pub';
 
   @override
   final String name = 'version-check';
@@ -85,6 +97,8 @@ class VersionCheckCommand extends PluginCommand {
       'Checks if the versions of the plugins have been incremented per pub specification.\n'
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
+
+  final http.Client httpClient;
 
   @override
   Future<void> run() async {
@@ -115,8 +129,31 @@ class VersionCheckCommand extends PluginCommand {
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
-      final Version masterVersion =
-          await gitVersionFinder.getPackageVersion(pubspecPath);
+      Version masterVersion;
+      if (argResults[_againstPubFlag] as bool) {
+        final PubVersionFinder pubVersionFinder = PubVersionFinder(
+            package: pubspecFile.parent.basename,
+            httpClient: httpClient ?? http.Client());
+        final PubVersionFinderResponse pubVersionFinderResponse =
+            await pubVersionFinder.getPackageVersion();
+        switch (pubVersionFinderResponse.result) {
+          case PubVersionFinderResult.success:
+            masterVersion = pubVersionFinderResponse.versions.first;
+            break;
+          case PubVersionFinderResult.fail:
+            printErrorAndExit(errorMessage: '''
+${indentation}Error fetching version on pub for ${pubspecFile.parent.basename}.
+${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
+${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
+''');
+            break;
+          case PubVersionFinderResult.noPackageFound:
+            masterVersion = null;
+            break;
+        }
+      } else {
+        masterVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
+      }
       if (masterVersion == null) {
         print('${indentation}Unable to find pubspec in master. '
             'Safe to ignore if the project is new.');
