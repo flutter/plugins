@@ -563,7 +563,6 @@ void main() {
           'No version check errors found!',
         ]),
       );
-      expect(gitDirCommands.length, equals(2));
     });
 
     test('denies invalid against pub', () async {

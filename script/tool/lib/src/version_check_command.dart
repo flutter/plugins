@@ -132,13 +132,11 @@ class VersionCheckCommand extends PluginCommand {
       }
       Version masterVersion;
       if (argResults[_againstPubFlag] as bool) {
-        final http.Client client =
-            httpClient ?? http.Client();
         final PubVersionFinder pubVersionFinder = PubVersionFinder(
-            package: pubspecFile.parent.basename, httpClient: client);
+            package: pubspecFile.parent.basename, httpClient: httpClient ?? http.Client());
         final PubVersionFinderResponse pubVersionFinderResponse =
             await pubVersionFinder.getPackageVersion();
-        client.close();
+        pubVersionFinder.httpClient.close();
         switch (pubVersionFinderResponse.result) {
           case PubVersionFinderResult.success:
             masterVersion = pubVersionFinderResponse.versions.first;

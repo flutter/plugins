@@ -551,6 +551,8 @@ class ProcessRunner {
 }
 
 /// Finding version of [package] that is published on pub.
+///
+/// Note: you should manually close the [httpClient] when done using the finder.
 class PubVersionFinder {
 
   /// Constructor.
@@ -566,6 +568,8 @@ class PubVersionFinder {
   final String pubHost;
 
   /// The http client, can override for testing.
+  ///
+  /// You should manually close this client when done using this finder.
   final http.Client httpClient;
 
   /// Get the package version on pub.
