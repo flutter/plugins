@@ -23,6 +23,8 @@
 
 @property(readonly) PHPickerViewController *_pickerViewController;
 
+@property(readonly) BOOL _phPickerFlag;
+
 @end
 
 static const int SOURCE_CAMERA = 0;
@@ -32,7 +34,6 @@ static const int SOURCE_GALLERY = 1;
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIImagePickerControllerCameraDevice _device;
-  BOOL _phPickerFlag;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -116,7 +117,7 @@ static const int SOURCE_GALLERY = 1;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    _phPickerFlag = NO;
+    __phPickerFlag = NO;
     self.result = result;
     _arguments = call.arguments;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
@@ -124,7 +125,7 @@ static const int SOURCE_GALLERY = 1;
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
-        _phPickerFlag = YES;
+        __phPickerFlag = YES;
         [self pickImageWithPHPicker:true];
       } else {
         // UIImagePicker is used
@@ -304,7 +305,7 @@ static const int SOURCE_GALLERY = 1;
 
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
-  if (_phPickerFlag) {
+  if (__phPickerFlag) {
     [[self viewControllerWithWindow:nil] presentViewController:__pickerViewController
                                                       animated:YES
                                                     completion:nil];
