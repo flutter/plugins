@@ -23,13 +23,10 @@
   return result.firstObject;
 }
 
-+ (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result {
-  if (@available(iOS 14, *)) {
-    PHFetchResult *fetchResult =
-        [PHAsset fetchAssetsWithLocalIdentifiers:@[ result.assetIdentifier ] options:nil];
-    return fetchResult.firstObject;
-  }
-  return nil;
++ (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {
+  PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[ result.assetIdentifier ]
+                                                                options:nil];
+  return fetchResult.firstObject;
 }
 
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
