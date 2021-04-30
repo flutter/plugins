@@ -21,6 +21,8 @@
 
 @property(copy, nonatomic) FlutterResult result;
 
+@property NSDictionary *_arguments;
+
 @property(readonly) PHPickerViewController *_pickerViewController;
 
 @property(readonly) BOOL _phPickerFlag;
@@ -31,7 +33,6 @@ static const int SOURCE_CAMERA = 0;
 static const int SOURCE_GALLERY = 1;
 
 @implementation FLTImagePickerPlugin {
-  NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIImagePickerControllerCameraDevice _device;
 }
@@ -86,11 +87,11 @@ static const int SOURCE_GALLERY = 1;
   _imagePickerController.delegate = self;
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-  int imageSource = [[_arguments objectForKey:@"source"] intValue];
+  int imageSource = [[__arguments objectForKey:@"source"] intValue];
 
   switch (imageSource) {
     case SOURCE_CAMERA: {
-      NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
+      NSInteger cameraDevice = [[__arguments objectForKey:@"cameraDevice"] intValue];
       _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
                                     : UIImagePickerControllerCameraDeviceRear;
       [self checkCameraAuthorization];
@@ -118,8 +119,8 @@ static const int SOURCE_GALLERY = 1;
   if ([@"pickImage" isEqualToString:call.method]) {
     __phPickerFlag = NO;
     self.result = result;
-    _arguments = call.arguments;
-    int imageSource = [[_arguments objectForKey:@"source"] intValue];
+    __arguments = call.arguments;
+    int imageSource = [[__arguments objectForKey:@"source"] intValue];
 
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
@@ -137,7 +138,7 @@ static const int SOURCE_GALLERY = 1;
     if (@available(iOS 14, *)) {
       NSLog(@"pickImage has been called on iOS14+");
       self.result = result;
-      _arguments = call.arguments;
+      __arguments = call.arguments;
       NSLog(@"Result and arguments have been set");
       [self pickImageWithPHPicker:false];
     }
@@ -152,11 +153,11 @@ static const int SOURCE_GALLERY = 1;
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
 
     self.result = result;
-    _arguments = call.arguments;
+    __arguments = call.arguments;
 
-    int imageSource = [[_arguments objectForKey:@"source"] intValue];
-    if ([[_arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
-      NSTimeInterval max = [[_arguments objectForKey:@"maxDuration"] doubleValue];
+    int imageSource = [[__arguments objectForKey:@"source"] intValue];
+    if ([[__arguments objectForKey:@"maxDuration"] isKindOfClass:[NSNumber class]]) {
+      NSTimeInterval max = [[__arguments objectForKey:@"maxDuration"] doubleValue];
       _imagePickerController.videoMaximumDuration = max;
     }
 
@@ -200,7 +201,7 @@ static const int SOURCE_GALLERY = 1;
                       otherButtonTitles:nil] show];
     self.result(nil);
     self.result = nil;
-    _arguments = nil;
+    __arguments = nil;
   }
 }
 
@@ -333,9 +334,9 @@ static const int SOURCE_GALLERY = 1;
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
             if (image != nil) {
-              NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-              NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
-              NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+              NSNumber *maxWidth = [self->__arguments objectForKey:@"maxWidth"];
+              NSNumber *maxHeight = [self->__arguments objectForKey:@"maxHeight"];
+              NSNumber *imageQuality = [self->__arguments objectForKey:@"imageQuality"];
 
               if (![imageQuality isKindOfClass:[NSNumber class]]) {
                 imageQuality = @1;
@@ -414,16 +415,16 @@ static const int SOURCE_GALLERY = 1;
     }
     self.result(videoURL.path);
     self.result = nil;
-    _arguments = nil;
+    __arguments = nil;
   } else {
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
 
-    NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-    NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-    NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+    NSNumber *maxWidth = [__arguments objectForKey:@"maxWidth"];
+    NSNumber *maxHeight = [__arguments objectForKey:@"maxHeight"];
+    NSNumber *imageQuality = [__arguments objectForKey:@"imageQuality"];
 
     if (![imageQuality isKindOfClass:[NSNumber class]]) {
       imageQuality = @1;
@@ -466,7 +467,7 @@ static const int SOURCE_GALLERY = 1;
   }
   self.result(nil);
   self.result = nil;
-  _arguments = nil;
+  __arguments = nil;
 }
 
 - (void)saveImageWithOriginalImageData:(NSData *)originalImageData
@@ -504,7 +505,7 @@ static const int SOURCE_GALLERY = 1;
                                     details:nil]);
   }
   self.result = nil;
-  _arguments = nil;
+  __arguments = nil;
 }
 
 @end
