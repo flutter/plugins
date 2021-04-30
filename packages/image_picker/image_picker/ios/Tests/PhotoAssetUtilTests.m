@@ -17,7 +17,7 @@
   XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:mockData]);
 }
 
-- (void)testGetAssetFromPHPickerResultShouldReturnNilIfNotAvailable API_AVAILABLE(ios(14)){
+- (void)testGetAssetFromPHPickerResultShouldReturnNilIfNotAvailable API_AVAILABLE(ios(14)) {
   if (@available(iOS 14, *)) {
     PHPickerResult *mockData;
     [mockData.itemProvider

@@ -248,8 +248,7 @@ static const int SOURCE_GALLERY = 1;
         } else if (@available(iOS 14, *)) {
           if (status == PHAuthorizationStatusLimited) {
             dispatch_async(dispatch_get_main_queue(), ^{
-              [self showLimitedPhotoLibrary];  // Implemented limited access to the photo library by
-                                               // above instructions
+              [self showLimitedPhotoLibrary];
             });
           } else {
             [self errorNoPhotoAccess:status];
