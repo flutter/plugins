@@ -215,7 +215,7 @@ class PublishPluginCommand extends PluginCommand {
     }
     if (packagesFailed.isNotEmpty) {
       _print(
-          'Packages failed to release: ${packagesFailed.join(', ')}, see above for details.');
+          'Failed to release the following packages: ${packagesFailed.join(', ')}, see above for details.');
     }
     return packagesFailed.isEmpty;
   }
@@ -247,7 +247,7 @@ class PublishPluginCommand extends PluginCommand {
     return true;
   }
 
-  // Returns `true` if needs to release the version, `false` if needs to skip
+  // Returns a [_CheckNeedsReleaseResult] that indicates the result.
   Future<_CheckNeedsReleaseResult> _checkNeedsRelease({
     @required File pubspecFile,
     @required GitVersionFinder gitVersionFinder,
@@ -267,9 +267,7 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     if (pubspec.version == null) {
-      _print('No version found. A package that '
-          'intentionally has no version should be marked '
-          '"publish_to: none".');
+      _print('No version found. A package that intentionally has no version should be marked "publish_to: none"');
       return _CheckNeedsReleaseResult.failure;
     }
 
@@ -484,6 +482,6 @@ enum _CheckNeedsReleaseResult {
   // The package does not need to be released.
   noRelease,
 
-  // There's an error when trying to access if the package needs to be released.
+  // There's an error when trying to determine whether the package needs to be released.
   failure,
 }
