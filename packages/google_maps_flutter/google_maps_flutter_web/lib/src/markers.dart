@@ -15,7 +15,7 @@ class MarkersController extends GeometryController {
   /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   MarkersController({
     required StreamController<MapEvent> stream,
-  })   : _streamController = stream,
+  })  : _streamController = stream,
         _markerIdToController = Map<MarkerId, MarkerController>();
 
   /// Returns the cache of [MarkerController]s. Test only.
