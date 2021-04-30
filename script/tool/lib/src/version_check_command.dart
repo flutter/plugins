@@ -98,6 +98,7 @@ class VersionCheckCommand extends PluginCommand {
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
+  /// The http client used to query pub server.
   final http.Client httpClient;
 
   @override
@@ -131,11 +132,13 @@ class VersionCheckCommand extends PluginCommand {
       }
       Version masterVersion;
       if (argResults[_againstPubFlag] as bool) {
+        final http.Client client =
+            httpClient ?? http.Client();
         final PubVersionFinder pubVersionFinder = PubVersionFinder(
-            package: pubspecFile.parent.basename,
-            httpClient: httpClient ?? http.Client());
+            package: pubspecFile.parent.basename, httpClient: client);
         final PubVersionFinderResponse pubVersionFinderResponse =
             await pubVersionFinder.getPackageVersion();
+        client.close();
         switch (pubVersionFinderResponse.result) {
           case PubVersionFinderResult.success:
             masterVersion = pubVersionFinderResponse.versions.first;
