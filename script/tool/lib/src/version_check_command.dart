@@ -132,18 +132,20 @@ class VersionCheckCommand extends PluginCommand {
       }
       Version masterVersion;
       if (argResults[_againstPubFlag] as bool) {
+        final String pacakgeName = pubspecFile.parent.basename;
         final PubVersionFinder pubVersionFinder = PubVersionFinder(
-            package: pubspecFile.parent.basename, httpClient: httpClient ?? http.Client());
+            package: pacakgeName, httpClient: httpClient ?? http.Client());
         final PubVersionFinderResponse pubVersionFinderResponse =
             await pubVersionFinder.getPackageVersion();
         pubVersionFinder.httpClient.close();
         switch (pubVersionFinderResponse.result) {
           case PubVersionFinderResult.success:
             masterVersion = pubVersionFinderResponse.versions.first;
+            print('$indentation$pacakgeName: Current largest version on pub: $masterVersion');
             break;
           case PubVersionFinderResult.fail:
             printErrorAndExit(errorMessage: '''
-${indentation}Error fetching version on pub for ${pubspecFile.parent.basename}.
+${indentation}Error fetching version on pub for ${pacakgeName}.
 ${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
 ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');

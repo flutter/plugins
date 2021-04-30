@@ -560,6 +560,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
+          '${indentation}plugin: Current largest version on pub: 1.0.0',
           'No version check errors found!',
         ]),
       );
