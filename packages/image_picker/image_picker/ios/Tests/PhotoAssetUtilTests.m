@@ -12,12 +12,12 @@
 
 @implementation PhotoAssetUtilTests
 
-- (void)testGetAssetFromImagePickerInfoShouldReturnNilIfNotAvailable {
+- (void)getAssetFromImagePickerInfoShouldReturnNilIfNotAvailable {
   NSDictionary *mockData = @{};
   XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:mockData]);
 }
 
-- (void)testGetAssetFromPHPickerResultShouldReturnNilIfNotAvailable {
+- (void)testGetAssetFromPHPickerResultShouldReturnNilIfNotAvailable API_AVAILABLE(ios(14)){
   if (@available(iOS 14, *)) {
     PHPickerResult *mockData;
     [mockData.itemProvider
