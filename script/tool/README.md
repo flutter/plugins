@@ -1,8 +1,15 @@
 # Flutter Plugin Tools
 
+This is a set of utilities used in the flutter/plugins and flutter/packages
+repositories. It is no longer explictily maintained as a general-purpose tool
+for multi-package repositories, so your mileage may vary if using it in other
+repositories.
+
+----
+
 Note: The commands in tools are designed to run at the root of the repository or `<repository-root>/packages/`.
 
-To run the tool:
+To run the tool (in flutter/plugins):
 
 ```sh
 cd <path_to_plugins>/script/tool && dart pub get && cd ../../
