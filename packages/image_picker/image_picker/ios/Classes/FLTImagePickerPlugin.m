@@ -21,6 +21,8 @@
 
 @property(copy, nonatomic) FlutterResult result;
 
+@property(readonly) PHPickerViewController *_pickerViewController;
+
 @end
 
 static const int SOURCE_CAMERA = 0;
@@ -29,7 +31,6 @@ static const int SOURCE_GALLERY = 1;
 @implementation FLTImagePickerPlugin {
   NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
-  PHPickerViewController *_pickerViewController;
   UIImagePickerControllerCameraDevice _device;
   BOOL _phPickerFlag;
 }
@@ -44,10 +45,6 @@ static const int SOURCE_GALLERY = 1;
 
 - (UIImagePickerController *)getImagePickerController {
   return _imagePickerController;
-}
-
-- (PHPickerViewController *)getPickerViewController {
-  return _pickerViewController;
 }
 
 - (UIViewController *)viewControllerWithWindow:(UIWindow *)window {
@@ -68,7 +65,7 @@ static const int SOURCE_GALLERY = 1;
   return topController;
 }
 
-- (void)pickImageWithPHPicker:(bool)single {
+- (void)pickImageWithPHPicker:(bool)single API_AVAILABLE(ios(14)) {
   PHPhotoLibrary *photoLibrary =
       PHPhotoLibrary.sharedPhotoLibrary;  // This step is required to fetch PHAsset
   PHPickerConfiguration *config = [[PHPickerConfiguration alloc] initWithPhotoLibrary:photoLibrary];
@@ -77,8 +74,8 @@ static const int SOURCE_GALLERY = 1;
   }
   config.filter = [PHPickerFilter imagesFilter];
 
-  _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
-  _pickerViewController.delegate = self;
+  __pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+  __pickerViewController.delegate = self;
 
   [self checkPhotoAuthorization];
 }
@@ -308,7 +305,7 @@ static const int SOURCE_GALLERY = 1;
 - (void)showPhotoLibrary {
   // No need to check if SourceType is available. It always is.
   if (_phPickerFlag) {
-    [[self viewControllerWithWindow:nil] presentViewController:_pickerViewController
+    [[self viewControllerWithWindow:nil] presentViewController:__pickerViewController
                                                       animated:YES
                                                     completion:nil];
   } else {
@@ -322,7 +319,7 @@ static const int SOURCE_GALLERY = 1;
 // Limited access to the photo library
 - (void)showLimitedPhotoLibrary {
   [[PHPhotoLibrary sharedPhotoLibrary]
-      presentLimitedLibraryPickerFromViewController:_pickerViewController];
+      presentLimitedLibraryPickerFromViewController:__pickerViewController];
 }
 
 - (void)picker:(PHPickerViewController *)picker
