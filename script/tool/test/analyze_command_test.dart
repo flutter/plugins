@@ -42,16 +42,12 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-              mockPackagesDir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin1Dir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin2Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
-              plugin1Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
-              plugin2Dir.path),
+          ProcessCall('dart', const <String>['analyze'], plugin1Dir.path),
+          ProcessCall('dart', const <String>['analyze'], plugin2Dir.path),
         ]));
   });
 
@@ -88,14 +84,9 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-                mockPackagesDir.path),
             ProcessCall(
                 'flutter', const <String>['packages', 'get'], pluginDir.path),
-            ProcessCall(
-                'pub',
-                const <String>['global', 'run', 'tuneup', 'check'],
-                pluginDir.path),
+            ProcessCall('dart', const <String>['analyze'], pluginDir.path),
           ]));
     });
 
