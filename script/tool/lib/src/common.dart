@@ -584,11 +584,6 @@ class PubVersionFinder {
           result: PubVersionFinderResult.noPackageFound,
           httpResponse: response);
     } else if (response.statusCode != 200) {
-      print('''
-Error fetching version on pub for $package.
-HTTP Status ${response.statusCode}
-HTTP response: ${response.body}
-''');
       return PubVersionFinderResponse(
           versions: null,
           result: PubVersionFinderResult.fail,

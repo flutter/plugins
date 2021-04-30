@@ -42,6 +42,14 @@ class MockGitDir extends Mock implements GitDir {}
 
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
+const String _redColorMessagePrefix = '\x1B[31m';
+const String _redColorMessagePostfix = '\x1B[0m';
+
+// Some error message was printed in a "Colorized" red message. So `\x1B[31m` and `\x1B[0m` needs to be included.
+String _redColorString(String string) {
+  return '$_redColorMessagePrefix$string$_redColorMessagePostfix';
+}
+
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
@@ -170,6 +178,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
+          '${indentation}Unable to find pubspec in master. Safe to ignore if the project is new.',
           'No version check errors found!',
         ]),
       );
@@ -326,25 +335,27 @@ void main() {
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
-      await expectLater(
+      bool hasError = false;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
         output,
-        throwsA(const TypeMatcher<ToolExit>()),
+        containsAllInOrder(<String>[
+          _redColorString('''
+versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+The version in pubspec.yaml is 1.0.1.
+The first version listed in CHANGELOG.md is 1.0.2.
+'''),
+        ]),
       );
-      try {
-        final List<String> outputValue = await output;
-        await expectLater(
-          outputValue,
-          containsAllInOrder(<String>[
-            '''
-  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-  The version in pubspec.yaml is 1.0.1.
-  The first version listed in CHANGELOG.md is 1.0.2.
-  ''',
-          ]),
-        );
-      } on ToolExit catch (_) {}
     });
 
     test('Success if CHANGELOG and pubspec versions match', () async {
@@ -393,25 +404,29 @@ void main() {
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
-      await expectLater(
+      bool hasError = false;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
         output,
-        throwsA(const TypeMatcher<ToolExit>()),
-      );
-      try {
-        final List<String> outputValue = await output;
-        await expectLater(
-          outputValue,
-          containsAllInOrder(<String>[
+        containsAllInOrder(<String>[
+          _redColorString(
             '''
-  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-  The version in pubspec.yaml is 1.0.0.
-  The first version listed in CHANGELOG.md is 1.0.1.
-  ''',
-          ]),
-        );
-      } on ToolExit catch (_) {}
+versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+The version in pubspec.yaml is 1.0.0.
+The first version listed in CHANGELOG.md is 1.0.1.
+''',
+          )
+        ]),
+      );
     });
 
     test('Allow NEXT as a placeholder for gathering CHANGELOG entries',
@@ -468,25 +483,28 @@ void main() {
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
-      await expectLater(
+      bool hasError = false;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
         output,
-        throwsA(const TypeMatcher<ToolExit>()),
-      );
-      try {
-        final List<String> outputValue = await output;
-        await expectLater(
-          outputValue,
-          containsAllInOrder(<String>[
+        containsAllInOrder(<String>[
+          _redColorString(
             '''
-  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-  The version in pubspec.yaml is 1.0.0.
-  The first version listed in CHANGELOG.md is 1.0.1.
-  ''',
-          ]),
-        );
-      } on ToolExit catch (_) {}
+When bumping the version for release, the NEXT section should be incorporated
+into the new version's release notes.
+''',
+          )
+        ]),
+      );
     });
 
     test('Fail if the version changes without replacing NEXT', () async {
@@ -507,25 +525,30 @@ void main() {
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
-      await expectLater(
+      bool hasError = false;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
         output,
-        throwsA(const TypeMatcher<ToolExit>()),
-      );
-      try {
-        final List<String> outputValue = await output;
-        await expectLater(
-          outputValue,
-          containsAllInOrder(<String>[
+        containsAllInOrder(<String>[
+          'Found NEXT; validating next version in the CHANGELOG.',
+          _redColorString(
             '''
-  versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-  The version in pubspec.yaml is 1.0.0.
-  The first version listed in CHANGELOG.md is 1.0.1.
-  ''',
-          ]),
-        );
-      } on ToolExit catch (_) {}
+versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+The version in pubspec.yaml is 1.0.1.
+The first version listed in CHANGELOG.md is 1.0.0.
+''',
+          )
+        ]),
+      );
     });
 
     test('allows valid against pub', () async {
@@ -591,12 +614,28 @@ void main() {
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
         'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
       };
-      final Future<List<String>> result = runCapturingPrint(runner,
-          <String>['version-check', '--base-sha=master', '--against-pub']);
 
-      await expectLater(
+      bool hasError = false;
+      final List<String> result = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        containsAllInOrder(<String>[
+          _redColorString(
+            '''
+${indentation}Incorrectly updated version.
+${indentation}HEAD: 2.0.0, pub: 0.0.2.
+${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: NextVersionType.MINOR, 0.0.3: NextVersionType.PATCH}''',
+          )
+        ]),
       );
     });
 
@@ -620,26 +659,29 @@ void main() {
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
         'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
       };
-      final Future<List<String>> result = runCapturingPrint(runner,
-          <String>['version-check', '--base-sha=master', '--against-pub']);
+      bool hasError = false;
+      final List<String> result = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
 
-      await expectLater(
+      expect(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
-      );
-      try {
-        final List<String> outputValue = await result;
-        await expectLater(
-          outputValue,
-          containsAllInOrder(<String>[
+        containsAllInOrder(<String>[
+          _redColorString(
             '''
-${indentation}Error fetching version on pub for plugin}.
-${indentation}HTTP Status 404}
-${indentation}HTTP response: xx}
+${indentation}Error fetching version on pub for plugin.
+${indentation}HTTP Status 400
+${indentation}HTTP response: xx
 ''',
-          ]),
-        );
-      } on ToolExit catch (_) {}
+          )
+        ]),
+      );
     });
 
     test('when checking against pub, allow any version if http status is 404.',
@@ -667,6 +709,7 @@ ${indentation}HTTP response: xx}
       expect(
         result,
         containsAllInOrder(<String>[
+          '${indentation}Unable to find package on pub server. Safe to ignore if the project is new.',
           'No version check errors found!',
         ]),
       );

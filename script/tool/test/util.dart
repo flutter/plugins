@@ -193,19 +193,29 @@ void cleanupPackages() {
   });
 }
 
+typedef _ErrorHandler = void Function(Error error);
+
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
+/// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<void> runner, List<String> args) async {
+    CommandRunner<void> runner, List<String> args, {_ErrorHandler errorHandler}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
       prints.add(message);
     },
   );
-  await Zone.current
+  try {
+    await Zone.current
       .fork(specification: spec)
       .run<Future<void>>(() => runner.run(args));
+  } on Error catch (e) {
+    if (errorHandler == null) {
+      rethrow;
+    }
+    errorHandler(e);
+  }
 
   return prints;
 }

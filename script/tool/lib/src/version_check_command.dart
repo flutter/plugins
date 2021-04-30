@@ -130,7 +130,7 @@ class VersionCheckCommand extends PluginCommand {
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
-      Version masterVersion;
+      Version sourceVersion;
       if (argResults[_againstPubFlag] as bool) {
         final String pacakgeName = pubspecFile.parent.basename;
         final PubVersionFinder pubVersionFinder = PubVersionFinder(
@@ -140,8 +140,8 @@ class VersionCheckCommand extends PluginCommand {
         pubVersionFinder.httpClient.close();
         switch (pubVersionFinderResponse.result) {
           case PubVersionFinderResult.success:
-            masterVersion = pubVersionFinderResponse.versions.first;
-            print('$indentation$pacakgeName: Current largest version on pub: $masterVersion');
+            sourceVersion = pubVersionFinderResponse.versions.first;
+            print('$indentation$pacakgeName: Current largest version on pub: $sourceVersion');
             break;
           case PubVersionFinderResult.fail:
             printErrorAndExit(errorMessage: '''
@@ -151,33 +151,39 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');
             break;
           case PubVersionFinderResult.noPackageFound:
-            masterVersion = null;
+            sourceVersion = null;
             break;
         }
       } else {
-        masterVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
+        sourceVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
       }
-      if (masterVersion == null) {
-        print('${indentation}Unable to find pubspec in master. '
-            'Safe to ignore if the project is new.');
+      if (sourceVersion == null) {
+        String safeToIgnoreMessage;
+        if (argResults[_againstPubFlag] as bool) {
+          safeToIgnoreMessage = '${indentation}Unable to find package on pub server.';
+        } else {
+          safeToIgnoreMessage = '${indentation}Unable to find pubspec in master.';
+        }
+        print('$safeToIgnoreMessage Safe to ignore if the project is new.');
         continue;
       }
 
-      if (masterVersion == headVersion) {
+      if (sourceVersion == headVersion) {
         print('${indentation}No version change.');
         continue;
       }
 
       final Map<Version, NextVersionType> allowedNextVersions =
-          getAllowedNextVersions(masterVersion, headVersion);
+          getAllowedNextVersions(sourceVersion, headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
+        final String source = (argResults[_againstPubFlag] as bool) ? 'pub' : 'master';
         final String error = '${indentation}Incorrectly updated version.\n'
-            '${indentation}HEAD: $headVersion, master: $masterVersion.\n'
+            '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
             '${indentation}Allowed versions: $allowedNextVersions';
         printErrorAndExit(errorMessage: error);
       } else {
-        print('$indentation$headVersion -> $masterVersion');
+        print('$indentation$headVersion -> $sourceVersion');
       }
 
       final bool isPlatformInterface =
@@ -264,7 +270,7 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
         printErrorAndExit(errorMessage: '''
 When bumping the version for release, the NEXT section should be incorporated
 into the new version's release notes.
-      ''');
+''');
       }
     }
 
