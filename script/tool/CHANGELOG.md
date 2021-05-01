@@ -1,6 +1,7 @@
 ## NEXT
 
 - Add `against-pub` flag for version-check.
+- Add `log-status` flag for publish-check.
 
 ## 0.1.0
 
