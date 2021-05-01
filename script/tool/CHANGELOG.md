@@ -3,6 +3,10 @@
 - Add `against-pub` flag for version-check.
 - Add `log-status` flag for publish-check.
 
+## 0.1.0+1
+
+- Re-add the bin/ directory.
+
 ## 0.1.0
 
 - **NOTE**: This is no longer intended as a general-purpose package, and is now
