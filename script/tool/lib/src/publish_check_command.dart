@@ -7,6 +7,8 @@ import 'dart:io' as io;
 
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
+import 'package:http/http.dart' as http;
+import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
@@ -18,6 +20,7 @@ class PublishCheckCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
+    this.httpClient,
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addFlag(
       _allowPrereleaseFlag,
@@ -26,9 +29,22 @@ class PublishCheckCommand extends PluginCommand {
           'the SDK constraint is a pre-release version, is ignored.',
       defaultsTo: false,
     );
+    argParser.addFlag(_logStatusFlag,
+        help:
+            'Logs the check-publish final status to a defined string as the last line of the command output.\n'
+            'The possible values are:\n'
+            '    $_resultNeedsPublish: There is at least one package need to be published. They also passed all publish checks. \n'
+            '    $_resultNoPublish: There are no packages need to be published. Either no pubspec change detected or the version has already been published. \n'
+            '    $_resultError: Some error has occurred.',
+        defaultsTo: false,
+        negatable: true);
   }
 
   static const String _allowPrereleaseFlag = 'allow-pre-release';
+  static const String _logStatusFlag = 'log-status';
+  static const String _resultNeedsPublish = 'needs-publish';
+  static const String _resultNoPublish = 'no-publish';
+  static const String _resultError = 'error';
 
   @override
   final String name = 'publish-check';
@@ -37,13 +53,28 @@ class PublishCheckCommand extends PluginCommand {
   final String description =
       'Checks to make sure that a plugin *could* be published.';
 
+  /// The custom http client used to query versions on pub.
+  final http.Client httpClient;
+
   @override
   Future<void> run() async {
     final List<Directory> failedPackages = <Directory>[];
 
+    String resultToLog = _resultNoPublish;
     await for (final Directory plugin in getPlugins()) {
-      if (!(await _passesPublishCheck(plugin))) {
-        failedPackages.add(plugin);
+      final _PublishCheckResult result = await _passesPublishCheck(plugin);
+      switch (result) {
+        case _PublishCheckResult._needsPublish:
+          if (failedPackages.isEmpty) {
+            resultToLog = _resultNeedsPublish;
+          }
+          break;
+        case _PublishCheckResult._noPublish:
+          break;
+        case _PublishCheckResult.error:
+          failedPackages.add(plugin);
+          resultToLog = _resultError;
+          break;
       }
     }
 
@@ -56,12 +87,19 @@ class PublishCheckCommand extends PluginCommand {
       final Colorize colorizedError = Colorize('$error\n$joinedFailedPackages')
         ..red();
       print(colorizedError);
-      throw ToolExit(1);
+    } else {
+      final Colorize passedMessage =
+          Colorize('All packages passed publish check!')..green();
+      print(passedMessage);
     }
 
-    final Colorize passedMessage =
-        Colorize('All packages passed publish check!')..green();
-    print(passedMessage);
+    // This has to be last output of this command because it is promised in the help section.
+    if (argResults[_logStatusFlag] as bool) {
+      print(resultToLog);
+    }
+    if (failedPackages.isNotEmpty) {
+      throw ToolExit(1);
+    }
   }
 
   Pubspec _tryParsePubspec(Directory package) {
@@ -121,24 +159,54 @@ class PublishCheckCommand extends PluginCommand {
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
   }
 
-  Future<bool> _passesPublishCheck(Directory package) async {
+  Future<_PublishCheckResult> _passesPublishCheck(Directory package) async {
     final String packageName = package.basename;
     print('Checking that $packageName can be published.');
 
     final Pubspec pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
-      return false;
+      print('no pubspec');
+      return _PublishCheckResult.error;
     } else if (pubspec.publishTo == 'none') {
       print('Package $packageName is marked as unpublishable. Skipping.');
-      return true;
+      return _PublishCheckResult._noPublish;
+    }
+
+    final Version version = pubspec.version;
+    final bool alreadyPublished = await _checkIfAlreadyPublished(
+        packageName: packageName, version: version);
+    if (alreadyPublished) {
+      print(
+          'Package $packageName version: $version has already be published on pub.');
+      return _PublishCheckResult._noPublish;
     }
 
     if (await _hasValidPublishCheckRun(package)) {
       print('Package $packageName is able to be published.');
-      return true;
+      return _PublishCheckResult._needsPublish;
     } else {
       print('Unable to publish $packageName');
-      return false;
+      return _PublishCheckResult.error;
     }
   }
+
+  // Check if `packageName` already has `version` published on pub.
+  Future<bool> _checkIfAlreadyPublished(
+      {String packageName, Version version}) async {
+    final PubVersionFinder pubVersionFinder = PubVersionFinder(
+        package: packageName, httpClient: httpClient ?? http.Client());
+    final PubVersionFinderResponse pubVersionFinderResponse =
+        await pubVersionFinder.getPackageVersion();
+    pubVersionFinder.httpClient.close();
+    return pubVersionFinderResponse.result == PubVersionFinderResult.success &&
+        pubVersionFinderResponse.versions.contains(version);
+  }
+}
+
+enum _PublishCheckResult {
+  _needsPublish,
+
+  _noPublish,
+
+  error,
 }
