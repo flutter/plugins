@@ -8,7 +8,6 @@
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
 #include <flutter_plugin_registrar.h>
-#include <winrt/Windows.Foundation.h>
 
 #include <memory>
 #include <string>
