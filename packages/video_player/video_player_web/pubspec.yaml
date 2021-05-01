@@ -18,6 +18,10 @@ dependencies:
   meta: ^1.3.0
   video_player_platform_interface: ^4.0.0
 
+dependency_overrides:
+  video_player_platform_interface:
+    path: ../video_player_platform_interface
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

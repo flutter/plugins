@@ -96,6 +96,121 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<List<TrackSelection>> getTrackSelections(
+    int textureId, {
+    TrackSelectionNameResource? trackSelectionNameResource,
+  }) async {
+    trackSelectionNameResource ??= TrackSelectionNameResource();
+    TrackSelectionsMessage response =
+        await _api.trackSelections(TextureMessage()..textureId = textureId);
+    final List<TrackSelection> trackSelections = [];
+    for (dynamic trackSelectionMap in response.trackSelections!) {
+      final trackSelectionType =
+          _intTrackSelectionTypeMap[trackSelectionMap['trackType']]!;
+      final bool isUnknown = trackSelectionMap['isUnknown'];
+      final bool isAuto = trackSelectionMap['isAuto'];
+      final String trackId = trackSelectionMap['trackId'];
+      final bool isSelected = trackSelectionMap['isSelected'];
+      if (isUnknown || isAuto) {
+        trackSelections.add(TrackSelection(
+          trackId: trackId,
+          trackType: trackSelectionType,
+          trackName: isUnknown
+              ? trackSelectionNameResource.trackUnknown
+              : trackSelectionNameResource.trackAuto,
+          isSelected: isSelected,
+        ));
+      } else {
+        switch (trackSelectionType) {
+          case TrackSelectionType.video:
+            {
+              final int rolesFlag = trackSelectionMap['rolesFlag'];
+              final int bitrate = trackSelectionMap['bitrate'];
+              final int width = trackSelectionMap['width'];
+              final int height = trackSelectionMap['height'];
+              final trackSelectionName = _joinWithSeparator([
+                _buildRoleString(rolesFlag, trackSelectionNameResource),
+                _buildVideoQualityOrResolutionString(
+                    bitrate, width, height, trackSelectionNameResource),
+              ], trackSelectionNameResource.trackItemListSeparator);
+              trackSelections.add(TrackSelection(
+                trackId: trackId,
+                trackType: trackSelectionType,
+                trackName: trackSelectionName.isEmpty
+                    ? trackSelectionNameResource.trackUnknown
+                    : trackSelectionName,
+                isSelected: isSelected,
+                size: width == -1 || height == -1
+                    ? null
+                    : Size(width.toDouble(), height.toDouble()),
+                role: _toRoleType(rolesFlag),
+                bitrate: bitrate == -1 ? null : bitrate,
+              ));
+              break;
+            }
+          case TrackSelectionType.audio:
+            {
+              final int rolesFlag = trackSelectionMap['rolesFlag'];
+              final String language = trackSelectionMap['language'];
+              final String label = trackSelectionMap['label'];
+              final int channelCount = trackSelectionMap['channelCount'];
+              final int bitrate = trackSelectionMap['bitrate'];
+              final trackSelectionName = _joinWithSeparator([
+                _buildLanguageOrLabelString(
+                    language, rolesFlag, label, trackSelectionNameResource),
+                _buildAudioChannelString(
+                    channelCount, trackSelectionNameResource),
+                _buildAvgBitrateString(bitrate, trackSelectionNameResource),
+              ], trackSelectionNameResource.trackItemListSeparator);
+              trackSelections.add(TrackSelection(
+                trackId: trackId,
+                trackType: trackSelectionType,
+                trackName: trackSelectionName.isEmpty
+                    ? trackSelectionNameResource.trackUnknown
+                    : trackSelectionName,
+                isSelected: isSelected,
+                language: language.isEmpty ? null : language,
+                label: label.isEmpty ? null : label,
+                channel: _toChannelType(channelCount),
+                role: _toRoleType(rolesFlag),
+                bitrate: bitrate == -1 ? null : bitrate,
+              ));
+              break;
+            }
+          case TrackSelectionType.text:
+            {
+              final int rolesFlag = trackSelectionMap['rolesFlag'];
+              final String language = trackSelectionMap['language'];
+              final String label = trackSelectionMap['label'];
+              final trackSelectionName = _buildLanguageOrLabelString(
+                  language, rolesFlag, label, trackSelectionNameResource);
+              trackSelections.add(TrackSelection(
+                trackId: trackId,
+                trackType: trackSelectionType,
+                trackName: trackSelectionName.isEmpty
+                    ? trackSelectionNameResource.trackUnknown
+                    : trackSelectionName,
+                isSelected: isSelected,
+                language: language.isEmpty ? null : language,
+                label: label.isEmpty ? null : label,
+                role: _toRoleType(rolesFlag),
+              ));
+              break;
+            }
+        }
+      }
+    }
+    return trackSelections;
+  }
+
+  @override
+  Future<void> setTrackSelection(int textureId, TrackSelection trackSelection) {
+    return _api.setTrackSelection(TrackSelectionsMessage()
+      ..trackId = trackSelection.trackId
+      ..textureId = textureId);
+  }
+
+  @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return _eventChannelFor(textureId)
         .receiveBroadcastStream()
@@ -153,6 +268,151 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
     VideoFormat.dash: 'dash',
     VideoFormat.other: 'other',
   };
+
+  static const Map<int, TrackSelectionType> _intTrackSelectionTypeMap =
+      <int, TrackSelectionType>{
+    1: TrackSelectionType.audio,
+    2: TrackSelectionType.video,
+    3: TrackSelectionType.text,
+  };
+
+  TrackSelectionRoleType? _toRoleType(int rolesFlag) {
+    switch (rolesFlag) {
+      case 0:
+        return TrackSelectionRoleType.alternate;
+      case 1:
+        return TrackSelectionRoleType.supplementary;
+      case 2:
+        return TrackSelectionRoleType.commentary;
+      case 3:
+        return TrackSelectionRoleType.closedCaptions;
+    }
+  }
+
+  TrackSelectionChannelType? _toChannelType(int channelCount) {
+    switch (channelCount) {
+      case 1:
+        return TrackSelectionChannelType.mono;
+      case 2:
+        return TrackSelectionChannelType.stereo;
+      default:
+        return TrackSelectionChannelType.surround;
+    }
+  }
+
+  String _buildVideoQualityOrResolutionString(
+    int bitrate,
+    int width,
+    int height,
+    TrackSelectionNameResource trackSelectionNameResource,
+  ) {
+    const int bitrate1080p = 2800000;
+    const int bitrate720p = 1600000;
+    const int bitrate480p = 700000;
+    const int bitrate360p = 530000;
+    const int bitrate240p = 400000;
+    const int bitrate160p = 300000;
+
+    if (bitrate != -1 && bitrate <= bitrate160p) {
+      return trackSelectionNameResource.trackBitrate160p;
+    }
+    if (bitrate != -1 && bitrate <= bitrate240p) {
+      return trackSelectionNameResource.trackBitrate240p;
+    }
+    if (bitrate != -1 && bitrate <= bitrate360p) {
+      return trackSelectionNameResource.trackBitrate360p;
+    }
+    if (bitrate != -1 && bitrate <= bitrate480p) {
+      return trackSelectionNameResource.trackBitrate480p;
+    }
+    if (bitrate != -1 && bitrate <= bitrate720p) {
+      return trackSelectionNameResource.trackBitrate720p;
+    }
+    if (bitrate != -1 && bitrate <= bitrate1080p) {
+      return trackSelectionNameResource.trackBitrate1080p;
+    }
+
+    return _joinWithSeparator([
+      _buildResolutionString(width, height, trackSelectionNameResource),
+      _buildAvgBitrateString(bitrate, trackSelectionNameResource),
+    ], trackSelectionNameResource.trackItemListSeparator);
+  }
+
+  String _buildResolutionString(int width, int height,
+      TrackSelectionNameResource trackSelectionNameResource) {
+    if (width == -1 || height == -1) {
+      return '';
+    }
+    return [width, trackSelectionNameResource.trackResolutionSeparator, height]
+        .join(' ');
+  }
+
+  String _buildAvgBitrateString(
+      int bitrate, TrackSelectionNameResource trackSelectionNameResource) {
+    if (bitrate == -1) {
+      return '';
+    }
+    return [
+      (bitrate / 1000000).toStringAsFixed(2),
+      trackSelectionNameResource.trackBitrateMbps,
+    ].join(' ');
+  }
+
+  String _buildLanguageOrLabelString(
+    String language,
+    int rolesFlag,
+    String label,
+    TrackSelectionNameResource trackSelectionNameResource,
+  ) {
+    String languageAndRole = _joinWithSeparator(
+      [language, _buildRoleString(rolesFlag, trackSelectionNameResource)],
+      trackSelectionNameResource.trackItemListSeparator,
+    );
+    return languageAndRole.isEmpty ? label : languageAndRole;
+  }
+
+  String _buildRoleString(
+      int rolesFlag, TrackSelectionNameResource trackSelectionNameResource) {
+    switch (rolesFlag) {
+      case 0:
+        return trackSelectionNameResource.trackRoleAlternate;
+      case 1:
+        return trackSelectionNameResource.trackRoleSupplementary;
+      case 2:
+        return trackSelectionNameResource.trackRoleCommentary;
+      case 3:
+        return trackSelectionNameResource.trackRoleClosedCaptions;
+      default:
+        return '';
+    }
+  }
+
+  String _buildAudioChannelString(
+      int channelCount, TrackSelectionNameResource trackSelectionNameResource) {
+    if (channelCount == -1) {
+      return '';
+    }
+    switch (channelCount) {
+      case 1:
+        return trackSelectionNameResource.trackMono;
+      case 2:
+        return trackSelectionNameResource.trackStereo;
+      default:
+        return trackSelectionNameResource.trackSurround;
+    }
+  }
+
+  String _joinWithSeparator(List<String> names, String separator) {
+    String jointNames = '';
+    for (String name in names) {
+      if (jointNames.isEmpty) {
+        jointNames = name;
+      } else if (name.isNotEmpty) {
+        jointNames += [separator, name].join(' ');
+      }
+    }
+    return jointNames;
+  }
 
   DurationRange _toDurationRange(dynamic value) {
     final List<dynamic> pair = value;

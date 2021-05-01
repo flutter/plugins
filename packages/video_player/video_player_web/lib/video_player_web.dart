@@ -140,6 +140,20 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
   }
 
   @override
+  Future<List<TrackSelection>> getTrackSelections(
+    int textureId, {
+    TrackSelectionNameResource? trackSelectionNameResource,
+  }) async {
+    return _videoPlayers[textureId]!.getTrackSelections(
+        trackSelectionNameResource: trackSelectionNameResource);
+  }
+
+  @override
+  Future<void> setTrackSelection(
+          int textureId, TrackSelection trackSelection) async =>
+      Future<void>.value();
+
+  @override
   Stream<VideoEvent> videoEventsFor(int textureId) {
     return _videoPlayers[textureId]!.eventController.stream;
   }
@@ -283,6 +297,12 @@ class _VideoPlayer {
 
   Duration getPosition() {
     return Duration(milliseconds: (videoElement.currentTime * 1000).round());
+  }
+
+  List<TrackSelection> getTrackSelections({
+    TrackSelectionNameResource? trackSelectionNameResource,
+  }) {
+    return [];
   }
 
   void sendInitialized() {

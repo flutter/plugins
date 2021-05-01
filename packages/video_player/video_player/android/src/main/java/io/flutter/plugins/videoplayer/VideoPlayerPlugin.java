@@ -18,6 +18,7 @@ import io.flutter.plugins.videoplayer.Messages.MixWithOthersMessage;
 import io.flutter.plugins.videoplayer.Messages.PlaybackSpeedMessage;
 import io.flutter.plugins.videoplayer.Messages.PositionMessage;
 import io.flutter.plugins.videoplayer.Messages.TextureMessage;
+import io.flutter.plugins.videoplayer.Messages.TrackSelectionsMessage;
 import io.flutter.plugins.videoplayer.Messages.VideoPlayerApi;
 import io.flutter.plugins.videoplayer.Messages.VolumeMessage;
 import io.flutter.view.TextureRegistry;
@@ -28,6 +29,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 /** Android platform implementation of the VideoPlayerPlugin. */
 public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
+
   private static final String TAG = "VideoPlayerPlugin";
   private final LongSparseArray<VideoPlayer> videoPlayers = new LongSparseArray<>();
   private FlutterState flutterState;
@@ -200,6 +202,18 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     player.seekTo(arg.getPosition().intValue());
   }
 
+  public TrackSelectionsMessage trackSelections(TextureMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    TrackSelectionsMessage result = new TrackSelectionsMessage();
+    result.setTrackSelections(player.getTrackSelections());
+    return result;
+  }
+
+  public void setTrackSelection(TrackSelectionsMessage arg) {
+    VideoPlayer player = videoPlayers.get(arg.getTextureId());
+    player.setTrackSelection(arg.getTrackId());
+  }
+
   public void pause(TextureMessage arg) {
     VideoPlayer player = videoPlayers.get(arg.getTextureId());
     player.pause();
@@ -211,14 +225,17 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
   }
 
   private interface KeyForAssetFn {
+
     String get(String asset);
   }
 
   private interface KeyForAssetAndPackageName {
+
     String get(String asset, String packageName);
   }
 
   private static final class FlutterState {
+
     private final Context applicationContext;
     private final BinaryMessenger binaryMessenger;
     private final KeyForAssetFn keyForAsset;
