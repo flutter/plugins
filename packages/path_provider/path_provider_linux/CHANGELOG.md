@@ -1,3 +1,8 @@
+## 2.0.1
+
+* Change getApplicationSupportPath from using executable name to application ID (if provided).
+  * If the executable name based directory exists, continue to use that so existing applications continue with the same behaviour.
+
 ## 2.0.0
 
 * Migrate to null safety.
