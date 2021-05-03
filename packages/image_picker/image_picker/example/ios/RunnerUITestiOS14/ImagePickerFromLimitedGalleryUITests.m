@@ -21,11 +21,9 @@ const int kLimitedElementWaitingTime = 30;
 
   self.continueAfterFailure = NO;
   self.app = [[XCUIApplication alloc] init];
-  if (@available(iOS 14, *)) {
-    [self.app launch];
-    __weak typeof(self) weakSelf = self;
-    [self
-        addUIInterruptionMonitorWithDescription:@"Permission popups"
+  [self.app launch];
+  __weak typeof(self) weakSelf = self;
+  [self addUIInterruptionMonitorWithDescription:@"Permission popups"
                                         handler:^BOOL(XCUIElement* _Nonnull interruptingElement) {
                                           if (@available(iOS 14, *)) {
                                             XCUIElement* limitedPhotoPermission =
@@ -54,9 +52,6 @@ const int kLimitedElementWaitingTime = 30;
                                           }
                                           return YES;
                                         }];
-  } else {
-    XCTSkip(@"Required iOS version is not available for this test.");
-  }
 }
 
 - (void)tearDown {
