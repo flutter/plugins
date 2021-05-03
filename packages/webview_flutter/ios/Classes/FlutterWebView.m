@@ -228,39 +228,6 @@
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
-- (void)setupContentBlockers:(NSArray<NSString *> *)hosts completion:(void (^)(void))completion {
-    
-    if ([hosts count] == 0) {
-        completion();
-        return;
-    }
-    NSString *contentBlockersIdentifier = @"contentBlockersIdentifier";
-    NSString *jsonStringFormat = @"[{\"trigger\":{\"url-filter\":\".*\",\"if-domain\":[%@]},\"action\":{\"type\":\"block\"}}]";
-    
-    NSMutableArray<NSString *> *formattedHosts = [NSMutableArray arrayWithCapacity:[hosts count]];
-    [hosts enumerateObjectsUsingBlock:^(NSString * _Nonnull obj, NSUInteger idx, BOOL * _Nonnull stop) {
-        [formattedHosts addObject:[NSString stringWithFormat:@"\"%@\"", obj]];
-    }];
-    
-    NSString *hostsString = [formattedHosts componentsJoinedByString:@","];
-    NSString *jsonString = [NSString stringWithFormat:jsonStringFormat, hostsString];
-
-    if (@available(iOS 11.0, *)) {
-        [WKContentRuleListStore.defaultStore compileContentRuleListForIdentifier:contentBlockersIdentifier encodedContentRuleList:jsonString completionHandler:^(WKContentRuleList *list, NSError *error) {
-            
-            if (error) {
-                completion();
-                return;
-            }
-            
-            [[self->_webView configuration].userContentController addContentRuleList: list];
-            completion();
-        }];
-    } else {
-        completion();
-    }
-}
-
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
   if (![self loadRequest:[call arguments]]) {
     result([FlutterError
