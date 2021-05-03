@@ -23,6 +23,8 @@
 
 @property(nonatomic) NSDictionary *arguments;
 
+@property(nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
+
 @end
 
 static const int SOURCE_CAMERA = 0;
@@ -71,11 +73,10 @@ static const int SOURCE_GALLERY = 1;
   }
   config.filter = [PHPickerFilter imagesFilter];
 
-  PHPickerViewController *pickerViewController =
-      [[PHPickerViewController alloc] initWithConfiguration:config];
-  pickerViewController.delegate = self;
+  _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+  _pickerViewController.delegate = self;
 
-  [self checkPhotoAuthorization:pickerViewController pickerFlag:YES];
+  [self checkPhotoAuthorization:YES];
 }
 
 - (void)pickImageWithUIImagePicker {
@@ -95,7 +96,7 @@ static const int SOURCE_GALLERY = 1;
       break;
     }
     case SOURCE_GALLERY:
-      [self checkPhotoAuthorization:nil pickerFlag:NO];
+      [self checkPhotoAuthorization:NO];
       break;
     default:
       self.result([FlutterError errorWithCode:@"invalid_source"
@@ -161,7 +162,7 @@ static const int SOURCE_GALLERY = 1;
         [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
-        [self checkPhotoAuthorization:nil pickerFlag:NO];
+        [self checkPhotoAuthorization:NO];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -231,20 +232,19 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-- (void)checkPhotoAuthorization:(PHPickerViewController *)pickerViewController
-                     pickerFlag:(BOOL)pickerFlag {
+- (void)checkPhotoAuthorization:(BOOL)pickerFlag {
   PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         if (status == PHAuthorizationStatusAuthorized) {
           dispatch_async(dispatch_get_main_queue(), ^{
-            [self showPhotoLibrary:pickerViewController pickerFlag:pickerFlag];
+            [self showPhotoLibrary:pickerFlag];
           });
         } else if (@available(iOS 14, *)) {
           if (status == PHAuthorizationStatusLimited) {
             dispatch_async(dispatch_get_main_queue(), ^{
-              [self showLimitedPhotoLibrary:pickerViewController];
+              [self showLimitedPhotoLibrary];
             });
           } else {
             [self errorNoPhotoAccess:status];
@@ -256,7 +256,7 @@ static const int SOURCE_GALLERY = 1;
       break;
     }
     case PHAuthorizationStatusAuthorized:
-      [self showPhotoLibrary:pickerViewController pickerFlag:pickerFlag];
+      [self showPhotoLibrary:pickerFlag];
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
@@ -298,11 +298,10 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-- (void)showPhotoLibrary:(PHPickerViewController *)pickerViewController
-              pickerFlag:(BOOL)pickerFlag {
+- (void)showPhotoLibrary:(BOOL)pickerFlag {
   // No need to check if SourceType is available. It always is.
   if (pickerFlag) {
-    [[self viewControllerWithWindow:nil] presentViewController:pickerViewController
+    [[self viewControllerWithWindow:nil] presentViewController:_pickerViewController
                                                       animated:YES
                                                     completion:nil];
   } else {
@@ -314,10 +313,9 @@ static const int SOURCE_GALLERY = 1;
 }
 
 // Limited access to the photo library
-- (void)showLimitedPhotoLibrary:(PHPickerViewController *)pickerViewController
-    API_AVAILABLE(ios(14)) {
+- (void)showLimitedPhotoLibrary API_AVAILABLE(ios(14)) {
   [[PHPhotoLibrary sharedPhotoLibrary]
-      presentLimitedLibraryPickerFromViewController:pickerViewController];
+      presentLimitedLibraryPickerFromViewController:_pickerViewController];
 }
 
 - (NSNumber *)getDesiredImageQuality {
