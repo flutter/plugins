@@ -314,7 +314,8 @@ static const int SOURCE_GALLERY = 1;
 }
 
 // Limited access to the photo library
-- (void)showLimitedPhotoLibrary:(PHPickerViewController *)pickerViewController {
+- (void)showLimitedPhotoLibrary:(PHPickerViewController *)pickerViewController
+    API_AVAILABLE(ios(14)) {
   [[PHPhotoLibrary sharedPhotoLibrary]
       presentLimitedLibraryPickerFromViewController:pickerViewController];
 }
