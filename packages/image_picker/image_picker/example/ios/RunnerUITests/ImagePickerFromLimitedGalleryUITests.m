@@ -21,6 +21,9 @@ const int kLimitedElementWaitingTime = 30;
 
   self.continueAfterFailure = NO;
   self.app = [[XCUIApplication alloc] init];
+  if (!(@available(iOS 14, *))) {
+    XCTSkip(@"Required iOS version is not available for this test.");
+  }
   [self.app launch];
   __weak typeof(self) weakSelf = self;
   [self addUIInterruptionMonitorWithDescription:@"Permission popups"
