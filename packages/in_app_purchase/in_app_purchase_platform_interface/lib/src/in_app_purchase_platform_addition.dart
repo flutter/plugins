@@ -14,9 +14,11 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 ///
 /// All the APIs added by [InAppPurchasePlatformAddition] implementers will be accessed from
 /// [InAppPurchasePlatformAdditionProvider.getPlatformAddition] by the client APPs.
-/// To avoid client APPs to directly call the [InAppPurchasePlatform] APIs, we highly recommand to not have [InAppPurchasePlatformAddition] and [InAppPurchasePlatform]
-/// being the same class.
+/// To avoid client APPs to directly call the [InAppPurchasePlatform] APIs, an [InAppPurchasePlatformAddition] implementation must not
+/// be a type of [InAppPurchasePlatform].
 abstract class InAppPurchasePlatformAddition {
+  static InAppPurchasePlatformAddition? _instance;
+
   /// The instance containing the platform-specific in_app_purchase
   /// functionality.
   ///
@@ -49,5 +51,13 @@ abstract class InAppPurchasePlatformAddition {
   ///   }
   /// }
   /// ```
-  static InAppPurchasePlatformAddition? instance;
+  static InAppPurchasePlatformAddition? get instance => _instance;
+
+  /// Sets the instance to a desired [InAppPurchasePlatformAddition] implementation.
+  ///
+  /// The `instance` must not be a type of [InAppPurchasePlatform].
+  static set instance(InAppPurchasePlatformAddition? instance) {
+    assert(!(instance is InAppPurchasePlatform));
+    _instance = instance;
+  }
 }

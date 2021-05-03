@@ -145,6 +145,13 @@ void main() {
           MockInAppPurchasePlatformAddition();
     });
 
+    test('Can not be a `InAppPurchasePlatform`', () {
+      expect(
+          () => InAppPurchasePlatformAddition.instance =
+              ExtendsInAppPurchasePlatformAdditionIsPlatformInterface(),
+          throwsAssertionError);
+    });
+
     test('Provider can provide', () {
       ImplementsInAppPurchasePlatformAdditionProvider.register();
       final ImplementsInAppPurchasePlatformAdditionProvider provider =
@@ -210,3 +217,7 @@ class ImplementsInAppPurchasePlatformAdditionProvider
     return InAppPurchasePlatformAddition.instance as T;
   }
 }
+
+class ExtendsInAppPurchasePlatformAdditionIsPlatformInterface
+    extends InAppPurchasePlatform
+    implements ExtendsInAppPurchasePlatformAddition {}
