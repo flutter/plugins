@@ -8,20 +8,13 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 /// The interface that platform implementations must implement when they want to
 /// provide platform-specific in_app_purchase features.
 ///
-/// Platform implementations should extend this class rather than implement it as `in_app_purchase`
-/// does not consider newly added methods to be breaking changes. Extending this class
-/// (using `extends`) ensures that the subclass will get the default implementation, while
-/// platform implementations that `implements` this interface will be broken by newly added
-/// [InAppPurchasePlatformAddition] methods.
-abstract class InAppPurchasePlatformAddition extends PlatformInterface {
-  /// Constructs a InAppPurchasePlatform.
-  InAppPurchasePlatformAddition() : super(token: _token);
-
-  static final Object _token = Object();
-
-  // Should only be accessed after setter is called.
-  static InAppPurchasePlatformAddition? _instance;
-
+/// Platforms that wants to introduce platform-specific public APIs should create
+/// a class that either extend or implements [InAppPurchasePlatformAddition]. Then replace
+/// the [InAppPurchasePlatformAddition.instance] with an instance of that class.
+///
+/// We highly recommand against to have [InAppPurchasePlatformAddition] and [InAppPurchasePlatform]
+/// being the same class.
+abstract class InAppPurchasePlatformAddition {
   /// The instance containing the platform-specific in_app_purchase
   /// functionality.
   ///
@@ -54,16 +47,5 @@ abstract class InAppPurchasePlatformAddition extends PlatformInterface {
   ///   }
   /// }
   /// ```
-  static InAppPurchasePlatformAddition? get instance => _instance;
-
-  /// Platform-specific plugins should set this with their own platform-specific
-  /// class that extends [InAppPurchasePlatformAddition] when they register themselves.
-  static set instance(InAppPurchasePlatformAddition? instance) {
-    _instance = instance;
-    if (_instance == null) {
-      return;
-    }
-    PlatformInterface.verifyToken(instance!, _token);
-    assert(instance.runtimeType is! InAppPurchasePlatform);
-  }
+  static InAppPurchasePlatformAddition? instance;
 }

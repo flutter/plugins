@@ -122,7 +122,6 @@ void main() {
   });
 
   group('$InAppPurchasePlatformAddition', () {
-
     setUp(() {
       InAppPurchasePlatformAddition.instance = null;
     });
@@ -131,11 +130,9 @@ void main() {
       expect(InAppPurchasePlatformAddition.instance, isNull);
     });
 
-    test('Cannot be implemented with `implements`', () {
-      expect(() {
-        InAppPurchasePlatformAddition.instance =
-            ImplementsInAppPurchasePlatformAddition();
-      }, throwsNoSuchMethodError);
+    test('Can be implemented.', () {
+      InAppPurchasePlatformAddition.instance =
+          ImplementsInAppPurchasePlatformAddition();
     });
 
     test('InAppPurchasePlatformAddition Can be extended', () {
