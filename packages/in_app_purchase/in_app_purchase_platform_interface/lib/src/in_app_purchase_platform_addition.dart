@@ -53,7 +53,7 @@ abstract class InAppPurchasePlatformAddition {
   /// ```
   static InAppPurchasePlatformAddition? get instance => _instance;
 
-  /// Sets the instance to a desired [InAppPurchasePlatformAddition] implementation.
+  /// Set the instance to a desired [InAppPurchasePlatformAddition] implementation.
   ///
   /// The `instance` must not be a type of [InAppPurchasePlatform].
   static set instance(InAppPurchasePlatformAddition? instance) {
