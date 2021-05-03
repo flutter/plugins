@@ -12,7 +12,9 @@ import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 /// a class that either extend or implements [InAppPurchasePlatformAddition]. Then replace
 /// the [InAppPurchasePlatformAddition.instance] with an instance of that class.
 ///
-/// We highly recommand against to have [InAppPurchasePlatformAddition] and [InAppPurchasePlatform]
+/// All the APIs added by [InAppPurchasePlatformAddition] implementers will be accessed from
+/// [InAppPurchasePlatformAdditionProvider.getPlatformAddition] by the client APPs.
+/// To avoid client APPs to directly call the [InAppPurchasePlatform] APIs, we highly recommand to not have [InAppPurchasePlatformAddition] and [InAppPurchasePlatform]
 /// being the same class.
 abstract class InAppPurchasePlatformAddition {
   /// The instance containing the platform-specific in_app_purchase
