@@ -84,6 +84,14 @@ class PublishPluginCommand extends PluginCommand {
       defaultsTo: false,
       negatable: true,
     );
+    argParser.addFlag(_yesOption,
+        help: 'Running the command without asking for Y/N inputs.\n'
+            'This command will add a `--force` flag to the `pub publish` command if it is not added with $_pubFlagsOption\n'
+            'It also skips the y/n inputs when pushing tags to remote.\n'
+            'If running this on CI, an environment variable named $_pubCredentialName must be set to a String that represents the pub credential JSON.\n'
+            'WARNING: Do not check in the content of pub credential JSON, it should only come from secure sources.',
+        defaultsTo: false,
+        negatable: true);
   }
 
   static const String _packageOption = 'package';
@@ -93,6 +101,9 @@ class PublishPluginCommand extends PluginCommand {
   static const String _remoteOption = 'remote';
   static const String _allChangedFlag = 'all-changed';
   static const String _dryRunFlag = 'dry-run';
+  static const String _yesOption = 'yes';
+
+  static const String _pubCredentialName = 'PUB_CREDENTIALS';
 
   // Version tags should follow <package-name>-v<semantic-version>. For example,
   // `flutter_plugin_tools-v0.0.24`.
@@ -267,7 +278,8 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     if (pubspec.version == null) {
-      _print('No version found. A package that intentionally has no version should be marked "publish_to: none"');
+      _print(
+          'No version found. A package that intentionally has no version should be marked "publish_to: none"');
       return _CheckNeedsReleaseResult.failure;
     }
 
@@ -408,24 +420,33 @@ Safe to ignore if the package is deleted in this commit.
         argResults[_pubFlagsOption] as List<String>;
     _print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
-    if (!(argResults[_dryRunFlag] as bool)) {
-      final io.Process publish = await processRunner.start(
-          'flutter', <String>['pub', 'publish'] + publishFlags,
-          workingDirectory: packageDir);
-      publish.stdout
-          .transform(utf8.decoder)
-          .listen((String data) => _print(data));
-      publish.stderr
-          .transform(utf8.decoder)
-          .listen((String data) => _print(data));
-      _stdinSubscription ??= _stdin
-          .transform(utf8.decoder)
-          .listen((String data) => publish.stdin.writeln(data));
-      final int result = await publish.exitCode;
-      if (result != 0) {
-        _print('Publish ${packageDir.basename} failed.');
-        return false;
-      }
+    if (argResults[_dryRunFlag] as bool) {
+      return true;
+    }
+
+    if (argResults[_yesOption] as bool) {
+      publishFlags.add('--force');
+    }
+    if (publishFlags.contains('--force')) {
+      _ensureValidPubCredential();
+    }
+
+    final io.Process publish = await processRunner.start(
+        'flutter', <String>['pub', 'publish'] + publishFlags,
+        workingDirectory: packageDir);
+    publish.stdout
+        .transform(utf8.decoder)
+        .listen((String data) => _print(data));
+    publish.stderr
+        .transform(utf8.decoder)
+        .listen((String data) => _print(data));
+    _stdinSubscription ??= _stdin
+        .transform(utf8.decoder)
+        .listen((String data) => publish.stdin.writeln(data));
+    final int result = await publish.exitCode;
+    if (result != 0) {
+      _print('Publish ${packageDir.basename} failed.');
+      return false;
     }
     return true;
   }
@@ -453,11 +474,13 @@ Safe to ignore if the package is deleted in this commit.
     @required String remoteUrl,
   }) async {
     assert(remote != null && tag != null && remoteUrl != null);
-    _print('Ready to push $tag to $remoteUrl (y/n)?');
-    final String input = _stdin.readLineSync();
-    if (input.toLowerCase() != 'y') {
-      _print('Tag push canceled.');
-      return false;
+    if (!(argResults[_yesOption] as bool)) {
+      _print('Ready to push $tag to $remoteUrl (y/n)?');
+      final String input = _stdin.readLineSync();
+      if (input.toLowerCase() != 'y') {
+        _print('Tag push canceled.');
+        return false;
+      }
     }
     if (!(argResults[_dryRunFlag] as bool)) {
       final io.ProcessResult result = await processRunner.run(
@@ -473,7 +496,42 @@ Safe to ignore if the package is deleted in this commit.
     }
     return true;
   }
+
+  void _ensureValidPubCredential() {
+    final File credentialFile = fileSystem.file(_credentialsPath);
+    if (credentialFile.existsSync() &&
+        credentialFile.readAsStringSync().isNotEmpty) {
+      return;
+    }
+    final String credential = io.Platform.environment[_pubCredentialName];
+    if (credential == null) {
+      printErrorAndExit(errorMessage: '''
+No pub credential available. Please check if `~/.pub-cache/credentials.json` is valid.
+If running this command on CI, you can set the pub credential content in the $_pubCredentialName environment variable.
+''');
+    }
+    credentialFile.openSync(mode: FileMode.writeOnlyAppend)
+      ..writeStringSync(credential)
+      ..closeSync();
+  }
 }
+
+/// The path in which pub expects to find its credentials file.
+final String _credentialsPath = () {
+  // This follows the same logic as pub:
+  // https://github.com/dart-lang/pub/blob/d99b0d58f4059d7bb4ac4616fd3d54ec00a2b5d4/lib/src/system_cache.dart#L34-L43
+  String cacheDir;
+  final String pubCache = io.Platform.environment['PUB_CACHE'];
+  if (pubCache != null) {
+    cacheDir = pubCache;
+  } else if (io.Platform.isWindows) {
+    final String appData = io.Platform.environment['APPDATA'];
+    cacheDir = p.join(appData, 'Pub', 'Cache');
+  } else {
+    cacheDir = p.join(io.Platform.environment['HOME'], '.pub-cache');
+  }
+  return p.join(cacheDir, 'credentials.json');
+}();
 
 enum _CheckNeedsReleaseResult {
   // The package needs to be released.

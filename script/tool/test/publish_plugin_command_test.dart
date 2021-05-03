@@ -202,6 +202,27 @@ void main() {
       expect(processRunner.mockPublishArgs[3], '--server=foo');
     });
 
+    test('--yes flag automatically adds --force to --pub-publish-flags',
+        () async {
+      processRunner.mockPublishCompleteCode = 0;
+      await commandRunner.run(<String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+        '--no-push-tags',
+        '--no-tag-release',
+        '--yes',
+        '--pub-publish-flags',
+        '--server=foo'
+      ]);
+
+      expect(processRunner.mockPublishArgs.length, 4);
+      expect(processRunner.mockPublishArgs[0], 'pub');
+      expect(processRunner.mockPublishArgs[1], 'publish');
+      expect(processRunner.mockPublishArgs[2], '--server=foo');
+      expect(processRunner.mockPublishArgs[3], '--force');
+    });
+
     test('throws if pub publish fails', () async {
       processRunner.mockPublishCompleteCode = 128;
       await expectLater(
@@ -302,6 +323,22 @@ void main() {
       mockStdin.readLineOutput = 'y';
       await commandRunner.run(<String>[
         'publish-plugin',
+        '--package',
+        testPluginName,
+      ]);
+
+      expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
+      expect(processRunner.pushTagsArgs[1], 'upstream');
+      expect(processRunner.pushTagsArgs[2], 'fake_package-v0.0.1');
+      expect(printedMessages.last, 'Done!');
+    });
+
+    test('does not ask for user input if the --yes flag is on', () async {
+      await gitDir.runCommand(<String>['tag', 'garbage']);
+      processRunner.mockPublishCompleteCode = 0;
+      await commandRunner.run(<String>[
+        'publish-plugin',
+        '--yes',
         '--package',
         testPluginName,
       ]);
