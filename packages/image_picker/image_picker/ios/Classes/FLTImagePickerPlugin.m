@@ -23,10 +23,6 @@
 
 @property(nonatomic) NSDictionary *arguments;
 
-@property(readonly) PHPickerViewController *_pickerViewController;
-
-@property(readonly) BOOL _phPickerFlag;
-
 @end
 
 static const int SOURCE_CAMERA = 0;
@@ -75,10 +71,11 @@ static const int SOURCE_GALLERY = 1;
   }
   config.filter = [PHPickerFilter imagesFilter];
 
-  __pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
-  __pickerViewController.delegate = self;
+  PHPickerViewController *pickerViewController =
+      [[PHPickerViewController alloc] initWithConfiguration:config];
+  pickerViewController.delegate = self;
 
-  [self checkPhotoAuthorization];
+  [self checkPhotoAuthorization:pickerViewController pickerFlag:YES];
 }
 
 - (void)pickImageWithUIImagePicker {
@@ -98,7 +95,7 @@ static const int SOURCE_GALLERY = 1;
       break;
     }
     case SOURCE_GALLERY:
-      [self checkPhotoAuthorization];
+      [self checkPhotoAuthorization:nil pickerFlag:NO];
       break;
     default:
       self.result([FlutterError errorWithCode:@"invalid_source"
@@ -117,7 +114,6 @@ static const int SOURCE_GALLERY = 1;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    __phPickerFlag = NO;
     self.result = result;
     _arguments = call.arguments;
     int imageSource = [[_arguments objectForKey:@"source"] intValue];
@@ -125,7 +121,6 @@ static const int SOURCE_GALLERY = 1;
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
-        __phPickerFlag = YES;
         [self pickImageWithPHPicker:true];
       } else {
         // UIImagePicker is used
@@ -166,7 +161,7 @@ static const int SOURCE_GALLERY = 1;
         [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
-        [self checkPhotoAuthorization];
+        [self checkPhotoAuthorization:nil pickerFlag:NO];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -236,19 +231,20 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-- (void)checkPhotoAuthorization {
+- (void)checkPhotoAuthorization:(PHPickerViewController *)pickerViewController
+                     pickerFlag:(BOOL)pickerFlag {
   PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         if (status == PHAuthorizationStatusAuthorized) {
           dispatch_async(dispatch_get_main_queue(), ^{
-            [self showPhotoLibrary];
+            [self showPhotoLibrary:pickerViewController pickerFlag:pickerFlag];
           });
         } else if (@available(iOS 14, *)) {
           if (status == PHAuthorizationStatusLimited) {
             dispatch_async(dispatch_get_main_queue(), ^{
-              [self showLimitedPhotoLibrary];
+              [self showLimitedPhotoLibrary:pickerViewController];
             });
           } else {
             [self errorNoPhotoAccess:status];
@@ -260,7 +256,7 @@ static const int SOURCE_GALLERY = 1;
       break;
     }
     case PHAuthorizationStatusAuthorized:
-      [self showPhotoLibrary];
+      [self showPhotoLibrary:pickerViewController pickerFlag:pickerFlag];
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
@@ -302,10 +298,11 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-- (void)showPhotoLibrary {
+- (void)showPhotoLibrary:(PHPickerViewController *)pickerViewController
+              pickerFlag:(BOOL)pickerFlag {
   // No need to check if SourceType is available. It always is.
-  if (__phPickerFlag) {
-    [[self viewControllerWithWindow:nil] presentViewController:__pickerViewController
+  if (pickerFlag) {
+    [[self viewControllerWithWindow:nil] presentViewController:pickerViewController
                                                       animated:YES
                                                     completion:nil];
   } else {
@@ -317,9 +314,9 @@ static const int SOURCE_GALLERY = 1;
 }
 
 // Limited access to the photo library
-- (void)showLimitedPhotoLibrary {
+- (void)showLimitedPhotoLibrary:(PHPickerViewController *)pickerViewController {
   [[PHPhotoLibrary sharedPhotoLibrary]
-      presentLimitedLibraryPickerFromViewController:__pickerViewController];
+      presentLimitedLibraryPickerFromViewController:pickerViewController];
 }
 
 - (void)picker:(PHPickerViewController *)picker
