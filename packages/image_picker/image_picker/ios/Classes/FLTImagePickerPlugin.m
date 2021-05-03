@@ -318,8 +318,7 @@ static const int SOURCE_GALLERY = 1;
       presentLimitedLibraryPickerFromViewController:_pickerViewController];
 }
 
-- (NSNumber *)getDesiredImageQuality {
-  NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+- (NSNumber *)getDesiredImageQuality:(NSNumber *)imageQuality {
   if (![imageQuality isKindOfClass:[NSNumber class]]) {
     imageQuality = @1;
   } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
@@ -333,47 +332,52 @@ static const int SOURCE_GALLERY = 1;
 - (void)picker:(PHPickerViewController *)picker
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
+  __weak typeof(self) weakSelf = self;
+
+  NSNumber *maxWidth = [weakSelf.arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [weakSelf.arguments objectForKey:@"maxHeight"];
+  NSNumber *imageQuality = [weakSelf.arguments objectForKey:@"imageQuality"];
+  NSNumber *desiredImageQuality = [weakSelf getDesiredImageQuality:imageQuality];
 
   for (PHPickerResult *result in results) {
-    __weak typeof(self) weakSelf = self;
-
     [result.itemProvider
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
             if (image != nil) {
-              NSNumber *maxWidth = [weakSelf.arguments objectForKey:@"maxWidth"];
-              NSNumber *maxHeight = [weakSelf.arguments objectForKey:@"maxHeight"];
-              NSNumber *imageQuality = [weakSelf getDesiredImageQuality];
+              __block UIImage *localImage = image;
+              dispatch_async(dispatch_get_main_queue(), ^{
+                if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                  localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                                           maxWidth:maxWidth
+                                                          maxHeight:maxHeight];
+                }
 
-              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                image = [FLTImagePickerImageUtil scaledImage:image
-                                                    maxWidth:maxWidth
-                                                   maxHeight:maxHeight];
-              }
+                PHAsset *originalAsset =
+                    [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
 
-              PHAsset *originalAsset =
-                  [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
-
-              if (!originalAsset) {
-                // Image picked without an original asset (e.g. User took a photo directly)
-                [weakSelf saveImageWithPickerInfo:nil image:image imageQuality:imageQuality];
-              } else {
-                [[PHImageManager defaultManager]
-                    requestImageDataForAsset:originalAsset
-                                     options:nil
-                               resultHandler:^(
-                                   NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                                 // maxWidth and maxHeight are used only for GIF images.
-                                 [weakSelf saveImageWithOriginalImageData:imageData
-                                                                    image:image
-                                                                 maxWidth:maxWidth
-                                                                maxHeight:maxHeight
-                                                             imageQuality:imageQuality];
-                               }];
-              }
+                if (!originalAsset) {
+                  // Image picked without an original asset (e.g. User took a photo directly)
+                  [weakSelf saveImageWithPickerInfo:nil
+                                              image:localImage
+                                       imageQuality:desiredImageQuality];
+                } else {
+                  [[PHImageManager defaultManager]
+                      requestImageDataForAsset:originalAsset
+                                       options:nil
+                                 resultHandler:^(
+                                     NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                                   // maxWidth and maxHeight are used only for GIF images.
+                                   [weakSelf saveImageWithOriginalImageData:imageData
+                                                                      image:localImage
+                                                                   maxWidth:maxWidth
+                                                                  maxHeight:maxHeight
+                                                               imageQuality:desiredImageQuality];
+                                 }];
+                }
+              });
             }
           }
         }];
@@ -425,7 +429,9 @@ static const int SOURCE_GALLERY = 1;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-    NSNumber *imageQuality = [weakSelf getDesiredImageQuality];
+    NSNumber *imageQuality = [weakSelf.arguments objectForKey:@"imageQuality"];
+
+    imageQuality = [weakSelf getDesiredImageQuality:imageQuality];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
       image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
