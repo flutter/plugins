@@ -319,28 +319,34 @@ static const int SOURCE_GALLERY = 1;
       presentLimitedLibraryPickerFromViewController:pickerViewController];
 }
 
+- (NSNumber *)getDesiredImageQuality {
+  NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+  if (![imageQuality isKindOfClass:[NSNumber class]]) {
+    imageQuality = @1;
+  } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
+    imageQuality = [NSNumber numberWithInt:1];
+  } else {
+    imageQuality = @([imageQuality floatValue] / 100);
+  }
+  return imageQuality;
+}
+
 - (void)picker:(PHPickerViewController *)picker
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
 
   for (PHPickerResult *result in results) {
+    __weak typeof(self) weakSelf = self;
+
     [result.itemProvider
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
             if (image != nil) {
-              NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-              NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
-              NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
-
-              if (![imageQuality isKindOfClass:[NSNumber class]]) {
-                imageQuality = @1;
-              } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
-                imageQuality = [NSNumber numberWithInt:1];
-              } else {
-                imageQuality = @([imageQuality floatValue] / 100);
-              }
+              NSNumber *maxWidth = [weakSelf.arguments objectForKey:@"maxWidth"];
+              NSNumber *maxHeight = [weakSelf.arguments objectForKey:@"maxHeight"];
+              NSNumber *imageQuality = [weakSelf getDesiredImageQuality];
 
               if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
                 image = [FLTImagePickerImageUtil scaledImage:image
@@ -353,9 +359,8 @@ static const int SOURCE_GALLERY = 1;
 
               if (!originalAsset) {
                 // Image picked without an original asset (e.g. User took a photo directly)
-                [self saveImageWithPickerInfo:nil image:image imageQuality:imageQuality];
+                [weakSelf saveImageWithPickerInfo:nil image:image imageQuality:imageQuality];
               } else {
-                __weak typeof(self) weakSelf = self;
                 [[PHImageManager defaultManager]
                     requestImageDataForAsset:originalAsset
                                      options:nil
@@ -417,18 +422,11 @@ static const int SOURCE_GALLERY = 1;
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
+    __weak typeof(self) weakSelf = self;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-    NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
-
-    if (![imageQuality isKindOfClass:[NSNumber class]]) {
-      imageQuality = @1;
-    } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
-      imageQuality = [NSNumber numberWithInt:1];
-    } else {
-      imageQuality = @([imageQuality floatValue] / 100);
-    }
+    NSNumber *imageQuality = [weakSelf getDesiredImageQuality];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
       image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
@@ -437,9 +435,8 @@ static const int SOURCE_GALLERY = 1;
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
-      [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
+      [weakSelf saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
     } else {
-      __weak typeof(self) weakSelf = self;
       [[PHImageManager defaultManager]
           requestImageDataForAsset:originalAsset
                            options:nil
