@@ -35,8 +35,6 @@ void main() {
   setUp(() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
 
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-
     const String debugMessage = 'dummy message';
     final BillingResponse responseCode = BillingResponse.ok;
     final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -45,16 +43,20 @@ void main() {
         name: startConnectionCall,
         value: buildBillingResultMap(expectedBillingResult));
     stubPlatform.addResponse(name: endConnectionCall, value: null);
-    iapAndroidPlatform = InAppPurchaseAndroidPlatform.instance;
+
+    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+    InAppPurchaseAndroidPlatform.registerPlatform();
+    iapAndroidPlatform =
+        InAppPurchasePlatform.instance as InAppPurchaseAndroidPlatform;
   });
 
   tearDown(() {
     stubPlatform.reset();
-    InAppPurchaseAndroidPlatform.reset();
   });
 
   group('connection management', () {
     test('connects on initialization', () {
+      //await iapAndroidPlatform.isAvailable();
       expect(stubPlatform.countPreviousCalls(startConnectionCall), equals(1));
     });
   });

@@ -36,18 +36,20 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
           .add(await _getPurchaseDetailsFromResult(resultWrapper));
     });
 
-    androidPlatformAddition = InAppPurchaseAndroidPlatformAddition(
-      billingClient,
-    );
-    InAppPurchasePlatformAddition.instance = androidPlatformAddition;
+    // Register [InAppPurchaseAndroidPlatformAddition].
+    InAppPurchasePlatformAddition.instance =
+        InAppPurchaseAndroidPlatformAddition(billingClient);
 
     _readyFuture = _connect();
     _purchaseUpdatedController = StreamController.broadcast();
   }
 
-  /// Returns the singleton instance of the [InAppPurchaseAndroidPlatform].
-  static InAppPurchaseAndroidPlatform get instance => _getOrCreateInstance();
-  static InAppPurchaseAndroidPlatform? _instance;
+  /// Registers this class as the default instance of [InAppPurchasePlatform].
+  static void registerPlatform() {
+    // Register the platform instance with the plugin platform
+    // interface.
+    InAppPurchasePlatform.setInstance(InAppPurchaseAndroidPlatform._());
+  }
 
   static late StreamController<List<PurchaseDetails>>
       _purchaseUpdatedController;
@@ -61,13 +63,6 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   /// This field should not be used out of test code.
   @visibleForTesting
   late final BillingClient billingClient;
-
-  /// The [InAppPurchaseAndroidPlatformAddition] containing Android specific
-  /// features which don't fit in the platform agnostic interface.
-  ///
-  /// This field should not be used out of test code.
-  @visibleForTesting
-  late final InAppPurchaseAndroidPlatformAddition androidPlatformAddition;
 
   late Future<void> _readyFuture;
   static Set<String> _productIdsToConsume = Set<String>();
@@ -224,22 +219,6 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     _purchaseUpdatedController.add(pastPurchases);
   }
 
-  /// Resets the connection instance.
-  ///
-  /// The next call to [instance] will create a new instance. Should only be
-  /// used in tests.
-  @visibleForTesting
-  static void reset() => _instance = null;
-
-  static InAppPurchaseAndroidPlatform _getOrCreateInstance() {
-    if (_instance != null) {
-      return _instance!;
-    }
-
-    _instance = InAppPurchaseAndroidPlatform._();
-    return _instance!;
-  }
-
   Future<void> _connect() =>
       billingClient.startConnection(onBillingServiceDisconnected: () {});
 
@@ -251,7 +230,9 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     }
 
     final BillingResultWrapper billingResult =
-        await androidPlatformAddition.consumePurchase(purchaseDetails);
+        await (InAppPurchasePlatformAddition.instance
+                as InAppPurchaseAndroidPlatformAddition)
+            .consumePurchase(purchaseDetails);
     final BillingResponse consumedResponse = billingResult.responseCode;
     if (consumedResponse != BillingResponse.ok) {
       purchaseDetails.status = PurchaseStatus.error;
