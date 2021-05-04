@@ -130,22 +130,20 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
 
   @override
   Future<bool> buyNonConsumable({required PurchaseParam purchaseParam}) async {
-    if (!(purchaseParam is GooglePlayPurchaseParam)) {
-      throw ArgumentError(
-        'On Android, the `purchaseParam` should always be of type `GooglePlayPurchaseParam`.',
-      );
+    ChangeSubscriptionParam? changeSubscriptionParam;
+
+    if (purchaseParam is GooglePlayPurchaseParam) {
+      changeSubscriptionParam = purchaseParam.changeSubscriptionParam;
     }
 
     BillingResultWrapper billingResultWrapper =
         await billingClient.launchBillingFlow(
             sku: purchaseParam.productDetails.id,
             accountId: purchaseParam.applicationUserName,
-            oldSku: purchaseParam
-                .changeSubscriptionParam?.oldPurchaseDetails.productID,
-            purchaseToken: purchaseParam.changeSubscriptionParam
+            oldSku: changeSubscriptionParam?.oldPurchaseDetails.productID,
+            purchaseToken: changeSubscriptionParam
                 ?.oldPurchaseDetails.verificationData.serverVerificationData,
-            prorationMode:
-                purchaseParam.changeSubscriptionParam?.prorationMode);
+            prorationMode: changeSubscriptionParam?.prorationMode);
     return billingResultWrapper.responseCode == BillingResponse.ok;
   }
 

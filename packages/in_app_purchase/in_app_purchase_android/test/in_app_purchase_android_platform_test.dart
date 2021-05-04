@@ -221,7 +221,7 @@ void main() {
 
       late StreamSubscription subscription;
       subscription = stream.listen((purchaseDetailsList) {
-        if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
+        if (purchaseDetailsList.first.status == PurchaseStatus.restored) {
           completer.complete(purchaseDetailsList);
           subscription.cancel();
         }
@@ -260,7 +260,7 @@ void main() {
         expect(purchase.verificationData.source, kIAPSource);
         expect(purchase.transactionDate, dummyPurchase.purchaseTime.toString());
         expect(purchase.billingClientPurchase, dummyPurchase);
-        expect(purchase.status, PurchaseStatus.purchased);
+        expect(purchase.status, PurchaseStatus.restored);
       });
     });
   });
@@ -270,23 +270,6 @@ void main() {
         'BillingClient#launchBillingFlow(Activity, BillingFlowParams)';
     const String consumeMethodName =
         'BillingClient#consumeAsync(String, ConsumeResponseListener)';
-
-    test('buy non consumable, throw argument exception', () {
-      final PurchaseParam purchaseParam = PurchaseParam(
-          productDetails:
-              GooglePlayProductDetails.fromSkuDetails(dummySkuDetails),
-          applicationUserName: "hashedAccountId");
-      expect(
-        () => iapAndroidPlatform.buyNonConsumable(purchaseParam: purchaseParam),
-        throwsA(
-          isA<ArgumentError>().having(
-            (e) => e.message,
-            'message',
-            'On Android, the `purchaseParam` should always be of type `GooglePlayPurchaseParam`.',
-          ),
-        ),
-      );
-    });
 
     test('buy non consumable, serializes and deserializes data', () async {
       final SkuDetailsWrapper skuDetails = dummySkuDetails;
