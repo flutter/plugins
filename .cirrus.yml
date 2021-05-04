@@ -48,11 +48,7 @@ task:
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
-        - if [[ "$CIRRUS_BRANCH" == "master" ]]; then
-        -   $PLUGIN_TOOLS version-check
-        - else
-        -   $PLUGIN_TOOLS version-check --run-on-changed-packages
-        - fi
+        - ./script/incremental_build.sh version-check
         - ./script/check_publish.sh
     - name: format
       format_script: ./script/incremental_build.sh format --fail-on-change

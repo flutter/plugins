@@ -203,6 +203,7 @@ abstract class PluginCommand extends Command<void> {
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
             'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'If no plugins have changed, the command runs on all plugins.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
             'See $_kBaseSha if a custom base is needed to determine the diff.');
     argParser.addOption(_kBaseSha,
