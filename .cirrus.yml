@@ -49,7 +49,7 @@ task:
     - name: publishable
       script:
         - ./script/incremental_build.sh version-check
-        - ./script/check_publish.sh
+        - ./script/incremental_build.sh publish-check
     - name: format
       format_script: ./script/incremental_build.sh format --fail-on-change
       license_script:
