@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
+// ignore: avoid_classes_with_only_static_members
 /// The interface that platform implementations must implement when they want to
 /// provide platform-specific in_app_purchase features.
 ///
@@ -57,7 +57,7 @@ abstract class InAppPurchasePlatformAddition {
   ///
   /// The `instance` must not be a type of [InAppPurchasePlatform].
   static set instance(InAppPurchasePlatformAddition? instance) {
-    assert(!(instance is InAppPurchasePlatform));
+    assert(instance is! InAppPurchasePlatform);
     _instance = instance;
   }
 }
