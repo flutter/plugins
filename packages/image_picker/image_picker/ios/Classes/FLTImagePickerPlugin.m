@@ -332,10 +332,10 @@ static const int SOURCE_GALLERY = 1;
   [picker dismissViewControllerAnimated:YES completion:nil];
   __weak typeof(self) weakSelf = self;
 
-  NSNumber *maxWidth = [weakSelf.arguments objectForKey:@"maxWidth"];
-  NSNumber *maxHeight = [weakSelf.arguments objectForKey:@"maxHeight"];
-  NSNumber *imageQuality = [weakSelf.arguments objectForKey:@"imageQuality"];
-  NSNumber *desiredImageQuality = [weakSelf getDesiredImageQuality:imageQuality];
+  NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
+  NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+  NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
   for (PHPickerResult *result in results) {
     [result.itemProvider
@@ -427,9 +427,8 @@ static const int SOURCE_GALLERY = 1;
 
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-    NSNumber *imageQuality = [weakSelf.arguments objectForKey:@"imageQuality"];
-
-    imageQuality = [weakSelf getDesiredImageQuality:imageQuality];
+    NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+    NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
       image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
@@ -438,7 +437,7 @@ static const int SOURCE_GALLERY = 1;
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
-      [weakSelf saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
+      [weakSelf saveImageWithPickerInfo:info image:image imageQuality:desiredImageQuality];
     } else {
       [[PHImageManager defaultManager]
           requestImageDataForAsset:originalAsset
@@ -450,7 +449,7 @@ static const int SOURCE_GALLERY = 1;
                                                           image:image
                                                        maxWidth:maxWidth
                                                       maxHeight:maxHeight
-                                                   imageQuality:imageQuality];
+                                                   imageQuality:desiredImageQuality];
                      }];
     }
   }
