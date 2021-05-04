@@ -131,7 +131,7 @@ void main() {
     });
 
     test(
-        '--log-status: Log no_publish at the end if there are no packages need to be published. ',
+        '--machine: Log no_publish at the end if there are no packages need to be published. ',
         () async {
       const Map<String, dynamic> httpResponseA = <String, dynamic>{
         'name': 'a',
@@ -151,8 +151,6 @@ void main() {
       };
 
       final MockClient mockClient = MockClient((http.Request request) async {
-        print('url ${request.url}');
-        print(request.url.pathSegments.last);
         if (request.url.pathSegments.last == 'no_publish_a.json') {
           return http.Response(json.encode(httpResponseA), 200);
         } else if (request.url.pathSegments.last == 'no_publish_b.json') {
@@ -185,13 +183,13 @@ void main() {
       );
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['publish-check', '--log-status']);
+          runner, <String>['publish-check', '--machine']);
 
-      expect(output.last, 'no-publish');
+      expect(output[0], 'no-publish');
     });
 
     test(
-        '--log-status: Log needs-publish at the end if there is at least 1 plugin needs to be published. ',
+        '--machine: Log needs-publish at the end if there is at least 1 plugin needs to be published. ',
         () async {
       const Map<String, dynamic> httpResponseA = <String, dynamic>{
         'name': 'a',
@@ -210,8 +208,6 @@ void main() {
       };
 
       final MockClient mockClient = MockClient((http.Request request) async {
-        print('url ${request.url}');
-        print(request.url.pathSegments.last);
         if (request.url.pathSegments.last == 'no_publish_a.json') {
           return http.Response(json.encode(httpResponseA), 200);
         } else if (request.url.pathSegments.last == 'no_publish_b.json') {
@@ -244,13 +240,13 @@ void main() {
       );
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['publish-check', '--log-status']);
+          runner, <String>['publish-check', '--machine']);
 
-      expect(output.last, 'needs-publish');
+      expect(output[0], 'needs-publish');
     });
 
     test(
-        '--log-status: Log error at the end if there is at least 1 plugin contains error.',
+        '--machine: Log error at the end if there is at least 1 plugin contains error.',
         () async {
       const Map<String, dynamic> httpResponseA = <String, dynamic>{
         'name': 'a',
@@ -305,13 +301,13 @@ void main() {
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['publish-check', '--log-status'],
+          runner, <String>['publish-check', '--machine'],
           errorHandler: (Error error) {
         expect(error, isA<ToolExit>());
         hasError = true;
       });
       expect(hasError, isTrue);
-      expect(output.last, 'error');
+      expect(output[0], 'error');
     });
   });
 }

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:colorize/colorize.dart';
@@ -29,22 +30,27 @@ class PublishCheckCommand extends PluginCommand {
           'the SDK constraint is a pre-release version, is ignored.',
       defaultsTo: false,
     );
-    argParser.addFlag(_logStatusFlag,
-        help:
-            'Logs the check-publish final status to a defined string as the last line of the command output.\n'
+    argParser.addFlag(_machineFlag,
+        help: 'Only prints a final status as a defined string.\n'
             'The possible values are:\n'
-            '    $_resultNeedsPublish: There is at least one package need to be published. They also passed all publish checks. \n'
-            '    $_resultNoPublish: There are no packages need to be published. Either no pubspec change detected or the version has already been published. \n'
+            '    $_resultNeedsPublish: There is at least one package need to be published. They also passed all publish checks.\n'
+            '    $_resultNoPublish: There are no packages needs to be published. Either no pubspec change detected or all versions have already been published.\n'
             '    $_resultError: Some error has occurred.',
         defaultsTo: false,
         negatable: true);
   }
 
   static const String _allowPrereleaseFlag = 'allow-pre-release';
-  static const String _logStatusFlag = 'log-status';
+  static const String _machineFlag = 'machine';
   static const String _resultNeedsPublish = 'needs-publish';
   static const String _resultNoPublish = 'no-publish';
   static const String _resultError = 'error';
+
+  final List<String> _validStatus = <String>[
+    _resultNeedsPublish,
+    _resultNoPublish,
+    _resultError
+  ];
 
   @override
   final String name = 'publish-check';
@@ -58,6 +64,19 @@ class PublishCheckCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    final ZoneSpecification logSwitchSpecification = ZoneSpecification(
+        print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
+      final bool logMachineMessage = argResults[_machineFlag] as bool;
+      final bool isMachineMessage = _validStatus.contains(message);
+      if (logMachineMessage == isMachineMessage) {
+        parent.print(zone, message);
+      }
+    });
+
+    await runZoned(_runCommand, zoneSpecification: logSwitchSpecification);
+  }
+
+  Future<void> _runCommand() async {
     final List<Directory> failedPackages = <Directory>[];
 
     String resultToLog = _resultNoPublish;
@@ -94,7 +113,7 @@ class PublishCheckCommand extends PluginCommand {
     }
 
     // This has to be last output of this command because it is promised in the help section.
-    if (argResults[_logStatusFlag] as bool) {
+    if (argResults[_machineFlag] as bool) {
       print(resultToLog);
     }
     if (failedPackages.isNotEmpty) {
@@ -127,8 +146,11 @@ class PublishCheckCommand extends PluginCommand {
     final Completer<void> stdOutCompleter = Completer<void>();
     process.stdout.listen(
       (List<int> event) {
-        io.stdout.add(event);
-        outputBuffer.write(String.fromCharCodes(event));
+        final String output = String.fromCharCodes(event);
+        if (output.isNotEmpty) {
+          print(output);
+          outputBuffer.write(output);
+        }
       },
       onDone: () => stdOutCompleter.complete(),
     );
@@ -136,8 +158,11 @@ class PublishCheckCommand extends PluginCommand {
     final Completer<void> stdInCompleter = Completer<void>();
     process.stderr.listen(
       (List<int> event) {
-        io.stderr.add(event);
-        outputBuffer.write(String.fromCharCodes(event));
+        final String output = String.fromCharCodes(event);
+        if (output.isNotEmpty) {
+          print(Colorize(output)..red());
+          outputBuffer.write(output);
+        }
       },
       onDone: () => stdInCompleter.complete(),
     );
@@ -197,9 +222,24 @@ class PublishCheckCommand extends PluginCommand {
         package: packageName, httpClient: httpClient ?? http.Client());
     final PubVersionFinderResponse pubVersionFinderResponse =
         await pubVersionFinder.getPackageVersion();
+    bool published;
+    switch (pubVersionFinderResponse.result) {
+      case PubVersionFinderResult.success:
+        published = pubVersionFinderResponse.versions.contains(version);
+        break;
+      case PubVersionFinderResult.fail:
+        printErrorAndExit(errorMessage: '''
+Error fetching version on pub for $packageName.
+HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
+HTTP response: ${pubVersionFinderResponse.httpResponse.body}
+''');
+        break;
+      case PubVersionFinderResult.noPackageFound:
+        published = false;
+        break;
+    }
     pubVersionFinder.httpClient.close();
-    return pubVersionFinderResponse.result == PubVersionFinderResult.success &&
-        pubVersionFinderResponse.versions.contains(version);
+    return published;
   }
 }
 
