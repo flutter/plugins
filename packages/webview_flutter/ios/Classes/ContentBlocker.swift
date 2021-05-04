@@ -19,8 +19,9 @@ enum ContentBlockingRuleType: String {
     case hosts
 }
 
-let ACTIVE = 1
-let INACTIVE = 0
+private let ACTIVE = 1
+private let INACTIVE = 0
+private let DEFAULT_WHITELISTING_KEY = "*"
 
 protocol ContentBlockerApi {
     func setupContentBlocking(rules: [String: [String: Any]], webview: FLTWKWebView, completion: @escaping () -> Void)
@@ -194,12 +195,12 @@ class WKContentRuleBlocker: ContentBlockerApi {
     }
 
     fileprivate func configureWebview(key: String, webview: FLTWKWebView) {
-        var shouldAdd = true
-        let host = webview.url?.host
-        if host != nil && whiteListing[host!]?[key] == ACTIVE {
-            print("Host \(host!) has active \(key) feature.")
+        var shouldAdd = shouldAddByDefault(key: key)
+        if let host = webview.url?.host, whiteListing[host]?[key] == ACTIVE {
+            print("Host \(host) has active \(key) feature.")
             shouldAdd = false
         }
+
         if shouldAdd {
             addContentBlocker(key: key, webview: webview)
             print("Loaded \(key) content rule set")
@@ -207,6 +208,11 @@ class WKContentRuleBlocker: ContentBlockerApi {
             removeContentBlocker(key: key, webview: webview)
             print("Removed \(key) content rule set")
         }
+    }
+
+    fileprivate func shouldAddByDefault(key: String) -> Bool {
+        guard let entry = whiteListing[DEFAULT_WHITELISTING_KEY] else { return true }
+        return entry[key] != ACTIVE
     }
 
     fileprivate func addContentBlocker(key: String, webview: FLTWKWebView) {
