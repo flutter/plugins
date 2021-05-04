@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 /// Thrown to indicate that an action failed while interacting with the
 /// in_app_purchase plugin.
 class InAppPurchaseException implements Exception {

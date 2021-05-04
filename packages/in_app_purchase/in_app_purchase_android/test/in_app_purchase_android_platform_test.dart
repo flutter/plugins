@@ -11,6 +11,7 @@ import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_android/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase_android/src/channel.dart';
+import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
 import 'package:in_app_purchase_android/src/types/in_app_purchase_exception.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
@@ -33,6 +34,9 @@ void main() {
 
   setUp(() {
     widgets.WidgetsFlutterBinding.ensureInitialized();
+
+    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+
     const String debugMessage = 'dummy message';
     final BillingResponse responseCode = BillingResponse.ok;
     final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
@@ -41,7 +45,6 @@ void main() {
         name: startConnectionCall,
         value: buildBillingResultMap(expectedBillingResult));
     stubPlatform.addResponse(name: endConnectionCall, value: null);
-    InAppPurchaseAndroidPlatform.enablePendingPurchases();
     iapAndroidPlatform = InAppPurchaseAndroidPlatform.instance;
   });
 
@@ -628,26 +631,6 @@ void main() {
       await iapAndroidPlatform.buyConsumable(
           purchaseParam: purchaseParam, autoConsume: false);
       expect(null, await consumeCompleter.future);
-    });
-  });
-
-  group('consume purchases', () {
-    const String consumeMethodName =
-        'BillingClient#consumeAsync(String, ConsumeResponseListener)';
-    test('consume purchase async success', () async {
-      final BillingResponse expectedCode = BillingResponse.ok;
-      const String debugMessage = 'dummy message';
-      final BillingResultWrapper expectedBillingResult = BillingResultWrapper(
-          responseCode: expectedCode, debugMessage: debugMessage);
-      stubPlatform.addResponse(
-        name: consumeMethodName,
-        value: buildBillingResultMap(expectedBillingResult),
-      );
-      final BillingResultWrapper billingResultWrapper =
-          await iapAndroidPlatform.consumePurchase(
-              GooglePlayPurchaseDetails.fromPurchase(dummyPurchase));
-
-      expect(billingResultWrapper, equals(expectedBillingResult));
     });
   });
 
