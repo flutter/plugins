@@ -42,9 +42,8 @@ class MissingPlatformDirectoryException implements Exception {
 }
 
 PathProviderPlatform get _platform {
-  // This is to manually endorse Dart implementations until automatic
-  // registration of Dart plugins is implemented. For details see
-  // https://github.com/flutter/flutter/issues/52267.
+  // TODO(egarciad): Remove once auto registration lands on Flutter stable.
+  // https://github.com/flutter/flutter/issues/81421.
   if (_manualDartRegistrationNeeded) {
     // Only do the initial registration if it hasn't already been overridden
     // with a non-default instance.
