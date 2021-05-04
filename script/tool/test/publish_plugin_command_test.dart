@@ -208,7 +208,7 @@ void main() {
       expect(processRunner.mockPublishArgs[3], '--server=foo');
     });
 
-    test('--yes flag automatically adds --force to --pub-publish-flags',
+    test('--skip-confirmation flag automatically adds --force to --pub-publish-flags',
         () async {
       processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
@@ -218,7 +218,7 @@ void main() {
         testPluginName,
         '--no-push-tags',
         '--no-tag-release',
-        '--yes',
+        '--skip-confirmation',
         '--pub-publish-flags',
         '--server=foo'
       ]);
@@ -340,13 +340,13 @@ void main() {
       expect(printedMessages.last, 'Done!');
     });
 
-    test('does not ask for user input if the --yes flag is on', () async {
+    test('does not ask for user input if the --skip-confirmation flag is on', () async {
       await gitDir.runCommand(<String>['tag', 'garbage']);
       processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
       await commandRunner.run(<String>[
         'publish-plugin',
-        '--yes',
+        '--skip-confirmation',
         '--package',
         testPluginName,
       ]);
