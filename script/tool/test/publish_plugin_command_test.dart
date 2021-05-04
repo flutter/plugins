@@ -29,13 +29,20 @@ void main() {
   TestProcessRunner processRunner;
   CommandRunner<void> commandRunner;
   MockStdin mockStdin;
+  const FileSystem fileSystem = LocalFileSystem();
+
+  void _createMockCredentialFile() {
+    final String credentialPath = PublishPluginCommand.getCredentialPath();
+    fileSystem.file(credentialPath)
+      ..createSync(recursive: true)
+      ..writeAsStringSync('some credential');
+  }
 
   setUp(() async {
     // This test uses a local file system instead of an in memory one throughout
     // so that git actually works. In setup we initialize a mono repo of plugins
     // with one package and commit everything to Git.
-    parentDir = const LocalFileSystem()
-        .systemTempDirectory
+    parentDir = fileSystem.systemTempDirectory
         .createTempSync('publish_plugin_command_test-');
     initializeFakePackages(parentDir: parentDir);
     pluginDir = createFakePlugin(testPluginName, withSingleExample: false);
@@ -49,8 +56,7 @@ void main() {
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(
-          mockPackagesDir, mockPackagesDir.fileSystem,
+      ..addCommand(PublishPluginCommand(mockPackagesDir, fileSystem,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
@@ -205,6 +211,7 @@ void main() {
     test('--yes flag automatically adds --force to --pub-publish-flags',
         () async {
       processRunner.mockPublishCompleteCode = 0;
+      _createMockCredentialFile();
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
@@ -336,6 +343,7 @@ void main() {
     test('does not ask for user input if the --yes flag is on', () async {
       await gitDir.runCommand(<String>['tag', 'garbage']);
       processRunner.mockPublishCompleteCode = 0;
+      _createMockCredentialFile();
       await commandRunner.run(<String>[
         'publish-plugin',
         '--yes',

@@ -84,12 +84,10 @@ class PublishPluginCommand extends PluginCommand {
       defaultsTo: false,
       negatable: true,
     );
-    argParser.addFlag(_yesOption,
-        help: 'Running the command without asking for Y/N inputs.\n'
+    argParser.addFlag(_skipConfirmationFlag,
+        help: 'Run the command without asking for Y/N inputs.\n'
             'This command will add a `--force` flag to the `pub publish` command if it is not added with $_pubFlagsOption\n'
-            'It also skips the y/n inputs when pushing tags to remote.\n'
-            'If running this on CI, an environment variable named $_pubCredentialName must be set to a String that represents the pub credential JSON.\n'
-            'WARNING: Do not check in the content of pub credential JSON, it should only come from secure sources.',
+            'It also skips the y/n inputs when pushing tags to remote.\n',
         defaultsTo: false,
         negatable: true);
   }
@@ -101,7 +99,7 @@ class PublishPluginCommand extends PluginCommand {
   static const String _remoteOption = 'remote';
   static const String _allChangedFlag = 'all-changed';
   static const String _dryRunFlag = 'dry-run';
-  static const String _yesOption = 'yes';
+  static const String _skipConfirmationFlag = 'skip-confirmation';
 
   static const String _pubCredentialName = 'PUB_CREDENTIALS';
 
@@ -114,7 +112,9 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   final String description =
-      'Attempts to publish the given plugin and tag its release on GitHub.';
+      'Attempts to publish the given plugin and tag its release on GitHub.\n'
+      'If running this on CI, an environment variable named $_pubCredentialName must be set to a String that represents the pub credential JSON.\n'
+      'WARNING: Do not check in the content of pub credential JSON, it should only come from secure sources.';
 
   final Print _print;
   final io.Stdin _stdin;
@@ -424,7 +424,7 @@ Safe to ignore if the package is deleted in this commit.
       return true;
     }
 
-    if (argResults[_yesOption] as bool) {
+    if (argResults[_skipConfirmationFlag] as bool) {
       publishFlags.add('--force');
     }
     if (publishFlags.contains('--force')) {
@@ -474,7 +474,7 @@ Safe to ignore if the package is deleted in this commit.
     @required String remoteUrl,
   }) async {
     assert(remote != null && tag != null && remoteUrl != null);
-    if (!(argResults[_yesOption] as bool)) {
+    if (!(argResults[_skipConfirmationFlag] as bool)) {
       _print('Ready to push $tag to $remoteUrl (y/n)?');
       final String input = _stdin.readLineSync();
       if (input.toLowerCase() != 'y') {
@@ -514,6 +514,12 @@ If running this command on CI, you can set the pub credential content in the $_p
       ..writeStringSync(credential)
       ..closeSync();
   }
+
+  /// Returns the correct path where the pub credential is stored.
+  @visibleForTesting
+  static String getCredentialPath() {
+    return _credentialsPath;
+  }
 }
 
 /// The path in which pub expects to find its credentials file.
@@ -522,6 +528,7 @@ final String _credentialsPath = () {
   // https://github.com/dart-lang/pub/blob/d99b0d58f4059d7bb4ac4616fd3d54ec00a2b5d4/lib/src/system_cache.dart#L34-L43
   String cacheDir;
   final String pubCache = io.Platform.environment['PUB_CACHE'];
+  print(pubCache);
   if (pubCache != null) {
     cacheDir = pubCache;
   } else if (io.Platform.isWindows) {
