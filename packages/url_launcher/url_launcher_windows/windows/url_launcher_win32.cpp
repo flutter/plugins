@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 #include <windows.h>
 
+#include <sstream>
 #include <string>
 
 #include "include/url_launcher_windows/url_launcher_plugin.h"
