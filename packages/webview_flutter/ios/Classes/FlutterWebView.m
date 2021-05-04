@@ -153,6 +153,11 @@
       }
     };
 
+    if ([args[@"whiteListing"] isKindOfClass:[NSDictionary class]]) {
+      NSDictionary *rules = args[@"whiteListing"];
+      [ContentBlocker.shared updateWhiteListingWithRules:rules];
+    }
+
     if ([args[@"blockingRules"] isKindOfClass:[NSDictionary class]]) {
       NSDictionary *rules = args[@"blockingRules"];
       [ContentBlocker.shared setupContentBlockingWithRules:rules webview:_webView completion:loadBlock];
@@ -214,6 +219,8 @@
     [self getScrollY:call result:result];
   } else if ([[call method] isEqualToString:@"takeScreenshot"]) {
     [self takeScreenshot:call result:result];
+  } else if ([[call method] isEqualToString:@"refreshWhiteListing"]) {
+    [self onRefreshWhiteListing:call result:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -226,6 +233,14 @@
     return;
   }
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
+}
+
+- (void)onRefreshWhiteListing:(FlutterMethodCall*)call result:(FlutterResult)result {
+    [ContentBlocker.shared updateWhiteListingWithRules:call.arguments];
+    [ContentBlocker.shared onUrlChangedWithWebview:_webView];
+    [_webView reload];
+    result(nil);
+    return;
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -503,6 +518,7 @@
   if (!nsUrl) {
     return false;
   }
+  [ContentBlocker.shared onUrlChangedWithWebview:_webView];
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
   [request setAllHTTPHeaderFields:headers];
   [_webView loadRequest:request];

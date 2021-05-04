@@ -257,6 +257,7 @@ class WebView extends StatefulWidget {
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
     this.blockingRules,
+    this.whiteListing,
     this.tabId,
     this.maxCachedTabs = 0,
   })  : assert(javascriptMode != null),
@@ -460,6 +461,22 @@ class WebView extends StatefulWidget {
   ///  - json the content blocking rules for iOS
   final Map<String, BlockingRule>? blockingRules;
 
+  /// Provides a Map of whitelisted pages to features that are either white or black listed.
+  /// Format:
+  /// ```
+  /// {
+  ///   "wikipedia.org" : {
+  ///     "ads" : 0
+  ///     "tracking" : 1,
+  ///     ...
+  ///   }
+  /// }
+  /// Where the domain can only consist of domain name, TLD and subdomains.
+  /// The features are arbitary and correspond to the [unique_id] of the [blockingRules].
+  /// Features are describes positive and 0 means inactive and 1 is active.
+  /// So `ads : 0` means that ads will be not blocked.
+  final Map<String, Map<String, int>>? whiteListing;
+
   /// Used for restoring previous WebView state.
   final String? tabId;
 
@@ -533,6 +550,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
     blockingRules:
         widget.blockingRules?.map((key, value) => MapEntry(key, value.rule)),
+    whiteListing: widget.whiteListing,
     tabId: widget.tabId,
     maxCachedTabs: widget.maxCachedTabs,
   );
@@ -765,6 +783,12 @@ class WebViewController {
   /// Reloads the current URL.
   Future<void> reload() {
     return _webViewPlatformController.reload();
+  }
+
+  /// Refresh with new whiteLising.
+  /// This updates the whitelisting and reloads content if needed.
+  Future<void> refreshWhiteListing(Map<String, Map<String, int>> whiteListing) {
+    return _webViewPlatformController.refreshWhiteListing(whiteListing);
   }
 
   /// Clears all caches used by the [WebView].

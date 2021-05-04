@@ -19,8 +19,15 @@ enum ContentBlockingRuleType: String {
     case hosts
 }
 
+let ACTIVE = 1
+let INACTIVE = 0
+
 protocol ContentBlockerApi {
     func setupContentBlocking(rules: [String: [String: Any]], webview: FLTWKWebView, completion: @escaping () -> Void)
+
+    func updateWhiteListing(rules: [String: [String: Any]])
+
+    func onUrlChanged(webview: FLTWKWebView)
 }
 
 @objc public class ContentBlocker: NSObject, ContentBlockerApi {
@@ -37,21 +44,61 @@ protocol ContentBlockerApi {
         }
     }
 
+    @objc public func updateWhiteListing(rules: [String: [String: Any]]) {
+        instance.updateWhiteListing(rules: rules)
+    }
+
     @objc public func setupContentBlocking(rules: [String: [String: Any]], webview: FLTWKWebView, completion: @escaping () -> Void) {
         instance.setupContentBlocking(rules: rules, webview: webview, completion: completion)
+    }
+
+    @objc public func onUrlChanged(webview: FLTWKWebView) {
+        instance.onUrlChanged(webview: webview)
     }
 }
 
 class ContentBlockerNotAvailable: ContentBlockerApi {
+    func updateWhiteListing(rules: [String: [String: Any]]) {
+        print("Content Blocking is not available for iOS prior 11")
+    }
+
     func setupContentBlocking(rules: [String: [String: Any]], webview: FLTWKWebView, completion: @escaping () -> Void) {
         print("Content Blocking is not available for iOS prior 11")
         completion()
+    }
+
+    func onUrlChanged(webview: FLTWKWebView) {
+        print("Content Blocking is not available for iOS prior 11")
     }
 }
 
 @available(iOS 11.0, *)
 class WKContentRuleBlocker: ContentBlockerApi {
     private var compiledLists = [String: WKContentRuleList]()
+    private var whiteListing = [String: [String: Int]]()
+
+    func updateWhiteListing(rules: [String: [String: Any]]) {
+        var tempDict = [String: [String: Int]]()
+        rules.forEach { (key: String, value: [String: Any]) in
+            tempDict[key] = value.reduce([String: Int]()) { (dict, entry) -> [String: Int] in
+                var dict = dict
+                let value = entry.value as? Int ?? -1
+                if value == -1 {
+                    logOrFatal(message: "Could not convert whitelist map value: \(value). Should be an Int.")
+                }
+                dict[entry.key] = value
+                return dict
+            }
+        }
+        whiteListing = tempDict
+    }
+
+    @objc public func onUrlChanged(webview: FLTWKWebView) {
+        for list in compiledLists.keys {
+            configureWebview(key: list, webview: webview)
+        }
+    }
+
 
     func setupContentBlocking(rules: [String: [String: Any]], webview: FLTWKWebView, completion: @escaping () -> Void) {
         var loadingResults = [String: Bool]()
@@ -97,9 +144,8 @@ class WKContentRuleBlocker: ContentBlockerApi {
 
         group.notify(queue: .main) {
             for res in loadingResults {
-                self.addContentBlocker(key: res.key, webview: webview)
+                self.configureWebview(key: res.key, webview: webview)
             }
-            print("Loaded \(loadingResults.count) content rule sets")
             completion()
         }
     }
@@ -136,7 +182,7 @@ class WKContentRuleBlocker: ContentBlockerApi {
                                     completionHandler: { list, error in
 
                                         if let error = error {
-                                            print("Couldn't compile the content rules \(error.localizedDescription)")
+                                            print("Couldn't compile the content rules \(key) : \(error.localizedDescription)")
                                             completion(.errorCanNotCompileRules)
                                             return
                                         }
@@ -145,6 +191,22 @@ class WKContentRuleBlocker: ContentBlockerApi {
                                         completion(.success)
                                     }
             )
+    }
+
+    fileprivate func configureWebview(key: String, webview: FLTWKWebView) {
+        var shouldAdd = true
+        let host = webview.url?.host
+        if host != nil && whiteListing[host!]?[key] == ACTIVE {
+            print("Host \(host!) has active \(key) feature.")
+            shouldAdd = false
+        }
+        if shouldAdd {
+            addContentBlocker(key: key, webview: webview)
+            print("Loaded \(key) content rule set")
+        } else {
+            removeContentBlocker(key: key, webview: webview)
+            print("Removed \(key) content rule set")
+        }
     }
 
     fileprivate func addContentBlocker(key: String, webview: FLTWKWebView) {
