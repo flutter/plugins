@@ -237,21 +237,19 @@ static const int SOURCE_GALLERY = 1;
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        if (status == PHAuthorizationStatusAuthorized) {
-          dispatch_async(dispatch_get_main_queue(), ^{
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (status == PHAuthorizationStatusAuthorized) {
             [self showPhotoLibrary:pickerFlag];
-          });
-        } else if (@available(iOS 14, *)) {
-          if (status == PHAuthorizationStatusLimited) {
-            dispatch_async(dispatch_get_main_queue(), ^{
+          } else if (@available(iOS 14, *)) {
+            if (status == PHAuthorizationStatusLimited) {
               [self showLimitedPhotoLibrary];
-            });
+            } else {
+              [self errorNoPhotoAccess:status];
+            }
           } else {
             [self errorNoPhotoAccess:status];
           }
-        } else {
-          [self errorNoPhotoAccess:status];
-        }
+        });
       }];
       break;
     }
