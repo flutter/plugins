@@ -71,7 +71,7 @@ task:
           CHANNEL: "master"
       tool_script:
         - cd script/tool
-        - dart analyze
+        - dart analyze --fatal-infos
       plugins_script:
         - ./script/incremental_build.sh analyze
     ## TODO(cyanglaz):
