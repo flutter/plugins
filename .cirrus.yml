@@ -57,9 +57,6 @@ task:
     - name: format
       format_script: ./script/incremental_build.sh format --fail-on-change
       license_script:
-        - cd script/tool
-        - pub get
-        - cd ../..
         - dart script/tool/lib/src/main.dart license-check
     - name: test
       env:
@@ -72,7 +69,10 @@ task:
       env:
         matrix:
           CHANNEL: "master"
-      script:
+      tool_script:
+        - cd script/tool
+        - dart analyze
+      plugins_script:
         - ./script/incremental_build.sh analyze
     ## TODO(cyanglaz):
     ## Combing stable and master analyze jobs when integration test null safety is ready on flutter stable.
