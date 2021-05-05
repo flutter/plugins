@@ -116,7 +116,7 @@ task:
       build_script:
         - flutter config --enable-linux-desktop
         - ./script/incremental_build.sh build-examples --linux
-      test_script:
+      drive_script:
         - xvfb-run ./script/incremental_build.sh drive-examples --linux
 
 # Heavy-workload Linux tasks.
@@ -182,7 +182,7 @@ task:
         - ./chromedriver/chromedriver --port=4444 &
       build_script:
         - ./script/incremental_build.sh build-examples --web
-      test_script:
+      drive_script:
         # TODO(stuartmorgan): Eliminate this check once 2.1 reaches stable.
         - if [[ "$CHANNEL" == "master" ]]; then
         -   ./script/incremental_build.sh drive-examples --web
@@ -221,8 +221,9 @@ task:
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
       build_script:
         - ./script/incremental_build.sh build-examples --ipa
-      test_script:
+      xctest_script:
         - ./script/incremental_build.sh xctest --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
+      drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
         # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
@@ -245,7 +246,7 @@ task:
       build_script:
         - flutter config --enable-macos-desktop
         - ./script/incremental_build.sh build-examples --macos --no-ipa
-      test_script:
+      drive_script:
         - ./script/incremental_build.sh drive-examples --macos
 
 task:
