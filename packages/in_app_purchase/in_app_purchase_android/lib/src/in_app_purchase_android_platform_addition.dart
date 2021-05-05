@@ -12,9 +12,12 @@ class InAppPurchaseAndroidPlatformAddition
   /// Creates a [InAppPurchaseAndroidPlatformAddition] which uses the supplied
   /// `BillingClient` to provide Android specific features.
   InAppPurchaseAndroidPlatformAddition(this._billingClient) {
-    if (InAppPurchaseAndroidPlatformAddition.enablePendingPurchase) {
-      _billingClient.enablePendingPurchases();
-    }
+    assert(
+      _enablePendingPurchase,
+      'enablePendingPurchases() must be called when initializing the application and before you access the [InAppPurchase.instance].',
+    );
+
+    _billingClient.enablePendingPurchases();
   }
 
   /// Whether pending purchase is enabled.
