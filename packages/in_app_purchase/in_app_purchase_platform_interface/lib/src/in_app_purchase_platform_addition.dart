@@ -9,13 +9,13 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
 /// provide platform-specific in_app_purchase features.
 ///
 /// Platforms that wants to introduce platform-specific public APIs should create
-/// a class that either extend or implements [InAppPurchasePlatformAddition]. Then replace
-/// the [InAppPurchasePlatformAddition.instance] with an instance of that class.
+/// a class that either extend or implements [InAppPurchasePlatformAddition]. Then set
+/// the [InAppPurchasePlatformAddition.instance] to an instance of that class.
 ///
-/// All the APIs added by [InAppPurchasePlatformAddition] implementers will be accessed from
+/// All the APIs added by [InAppPurchasePlatformAddition] implementations will be accessed from
 /// [InAppPurchasePlatformAdditionProvider.getPlatformAddition] by the client APPs.
-/// To avoid client APPs to directly call the [InAppPurchasePlatform] APIs, an [InAppPurchasePlatformAddition] implementation must not
-/// be a type of [InAppPurchasePlatform].
+/// To avoid clients directly calling [InAppPurchasePlatform] APIs,
+/// an [InAppPurchasePlatformAddition] implementation should not be a type of [InAppPurchasePlatform].
 abstract class InAppPurchasePlatformAddition {
   static InAppPurchasePlatformAddition? _instance;
 
@@ -53,9 +53,9 @@ abstract class InAppPurchasePlatformAddition {
   /// ```
   static InAppPurchasePlatformAddition? get instance => _instance;
 
-  /// Set the instance to a desired [InAppPurchasePlatformAddition] implementation.
+  /// Sets the instance to a desired [InAppPurchasePlatformAddition] implementation.
   ///
-  /// The `instance` must not be a type of [InAppPurchasePlatform].
+  /// The `instance` should not be a type of [InAppPurchasePlatform].
   static set instance(InAppPurchasePlatformAddition? instance) {
     assert(instance is! InAppPurchasePlatform);
     _instance = instance;

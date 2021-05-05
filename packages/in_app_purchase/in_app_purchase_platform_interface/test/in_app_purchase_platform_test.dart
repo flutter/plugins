@@ -140,11 +140,6 @@ void main() {
           ExtendsInAppPurchasePlatformAddition();
     });
 
-    test('Can be mocked with `implements`', () {
-      InAppPurchasePlatformAddition.instance =
-          MockInAppPurchasePlatformAddition();
-    });
-
     test('Can not be a `InAppPurchasePlatform`', () {
       expect(
           () => InAppPurchasePlatformAddition.instance =
@@ -194,13 +189,6 @@ class ImplementsInAppPurchasePlatformAddition
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
-
-class MockInAppPurchasePlatformAddition extends Mock
-    with
-        // ignore: prefer_mixin
-        MockPlatformInterfaceMixin
-    implements
-        InAppPurchasePlatformAddition {}
 
 class ExtendsInAppPurchasePlatformAddition
     extends InAppPurchasePlatformAddition {}
