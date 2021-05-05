@@ -4,8 +4,6 @@
 
 package io.flutter.plugins.camera;
 
-import static io.flutter.plugins.camera.CameraUtils.computeBestPreviewSize;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -85,6 +83,7 @@ public class Camera {
   private final String cameraName;
   private final Size captureSize;
   private final Size previewSize;
+  private final boolean takePictureWithMaxResolution;
   private final boolean enableAudio;
   private final Context applicationContext;
   private final CamcorderProfile recordingProfile;
@@ -125,12 +124,14 @@ public class Camera {
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
+      final boolean takePictureWithMaxResolution,
       final boolean enableAudio)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
     this.cameraName = cameraName;
+    this.takePictureWithMaxResolution = takePictureWithMaxResolution;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
@@ -151,7 +152,7 @@ public class Camera {
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
-    previewSize = computeBestPreviewSize(cameraName, preset);
+    previewSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     cameraZoom =
         new CameraZoom(
             cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),

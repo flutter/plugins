@@ -82,16 +82,6 @@ public final class CameraUtils {
     }
   }
 
-  static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
-    if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
-      preset = ResolutionPreset.high;
-    }
-
-    CamcorderProfile profile =
-        getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
-    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
-  }
-
   static Size computeBestCaptureSize(StreamConfigurationMap streamConfigurationMap) {
     // For still image captures, we use the largest available size.
     return Collections.max(
