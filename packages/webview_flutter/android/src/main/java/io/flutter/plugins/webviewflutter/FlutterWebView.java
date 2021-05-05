@@ -29,6 +29,7 @@ import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugins.webviewflutter.adblock.ContentBlocker;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.io.ByteArrayOutputStream;
@@ -146,7 +147,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel.setMethodCallHandler(this);
 
     if (params.containsKey("blockingRules") && !ContentBlocker.INSTANCE.isReady()) {
-      ContentBlocker.INSTANCE.setupContentBlocking((Map<String, Map<String, Object>>) params.get("blockingRules"));
+      Map<String, Map<String, Object>> rules = (Map<String, Map<String, Object>>) params.get("blockingRules");
+      Map<String, Map<String, Integer>> whiteListing = new HashMap<>();
+      if (params.containsKey("whiteListing") ) {
+        whiteListing = (Map<String, Map<String, Integer>>) params.get("whiteListing");
+      }
+      ContentBlocker.INSTANCE.setupContentBlocking(rules, whiteListing);
     }
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
@@ -253,6 +259,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "reload":
         reload(result);
         break;
+      case "refreshWhiteListing":
+        refreshWhiteListing(methodCall, result);
+        break;
       case "currentUrl":
         currentUrl(result);
         break;
@@ -338,6 +347,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void reload(Result result) {
+    webView.reload();
+    result.success(null);
+  }
+
+  private void refreshWhiteListing(MethodCall methodCall, Result result) {
+    //noinspection unchecked
+    ContentBlocker.INSTANCE.updateWhitelist((Map<String, Map<String, Integer>>) methodCall.arguments);
     webView.reload();
     result.success(null);
   }

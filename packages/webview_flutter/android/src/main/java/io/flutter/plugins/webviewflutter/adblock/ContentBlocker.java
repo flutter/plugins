@@ -6,6 +6,7 @@ import android.util.Log;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -55,15 +56,21 @@ enum ContentBlockingRuleTypes {
 public enum ContentBlocker implements ContentBlockEngine {
     INSTANCE;
 
+    private static final String TAG = "ContentBlocker";
+    private static final String DEFAULT_WHITELISTING_KEY = "*";
+    private static final int ACTIVE = 1;
+    private static final int INACTIVE = 0;
+
     private final Map<String, ContentBlockEngine> engines = Collections.synchronizedMap(new LinkedHashMap<String, ContentBlockEngine>());
     private final AtomicBoolean isReady = new AtomicBoolean(false);
-    private static final String TAG = "ContentBlocker";
+    private Map<String, Map<String, Integer>> whitelist = new HashMap<>();
 
     public boolean isReady() {
         return isReady.get();
     }
 
-    public void setupContentBlocking(Map<String, Map<String, Object>> rules) {
+    public void setupContentBlocking(Map<String, Map<String, Object>> rules, Map<String, Map<String, Integer>> whitelist) {
+        updateWhitelist(whitelist);
         for (final Map.Entry<String, Map<String, Object>> rule : rules.entrySet()) {
             ContentBlockingRuleTypes type = forRawName((String) rule.getValue().get(ContentBlockingKeys.TYPE.rawName));
             switch (type) {
@@ -98,10 +105,22 @@ public enum ContentBlocker implements ContentBlockEngine {
         isReady.set(true);
     }
 
+    public void updateWhitelist(Map<String, Map<String, Integer>> whitelist) {
+        if (whitelist != null) {
+            this.whitelist = new HashMap<>(whitelist);
+        }
+    }
+
     @Override
     public BlockResult shouldBlock(Uri hostedUrl, Uri requestedUrl, ContentType type) {
-        for (ContentBlockEngine engine : engines.values()) {
-            BlockResult blockResult = engine.shouldBlock(hostedUrl, requestedUrl, type);
+        final String host = hostedUrl != null && hostedUrl.getHost() != null ? hostedUrl.getHost() : "";
+        Map<String, Integer> listing = whitelist.get(host);
+        Map<String, Integer> genericListing = whitelist.get(host);
+        for (Map.Entry<String, ContentBlockEngine> engine : engines.entrySet()) {
+            if (isWhiteListed(engine.getKey(), listing, genericListing)) {
+                return BlockResult.OK;
+            }
+            BlockResult blockResult = engine.getValue().shouldBlock(hostedUrl, requestedUrl, type);
             switch (blockResult) {
                 case BLOCK:
                     return blockResult;
@@ -111,6 +130,19 @@ public enum ContentBlocker implements ContentBlockEngine {
             }
         }
         return BlockResult.OK;
+    }
+
+    private boolean isWhiteListed(String feature, Map<String, Integer> listing, Map<String, Integer> genericListing) {
+        Integer specificActivation = listing != null ? listing.get(feature) : null;
+        if (specificActivation != null) {
+            return specificActivation == ACTIVE;
+        }
+        Integer genericActivation = genericListing != null ? genericListing.get(feature) : null;
+        if (genericActivation != null) {
+            return genericActivation == ACTIVE;
+        }
+
+        return false;
     }
 }
 
@@ -122,7 +154,7 @@ interface ContentBlockEngine {
      *
      * @param hostedUrl    (i.e. https://heise.de)
      * @param requestedUrl (i.e. https://heise.de/ads/script)
-     * @param type (The types of content that is requested)
+     * @param type         (The types of content that is requested)
      * @return The decision if the requestedUrl should be blocked.
      */
     BlockResult shouldBlock(Uri hostedUrl, Uri requestedUrl, ContentType type);
