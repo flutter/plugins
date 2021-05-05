@@ -22,7 +22,9 @@ class PublishCheckCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
     this.httpClient,
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  })  : _pubVersionFinder =
+            PubVersionFinder(httpClient: httpClient ?? http.Client()),
+        super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addFlag(
       _allowPrereleaseFlag,
       help: 'Allows the pre-release SDK warning to pass.\n'
@@ -33,23 +35,23 @@ class PublishCheckCommand extends PluginCommand {
     argParser.addFlag(_machineFlag,
         help: 'Only prints a final status as a defined string.\n'
             'The possible values are:\n'
-            '    $_resultNeedsPublish: There is at least one package need to be published. They also passed all publish checks.\n'
-            '    $_resultNoPublish: There are no packages needs to be published. Either no pubspec change detected or all versions have already been published.\n'
-            '    $_resultError: Some error has occurred.',
+            '    $_machineMessageNeedsPublish: There is at least one package need to be published. They also passed all publish checks.\n'
+            '    $_machineMessageNoPublish: There are no packages needs to be published. Either no pubspec change detected or all versions have already been published.\n'
+            '    $_machineMessageError: Some error has occurred.',
         defaultsTo: false,
         negatable: true);
   }
 
   static const String _allowPrereleaseFlag = 'allow-pre-release';
   static const String _machineFlag = 'machine';
-  static const String _resultNeedsPublish = 'needs-publish';
-  static const String _resultNoPublish = 'no-publish';
-  static const String _resultError = 'error';
+  static const String _machineMessageNeedsPublish = 'needs-publish';
+  static const String _machineMessageNoPublish = 'no-publish';
+  static const String _machineMessageError = 'error';
 
   final List<String> _validStatus = <String>[
-    _resultNeedsPublish,
-    _resultNoPublish,
-    _resultError
+    _machineMessageNeedsPublish,
+    _machineMessageNoPublish,
+    _machineMessageError
   ];
 
   @override
@@ -61,6 +63,8 @@ class PublishCheckCommand extends PluginCommand {
 
   /// The custom http client used to query versions on pub.
   final http.Client httpClient;
+
+  final PubVersionFinder _pubVersionFinder;
 
   @override
   Future<void> run() async {
@@ -79,23 +83,24 @@ class PublishCheckCommand extends PluginCommand {
   Future<void> _runCommand() async {
     final List<Directory> failedPackages = <Directory>[];
 
-    String resultToLog = _resultNoPublish;
+    String resultToLog = _machineMessageNoPublish;
     await for (final Directory plugin in getPlugins()) {
       final _PublishCheckResult result = await _passesPublishCheck(plugin);
       switch (result) {
         case _PublishCheckResult._needsPublish:
           if (failedPackages.isEmpty) {
-            resultToLog = _resultNeedsPublish;
+            resultToLog = _machineMessageNeedsPublish;
           }
           break;
         case _PublishCheckResult._noPublish:
           break;
-        case _PublishCheckResult.error:
+        case _PublishCheckResult._error:
           failedPackages.add(plugin);
-          resultToLog = _resultError;
+          resultToLog = _machineMessageError;
           break;
       }
     }
+    _pubVersionFinder.httpClient.close();
 
     if (failedPackages.isNotEmpty) {
       final String error =
@@ -112,7 +117,6 @@ class PublishCheckCommand extends PluginCommand {
       print(passedMessage);
     }
 
-    // This has to be last output of this command because it is promised in the help section.
     if (argResults[_machineFlag] as bool) {
       print(resultToLog);
     }
@@ -191,7 +195,7 @@ class PublishCheckCommand extends PluginCommand {
     final Pubspec pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       print('no pubspec');
-      return _PublishCheckResult.error;
+      return _PublishCheckResult._error;
     } else if (pubspec.publishTo == 'none') {
       print('Package $packageName is marked as unpublishable. Skipping.');
       return _PublishCheckResult._noPublish;
@@ -211,23 +215,22 @@ class PublishCheckCommand extends PluginCommand {
       return _PublishCheckResult._needsPublish;
     } else {
       print('Unable to publish $packageName');
-      return _PublishCheckResult.error;
+      return _PublishCheckResult._error;
     }
   }
 
   // Check if `packageName` already has `version` published on pub.
   Future<bool> _checkIfAlreadyPublished(
       {String packageName, Version version}) async {
-    final PubVersionFinder pubVersionFinder = PubVersionFinder(
-        package: packageName, httpClient: httpClient ?? http.Client());
     final PubVersionFinderResponse pubVersionFinderResponse =
-        await pubVersionFinder.getPackageVersion();
+        await _pubVersionFinder.getPackageVersion(package: packageName);
     bool published;
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
         published = pubVersionFinderResponse.versions.contains(version);
         break;
       case PubVersionFinderResult.fail:
+        print(_machineMessageError);
         printErrorAndExit(errorMessage: '''
 Error fetching version on pub for $packageName.
 HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
@@ -238,7 +241,6 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
         published = false;
         break;
     }
-    pubVersionFinder.httpClient.close();
     return published;
   }
 }
@@ -248,5 +250,5 @@ enum _PublishCheckResult {
 
   _noPublish,
 
-  error,
+  _error,
 }

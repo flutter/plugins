@@ -1,7 +1,7 @@
 ## NEXT
 
-- Add `against-pub` flag for version-check.
-- Add `log-status` flag for publish-check.
+- Add `against-pub` flag for version-check, which allows the command to check version with pub.
+- Add `machine` flag for publish-check, which replaces outputs to something parsable by machines.
 
 ## 0.1.0+1
 

@@ -306,15 +306,13 @@ file2/file2.cc
   });
 
   group('$PubVersionFinder', () {
-
     test('Package does not exist.', () async {
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('', 404);
       });
-      final PubVersionFinder finder =
-          PubVersionFinder(package: 'some_package', httpClient: mockClient);
+      final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
       final PubVersionFinderResponse response =
-          await finder.getPackageVersion();
+          await finder.getPackageVersion(package: 'some_package');
 
       expect(response.versions, isNull);
       expect(response.result, PubVersionFinderResult.noPackageFound);
@@ -326,10 +324,9 @@ file2/file2.cc
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('', 400);
       });
-      final PubVersionFinder finder =
-          PubVersionFinder(package: 'some_package', httpClient: mockClient);
+      final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
       final PubVersionFinderResponse response =
-          await finder.getPackageVersion();
+          await finder.getPackageVersion(package: 'some_package');
 
       expect(response.versions, isNull);
       expect(response.result, PubVersionFinderResult.fail);
@@ -358,10 +355,9 @@ file2/file2.cc
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final PubVersionFinder finder =
-          PubVersionFinder(package: 'some_package', httpClient: mockClient);
+      final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
       final PubVersionFinderResponse response =
-          await finder.getPackageVersion();
+          await finder.getPackageVersion(package: 'some_package');
 
       expect(response.versions, <Version>[
         Version.parse('2.0.0'),

@@ -76,7 +76,9 @@ class VersionCheckCommand extends PluginCommand {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
     this.httpClient,
-  }) : super(packagesDir, fileSystem,
+  })  : _pubVersionFinder =
+            PubVersionFinder(httpClient: httpClient ?? http.Client()),
+        super(packagesDir, fileSystem,
             processRunner: processRunner, gitDir: gitDir) {
     argParser.addFlag(
       _againstPubFlag,
@@ -100,6 +102,8 @@ class VersionCheckCommand extends PluginCommand {
 
   /// The http client used to query pub server.
   final http.Client httpClient;
+
+  final PubVersionFinder _pubVersionFinder;
 
   @override
   Future<void> run() async {
@@ -133,15 +137,13 @@ class VersionCheckCommand extends PluginCommand {
       Version sourceVersion;
       if (argResults[_againstPubFlag] as bool) {
         final String packageName = pubspecFile.parent.basename;
-        final PubVersionFinder pubVersionFinder = PubVersionFinder(
-            package: packageName, httpClient: httpClient ?? http.Client());
         final PubVersionFinderResponse pubVersionFinderResponse =
-            await pubVersionFinder.getPackageVersion();
-        pubVersionFinder.httpClient.close();
+            await _pubVersionFinder.getPackageVersion(package: packageName);
         switch (pubVersionFinderResponse.result) {
           case PubVersionFinderResult.success:
             sourceVersion = pubVersionFinderResponse.versions.first;
-            print('$indentation$packageName: Current largest version on pub: $sourceVersion');
+            print(
+                '$indentation$packageName: Current largest version on pub: $sourceVersion');
             break;
           case PubVersionFinderResult.fail:
             printErrorAndExit(errorMessage: '''
@@ -160,9 +162,11 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       if (sourceVersion == null) {
         String safeToIgnoreMessage;
         if (argResults[_againstPubFlag] as bool) {
-          safeToIgnoreMessage = '${indentation}Unable to find package on pub server.';
+          safeToIgnoreMessage =
+              '${indentation}Unable to find package on pub server.';
         } else {
-          safeToIgnoreMessage = '${indentation}Unable to find pubspec in master.';
+          safeToIgnoreMessage =
+              '${indentation}Unable to find pubspec in master.';
         }
         print('$safeToIgnoreMessage Safe to ignore if the project is new.');
         continue;
@@ -177,7 +181,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
           getAllowedNextVersions(sourceVersion, headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
-        final String source = (argResults[_againstPubFlag] as bool) ? 'pub' : 'master';
+        final String source =
+            (argResults[_againstPubFlag] as bool) ? 'pub' : 'master';
         final String error = '${indentation}Incorrectly updated version.\n'
             '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
             '${indentation}Allowed versions: $allowedNextVersions';
@@ -199,6 +204,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     await for (final Directory plugin in getPlugins()) {
       await _checkVersionsMatch(plugin);
     }
+    _pubVersionFinder.httpClient.close();
 
     print('No version check errors found!');
   }
