@@ -30,7 +30,7 @@
 static const int SOURCE_CAMERA = 0;
 static const int SOURCE_GALLERY = 1;
 
-enum ImagePickerClassType { UIImagePickerClassType = 0, PHPickerClassType = 1 };
+enum ImagePickerClassType { UIImagePickerClassType, PHPickerClassType };
 
 @implementation FLTImagePickerPlugin {
   UIImagePickerController *_imagePickerController;
@@ -240,12 +240,6 @@ enum ImagePickerClassType { UIImagePickerClassType = 0, PHPickerClassType = 1 };
         dispatch_async(dispatch_get_main_queue(), ^{
           if (status == PHAuthorizationStatusAuthorized) {
             [self showPhotoLibrary:imagePickerClassType];
-          } else if (@available(iOS 14, *)) {
-            if (status == PHAuthorizationStatusLimited) {
-              [self showLimitedPhotoLibrary];
-            } else {
-              [self errorNoPhotoAccess:status];
-            }
           } else {
             [self errorNoPhotoAccess:status];
           }
@@ -308,12 +302,6 @@ enum ImagePickerClassType { UIImagePickerClassType = 0, PHPickerClassType = 1 };
                                                       animated:YES
                                                     completion:nil];
   }
-}
-
-// Limited access to the photo library
-- (void)showLimitedPhotoLibrary API_AVAILABLE(ios(14)) {
-  [[PHPhotoLibrary sharedPhotoLibrary]
-      presentLimitedLibraryPickerFromViewController:_pickerViewController];
 }
 
 - (NSNumber *)getDesiredImageQuality:(NSNumber *)imageQuality {
