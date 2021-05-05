@@ -13,8 +13,8 @@ import 'package:quiver/iterables.dart';
 
 import 'common.dart';
 
-const String _googleFormatterUrl =
-    'https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar';
+final Uri _googleFormatterUrl = Uri.https('github.com',
+    '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');
 
 /// A command to format all package code.
 class FormatCommand extends PluginCommand {

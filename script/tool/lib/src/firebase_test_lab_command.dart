@@ -30,7 +30,7 @@ class FirebaseTestLabCommand extends PluginCommand {
         defaultsTo:
             p.join(io.Platform.environment['HOME'], 'gcloud-service-key.json'));
     argParser.addOption('test-run-id',
-        defaultsTo: Uuid().v4(),
+        defaultsTo: const Uuid().v4(),
         help:
             'Optional string to append to the results path, to avoid conflicts. '
             'Randomly chosen on each invocation if none is provided. '
