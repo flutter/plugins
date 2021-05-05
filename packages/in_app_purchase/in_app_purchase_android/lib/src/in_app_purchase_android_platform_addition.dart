@@ -6,7 +6,7 @@ import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_inte
 
 import '../billing_client_wrappers.dart';
 
-/// Contains InApp Purchase features that are only available on Android.
+/// Contains InApp Purchase features that are only available on PlayStore.
 class InAppPurchaseAndroidPlatformAddition
     extends InAppPurchasePlatformAddition {
   /// Creates a [InAppPurchaseAndroidPlatformAddition] which uses the supplied
