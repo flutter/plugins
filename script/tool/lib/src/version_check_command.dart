@@ -187,7 +187,7 @@ class VersionCheckCommand extends PluginCommand {
 
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
-    bool hasNextSection = versionString == 'NEXT';
+    final bool hasNextSection = versionString == 'NEXT';
     if (hasNextSection) {
       print('Found NEXT; validating next version in the CHANGELOG.');
       // Ensure that the version in pubspec hasn't changed without updating
