@@ -42,8 +42,8 @@ class AnalyzeCommand extends PluginCommand {
         continue;
       }
 
-      final bool allowed = (argResults[_customAnalysisFlag] as List<String>)
-          .any((String directory) =>
+      final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
+          (String directory) =>
               directory != null &&
               directory.isNotEmpty &&
               p.isWithin(p.join(packagesDir.path, directory), file.path));
@@ -69,8 +69,8 @@ class AnalyzeCommand extends PluginCommand {
 
     final List<String> failingPackages = <String>[];
     await for (final Directory package in getPlugins()) {
-      final int exitCode = await processRunner.runAndStream(
-          'dart', <String>['analyze'], workingDir: package);
+      final int exitCode = await processRunner
+          .runAndStream('dart', <String>['analyze'], workingDir: package);
       if (exitCode != 0) {
         failingPackages.add(p.basename(package.path));
       }

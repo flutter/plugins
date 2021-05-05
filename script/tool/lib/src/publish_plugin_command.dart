@@ -111,8 +111,8 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final String package = argResults[_packageOption] as String;
-    final bool publishAllChanged = argResults[_allChangedFlag] as bool;
+    final String package = getStringArg(_packageOption);
+    final bool publishAllChanged = getBoolArg(_allChangedFlag);
     if (package == null && !publishAllChanged) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
@@ -127,14 +127,14 @@ class PublishPluginCommand extends PluginCommand {
     final GitDir baseGitDir =
         await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
 
-    final bool shouldPushTag = argResults[_pushTagsOption] == true;
-    final String remote = argResults[_remoteOption] as String;
+    final bool shouldPushTag = getBoolArg(_pushTagsOption);
+    final String remote = getStringArg(_remoteOption);
     String remoteUrl;
     if (shouldPushTag) {
       remoteUrl = await _verifyRemote(remote);
     }
     _print('Local repo is ready!');
-    if (argResults[_dryRunFlag] as bool) {
+    if (getBoolArg(_dryRunFlag)) {
       _print('===============  DRY RUN ===============');
     }
 
@@ -233,7 +233,7 @@ class PublishPluginCommand extends PluginCommand {
     if (!await _publishPlugin(packageDir: packageDir)) {
       return false;
     }
-    if (argResults[_tagReleaseOption] as bool) {
+    if (getBoolArg(_tagReleaseOption)) {
       if (!await _tagRelease(
         packageDir: packageDir,
         remote: remote,
@@ -267,7 +267,8 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     if (pubspec.version == null) {
-      _print('No version found. A package that intentionally has no version should be marked "publish_to: none"');
+      _print(
+          'No version found. A package that intentionally has no version should be marked "publish_to: none"');
       return _CheckNeedsReleaseResult.failure;
     }
 
@@ -321,7 +322,7 @@ Safe to ignore if the package is deleted in this commit.
   }) async {
     final String tag = _getTag(packageDir);
     _print('Tagging release $tag...');
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
         <String>['tag', tag],
@@ -404,11 +405,10 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<bool> _publish(Directory packageDir) async {
-    final List<String> publishFlags =
-        argResults[_pubFlagsOption] as List<String>;
+    final List<String> publishFlags = getStringListArg(_pubFlagsOption);
     _print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.Process publish = await processRunner.start(
           'flutter', <String>['pub', 'publish'] + publishFlags,
           workingDirectory: packageDir);
@@ -459,7 +459,7 @@ Safe to ignore if the package is deleted in this commit.
       _print('Tag push canceled.');
       return false;
     }
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
         <String>['push', remote, tag],

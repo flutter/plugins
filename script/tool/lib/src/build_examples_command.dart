@@ -52,7 +52,7 @@ class BuildExamplesCommand extends PluginCommand {
     ];
     final Map<String, bool> platforms = <String, bool>{
       for (final String platform in platformSwitches)
-        platform: argResults[platform] as bool
+        platform: getBoolArg(platform)
     };
     if (!platforms.values.any((bool enabled) => enabled)) {
       print(
@@ -63,7 +63,7 @@ class BuildExamplesCommand extends PluginCommand {
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
-    final String enableExperiment = argResults[kEnableExperiment] as String;
+    final String enableExperiment = getStringArg(kEnableExperiment);
 
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {

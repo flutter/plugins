@@ -78,7 +78,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       <String>[
         'auth',
         'activate-service-account',
-        '--key-file=${argResults['service-key']}',
+        '--key-file=${getStringArg('service-key')}',
       ],
       exitOnError: true,
       logOnError: true,
@@ -87,7 +87,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       'config',
       'set',
       'project',
-      argResults['project'] as String,
+      getStringArg('project'),
     ]);
     if (exitCode == 0) {
       _print('\nFirebase project configured.');
@@ -125,7 +125,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       final Directory androidDirectory =
           fileSystem.directory(p.join(exampleDirectory.path, 'android'));
 
-      final String enableExperiment = argResults[kEnableExperiment] as String;
+      final String enableExperiment = getStringArg(kEnableExperiment);
       final String encodedEnableExperiment =
           Uri.encodeComponent('--enable-experiment=$enableExperiment');
 
@@ -213,7 +213,7 @@ class FirebaseTestLabCommand extends PluginCommand {
             continue;
           }
           final String buildId = io.Platform.environment['CIRRUS_BUILD_ID'];
-          final String testRunId = argResults['test-run-id'] as String;
+          final String testRunId = getStringArg('test-run-id');
           final String resultsDir =
               'plugins_android_test/$packageName/$buildId/$testRunId/${resultsCounter++}/';
           final List<String> args = <String>[
@@ -229,10 +229,10 @@ class FirebaseTestLabCommand extends PluginCommand {
             'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
             '--timeout',
             '5m',
-            '--results-bucket=${argResults['results-bucket']}',
+            '--results-bucket=${getStringArg('results-bucket')}',
             '--results-dir=$resultsDir',
           ];
-          for (final String device in argResults['device'] as List<String>) {
+          for (final String device in getStringListArg('device')) {
             args.addAll(<String>['--device', device]);
           }
           exitCode = await processRunner.runAndStream('gcloud', args,

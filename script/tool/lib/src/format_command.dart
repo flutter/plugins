@@ -47,7 +47,7 @@ class FormatCommand extends PluginCommand {
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['fail-on-change'] == true) {
+    if (getBoolArg('fail-on-change')) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);
@@ -105,7 +105,7 @@ class FormatCommand extends PluginCommand {
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
     for (final List<String> batch in batches) {
-      await processRunner.runAndStream(argResults['clang-format'] as String,
+      await processRunner.runAndStream(getStringArg('clang-format'),
           <String>['-i', '--style=Google', ...batch],
           workingDir: packagesDir, exitOnError: true);
     }

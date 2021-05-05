@@ -255,9 +255,24 @@ abstract class PluginCommand extends Command<void> {
     return _shardCount;
   }
 
+  /// Convenience accessor for boolean arguments.
+  bool getBoolArg(String key) {
+    return (argResults[key] as bool) ?? false;
+  }
+
+  /// Convenience accessor for String arguments.
+  String getStringArg(String key) {
+    return (argResults[key] as String) ?? '';
+  }
+
+  /// Convenience accessor for List<String> arguments.
+  List<String> getStringListArg(String key) {
+    return (argResults[key] as List<String>) ?? <String>[];
+  }
+
   void _checkSharding() {
-    final int shardIndex = int.tryParse(argResults[_shardIndexArg] as String);
-    final int shardCount = int.tryParse(argResults[_shardCountArg] as String);
+    final int shardIndex = int.tryParse(getStringArg(_shardIndexArg));
+    final int shardCount = int.tryParse(getStringArg(_shardCountArg));
     if (shardIndex == null) {
       usageException('$_shardIndexArg must be an integer');
     }
@@ -312,12 +327,10 @@ abstract class PluginCommand extends Command<void> {
   ///    "client library" package, which declares the API for the plugin, as
   ///    well as one or more platform-specific implementations.
   Stream<Directory> _getAllPlugins() async* {
-    Set<String> plugins =
-        Set<String>.from(argResults[_pluginsArg] as List<String>);
+    Set<String> plugins = Set<String>.from(getStringListArg(_pluginsArg));
     final Set<String> excludedPlugins =
-        Set<String>.from(argResults[_excludeArg] as List<String>);
-    final bool runOnChangedPackages =
-        argResults[_runOnChangedPackagesArg] as bool;
+        Set<String>.from(getStringListArg(_excludeArg));
+    final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
     if (plugins.isEmpty && runOnChangedPackages) {
       plugins = await _getChangedPackages();
     }
@@ -415,7 +428,7 @@ abstract class PluginCommand extends Command<void> {
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
     final String rootDir = packagesDir.parent.absolute.path;
-    final String baseSha = argResults[_kBaseSha] as String;
+    final String baseSha = getStringArg(_kBaseSha);
 
     GitDir baseGitDir = gitDir;
     if (baseGitDir == null) {

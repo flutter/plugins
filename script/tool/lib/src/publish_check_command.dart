@@ -108,7 +108,7 @@ class PublishCheckCommand extends PluginCommand {
       return true;
     }
 
-    if (!(argResults[_allowPrereleaseFlag] as bool)) {
+    if (!getBoolArg(_allowPrereleaseFlag)) {
       return false;
     }
 

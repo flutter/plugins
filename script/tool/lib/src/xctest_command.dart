@@ -48,7 +48,7 @@ class XCTestCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    String destination = argResults[_kiOSDestination] as String;
+    String destination = getStringArg(_kiOSDestination);
     if (destination == null) {
       final String simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
@@ -58,7 +58,7 @@ class XCTestCommand extends PluginCommand {
       destination = 'id=$simulatorId';
     }
 
-    final List<String> skipped = argResults[_kSkip] as List<String>;
+    final List<String> skipped = getStringListArg(_kSkip);
 
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {
