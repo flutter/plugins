@@ -52,23 +52,30 @@ class DriveExamplesCommand extends PluginCommand {
   @override
   Future<void> run() async {
     final List<String> failingTests = <String>[];
+    final List<String> pluginsWithoutTests = <String>[];
     final bool isLinux = argResults[kLinux] == true;
     final bool isMacos = argResults[kMacos] == true;
     final bool isWeb = argResults[kWeb] == true;
     final bool isWindows = argResults[kWindows] == true;
     await for (final Directory plugin in getPlugins()) {
+      final String pluginName = plugin.basename;
+      print('\n==========\nChecking $pluginName...');
+      if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
+        print('Not supported for the target platform; skipping.');
+        continue;
+      }
+      int examplesFound = 0;
+      bool testsRan = false;
       final String flutterCommand =
           const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
       for (final Directory example in getExamplesForPlugin(plugin)) {
+        ++examplesFound;
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
-        if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
-          continue;
-        }
         final Directory driverTests =
             fileSystem.directory(p.join(example.path, 'test_driver'));
         if (!driverTests.existsSync()) {
-          // No driver tests available for this example
+          print('No driver tests found for $packageName');
           continue;
         }
         // Look for driver tests ending in _test.dart in test_driver/
@@ -160,6 +167,7 @@ Tried searching for the following:
           }
 
           for (final String targetPath in targetPaths) {
+            testsRan = true;
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -177,6 +185,11 @@ Tried searching for the following:
           }
         }
       }
+      if (!testsRan) {
+        pluginsWithoutTests.add(pluginName);
+        print(
+            'No driver tests run for $pluginName ($examplesFound examples found)');
+      }
     }
     print('\n\n');
 
@@ -185,6 +198,15 @@ Tried searching for the following:
       for (final String test in failingTests) {
         print(' * $test');
       }
+      throw ToolExit(1);
+    }
+
+    if (pluginsWithoutTests.isNotEmpty) {
+      print('The following plugins did not run any integration tests:');
+      for (final String plugin in pluginsWithoutTests) {
+        print(' * $plugin');
+      }
+      print('If this is intentional, they must be explicitly excluded.');
       throw ToolExit(1);
     }
 
