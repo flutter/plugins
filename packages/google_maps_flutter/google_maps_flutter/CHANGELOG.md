@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Google Maps requires at least Android SDK 20.
+
 ## 2.0.3
 
 * Fix incorrect typecast in TileOverlay example.
