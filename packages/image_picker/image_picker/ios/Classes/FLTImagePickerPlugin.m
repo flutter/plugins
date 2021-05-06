@@ -23,7 +23,7 @@
 
 @property(copy, nonatomic) NSDictionary *arguments;
 
-@property(copy, nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
+@property(strong, nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
 
 @end
 
