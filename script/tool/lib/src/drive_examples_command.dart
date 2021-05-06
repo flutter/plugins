@@ -59,6 +59,13 @@ class DriveExamplesCommand extends PluginCommand {
     final bool isWindows = argResults[kWindows] == true;
     await for (final Directory plugin in getPlugins()) {
       final String pluginName = plugin.basename;
+      if (pluginName.endsWith('_platform_interface') &&
+          !plugin.childDirectory('example').existsSync()) {
+        // Platform interface packages generally aren't intended to have
+        // examples, and don't need integration tests, so silently skip them
+        // unless for some reason there is an example directory.
+        continue;
+      }
       print('\n==========\nChecking $pluginName...');
       if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
         print('Not supported for the target platform; skipping.');
