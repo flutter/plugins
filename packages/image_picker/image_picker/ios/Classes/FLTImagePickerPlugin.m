@@ -322,9 +322,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
 
-  NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-  NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
-  NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+  NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
   NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
   for (PHPickerResult *result in results) {
