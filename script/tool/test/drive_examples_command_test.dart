@@ -55,6 +55,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -100,6 +101,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -168,6 +170,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -223,6 +226,8 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -255,6 +260,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -300,6 +306,8 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -332,6 +340,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -379,6 +388,8 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -411,6 +422,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -460,6 +472,8 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -492,6 +506,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -538,6 +553,8 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
