@@ -22,6 +22,10 @@ dev_dependencies:
     sdk: flutter
 
 dependency_overrides:
+  # Overridden to support the current stable Flutter release - 2.0.6 – which
+  # pins an old version of `crypto`. Won't be needed when stable is updated to
+  # allow crypto ^3.0.0
+  crypto: ^3.0.0
   # The example app is bundled with the plugin so we use a path dependency on
   # the parent directory to use the current plugin's version.
   google_sign_in:
