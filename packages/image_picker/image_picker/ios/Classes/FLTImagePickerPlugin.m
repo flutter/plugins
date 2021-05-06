@@ -30,7 +30,7 @@
 static const int SOURCE_CAMERA = 0;
 static const int SOURCE_GALLERY = 1;
 
-enum ImagePickerClassType { UIImagePickerClassType, PHPickerClassType };
+typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPickerClassType };
 
 @implementation FLTImagePickerPlugin {
   UIImagePickerController *_imagePickerController;
@@ -232,7 +232,7 @@ enum ImagePickerClassType { UIImagePickerClassType, PHPickerClassType };
   }
 }
 
-- (void)checkPhotoAuthorization:(int)imagePickerClassType {
+- (void)checkPhotoAuthorization:(ImagePickerClassType)imagePickerClassType {
   PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
@@ -290,17 +290,20 @@ enum ImagePickerClassType { UIImagePickerClassType, PHPickerClassType };
   }
 }
 
-- (void)showPhotoLibrary:(int)imagePickerClassType {
+- (void)showPhotoLibrary:(ImagePickerClassType)imagePickerClassType {
   // No need to check if SourceType is available. It always is.
-  if (imagePickerClassType) {
-    [[self viewControllerWithWindow:nil] presentViewController:_pickerViewController
-                                                      animated:YES
-                                                    completion:nil];
-  } else {
-    _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-    [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
-                                                      animated:YES
-                                                    completion:nil];
+  switch (imagePickerClassType) {
+    case PHPickerClassType:
+      [[self viewControllerWithWindow:nil] presentViewController:_pickerViewController
+                                                        animated:YES
+                                                      completion:nil];
+      break;
+    case UIImagePickerClassType:
+      _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+      [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
+                                                        animated:YES
+                                                      completion:nil];
+      break;
   }
 }
 
