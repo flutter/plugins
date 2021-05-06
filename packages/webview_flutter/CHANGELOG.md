@@ -1,3 +1,8 @@
+## 2.0.5
+
+* WebView requires at least Android 19 if you are using
+hybrid composition ([flutter/issues/59894](https://github.com/flutter/flutter/issues/59894)).
+
 ## 2.0.4
 
 * Fix a bug where `allowsInlineMediaPlayback` is not respected on iOS.
