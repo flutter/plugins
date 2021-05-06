@@ -604,10 +604,12 @@ class PubVersionFinder {
 class PubVersionFinderResponse {
   /// Constructor.
   PubVersionFinderResponse({this.versions, this.result, this.httpResponse}) {
-    versions.sort((Version a, Version b) {
-      /// TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
-      return b.compareTo(a);
-    });
+    if (versions != null && versions.isNotEmpty) {
+      versions.sort((Version a, Version b) {
+        /// TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
+        return b.compareTo(a);
+      });
+    }
   }
 
   /// The versions found in [PubVersionFinder].

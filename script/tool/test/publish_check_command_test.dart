@@ -131,7 +131,7 @@ void main() {
     });
 
     test(
-        '--machine: Log no_publish at the end if there are no packages need to be published. ',
+        '--machine: Log JSON with status:no-publish and correct human message, if there are no packages need to be published. ',
         () async {
       const Map<String, dynamic> httpResponseA = <String, dynamic>{
         'name': 'a',
@@ -181,15 +181,25 @@ void main() {
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
       );
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
-      expect(output[0], 'no-publish');
+      // ignore: use_raw_strings
+      expect(output.first, '''
+{
+  "status": "no-publish",
+  "humanMessage": [
+    "Checking that no_publish_a can be published.",
+    "Package no_publish_a version: 0.1.0 has already be published on pub.",
+    "Checking that no_publish_b can be published.",
+    "Package no_publish_b version: 0.2.0 has already be published on pub.",
+    "\\u001b[32mAll packages passed publish check!\\u001b[0m"
+  ]
+}''');
     });
 
     test(
-        '--machine: Log needs-publish at the end if there is at least 1 plugin needs to be published. ',
+        '--machine: Log JSON with status:needs-publish and correct human message, if there is at least 1 plugin needs to be published.',
         () async {
       const Map<String, dynamic> httpResponseA = <String, dynamic>{
         'name': 'a',
@@ -242,11 +252,22 @@ void main() {
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
-      expect(output[0], 'needs-publish');
+      // ignore: use_raw_strings
+      expect(output.first, '''
+{
+  "status": "needs-publish",
+  "humanMessage": [
+    "Checking that no_publish_a can be published.",
+    "Package no_publish_a version: 0.1.0 has already be published on pub.",
+    "Checking that no_publish_b can be published.",
+    "Package no_publish_b is able to be published.",
+    "\\u001b[32mAll packages passed publish check!\\u001b[0m"
+  ]
+}''');
     });
 
     test(
-        '--machine: Log error at the end if there is at least 1 plugin contains error.',
+        '--machine: Log correct JSON, if there is at least 1 plugin contains error.',
         () async {
       const Map<String, dynamic> httpResponseA = <String, dynamic>{
         'name': 'a',
@@ -307,7 +328,22 @@ void main() {
         hasError = true;
       });
       expect(hasError, isTrue);
-      expect(output[0], 'error');
+
+      // ignore: use_raw_strings
+      expect(output.first, '''
+{
+  "status": "error",
+  "humanMessage": [
+    "Checking that no_publish_a can be published.",
+    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException: line 1, column 1: Not a map\\n  ╷\\n1 │ bad-yaml\\n  │ ^^^^^^^^\\n  ╵}",
+    "no pubspec",
+    "Checking that no_publish_b can be published.",
+    "url https://pub.dev/packages/no_publish_b.json",
+    "no_publish_b.json",
+    "Package no_publish_b is able to be published.",
+    "\\u001b[31mFAIL: The following 1 package(s) failed the publishing check:\\nMemoryDirectory: '/packages/no_publish_a'\\u001b[0m"
+  ]
+}''');
     });
   });
 }
