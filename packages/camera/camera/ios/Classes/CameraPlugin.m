@@ -306,6 +306,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
                               AVCaptureAudioDataOutputSampleBufferDelegate>
 @property(readonly, nonatomic) int64_t textureId;
 @property(nonatomic, copy) void (^onFrameAvailable)(void);
+@property BOOL enableTakePictureWithMaxResolution;
 @property BOOL enableAudio;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterMethodChannel *methodChannel;
@@ -353,6 +354,7 @@ NSString *const errorMethod = @"error";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
                   resolutionPreset:(NSString *)resolutionPreset
+enableTakePictureWithMaxResolution:(BOOL)enableTakePictureWithMaxResolution
                        enableAudio:(BOOL)enableAudio
                        orientation:(UIDeviceOrientation)orientation
                      dispatchQueue:(dispatch_queue_t)dispatchQueue
@@ -364,6 +366,7 @@ NSString *const errorMethod = @"error";
   } @catch (NSError *e) {
     *error = e;
   }
+  _enableTakePictureWithMaxResolution = enableTakePictureWithMaxResolution;
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
   _captureSession = [[AVCaptureSession alloc] init];
@@ -459,7 +462,8 @@ NSString *const errorMethod = @"error";
 
 - (void)captureToFile:(FlutterResult)result API_AVAILABLE(ios(10)) {
   AVCapturePhotoSettings *settings = [AVCapturePhotoSettings photoSettings];
-  if (_resolutionPreset == max) {
+  if (_resolutionPreset == max || _enableTakePictureWithMaxResolution == true) {
+    NSLog(@"setHighResolutionPhotoEnabled");
     [settings setHighResolutionPhotoEnabled:YES];
   }
 
@@ -1332,10 +1336,12 @@ NSString *const errorMethod = @"error";
   } else if ([@"create" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
+    NSNumber *enableTakePictureWithMaxResolution = call.arguments[@"enableTakePictureWithMaxResolution"];
     NSNumber *enableAudio = call.arguments[@"enableAudio"];
     NSError *error;
     FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
                                     resolutionPreset:resolutionPreset
+                  enableTakePictureWithMaxResolution:[enableTakePictureWithMaxResolution boolValue]
                                          enableAudio:[enableAudio boolValue]
                                          orientation:[[UIDevice currentDevice] orientation]
                                        dispatchQueue:_dispatchQueue

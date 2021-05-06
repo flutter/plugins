@@ -4,6 +4,8 @@
 
 package io.flutter.plugins.camera;
 
+import static io.flutter.plugins.camera.CameraUtils.computeBestCaptureSize;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -83,7 +85,7 @@ public class Camera {
   private final String cameraName;
   private final Size captureSize;
   private final Size previewSize;
-  private final boolean takePictureWithMaxResolution;
+  private final boolean enableTakePictureWithMaxResolution;
   private final boolean enableAudio;
   private final Context applicationContext;
   private final CamcorderProfile recordingProfile;
@@ -124,14 +126,14 @@ public class Camera {
       final DartMessenger dartMessenger,
       final String cameraName,
       final String resolutionPreset,
-      final boolean takePictureWithMaxResolution,
+      final boolean enableTakePictureWithMaxResolution,
       final boolean enableAudio)
       throws CameraAccessException {
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
     this.cameraName = cameraName;
-    this.takePictureWithMaxResolution = takePictureWithMaxResolution;
+    this.enableTakePictureWithMaxResolution = enableTakePictureWithMaxResolution;
     this.enableAudio = enableAudio;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
@@ -151,8 +153,20 @@ public class Camera {
     ResolutionPreset preset = ResolutionPreset.valueOf(resolutionPreset);
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
-    captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+    if(enableTakePictureWithMaxResolution)
+    {
+      captureSize = computeBestCaptureSize(cameraCharacteristics
+            .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP));
+      Log.i("Camera", "enableTakePictureWithMaxResolution");
+    }
+    else
+    {
+      captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+    }
+    Log.i("Camera", "[Preview Resolution] :" + previewSize);
+    Log.i("Camera", "[Capture Resolution] :" + captureSize);
+    
     cameraZoom =
         new CameraZoom(
             cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
@@ -318,7 +332,7 @@ public class Camera {
             }
             cameraCaptureSession = session;
 
-            updateFpsRange();
+            updateFpsRange(); 
             updateFocus(focusMode);
             updateFlash(flashMode);
             updateExposure(exposureMode);
