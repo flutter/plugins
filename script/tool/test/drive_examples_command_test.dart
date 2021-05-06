@@ -145,6 +145,25 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
+    test('a plugin without any integration test files is reported as an error',
+        () async {
+      createFakePlugin('plugin',
+          withExtraFiles: <List<String>>[
+            <String>['example', 'lib', 'main.dart'],
+          ],
+          isAndroidPlugin: true,
+          isIosPlugin: true);
+
+      final Directory pluginExampleDirectory =
+          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      await expectLater(
+          () => runCapturingPrint(runner, <String>['drive-examples']),
+          throwsA(const TypeMatcher<ToolExit>()));
+    });
+
     test(
         'driving under folder "test_driver" when targets are under "integration_test"',
         () async {
@@ -555,6 +574,27 @@ void main() {
         orderedEquals(<String>[
           '\n==========\nChecking plugin...',
           'Not supported for the target platform; skipping.',
+          '\n\n',
+          'All driver tests successful!',
+        ]),
+      );
+
+      print(processRunner.recordedCalls);
+      // Output should be empty since running drive-examples --macos with no macos
+      // implementation is a no-op.
+      expect(processRunner.recordedCalls, <ProcessCall>[]);
+    });
+
+    test('platform interface plugins are silently skipped', () async {
+      createFakePlugin('aplugin_platform_interface');
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'drive-examples',
+      ]);
+
+      expect(
+        output,
+        orderedEquals(<String>[
           '\n\n',
           'All driver tests successful!',
         ]),
