@@ -154,19 +154,17 @@ public class Camera {
     recordingProfile =
         CameraUtils.getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
     previewSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
-    if(enableTakePictureWithMaxResolution)
-    {
-      captureSize = computeBestCaptureSize(cameraCharacteristics
-            .get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP));
+    if (enableTakePictureWithMaxResolution) {
+      captureSize =
+          computeBestCaptureSize(
+              cameraCharacteristics.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP));
       Log.i("Camera", "enableTakePictureWithMaxResolution");
-    }
-    else
-    {
+    } else {
       captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     }
     Log.i("Camera", "[Preview Resolution] :" + previewSize);
     Log.i("Camera", "[Capture Resolution] :" + captureSize);
-    
+
     cameraZoom =
         new CameraZoom(
             cameraCharacteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE),
@@ -332,7 +330,7 @@ public class Camera {
             }
             cameraCaptureSession = session;
 
-            updateFpsRange(); 
+            updateFpsRange();
             updateFocus(focusMode);
             updateFlash(flashMode);
             updateExposure(exposureMode);
