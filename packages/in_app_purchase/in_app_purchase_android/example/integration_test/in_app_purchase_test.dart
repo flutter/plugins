@@ -15,7 +15,8 @@ void main() {
       (WidgetTester tester) async {
     InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
     InAppPurchaseAndroidPlatform.registerPlatform();
-    final InAppPurchasePlatform androidPlatform = InAppPurchasePlatform.instance;
+    final InAppPurchasePlatform androidPlatform =
+        InAppPurchasePlatform.instance;
     expect(androidPlatform, isNotNull);
   });
 }
