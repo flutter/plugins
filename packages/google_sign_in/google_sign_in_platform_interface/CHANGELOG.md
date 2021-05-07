@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add `serverAuthCode` to `GoogleSignInUserData`
+
 ## 2.0.1
 
 * Updates `init` function in `MethodChannelGoogleSignIn` to parametrize `clientId` property.

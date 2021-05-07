@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <bool name="force_code_for_refresh_token">false</bool>
+</resources>

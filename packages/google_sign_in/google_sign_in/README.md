@@ -4,7 +4,7 @@
 
 A Flutter plugin for [Google Sign In](https://developers.google.com/identity/).
 
-*Note*: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
+_Note_: This plugin is still under development, and some APIs might not be available yet. [Feedback](https://github.com/flutter/flutter/issues) and [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
 ## Android integration
 
@@ -19,6 +19,8 @@ want to mimic the behavior of the Google Sign-In sample app, you'll need to
 enable the [Google People API](https://developers.google.com/people/).
 
 Make sure you've filled out all required fields in the console for [OAuth consent screen](https://console.developers.google.com/apis/credentials/consent). Otherwise, you may encounter `APIException` errors.
+
+If you need to force a server auth code to include a refresh token when exchanged for an access token, set `force_code_for_refresh_token` to true as in `google_sign_in/example/android/app/src/main/res/values/bools.xml`.
 
 ## iOS integration
 
@@ -63,9 +65,11 @@ plugin could be an option.
 ## Usage
 
 ### Import the package
+
 To use this plugin, follow the [plugin installation instructions](https://pub.dev/packages/google_sign_in#pub-pkg-tab-installing).
 
 ### Use the plugin
+
 Add the following import to your Dart code:
 
 ```dart
@@ -82,6 +86,7 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
   ],
 );
 ```
+
 [Full list of available scopes](https://developers.google.com/identity/protocols/googlescopes).
 
 You can now use the `GoogleSignIn` class to authenticate in your Dart code, e.g.
