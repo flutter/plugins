@@ -10,6 +10,8 @@ dependencies:
     sdk: flutter
 
   camera_platform_interface: ^2.0.0
+  camera_web:
+    path: ../camera_web
 
   pedantic: ^1.10.0
   quiver: ^3.0.0
@@ -36,6 +38,8 @@ flutter:
         pluginClass: CameraPlugin
       ios:
         pluginClass: CameraPlugin
+      web:
+        default_package: camera_web
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
