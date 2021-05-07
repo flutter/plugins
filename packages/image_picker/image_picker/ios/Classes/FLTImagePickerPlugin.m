@@ -367,14 +367,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
             if (image != nil) {
               __block UIImage *localImage = image;
               dispatch_async(dispatch_get_main_queue(), ^{
-                if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                  localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                                           maxWidth:maxWidth
-                                                          maxHeight:maxHeight];
-                }
-
                 PHAsset *originalAsset =
                     [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
+
+                if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                  localImage =
+                      [FLTImagePickerImageUtil scaledImage:localImage
+                                                  maxWidth:maxWidth
+                                                 maxHeight:maxHeight
+                                      metadataAvailability:originalAsset == nil ? NO : YES];
+                }
 
                 if (!originalAsset) {
                   // Image picked without an original asset (e.g. User took a photo directly)
@@ -449,11 +451,15 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
     NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
+    PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+
     if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+      image = [FLTImagePickerImageUtil scaledImage:image
+                                          maxWidth:maxWidth
+                                         maxHeight:maxHeight
+                              metadataAvailability:originalAsset == nil ? NO : YES];
     }
 
-    PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
       [self saveImageWithPickerInfo:info image:image imageQuality:desiredImageQuality];
