@@ -3,7 +3,7 @@
       {
          "name":"Windows Plugins",
          "repo":"plugins",
-         "enabled":true
+         "enabled":false
       }
    ]
 }
