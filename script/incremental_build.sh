@@ -73,15 +73,6 @@ if [[ "${BRANCH_NAME}" == "master" ]]; then
   echo "Running for all packages"
   (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 else
-  # Sets CHANGED_PACKAGES
-  check_changed_packages
-
-  if [[ "$CHANGED_PACKAGES" == "" ]]; then
-    echo "No changes detected in packages."
-    echo "Running for all packages"
-    (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
-  else
-    echo running "${ACTIONS[@]}"
-    (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --plugins="$CHANGED_PACKAGES" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
-  fi
+  echo running "${ACTIONS[@]}"
+  (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}"  --run-on-changed-packages --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 fi
