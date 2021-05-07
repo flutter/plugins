@@ -9,9 +9,9 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:quiver/collection.dart';
 
 // TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
