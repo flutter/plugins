@@ -79,7 +79,7 @@
   NSData *data = [FLTImagePickerMetaDataUtil convertImage:image
                                                 usingType:type
                                                   quality:imageQuality];
-  if (metaData) {
+  if (metaData && data) {
     data = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:data];
   }
 
