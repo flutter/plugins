@@ -27,6 +27,7 @@ class MediaTrackCapabilities {
   final List<String>? whiteBalanceMode;
   final DoubleRangeStep? focusDistance;
   final List<String>? focusMode;
+  final DoubleRangeStep? zoom;
 
   const MediaTrackCapabilities(
       this.aspectRatio,
@@ -53,7 +54,8 @@ class MediaTrackCapabilities {
       this.exposureMode,
       this.whiteBalanceMode,
       this.focusDistance,
-      this.focusMode);
+      this.focusMode,
+      this.zoom);
 
   static MediaTrackCapabilities? fromObject(Map<dynamic, dynamic> obj) {
     final aspectRatio = DoubleRange.decode(obj, 'aspectRatio');
@@ -82,6 +84,7 @@ class MediaTrackCapabilities {
     final whiteBalanceMode = nullOrType<List<dynamic>>(obj, 'whiteBalanceMode');
     final focusDistance = DoubleRangeStep.decode(obj, 'focusDistance');
     final focusMode = nullOrType<List<dynamic>>(obj, 'focusMode');
+    final zoom = nullOrType<DoubleRangeStep>(obj, 'zoom');
 
     return MediaTrackCapabilities(
         aspectRatio,
@@ -108,7 +111,7 @@ class MediaTrackCapabilities {
         exposureMode?.cast<String>(),
         whiteBalanceMode?.cast<String>(),
         focusDistance,
-        focusMode?.cast<String>());
+        focusMode?.cast<String>(), zoom);
   }
 
   @override
@@ -187,13 +190,16 @@ class MediaTrackCapabilities {
     if (focusMode != null) {
       buffer.writeln('FocusMode: $focusMode');
     }
+    if (zoom != null) {
+      buffer.writeln('Zoom: $zoom');
+    }
     return buffer.toString();
   }
 }
 
 class DoubleRange {
-  final double max;
-  final double min;
+  final num max;
+  final num min;
 
   const DoubleRange(this.max, this.min);
 
@@ -214,9 +220,9 @@ class DoubleRange {
 }
 
 class DoubleRangeStep {
-  final double max;
-  final double min;
-  final int step;
+  final num max;
+  final num min;
+  final num step;
 
   const DoubleRangeStep(this.max, this.min, this.step);
 

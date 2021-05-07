@@ -13,12 +13,16 @@ import 'media_track_capabilities.dart';
 ///
 class CameraPlugin extends CameraPlatform {
   int _nextId = 1;
-  
-  // Maybe use a tuple for these two values as well.
+
+  // Maybe use a tuple for these values as well.
   final _devices = <int, MediaDeviceInfo>{};
   final _previewEl = <int, VideoElement>{};
-  
-  final _camInitializer = StreamController<Tuple2<int, MediaStream>>.broadcast();
+  final _mediaStreams = <int, MediaStream>{};
+
+  final _camInitializer =
+      StreamController<Tuple2<int, MediaStream>>.broadcast();
+
+  final _canvas = CanvasElement();
 
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith(Registrar registrar) {
@@ -85,37 +89,96 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> dispose(int cameraId) async {
     _devices.remove(cameraId);
+    _mediaStreams.remove(cameraId);
     _previewEl.remove(cameraId)?.remove();
   }
 
   @override
-  Future<double> getExposureOffsetStepSize(int cameraId) {
-    // TODO: implement getExposureOffsetStepSize
-    throw UnimplementedError();
+  Future<double> getExposureOffsetStepSize(int cameraId) async {
+    //TODO: Throw if not initialized
+    final stream = _mediaStreams[cameraId];
+
+    if (stream == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    final track = stream.getVideoTracks().first;
+    final capabilities =
+    MediaTrackCapabilities.fromObject(track.getCapabilities());
+
+    //TODO: Not sure if exposureTime is the right property to implement this.
+    return capabilities?.exposureTime?.step.toDouble() ?? 0;
   }
 
   @override
-  Future<double> getMaxExposureOffset(int cameraId) {
-    // TODO: implement getMaxExposureOffset
-    throw UnimplementedError();
+  Future<double> getMaxExposureOffset(int cameraId) async {
+    //TODO: Throw if not initialized
+    final stream = _mediaStreams[cameraId];
+
+    if (stream == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    final track = stream.getVideoTracks().first;
+    final capabilities =
+    MediaTrackCapabilities.fromObject(track.getCapabilities());
+
+    //TODO: Not sure if exposureTime is the right property to implement this.
+    return capabilities?.exposureTime?.max.toDouble() ?? 0;
   }
 
   @override
-  Future<double> getMaxZoomLevel(int cameraId) {
-    // TODO: implement getMaxZoomLevel
-    throw UnimplementedError();
+  Future<double> getMaxZoomLevel(int cameraId) async {
+    //TODO: Throw if not initialized
+
+    final stream = _mediaStreams[cameraId];
+
+    if (stream == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    final track = stream.getVideoTracks().first;
+    final capabilities =
+        MediaTrackCapabilities.fromObject(track.getCapabilities());
+    return capabilities?.zoom?.max.toDouble() ?? 0;
+  }
+
+
+  @override
+  Future<double> getMinExposureOffset(int cameraId) async{
+    //TODO: Throw if not initialized
+    final stream = _mediaStreams[cameraId];
+
+    if (stream == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    final track = stream.getVideoTracks().first;
+    final capabilities =
+    MediaTrackCapabilities.fromObject(track.getCapabilities());
+
+    //TODO: Not sure if exposureTime is the right property to implement this.
+    return capabilities?.exposureTime?.min.toDouble() ?? 0;
   }
 
   @override
-  Future<double> getMinExposureOffset(int cameraId) {
-    // TODO: implement getMinExposureOffset
-    throw UnimplementedError();
-  }
+  Future<double> getMinZoomLevel(int cameraId) async {
+    //TODO: Throw if not initialized
+    final stream = _mediaStreams[cameraId];
 
-  @override
-  Future<double> getMinZoomLevel(int cameraId) {
-    // TODO: implement getMinZoomLevel
-    throw UnimplementedError();
+    if (stream == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    final track = stream.getVideoTracks().first;
+    final capabilities =
+        MediaTrackCapabilities.fromObject(track.getCapabilities());
+    return capabilities?.zoom?.min.toDouble() ?? 0;
   }
 
   @override
@@ -153,6 +216,7 @@ class CameraPlugin extends CameraPlatform {
     video.srcObject = userMedia;
     await video.play();
 
+    _mediaStreams[cameraId] = userMedia;
     _camInitializer.add(Tuple2(cameraId, userMedia));
   }
 
@@ -175,7 +239,6 @@ class CameraPlugin extends CameraPlatform {
     throw UnimplementedError();
   }
 
-
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
     final device = _devices[cameraId];
@@ -193,8 +256,8 @@ class CameraPlugin extends CameraPlatform {
       return CameraInitializedEvent(
           cameraId,
           //TODO: Not sure if using width and height .max is correct here.
-          capabilities?.width?.max ?? 0,
-          capabilities?.height?.max ?? 0,
+          capabilities?.width?.max.toDouble() ?? 1,
+          capabilities?.height?.max.toDouble() ?? 1,
           //TODO: Maybe use capabilities.exposureMode
           ExposureMode.auto,
           false,
@@ -205,14 +268,13 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
-    // TODO: implement onCameraResolutionChanged
-    throw UnimplementedError();
+  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) async* {
+    // TODO: This is not really implemented
   }
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() async* {
-    // Just to implement this
+    // TODO: This is not really implemented
   }
 
   @override
@@ -276,9 +338,19 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> setZoomLevel(int cameraId, double zoom) {
-    // TODO: implement setZoomLevel
-    throw UnimplementedError();
+  Future<void> setZoomLevel(int cameraId, double zoom) async {
+    final stream = _mediaStreams[cameraId];
+    if (stream == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    final track = stream.getVideoTracks().first;
+    await track.applyConstraints({
+      'advanced': [
+        {'zoom': zoom}
+      ]
+    });
   }
 
   @override
@@ -294,9 +366,24 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<XFile> takePicture(int cameraId) {
-    // TODO: implement takePicture
-    throw UnimplementedError();
+  Future<XFile> takePicture(int cameraId) async {
+    //TODO: Throw if not initialized
+
+    final video = _previewEl[cameraId];
+
+    if (video == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $cameraId was found');
+    }
+
+    _canvas.width = video.videoWidth;
+    _canvas.height = video.videoHeight;
+    final context = _canvas.context2D;
+    context.drawImage(video, 0, 0);
+
+    final data = _canvas.toDataUrl('image/png');
+    final uri = Uri.parse(data);
+    return XFile('picture.png', bytes: uri.data!.contentAsBytes());
   }
 
   @override
