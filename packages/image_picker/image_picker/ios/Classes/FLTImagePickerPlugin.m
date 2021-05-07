@@ -78,7 +78,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
 
-  [self checkPhotoAuthorization:PHPickerClassType];
+  [self checkPhotoAuthorizationForAccessLevel];
 }
 
 - (void)pickImageWithUIImagePicker {
@@ -98,7 +98,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     }
     case SOURCE_GALLERY:
-      [self checkPhotoAuthorization:UIImagePickerClassType];
+      [self checkPhotoAuthorization];
       break;
     default:
       self.result([FlutterError errorWithCode:@"invalid_source"
@@ -162,7 +162,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         [self checkCameraAuthorization];
         break;
       case SOURCE_GALLERY:
-        [self checkPhotoAuthorization:UIImagePickerClassType];
+        [self checkPhotoAuthorization];
         break;
       default:
         result([FlutterError errorWithCode:@"invalid_source"
@@ -232,14 +232,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)checkPhotoAuthorization:(ImagePickerClassType)imagePickerClassType {
+- (void)checkPhotoAuthorization {
   PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
         dispatch_async(dispatch_get_main_queue(), ^{
           if (status == PHAuthorizationStatusAuthorized) {
-            [self showPhotoLibrary:imagePickerClassType];
+            [self showPhotoLibrary:UIImagePickerClassType];
           } else {
             [self errorNoPhotoAccess:status];
           }
@@ -248,7 +248,38 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       break;
     }
     case PHAuthorizationStatusAuthorized:
-      [self showPhotoLibrary:imagePickerClassType];
+      [self showPhotoLibrary:UIImagePickerClassType];
+      break;
+    case PHAuthorizationStatusDenied:
+    case PHAuthorizationStatusRestricted:
+    default:
+      [self errorNoPhotoAccess:status];
+      break;
+  }
+}
+
+- (void)checkPhotoAuthorizationForAccessLevel API_AVAILABLE(ios(14)) {
+  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+  switch (status) {
+    case PHAuthorizationStatusNotDetermined: {
+      [PHPhotoLibrary
+          requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+                                     handler:^(PHAuthorizationStatus status) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                         if (status == PHAuthorizationStatusAuthorized) {
+                                           [self showPhotoLibrary:PHPickerClassType];
+                                         } else if (status == PHAuthorizationStatusLimited) {
+                                           [self showPhotoLibrary:PHPickerClassType];
+                                         } else {
+                                           [self errorNoPhotoAccess:status];
+                                         }
+                                       });
+                                     }];
+      break;
+    }
+    case PHAuthorizationStatusAuthorized:
+    case PHAuthorizationStatusLimited:
+      [self showPhotoLibrary:PHPickerClassType];
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
