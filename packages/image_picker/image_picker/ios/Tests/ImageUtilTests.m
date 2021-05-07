@@ -14,7 +14,10 @@
 
 - (void)testScaledImage_ShouldBeScaled {
   UIImage *image = [UIImage imageWithData:ImagePickerTestImages.JPGTestData];
-  UIImage *newImage = [FLTImagePickerImageUtil scaledImage:image maxWidth:@3 maxHeight:@2];
+  UIImage *newImage = [FLTImagePickerImageUtil scaledImage:image
+                                                  maxWidth:@3
+                                                 maxHeight:@2
+                                      metadataAvailability:YES];
 
   XCTAssertEqual(newImage.size.width, 3);
   XCTAssertEqual(newImage.size.height, 2);
