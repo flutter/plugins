@@ -1,3 +1,7 @@
+## 5.0.3-dev
+
+* Fixed links in `README.md`.
+
 ## 5.0.2
 
 * Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
