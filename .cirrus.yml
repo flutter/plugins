@@ -262,7 +262,7 @@ task:
   << : *FLUTTER_UPGRADE_TEMPLATE
   gke_container:
     dockerfile: .ci/DockerfileWindows
-    builder_image_name: docker-builder # gce vm image
+    builder_image_name: docker-builder-win # gce vm image
     builder_image_project: flutter-cirrus
     cluster_name: test-cluster
     zone: us-central1-a
