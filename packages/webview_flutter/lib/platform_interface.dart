@@ -391,6 +391,7 @@ class WebSettings {
   /// The `userAgent` parameter must not be null.
   WebSettings({
     this.javascriptMode,
+    this.mixedContentMode,
     this.hasNavigationDelegate,
     this.hasProgressTracking,
     this.debuggingEnabled,
@@ -401,6 +402,9 @@ class WebSettings {
 
   /// The JavaScript execution mode to be used by the webview.
   final JavascriptMode? javascriptMode;
+
+  ///mixedContentMode in WebSettings
+  final MixedContentMode? mixedContentMode;
 
   /// Whether the [WebView] has a [NavigationDelegate] set.
   final bool? hasNavigationDelegate;
