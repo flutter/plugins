@@ -1,5 +1,8 @@
+// ignore_for_file: public_member_api_docs
+
 import 'dart:async';
 import 'dart:html';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -10,17 +13,49 @@ import 'package:tuple/tuple.dart';
 
 import 'media_track_capabilities.dart';
 
+class CameraInfo {
+  /// Device id assinged by the plugin
+  final int id;
+
+  bool disposed = false;
+  bool initialized = false;
+
+  MediaDeviceInfo? deviceInfo;
+  VideoElement? videoElement;
+  MediaStream? stream;
+  MediaRecorder? recorder;
+
+  CameraInfo(this.id);
+}
+
+extension on Map<int, CameraInfo> {
+  //TODO: Find better naming.
+  CameraInfo get(int id,
+      {bool throwNotInitialized = true, bool throwDisposed = true}) {
+    final e = this[id];
+    if (e == null) {
+      throw CameraException(
+          'CameraId not found.', 'No camera with $id was found');
+    }
+    if (throwNotInitialized && !e.initialized) {
+      throw CameraException(
+          'Camera not initialized', 'Camera $id is not initialized');
+    }
+    if (throwDisposed && e.disposed) {
+      throw CameraException('Camera disposed', 'Camera $id is disposed');
+    }
+    return e;
+  }
+}
+
 ///
 class CameraPlugin extends CameraPlatform {
   int _nextId = 1;
 
-  // Maybe use a tuple for these values as well.
-  final _devices = <int, MediaDeviceInfo>{};
-  final _previewEl = <int, VideoElement>{};
-  final _mediaStreams = <int, MediaStream>{};
+  final _cameras = <int, CameraInfo>{};
 
   final _camInitializer =
-      StreamController<Tuple2<int, MediaStream>>.broadcast();
+      StreamController<Tuple2<int, CameraEvent>>.broadcast();
 
   final _canvas = CanvasElement();
 
@@ -79,33 +114,28 @@ class CameraPlugin extends CameraPlatform {
           'Couldn\'t find a camera labeled: ${cameraDescription.name}');
     }
 
-    final device = l.first;
-    final id = _nextId++;
-    _devices[id] = device;
+    final device = CameraInfo(_nextId++);
+    device.deviceInfo = l.first;
 
-    return id;
+    _cameras[device.id] = device;
+
+    return device.id;
   }
 
   @override
   Future<void> dispose(int cameraId) async {
-    _devices.remove(cameraId);
-    _mediaStreams.remove(cameraId);
-    _previewEl.remove(cameraId)?.remove();
+    _cameras[cameraId]?.videoElement?.remove();
+    _cameras[cameraId]?.disposed = true;
   }
 
   @override
   Future<double> getExposureOffsetStepSize(int cameraId) async {
-    //TODO: Throw if not initialized
-    final stream = _mediaStreams[cameraId];
-
-    if (stream == null) {
-      throw CameraException(
-          'CameraId not found.', 'No camera with $cameraId was found');
-    }
+    //TODO: Throw if not initialized or disposed
+    final stream = _cameras.get(cameraId).stream!;
 
     final track = stream.getVideoTracks().first;
     final capabilities =
-    MediaTrackCapabilities.fromObject(track.getCapabilities());
+        MediaTrackCapabilities.fromObject(track.getCapabilities());
 
     //TODO: Not sure if exposureTime is the right property to implement this.
     return capabilities?.exposureTime?.step.toDouble() ?? 0;
@@ -113,8 +143,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<double> getMaxExposureOffset(int cameraId) async {
-    //TODO: Throw if not initialized
-    final stream = _mediaStreams[cameraId];
+    final stream = _cameras.get(cameraId).stream!;
 
     if (stream == null) {
       throw CameraException(
@@ -123,7 +152,7 @@ class CameraPlugin extends CameraPlatform {
 
     final track = stream.getVideoTracks().first;
     final capabilities =
-    MediaTrackCapabilities.fromObject(track.getCapabilities());
+        MediaTrackCapabilities.fromObject(track.getCapabilities());
 
     //TODO: Not sure if exposureTime is the right property to implement this.
     return capabilities?.exposureTime?.max.toDouble() ?? 0;
@@ -131,9 +160,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<double> getMaxZoomLevel(int cameraId) async {
-    //TODO: Throw if not initialized
-
-    final stream = _mediaStreams[cameraId];
+    final stream = _cameras.get(cameraId).stream!;
 
     if (stream == null) {
       throw CameraException(
@@ -146,11 +173,9 @@ class CameraPlugin extends CameraPlatform {
     return capabilities?.zoom?.max.toDouble() ?? 0;
   }
 
-
   @override
-  Future<double> getMinExposureOffset(int cameraId) async{
-    //TODO: Throw if not initialized
-    final stream = _mediaStreams[cameraId];
+  Future<double> getMinExposureOffset(int cameraId) async {
+    final stream = _cameras.get(cameraId).stream!;
 
     if (stream == null) {
       throw CameraException(
@@ -159,7 +184,7 @@ class CameraPlugin extends CameraPlatform {
 
     final track = stream.getVideoTracks().first;
     final capabilities =
-    MediaTrackCapabilities.fromObject(track.getCapabilities());
+        MediaTrackCapabilities.fromObject(track.getCapabilities());
 
     //TODO: Not sure if exposureTime is the right property to implement this.
     return capabilities?.exposureTime?.min.toDouble() ?? 0;
@@ -167,13 +192,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<double> getMinZoomLevel(int cameraId) async {
-    //TODO: Throw if not initialized
-    final stream = _mediaStreams[cameraId];
-
-    if (stream == null) {
-      throw CameraException(
-          'CameraId not found.', 'No camera with $cameraId was found');
-    }
+    final stream = _cameras.get(cameraId).stream!;
 
     final track = stream.getVideoTracks().first;
     final capabilities =
@@ -184,13 +203,8 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> initializeCamera(int cameraId,
       {ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown}) async {
-    final device = _devices[cameraId];
-    if (device == null) {
-      throw CameraException(
-          'CameraId not found.', 'No camera with $cameraId was found');
-    }
-
-    if (_previewEl[cameraId] != null) {
+    final camera = _cameras.get(cameraId, throwNotInitialized: false);
+    if (camera.initialized) {
       return;
     }
 
@@ -198,7 +212,7 @@ class CameraPlugin extends CameraPlatform {
     try {
       userMedia = await window.navigator.mediaDevices!.getUserMedia({
         'video': {
-          'deviceId': {'exact': device.deviceId}
+          'deviceId': {'exact': camera.deviceInfo!.deviceId}
         },
         'audio': false
       });
@@ -211,13 +225,31 @@ class CameraPlugin extends CameraPlatform {
     ui.platformViewRegistry
         .registerViewFactory('video-view-$cameraId', (int viewId) => video);
 
-    _previewEl[cameraId] = video;
+    camera.videoElement = video;
 
     video.srcObject = userMedia;
     await video.play();
 
-    _mediaStreams[cameraId] = userMedia;
-    _camInitializer.add(Tuple2(cameraId, userMedia));
+    camera.stream = userMedia;
+
+    final videoTrack = userMedia.getVideoTracks().first;
+    final capabilities =
+        MediaTrackCapabilities.fromObject(videoTrack.getCapabilities());
+
+    camera.initialized = true;
+    _camInitializer.add(Tuple2(
+        cameraId,
+        CameraInitializedEvent(
+            cameraId,
+            //TODO: Not sure if using width and height .max is correct here.
+            capabilities?.width?.max.toDouble() ?? 1,
+            capabilities?.height?.max.toDouble() ?? 1,
+            //TODO: Maybe use capabilities.exposureMode
+            ExposureMode.auto,
+            false,
+            //TODO: Maybe use capabilities.focusMode
+            FocusMode.auto,
+            false)));
   }
 
   @override
@@ -241,34 +273,16 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
-    final device = _devices[cameraId];
-    if (device == null) {
-      throw CameraException(
-          'CameraId not found.', 'No camera with $cameraId was found');
-    }
+    //TODO: Throw if camera id is disposed or not initialized (?)
 
-    return _camInitializer.stream.where((e) => e.item1 == cameraId).map((e) {
-      final userMedia = e.item2;
-
-      final videoTrack = userMedia.getVideoTracks().first;
-      final capabilities =
-          MediaTrackCapabilities.fromObject(videoTrack.getCapabilities());
-      return CameraInitializedEvent(
-          cameraId,
-          //TODO: Not sure if using width and height .max is correct here.
-          capabilities?.width?.max.toDouble() ?? 1,
-          capabilities?.height?.max.toDouble() ?? 1,
-          //TODO: Maybe use capabilities.exposureMode
-          ExposureMode.auto,
-          false,
-          //TODO: Maybe use capabilities.focusMode
-          FocusMode.auto,
-          false);
-    });
+    return _camInitializer.stream
+        .where((e) => e.item1 == cameraId && e.item2 is CameraInitializedEvent)
+        .map((e) => e.item2 as CameraInitializedEvent);
   }
 
   @override
-  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) async* {
+  Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(
+      int cameraId) async* {
     // TODO: This is not really implemented
   }
 
@@ -279,14 +293,20 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
-    // TODO: implement onVideoRecordedEvent
-    throw UnimplementedError();
+    //TODO: Throw if camera id is disposed, not initialized or not recording(?)
+
+    return _camInitializer.stream
+        .where((e) => e.item1 == cameraId && e.item2 is VideoRecordedEvent)
+        .map((e) => e.item2 as VideoRecordedEvent);
   }
 
   @override
-  Future<void> pauseVideoRecording(int cameraId) {
-    // TODO: implement pauseVideoRecording
-    throw UnimplementedError();
+  Future<void> pauseVideoRecording(int cameraId) async {
+    final recorder = _cameras.get(cameraId).recorder;
+    if (recorder == null) {
+      throw CameraException('Recording not started', '');
+    }
+    recorder.pause();
   }
 
   @override
@@ -296,9 +316,12 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> resumeVideoRecording(int cameraId) {
-    // TODO: implement resumeVideoRecording
-    throw UnimplementedError();
+  Future<void> resumeVideoRecording(int cameraId) async {
+    final recorder = _cameras.get(cameraId).recorder;
+    if (recorder == null) {
+      throw CameraException('Recording not started', '');
+    }
+    recorder.resume();
   }
 
   @override
@@ -339,11 +362,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {
-    final stream = _mediaStreams[cameraId];
-    if (stream == null) {
-      throw CameraException(
-          'CameraId not found.', 'No camera with $cameraId was found');
-    }
+    final stream = _cameras.get(cameraId).stream!;
 
     final track = stream.getVideoTracks().first;
     await track.applyConstraints({
@@ -354,22 +373,54 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
-    // TODO: implement startVideoRecording
-    throw UnimplementedError();
+  Future<void> startVideoRecording(int cameraId,
+      {Duration? maxVideoDuration}) async {
+    // TODO: Implement maxVideoDuration
+
+    final camera = _cameras.get(cameraId);
+    if (camera.recorder != null) {
+      throw CameraException('Recording already started.', '');
+    }
+
+    final recorder = MediaRecorder(camera.stream!, {
+      'mimeType': 'video/webm',
+    });
+    recorder.start();
+
+    recorder.addEventListener('dataavailable', (event) async {
+      final blobEvent = event as BlobEvent;
+      final fileReader = FileReader();
+      fileReader.onLoad.listen((event) {
+        _camInitializer.add(Tuple2(
+            cameraId,
+            VideoRecordedEvent(
+                cameraId,
+                XFile('recording.webm', bytes: fileReader.result as Uint8List),
+                Duration.zero)));
+      });
+      fileReader.readAsArrayBuffer(blobEvent.data!);
+    });
+
+    camera.recorder = recorder;
   }
 
   @override
-  Future<XFile> stopVideoRecording(int cameraId) {
-    // TODO: implement stopVideoRecording
-    throw UnimplementedError();
+  Future<XFile> stopVideoRecording(int cameraId) async {
+    final recorder = _cameras.get(cameraId).recorder;
+    if (recorder == null) {
+      throw CameraException('Camera not initialized', '');
+    }
+    recorder.stop();
+
+    final event = await onVideoRecordedEvent(cameraId).first;
+    return event.file;
   }
 
   @override
   Future<XFile> takePicture(int cameraId) async {
     //TODO: Throw if not initialized
 
-    final video = _previewEl[cameraId];
+    final video = _cameras.get(cameraId).videoElement;
 
     if (video == null) {
       throw CameraException(
