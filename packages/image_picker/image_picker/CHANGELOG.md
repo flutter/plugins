@@ -1,3 +1,7 @@
+## 0.7.5
+
+* Support targeting Android 11 (API level 30)
+
 ## 0.7.4
 
 * Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
