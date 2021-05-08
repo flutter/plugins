@@ -81,18 +81,38 @@ class CameraPlugin extends CameraPlatform {
         .cast<MediaDeviceInfo>();
 
     //TODO: Call 'getCapabilities' to get lensDirection.
-    return devices
-        .where((e) => e.kind == 'videoinput')
-        .map((e) => CameraDescription(
-            name: e.label ?? '',
-            lensDirection: CameraLensDirection.external,
-            sensorOrientation: 0))
-        .toList();
+
+    return Future.wait<CameraDescription>(
+        devices.where((e) => e.kind == 'videoinput').map((e) async {
+      final userMedia = await window.navigator.mediaDevices!.getUserMedia({
+        'video': {
+          'deviceId': {'exact': e.deviceId}
+        },
+        'audio': false
+      });
+
+      final track = userMedia.getVideoTracks().first;
+      final facingMode =
+          MediaTrackCapabilities.fromObject(track.getCapabilities())
+                  ?.facingMode ??
+              [];
+      var direction = CameraLensDirection.external;
+      if (facingMode.isNotEmpty) {
+        if (facingMode.first == 'user') {
+          direction = CameraLensDirection.front;
+        } else if (facingMode.first == 'environment') {
+          direction = CameraLensDirection.back;
+        }
+      }
+
+      return CameraDescription(
+          name: e.label ?? '', lensDirection: direction, sensorOrientation: 0);
+    }).toList());
   }
 
   @override
   Widget buildPreview(int cameraId) {
-    //TODO: Throw if not initialized.
+    _cameras.get(cameraId);
 
     return HtmlElementView(viewType: 'video-view-$cameraId');
   }
@@ -237,6 +257,7 @@ class CameraPlugin extends CameraPlatform {
         MediaTrackCapabilities.fromObject(videoTrack.getCapabilities());
 
     camera.initialized = true;
+
     _camInitializer.add(Tuple2(
         cameraId,
         CameraInitializedEvent(
@@ -309,11 +330,9 @@ class CameraPlugin extends CameraPlatform {
     recorder.pause();
   }
 
+  /// Not needed in web
   @override
-  Future<void> prepareForVideoRecording() {
-    // TODO: implement prepareForVideoRecording
-    throw UnimplementedError();
-  }
+  Future<void> prepareForVideoRecording() async {}
 
   @override
   Future<void> resumeVideoRecording(int cameraId) async {
@@ -375,15 +394,13 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> startVideoRecording(int cameraId,
       {Duration? maxVideoDuration}) async {
-    // TODO: Implement maxVideoDuration
-
     final camera = _cameras.get(cameraId);
     if (camera.recorder != null) {
       throw CameraException('Recording already started.', '');
     }
 
     final recorder = MediaRecorder(camera.stream!, {
-      'mimeType': 'video/webm',
+      'mimeType': 'video/webm;codecs=VP8',
     });
     recorder.start();
 
@@ -395,7 +412,8 @@ class CameraPlugin extends CameraPlatform {
             cameraId,
             VideoRecordedEvent(
                 cameraId,
-                XFile('recording.webm', bytes: fileReader.result as Uint8List),
+                XFile.fromData(fileReader.result as Uint8List,
+                    mimeType: 'video/webm;codecs=VP8'),
                 Duration.zero)));
       });
       fileReader.readAsArrayBuffer(blobEvent.data!);
@@ -418,8 +436,6 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<XFile> takePicture(int cameraId) async {
-    //TODO: Throw if not initialized
-
     final video = _cameras.get(cameraId).videoElement;
 
     if (video == null) {
@@ -434,7 +450,7 @@ class CameraPlugin extends CameraPlatform {
 
     final data = _canvas.toDataUrl('image/png');
     final uri = Uri.parse(data);
-    return XFile('picture.png', bytes: uri.data!.contentAsBytes());
+    return XFile.fromData(uri.data!.contentAsBytes(), mimeType: 'image/png');
   }
 
   @override
