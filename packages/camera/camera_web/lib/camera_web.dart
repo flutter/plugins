@@ -66,6 +66,11 @@ class CameraPlugin extends CameraPlatform {
 
   // This is needed before every call to ensure to have the devices description.
   Future<void> _requestPermission() async {
+    if (window.navigator.mediaDevices == null) {
+      throw CameraException(
+          'MediaDevice API not supported in this browser!', '');
+    }
+
     try {
       await window.navigator.mediaDevices!.getUserMedia({'video': true});
     } on DomException catch (e) {
@@ -275,9 +280,27 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<void> lockCaptureOrientation(
-      int cameraId, DeviceOrientation orientation) {
-    // TODO: implement lockCaptureOrientation
-    throw UnimplementedError();
+      int cameraId, DeviceOrientation deviceOrientation) async {
+    if (window.screen == null || window.screen!.orientation == null) {
+      throw CameraException('Screen API not available in this browser.', '');
+    }
+
+    late final String orientation;
+    switch (deviceOrientation) {
+      case DeviceOrientation.portraitUp:
+        orientation = 'portrait-primary';
+        break;
+      case DeviceOrientation.landscapeLeft:
+        orientation = 'landscape-primary';
+        break;
+      case DeviceOrientation.portraitDown:
+        orientation = 'portrait-secondary';
+        break;
+      case DeviceOrientation.landscapeRight:
+        orientation = 'landscape-secondary';
+        break;
+    }
+    await window.screen!.orientation!.lock(orientation);
   }
 
   @override
@@ -374,12 +397,6 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> setFocusPoint(int cameraId, Point<double>? point) {
-    // TODO: implement setFocusPoint
-    throw UnimplementedError();
-  }
-
-  @override
   Future<void> setZoomLevel(int cameraId, double zoom) async {
     final stream = _cameras.get(cameraId).stream!;
 
@@ -454,8 +471,11 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> unlockCaptureOrientation(int cameraId) {
-    // TODO: implement unlockCaptureOrientation
-    throw UnimplementedError();
+  Future<void> unlockCaptureOrientation(int cameraId) async {
+    if (window.screen == null || window.screen!.orientation == null) {
+      throw CameraException('Screen API not available in this browser.', '');
+    }
+
+    window.screen!.orientation!.unlock();
   }
 }
