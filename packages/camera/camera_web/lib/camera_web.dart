@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:html';
+import 'dart:js_util' as js_util;
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -64,6 +65,15 @@ class CameraPlugin extends CameraPlatform {
     CameraPlatform.instance = CameraPlugin();
   }
 
+  static MediaTrackCapabilities? _getCapabilities(MediaStreamTrack track) {
+    // In firefox 'getCapabilities' is not implemented.
+    final p = js_util.getProperty(track, 'getCapabilities');
+    if (p == null) {
+      return null;
+    }
+    return MediaTrackCapabilities.fromObject(track.getCapabilities());
+  }
+
   // This is needed before every call to ensure to have the devices description.
   Future<void> _requestPermission() async {
     if (window.navigator.mediaDevices == null) {
@@ -97,10 +107,8 @@ class CameraPlugin extends CameraPlatform {
       });
 
       final track = userMedia.getVideoTracks().first;
-      final facingMode =
-          MediaTrackCapabilities.fromObject(track.getCapabilities())
-                  ?.facingMode ??
-              [];
+
+      final facingMode = _getCapabilities(track)?.facingMode ?? [];
       var direction = CameraLensDirection.external;
       if (facingMode.isNotEmpty) {
         if (facingMode.first == 'user') {
@@ -159,8 +167,7 @@ class CameraPlugin extends CameraPlatform {
     final stream = _cameras.get(cameraId).stream!;
 
     final track = stream.getVideoTracks().first;
-    final capabilities =
-        MediaTrackCapabilities.fromObject(track.getCapabilities());
+    final capabilities = _getCapabilities(track);
 
     //TODO: Not sure if exposureTime is the right property to implement this.
     return capabilities?.exposureTime?.step.toDouble() ?? 0;
@@ -176,12 +183,12 @@ class CameraPlugin extends CameraPlatform {
     }
 
     final track = stream.getVideoTracks().first;
-    final capabilities =
-        MediaTrackCapabilities.fromObject(track.getCapabilities());
+    final capabilities = _getCapabilities(track);
 
     //TODO: Not sure if exposureTime is the right property to implement this.
     return capabilities?.exposureTime?.max.toDouble() ?? 0;
   }
+
 
   @override
   Future<double> getMaxZoomLevel(int cameraId) async {
@@ -193,8 +200,7 @@ class CameraPlugin extends CameraPlatform {
     }
 
     final track = stream.getVideoTracks().first;
-    final capabilities =
-        MediaTrackCapabilities.fromObject(track.getCapabilities());
+    final capabilities = _getCapabilities(track);
     return capabilities?.zoom?.max.toDouble() ?? 0;
   }
 
@@ -208,10 +214,7 @@ class CameraPlugin extends CameraPlatform {
     }
 
     final track = stream.getVideoTracks().first;
-    final capabilities =
-        MediaTrackCapabilities.fromObject(track.getCapabilities());
-
-    //TODO: Not sure if exposureTime is the right property to implement this.
+    final capabilities = _getCapabilities(track);
     return capabilities?.exposureTime?.min.toDouble() ?? 0;
   }
 
@@ -220,8 +223,7 @@ class CameraPlugin extends CameraPlatform {
     final stream = _cameras.get(cameraId).stream!;
 
     final track = stream.getVideoTracks().first;
-    final capabilities =
-        MediaTrackCapabilities.fromObject(track.getCapabilities());
+    final capabilities = _getCapabilities(track);
     return capabilities?.zoom?.min.toDouble() ?? 0;
   }
 
@@ -247,8 +249,12 @@ class CameraPlugin extends CameraPlatform {
     }
 
     final video = VideoElement();
+
+    // See https://github.com/flutter/flutter/issues/41563
+    // ignore: undefined_prefixed_name
     ui.platformViewRegistry
         .registerViewFactory('video-view-$cameraId', (int viewId) => video);
+    //TODO: Does the view factory need to be disposed?
 
     camera.videoElement = video;
 
@@ -257,9 +263,8 @@ class CameraPlugin extends CameraPlatform {
 
     camera.stream = userMedia;
 
-    final videoTrack = userMedia.getVideoTracks().first;
-    final capabilities =
-        MediaTrackCapabilities.fromObject(videoTrack.getCapabilities());
+    final track = userMedia.getVideoTracks().first;
+    final capabilities = _getCapabilities(track);
 
     camera.initialized = true;
 
@@ -417,7 +422,7 @@ class CameraPlugin extends CameraPlatform {
     }
 
     final recorder = MediaRecorder(camera.stream!, {
-      'mimeType': 'video/webm;codecs=VP8',
+      'mimeType': 'video/webm;codecs=vp8',
     });
     recorder.start();
 
@@ -430,7 +435,7 @@ class CameraPlugin extends CameraPlatform {
             VideoRecordedEvent(
                 cameraId,
                 XFile.fromData(fileReader.result as Uint8List,
-                    mimeType: 'video/webm;codecs=VP8'),
+                    mimeType: 'video/webm;codecs=vp8'),
                 Duration.zero)));
       });
       fileReader.readAsArrayBuffer(blobEvent.data!);

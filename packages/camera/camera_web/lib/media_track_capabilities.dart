@@ -57,7 +57,7 @@ class MediaTrackCapabilities {
       this.focusMode,
       this.zoom);
 
-  static MediaTrackCapabilities? fromObject(Map<dynamic, dynamic> obj) {
+  static MediaTrackCapabilities fromObject(Map<dynamic, dynamic> obj) {
     final aspectRatio = DoubleRange.decode(obj, 'aspectRatio');
     final autoGainControl = nullOrType<List<bool>>(obj, 'autoGainControl');
     final channelCount = DoubleRange.decode(obj, 'channelCount');
