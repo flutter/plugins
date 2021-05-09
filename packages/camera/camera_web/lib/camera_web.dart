@@ -10,12 +10,11 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:tuple/tuple.dart';
 
 import 'media_track_capabilities.dart';
 
 class CameraInfo {
-  /// Device id assinged by the plugin
+  /// Device id assigned by the plugin
   final int id;
 
   bool disposed = false;
@@ -30,7 +29,6 @@ class CameraInfo {
 }
 
 extension on Map<int, CameraInfo> {
-  //TODO: Find better naming.
   CameraInfo get(int id,
       {bool throwNotInitialized = true, bool throwDisposed = true}) {
     final e = this[id];
@@ -55,8 +53,7 @@ class CameraPlugin extends CameraPlatform {
 
   final _cameras = <int, CameraInfo>{};
 
-  final _camInitializer =
-      StreamController<Tuple2<int, CameraEvent>>.broadcast();
+  final _cameraEvents = StreamController<CameraEvent>.broadcast();
 
   final _canvas = CanvasElement();
 
@@ -74,28 +71,14 @@ class CameraPlugin extends CameraPlatform {
     return MediaTrackCapabilities.fromObject(track.getCapabilities());
   }
 
-  // This is needed before every call to ensure to have the devices description.
-  Future<void> _requestPermission() async {
-    if (window.navigator.mediaDevices == null) {
-      throw CameraException(
-          'MediaDevice API not supported in this browser!', '');
-    }
-
-    try {
-      await window.navigator.mediaDevices!.getUserMedia({'video': true});
-    } on DomException catch (e) {
-      throw CameraException(e.name, e.message);
-    }
-  }
-
   @override
   Future<List<CameraDescription>> availableCameras() async {
-    await _requestPermission();
-
+    if (window.navigator.mediaDevices == null) {
+      throw CameraException('The MediaDevices API is not supported!',
+          'No MediaDevice found, either the browser doesn\'t support it, or you are in an un-safe context.');
+    }
     final devices = (await window.navigator.mediaDevices!.enumerateDevices())
         .cast<MediaDeviceInfo>();
-
-    //TODO: Call 'getCapabilities' to get lensDirection.
 
     return Future.wait<CameraDescription>(
         devices.where((e) => e.kind == 'videoinput').map((e) async {
@@ -108,12 +91,20 @@ class CameraPlugin extends CameraPlatform {
 
       final track = userMedia.getVideoTracks().first;
 
-      final facingMode = _getCapabilities(track)?.facingMode ?? [];
+      //TODO: Use getSettings
+      final settings = track.getSettings();
+      var facingMode = settings['facingMode'];
+      if (facingMode == null) {
+        final capabilities = _getCapabilities(track)?.facingMode ?? const [];
+        if (capabilities.isNotEmpty) {
+          facingMode = capabilities.first;
+        }
+      }
       var direction = CameraLensDirection.external;
-      if (facingMode.isNotEmpty) {
-        if (facingMode.first == 'user') {
+      if (facingMode != null) {
+        if (facingMode == 'user') {
           direction = CameraLensDirection.front;
-        } else if (facingMode.first == 'environment') {
+        } else if (facingMode == 'environment') {
           direction = CameraLensDirection.back;
         }
       }
@@ -135,7 +126,11 @@ class CameraPlugin extends CameraPlatform {
       CameraDescription cameraDescription, ResolutionPreset? resolutionPreset,
       {bool enableAudio = false}) async {
     // TODO: implement enableAudio and resolutionPreset.
-    await _requestPermission();
+
+    if (window.navigator.mediaDevices == null) {
+      throw CameraException('The MediaDevices API is not supported!',
+          'No MediaDevice found, either the browser doesn\'t support it, or you are in an un-safe context.');
+    }
 
     final devices = (await window.navigator.mediaDevices!.enumerateDevices())
         .cast<MediaDeviceInfo>();
@@ -159,6 +154,9 @@ class CameraPlugin extends CameraPlatform {
   Future<void> dispose(int cameraId) async {
     _cameras[cameraId]?.videoElement?.remove();
     _cameras[cameraId]?.disposed = true;
+
+    //TODO: Not sure if this is needed
+    _cameras[cameraId]?.stream?.getVideoTracks().first.stop();
   }
 
   @override
@@ -188,7 +186,6 @@ class CameraPlugin extends CameraPlatform {
     //TODO: Not sure if exposureTime is the right property to implement this.
     return capabilities?.exposureTime?.max.toDouble() ?? 0;
   }
-
 
   @override
   Future<double> getMaxZoomLevel(int cameraId) async {
@@ -230,6 +227,11 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> initializeCamera(int cameraId,
       {ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown}) async {
+    if (window.navigator.mediaDevices == null) {
+      throw CameraException('The MediaDevices API is not supported!',
+          'No MediaDevice found, either the browser doesn\'t support it, or you are in an un-safe context.');
+    }
+
     final camera = _cameras.get(cameraId, throwNotInitialized: false);
     if (camera.initialized) {
       return;
@@ -257,9 +259,18 @@ class CameraPlugin extends CameraPlatform {
     //TODO: Does the view factory need to be disposed?
 
     camera.videoElement = video;
-
     video.srcObject = userMedia;
-    await video.play();
+
+    try {
+      await video.play();
+    } catch (e) {
+      // This happens only in chrome and when the code is run from the build files (flutter build).
+      // Tough this can be ignored without any further issues.
+      if (!e.toString().toLowerCase().contains(
+          'the play() request was interrupted by a call to pause()')) {
+        rethrow;
+      }
+    }
 
     camera.stream = userMedia;
 
@@ -268,19 +279,16 @@ class CameraPlugin extends CameraPlatform {
 
     camera.initialized = true;
 
-    _camInitializer.add(Tuple2(
+    _cameraEvents.add(CameraInitializedEvent(
         cameraId,
-        CameraInitializedEvent(
-            cameraId,
-            //TODO: Not sure if using width and height .max is correct here.
-            capabilities?.width?.max.toDouble() ?? 1,
-            capabilities?.height?.max.toDouble() ?? 1,
-            //TODO: Maybe use capabilities.exposureMode
-            ExposureMode.auto,
-            false,
-            //TODO: Maybe use capabilities.focusMode
-            FocusMode.auto,
-            false)));
+        capabilities?.width?.max.toDouble() ?? video.videoWidth.toDouble(),
+        capabilities?.height?.max.toDouble() ?? video.videoHeight.toDouble(),
+        //TODO: Maybe use settings/capabilities.exposureMode
+        ExposureMode.auto,
+        false,
+        //TODO: Maybe use settings/capabilities.focusMode
+        FocusMode.auto,
+        false));
   }
 
   @override
@@ -324,9 +332,9 @@ class CameraPlugin extends CameraPlatform {
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
     //TODO: Throw if camera id is disposed or not initialized (?)
 
-    return _camInitializer.stream
-        .where((e) => e.item1 == cameraId && e.item2 is CameraInitializedEvent)
-        .map((e) => e.item2 as CameraInitializedEvent);
+    return _cameraEvents.stream
+        .where((e) => e is CameraInitializedEvent && e.cameraId == cameraId)
+        .cast<CameraInitializedEvent>();
   }
 
   @override
@@ -344,9 +352,9 @@ class CameraPlugin extends CameraPlatform {
   Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
     //TODO: Throw if camera id is disposed, not initialized or not recording(?)
 
-    return _camInitializer.stream
-        .where((e) => e.item1 == cameraId && e.item2 is VideoRecordedEvent)
-        .map((e) => e.item2 as VideoRecordedEvent);
+    return _cameraEvents.stream
+        .where((e) => e is VideoRecordedEvent && e.cameraId == cameraId)
+        .cast<VideoRecordedEvent>();
   }
 
   @override
@@ -429,16 +437,14 @@ class CameraPlugin extends CameraPlatform {
     recorder.addEventListener('dataavailable', (event) async {
       final blobEvent = event as BlobEvent;
       final fileReader = FileReader();
-      fileReader.onLoad.listen((event) {
-        _camInitializer.add(Tuple2(
-            cameraId,
-            VideoRecordedEvent(
-                cameraId,
-                XFile.fromData(fileReader.result as Uint8List,
-                    mimeType: 'video/webm;codecs=vp8'),
-                Duration.zero)));
-      });
       fileReader.readAsArrayBuffer(blobEvent.data!);
+
+      await fileReader.onLoad.first;
+      _cameraEvents.add(VideoRecordedEvent(
+          cameraId,
+          XFile.fromData(fileReader.result as Uint8List,
+              mimeType: 'video/webm;codecs=vp8'),
+          Duration.zero));
     });
 
     camera.recorder = recorder;

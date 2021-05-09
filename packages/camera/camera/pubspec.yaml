@@ -10,6 +10,8 @@ dependencies:
     sdk: flutter
 
   camera_platform_interface: ^2.0.0
+
+  #TODO: Not sure on which version the plugin is going to be published.
   camera_web:
     path: ../camera_web
 
@@ -29,6 +31,7 @@ dev_dependencies:
   # every version of flutter_driver from sdk depends on crypto 2.1.5.
   mockito: ^5.0.0-nullsafety.7
   plugin_platform_interface: ^2.0.0
+
 
 flutter:
   plugin:

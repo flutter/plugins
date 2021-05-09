@@ -84,7 +84,7 @@ class MediaTrackCapabilities {
     final whiteBalanceMode = nullOrType<List<dynamic>>(obj, 'whiteBalanceMode');
     final focusDistance = DoubleRangeStep.decode(obj, 'focusDistance');
     final focusMode = nullOrType<List<dynamic>>(obj, 'focusMode');
-    final zoom = nullOrType<DoubleRangeStep>(obj, 'zoom');
+    final zoom = DoubleRangeStep.decode(obj, 'zoom');
 
     return MediaTrackCapabilities(
         aspectRatio,
