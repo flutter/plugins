@@ -4,9 +4,9 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -187,7 +187,7 @@ class VersionCheckCommand extends PluginCommand {
 
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
-    bool hasNextSection = versionString == 'NEXT';
+    final bool hasNextSection = versionString == 'NEXT';
     if (hasNextSection) {
       print('Found NEXT; validating next version in the CHANGELOG.');
       // Ensure that the version in pubspec hasn't changed without updating

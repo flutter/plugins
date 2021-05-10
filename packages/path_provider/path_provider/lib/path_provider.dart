@@ -6,10 +6,10 @@ import 'dart:io' show Directory, Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
 import 'package:path_provider_linux/path_provider_linux.dart';
-import 'package:path_provider_windows/path_provider_windows.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 // ignore: implementation_imports
 import 'package:path_provider_platform_interface/src/method_channel_path_provider.dart';
+import 'package:path_provider_windows/path_provider_windows.dart';
 
 export 'package:path_provider_platform_interface/path_provider_platform_interface.dart'
     show StorageDirectory;
@@ -42,9 +42,8 @@ class MissingPlatformDirectoryException implements Exception {
 }
 
 PathProviderPlatform get _platform {
-  // This is to manually endorse Dart implementations until automatic
-  // registration of Dart plugins is implemented. For details see
-  // https://github.com/flutter/flutter/issues/52267.
+  // TODO(egarciad): Remove once auto registration lands on Flutter stable.
+  // https://github.com/flutter/flutter/issues/81421.
   if (_manualDartRegistrationNeeded) {
     // Only do the initial registration if it hasn't already been overridden
     // with a non-default instance.

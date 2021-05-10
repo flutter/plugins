@@ -73,11 +73,16 @@ class FirebaseTestLabCommand extends PluginCommand {
     } else {
       _firebaseProjectConfigured = Completer<void>();
     }
-    await processRunner.runAndExitOnError('gcloud', <String>[
-      'auth',
-      'activate-service-account',
-      '--key-file=${argResults['service-key']}',
-    ]);
+    await processRunner.run(
+      'gcloud',
+      <String>[
+        'auth',
+        'activate-service-account',
+        '--key-file=${argResults['service-key']}',
+      ],
+      exitOnError: true,
+      logOnError: true,
+    );
     final int exitCode = await processRunner.runAndStream('gcloud', <String>[
       'config',
       'set',

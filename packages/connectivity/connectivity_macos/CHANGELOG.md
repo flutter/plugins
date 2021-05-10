@@ -1,3 +1,7 @@
+## 0.2.1
+
+* Add `implements` to pubspec.yaml.
+
 ## 0.2.0
 
 * Remove placeholder Dart file.
