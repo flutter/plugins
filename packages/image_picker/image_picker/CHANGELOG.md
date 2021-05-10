@@ -1,9 +1,8 @@
 ## 0.7.5
 
 * Fixes an issue where image rotation is wrong when Select Photos chose and image is scaled.
-* Breaking Changes:
-    * Migrate to PHPicker for iOS 14 and higher versions to pick image from the photo library.
-    * Implement the limited permission to pick photo from the photo library when Select Photo is chose.
+* Migrate to PHPicker for iOS 14 and higher versions to pick image from the photo library.
+* Implement the limited permission to pick photo from the photo library when Select Photo is chose.
 
 ## 0.7.4
 
