@@ -70,7 +70,8 @@ class AnalyzeCommand extends PluginCommand {
     final List<String> failingPackages = <String>[];
     await for (final Directory package in getPlugins()) {
       final int exitCode = await processRunner.runAndStream(
-          'dart', <String>['analyze'], workingDir: package);
+          'dart', <String>['analyze', '--fatal-infos'],
+          workingDir: package);
       if (exitCode != 0) {
         failingPackages.add(p.basename(package.path));
       }

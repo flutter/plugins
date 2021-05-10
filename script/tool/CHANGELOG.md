@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Update the allowed third-party licenses for flutter/packages.
+
 ## 0.1.0+1
 
 - Re-add the bin/ directory.
