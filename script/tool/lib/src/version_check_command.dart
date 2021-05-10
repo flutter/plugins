@@ -4,9 +4,9 @@
 
 import 'dart:async';
 
-import 'package:meta/meta.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
