@@ -2,18 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
+
 // ignore: avoid_classes_with_only_static_members
 /// The interface that platform implementations must implement when they want to
-/// provide platform specific in_app_purchase features.
+/// provide platform-specific in_app_purchase features.
+///
+/// Platforms that wants to introduce platform-specific public APIs should create
+/// a class that either extend or implements [InAppPurchasePlatformAddition]. Then set
+/// the [InAppPurchasePlatformAddition.instance] to an instance of that class.
+///
+/// All the APIs added by [InAppPurchasePlatformAddition] implementations will be accessed from
+/// [InAppPurchasePlatformAdditionProvider.getPlatformAddition] by the client APPs.
+/// To avoid clients directly calling [InAppPurchasePlatform] APIs,
+/// an [InAppPurchasePlatformAddition] implementation should not be a type of [InAppPurchasePlatform].
 abstract class InAppPurchasePlatformAddition {
+  static InAppPurchasePlatformAddition? _instance;
+
   /// The instance containing the platform-specific in_app_purchase
   /// functionality.
+  ///
+  /// Returns `null` by default.
   ///
   /// To implement additional functionality extend
   /// [`InAppPurchasePlatformAddition`][3] with the platform-specific
   /// functionality, and when the plugin is registered, set the
   /// `InAppPurchasePlatformAddition.instance` with the new addition
-  /// implementationinstance.
+  /// implementation instance.
   ///
   /// Example implementation might look like this:
   /// ```dart
@@ -22,7 +37,7 @@ abstract class InAppPurchasePlatformAddition {
   /// }
   /// ```
   ///
-  /// The following snippit shows how to register the `InAppPurchaseMyPlatformAddition`:
+  /// The following snippet shows how to register the `InAppPurchaseMyPlatformAddition`:
   /// ```dart
   /// class InAppPurchaseMyPlatformPlugin {
   ///   static void registerWith(Registrar registrar) {
@@ -36,5 +51,13 @@ abstract class InAppPurchasePlatformAddition {
   ///   }
   /// }
   /// ```
-  static InAppPurchasePlatformAddition? instance;
+  static InAppPurchasePlatformAddition? get instance => _instance;
+
+  /// Sets the instance to a desired [InAppPurchasePlatformAddition] implementation.
+  ///
+  /// The `instance` should not be a type of [InAppPurchasePlatform].
+  static set instance(InAppPurchasePlatformAddition? instance) {
+    assert(instance is! InAppPurchasePlatform);
+    _instance = instance;
+  }
 }
