@@ -2,7 +2,7 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 Pod::Spec.new do |s|
-  s.name             = 'in_app_purchase'
+  s.name             = 'in_app_purchase_ios'
   s.version          = '0.0.1'
   s.summary          = 'Flutter In App Purchase'
   s.description      = <<-DESC
