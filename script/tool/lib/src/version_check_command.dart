@@ -147,7 +147,7 @@ class VersionCheckCommand extends PluginCommand {
             break;
           case PubVersionFinderResult.fail:
             printErrorAndExit(errorMessage: '''
-${indentation}Error fetching version on pub for ${packageName}.
+${indentation}Error fetching version on pub for $packageName.
 ${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
 ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');

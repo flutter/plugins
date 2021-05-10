@@ -620,7 +620,8 @@ class PubVersionFinderResponse {
   PubVersionFinderResponse({this.versions, this.result, this.httpResponse}) {
     if (versions != null && versions.isNotEmpty) {
       versions.sort((Version a, Version b) {
-        /// TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
+        // TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
+        // https://github.com/flutter/flutter/issues/82222
         return b.compareTo(a);
       });
     }
