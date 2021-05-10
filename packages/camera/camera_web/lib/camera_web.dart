@@ -398,9 +398,15 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> setFlashMode(int cameraId, FlashMode mode) {
-    // TODO: implement setFlashMode
-    throw UnimplementedError();
+  Future<void> setFlashMode(int cameraId, FlashMode mode) async {
+    final stream = _cameras.get(cameraId).stream!;
+
+    final track = stream.getVideoTracks().first;
+    await track.applyConstraints({
+      'advanced': [
+        {'torch': mode == FlashMode.off ? false : true}
+      ]
+    });
   }
 
   @override
