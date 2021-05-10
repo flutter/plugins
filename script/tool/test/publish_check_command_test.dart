@@ -193,7 +193,7 @@ void main() {
     "Package no_publish_a version: 0.1.0 has already be published on pub.",
     "Checking that no_publish_b can be published.",
     "Package no_publish_b version: 0.2.0 has already be published on pub.",
-    "\\u001b[32mAll packages passed publish check!\\u001b[0m"
+    "SUCCESS: All packages passed publish check!"
   ]
 }''');
     });
@@ -261,7 +261,7 @@ void main() {
     "Package no_publish_a version: 0.1.0 has already be published on pub.",
     "Checking that no_publish_b can be published.",
     "Package no_publish_b is able to be published.",
-    "\\u001b[32mAll packages passed publish check!\\u001b[0m"
+    "SUCCESS: All packages passed publish check!"
   ]
 }''');
     });
@@ -341,7 +341,7 @@ void main() {
     "url https://pub.dev/packages/no_publish_b.json",
     "no_publish_b.json",
     "Package no_publish_b is able to be published.",
-    "\\u001b[31mFAIL: The following 1 package(s) failed the publishing check:\\nMemoryDirectory: '/packages/no_publish_a'\\u001b[0m"
+    "ERROR: The following 1 package(s) failed the publishing check:\\nMemoryDirectory: '/packages/no_publish_a'"
   ]
 }''');
     });

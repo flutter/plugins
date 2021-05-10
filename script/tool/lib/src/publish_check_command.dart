@@ -9,6 +9,7 @@ import 'dart:io' as io;
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -112,21 +113,16 @@ class PublishCheckCommand extends PluginCommand {
 
     if (failedPackages.isNotEmpty) {
       final String error =
-          'FAIL: The following ${failedPackages.length} package(s) failed the '
+          'The following ${failedPackages.length} package(s) failed the '
           'publishing check:';
       final String joinedFailedPackages = failedPackages.join('\n');
-
-      final Colorize colorizedError = Colorize('$error\n$joinedFailedPackages')
-        ..red();
-      print(colorizedError);
+      _printImportantStatusMessage('$error\n$joinedFailedPackages', isError: true);
     } else {
-      final Colorize passedMessage =
-          Colorize('All packages passed publish check!')..green();
-      print(passedMessage);
+      _printImportantStatusMessage('All packages passed publish check!', isError: false);
     }
 
     if (argResults[_machineFlag] as bool) {
-      setStatus(status);
+      _setStatus(status);
       _machineOutput[_humanMessageKey] = _humanMessages;
       print(_prettyJson(_machineOutput));
     }
@@ -175,7 +171,7 @@ class PublishCheckCommand extends PluginCommand {
       (List<int> event) {
         final String output = String.fromCharCodes(event);
         if (output.isNotEmpty) {
-          print(Colorize(output)..red());
+          _printImportantStatusMessage(output, isError: true);
           outputBuffer.write(output);
         }
       },
@@ -261,13 +257,28 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     return result;
   }
 
-  void setStatus(String status) {
+  void _setStatus(String status) {
     assert(_validStatus.contains(status));
     _machineOutput[_statusKey] = status;
   }
 
   String _prettyJson(Map<String, dynamic> map) {
     return const JsonEncoder.withIndent('  ').convert(_machineOutput);
+  }
+
+  void _printImportantStatusMessage(String message, {@required bool isError}) {
+    final String statusMessage = '${isError ? 'ERROR' : 'SUCCESS'}: $message';
+    if (argResults[_machineFlag] as bool) {
+      print(statusMessage);
+    } else {
+      final Colorize colorizedMessage = Colorize(statusMessage);
+      if (isError) {
+        colorizedMessage.red();
+      } else {
+        colorizedMessage.green();
+      }
+      print(colorizedMessage);
+    }
   }
 }
 
