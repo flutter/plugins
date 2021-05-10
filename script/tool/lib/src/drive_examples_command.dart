@@ -101,13 +101,13 @@ class DriveExamplesCommand extends PluginCommand {
                 fileSystem.directory(p.join(example.path, 'integration_test'));
 
             if (await integrationTests.exists()) {
-              await for (final FileSystemEntity integration_test
+              await for (final FileSystemEntity integrationTest
                   in integrationTests.list()) {
-                if (!integration_test.basename.endsWith('_test.dart')) {
+                if (!integrationTest.basename.endsWith('_test.dart')) {
                   continue;
                 }
                 targetPaths
-                    .add(p.relative(integration_test.path, from: example.path));
+                    .add(p.relative(integrationTest.path, from: example.path));
               }
             }
 
