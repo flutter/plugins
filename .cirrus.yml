@@ -168,7 +168,8 @@ task:
     - name: build-web+drive-examples
       env:
         # Currently missing; see https://github.com/flutter/flutter/issues/81982
-        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "image_picker_for_web,shared_preferences_web,video_player_web"
+        # and https://github.com/flutter/flutter/issues/82211
+        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "file_selector,image_picker_for_web,shared_preferences_web,video_player_web"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
