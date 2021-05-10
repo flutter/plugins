@@ -8,7 +8,7 @@ dependencies in the examples directory):
 flutter pub upgrade
 flutter pub run pigeon --dart_null_safety --input pigeons/messages.dart
 # git commit your changes so that your working environment is clean
-(cd ../../../; ./script/incremental_build.sh format --travis --clang-format=clang-format-7)
+(cd ../../../; ./script/tool_runner.sh format --clang-format=clang-format-7)
 ```
 
 If you update pigeon itself and want to test the changes here,

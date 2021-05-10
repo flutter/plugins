@@ -8,11 +8,11 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/version_check_command.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
-import 'package:test/test.dart';
-import 'package:flutter_plugin_tools/src/version_check_command.dart';
 import 'package:pub_semver/pub_semver.dart';
+import 'package:test/test.dart';
 import 'util.dart';
 
 void testAllowedVersion(
