@@ -5,6 +5,7 @@
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
+import 'package:google_maps_flutter_example/drag_marker.dart';
 import 'package:google_maps_flutter_example/lite_mode.dart';
 import 'animate_camera.dart';
 import 'map_click.dart';
@@ -34,6 +35,7 @@ final List<GoogleMapExampleAppPage> _allPages = <GoogleMapExampleAppPage>[
   PlacePolylinePage(),
   PlacePolygonPage(),
   PlaceCirclePage(),
+  DragMarkerPage(),
   PaddingPage(),
   SnapshotPage(),
   LiteModePage(),

@@ -467,10 +467,14 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMarkerDragStart(Marker marker) {}
+  public void onMarkerDragStart(Marker marker) {
+    markersController.onMarkerDragStart(marker.getId(), marker.getPosition());
+  }
 
   @Override
-  public void onMarkerDrag(Marker marker) {}
+  public void onMarkerDrag(Marker marker) {
+    markersController.onMarkerDrag(marker.getId(), marker.getPosition());
+  }
 
   @Override
   public void onMarkerDragEnd(Marker marker) {

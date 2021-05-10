@@ -105,6 +105,28 @@ class MarkersController {
     return false;
   }
 
+  void onMarkerDragStart(String googleMarkerId, LatLng latLng) {
+    String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
+    if (markerId == null) {
+      return;
+    }
+    final Map<String, Object> data = new HashMap<>();
+    data.put("markerId", markerId);
+    data.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("marker#onDragStart", data);
+  }
+
+  void onMarkerDrag(String googleMarkerId, LatLng latLng) {
+    String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
+    if (markerId == null) {
+      return;
+    }
+    final Map<String, Object> data = new HashMap<>();
+    data.put("markerId", markerId);
+    data.put("position", Convert.latLngToJson(latLng));
+    methodChannel.invokeMethod("marker#onDrag", data);
+  }
+
   void onMarkerDragEnd(String googleMarkerId, LatLng latLng) {
     String markerId = googleMapsMarkerIdToDartMarkerId.get(googleMarkerId);
     if (markerId == null) {

@@ -1,3 +1,6 @@
+## 2.0.5
+
+* Add additional marker drag events
 ## 2.0.4
 
 * Preserve the `TileProvider` when copying `TileOverlay`, fixing a
