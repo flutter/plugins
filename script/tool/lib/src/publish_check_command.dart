@@ -116,9 +116,11 @@ class PublishCheckCommand extends PluginCommand {
           'The following ${failedPackages.length} package(s) failed the '
           'publishing check:';
       final String joinedFailedPackages = failedPackages.join('\n');
-      _printImportantStatusMessage('$error\n$joinedFailedPackages', isError: true);
+      _printImportantStatusMessage('$error\n$joinedFailedPackages',
+          isError: true);
     } else {
-      _printImportantStatusMessage('All packages passed publish check!', isError: false);
+      _printImportantStatusMessage('All packages passed publish check!',
+          isError: false);
     }
 
     if (argResults[_machineFlag] as bool) {
