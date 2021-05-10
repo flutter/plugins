@@ -386,9 +386,19 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<double> setExposureOffset(int cameraId, double offset) {
-    // TODO: implement setExposureOffset
-    throw UnimplementedError();
+  Future<double> setExposureOffset(int cameraId, double offset) async {
+    final stream = _cameras.get(cameraId).stream!;
+    //TODO: Validate the offset
+
+    final track = stream.getVideoTracks().first;
+    await track.applyConstraints({
+      'advanced': [
+        {'exposureTime': offset}
+      ]
+    });
+
+    //TODO: Get the set offset from `track.getSettings()`.
+    return offset;
   }
 
   @override
