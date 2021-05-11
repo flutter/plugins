@@ -190,11 +190,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                       animated:YES
                                                     completion:nil];
   } else {
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
-                                message:NSLocalizedString(@"Camera not available.", nil)
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                      otherButtonTitles:nil] show];
+    UIAlertController *cameraErrorAlert =
+        [UIAlertController alertControllerWithTitle:@"Error"
+                                            message:@"Camera not available."
+                                     preferredStyle:UIAlertControllerStyleAlert];
+    [cameraErrorAlert addAction:[UIAlertAction actionWithTitle:@"OK"
+                                                         style:UIAlertActionStyleDefault
+                                                       handler:^(UIAlertAction *action){
+                                                       }]];
+    [[self viewControllerWithWindow:nil] presentViewController:cameraErrorAlert
+                                                      animated:YES
+                                                    completion:nil];
     self.result(nil);
     self.result = nil;
     _arguments = nil;
