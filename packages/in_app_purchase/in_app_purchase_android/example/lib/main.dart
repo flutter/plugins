@@ -47,7 +47,7 @@ class _MyApp extends StatefulWidget {
 
 class _MyAppState extends State<_MyApp> {
   final InAppPurchasePlatform _inAppPurchasePlatform =
-      InAppPurchasePlatform.instance!;
+      InAppPurchasePlatform.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
