@@ -8,7 +8,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_android/src/in_app_purchase_android_platform_addition.dart';
-import 'package:in_app_purchase_android/src/types/in_app_purchase_exception.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../billing_client_wrappers.dart';
@@ -48,7 +47,7 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
   static void registerPlatform() {
     // Register the platform instance with the plugin platform
     // interface.
-    InAppPurchasePlatform.setInstance(InAppPurchaseAndroidPlatform._());
+    InAppPurchasePlatform.instance = InAppPurchaseAndroidPlatform._();
   }
 
   static late StreamController<List<PurchaseDetails>>
