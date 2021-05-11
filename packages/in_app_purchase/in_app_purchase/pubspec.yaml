@@ -10,9 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   
-  # TODO(mvanbeusekom): Replace with pub.dev version when in_app_purchase_platform_interface is published
-  in_app_purchase_platform_interface:
-    path: ../in_app_purchase_platform_interface
+  in_app_purchase_platform_interface: ^1.0.0
   # TODO(mvanbeusekom): Replace with pub.dev version when in_app_purchase_android is published
   in_app_purchase_android:
     path: ../in_app_purchase_android
