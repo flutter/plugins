@@ -232,6 +232,14 @@ Future<List<String>> runCapturingPrint(
   return prints;
 }
 
+const String _redColorMessagePrefix = '\x1B[31m';
+const String _redColorMessagePostfix = '\x1B[0m';
+
+/// Some error message was printed in a "Colorized" red message. So `\x1B[31m` and `\x1B[0m` needs to be included.
+String redColorString(String string) {
+  return '$_redColorMessagePrefix$string$_redColorMessagePostfix';
+}
+
 /// A mock [ProcessRunner] which records process calls.
 class RecordingProcessRunner extends ProcessRunner {
   io.Process processToReturn;

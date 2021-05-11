@@ -7,8 +7,6 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter_plugin_tools/src/publish_check_command.dart';
-import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:path/path.dart' as p;
 
 import 'analyze_command.dart';
@@ -22,6 +20,9 @@ import 'java_test_command.dart';
 import 'license_check_command.dart';
 import 'lint_podspecs_command.dart';
 import 'list_command.dart';
+import 'publish_check_command.dart';
+import 'publish_plugin_command.dart';
+import 'read_json_command.dart';
 import 'test_command.dart';
 import 'version_check_command.dart';
 import 'xctest_command.dart';
@@ -58,7 +59,8 @@ void main(List<String> args) {
     ..addCommand(PublishPluginCommand(packagesDir, fileSystem))
     ..addCommand(TestCommand(packagesDir, fileSystem))
     ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
-    ..addCommand(XCTestCommand(packagesDir, fileSystem));
+    ..addCommand(XCTestCommand(packagesDir, fileSystem))
+    ..addCommand(MapReadJsonCommand());
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e as ToolExit;

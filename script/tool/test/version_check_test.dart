@@ -42,14 +42,6 @@ class MockGitDir extends Mock implements GitDir {}
 
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
-const String _redColorMessagePrefix = '\x1B[31m';
-const String _redColorMessagePostfix = '\x1B[0m';
-
-// Some error message was printed in a "Colorized" red message. So `\x1B[31m` and `\x1B[0m` needs to be included.
-String _redColorString(String string) {
-  return '$_redColorMessagePrefix$string$_redColorMessagePostfix';
-}
-
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
@@ -349,7 +341,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          _redColorString('''
+          redColorString('''
 versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
 The version in pubspec.yaml is 1.0.1.
 The first version listed in CHANGELOG.md is 1.0.2.
@@ -418,7 +410,7 @@ The first version listed in CHANGELOG.md is 1.0.2.
       expect(
         output,
         containsAllInOrder(<String>[
-          _redColorString(
+          redColorString(
             '''
 versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
 The version in pubspec.yaml is 1.0.0.
@@ -497,7 +489,7 @@ The first version listed in CHANGELOG.md is 1.0.1.
       expect(
         output,
         containsAllInOrder(<String>[
-          _redColorString(
+          redColorString(
             '''
 When bumping the version for release, the NEXT section should be incorporated
 into the new version's release notes.
@@ -540,7 +532,7 @@ into the new version's release notes.
         output,
         containsAllInOrder(<String>[
           'Found NEXT; validating next version in the CHANGELOG.',
-          _redColorString(
+          redColorString(
             '''
 versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
 The version in pubspec.yaml is 1.0.1.
@@ -629,7 +621,7 @@ The first version listed in CHANGELOG.md is 1.0.0.
       expect(
         result,
         containsAllInOrder(<String>[
-          _redColorString(
+          redColorString(
             '''
 ${indentation}Incorrectly updated version.
 ${indentation}HEAD: 2.0.0, pub: 0.0.2.
@@ -673,7 +665,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
       expect(
         result,
         containsAllInOrder(<String>[
-          _redColorString(
+          redColorString(
             '''
 ${indentation}Error fetching version on pub for plugin.
 ${indentation}HTTP Status 400
