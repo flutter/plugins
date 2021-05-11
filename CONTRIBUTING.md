@@ -91,7 +91,7 @@ To run the integration tests using Flutter driver:
 
 ```console
 cd example
-flutter drive test_driver/<name_of_plugin_test>.dart
+flutter drive --driver test_driver/integration_test.dart --target integration_test/<name_of_plugin_test>.dart
 ```
 
 To run integration tests as instrumentation tests on a local Android device:
