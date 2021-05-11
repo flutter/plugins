@@ -81,6 +81,8 @@ void main() {
 }
 ```
 
+**Note:** It is not necessary to depend on `com.android.billingclient:billing` in your own app's `android/app/build.gradle` file. If you choose to do so know that conflicts might occur.
+
 ### Listening to purchase updates
 
 In your app's `initState` method, subscribe to any incoming purchases. These
