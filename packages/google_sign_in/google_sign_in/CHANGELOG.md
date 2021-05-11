@@ -1,6 +1,7 @@
-## NEXT
+## 5.0.3
 
 * Fixed links in `README.md`.
+* Added documentation for usage on the web.
 
 ## 5.0.2
 
