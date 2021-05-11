@@ -3,9 +3,6 @@ description: An implementation for the iOS platform of the Flutter `in_app_purch
 repository: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase_ios
 version: 0.1.0
 
-# TODO(mvanbeusekom): Remove when in_app_purchase_platform_interface is published
-publish_to: 'none'
-
 flutter:
   plugin:
     platforms:
@@ -13,9 +10,7 @@ flutter:
         pluginClass: InAppPurchasePlugin
 
 dependencies:
-  # TODO(mvanbeusekom): Replace with pub.dev version when in_app_purchase_platform_interface is published
-  in_app_purchase_platform_interface:
-    path: ../in_app_purchase_platform_interface
+  in_app_purchase_platform_interface: ^1.0.0
   
   flutter:
     sdk: flutter
