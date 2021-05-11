@@ -38,7 +38,7 @@ jobs:
       # Run doctor, for ease of debugging any issues.
       run: flutter doctor -v
     - name: Set up tools
-      run: pub get
+      run: dart pub get
       working-directory: ${{ github.workspace }}/plugins/script/tool
     - name: Build
       run: |
