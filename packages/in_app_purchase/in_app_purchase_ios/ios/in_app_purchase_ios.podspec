@@ -4,7 +4,7 @@
 Pod::Spec.new do |s|
   s.name             = 'in_app_purchase_ios'
   s.version          = '0.0.1'
-  s.summary          = 'Flutter In App Purchase'
+  s.summary          = 'Flutter In App Purchase iOS'
   s.description      = <<-DESC
 A Flutter plugin for in-app purchases. Exposes APIs for making in-app purchases through the App Store.
 Downloaded by pub (not CocoaPods).
