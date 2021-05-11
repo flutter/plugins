@@ -37,7 +37,8 @@ jobs:
           echo "The PUBLISH_CHECK_STATUS is: " + $PUBLISH_CHECK_STATUS
         working-directory: ${{ github.workspace }}/plugins
       - name: Cancel if published
-        run: exit(0)
+        # Prints the status, all the steps after this only runs if PUBLISH_CHECK_STATUS != 'published'
+        run: echo "The plugins updated in this commit have already been published."
         if: ${{ PUBLISH_CHECK_STATUS == 'published' }}
 
       # This workflow should be the last to run. So wait for all the other tests to succeed.
@@ -49,6 +50,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           wait-interval: 10 # seconds
           allowed-conclusions: success
+        if: ${{ PUBLISH_CHECK_STATUS != 'published' }}
 
       # The release process should be synchronized to avoid child commit release before the parent commit,
       # which might cause issue when child commit and parent commit both contain version updates for the same
@@ -63,16 +65,19 @@ jobs:
           # TODO(cyanglaz), only allow success and skipped after https://github.com/flutter/plugins/pull/3840 lands and correct configurations added to this workflow.
           # https://github.com/flutter/flutter/issues/81444
           allowed-conclusions: success,skipped,cancelled,failure
+        if: ${{ PUBLISH_CHECK_STATUS != 'published' }}
 
       # Checks out a copy of the repo.
       - name: Checkout code
         uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
         with:
           fetch-depth: 0 # Fetch all history so the tool can get all the tag to determine version.
+        if: ${{ PUBLISH_CHECK_STATUS != 'published' }}
 
       # TODO(cyanglaz): add real publish command.
       - name: run release
         run: echo "replace this command with release command"
+        if: ${{ PUBLISH_CHECK_STATUS != 'published' }}
 
         env:
           DEFAULT_BRANCH: master
