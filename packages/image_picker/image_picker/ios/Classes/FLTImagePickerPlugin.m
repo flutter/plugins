@@ -217,17 +217,15 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     case AVAuthorizationStatusNotDetermined: {
       [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                completionHandler:^(BOOL granted) {
-                                 if (granted) {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                   if (granted) {
                                      if (granted) {
                                        [self showCamera];
                                      }
-                                   });
-                                 } else {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                   } else {
                                      [self errorNoCameraAccess:AVAuthorizationStatusDenied];
-                                   });
-                                 }
+                                   }
+                                 });
                                }];
     }; break;
     case AVAuthorizationStatusDenied:
