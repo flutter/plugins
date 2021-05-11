@@ -1,3 +1,35 @@
+## 0.6.0
+
+As part of implementing federated architecture and making the interface compatible for other platform this version contains the following **breaking changes**:
+
+* Changes to the platform agnostic interface:
+  * The `InAppPurchaseConnection` class has been renamed to `InAppPurchase`. To access the generic InApp Purchase API use `InAppPurchase.instance`;
+  * The `purchaseUpdatedStream` has been renamed to `purchaseStream`. Restored purchases are now also emitted on this stream and are marked with a `status` of `PurchaseStatus.restored`;
+  * The `queryPurchases` method has been renamed to `restorePurchases`. This method no longer returns a list of restored purchases but emits each restored purchase on the `purchaseStream`;
+  * The `completePurchase` method no longer returns an instance `BillingWrapperResult` class (which was Android specific). Instead if the method ran succesfully it will simply return a completed `Future`, in case of errors it will complete the `Future` with an `InAppPurchaseException` describing the error.
+* Android specific changes:
+  * The Android specific `consumePurchase` and `enablePendingPurchases` methods have been removed from the platform agnostic interface and moved into the Android specific `InAppPurchaseAndroidPlatformAddition` class:
+    * `enablePendingPurchases` is a static method that should be called when initializing your App. Access the method like this: `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases()`;
+    * `consumePurchase` is an instance method on the `InAppPurchaseAndroidPlatformAddition` class. Acquire an instance using the `getPlatformAddition` method of the `InAppPurchase` class. For example:
+  ```dart
+  // Acquire the InAppPurchaseAndroidPlatformAddition instance.
+  InAppPurchaseAndroidPlatformAddition androidAddition = InAppPurchase.instance.getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+  // Consume an Android purchase.
+  BillingResultWrapper billingResult = await androidAddition.consumePurchase(purchase);
+  ```
+  * The [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase/latest/billing_client_wrappers/billing_client_wrappers-library.html) have been moved into the [in_app_purchase_android](https://pub.dev/packages/in_app_purchase_android) package. They are still available through the [in_app_purchase](https://pub.dev/packages/in_app_purchase) plugin but to use them it is necessary to import the correct package when using them: `import 'package:in_app_purchase_android/billing_client_wrappers.dart';`;
+* iOS specific changes:
+  * The iOS specific methods `presentCodeRedemptionSheet` and `refreshPurchaseVerificationData` methods have been removed from the platform agnostic interface and moved into the iOS specific `InAppPurchaseIosPlatformAddition` class. To use them acquire an instance through te `getPlatformAddition` method like so:
+  ```dart
+  // Acquire the InAppPurchaseIosPlatformAddition instance.
+  InAppPurchaseIosPlatformAddition iosAddition = InAppPurchase.instance.getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+  // Present the code redemption sheet.
+  await iosAddition.presentCodeRedemptionSheet();
+  // Refresh purchase verification data.
+  PurchaseVerificationData? verificationData = await iosAddition.refreshPurchaseVerificationData(); 
+  ```
+  * The [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase/latest/store_kit_wrappers/store_kit_wrappers-library.html) have been moved into the [in_app_purchase_ios](https://pub.dev/packages/in_app_purchase_ios) package. They are still available [in_app_purchase](https://pub.dev/packages/in_app_purchase) plugin but to use them it is necessary to import the correct package when using them: `import 'package:in_app_purchase_android/billing_client_wrappers.dart';`;
+
 ## 0.5.2
 
 * Added `rawPrice` and `currencyCode` to the ProductDetails model.
