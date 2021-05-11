@@ -7,6 +7,7 @@ available yet. [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
 ## Platform integration
+
 ### Android integration
 
 To access Google Sign-In, you'll need to make sure to
@@ -73,23 +74,9 @@ be an option.
 
 ### Web integration
 
-<!-- Copied from https://developers.google.com/identity/sign-in/web/sign-in on May 11, 2021-->
-#### Create authorization credentials
+For web integration details, see the
+[`google_sign_in_web` package](https://pub.dev/packages/google_sign_in_web).
 
-1. Go to the [Credentials page](https://console.developers.google.com/apis/credentials).
-1. Click **Create credentials > OAuth client ID**.
-1. Select the **Web application** application type.
-1. Name your OAuth 2.0 client and click **Create**.
-
-After configuration is complete, take note of the client ID that was created. You will need the client ID to complete the next steps. (A client secret is also created, but you need it only for server-side operations.)
-
-#### Specify your app's client ID
-
-In your app's `web/index.html` file, specify the client ID you created for your app in the Google Developers Console with the `google-signin-client_id` meta element.
-
-```html
-<meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
-```
 ## Usage
 
 ### Import the package
