@@ -265,7 +265,7 @@ task:
     builder_image_name: docker-builder-win # gce vm image
     builder_image_project: flutter-cirrus
     cluster_name: test-cluster
-    zone: us-central1-a
+    zone: us-central1
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
