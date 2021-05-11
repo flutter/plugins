@@ -26,15 +26,14 @@ jobs:
       run: |
         # Add tags, which are also necessary for version checks to work.
         git fetch origin +refs/tags/*:refs/tags/*
+        # Set channel
+        bin\flutter channel ${{matrix.channel}}
+        bin\flutter upgrade
+        # Enable desktop
+        bin\flutter config --enable-windows-desktop
         # Add fluter to path.
         echo "$env:GITHUB_WORKSPACE\flutter\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-        # Set channel
-        flutter channel ${{matrix.channel}}
-        flutter upgrade
       working-directory: ${{ github.workspace }}/flutter
-    - name: Enable desktop support
-      run: |
-        flutter config --enable-windows-desktop
     - name: Doctor
       # Run doctor, for ease of debugging any issues.
       run: flutter doctor -v
