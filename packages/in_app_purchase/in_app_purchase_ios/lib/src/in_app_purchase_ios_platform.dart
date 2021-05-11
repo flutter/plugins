@@ -48,7 +48,7 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
 
     // Register the platform-specific implementation of the idiomatic
     // InAppPurchase API.
-    InAppPurchasePlatform.setInstance(InAppPurchaseIosPlatform());
+    InAppPurchasePlatform.instance = InAppPurchaseIosPlatform();
 
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
     _observer = _TransactionObserver(StreamController.broadcast());

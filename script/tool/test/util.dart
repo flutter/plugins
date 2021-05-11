@@ -9,9 +9,9 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:quiver/collection.dart';
 
 // TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
@@ -63,19 +63,17 @@ Directory createFakePlugin(
   final Directory pluginDirectory = parentDirectory.childDirectory(name);
   pluginDirectory.createSync(recursive: true);
 
-  createFakePubspec(
-    pluginDirectory,
-    name: name,
-    isFlutter: isFlutter,
-    isAndroidPlugin: isAndroidPlugin,
-    isIosPlugin: isIosPlugin,
-    isWebPlugin: isWebPlugin,
-    isLinuxPlugin: isLinuxPlugin,
-    isMacOsPlugin: isMacOsPlugin,
-    isWindowsPlugin: isWindowsPlugin,
-    includeVersion: includeVersion,
-    version: version
-  );
+  createFakePubspec(pluginDirectory,
+      name: name,
+      isFlutter: isFlutter,
+      isAndroidPlugin: isAndroidPlugin,
+      isIosPlugin: isIosPlugin,
+      isWebPlugin: isWebPlugin,
+      isLinuxPlugin: isLinuxPlugin,
+      isMacOsPlugin: isMacOsPlugin,
+      isWindowsPlugin: isWindowsPlugin,
+      includeVersion: includeVersion,
+      version: version);
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
 ## 0.0.1
@@ -87,21 +85,28 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter, includeVersion: false, publishTo: 'none');
+        name: '${name}_example',
+        isFlutter: isFlutter,
+        includeVersion: false,
+        publishTo: 'none');
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     for (final String example in withExamples) {
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
-      createFakePubspec(currentExample, name: example, isFlutter: isFlutter, includeVersion: false, publishTo: 'none');
+      createFakePubspec(currentExample,
+          name: example,
+          isFlutter: isFlutter,
+          includeVersion: false,
+          publishTo: 'none');
     }
   }
 
+  final FileSystem fileSystem = pluginDirectory.fileSystem;
   for (final List<String> file in withExtraFiles) {
     final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
-    final File newFile =
-        mockFileSystem.file(mockFileSystem.path.joinAll(newFilePath));
+    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
   }
 
@@ -186,7 +191,7 @@ version: $version
 ''';
   }
   if (publishTo.isNotEmpty) {
-     yaml += '''
+    yaml += '''
 publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }

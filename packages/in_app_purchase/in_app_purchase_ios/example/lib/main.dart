@@ -250,12 +250,6 @@ class _MyAppState extends State<_MyApp> {
                       primary: Colors.white,
                     ),
                     onPressed: () {
-                      // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
-                      // verify the latest status of you your subscription by using server side receipt validation
-                      // and update the UI accordingly. The subscription purchase status shown
-                      // inside the app may not be accurate.
-                      final oldSubscription =
-                          _getOldSubscription(productDetails, purchases);
                       PurchaseParam purchaseParam = PurchaseParam(
                         productDetails: productDetails,
                         applicationUserName: null,
@@ -385,25 +379,5 @@ class _MyAppState extends State<_MyApp> {
         }
       }
     });
-  }
-
-  PurchaseDetails? _getOldSubscription(
-      ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
-    // This is just to demonstrate a subscription upgrade or downgrade.
-    // This method assumes that you have only 2 subscriptions under a group, 'subscription_silver' & 'subscription_gold'.
-    // The 'subscription_silver' subscription can be upgraded to 'subscription_gold' and
-    // the 'subscription_gold' subscription can be downgraded to 'subscription_silver'.
-    // Please remember to replace the logic of finding the old subscription Id as per your app.
-    // The old subscription is only required on Android since Apple handles this internally
-    // by using the subscription group feature in iTunesConnect.
-    PurchaseDetails? oldSubscription;
-    if (productDetails.id == _kSilverSubscriptionId &&
-        purchases[_kGoldSubscriptionId] != null) {
-      oldSubscription = purchases[_kGoldSubscriptionId];
-    } else if (productDetails.id == _kGoldSubscriptionId &&
-        purchases[_kSilverSubscriptionId] != null) {
-      oldSubscription = purchases[_kSilverSubscriptionId];
-    }
-    return oldSubscription;
   }
 }

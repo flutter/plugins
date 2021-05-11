@@ -203,6 +203,7 @@ abstract class PluginCommand extends Command<void> {
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
             'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'If no plugins have changed, the command runs on all plugins.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
             'See $_kBaseSha if a custom base is needed to determine the diff.');
     argParser.addOption(_kBaseSha,
@@ -300,8 +301,8 @@ abstract class PluginCommand extends Command<void> {
   /// Returns the root Dart package folders of the plugins involved in this
   /// command execution, assuming there is only one shard.
   ///
-  /// Plugin packages can exist in one of two places relative to the packages
-  /// directory.
+  /// Plugin packages can exist in the following places relative to the packages
+  /// directory:
   ///
   /// 1. As a Dart package in a directory which is a direct child of the
   ///    packages directory. This is a plugin where all of the implementations
@@ -311,6 +312,9 @@ abstract class PluginCommand extends Command<void> {
   ///    packages which implement a single plugin. This directory contains a
   ///    "client library" package, which declares the API for the plugin, as
   ///    well as one or more platform-specific implementations.
+  /// 3./4. Either of the above, but in a third_party/packages/ directory that
+  ///    is a sibling of the packages directory. This is used for a small number
+  ///    of packages in the flutter/packages repository.
   Stream<Directory> _getAllPlugins() async* {
     Set<String> plugins =
         Set<String>.from(argResults[_pluginsArg] as List<String>);
@@ -322,33 +326,42 @@ abstract class PluginCommand extends Command<void> {
       plugins = await _getChangedPackages();
     }
 
-    await for (final FileSystemEntity entity
-        in packagesDir.list(followLinks: false)) {
-      // A top-level Dart package is a plugin package.
-      if (_isDartPackage(entity)) {
-        if (!excludedPlugins.contains(entity.basename) &&
-            (plugins.isEmpty || plugins.contains(p.basename(entity.path)))) {
-          yield entity as Directory;
-        }
-      } else if (entity is Directory) {
-        // Look for Dart packages under this top-level directory.
-        await for (final FileSystemEntity subdir
-            in entity.list(followLinks: false)) {
-          if (_isDartPackage(subdir)) {
-            // If --plugin=my_plugin is passed, then match all federated
-            // plugins under 'my_plugin'. Also match if the exact plugin is
-            // passed.
-            final String relativePath =
-                p.relative(subdir.path, from: packagesDir.path);
-            final String packageName = p.basename(subdir.path);
-            final String basenamePath = p.basename(entity.path);
-            if (!excludedPlugins.contains(basenamePath) &&
-                !excludedPlugins.contains(packageName) &&
-                !excludedPlugins.contains(relativePath) &&
-                (plugins.isEmpty ||
-                    plugins.contains(relativePath) ||
-                    plugins.contains(basenamePath))) {
-              yield subdir as Directory;
+    final Directory thirdPartyPackagesDirectory = packagesDir.parent
+        .childDirectory('third_party')
+        .childDirectory('packages');
+
+    for (final Directory dir in <Directory>[
+      packagesDir,
+      if (thirdPartyPackagesDirectory.existsSync()) thirdPartyPackagesDirectory,
+    ]) {
+      await for (final FileSystemEntity entity
+          in dir.list(followLinks: false)) {
+        // A top-level Dart package is a plugin package.
+        if (_isDartPackage(entity)) {
+          if (!excludedPlugins.contains(entity.basename) &&
+              (plugins.isEmpty || plugins.contains(p.basename(entity.path)))) {
+            yield entity as Directory;
+          }
+        } else if (entity is Directory) {
+          // Look for Dart packages under this top-level directory.
+          await for (final FileSystemEntity subdir
+              in entity.list(followLinks: false)) {
+            if (_isDartPackage(subdir)) {
+              // If --plugin=my_plugin is passed, then match all federated
+              // plugins under 'my_plugin'. Also match if the exact plugin is
+              // passed.
+              final String relativePath =
+                  p.relative(subdir.path, from: dir.path);
+              final String packageName = p.basename(subdir.path);
+              final String basenamePath = p.basename(entity.path);
+              if (!excludedPlugins.contains(basenamePath) &&
+                  !excludedPlugins.contains(packageName) &&
+                  !excludedPlugins.contains(relativePath) &&
+                  (plugins.isEmpty ||
+                      plugins.contains(relativePath) ||
+                      plugins.contains(basenamePath))) {
+                yield subdir as Directory;
+              }
             }
           }
         }
@@ -449,8 +462,9 @@ abstract class PluginCommand extends Command<void> {
     if (packages.isNotEmpty) {
       final String changedPackages = packages.join(',');
       print(changedPackages);
+    } else {
+      print('No changed packages.');
     }
-    print('No changed packages.');
     return packages;
   }
 }
