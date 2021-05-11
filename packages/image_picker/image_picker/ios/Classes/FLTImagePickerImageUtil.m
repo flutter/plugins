@@ -31,7 +31,7 @@
 + (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
                maxHeight:(NSNumber *)maxHeight
-    metadataAvailability:(BOOL)metadataAvailability {
+     isMetadataAvailable:(BOOL)isMetadataAvailable {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
 
@@ -70,7 +70,7 @@
     }
   }
 
-  if (!metadataAvailability) {
+  if (!isMetadataAvailable) {
     UIImage *imageToScale = [UIImage imageWithCGImage:image.CGImage
                                                 scale:1
                                           orientation:image.imageOrientation];
@@ -144,7 +144,7 @@
     }
 
     UIImage *image = [UIImage imageWithCGImage:imageRef scale:1.0 orientation:UIImageOrientationUp];
-    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight metadataAvailability:YES];
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight isMetadataAvailable:YES];
 
     [images addObject:image];
 
