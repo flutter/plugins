@@ -23,10 +23,6 @@ const String kIAPSource = 'app_store';
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
 class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
-  /// Returns the singleton instance of the [InAppPurchaseIosPlatform] that should be
-  /// used across the app.
-  static InAppPurchaseIosPlatform get instance => _getOrCreateInstance();
-  static InAppPurchaseIosPlatform? _instance;
   static late SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static late _TransactionObserver _observer;
 
@@ -44,22 +40,19 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
   @visibleForTesting
   static SKTransactionObserverWrapper get observer => _observer;
 
-  static InAppPurchaseIosPlatform _getOrCreateInstance() {
-    if (_instance != null) {
-      return _instance!;
-    }
-
+  /// Registers this class as the default instance of [InAppPurchasePlatform].
+  static void registerPlatform() {
     // Register the [InAppPurchaseIosPlatformAddition] containing iOS
     // platform-specific functionality.
     InAppPurchasePlatformAddition.instance = InAppPurchaseIosPlatformAddition();
 
     // Register the platform-specific implementation of the idiomatic
     // InAppPurchase API.
-    _instance = InAppPurchaseIosPlatform();
+    InAppPurchasePlatform.instance = InAppPurchaseIosPlatform();
+
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
     _observer = _TransactionObserver(StreamController.broadcast());
     _skPaymentQueueWrapper.setTransactionObserver(observer);
-    return _instance!;
   }
 
   @override

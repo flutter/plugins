@@ -31,4 +31,7 @@ dependencies:
   ...
 ```
 
+## TODO
+- [ ] Add an example application demonstrating the use of the [in_app_purchase_ios] package (see also issue [flutter/flutter#81695](https://github.com/flutter/flutter/issues/81695)).
+
 [1]: ../in_app_purchase/in_app_purchase

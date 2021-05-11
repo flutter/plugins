@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Unpin iOS GoogleMaps pod dependency version.
+
 ## 2.0.3
 
 * Fix incorrect typecast in TileOverlay example.
