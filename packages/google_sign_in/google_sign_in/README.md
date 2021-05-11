@@ -85,7 +85,7 @@ After configuration is complete, take note of the client ID that was created. Yo
 
 #### Specify your app's client ID
 
-Specify the client ID you created for your app in the Google Developers Console with the `google-signin-client_id` meta element.
+In your app's `web/index.html` file, specify the client ID you created for your app in the Google Developers Console with the `google-signin-client_id` meta element.
 
 ```html
 <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
@@ -134,4 +134,3 @@ Future<void> _handleSignIn() async {
 
 Find the example wiring in the
 [Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
-
