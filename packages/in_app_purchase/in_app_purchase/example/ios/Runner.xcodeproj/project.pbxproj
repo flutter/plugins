@@ -9,10 +9,6 @@
 /* Begin PBXBuildFile section */
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
-		523686A0BE5A2D2269D4F386 /* libPods-in_app_purchase_pluginTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = E20838C66ABCD8667B0BB95D /* libPods-in_app_purchase_pluginTests.a */; };
-		688DE35121F2A5A100EA2684 /* TranslatorTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 688DE35021F2A5A100EA2684 /* TranslatorTest.m */; };
-		6896B34621E9363700D37AEF /* ProductRequestHandlerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 6896B34521E9363700D37AEF /* ProductRequestHandlerTest.m */; };
-		6896B34C21EEB4B800D37AEF /* Stubs.m in Sources */ = {isa = PBXBuildFile; fileRef = 6896B34B21EEB4B800D37AEF /* Stubs.m */; };
 		861D0D93B0757D95C8A69620 /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B2AB6BE1D4E2232AB5D4A002 /* libPods-Runner.a */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
@@ -20,19 +16,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A5279298219369C600FF69E6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5279297219369C600FF69E6 /* StoreKit.framework */; };
-		A59001A721E69658004A3E5E /* InAppPurchasePluginTest.m in Sources */ = {isa = PBXBuildFile; fileRef = A59001A621E69658004A3E5E /* InAppPurchasePluginTest.m */; };
-		F78AF3142342BC89008449C7 /* PaymentQueueTest.m in Sources */ = {isa = PBXBuildFile; fileRef = F78AF3132342BC89008449C7 /* PaymentQueueTest.m */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXContainerItemProxy section */
-		A59001A921E69658004A3E5E /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
-			remoteInfo = Runner;
-		};
-/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		9705A1C41CF9048500538489 /* Embed Frameworks */ = {
@@ -51,10 +35,6 @@
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
-		688DE35021F2A5A100EA2684 /* TranslatorTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = TranslatorTest.m; path = ../../../ios/Tests/TranslatorTest.m; sourceTree = "<group>"; };
-		6896B34521E9363700D37AEF /* ProductRequestHandlerTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ProductRequestHandlerTest.m; path = ../../../ios/Tests/ProductRequestHandlerTest.m; sourceTree = "<group>"; };
-		6896B34A21EEB4B800D37AEF /* Stubs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Stubs.h; path = ../../../ios/Tests/Stubs.h; sourceTree = "<group>"; };
-		6896B34B21EEB4B800D37AEF /* Stubs.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = Stubs.m; path = ../../../ios/Tests/Stubs.m; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -67,9 +47,6 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A5279297219369C600FF69E6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
-		A59001A421E69658004A3E5E /* in_app_purchase_pluginTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = in_app_purchase_pluginTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		A59001A621E69658004A3E5E /* InAppPurchasePluginTest.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = InAppPurchasePluginTest.m; path = ../../../ios/Tests/InAppPurchasePluginTest.m; sourceTree = "<group>"; };
-		A59001A821E69658004A3E5E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		ACAF3B1D3B61187149C0FF81 /* Pods-in_app_purchase_pluginTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-in_app_purchase_pluginTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-in_app_purchase_pluginTests/Pods-in_app_purchase_pluginTests.release.xcconfig"; sourceTree = "<group>"; };
 		B2AB6BE1D4E2232AB5D4A002 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE95F46E12942F78BF67E55B /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
@@ -77,7 +54,6 @@
 		DE7EEEE26E27ACC04BA9951D /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		E20838C66ABCD8667B0BB95D /* libPods-in_app_purchase_pluginTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-in_app_purchase_pluginTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F6E5D5F926131C4800C68BED /* Configuration.storekit */ = {isa = PBXFileReference; lastKnownFileType = text; path = Configuration.storekit; sourceTree = "<group>"; };
-		F78AF3132342BC89008449C7 /* PaymentQueueTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = PaymentQueueTest.m; path = ../../../ios/Tests/PaymentQueueTest.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -87,14 +63,6 @@
 			files = (
 				861D0D93B0757D95C8A69620 /* libPods-Runner.a in Frameworks */,
 				A5279298219369C600FF69E6 /* StoreKit.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A59001A121E69658004A3E5E /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				523686A0BE5A2D2269D4F386 /* libPods-in_app_purchase_pluginTests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,7 +96,6 @@
 			children = (
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
-				A59001A521E69658004A3E5E /* in_app_purchase_pluginTests */,
 				97C146EF1CF9000F007C117D /* Products */,
 				2D4BBB2E0E7B18550E80D50C /* Pods */,
 				E4DB99639FAD8ADED6B572FC /* Frameworks */,
@@ -139,7 +106,6 @@
 			isa = PBXGroup;
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
-				A59001A421E69658004A3E5E /* in_app_purchase_pluginTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -167,20 +133,6 @@
 				97C146F21CF9000F007C117D /* main.m */,
 			);
 			name = "Supporting Files";
-			sourceTree = "<group>";
-		};
-		A59001A521E69658004A3E5E /* in_app_purchase_pluginTests */ = {
-			isa = PBXGroup;
-			children = (
-				A59001A621E69658004A3E5E /* InAppPurchasePluginTest.m */,
-				6896B34521E9363700D37AEF /* ProductRequestHandlerTest.m */,
-				F78AF3132342BC89008449C7 /* PaymentQueueTest.m */,
-				A59001A821E69658004A3E5E /* Info.plist */,
-				6896B34A21EEB4B800D37AEF /* Stubs.h */,
-				6896B34B21EEB4B800D37AEF /* Stubs.m */,
-				688DE35021F2A5A100EA2684 /* TranslatorTest.m */,
-			);
-			path = in_app_purchase_pluginTests;
 			sourceTree = "<group>";
 		};
 		E4DB99639FAD8ADED6B572FC /* Frameworks */ = {
@@ -217,25 +169,6 @@
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
 		};
-		A59001A321E69658004A3E5E /* in_app_purchase_pluginTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = A59001AD21E69658004A3E5E /* Build configuration list for PBXNativeTarget "in_app_purchase_pluginTests" */;
-			buildPhases = (
-				4EA84B170943DF9C4A2CF33C /* [CP] Check Pods Manifest.lock */,
-				A59001A021E69658004A3E5E /* Sources */,
-				A59001A121E69658004A3E5E /* Frameworks */,
-				A59001A221E69658004A3E5E /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				A59001AA21E69658004A3E5E /* PBXTargetDependency */,
-			);
-			name = in_app_purchase_pluginTests;
-			productName = in_app_purchase_pluginTests;
-			productReference = A59001A421E69658004A3E5E /* in_app_purchase_pluginTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -254,11 +187,6 @@
 							};
 						};
 					};
-					A59001A321E69658004A3E5E = {
-						CreatedOnToolsVersion = 10.0;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 97C146ED1CF9000F007C117D;
-					};
 				};
 			};
 			buildConfigurationList = 97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */;
@@ -275,7 +203,6 @@
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
-				A59001A321E69658004A3E5E /* in_app_purchase_pluginTests */,
 			);
 		};
 /* End PBXProject section */
@@ -289,13 +216,6 @@
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		A59001A221E69658004A3E5E /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -315,28 +235,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" embed_and_thin";
-		};
-		4EA84B170943DF9C4A2CF33C /* [CP] Check Pods Manifest.lock */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
-				"${PODS_ROOT}/Manifest.lock",
-			);
-			name = "[CP] Check Pods Manifest.lock";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-				"$(DERIVED_FILE_DIR)/Pods-in_app_purchase_pluginTests-checkManifestLockResult.txt",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
-			showEnvVarsInLog = 0;
 		};
 		5DF63B80D489A62B306EA07A /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -383,27 +281,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		A59001A021E69658004A3E5E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F78AF3142342BC89008449C7 /* PaymentQueueTest.m in Sources */,
-				6896B34621E9363700D37AEF /* ProductRequestHandlerTest.m in Sources */,
-				688DE35121F2A5A100EA2684 /* TranslatorTest.m in Sources */,
-				A59001A721E69658004A3E5E /* InAppPurchasePluginTest.m in Sources */,
-				6896B34C21EEB4B800D37AEF /* Stubs.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
-
-/* Begin PBXTargetDependency section */
-		A59001AA21E69658004A3E5E /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 97C146ED1CF9000F007C117D /* Runner */;
-			targetProxy = A59001A921E69658004A3E5E /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		97C146FA1CF9000F007C117D /* Main.storyboard */ = {
@@ -537,6 +415,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -548,7 +427,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.inAppPurchaseExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.baseflow.example.iap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
 			};
@@ -560,6 +439,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -571,52 +451,9 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.inAppPurchaseExample;
+				PRODUCT_BUNDLE_IDENTIFIER = com.baseflow.example.iap;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				VERSIONING_SYSTEM = "apple-generic";
-			};
-			name = Release;
-		};
-		A59001AB21E69658004A3E5E /* Debug */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = CC2B3FFB29B2574DEDD718A6 /* Pods-in_app_purchase_pluginTests.debug.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = in_app_purchase_pluginTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "sample.changme.in-app-purchase-pluginTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
-			};
-			name = Debug;
-		};
-		A59001AC21E69658004A3E5E /* Release */ = {
-			isa = XCBuildConfiguration;
-			baseConfigurationReference = ACAF3B1D3B61187149C0FF81 /* Pods-in_app_purchase_pluginTests.release.xcconfig */;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = in_app_purchase_pluginTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "sample.changme.in-app-purchase-pluginTests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
 			name = Release;
 		};
@@ -637,15 +474,6 @@
 			buildConfigurations = (
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		A59001AD21E69658004A3E5E /* Build configuration list for PBXNativeTarget "in_app_purchase_pluginTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				A59001AB21E69658004A3E5E /* Debug */,
-				A59001AC21E69658004A3E5E /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
