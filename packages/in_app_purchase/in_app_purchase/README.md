@@ -44,8 +44,8 @@ can start using the plugin. Two basic options are available:
 1. A generic, idiomatic Flutter API: [in_app_purchase](https://pub.dev/documentation/in_app_purchase/latest/in_app_purchase/in_app_purchase-library.html).
    This API supports most use cases for loading and making purchases.
 
-2. Platform-specific Dart APIs: [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase/latest/store_kit_wrappers/store_kit_wrappers-library.html)
-   and [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase/latest/billing_client_wrappers/billing_client_wrappers-library.html).
+2. Platform-specific Dart APIs: [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase_ios/latest/store_kit_wrappers/store_kit_wrappers-library.html)
+   and [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase_android/latest/billing_client_wrappers/billing_client_wrappers-library.html).
    These APIs expose platform-specific behavior and allow for more fine-tuned
    control when needed. However, if you use one of these APIs, your
    purchase-handling logic is significantly different for the different
