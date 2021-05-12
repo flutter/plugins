@@ -1,6 +1,6 @@
 ## 0.6.0
 
-As part of implementing federated architecture and making the interface compatible for other platform this version contains the following **breaking changes**:
+As part of implementing federated architecture and making the interface compatible for other platforms this version contains the following **breaking changes**:
 
 * Changes to the platform agnostic interface:
   * If you used `InAppPurchaseConnection.instance` to access generic In App Purchase APIs, please use `InAppPurchase.instance` instead;
@@ -9,7 +9,7 @@ As part of implementing federated architecture and making the interface compatib
   * The `InAppPurchase.completePurchase` method no longer returns an instance `BillingWrapperResult` class (which was Android specific). Instead it will return a completed `Future` if the method executed successfully, in case of errors it will complete with an `InAppPurchaseException` describing the error.
 * Android specific changes:
   * The Android specific `InAppPurchaseConnection.consumePurchase` and `InAppPurchaseConnection.enablePendingPurchases` methods have been removed from the platform agnostic interface and moved to the Android specific `InAppPurchaseAndroidPlatformAddition` class:
-    * `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases` is a static method that should be called when initializing your App. Access the method like this: `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases()`;
+    * `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases` is a static method that should be called when initializing your App. Access the method like this: `InAppPurchaseAndroidPlatformAddition.enablePendingPurchases()` (make sure to add the following import: `import 'package:in_app_purchase_android/in_app_purchase_android.dart';`);
     * To use the `InAppPurchaseAndroidPlatformAddition.consumePurchase` method, acquire an instance using the `InAppPurchase.getPlatformAddition` method. For example:
   ```dart
   // Acquire the InAppPurchaseAndroidPlatformAddition instance.
@@ -19,7 +19,7 @@ As part of implementing federated architecture and making the interface compatib
   ```
   * The [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase/latest/billing_client_wrappers/billing_client_wrappers-library.html) have been moved into the [in_app_purchase_android](https://pub.dev/packages/in_app_purchase_android) package. They are still available through the [in_app_purchase](https://pub.dev/packages/in_app_purchase) plugin but to use them it is necessary to import the correct package when using them: `import 'package:in_app_purchase_android/billing_client_wrappers.dart';`;
 * iOS specific changes:
-  * The iOS specific methods `InAppPurchaseConnection.presentCodeRedemptionSheet` and `InAppPurchaseConnection.refreshPurchaseVerificationData` methods have been removed from the platform agnostic interface and moved into the iOS specific `InAppPurchaseIosPlatformAddition` class. To use them acquire an instance through te `InAppPurchase.getPlatformAddition` method like so:
+  * The iOS specific methods `InAppPurchaseConnection.presentCodeRedemptionSheet` and `InAppPurchaseConnection.refreshPurchaseVerificationData` methods have been removed from the platform agnostic interface and moved into the iOS specific `InAppPurchaseIosPlatformAddition` class. To use them acquire an instance through the `InAppPurchase.getPlatformAddition` method like so:
   ```dart
   // Acquire the InAppPurchaseIosPlatformAddition instance.
   InAppPurchaseIosPlatformAddition iosAddition = InAppPurchase.instance.getPlatformAddition<InAppPurchaseIosPlatformAddition>();
@@ -28,7 +28,7 @@ As part of implementing federated architecture and making the interface compatib
   // Refresh purchase verification data.
   PurchaseVerificationData? verificationData = await iosAddition.refreshPurchaseVerificationData(); 
   ```
-  * The [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase/latest/store_kit_wrappers/store_kit_wrappers-library.html) have been moved into the [in_app_purchase_ios](https://pub.dev/packages/in_app_purchase_ios) package. They are still available [in_app_purchase](https://pub.dev/packages/in_app_purchase) plugin but to use them it is necessary to import the correct package when using them: `import 'package:in_app_purchase_ios/store_kit_wrappers.dart';`;
+  * The [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase/latest/store_kit_wrappers/store_kit_wrappers-library.html) have been moved into the [in_app_purchase_ios](https://pub.dev/packages/in_app_purchase_ios) package. They are still available in the [in_app_purchase](https://pub.dev/packages/in_app_purchase) plugin, but to use them it is necessary to import the correct package when using them: `import 'package:in_app_purchase_ios/store_kit_wrappers.dart';`;
 
 ## 0.5.2
 
