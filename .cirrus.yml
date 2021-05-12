@@ -255,7 +255,6 @@ task:
         # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
         - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
         - ./script/tool_runner.sh podspecs
-        - ./script/incremental_build.sh podspecs
 
 # Windows tasks
 task:
@@ -265,7 +264,7 @@ task:
     builder_image_name: docker-builder-win # gce vm image
     builder_image_project: flutter-cirrus
     cluster_name: test-cluster
-    zone: us-central1
+    zone: us-central1-a
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
