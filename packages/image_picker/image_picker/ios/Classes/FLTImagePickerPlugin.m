@@ -371,11 +371,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                     [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
 
                 if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                  localImage =
-                      [FLTImagePickerImageUtil scaledImage:localImage
-                                                  maxWidth:maxWidth
-                                                 maxHeight:maxHeight
-                                       isMetadataAvailable:originalAsset == nil ? NO : YES];
+                  localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                                           maxWidth:maxWidth
+                                                          maxHeight:maxHeight
+                                                isMetadataAvailable:originalAsset != nil];
                 }
 
                 if (!originalAsset) {
@@ -457,7 +456,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       image = [FLTImagePickerImageUtil scaledImage:image
                                           maxWidth:maxWidth
                                          maxHeight:maxHeight
-                               isMetadataAvailable:originalAsset == nil ? NO : YES];
+                               isMetadataAvailable:originalAsset != nil];
     }
 
     if (!originalAsset) {
