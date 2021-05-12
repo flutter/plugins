@@ -368,40 +368,38 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
-            if (image != nil) {
-              __block UIImage *localImage = image;
-              dispatch_async(dispatch_get_main_queue(), ^{
-                if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                  localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                                           maxWidth:maxWidth
-                                                          maxHeight:maxHeight];
-                }
+            __block UIImage *localImage = image;
+            dispatch_async(dispatch_get_main_queue(), ^{
+              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                                         maxWidth:maxWidth
+                                                        maxHeight:maxHeight];
+              }
 
-                PHAsset *originalAsset =
-                    [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
+              PHAsset *originalAsset =
+                  [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
 
-                if (!originalAsset) {
-                  // Image picked without an original asset (e.g. User took a photo directly)
-                  [self saveImageWithPickerInfo:nil
-                                          image:localImage
-                                   imageQuality:desiredImageQuality];
-                } else {
-                  [[PHImageManager defaultManager]
-                      requestImageDataForAsset:originalAsset
-                                       options:nil
-                                 resultHandler:^(
-                                     NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                                   // maxWidth and maxHeight are used only for GIF images.
-                                   [self saveImageWithOriginalImageData:imageData
-                                                                  image:localImage
-                                                               maxWidth:maxWidth
-                                                              maxHeight:maxHeight
-                                                           imageQuality:desiredImageQuality];
-                                 }];
-                }
-              });
-            }
+              if (!originalAsset) {
+                // Image picked without an original asset (e.g. User took a photo directly)
+                [self saveImageWithPickerInfo:nil
+                                        image:localImage
+                                 imageQuality:desiredImageQuality];
+              } else {
+                [[PHImageManager defaultManager]
+                    requestImageDataForAsset:originalAsset
+                                     options:nil
+                               resultHandler:^(
+                                   NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                                 // maxWidth and maxHeight are used only for GIF images.
+                                 [self saveImageWithOriginalImageData:imageData
+                                                                image:localImage
+                                                             maxWidth:maxWidth
+                                                            maxHeight:maxHeight
+                                                         imageQuality:desiredImageQuality];
+                               }];
+              }
+            });
           }
         }];
   }
