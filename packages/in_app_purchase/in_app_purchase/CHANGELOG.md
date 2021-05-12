@@ -5,7 +5,7 @@ As part of implementing federated architecture and making the interface compatib
 * Changes to the platform agnostic interface:
   * If you used `InAppPurchaseConnection.instance` to access generic In App Purchase APIs, please use `InAppPurchase.instance` instead;
   * The `InAppPurchaseConnection.purchaseUpdatedStream` has been renamed to `InAppPurchase.purchaseStream`;
-  * The `InAppPurchaseConnection.queryPastPurchases` method has been replaced by `InAppPurchase.restorePurchases`. This method no longer returns a list of restored purchases but emits each restored purchase on the `InAppPurchase.purchaseStream`;
+  * The `InAppPurchaseConnection.queryPastPurchases` method has been removed. Instead, you should use `InAppPurchase.restorePurchases`. This method emits each restored purchase on the `InAppPurchase.purchaseStream`, the `PurchaseDetails` object will be marked with a `status` of `PurchaseStatus.restored`;
   * The `InAppPurchase.completePurchase` method no longer returns an instance `BillingWrapperResult` class (which was Android specific). Instead it will return a completed `Future` if the method executed successfully, in case of errors it will complete with an `InAppPurchaseException` describing the error.
 * Android specific changes:
   * The Android specific `InAppPurchaseConnection.consumePurchase` and `InAppPurchaseConnection.enablePendingPurchases` methods have been removed from the platform agnostic interface and moved to the Android specific `InAppPurchaseAndroidPlatformAddition` class:
