@@ -1,3 +1,8 @@
+## 0.7.5+1
+
+* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked 
+is not included selected photos and image is scaled.
+
 ## 0.7.5
 
 * Fixes an issue where image rotation is wrong when Select Photos chose and image is scaled.
