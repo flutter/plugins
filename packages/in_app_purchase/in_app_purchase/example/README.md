@@ -32,7 +32,7 @@ below.
    - `subscription_silver`: A lower level subscription.
    - `subscription_gold`: A higher level subscription.
 
-   Make sure that all of the products are set to `ACTIVE`.
+   Make sure that all the products are set to `ACTIVE`.
 
 4. Update `APP_ID` in `example/android/app/build.gradle` to match your package
    ID in the PDC.
