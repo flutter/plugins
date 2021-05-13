@@ -1,6 +1,20 @@
+## 2.0.4
+
+* Unpin iOS GoogleMaps pod dependency version.
+
+## 2.0.3
+
+* Fix incorrect typecast in TileOverlay example.
+* Fix english wording in instructions.
+
+## 2.0.2
+
+* Update flutter\_plugin\_android\_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
 ## 2.0.1
 
-* Update platform_plugin_interface version requirement.
+* Update platform\_plugin\_interface version requirement.
 
 ## 2.0.0
 

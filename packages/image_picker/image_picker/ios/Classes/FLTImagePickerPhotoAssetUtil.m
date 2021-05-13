@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,12 @@
   PHFetchResult<PHAsset *> *result = [PHAsset fetchAssetsWithALAssetURLs:@[ referenceURL ]
                                                                  options:nil];
   return result.firstObject;
+}
+
++ (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {
+  PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[ result.assetIdentifier ]
+                                                                options:nil];
+  return fetchResult.firstObject;
 }
 
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData

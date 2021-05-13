@@ -1,4 +1,4 @@
-// Copyright 2017, the Flutter project authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -108,6 +108,8 @@ class GoogleSignInAccount implements GoogleIdentity {
     final String? token = (await authentication).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
+      // TODO(kevmoo): Use the correct value once it's available from authentication
+      // See https://github.com/flutter/flutter/issues/80905
       "X-Goog-AuthUser": "0",
     };
   }

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,7 +9,9 @@ import 'package:path/path.dart' as p;
 
 import 'common.dart';
 
+/// A command to run the Java tests of Android plugins.
 class JavaTestCommand extends PluginCommand {
+  /// Creates an instance of the test runner.
   JavaTestCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
@@ -27,18 +29,20 @@ class JavaTestCommand extends PluginCommand {
   static const String _gradleWrapper = 'gradlew';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final Stream<Directory> examplesWithTests = getExamples().where(
         (Directory d) =>
             isFlutterPackage(d, fileSystem) &&
-            fileSystem
-                .directory(p.join(d.path, 'android', 'app', 'src', 'test'))
-                .existsSync());
+            (fileSystem
+                    .directory(p.join(d.path, 'android', 'app', 'src', 'test'))
+                    .existsSync() ||
+                fileSystem
+                    .directory(p.join(d.path, '..', 'android', 'src', 'test'))
+                    .existsSync()));
 
     final List<String> failingPackages = <String>[];
     final List<String> missingFlutterBuild = <String>[];
-    await for (Directory example in examplesWithTests) {
+    await for (final Directory example in examplesWithTests) {
       final String packageName =
           p.relative(example.path, from: packagesDir.path);
       print('\nRUNNING JAVA TESTS for $packageName');
@@ -68,14 +72,14 @@ class JavaTestCommand extends PluginCommand {
       print(
           'The Java tests for the following packages are failing (see above for'
           'details):');
-      for (String package in failingPackages) {
+      for (final String package in failingPackages) {
         print(' * $package');
       }
     }
     if (missingFlutterBuild.isNotEmpty) {
       print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
           'the following packages before executing tests again:');
-      for (String package in missingFlutterBuild) {
+      for (final String package in missingFlutterBuild) {
         print(' * $package');
       }
     }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,13 +11,13 @@ import 'util.dart';
 
 void main() {
   group('$ListCommand', () {
-    CommandRunner<ListCommand> runner;
+    CommandRunner<void> runner;
 
     setUp(() {
       initializeFakePackages();
       final ListCommand command = ListCommand(mockPackagesDir, mockFileSystem);
 
-      runner = CommandRunner<Null>('list_test', 'Test for $ListCommand');
+      runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
       runner.addCommand(command);
     });
 

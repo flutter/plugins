@@ -1,6 +1,14 @@
-## 2.0.3
+## 2.1.2
 
 * iOS: Update texture on `seekTo`.
+
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
 
 ## 2.0.2
 

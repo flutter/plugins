@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,19 +12,19 @@ import 'package:platform/platform.dart';
 
 import 'common.dart';
 
-typedef void Print(Object object);
-
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
 /// See https://guides.cocoapods.org/terminal/commands.html#pod_lib_lint.
 class LintPodspecsCommand extends PluginCommand {
+  /// Creates an instance of the linter command.
   LintPodspecsCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-    this.platform = const LocalPlatform(),
+    Platform platform = const LocalPlatform(),
     Print print = print,
-  })  : _print = print,
+  })  : _platform = platform,
+        _print = print,
         super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addMultiOption('skip',
         help:
@@ -47,26 +47,29 @@ class LintPodspecsCommand extends PluginCommand {
       'Runs "pod lib lint" on all iOS and macOS plugin podspecs.\n\n'
       'This command requires "pod" and "flutter" to be in your path. Runs on macOS only.';
 
-  final Platform platform;
+  final Platform _platform;
 
   final Print _print;
 
   @override
-  Future<Null> run() async {
-    if (!platform.isMacOS) {
+  Future<void> run() async {
+    if (!_platform.isMacOS) {
       _print('Detected platform is not macOS, skipping podspec lint');
       return;
     }
 
-    checkSharding();
-
-    await processRunner.runAndExitOnError('which', <String>['pod'],
-        workingDir: packagesDir);
+    await processRunner.run(
+      'which',
+      <String>['pod'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
 
     _print('Starting podspec lint test');
 
     final List<String> failingPlugins = <String>[];
-    for (File podspec in await _podspecsToLint()) {
+    for (final File podspec in await _podspecsToLint()) {
       if (!await _lintPodspec(podspec)) {
         failingPlugins.add(p.basenameWithoutExtension(podspec.path));
       }
@@ -75,9 +78,9 @@ class LintPodspecsCommand extends PluginCommand {
     _print('\n\n');
     if (failingPlugins.isNotEmpty) {
       _print('The following plugins have podspec errors (see above):');
-      failingPlugins.forEach((String plugin) {
+      for (final String plugin in failingPlugins) {
         _print(' * $plugin');
-      });
+      }
       throw ToolExit(1);
     }
   }
@@ -86,7 +89,8 @@ class LintPodspecsCommand extends PluginCommand {
     final List<File> podspecs = await getFiles().where((File entity) {
       final String filePath = entity.path;
       return p.extension(filePath) == '.podspec' &&
-          !argResults['skip'].contains(p.basenameWithoutExtension(filePath));
+          !(argResults['skip'] as List<String>)
+              .contains(p.basenameWithoutExtension(filePath));
     }).toList();
 
     podspecs.sort(
@@ -102,12 +106,14 @@ class LintPodspecsCommand extends PluginCommand {
     _print('Linting $podspecBasename');
 
     // Lint plugin as framework (use_frameworks!).
-    final ProcessResult frameworkResult = await _runPodLint(podspecPath, libraryLint: true);
+    final ProcessResult frameworkResult =
+        await _runPodLint(podspecPath, libraryLint: true);
     _print(frameworkResult.stdout);
     _print(frameworkResult.stderr);
 
     // Lint plugin as library.
-    final ProcessResult libraryResult = await _runPodLint(podspecPath, libraryLint: false);
+    final ProcessResult libraryResult =
+        await _runPodLint(podspecPath, libraryLint: false);
     _print(libraryResult.stdout);
     _print(libraryResult.stderr);
 
@@ -116,7 +122,7 @@ class LintPodspecsCommand extends PluginCommand {
 
   Future<ProcessResult> _runPodLint(String podspecPath,
       {bool libraryLint}) async {
-    final bool allowWarnings = argResults['ignore-warnings']
+    final bool allowWarnings = (argResults['ignore-warnings'] as List<String>)
         .contains(p.basenameWithoutExtension(podspecPath));
     final List<String> arguments = <String>[
       'lib',

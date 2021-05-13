@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,7 +29,7 @@ class AndroidDeviceInfo {
     required this.isPhysicalDevice,
     required this.androidId,
     required List<String> systemFeatures,
-  })   : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
+  })  : supported32BitAbis = List<String>.unmodifiable(supported32BitAbis),
         supported64BitAbis = List<String>.unmodifiable(supported64BitAbis),
         supportedAbis = List<String>.unmodifiable(supportedAbis),
         systemFeatures = List<String>.unmodifiable(systemFeatures);

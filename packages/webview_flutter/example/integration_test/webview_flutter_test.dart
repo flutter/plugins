@@ -1,4 +1,4 @@
-// Copyright 2019, the Chromium project authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -61,8 +61,6 @@ void main() {
     expect(currentUrl, 'https://www.google.com/');
   });
 
-  // enable this once https://github.com/flutter/flutter/issues/31510
-  // is resolved.
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -343,6 +341,11 @@ void main() {
             function play() {
               var video = document.getElementById("video");
               video.play();
+              video.addEventListener('timeupdate', videoTimeUpdateHandler, false);
+            }
+            function videoTimeUpdateHandler(e) {
+              var video = document.getElementById("video");
+              VideoTestTime.postMessage(video.currentTime);
             }
             function isPaused() {
               var video = document.getElementById("video");
@@ -420,7 +423,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+    });
 
     testWidgets('Changes to initialMediaPlaybackPolicy are ignored',
         (WidgetTester tester) async {
@@ -479,24 +482,36 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+    });
 
     testWidgets('Video plays inline when allowsInlineMediaPlayback is true',
         (WidgetTester tester) async {
       Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
       Completer<void> pageLoaded = Completer<void>();
+      Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
-            key: GlobalKey(),
             initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
+            javascriptChannels: <JavascriptChannel>{
+              JavascriptChannel(
+                name: 'VideoTestTime',
+                onMessageReceived: (JavascriptMessage message) {
+                  final double currentTime = double.parse(message.message);
+                  // Let it play for at least 1 second to make sure the related video's properties are set.
+                  if (currentTime > 1) {
+                    videoPlaying.complete(null);
+                  }
+                },
+              ),
+            },
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
@@ -508,23 +523,46 @@ void main() {
       WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isFullScreen =
-          await controller.evaluateJavascript('isFullScreen();');
-      expect(isFullScreen, _webviewBool(false));
+      // Pump once to trigger the video play.
+      await tester.pump();
 
-      controllerCompleter = Completer<WebViewController>();
-      pageLoaded = Completer<void>();
+      // Makes sure we get the correct event that indicates the video is actually playing.
+      await videoPlaying.future;
+
+      String fullScreen =
+          await controller.evaluateJavascript('isFullScreen();');
+      expect(fullScreen, _webviewBool(false));
+    });
+
+    testWidgets(
+        'Video plays full screen when allowsInlineMediaPlayback is false',
+        (WidgetTester tester) async {
+      Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
+      Completer<void> pageLoaded = Completer<void>();
+      Completer<void> videoPlaying = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
           child: WebView(
-            key: GlobalKey(),
             initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
             onWebViewCreated: (WebViewController controller) {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
+            javascriptChannels: <JavascriptChannel>{
+              JavascriptChannel(
+                name: 'VideoTestTime',
+                onMessageReceived: (JavascriptMessage message) {
+                  final double currentTime = double.parse(message.message);
+                  // Let it play for at least 1 second to make sure the related video's properties are set.
+                  if (currentTime > 1) {
+                    videoPlaying.complete(null);
+                  }
+                },
+              ),
+            },
             onPageFinished: (String url) {
               pageLoaded.complete(null);
             },
@@ -533,13 +571,19 @@ void main() {
           ),
         ),
       );
-
-      controller = await controllerCompleter.future;
+      WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      isFullScreen = await controller.evaluateJavascript('isFullScreen();');
-      expect(isFullScreen, _webviewBool(true));
-    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+      // Pump once to trigger the video play.
+      await tester.pump();
+
+      // Makes sure we get the correct event that indicates the video is actually playing.
+      await videoPlaying.future;
+
+      String fullScreen =
+          await controller.evaluateJavascript('isFullScreen();');
+      expect(fullScreen, _webviewBool(true));
+    });
   });
 
   group('Audio playback policy', () {
@@ -639,7 +683,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(true));
-    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+    });
 
     testWidgets('Changes to initialMediaPlaybackPolocy are ignored',
         (WidgetTester tester) async {
@@ -708,7 +752,7 @@ void main() {
 
       isPaused = await controller.evaluateJavascript('isPaused();');
       expect(isPaused, _webviewBool(false));
-    }, skip: true /* https://github.com/flutter/flutter/issues/72572 */);
+    });
   });
 
   testWidgets('getTitle', (WidgetTester tester) async {

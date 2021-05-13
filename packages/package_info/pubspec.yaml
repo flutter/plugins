@@ -25,9 +25,9 @@ dev_dependencies:
   flutter_driver:
     sdk: flutter
   integration_test:
-    path: ../integration_test
+    sdk: flutter
   pedantic: ^1.10.0
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5"

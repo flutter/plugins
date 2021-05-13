@@ -1,6 +1,7 @@
 name: flutter_plugin_tools
-description: Productivity utils for hosting multiple plugins within one repository.
-publish_to: 'none'
+description: Productivity utils for flutter/plugins and flutter/packages
+repository: https://github.com/flutter/plugins/tree/master/script/tool
+version: 0.1.1
 
 dependencies:
   args: "^1.4.3"
@@ -19,12 +20,12 @@ dependencies:
   file: ^5.0.10
   uuid: ^2.0.4
   http_multi_server: ^2.2.0
-  collection: 1.14.13
+  collection: ^1.14.13
 
 dev_dependencies:
   matcher: ^0.12.6
   mockito: ^4.1.1
-  pedantic: 1.8.0
+  pedantic: ^1.8.0
 
 environment:
   sdk: ">=2.3.0 <3.0.0"

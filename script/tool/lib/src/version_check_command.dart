@@ -1,61 +1,44 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' as io;
 
-import 'package:meta/meta.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common.dart';
 
-const String _kBaseSha = 'base-sha';
-
+/// Categories of version change types.
 enum NextVersionType {
+  /// A breaking change.
   BREAKING_MAJOR,
-  MAJOR_NULLSAFETY_PRE_RELEASE,
-  MINOR_NULLSAFETY_PRE_RELEASE,
+
+  /// A minor change (e.g., added feature).
   MINOR,
+
+  /// A bugfix change.
   PATCH,
+
+  /// The release of an existing prerelease version.
   RELEASE,
 }
 
-Version getNextNullSafetyPreRelease(Version current, Version next) {
-  String nextNullsafetyPrerelease = 'nullsafety';
-  if (current.isPreRelease &&
-      current.preRelease.first is String &&
-      current.preRelease.first == 'nullsafety') {
-    if (current.preRelease.length == 1) {
-      nextNullsafetyPrerelease = 'nullsafety.1';
-    } else if (current.preRelease.length == 2 &&
-        current.preRelease.last is int) {
-      nextNullsafetyPrerelease = 'nullsafety.${current.preRelease.last + 1}';
-    }
-  }
-  return Version(
-    next.major,
-    next.minor,
-    next.patch,
-    pre: nextNullsafetyPrerelease,
-  );
-}
-
+/// Returns the set of allowed next versions, with their change type, for
+/// [masterVersion].
+///
+/// [headVerison] is used to check whether this is a pre-1.0 version bump, as
+/// those have different semver rules.
 @visibleForTesting
 Map<Version, NextVersionType> getAllowedNextVersions(
     Version masterVersion, Version headVersion) {
-  final Version nextNullSafetyMajor =
-      getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMajor);
-  final Version nextNullSafetyMinor =
-      getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMinor);
   final Map<Version, NextVersionType> allowedNextVersions =
       <Version, NextVersionType>{
     masterVersion.nextMajor: NextVersionType.BREAKING_MAJOR,
-    nextNullSafetyMajor: NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE,
-    nextNullSafetyMinor: NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE,
     masterVersion.nextMinor: NextVersionType.MINOR,
     masterVersion.nextPatch: NextVersionType.PATCH,
   };
@@ -65,7 +48,7 @@ Map<Version, NextVersionType> getAllowedNextVersions(
     if (masterVersion.build.isEmpty) {
       nextBuildNumber = 1;
     } else {
-      final int currentBuildNumber = masterVersion.build.first;
+      final int currentBuildNumber = masterVersion.build.first as int;
       nextBuildNumber = currentBuildNumber + 1;
     }
     final Version preReleaseVersion = Version(
@@ -80,28 +63,33 @@ Map<Version, NextVersionType> getAllowedNextVersions(
         NextVersionType.BREAKING_MAJOR;
     allowedNextVersions[masterVersion.nextPatch] = NextVersionType.MINOR;
     allowedNextVersions[preReleaseVersion] = NextVersionType.PATCH;
-
-    final Version nextNullSafetyMajor =
-        getNextNullSafetyPreRelease(masterVersion, masterVersion.nextMinor);
-    final Version nextNullSafetyMinor =
-        getNextNullSafetyPreRelease(masterVersion, masterVersion.nextPatch);
-
-    allowedNextVersions[nextNullSafetyMajor] =
-        NextVersionType.MAJOR_NULLSAFETY_PRE_RELEASE;
-    allowedNextVersions[nextNullSafetyMinor] =
-        NextVersionType.MINOR_NULLSAFETY_PRE_RELEASE;
   }
   return allowedNextVersions;
 }
 
+/// A command to validate version changes to packages.
 class VersionCheckCommand extends PluginCommand {
+  /// Creates an instance of the version check command.
   VersionCheckCommand(
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
-  }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+    this.httpClient,
+  })  : _pubVersionFinder =
+            PubVersionFinder(httpClient: httpClient ?? http.Client()),
+        super(packagesDir, fileSystem,
+            processRunner: processRunner, gitDir: gitDir) {
+    argParser.addFlag(
+      _againstPubFlag,
+      help: 'Whether the version check should run against the version on pub.\n'
+          'Defaults to false, which means the version check only run against the previous version in code.',
+      defaultsTo: false,
+      negatable: true,
+    );
+  }
+
+  static const String _againstPubFlag = 'against-pub';
 
   @override
   final String name = 'version-check';
@@ -112,61 +100,111 @@ class VersionCheckCommand extends PluginCommand {
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
+  /// The http client used to query pub server.
+  final http.Client httpClient;
+
+  final PubVersionFinder _pubVersionFinder;
+
   @override
-  Future<Null> run() async {
-    checkSharding();
+  Future<void> run() async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
 
-    final String baseSha = argResults[_kBaseSha];
+    const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
-      try {
-        final File pubspecFile = fileSystem.file(pubspecPath);
-        if (!pubspecFile.existsSync()) {
-          continue;
-        }
-        final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
-        if (pubspec.publishTo == 'none') {
-          continue;
-        }
+      print('Checking versions for $pubspecPath...');
+      final File pubspecFile = fileSystem.file(pubspecPath);
+      if (!pubspecFile.existsSync()) {
+        print('${indentation}Deleted; skipping.');
+        continue;
+      }
+      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      if (pubspec.publishTo == 'none') {
+        print('${indentation}Found "publish_to: none"; skipping.');
+        continue;
+      }
 
-        final Version masterVersion =
-            await gitVersionFinder.getPackageVersion(pubspecPath, baseSha);
-        final Version headVersion =
-            await gitVersionFinder.getPackageVersion(pubspecPath, 'HEAD');
-        if (headVersion == null) {
-          continue; // Example apps don't have versions
+      final Version headVersion =
+          await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
+      if (headVersion == null) {
+        printErrorAndExit(
+            errorMessage: '${indentation}No version found. A package that '
+                'intentionally has no version should be marked '
+                '"publish_to: none".');
+      }
+      Version sourceVersion;
+      if (argResults[_againstPubFlag] as bool) {
+        final String packageName = pubspecFile.parent.basename;
+        final PubVersionFinderResponse pubVersionFinderResponse =
+            await _pubVersionFinder.getPackageVersion(package: packageName);
+        switch (pubVersionFinderResponse.result) {
+          case PubVersionFinderResult.success:
+            sourceVersion = pubVersionFinderResponse.versions.first;
+            print(
+                '$indentation$packageName: Current largest version on pub: $sourceVersion');
+            break;
+          case PubVersionFinderResult.fail:
+            printErrorAndExit(errorMessage: '''
+${indentation}Error fetching version on pub for $packageName.
+${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
+${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
+''');
+            break;
+          case PubVersionFinderResult.noPackageFound:
+            sourceVersion = null;
+            break;
         }
-
-        final Map<Version, NextVersionType> allowedNextVersions =
-            getAllowedNextVersions(masterVersion, headVersion);
-
-        if (!allowedNextVersions.containsKey(headVersion)) {
-          final String error = '$pubspecPath incorrectly updated version.\n'
-              'HEAD: $headVersion, master: $masterVersion.\n'
-              'Allowed versions: $allowedNextVersions';
-          printErrorAndExit(errorMessage: error);
+      } else {
+        sourceVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
+      }
+      if (sourceVersion == null) {
+        String safeToIgnoreMessage;
+        if (argResults[_againstPubFlag] as bool) {
+          safeToIgnoreMessage =
+              '${indentation}Unable to find package on pub server.';
+        } else {
+          safeToIgnoreMessage =
+              '${indentation}Unable to find pubspec in master.';
         }
+        print('$safeToIgnoreMessage Safe to ignore if the project is new.');
+        continue;
+      }
 
-        bool isPlatformInterface = pubspec.name.endsWith("_platform_interface");
-        if (isPlatformInterface &&
-            allowedNextVersions[headVersion] ==
-                NextVersionType.BREAKING_MAJOR) {
-          final String error = '$pubspecPath breaking change detected.\n'
-              'Breaking changes to platform interfaces are strongly discouraged.\n';
-          printErrorAndExit(errorMessage: error);
-        }
-      } on io.ProcessException {
-        print('Unable to find pubspec in master for $pubspecPath.'
-            ' Safe to ignore if the project is new.');
+      if (sourceVersion == headVersion) {
+        print('${indentation}No version change.');
+        continue;
+      }
+
+      final Map<Version, NextVersionType> allowedNextVersions =
+          getAllowedNextVersions(sourceVersion, headVersion);
+
+      if (!allowedNextVersions.containsKey(headVersion)) {
+        final String source =
+            (argResults[_againstPubFlag] as bool) ? 'pub' : 'master';
+        final String error = '${indentation}Incorrectly updated version.\n'
+            '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
+            '${indentation}Allowed versions: $allowedNextVersions';
+        printErrorAndExit(errorMessage: error);
+      } else {
+        print('$indentation$headVersion -> $sourceVersion');
+      }
+
+      final bool isPlatformInterface =
+          pubspec.name.endsWith('_platform_interface');
+      if (isPlatformInterface &&
+          allowedNextVersions[headVersion] == NextVersionType.BREAKING_MAJOR) {
+        final String error = '$pubspecPath breaking change detected.\n'
+            'Breaking changes to platform interfaces are strongly discouraged.\n';
+        printErrorAndExit(errorMessage: error);
       }
     }
 
-    await for (Directory plugin in getPlugins()) {
+    await for (final Directory plugin in getPlugins()) {
       await _checkVersionsMatch(plugin);
     }
+    _pubVersionFinder.httpClient.close();
 
     print('No version check errors found!');
   }
@@ -176,11 +214,11 @@ class VersionCheckCommand extends PluginCommand {
     final String packageName = plugin.basename;
     print('-----------------------------------------');
     print(
-        'Checking the first version listed in CHANGELOG.MD matches the version in pubspec.yaml for $packageName.');
+        'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for $packageName.');
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
-      final String error = 'Cannot parse version from pubspec.yaml';
+      const String error = 'Cannot parse version from pubspec.yaml';
       printErrorAndExit(errorMessage: error);
     }
     final Version fromPubspec = pubspec.version;
@@ -189,16 +227,33 @@ class VersionCheckCommand extends PluginCommand {
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     String firstLineWithText;
-    final Iterator iterator = lines.iterator;
+    final Iterator<String> iterator = lines.iterator;
     while (iterator.moveNext()) {
-      if ((iterator.current as String).trim().isNotEmpty) {
-        firstLineWithText = iterator.current;
+      if (iterator.current.trim().isNotEmpty) {
+        firstLineWithText = iterator.current.trim();
         break;
       }
     }
     // Remove all leading mark down syntax from the version line.
-    final String versionString = firstLineWithText.split(' ').last;
-    Version fromChangeLog = Version.parse(versionString);
+    String versionString = firstLineWithText.split(' ').last;
+
+    // Skip validation for the special NEXT version that's used to accumulate
+    // changes that don't warrant publishing on their own.
+    final bool hasNextSection = versionString == 'NEXT';
+    if (hasNextSection) {
+      print('Found NEXT; validating next version in the CHANGELOG.');
+      // Ensure that the version in pubspec hasn't changed without updating
+      // CHANGELOG. That means the next version entry in the CHANGELOG pass the
+      // normal validation.
+      while (iterator.moveNext()) {
+        if (iterator.current.trim().startsWith('## ')) {
+          versionString = iterator.current.trim().split(' ').last;
+          break;
+        }
+      }
+    }
+
+    final Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
       final String error =
           'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md';
@@ -213,14 +268,26 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
 ''';
       printErrorAndExit(errorMessage: error);
     }
-    print('${packageName} passed version check');
+
+    // If NEXT wasn't the first section, it should not exist at all.
+    if (!hasNextSection) {
+      final RegExp nextRegex = RegExp(r'^#+\s*NEXT\s*$');
+      if (lines.any((String line) => nextRegex.hasMatch(line))) {
+        printErrorAndExit(errorMessage: '''
+When bumping the version for release, the NEXT section should be incorporated
+into the new version's release notes.
+''');
+      }
+    }
+
+    print('$packageName passed version check');
   }
 
   Pubspec _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
     try {
-      Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+      final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec == null) {
         final String error =
             'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';

@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -17,7 +17,14 @@ import 'package:shared_preferences_platform_interface/shared_preferences_platfor
 /// This class implements the `package:shared_preferences` functionality for Linux.
 class SharedPreferencesLinux extends SharedPreferencesStorePlatform {
   /// The default instance of [SharedPreferencesLinux] to use.
+  /// TODO(egarciad): Remove when the Dart plugin registrant lands on Flutter stable.
+  /// https://github.com/flutter/flutter/issues/81421
   static SharedPreferencesLinux instance = SharedPreferencesLinux();
+
+  /// Registers the Linux implementation.
+  static void registerWith() {
+    SharedPreferencesStorePlatform.instance = instance;
+  }
 
   /// Local copy of preferences
   Map<String, Object>? _cachedPreferences;

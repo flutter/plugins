@@ -1,10 +1,11 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 
 // A fake VersionInfoQuerier that just returns preset responses.
@@ -13,20 +14,26 @@ class FakeVersionInfoQuerier implements VersionInfoQuerier {
 
   final Map<String, String> responses;
 
-  getStringValue(Pointer<Uint8>? versionInfo, key) => responses[key];
+  String? getStringValue(Pointer<Uint8>? versionInfo, String key) =>
+      responses[key];
 }
 
 void main() {
+  test('registered instance', () {
+    PathProviderWindows.registerWith();
+    expect(PathProviderPlatform.instance, isA<PathProviderWindows>());
+  });
+
   test('getTemporaryPath', () async {
-    final pathProvider = PathProviderWindows();
+    final PathProviderWindows pathProvider = PathProviderWindows();
     expect(await pathProvider.getTemporaryPath(), contains(r'C:\'));
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with no version info', () async {
-    final pathProvider = PathProviderWindows();
+    final PathProviderWindows pathProvider = PathProviderWindows();
     pathProvider.versionInfoQuerier =
         FakeVersionInfoQuerier(<String, String>{});
-    final path = await pathProvider.getApplicationSupportPath();
+    final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'AppData'));
     // The last path component should be the executable name.
@@ -34,12 +41,12 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with full version info', () async {
-    final pathProvider = PathProviderWindows();
+    final PathProviderWindows pathProvider = PathProviderWindows();
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': 'Amazing App',
     });
-    final path = await pathProvider.getApplicationSupportPath();
+    final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
       expect(path, endsWith(r'AppData\Roaming\A Company\Amazing App'));
@@ -48,11 +55,11 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with missing company', () async {
-    final pathProvider = PathProviderWindows();
+    final PathProviderWindows pathProvider = PathProviderWindows();
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'ProductName': 'Amazing App',
     });
-    final path = await pathProvider.getApplicationSupportPath();
+    final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
       expect(path, endsWith(r'AppData\Roaming\Amazing App'));
@@ -61,12 +68,12 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with problematic values', () async {
-    final pathProvider = PathProviderWindows();
+    final PathProviderWindows pathProvider = PathProviderWindows();
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': r'A <Bad> Company: Name.',
       'ProductName': r'A"/Terrible\|App?*Name',
     });
-    final path = await pathProvider.getApplicationSupportPath();
+    final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
       expect(
@@ -79,12 +86,12 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with a completely invalid company', () async {
-    final pathProvider = PathProviderWindows();
+    final PathProviderWindows pathProvider = PathProviderWindows();
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': r'..',
       'ProductName': r'Amazing App',
     });
-    final path = await pathProvider.getApplicationSupportPath();
+    final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, isNotNull);
     if (path != null) {
       expect(path, endsWith(r'AppData\Roaming\Amazing App'));
@@ -93,28 +100,28 @@ void main() {
   }, skip: !Platform.isWindows);
 
   test('getApplicationSupportPath with very long app name', () async {
-    final pathProvider = PathProviderWindows();
-    final truncatedName = 'A' * 255;
+    final PathProviderWindows pathProvider = PathProviderWindows();
+    final String truncatedName = 'A' * 255;
     pathProvider.versionInfoQuerier = FakeVersionInfoQuerier(<String, String>{
       'CompanyName': 'A Company',
       'ProductName': truncatedName * 2,
     });
-    final path = await pathProvider.getApplicationSupportPath();
+    final String? path = await pathProvider.getApplicationSupportPath();
     expect(path, endsWith('\\$truncatedName'));
     // The directory won't exist, since it's longer than MAXPATH, so don't check
     // that here.
   }, skip: !Platform.isWindows);
 
   test('getApplicationDocumentsPath', () async {
-    final pathProvider = PathProviderWindows();
-    final path = await pathProvider.getApplicationDocumentsPath();
+    final PathProviderWindows pathProvider = PathProviderWindows();
+    final String? path = await pathProvider.getApplicationDocumentsPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'Documents'));
   }, skip: !Platform.isWindows);
 
   test('getDownloadsPath', () async {
-    final pathProvider = PathProviderWindows();
-    final path = await pathProvider.getDownloadsPath();
+    final PathProviderWindows pathProvider = PathProviderWindows();
+    final String? path = await pathProvider.getDownloadsPath();
     expect(path, contains(r'C:\'));
     expect(path, contains(r'Downloads'));
   }, skip: !Platform.isWindows);

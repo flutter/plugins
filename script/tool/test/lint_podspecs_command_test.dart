@@ -1,8 +1,6 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
@@ -17,7 +15,7 @@ import 'util.dart';
 
 void main() {
   group('$LintPodspecsCommand', () {
-    CommandRunner<Null> runner;
+    CommandRunner<void> runner;
     MockPlatform mockPlatform;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
     List<String> printedMessages;
@@ -37,7 +35,7 @@ void main() {
       );
 
       runner =
-          CommandRunner<Null>('podspec_test', 'Test for $LintPodspecsCommand');
+          CommandRunner<void>('podspec_test', 'Test for $LintPodspecsCommand');
       runner.addCommand(command);
       final MockProcess mockLintProcess = MockProcess();
       mockLintProcess.exitCodeCompleter.complete(0);
@@ -64,7 +62,7 @@ void main() {
     });
 
     test('runs pod lib lint on a podspec', () async {
-      Directory plugin1Dir =
+      final Directory plugin1Dir =
           createFakePlugin('plugin1', withExtraFiles: <List<String>>[
         <String>['ios', 'plugin1.podspec'],
         <String>['bogus.dart'], // Ignore non-podspecs.
@@ -78,7 +76,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -103,8 +101,7 @@ void main() {
         ]),
       );
 
-      expect(
-          printedMessages, contains('Linting plugin1.podspec'));
+      expect(printedMessages, contains('Linting plugin1.podspec'));
       expect(printedMessages, contains('Foo'));
       expect(printedMessages, contains('Bar'));
     });
@@ -123,13 +120,13 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
         ]),
       );
     });
 
     test('allow warnings for podspecs with known warnings', () async {
-      Directory plugin1Dir =
+      final Directory plugin1Dir =
           createFakePlugin('plugin1', withExtraFiles: <List<String>>[
         <String>['plugin1.podspec'],
       ]);
@@ -139,7 +136,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -166,8 +163,7 @@ void main() {
         ]),
       );
 
-      expect(
-          printedMessages, contains('Linting plugin1.podspec'));
+      expect(printedMessages, contains('Linting plugin1.podspec'));
     });
   });
 }
