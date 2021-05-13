@@ -26,9 +26,10 @@ As part of implementing federated architecture and making the interface compatib
   // Present the code redemption sheet.
   await iosAddition.presentCodeRedemptionSheet();
   // Refresh purchase verification data.
-  PurchaseVerificationData? verificationData = await iosAddition.refreshPurchaseVerificationData(); 
+  PurchaseVerificationData? verificationData = await iosAddition.refreshPurchaseVerificationData();
   ```
   * The [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase_ios/latest/store_kit_wrappers/store_kit_wrappers-library.html) have been moved into the [in_app_purchase_ios](https://pub.dev/packages/in_app_purchase_ios) package. They are still available in the [in_app_purchase](https://pub.dev/packages/in_app_purchase) plugin, but to use them it is necessary to import the correct package when using them: `import 'package:in_app_purchase_ios/store_kit_wrappers.dart';`;
+  * Update the minimum supported Flutter version to 1.20.0.
 
 ## 0.5.2
 
