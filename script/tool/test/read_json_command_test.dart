@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/read_json_command.dart';
 import 'package:test/test.dart';
@@ -12,15 +14,16 @@ import 'util.dart';
 void main() {
   group('$MapReadJsonCommand', () {
     CommandRunner<void> runner;
+    final FileSystem fileSystem = MemoryFileSystem();
 
     setUp(() {
-      final MapReadJsonCommand command = MapReadJsonCommand();
+      final MapReadJsonCommand command = MapReadJsonCommand(fileSystem);
 
       runner = CommandRunner<void>('test_test', 'Test for $MapReadJsonCommand');
       runner.addCommand(command);
     });
 
-    test('throws if --json key is empty.', () async {
+    test('throws if --json-file key is empty.', () async {
       bool hasError = false;
 
       final List<String> outputs = await runCapturingPrint(
@@ -37,7 +40,7 @@ void main() {
       expect(
         outputs,
         orderedEquals(<String>[
-          redColorString('json is not specified'),
+          redColorString('json-file is not specified'),
         ]),
       );
     });
@@ -47,7 +50,7 @@ void main() {
 
       final List<String> outputs = await runCapturingPrint(
         runner,
-        <String>['read-map-json', '--json', '{"key": "value"}'],
+        <String>['read-map-json', '--json-file', '{"key": "value"}'],
         errorHandler: (Error error) {
           expect(error, isA<ToolExit>());
           hasError = true;
@@ -65,18 +68,26 @@ void main() {
     });
 
     test('correctly extract json value.', () async {
+      final File jsonFile = fileSystem.file('temp_json.json');
+      jsonFile.createSync();
+      const String jsonString = '''
+{
+  "key1":"value1"
+}
+''';
+      jsonFile.writeAsStringSync(jsonString);
       final List<String> outputs = await runCapturingPrint(runner, <String>[
         'read-map-json',
-        '--json',
-        '{"my_key": "my_value"}',
+        '--json-file',
+        'temp_json.json',
         '--key',
-        'my_key'
+        'key1'
       ]);
 
       expect(
         outputs,
         orderedEquals(<String>[
-          'my_value',
+          'value1',
         ]),
       );
     });

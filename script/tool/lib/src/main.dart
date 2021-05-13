@@ -60,7 +60,7 @@ void main(List<String> args) {
     ..addCommand(TestCommand(packagesDir, fileSystem))
     ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
     ..addCommand(XCTestCommand(packagesDir, fileSystem))
-    ..addCommand(MapReadJsonCommand());
+    ..addCommand(MapReadJsonCommand(fileSystem));
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e as ToolExit;
