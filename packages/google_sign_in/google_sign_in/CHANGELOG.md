@@ -1,3 +1,7 @@
+## NEXT
+
+* Remove unneeded null checks affecting package score.
+
 ## 5.0.3
 
 * Fixed links in `README.md`.

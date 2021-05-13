@@ -18,7 +18,7 @@ library gapi;
 import 'package:js/js.dart';
 
 // Module gapi
-typedef void LoadCallback(
+typedef LoadCallback = void Function(
     [dynamic args1,
     dynamic args2,
     dynamic args3,

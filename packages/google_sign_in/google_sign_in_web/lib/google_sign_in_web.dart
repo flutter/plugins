@@ -124,7 +124,7 @@ class GoogleSignInPlugin extends GoogleSignInPlatform {
     await initialized;
 
     return gapiUserToPluginUserData(
-        await auth2.getAuthInstance()?.currentUser?.get());
+        auth2.getAuthInstance()?.currentUser?.get());
   }
 
   @override

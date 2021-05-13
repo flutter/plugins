@@ -26,7 +26,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
     this.placeholderPhotoUrl,
     this.foregroundColor,
     this.backgroundColor,
-  }) : assert(identity != null);
+  });
 
   /// A regular expression that matches against the "size directive" path
   /// segment of Google profile image URLs.
@@ -106,7 +106,7 @@ class GoogleUserCircleAvatar extends StatelessWidget {
             FadeInImage.memoryNetwork(
               // This creates a transparent placeholder image, so that
               // [placeholder] shows through.
-              placeholder: Uint8List((size.round() * size.round())),
+              placeholder: Uint8List(size.round() * size.round()),
               image: sizedPhotoUrl,
             )
           ]),

@@ -44,9 +44,7 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data.email,
         id = data.id,
         photoUrl = data.photoUrl,
-        _idToken = data.idToken {
-    assert(id != null);
-  }
+        _idToken = data.idToken;
 
   // These error codes must match with ones declared on Android and iOS sides.
 
@@ -94,9 +92,7 @@ class GoogleSignInAccount implements GoogleIdentity {
 
     // On Android, there isn't an API for refreshing the idToken, so re-use
     // the one we obtained on login.
-    if (response.idToken == null) {
-      response.idToken = _idToken;
-    }
+    response.idToken ??= _idToken;
     return GoogleSignInAuthentication._(response);
   }
 
@@ -219,7 +215,7 @@ class GoogleSignIn {
   /// Client ID being used to connect to google sign-in. Only supported on web.
   final String? clientId;
 
-  StreamController<GoogleSignInAccount?> _currentUserController =
+  final StreamController<GoogleSignInAccount?> _currentUserController =
       StreamController<GoogleSignInAccount?>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.
