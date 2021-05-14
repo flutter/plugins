@@ -10,9 +10,8 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Can create InAppPurchaseConnection instance',
-      (WidgetTester tester) async {
-    final InAppPurchaseConnection connection = InAppPurchaseConnection.instance;
-    expect(connection, isNotNull);
+  testWidgets('Can create InAppPurchase instance', (WidgetTester tester) async {
+    final InAppPurchase iapInstance = InAppPurchase.instance;
+    expect(iapInstance, isNotNull);
   });
 }

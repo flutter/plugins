@@ -31,8 +31,18 @@ dependencies:
   ...
 ```
 
-## TODO
-- [ ] Add an example application demonstrating the use of the [in_app_purchase_android] package (see also issue [flutter/flutter#81695](https://github.com/flutter/flutter/issues/81695)).
+## Contributing
+
+This plugin uses
+[json_serializable](https://pub.dev/packages/json_serializable) for the
+many data structs passed between the underlying platform layers and Dart. After
+editing any of the serialized data structs, rebuild the serializers by running
+`flutter packages pub run build_runner build --delete-conflicting-outputs`.
+`flutter packages pub run build_runner watch --delete-conflicting-outputs` will
+watch the filesystem for changes.
+
+If you would like to contribute to the plugin, check out our
+[contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
 
 
 [1]: ../in_app_purchase/in_app_purchase

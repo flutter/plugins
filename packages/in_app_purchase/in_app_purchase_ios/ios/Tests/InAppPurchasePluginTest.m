@@ -7,7 +7,7 @@
 #import "FIAPaymentQueueHandler.h"
 #import "Stubs.h"
 
-@import in_app_purchase;
+@import in_app_purchase_ios;
 
 @interface InAppPurchasePluginTest : XCTestCase
 
