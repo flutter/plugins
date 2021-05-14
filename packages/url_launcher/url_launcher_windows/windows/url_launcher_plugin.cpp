@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "include/url_launcher_windows/url_launcher_plugin.h"
-#include "url_launcher_plugin_internal.h"
 
 #include <windows.h>
 
 #include <memory>
 #include <sstream>
 #include <string>
+
+#include "url_launcher_plugin_internal.h"
 
 namespace {
 
