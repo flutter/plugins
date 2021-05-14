@@ -132,6 +132,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+
+    if (params.containsKey("allowFileAccess") && params.get("allowFileAccess") != null) {
+      webView.getSettings().setAllowFileAccess((boolean) params.get("allowFileAccess"));
+    }
   }
 
   @Override

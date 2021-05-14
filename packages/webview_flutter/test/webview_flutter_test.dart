@@ -920,6 +920,19 @@ void main() {
 
     expect(platformWebView.userAgent, 'UA');
   });
+
+  testWidgets('Set allowFileAccess', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      initialUrl: 'https://youtube.com',
+      javascriptMode: JavascriptMode.unrestricted,
+      allowFileAccess: true,
+    ));
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView!;
+
+    expect(platformWebView.allowFileAccess, true);
+  });
 }
 
 class FakePlatformWebView {
@@ -934,6 +947,9 @@ class FakePlatformWebView {
     if (params.containsKey('javascriptChannelNames')) {
       javascriptChannelNames =
           List<String>.from(params['javascriptChannelNames']);
+    }
+    if (params.containsKey('allowFileAccess')) {
+      allowFileAccess = params['allowFileAccess'];
     }
     javascriptMode = JavascriptMode.values[params['settings']['jsMode']];
     hasNavigationDelegate =
@@ -959,6 +975,7 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
+  bool? allowFileAccess;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
