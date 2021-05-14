@@ -26,7 +26,7 @@ implementation. Note that on Android versions prior to Android 10 Hybrid Composi
 
 ### Using Hybrid Composition
 
-1. Set the `minSdkVersion` in `<app>/android/app/build.gradle`:
+1. Set the `minSdkVersion` in `android/app/build.gradle`:
 
 ```groovy
 android {

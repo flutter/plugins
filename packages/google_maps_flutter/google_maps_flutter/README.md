@@ -25,7 +25,7 @@ For more details, see [Getting started with Google Maps Platform](https://develo
 
 ### Android
 
-1. Set the `minSdkVersion` in `<app>/android/app/build.gradle`:
+1. Set the `minSdkVersion` in `android/app/build.gradle`:
 
 ```groovy
 android {
