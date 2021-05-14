@@ -44,8 +44,8 @@ can start using the plugin. Two basic options are available:
 1. A generic, idiomatic Flutter API: [in_app_purchase](https://pub.dev/documentation/in_app_purchase/latest/in_app_purchase/in_app_purchase-library.html).
    This API supports most use cases for loading and making purchases.
 
-2. Platform-specific Dart APIs: [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase/latest/store_kit_wrappers/store_kit_wrappers-library.html)
-   and [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase/latest/billing_client_wrappers/billing_client_wrappers-library.html).
+2. Platform-specific Dart APIs: [store_kit_wrappers](https://pub.dev/documentation/in_app_purchase_ios/latest/store_kit_wrappers/store_kit_wrappers-library.html)
+   and [billing_client_wrappers](https://pub.dev/documentation/in_app_purchase_android/latest/billing_client_wrappers/billing_client_wrappers-library.html).
    These APIs expose platform-specific behavior and allow for more fine-tuned
    control when needed. However, if you use one of these APIs, your
    purchase-handling logic is significantly different for the different
@@ -70,16 +70,22 @@ This section has examples of code for the following tasks:
 The following initialization code is required for Google Play:
 
 ```dart
+// Import `in_app_purchase_android.dart` to be able to access the 
+// `InAppPurchaseAndroidPlatformAddition` class.
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+
 void main() {
   // Inform the plugin that this app supports pending purchases on Android.
   // An error will occur on Android if you access the plugin `instance`
   // without this call.
-  //
-  // On iOS this is a no-op.
-  InAppPurchaseConnection.enablePendingPurchases();
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+  }
   runApp(MyApp());
 }
 ```
+
+**Note:** It is not necessary to depend on `com.android.billingclient:billing` in your own app's `android/app/build.gradle` file. If you choose to do so know that conflicts might occur.
 
 ### Listening to purchase updates
 
@@ -96,7 +102,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     final Stream purchaseUpdated =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
+        InAppPurchase.instance.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
@@ -124,7 +130,8 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
     } else {
       if (purchaseDetails.status == PurchaseStatus.error) {
         _handleError(purchaseDetails.error!);
-      } else if (purchaseDetails.status == PurchaseStatus.purchased) {
+      } else if (purchaseDetails.status == PurchaseStatus.purchased || 
+                 purchaseDetails.status == PurchaseStatus.restored) {
         bool valid = await _verifyPurchase(purchaseDetails);
         if (valid) {
           _deliverProduct(purchaseDetails);
@@ -134,7 +141,7 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
         }
       }
       if (purchaseDetails.pendingCompletePurchase) {
-        await InAppPurchaseConnection.instance
+        await InAppPurchase.instance
             .completePurchase(purchaseDetails);
       }
     }
@@ -145,7 +152,7 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
 ### Connecting to the underlying store
 
 ```dart
-final bool available = await InAppPurchaseConnection.instance.isAvailable();
+final bool available = await InAppPurchase.instance.isAvailable();
 if (!available) {
   // The store cannot be reached or accessed. Update the UI accordingly.
 }
@@ -158,38 +165,25 @@ if (!available) {
 // `Set<String> _kIds = <String>['product1', 'product2'].toSet()`.
 const Set<String> _kIds = <String>{'product1', 'product2'};
 final ProductDetailsResponse response =
-    await InAppPurchaseConnection.instance.queryProductDetails(_kIds);
+    await InAppPurchase.instance.queryProductDetails(_kIds);
 if (response.notFoundIDs.isNotEmpty) {
   // Handle the error.
 }
 List<ProductDetails> products = response.productDetails;
 ```
 
-### Loading previous purchases
+### Restoring previous purchases
 
-In the following example, implement `_verifyPurchase` so that it verifies the
-purchase following the best practices for each underlying store:
+Restored purchases will be emitted on the `InAppPurchase.purchaseStream`, make
+sure to validate restored purchases following the best practices for each 
+underlying store:
 
 * [Verifying App Store purchases](https://developer.apple.com/documentation/storekit/in-app_purchase/validating_receipts_with_the_app_store)
 * [Verifying Google Play purchases](https://developer.android.com/google/play/billing/security#verify)
 
 
 ```dart
-final QueryPurchaseDetailsResponse response =
-    await InAppPurchaseConnection.instance.queryPastPurchases();
-if (response.error != null) {
-  // Handle the error.
-}
-for (PurchaseDetails purchase in response.pastPurchases) {
-  // Verify the purchase following best practices for each underlying store.
-  _verifyPurchase(purchase);
-  // Deliver the purchase to the user in your app.
-  _deliverPurchase(purchase);
-  if (purchase.pendingCompletePurchase) {
-    // Mark that you've delivered the purchase. This is mandatory.
-    InAppPurchaseConnection.instance.completePurchase(purchase);
-  }
-}
+await InAppPurchase.instance.restorePurchases();
 ```
 
 Note that the App Store does not have any APIs for querying consumable
@@ -201,30 +195,30 @@ that as well.
 ### Making a purchase
 
 Both underlying stores handle consumable and non-consumable products differently. If
-you're using `InAppPurchaseConnection`, you need to make a distinction here and
+you're using `InAppPurchase`, you need to make a distinction here and
 call the right purchase method for each type.
 
 ```dart
-final ProductDetails productDetails = ... // Saved earlier from queryPastPurchases().
+final ProductDetails productDetails = ... // Saved earlier from queryProductDetails().
 final PurchaseParam purchaseParam = PurchaseParam(productDetails: productDetails);
 if (_isConsumable(productDetails)) {
-  InAppPurchaseConnection.instance.buyConsumable(purchaseParam: purchaseParam);
+  InAppPurchase.instance.buyConsumable(purchaseParam: purchaseParam);
 } else {
-  InAppPurchaseConnection.instance.buyNonConsumable(purchaseParam: purchaseParam);
+  InAppPurchase.instance.buyNonConsumable(purchaseParam: purchaseParam);
 }
 // From here the purchase flow will be handled by the underlying store.
-// Updates will be delivered to the `InAppPurchaseConnection.instance.purchaseUpdatedStream`.
+// Updates will be delivered to the `InAppPurchase.instance.purchaseStream`.
 ```
 
 ### Completing a purchase
 
-The `InAppPurchaseConnection.purchaseUpdatedStream` will send purchase updates after
-you initiate the purchase flow using `InAppPurchaseConnection.buyConsumable` or `InAppPurchaseConnection.buyNonConsumable`.
-After delivering the content to the user, call
-`InAppPurchaseConnection.completePurchase` to tell the App Store and
-Google Play that the purchase has been finished.
+The `InAppPurchase.purchaseStream` will send purchase updates after
+you initiate the purchase flow using `InAppPurchase.buyConsumable` 
+or `InAppPurchase.buyNonConsumable`. After delivering the content to 
+the user, call `InAppPurchase.completePurchase` to tell the App Store
+and Google Play that the purchase has been finished.
 
-> **Warning:** Failure to call `InAppPurchaseConnection.completePurchase` and
+> **Warning:** Failure to call `InAppPurchase.completePurchase` and
 > get a successful response within 3 days of the purchase will result a refund.
 
 ### Upgrading or downgrading an existing in-app subscription
@@ -232,8 +226,8 @@ Google Play that the purchase has been finished.
 To upgrade/downgrade an existing in-app subscription in Google Play,
 you need to provide an instance of `ChangeSubscriptionParam` with the old
 `PurchaseDetails` that the user needs to migrate from, and an optional
-`ProrationMode` with the `PurchaseParam` object while calling
-`InAppPurchaseConnection.buyNonConsumable`.
+`ProrationMode` with the `GooglePlayPurchaseParam` object while calling
+`InAppPurchase.buyNonConsumable`.
 
 The App Store does not require this because it provides a subscription
 grouping mechanism. Each subscription you offer must be assigned to a
@@ -244,12 +238,12 @@ users from accidentally purchasing multiple subscriptions. Refer to the
 
 ```dart
 final PurchaseDetails oldPurchaseDetails = ...;
-PurchaseParam purchaseParam = PurchaseParam(
+PurchaseParam purchaseParam = GooglePlayPurchaseParam(
     productDetails: productDetails,
     changeSubscriptionParam: ChangeSubscriptionParam(
         oldPurchaseDetails: oldPurchaseDetails,
         prorationMode: ProrationMode.immediateWithTimeProration));
-InAppPurchaseConnection.instance
+InAppPurchase.instance
     .buyNonConsumable(purchaseParam: purchaseParam);
 ```
 
@@ -260,18 +254,18 @@ codes that you've set up in App Store Connect. For more information on
 redeeming offer codes, see [Implementing Offer Codes in Your App](https://developer.apple.com/documentation/storekit/in-app_purchase/subscriptions_and_offers/implementing_offer_codes_in_your_app).
 
 ```dart
-InAppPurchaseConnection.instance.presentCodeRedemptionSheet();
+InAppPurchaseIosPlatformAddition iosPlatformAddition = 
+  InAppPurchase.getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+iosPlatformAddition.presentCodeRedemptionSheet();
 ```
 
-## Contributing to this plugin
+> **note:** The `InAppPurchaseIosPlatformAddition` is defined in the `in_app_purchase_ios.dart` 
+> file so you need to import it into the file you will be using `InAppPurchaseIosPlatformAddition`:
+> ```dart
+> import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+> ```
 
-This plugin uses
-[json_serializable](https://pub.dev/packages/json_serializable) for the
-many data structs passed between the underlying platform layers and Dart. After
-editing any of the serialized data structs, rebuild the serializers by running
-`flutter packages pub run build_runner build --delete-conflicting-outputs`.
-`flutter packages pub run build_runner watch --delete-conflicting-outputs` will
-watch the filesystem for changes.
+## Contributing to this plugin
 
 If you would like to contribute to the plugin, check out our
 [contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).

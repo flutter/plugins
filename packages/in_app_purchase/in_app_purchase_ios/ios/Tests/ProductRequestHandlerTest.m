@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "Stubs.h"
 
-@import in_app_purchase;
+@import in_app_purchase_ios;
 
 #pragma tests start here
 

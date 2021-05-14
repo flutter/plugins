@@ -11,6 +11,7 @@ import 'package:args/command_runner.dart';
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
@@ -203,6 +204,7 @@ abstract class PluginCommand extends Command<void> {
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
             'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'If no plugins have changed, the command runs on all plugins.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
             'See $_kBaseSha if a custom base is needed to determine the diff.');
     argParser.addOption(_kBaseSha,
@@ -300,8 +302,8 @@ abstract class PluginCommand extends Command<void> {
   /// Returns the root Dart package folders of the plugins involved in this
   /// command execution, assuming there is only one shard.
   ///
-  /// Plugin packages can exist in one of two places relative to the packages
-  /// directory.
+  /// Plugin packages can exist in the following places relative to the packages
+  /// directory:
   ///
   /// 1. As a Dart package in a directory which is a direct child of the
   ///    packages directory. This is a plugin where all of the implementations
@@ -311,6 +313,9 @@ abstract class PluginCommand extends Command<void> {
   ///    packages which implement a single plugin. This directory contains a
   ///    "client library" package, which declares the API for the plugin, as
   ///    well as one or more platform-specific implementations.
+  /// 3./4. Either of the above, but in a third_party/packages/ directory that
+  ///    is a sibling of the packages directory. This is used for a small number
+  ///    of packages in the flutter/packages repository.
   Stream<Directory> _getAllPlugins() async* {
     Set<String> plugins =
         Set<String>.from(argResults[_pluginsArg] as List<String>);
@@ -322,33 +327,42 @@ abstract class PluginCommand extends Command<void> {
       plugins = await _getChangedPackages();
     }
 
-    await for (final FileSystemEntity entity
-        in packagesDir.list(followLinks: false)) {
-      // A top-level Dart package is a plugin package.
-      if (_isDartPackage(entity)) {
-        if (!excludedPlugins.contains(entity.basename) &&
-            (plugins.isEmpty || plugins.contains(p.basename(entity.path)))) {
-          yield entity as Directory;
-        }
-      } else if (entity is Directory) {
-        // Look for Dart packages under this top-level directory.
-        await for (final FileSystemEntity subdir
-            in entity.list(followLinks: false)) {
-          if (_isDartPackage(subdir)) {
-            // If --plugin=my_plugin is passed, then match all federated
-            // plugins under 'my_plugin'. Also match if the exact plugin is
-            // passed.
-            final String relativePath =
-                p.relative(subdir.path, from: packagesDir.path);
-            final String packageName = p.basename(subdir.path);
-            final String basenamePath = p.basename(entity.path);
-            if (!excludedPlugins.contains(basenamePath) &&
-                !excludedPlugins.contains(packageName) &&
-                !excludedPlugins.contains(relativePath) &&
-                (plugins.isEmpty ||
-                    plugins.contains(relativePath) ||
-                    plugins.contains(basenamePath))) {
-              yield subdir as Directory;
+    final Directory thirdPartyPackagesDirectory = packagesDir.parent
+        .childDirectory('third_party')
+        .childDirectory('packages');
+
+    for (final Directory dir in <Directory>[
+      packagesDir,
+      if (thirdPartyPackagesDirectory.existsSync()) thirdPartyPackagesDirectory,
+    ]) {
+      await for (final FileSystemEntity entity
+          in dir.list(followLinks: false)) {
+        // A top-level Dart package is a plugin package.
+        if (_isDartPackage(entity)) {
+          if (!excludedPlugins.contains(entity.basename) &&
+              (plugins.isEmpty || plugins.contains(p.basename(entity.path)))) {
+            yield entity as Directory;
+          }
+        } else if (entity is Directory) {
+          // Look for Dart packages under this top-level directory.
+          await for (final FileSystemEntity subdir
+              in entity.list(followLinks: false)) {
+            if (_isDartPackage(subdir)) {
+              // If --plugin=my_plugin is passed, then match all federated
+              // plugins under 'my_plugin'. Also match if the exact plugin is
+              // passed.
+              final String relativePath =
+                  p.relative(subdir.path, from: dir.path);
+              final String packageName = p.basename(subdir.path);
+              final String basenamePath = p.basename(entity.path);
+              if (!excludedPlugins.contains(basenamePath) &&
+                  !excludedPlugins.contains(packageName) &&
+                  !excludedPlugins.contains(relativePath) &&
+                  (plugins.isEmpty ||
+                      plugins.contains(relativePath) ||
+                      plugins.contains(basenamePath))) {
+                yield subdir as Directory;
+              }
             }
           }
         }
@@ -449,8 +463,9 @@ abstract class PluginCommand extends Command<void> {
     if (packages.isNotEmpty) {
       final String changedPackages = packages.join(',');
       print(changedPackages);
+    } else {
+      print('No changed packages.');
     }
-    print('No changed packages.');
     return packages;
   }
 }
@@ -547,6 +562,98 @@ class ProcessRunner {
     final String workdir = workingDir == null ? '' : ' in ${workingDir.path}';
     return 'ERROR: Unable to execute "$executable ${args.join(' ')}"$workdir.';
   }
+}
+
+/// Finding version of [package] that is published on pub.
+class PubVersionFinder {
+  /// Constructor.
+  ///
+  /// Note: you should manually close the [httpClient] when done using the finder.
+  PubVersionFinder({this.pubHost = defaultPubHost, @required this.httpClient});
+
+  /// The default pub host to use.
+  static const String defaultPubHost = 'https://pub.dev';
+
+  /// The pub host url, defaults to `https://pub.dev`.
+  final String pubHost;
+
+  /// The http client.
+  ///
+  /// You should manually close this client when done using this finder.
+  final http.Client httpClient;
+
+  /// Get the package version on pub.
+  Future<PubVersionFinderResponse> getPackageVersion(
+      {@required String package}) async {
+    assert(package != null && package.isNotEmpty);
+    final Uri pubHostUri = Uri.parse(pubHost);
+    final Uri url = pubHostUri.replace(path: '/packages/$package.json');
+    final http.Response response = await httpClient.get(url);
+
+    if (response.statusCode == 404) {
+      return PubVersionFinderResponse(
+          versions: null,
+          result: PubVersionFinderResult.noPackageFound,
+          httpResponse: response);
+    } else if (response.statusCode != 200) {
+      return PubVersionFinderResponse(
+          versions: null,
+          result: PubVersionFinderResult.fail,
+          httpResponse: response);
+    }
+    final List<Version> versions =
+        (json.decode(response.body)['versions'] as List<dynamic>)
+            .map<Version>((final dynamic versionString) =>
+                Version.parse(versionString as String))
+            .toList();
+
+    return PubVersionFinderResponse(
+        versions: versions,
+        result: PubVersionFinderResult.success,
+        httpResponse: response);
+  }
+}
+
+/// Represents a response for [PubVersionFinder].
+class PubVersionFinderResponse {
+  /// Constructor.
+  PubVersionFinderResponse({this.versions, this.result, this.httpResponse}) {
+    if (versions != null && versions.isNotEmpty) {
+      versions.sort((Version a, Version b) {
+        // TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
+        // https://github.com/flutter/flutter/issues/82222
+        return b.compareTo(a);
+      });
+    }
+  }
+
+  /// The versions found in [PubVersionFinder].
+  ///
+  /// This is sorted by largest to smallest, so the first element in the list is the largest version.
+  /// Might be `null` if the [result] is not [PubVersionFinderResult.success].
+  final List<Version> versions;
+
+  /// The result of the version finder.
+  final PubVersionFinderResult result;
+
+  /// The response object of the http request.
+  final http.Response httpResponse;
+}
+
+/// An enum representing the result of [PubVersionFinder].
+enum PubVersionFinderResult {
+  /// The version finder successfully found a version.
+  success,
+
+  /// The version finder failed to find a valid version.
+  ///
+  /// This might due to http connection errors or user errors.
+  fail,
+
+  /// The version finder failed to locate the package.
+  ///
+  /// This indicates the package is new.
+  noPackageFound,
 }
 
 /// Finding diffs based on `baseGitDir` and `baseSha`.
