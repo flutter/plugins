@@ -596,8 +596,8 @@ class PubVersionFinder {
 
   /// Get the package version on pub.
   Future<PubVersionFinderResponse> getPackageVersion(
-      {required String? package}) async {
-    assert(package != null && package.isNotEmpty);
+      {required String package}) async {
+    assert(package.isNotEmpty);
     final Uri pubHostUri = Uri.parse(pubHost);
     final Uri url = pubHostUri.replace(path: '/packages/$package.json');
     final http.Response response = await httpClient.get(url);
