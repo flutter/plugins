@@ -9,9 +9,9 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:quiver/collection.dart';
 
 // TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
@@ -49,6 +49,7 @@ Directory createFakePlugin(
   bool isWindowsPlugin = false,
   bool includeChangeLog = false,
   bool includeVersion = false,
+  String version = '0.0.1',
   String parentDirectoryName = '',
   Directory packagesDirectory,
 }) {
@@ -62,18 +63,17 @@ Directory createFakePlugin(
   final Directory pluginDirectory = parentDirectory.childDirectory(name);
   pluginDirectory.createSync(recursive: true);
 
-  createFakePubspec(
-    pluginDirectory,
-    name: name,
-    isFlutter: isFlutter,
-    isAndroidPlugin: isAndroidPlugin,
-    isIosPlugin: isIosPlugin,
-    isWebPlugin: isWebPlugin,
-    isLinuxPlugin: isLinuxPlugin,
-    isMacOsPlugin: isMacOsPlugin,
-    isWindowsPlugin: isWindowsPlugin,
-    includeVersion: includeVersion,
-  );
+  createFakePubspec(pluginDirectory,
+      name: name,
+      isFlutter: isFlutter,
+      isAndroidPlugin: isAndroidPlugin,
+      isIosPlugin: isIosPlugin,
+      isWebPlugin: isWebPlugin,
+      isLinuxPlugin: isLinuxPlugin,
+      isMacOsPlugin: isMacOsPlugin,
+      isWindowsPlugin: isWindowsPlugin,
+      includeVersion: includeVersion,
+      version: version);
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
 ## 0.0.1
@@ -85,21 +85,28 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter);
+        name: '${name}_example',
+        isFlutter: isFlutter,
+        includeVersion: false,
+        publishTo: 'none');
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     for (final String example in withExamples) {
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
-      createFakePubspec(currentExample, name: example, isFlutter: isFlutter);
+      createFakePubspec(currentExample,
+          name: example,
+          isFlutter: isFlutter,
+          includeVersion: false,
+          publishTo: 'none');
     }
   }
 
+  final FileSystem fileSystem = pluginDirectory.fileSystem;
   for (final List<String> file in withExtraFiles) {
     final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
-    final File newFile =
-        mockFileSystem.file(mockFileSystem.path.joinAll(newFilePath));
+    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
   }
 
@@ -123,6 +130,7 @@ void createFakePubspec(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  String publishTo = 'http://no_pub_server.com',
   String version = '0.0.1',
 }) {
   parent.childFile('pubspec.yaml').createSync();
@@ -180,7 +188,11 @@ dependencies:
   if (includeVersion) {
     yaml += '''
 version: $version
-publish_to: http://no_pub_server.com # Hardcoded safeguard to prevent this from somehow being published by a broken test.
+''';
+  }
+  if (publishTo.isNotEmpty) {
+    yaml += '''
+publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
@@ -193,19 +205,29 @@ void cleanupPackages() {
   });
 }
 
+typedef _ErrorHandler = void Function(Error error);
+
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
+/// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<void> runner, List<String> args) async {
+    CommandRunner<void> runner, List<String> args, {_ErrorHandler errorHandler}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
       prints.add(message);
     },
   );
-  await Zone.current
+  try {
+    await Zone.current
       .fork(specification: spec)
       .run<Future<void>>(() => runner.run(args));
+  } on Error catch (e) {
+    if (errorHandler == null) {
+      rethrow;
+    }
+    errorHandler(e);
+  }
 
   return prints;
 }

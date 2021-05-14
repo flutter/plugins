@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 void main() {
@@ -17,8 +18,6 @@ void main() {
     fileSystem = MemoryFileSystem.test();
     pathProvider = FakePathProviderWindows();
   });
-
-  tearDown(() {});
 
   Future<String> _getFilePath() async {
     final directory = await pathProvider.getApplicationSupportPath();
@@ -41,6 +40,12 @@ void main() {
     prefs.pathProvider = pathProvider;
     return prefs;
   }
+
+  test('registered instance', () {
+    SharedPreferencesWindows.registerWith();
+    expect(SharedPreferencesStorePlatform.instance,
+        isA<SharedPreferencesWindows>());
+  });
 
   test('getAll', () async {
     await _writeTestFile('{"key1": "one", "key2": 2}');

@@ -24,9 +24,8 @@ class SharedPreferences {
   static bool _manualDartRegistrationNeeded = true;
 
   static SharedPreferencesStorePlatform get _store {
-    // This is to manually endorse the Linux implementation until automatic
-    // registration of dart plugins is implemented. For details see
-    // https://github.com/flutter/flutter/issues/52267.
+    // TODO(egarciad): Remove once auto registration lands on Flutter stable.
+    // https://github.com/flutter/flutter/issues/81421.
     if (_manualDartRegistrationNeeded) {
       // Only do the initial registration if it hasn't already been overridden
       // with a non-default instance.
