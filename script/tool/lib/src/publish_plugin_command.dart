@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -124,7 +126,7 @@ class PublishPluginCommand extends PluginCommand {
   Future<void> run() async {
     final String package = getStringArg(_packageOption);
     final bool publishAllChanged = getBoolArg(_allChangedFlag);
-    if (package == null && !publishAllChanged) {
+    if (package.isEmpty && !publishAllChanged) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
       throw ToolExit(1);

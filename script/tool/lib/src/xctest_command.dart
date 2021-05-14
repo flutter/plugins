@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -49,7 +51,7 @@ class XCTestCommand extends PluginCommand {
   @override
   Future<void> run() async {
     String destination = getStringArg(_kiOSDestination);
-    if (destination == null) {
+    if (destination.isEmpty) {
       final String simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
         print(_kFoundNoSimulatorsMessage);
