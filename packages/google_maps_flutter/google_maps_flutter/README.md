@@ -35,7 +35,7 @@ android {
 }
 ```
 
-**Important:** This means that app would require users to have Android SDK 20 or higher.
+This means that app will only be available for users that run Android SDK 20 or higher.
 
 2. Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 

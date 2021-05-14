@@ -31,12 +31,12 @@ implementation. Note that on Android versions prior to Android 10 Hybrid Composi
 ```groovy
 android {
     defaultConfig {
-        minSdkVersion 20
+        minSdkVersion 19
     }
 }
 ```
 
-**Important:** This means that app would require users to have Android SDK 20 or higher.
+This means that app will only be available for users that run Android SDK 19 or higher.
 
 2. To enable hybrid composition, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`.
 For example:
