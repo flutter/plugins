@@ -59,6 +59,7 @@ public class PackageInfoPlugin implements MethodCallHandler, FlutterPlugin {
         map.put("packageName", applicationContext.getPackageName());
         map.put("version", info.versionName);
         map.put("buildNumber", String.valueOf(getLongVersionCode(info)));
+        map.put("flavorName", BuildConfig.FLAVOR);
 
         result.success(map);
       } else {

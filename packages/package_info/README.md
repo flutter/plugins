@@ -17,6 +17,7 @@ String appName = packageInfo.appName;
 String packageName = packageInfo.packageName;
 String version = packageInfo.version;
 String buildNumber = packageInfo.buildNumber;
+String flavorName = packageInfo.flavorName;
 ```
 
 Or in async mode:
@@ -27,6 +28,7 @@ PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
   String packageName = packageInfo.packageName;
   String version = packageInfo.version;
   String buildNumber = packageInfo.buildNumber;
+  String flavorName = packageInfo.flavorName;
 });
 ```
 

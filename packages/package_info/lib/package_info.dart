@@ -28,6 +28,7 @@ class PackageInfo {
     required this.packageName,
     required this.version,
     required this.buildNumber,
+    required this.flavorName
   });
 
   static PackageInfo? _fromPlatform;
@@ -46,6 +47,7 @@ class PackageInfo {
       packageName: map["packageName"] ?? '',
       version: map["version"] ?? '',
       buildNumber: map["buildNumber"] ?? '',
+      flavorName: map["flavorName"] ?? '',
     );
     _fromPlatform = packageInfo;
     return packageInfo;
@@ -62,4 +64,7 @@ class PackageInfo {
 
   /// The build number. `CFBundleVersion` on iOS, `versionCode` on Android.
   final String buildNumber;
+
+  /// The flavor name. `flavorName` on Android.
+  final String flavorName;
 }

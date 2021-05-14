@@ -20,6 +20,7 @@ void main() {
         return <String, dynamic>{
           'appName': 'package_info_example',
           'buildNumber': '1',
+          'flavorName': 'dev',
           'packageName': 'io.flutter.plugins.packageinfoexample',
           'version': '1.0',
         };
@@ -37,6 +38,7 @@ void main() {
     final PackageInfo info = await PackageInfo.fromPlatform();
     expect(info.appName, 'package_info_example');
     expect(info.buildNumber, '1');
+    expect(info.flavorName, 'dev');
     expect(info.packageName, 'io.flutter.plugins.packageinfoexample');
     expect(info.version, '1.0');
     expect(
