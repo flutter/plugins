@@ -25,9 +25,19 @@ For more details, see [Getting started with Google Maps Platform](https://develo
 
 ### Android
 
-**Important:** The Google Maps plugin requires Android SDK 20.
+1. Set the `minSdkVersion` in `<app>/android/app/build.gradle`:
 
-Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
+```groovy
+android {
+    defaultConfig {
+        minSdkVersion 20
+    }
+}
+```
+
+**Important:** This means that app would require users to have Android SDK 20 or higher.
+
+2. Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <manifest ...
