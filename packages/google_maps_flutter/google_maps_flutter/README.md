@@ -25,6 +25,8 @@ For more details, see [Getting started with Google Maps Platform](https://develo
 
 ### Android
 
+**Important:** The Google Maps plugin requires Android SDK 20.
+
 Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
