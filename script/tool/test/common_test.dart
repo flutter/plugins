@@ -42,7 +42,8 @@ void main() {
     gitDirCommands = <List<String>?>[];
     gitDiffResponse = '';
     final MockGitDir gitDir = MockGitDir();
-    when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
+    when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
+        .thenAnswer((Invocation invocation) {
       gitDirCommands.add(invocation.positionalArguments[0] as List<String>?);
       final MockProcessResult mockProcessResult = MockProcessResult();
       if (invocation.positionalArguments[0][0] == 'diff') {
