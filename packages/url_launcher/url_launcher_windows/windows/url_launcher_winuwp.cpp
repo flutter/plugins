@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "include/url_launcher_windows/url_launcher_plugin.h"
+#include "url_launcher_plugin_internal.h"
 
 winrt::Windows::Foundation::IAsyncAction CanLaunchAsync(
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> value,

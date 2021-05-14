@@ -6,7 +6,7 @@
 #include <sstream>
 #include <string>
 
-#include "include/url_launcher_windows/url_launcher_plugin.h"
+#include "url_launcher_plugin_internal.h"
 
 // Converts the given UTF-8 string to UTF-16.
 std::wstring Utf16FromUtf8(const std::string& utf8_string) {
