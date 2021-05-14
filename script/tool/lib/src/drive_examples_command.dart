@@ -52,23 +52,37 @@ class DriveExamplesCommand extends PluginCommand {
   @override
   Future<void> run() async {
     final List<String> failingTests = <String>[];
+    final List<String> pluginsWithoutTests = <String>[];
     final bool isLinux = getBoolArg(kLinux);
     final bool isMacos = getBoolArg(kMacos);
     final bool isWeb = getBoolArg(kWeb);
     final bool isWindows = getBoolArg(kWindows);
     await for (final Directory plugin in getPlugins()) {
+      final String pluginName = plugin.basename;
+      if (pluginName.endsWith('_platform_interface') &&
+          !plugin.childDirectory('example').existsSync()) {
+        // Platform interface packages generally aren't intended to have
+        // examples, and don't need integration tests, so silently skip them
+        // unless for some reason there is an example directory.
+        continue;
+      }
+      print('\n==========\nChecking $pluginName...');
+      if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
+        print('Not supported for the target platform; skipping.');
+        continue;
+      }
+      int examplesFound = 0;
+      bool testsRan = false;
       final String flutterCommand =
           const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
       for (final Directory example in getExamplesForPlugin(plugin)) {
+        ++examplesFound;
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
-        if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
-          continue;
-        }
         final Directory driverTests =
             fileSystem.directory(p.join(example.path, 'test_driver'));
         if (!driverTests.existsSync()) {
-          // No driver tests available for this example
+          print('No driver tests found for $packageName');
           continue;
         }
         // Look for driver tests ending in _test.dart in test_driver/
@@ -101,13 +115,13 @@ class DriveExamplesCommand extends PluginCommand {
                 fileSystem.directory(p.join(example.path, 'integration_test'));
 
             if (await integrationTests.exists()) {
-              await for (final FileSystemEntity integration_test
+              await for (final FileSystemEntity integrationTest
                   in integrationTests.list()) {
-                if (!integration_test.basename.endsWith('_test.dart')) {
+                if (!integrationTest.basename.endsWith('_test.dart')) {
                   continue;
                 }
                 targetPaths
-                    .add(p.relative(integration_test.path, from: example.path));
+                    .add(p.relative(integrationTest.path, from: example.path));
               }
             }
 
@@ -159,6 +173,7 @@ Tried searching for the following:
           }
 
           for (final String targetPath in targetPaths) {
+            testsRan = true;
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -176,6 +191,11 @@ Tried searching for the following:
           }
         }
       }
+      if (!testsRan) {
+        pluginsWithoutTests.add(pluginName);
+        print(
+            'No driver tests run for $pluginName ($examplesFound examples found)');
+      }
     }
     print('\n\n');
 
@@ -184,6 +204,15 @@ Tried searching for the following:
       for (final String test in failingTests) {
         print(' * $test');
       }
+      throw ToolExit(1);
+    }
+
+    if (pluginsWithoutTests.isNotEmpty) {
+      print('The following plugins did not run any integration tests:');
+      for (final String plugin in pluginsWithoutTests) {
+        print(' * $plugin');
+      }
+      print('If this is intentional, they must be explicitly excluded.');
       throw ToolExit(1);
     }
 

@@ -20,7 +20,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight;
+               maxHeight:(NSNumber *)maxHeight
+     isMetadataAvailable:(BOOL)isMetadataAvailable;
 
 // Resize all gif animation frames.
 + (GIFInfo *)scaledGIFImage:(NSData *)data
