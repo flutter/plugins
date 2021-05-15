@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
@@ -53,10 +55,10 @@ class DriveExamplesCommand extends PluginCommand {
   Future<void> run() async {
     final List<String> failingTests = <String>[];
     final List<String> pluginsWithoutTests = <String>[];
-    final bool isLinux = argResults[kLinux] == true;
-    final bool isMacos = argResults[kMacos] == true;
-    final bool isWeb = argResults[kWeb] == true;
-    final bool isWindows = argResults[kWindows] == true;
+    final bool isLinux = getBoolArg(kLinux);
+    final bool isMacos = getBoolArg(kMacos);
+    final bool isWeb = getBoolArg(kWeb);
+    final bool isWindows = getBoolArg(kWindows);
     await for (final Directory plugin in getPlugins()) {
       final String pluginName = plugin.basename;
       if (pluginName.endsWith('_platform_interface') &&
@@ -140,8 +142,7 @@ Tried searching for the following:
 
           final List<String> driveArgs = <String>['drive'];
 
-          final String enableExperiment =
-              argResults[kEnableExperiment] as String;
+          final String enableExperiment = getStringArg(kEnableExperiment);
           if (enableExperiment.isNotEmpty) {
             driveArgs.add('--enable-experiment=$enableExperiment');
           }
@@ -222,12 +223,12 @@ Tried searching for the following:
 
   Future<bool> _pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin, FileSystem fileSystem) async {
-    final bool isAndroid = argResults[kAndroid] == true;
-    final bool isIOS = argResults[kIos] == true;
-    final bool isLinux = argResults[kLinux] == true;
-    final bool isMacos = argResults[kMacos] == true;
-    final bool isWeb = argResults[kWeb] == true;
-    final bool isWindows = argResults[kWindows] == true;
+    final bool isAndroid = getBoolArg(kAndroid);
+    final bool isIOS = getBoolArg(kIos);
+    final bool isLinux = getBoolArg(kLinux);
+    final bool isMacos = getBoolArg(kMacos);
+    final bool isWeb = getBoolArg(kWeb);
+    final bool isWindows = getBoolArg(kWindows);
     if (isAndroid) {
       return isAndroidPlugin(plugin, fileSystem);
     }

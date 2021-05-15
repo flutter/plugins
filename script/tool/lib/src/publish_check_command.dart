@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -78,7 +80,7 @@ class PublishCheckCommand extends PluginCommand {
   Future<void> run() async {
     final ZoneSpecification logSwitchSpecification = ZoneSpecification(
         print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
-      final bool logMachineMessage = argResults[_machineFlag] as bool;
+      final bool logMachineMessage = getBoolArg(_machineFlag);
       if (logMachineMessage && message != _prettyJson(_machineOutput)) {
         _humanMessages.add(message);
       } else {
@@ -123,7 +125,7 @@ class PublishCheckCommand extends PluginCommand {
           isError: false);
     }
 
-    if (argResults[_machineFlag] as bool) {
+    if (getBoolArg(_machineFlag)) {
       _setStatus(status);
       _machineOutput[_humanMessageKey] = _humanMessages;
       print(_prettyJson(_machineOutput));
@@ -184,7 +186,7 @@ class PublishCheckCommand extends PluginCommand {
       return true;
     }
 
-    if (!(argResults[_allowPrereleaseFlag] as bool)) {
+    if (!getBoolArg(_allowPrereleaseFlag)) {
       return false;
     }
 
@@ -270,7 +272,7 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
   void _printImportantStatusMessage(String message, {@required bool isError}) {
     final String statusMessage = '${isError ? 'ERROR' : 'SUCCESS'}: $message';
-    if (argResults[_machineFlag] as bool) {
+    if (getBoolArg(_machineFlag)) {
       print(statusMessage);
     } else {
       final Colorize colorizedMessage = Colorize(statusMessage);
