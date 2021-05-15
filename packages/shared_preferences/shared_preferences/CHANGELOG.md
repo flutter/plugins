@@ -1,3 +1,7 @@
+## 2.0.7
+
+* Fix string clash with double entries on Android
+
 ## 2.0.6
 
 * Migrate maven repository from jcenter to mavenCentral.

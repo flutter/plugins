@@ -86,7 +86,9 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           break;
         case "setString":
           String value = (String) call.argument("value");
-          if (value.startsWith(LIST_IDENTIFIER) || value.startsWith(BIG_INTEGER_PREFIX)) {
+          if (value.startsWith(LIST_IDENTIFIER)
+              || value.startsWith(BIG_INTEGER_PREFIX)
+              || value.startsWith(DOUBLE_PREFIX)) {
             result.error(
                 "StorageError",
                 "This string cannot be stored as it clashes with special identifier prefixes.",
