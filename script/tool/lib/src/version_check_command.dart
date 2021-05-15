@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -135,7 +137,7 @@ class VersionCheckCommand extends PluginCommand {
                 '"publish_to: none".');
       }
       Version sourceVersion;
-      if (argResults[_againstPubFlag] as bool) {
+      if (getBoolArg(_againstPubFlag)) {
         final String packageName = pubspecFile.parent.basename;
         final PubVersionFinderResponse pubVersionFinderResponse =
             await _pubVersionFinder.getPackageVersion(package: packageName);
@@ -161,7 +163,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       }
       if (sourceVersion == null) {
         String safeToIgnoreMessage;
-        if (argResults[_againstPubFlag] as bool) {
+        if (getBoolArg(_againstPubFlag)) {
           safeToIgnoreMessage =
               '${indentation}Unable to find package on pub server.';
         } else {
@@ -181,8 +183,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
           getAllowedNextVersions(sourceVersion, headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
-        final String source =
-            (argResults[_againstPubFlag] as bool) ? 'pub' : 'master';
+        final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
         final String error = '${indentation}Incorrectly updated version.\n'
             '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
             '${indentation}Allowed versions: $allowedNextVersions';

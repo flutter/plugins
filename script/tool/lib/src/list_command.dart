@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -36,7 +38,7 @@ class ListCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    switch (argResults[_type] as String) {
+    switch (getStringArg(_type)) {
       case _plugin:
         await for (final Directory package in getPlugins()) {
           print(package.path);

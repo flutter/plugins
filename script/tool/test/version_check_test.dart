@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -65,7 +67,8 @@ void main() {
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};
       gitDir = MockGitDir();
-      when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
+      when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
+          .thenAnswer((Invocation invocation) {
         gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {

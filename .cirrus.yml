@@ -194,6 +194,12 @@ task:
   << : *MACOS_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
+    ### iOS+macOS tasks ***
+    - name: lint_darwin_plugins
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
     - name: build_all_plugins_ipa
       env:
@@ -251,14 +257,3 @@ task:
         - ./script/tool_runner.sh build-examples --macos --no-ipa
       drive_script:
         - ./script/tool_runner.sh drive-examples --macos
-
-task:
-  # Don't use FLUTTER_UPGRADE_TEMPLATE, Flutter tooling not needed.
-  << : *MACOS_TEMPLATE
-  << : *TOOL_SETUP_TEMPLATE
-  matrix:
-    - name: lint_darwin_plugins
-      script:
-        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
-        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-        - ./script/tool_runner.sh podspecs
