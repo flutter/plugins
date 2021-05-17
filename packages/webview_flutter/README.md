@@ -26,7 +26,19 @@ implementation. Note that on Android versions prior to Android 10 Hybrid Composi
 
 ### Using Hybrid Composition
 
-To enable hybrid composition, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`.
+1. Set the `minSdkVersion` in `android/app/build.gradle`:
+
+```groovy
+android {
+    defaultConfig {
+        minSdkVersion 19
+    }
+}
+```
+
+This means that app will only be available for users that run Android SDK 19 or higher.
+
+2. To enable hybrid composition, set `WebView.platform = SurfaceAndroidWebView();` in `initState()`.
 For example:
 
 ```dart
