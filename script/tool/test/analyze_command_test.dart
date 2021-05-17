@@ -12,8 +12,8 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  RecordingProcessRunner processRunner;
-  CommandRunner<void> runner;
+  late RecordingProcessRunner processRunner;
+  late CommandRunner<void> runner;
 
   setUp(() {
     initializeFakePackages();

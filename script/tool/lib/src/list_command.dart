@@ -36,7 +36,7 @@ class ListCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    switch (argResults[_type] as String) {
+    switch (getStringArg(_type)) {
       case _plugin:
         await for (final Directory package in getPlugins()) {
           print(package.path);

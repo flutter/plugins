@@ -33,5 +33,5 @@ class MockIOSink extends Mock implements IOSink {
   List<String> lines = <String>[];
 
   @override
-  void writeln([Object obj = '']) => lines.add(obj.toString());
+  void writeln([Object? obj = '']) => lines.add(obj.toString());
 }
