@@ -51,6 +51,8 @@ can start using the plugin. Two basic options are available:
    purchase-handling logic is significantly different for the different
    storefronts.
 
+See also the codelab for [in-app purchases in Flutter](https://codelabs.developers.google.com/codelabs/flutter-in-app-purchases) for a detailed guide on adding in-app purchase support to a Flutter App.
+
 ## Usage
 
 This section has examples of code for the following tasks:
