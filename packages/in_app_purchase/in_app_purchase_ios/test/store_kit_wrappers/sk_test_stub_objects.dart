@@ -84,8 +84,23 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
 
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   return {
+    'localeIdentifier': local.localeIdentifier,
+    'countryCode': local.countryCode,
+    'languageCode': local.languageCode,
+    'scriptCode': local.scriptCode,
+    'variantCode': local.variantCode,
+    'collationIdentifier': local.collationIdentifier,
+    'collatorIdentifier': local.collatorIdentifier,
+    'usesMetricSystem': local.usesMetricSystem,
+    'measurementSystem': local.measurementSystem,
+    'decimalSeparator': local.decimalSeparator,
+    'groupingSeparator': local.groupingSeparator,
     'currencySymbol': local.currencySymbol,
-    'currencyCode': local.currencyCode
+    'currencyCode': local.currencyCode,
+    'endDelimiterKey': local.endDelimiterKey,
+    'beginDelimiterKey': local.beginDelimiterKey,
+    'alternateQuotationEndDelimiterKey': local.alternateQuotationEndDelimiterKey,
+    'alternateQuotationBeginDelimiterKey': local.alternateQuotationBeginDelimiterKey
   };
 }
 
