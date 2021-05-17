@@ -41,7 +41,8 @@ void main() {
     test(
         'SKProductDiscountWrapper should have properties to be default if map is empty',
         () {
-      final SKProductDiscountWrapper wrapper = SKProductDiscountWrapper.fromJson(<String, dynamic>{});
+      final SKProductDiscountWrapper wrapper =
+          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.price, '');
       expect(
           wrapper.priceLocale,
@@ -66,8 +67,10 @@ void main() {
           ));
       expect(wrapper.numberOfPeriods, 0);
       expect(wrapper.paymentMode, SKProductDiscountPaymentMode.payAsYouGo);
-      expect(wrapper.subscriptionPeriod,
-          SKProductSubscriptionPeriodWrapper(numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day));
+      expect(
+          wrapper.subscriptionPeriod,
+          SKProductSubscriptionPeriodWrapper(
+              numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day));
     });
 
     test('SKProductWrapper should have property values consistent with map',
@@ -80,7 +83,8 @@ void main() {
     test(
         'SKProductWrapper should have properties to be default if map is empty',
         () {
-          final SKProductWrapper wrapper = SKProductWrapper.fromJson(<String, dynamic>{});
+      final SKProductWrapper wrapper =
+          SKProductWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.productIdentifier, '');
       expect(wrapper.localizedTitle, '');
       expect(wrapper.localizedDescription, '');

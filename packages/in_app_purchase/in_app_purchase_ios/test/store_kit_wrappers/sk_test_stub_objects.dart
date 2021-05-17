@@ -23,7 +23,8 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
   error: dummyError,
 );
 
-final SKPaymentTransactionWrapper dummyTransaction = SKPaymentTransactionWrapper(
+final SKPaymentTransactionWrapper dummyTransaction =
+    SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,
   payment: dummyPayment,
   originalTransaction: dummyOriginalTransaction,
@@ -52,7 +53,8 @@ final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(
   alternateQuotationBeginDelimiterKey: '“',
 );
 
-final SKProductSubscriptionPeriodWrapper dummySubscription = SKProductSubscriptionPeriodWrapper(
+final SKProductSubscriptionPeriodWrapper dummySubscription =
+    SKProductSubscriptionPeriodWrapper(
   numberOfUnits: 1,
   unit: SKSubscriptionPeriodUnit.month,
 );
@@ -99,8 +101,10 @@ Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
     'currencyCode': local.currencyCode,
     'endDelimiterKey': local.endDelimiterKey,
     'beginDelimiterKey': local.beginDelimiterKey,
-    'alternateQuotationEndDelimiterKey': local.alternateQuotationEndDelimiterKey,
-    'alternateQuotationBeginDelimiterKey': local.alternateQuotationBeginDelimiterKey
+    'alternateQuotationEndDelimiterKey':
+        local.alternateQuotationEndDelimiterKey,
+    'alternateQuotationBeginDelimiterKey':
+        local.alternateQuotationBeginDelimiterKey
   };
 }
 

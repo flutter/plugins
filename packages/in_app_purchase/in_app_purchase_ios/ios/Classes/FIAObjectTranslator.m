@@ -110,14 +110,11 @@
 
   [map setObject:[locale objectForKey:NSLocaleIdentifier] ?: [NSNull null]
           forKey:@"localeIdentifier"];
-  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null]
-          forKey:@"countryCode"];
+  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
   [map setObject:[locale objectForKey:NSLocaleLanguageCode] ?: [NSNull null]
           forKey:@"languageCode"];
-  [map setObject:[locale objectForKey:NSLocaleScriptCode] ?: [NSNull null]
-          forKey:@"scriptCode"];
-  [map setObject:[locale objectForKey:NSLocaleVariantCode] ?: [NSNull null]
-          forKey:@"variantCode"];
+  [map setObject:[locale objectForKey:NSLocaleScriptCode] ?: [NSNull null] forKey:@"scriptCode"];
+  [map setObject:[locale objectForKey:NSLocaleVariantCode] ?: [NSNull null] forKey:@"variantCode"];
   [map setObject:[locale objectForKey:NSLocaleCollationIdentifier] ?: [NSNull null]
           forKey:@"collationIdentifier"];
   [map setObject:[locale objectForKey:NSLocaleCollatorIdentifier] ?: [NSNull null]

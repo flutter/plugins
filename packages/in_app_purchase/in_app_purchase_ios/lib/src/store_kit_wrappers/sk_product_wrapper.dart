@@ -469,8 +469,10 @@ class SKPriceLocaleWrapper {
           currencyCode == other.currencyCode &&
           endDelimiterKey == other.endDelimiterKey &&
           beginDelimiterKey == other.beginDelimiterKey &&
-          alternateQuotationEndDelimiterKey == other.alternateQuotationEndDelimiterKey &&
-          alternateQuotationBeginDelimiterKey == other.alternateQuotationBeginDelimiterKey;
+          alternateQuotationEndDelimiterKey ==
+              other.alternateQuotationEndDelimiterKey &&
+          alternateQuotationBeginDelimiterKey ==
+              other.alternateQuotationBeginDelimiterKey;
 
   @override
   int get hashCode =>
