@@ -28,6 +28,7 @@ class BuildExamplesCommand extends PluginCommand {
     argParser.addFlag(kPlatformFlagMacos, defaultsTo: false);
     argParser.addFlag(kPlatformFlagWeb, defaultsTo: false);
     argParser.addFlag(kPlatformFlagWindows, defaultsTo: false);
+    argParser.addFlag(kPlatformFlagWinUwp, defaultsTo: false);
     argParser.addFlag(kIpa, defaultsTo: io.Platform.isMacOS);
     argParser.addFlag(kApk);
     argParser.addOption(
@@ -54,6 +55,7 @@ class BuildExamplesCommand extends PluginCommand {
       kPlatformFlagMacos,
       kPlatformFlagWeb,
       kPlatformFlagWindows,
+      kPlatformFlagWinUwp,
     ];
     if (!platformSwitches.any((String platform) => getBoolArg(platform))) {
       print(
@@ -149,6 +151,43 @@ class BuildExamplesCommand extends PluginCommand {
             }
           } else {
             print('Windows is not supported by this plugin');
+          }
+        }
+
+        if (getBoolArg(kPlatformFlagWinUwp)) {
+          print('\nBUILDING UWP for $packageName');
+          if (isWindowsPlugin(plugin)) {
+            // The UWP template is not yet stable, so the UWP directory
+            // needs to be created on the fly with 'flutter create .'
+            final Directory uwpFolder = example.childDirectory('uwp');
+            bool exampleCreated = false;
+            if (!uwpFolder.existsSync()) {
+              print('Creating temporary winuwp folder');
+              final int exampleCreateCode = await processRunner.runAndStream(
+                  flutterCommand, <String>['create', '.', '--platforms=winuwp'],
+                  workingDir: example);
+              if (exampleCreateCode == 0) {
+                exampleCreated = true;
+              }
+            }
+            final int buildExitCode = await processRunner.runAndStream(
+                flutterCommand,
+                <String>[
+                  'build',
+                  kPlatformFlagWinUwp,
+                  if (enableExperiment.isNotEmpty)
+                    '--enable-experiment=$enableExperiment',
+                ],
+                workingDir: example);
+            if (buildExitCode != 0) {
+              failingPackages.add('$packageName (UWP)');
+            }
+            if (exampleCreated && uwpFolder.existsSync()) {
+              print('Cleaning up temporary winuwp folder');
+              uwpFolder.deleteSync(recursive: true);
+            }
+          } else {
+            print('UWP is not supported by this plugin');
           }
         }
 
