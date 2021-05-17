@@ -108,7 +108,7 @@
   }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
 
-  [map setObject:[locale objectForKey:NSLocaleLocaleIdentifier] ?: [NSNull null]
+  [map setObject:[locale objectForKey:NSLocaleIdentifier] ?: [NSNull null]
           forKey:@"localeIdentifier"];
   [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null]
           forKey:@"countryCode"];
@@ -122,7 +122,7 @@
           forKey:@"collationIdentifier"];
   [map setObject:[locale objectForKey:NSLocaleCollatorIdentifier] ?: [NSNull null]
           forKey:@"collatorIdentifier"];
-  [map setObject:([locale objectForKey:NSLocaleUsesMetricSystem] == 1)
+  [map setObject:[locale objectForKey:NSLocaleUsesMetricSystem] ?: [NSNull null]
           forKey:@"usesMetricSystem"];
   [map setObject:[locale objectForKey:NSLocaleMeasurementSystem] ?: [NSNull null]
           forKey:@"measurementSystem"];
