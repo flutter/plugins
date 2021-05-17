@@ -1,4 +1,4 @@
-## 0.7.6
+## 0.7.5+2
 * Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
 
 ## 0.7.5+1
