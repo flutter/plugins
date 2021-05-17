@@ -158,9 +158,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     }
 
     switch (imageSource) {
-      case SOURCE_CAMERA:
+      case SOURCE_CAMERA: {
+        NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
+        _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
+                                      : UIImagePickerControllerCameraDeviceRear;
         [self checkCameraAuthorization];
         break;
+      }
       case SOURCE_GALLERY:
         [self checkPhotoAuthorization];
         break;
