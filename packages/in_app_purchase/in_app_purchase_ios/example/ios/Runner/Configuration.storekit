@@ -1,0 +1,96 @@
+{
+  "products" : [
+    {
+      "displayPrice" : "0.99",
+      "familyShareable" : false,
+      "internalID" : "AE10D05D",
+      "localizations" : [
+        {
+          "description" : "A consumable product.",
+          "displayName" : "Consumable",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "consumable",
+      "referenceName" : "consumable",
+      "type" : "Consumable"
+    },
+    {
+      "displayPrice" : "10.99",
+      "familyShareable" : false,
+      "internalID" : "FABCF067",
+      "localizations" : [
+        {
+          "description" : "An non-consumable product.",
+          "displayName" : "Upgrade",
+          "locale" : "en_US"
+        }
+      ],
+      "productID" : "upgrade",
+      "referenceName" : "upgrade",
+      "type" : "NonConsumable"
+    }
+  ],
+  "settings" : {
+
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "D0FEE8D8",
+      "localizations" : [
+
+      ],
+      "name" : "Example Subscriptions",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "displayPrice" : "3.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "922EB597",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "A lower level subscription.",
+              "displayName" : "Subscription Silver",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "subscription_silver",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "subscription_silver",
+          "subscriptionGroupID" : "D0FEE8D8",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "displayPrice" : "5.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "0BC7FF5E",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "A higher level subscription.",
+              "displayName" : "Subscription Gold",
+              "locale" : "en_US"
+            }
+          ],
+          "productID" : "subscription_gold",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "subscription_gold",
+          "subscriptionGroupID" : "D0FEE8D8",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 1,
+    "minor" : 0
+  }
+}

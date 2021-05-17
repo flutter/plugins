@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -58,8 +60,13 @@ class LintPodspecsCommand extends PluginCommand {
       return;
     }
 
-    await processRunner.runAndExitOnError('which', <String>['pod'],
-        workingDir: packagesDir);
+    await processRunner.run(
+      'which',
+      <String>['pod'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
 
     _print('Starting podspec lint test');
 
@@ -84,7 +91,7 @@ class LintPodspecsCommand extends PluginCommand {
     final List<File> podspecs = await getFiles().where((File entity) {
       final String filePath = entity.path;
       return p.extension(filePath) == '.podspec' &&
-          !(argResults['skip'] as List<String>)
+          !getStringListArg('skip')
               .contains(p.basenameWithoutExtension(filePath));
     }).toList();
 
@@ -117,7 +124,7 @@ class LintPodspecsCommand extends PluginCommand {
 
   Future<ProcessResult> _runPodLint(String podspecPath,
       {bool libraryLint}) async {
-    final bool allowWarnings = (argResults['ignore-warnings'] as List<String>)
+    final bool allowWarnings = (getStringListArg('ignore-warnings'))
         .contains(p.basenameWithoutExtension(podspecPath));
     final List<String> arguments = <String>[
       'lib',

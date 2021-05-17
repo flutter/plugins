@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/analyze_command.dart';
@@ -42,15 +44,13 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-              mockPackagesDir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin1Dir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin2Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
   });
@@ -88,13 +88,9 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-                mockPackagesDir.path),
             ProcessCall(
                 'flutter', const <String>['packages', 'get'], pluginDir.path),
-            ProcessCall(
-                'pub',
-                const <String>['global', 'run', 'tuneup', 'check'],
+            ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
                 pluginDir.path),
           ]));
     });

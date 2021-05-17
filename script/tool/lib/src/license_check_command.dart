@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -52,10 +54,14 @@ const Set<String> _ignoredFullBasenameList = <String>{
 final List<RegExp> _thirdPartyLicenseBlockRegexes = <RegExp>[
 // Third-party code used in url_launcher_web.
   RegExp(
-      r'^// Copyright 2017 Workiva Inc..*'
-      '^// Licensed under the Apache License, Version 2.0',
+      r'^// Copyright 2017 Workiva Inc\..*'
+      r'^// Licensed under the Apache License, Version 2\.0',
       multiLine: true,
       dotAll: true),
+  // bsdiff in flutter/packages.
+  RegExp(r'// Copyright 2003-2005 Colin Percival\. All rights reserved\.\n'
+      r'// Use of this source code is governed by a BSD-style license that can be\n'
+      r'// found in the LICENSE file\.\n'),
 ];
 
 // The exact format of the BSD license that our license files should contain.
@@ -158,16 +164,19 @@ class LicenseCheckCommand extends PluginCommand {
       _print('Checking ${file.path}');
       final String content = await file.readAsString();
 
+      final String firstParyLicense =
+          firstPartyLicenseBlockByExtension[p.extension(file.path)] ??
+              defaultFirstParyLicenseBlock;
       if (_isThirdParty(file)) {
+        // Third-party directories allow either known third-party licenses, our
+        // the first-party license, as there may be local additions.
         if (!_thirdPartyLicenseBlockRegexes
-            .any((RegExp regex) => regex.hasMatch(content))) {
+                .any((RegExp regex) => regex.hasMatch(content)) &&
+            !content.contains(firstParyLicense)) {
           unrecognizedThirdPartyFiles.add(file);
         }
       } else {
-        final String license =
-            firstPartyLicenseBlockByExtension[p.extension(file.path)] ??
-                defaultFirstParyLicenseBlock;
-        if (!content.contains(license)) {
+        if (!content.contains(firstParyLicense)) {
           incorrectFirstPartyFiles.add(file);
         }
       }

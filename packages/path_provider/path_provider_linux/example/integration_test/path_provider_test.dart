@@ -6,8 +6,8 @@
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:path_provider_linux/path_provider_linux.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();

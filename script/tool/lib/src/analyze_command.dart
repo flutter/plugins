@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -29,8 +31,8 @@ class AnalyzeCommand extends PluginCommand {
   final String name = 'analyze';
 
   @override
-  final String description = 'Analyzes all packages using package:tuneup.\n\n'
-      'This command requires "pub" and "flutter" to be in your path.';
+  final String description = 'Analyzes all packages using dart analyze.\n\n'
+      'This command requires "dart" and "flutter" to be in your path.';
 
   @override
   Future<void> run() async {
@@ -42,8 +44,8 @@ class AnalyzeCommand extends PluginCommand {
         continue;
       }
 
-      final bool allowed = (argResults[_customAnalysisFlag] as List<String>)
-          .any((String directory) =>
+      final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
+          (String directory) =>
               directory != null &&
               directory.isNotEmpty &&
               p.isWithin(p.join(packagesDir.path, directory), file.path));
@@ -56,11 +58,6 @@ class AnalyzeCommand extends PluginCommand {
           'If this was deliberate, pass the package to the analyze command with the --$_customAnalysisFlag flag and try again.');
       throw ToolExit(1);
     }
-
-    print('Activating tuneup package...');
-    await processRunner.runAndStream(
-        'pub', <String>['global', 'activate', 'tuneup'],
-        workingDir: packagesDir, exitOnError: true);
 
     await for (final Directory package in getPackages()) {
       if (isFlutterPackage(package, fileSystem)) {
@@ -75,7 +72,7 @@ class AnalyzeCommand extends PluginCommand {
     final List<String> failingPackages = <String>[];
     await for (final Directory package in getPlugins()) {
       final int exitCode = await processRunner.runAndStream(
-          'pub', <String>['global', 'run', 'tuneup', 'check'],
+          'dart', <String>['analyze', '--fatal-infos'],
           workingDir: package);
       if (exitCode != 0) {
         failingPackages.add(p.basename(package.path));

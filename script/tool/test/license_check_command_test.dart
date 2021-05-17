@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -266,6 +268,24 @@ void main() {
       // Sanity check that the test did actually check the file.
       expect(printedMessages,
           contains('Checking a_plugin/lib/src/third_party/file.cc'));
+      expect(printedMessages, contains('All source files passed validation!'));
+    });
+
+    test('allows first-party code in a third_party directory', () async {
+      final File firstPartyFileInThirdParty = root
+          .childDirectory('a_plugin')
+          .childDirectory('lib')
+          .childDirectory('src')
+          .childDirectory('third_party')
+          .childFile('first_party.cc');
+      firstPartyFileInThirdParty.createSync(recursive: true);
+      _writeLicense(firstPartyFileInThirdParty);
+
+      await runner.run(<String>['license-check']);
+
+      // Sanity check that the test did actually check the file.
+      expect(printedMessages,
+          contains('Checking a_plugin/lib/src/third_party/first_party.cc'));
       expect(printedMessages, contains('All source files passed validation!'));
     });
 
