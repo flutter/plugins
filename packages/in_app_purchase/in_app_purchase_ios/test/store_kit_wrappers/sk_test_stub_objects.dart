@@ -23,8 +23,7 @@ final SKPaymentTransactionWrapper dummyOriginalTransaction =
   error: dummyError,
 );
 
-final SKPaymentTransactionWrapper dummyTransaction =
-    SKPaymentTransactionWrapper(
+final SKPaymentTransactionWrapper dummyTransaction = SKPaymentTransactionWrapper(
   transactionState: SKPaymentTransactionStateWrapper.purchased,
   payment: dummyPayment,
   originalTransaction: dummyOriginalTransaction,
@@ -33,11 +32,27 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale =
-    SKPriceLocaleWrapper(currencySymbol: '\$', currencyCode: 'USD');
+final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(
+  localeIdentifier: 'en_US',
+  countryCode: 'US',
+  languageCode: 'en',
+  scriptCode: 'Latn',
+  variantCode: 'POSIX',
+  collationIdentifier: '',
+  collatorIdentifier: 'en',
+  usesMetricSystem: true,
+  measurementSystem: 'Metric',
+  decimalSeparator: '.',
+  groupingSeparator: ',',
+  currencySymbol: '\$',
+  currencyCode: 'USD',
+  endDelimiterKey: '”',
+  beginDelimiterKey: '“',
+  alternateQuotationEndDelimiterKey: '”',
+  alternateQuotationBeginDelimiterKey: '“',
+);
 
-final SKProductSubscriptionPeriodWrapper dummySubscription =
-    SKProductSubscriptionPeriodWrapper(
+final SKProductSubscriptionPeriodWrapper dummySubscription = SKProductSubscriptionPeriodWrapper(
   numberOfUnits: 1,
   unit: SKSubscriptionPeriodUnit.month,
 );

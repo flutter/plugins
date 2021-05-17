@@ -41,17 +41,33 @@ void main() {
     test(
         'SKProductDiscountWrapper should have properties to be default if map is empty',
         () {
-      final SKProductDiscountWrapper wrapper =
-          SKProductDiscountWrapper.fromJson(<String, dynamic>{});
+      final SKProductDiscountWrapper wrapper = SKProductDiscountWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.price, '');
-      expect(wrapper.priceLocale,
-          SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
+      expect(
+          wrapper.priceLocale,
+          SKPriceLocaleWrapper(
+            localeIdentifier: '',
+            countryCode: '',
+            languageCode: '',
+            scriptCode: '',
+            variantCode: '',
+            collationIdentifier: '',
+            collatorIdentifier: '',
+            usesMetricSystem: true,
+            measurementSystem: '',
+            decimalSeparator: '',
+            groupingSeparator: '',
+            currencySymbol: '',
+            currencyCode: '',
+            endDelimiterKey: '',
+            beginDelimiterKey: '',
+            alternateQuotationEndDelimiterKey: '',
+            alternateQuotationBeginDelimiterKey: '',
+          ));
       expect(wrapper.numberOfPeriods, 0);
       expect(wrapper.paymentMode, SKProductDiscountPaymentMode.payAsYouGo);
-      expect(
-          wrapper.subscriptionPeriod,
-          SKProductSubscriptionPeriodWrapper(
-              numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day));
+      expect(wrapper.subscriptionPeriod,
+          SKProductSubscriptionPeriodWrapper(numberOfUnits: 0, unit: SKSubscriptionPeriodUnit.day));
     });
 
     test('SKProductWrapper should have property values consistent with map',
@@ -64,13 +80,31 @@ void main() {
     test(
         'SKProductWrapper should have properties to be default if map is empty',
         () {
-      final SKProductWrapper wrapper =
-          SKProductWrapper.fromJson(<String, dynamic>{});
+          final SKProductWrapper wrapper = SKProductWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.productIdentifier, '');
       expect(wrapper.localizedTitle, '');
       expect(wrapper.localizedDescription, '');
-      expect(wrapper.priceLocale,
-          SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
+      expect(
+          wrapper.priceLocale,
+          SKPriceLocaleWrapper(
+            localeIdentifier: '',
+            countryCode: '',
+            languageCode: '',
+            scriptCode: '',
+            variantCode: '',
+            collationIdentifier: '',
+            collatorIdentifier: '',
+            usesMetricSystem: true,
+            measurementSystem: '',
+            decimalSeparator: '',
+            groupingSeparator: '',
+            currencySymbol: '',
+            currencyCode: '',
+            endDelimiterKey: '',
+            beginDelimiterKey: '',
+            alternateQuotationEndDelimiterKey: '',
+            alternateQuotationBeginDelimiterKey: '',
+          ));
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, '');
       expect(wrapper.subscriptionPeriod, null);
