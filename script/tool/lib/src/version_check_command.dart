@@ -2,10 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
@@ -74,8 +77,21 @@ class VersionCheckCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
-  }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+    this.httpClient,
+  })  : _pubVersionFinder =
+            PubVersionFinder(httpClient: httpClient ?? http.Client()),
+        super(packagesDir, fileSystem,
+            processRunner: processRunner, gitDir: gitDir) {
+    argParser.addFlag(
+      _againstPubFlag,
+      help: 'Whether the version check should run against the version on pub.\n'
+          'Defaults to false, which means the version check only run against the previous version in code.',
+      defaultsTo: false,
+      negatable: true,
+    );
+  }
+
+  static const String _againstPubFlag = 'against-pub';
 
   @override
   final String name = 'version-check';
@@ -85,6 +101,11 @@ class VersionCheckCommand extends PluginCommand {
       'Checks if the versions of the plugins have been incremented per pub specification.\n'
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
+
+  /// The http client used to query pub server.
+  final http.Client httpClient;
+
+  final PubVersionFinder _pubVersionFinder;
 
   @override
   Future<void> run() async {
@@ -115,29 +136,60 @@ class VersionCheckCommand extends PluginCommand {
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
-      final Version masterVersion =
-          await gitVersionFinder.getPackageVersion(pubspecPath);
-      if (masterVersion == null) {
-        print('${indentation}Unable to find pubspec in master. '
-            'Safe to ignore if the project is new.');
+      Version sourceVersion;
+      if (getBoolArg(_againstPubFlag)) {
+        final String packageName = pubspecFile.parent.basename;
+        final PubVersionFinderResponse pubVersionFinderResponse =
+            await _pubVersionFinder.getPackageVersion(package: packageName);
+        switch (pubVersionFinderResponse.result) {
+          case PubVersionFinderResult.success:
+            sourceVersion = pubVersionFinderResponse.versions.first;
+            print(
+                '$indentation$packageName: Current largest version on pub: $sourceVersion');
+            break;
+          case PubVersionFinderResult.fail:
+            printErrorAndExit(errorMessage: '''
+${indentation}Error fetching version on pub for $packageName.
+${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
+${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
+''');
+            break;
+          case PubVersionFinderResult.noPackageFound:
+            sourceVersion = null;
+            break;
+        }
+      } else {
+        sourceVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
+      }
+      if (sourceVersion == null) {
+        String safeToIgnoreMessage;
+        if (getBoolArg(_againstPubFlag)) {
+          safeToIgnoreMessage =
+              '${indentation}Unable to find package on pub server.';
+        } else {
+          safeToIgnoreMessage =
+              '${indentation}Unable to find pubspec in master.';
+        }
+        print('$safeToIgnoreMessage Safe to ignore if the project is new.');
         continue;
       }
 
-      if (masterVersion == headVersion) {
+      if (sourceVersion == headVersion) {
         print('${indentation}No version change.');
         continue;
       }
 
       final Map<Version, NextVersionType> allowedNextVersions =
-          getAllowedNextVersions(masterVersion, headVersion);
+          getAllowedNextVersions(sourceVersion, headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
+        final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
         final String error = '${indentation}Incorrectly updated version.\n'
-            '${indentation}HEAD: $headVersion, master: $masterVersion.\n'
+            '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
             '${indentation}Allowed versions: $allowedNextVersions';
         printErrorAndExit(errorMessage: error);
       } else {
-        print('$indentation$headVersion -> $masterVersion');
+        print('$indentation$headVersion -> $sourceVersion');
       }
 
       final bool isPlatformInterface =
@@ -153,6 +205,7 @@ class VersionCheckCommand extends PluginCommand {
     await for (final Directory plugin in getPlugins()) {
       await _checkVersionsMatch(plugin);
     }
+    _pubVersionFinder.httpClient.close();
 
     print('No version check errors found!');
   }
@@ -224,7 +277,7 @@ The first version listed in CHANGELOG.md is $fromChangeLog.
         printErrorAndExit(errorMessage: '''
 When bumping the version for release, the NEXT section should be incorporated
 into the new version's release notes.
-      ''');
+''');
       }
     }
 
