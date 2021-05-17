@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -42,8 +44,8 @@ class AnalyzeCommand extends PluginCommand {
         continue;
       }
 
-      final bool allowed = (argResults[_customAnalysisFlag] as List<String>)
-          .any((String directory) =>
+      final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
+          (String directory) =>
               directory != null &&
               directory.isNotEmpty &&
               p.isWithin(p.join(packagesDir.path, directory), file.path));

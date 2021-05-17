@@ -21,13 +21,13 @@ FileSystem mockFileSystem = MemoryFileSystem(
     style: const LocalPlatform().isWindows
         ? FileSystemStyle.windows
         : FileSystemStyle.posix);
-Directory mockPackagesDir;
+late Directory mockPackagesDir;
 
 /// Creates a mock packages directory in the mock file system.
 ///
 /// If [parentDir] is set the mock packages dir will be creates as a child of
 /// it. If not [mockFileSystem] will be used instead.
-void initializeFakePackages({Directory parentDir}) {
+void initializeFakePackages({Directory? parentDir}) {
   mockPackagesDir =
       (parentDir ?? mockFileSystem.currentDirectory).childDirectory('packages');
   mockPackagesDir.createSync();
@@ -51,7 +51,7 @@ Directory createFakePlugin(
   bool includeVersion = false,
   String version = '0.0.1',
   String parentDirectoryName = '',
-  Directory packagesDirectory,
+  Directory? packagesDirectory,
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
       'cannot pass withSingleExample and withExamples simultaneously');
@@ -205,44 +205,55 @@ void cleanupPackages() {
   });
 }
 
+typedef _ErrorHandler = void Function(Error error);
+
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
+/// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<void> runner, List<String> args) async {
+    CommandRunner<void> runner, List<String> args,
+    {_ErrorHandler? errorHandler}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
       prints.add(message);
     },
   );
-  await Zone.current
-      .fork(specification: spec)
-      .run<Future<void>>(() => runner.run(args));
+  try {
+    await Zone.current
+        .fork(specification: spec)
+        .run<Future<void>>(() => runner.run(args));
+  } on Error catch (e) {
+    if (errorHandler == null) {
+      rethrow;
+    }
+    errorHandler(e);
+  }
 
   return prints;
 }
 
 /// A mock [ProcessRunner] which records process calls.
 class RecordingProcessRunner extends ProcessRunner {
-  io.Process processToReturn;
+  io.Process? processToReturn;
   final List<ProcessCall> recordedCalls = <ProcessCall>[];
 
   /// Populate for [io.ProcessResult] to use a String [stdout] instead of a [List] of [int].
-  String resultStdout;
+  String? resultStdout;
 
   /// Populate for [io.ProcessResult] to use a String [stderr] instead of a [List] of [int].
-  String resultStderr;
+  String? resultStderr;
 
   @override
   Future<int> runAndStream(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
     bool exitOnError = false,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
     return Future<int>.value(
-        processToReturn == null ? 0 : await processToReturn.exitCode);
+        processToReturn == null ? 0 : await processToReturn!.exitCode);
   }
 
   /// Returns [io.ProcessResult] created from [processToReturn], [resultStdout], and [resultStderr].
@@ -250,28 +261,26 @@ class RecordingProcessRunner extends ProcessRunner {
   Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
     bool exitOnError = false,
     bool logOnError = false,
     Encoding stdoutEncoding = io.systemEncoding,
     Encoding stderrEncoding = io.systemEncoding,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    io.ProcessResult result;
+    io.ProcessResult? result;
 
-    if (processToReturn != null) {
-      result = io.ProcessResult(
-          processToReturn.pid,
-          await processToReturn.exitCode,
-          resultStdout ?? processToReturn.stdout,
-          resultStderr ?? processToReturn.stderr);
+    final io.Process? process = processToReturn;
+    if (process != null) {
+      result = io.ProcessResult(process.pid, await process.exitCode,
+          resultStdout ?? process.stdout, resultStderr ?? process.stderr);
     }
     return Future<io.ProcessResult>.value(result);
   }
 
   @override
   Future<io.Process> start(String executable, List<String> args,
-      {Directory workingDirectory}) async {
+      {Directory? workingDirectory}) async {
     recordedCalls.add(ProcessCall(executable, args, workingDirectory?.path));
     return Future<io.Process>.value(processToReturn);
   }
@@ -289,7 +298,7 @@ class ProcessCall {
   final List<String> args;
 
   /// The working directory this process was called from.
-  final String workingDir;
+  final String? workingDir;
 
   @override
   bool operator ==(dynamic other) {
@@ -301,10 +310,7 @@ class ProcessCall {
 
   @override
   int get hashCode =>
-      executable?.hashCode ??
-      0 ^ args?.hashCode ??
-      0 ^ workingDir?.hashCode ??
-      0;
+      (executable.hashCode) ^ (args.hashCode) ^ (workingDir?.hashCode ?? 0);
 
   @override
   String toString() {

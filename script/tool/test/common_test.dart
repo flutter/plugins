@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
@@ -9,20 +11,26 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
+import 'package:http/testing.dart';
+import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
+import 'common_test.mocks.dart';
 import 'util.dart';
 
+@GenerateMocks(<Type>[GitDir])
 void main() {
-  RecordingProcessRunner processRunner;
-  CommandRunner<void> runner;
-  FileSystem fileSystem;
-  Directory packagesDir;
-  Directory thirdPartyPackagesDir;
-  List<String> plugins;
-  List<List<String>> gitDirCommands;
-  String gitDiffResponse;
+  late RecordingProcessRunner processRunner;
+  late CommandRunner<void> runner;
+  late FileSystem fileSystem;
+  late Directory packagesDir;
+  late Directory thirdPartyPackagesDir;
+  late List<String> plugins;
+  late List<List<String>?> gitDirCommands;
+  late String gitDiffResponse;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
@@ -31,14 +39,15 @@ void main() {
         .childDirectory('third_party')
         .childDirectory('packages');
 
-    gitDirCommands = <List<String>>[];
+    gitDirCommands = <List<String>?>[];
     gitDiffResponse = '';
     final MockGitDir gitDir = MockGitDir();
-    when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-      gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
+    when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
+        .thenAnswer((Invocation invocation) {
+      gitDirCommands.add(invocation.positionalArguments[0] as List<String>?);
       final MockProcessResult mockProcessResult = MockProcessResult();
       if (invocation.positionalArguments[0][0] == 'diff') {
-        when<String>(mockProcessResult.stdout as String)
+        when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(gitDiffResponse);
       }
       return Future<ProcessResult>.value(mockProcessResult);
@@ -251,23 +260,24 @@ packages/plugin3/plugin3.dart
   });
 
   group('$GitVersionFinder', () {
-    List<List<String>> gitDirCommands;
-    String gitDiffResponse;
-    String mergeBaseResponse;
-    MockGitDir gitDir;
+    late List<List<String>?> gitDirCommands;
+    late String gitDiffResponse;
+    String? mergeBaseResponse;
+    late MockGitDir gitDir;
 
     setUp(() {
-      gitDirCommands = <List<String>>[];
+      gitDirCommands = <List<String>?>[];
       gitDiffResponse = '';
       gitDir = MockGitDir();
-      when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
-        gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
+      when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
+          .thenAnswer((Invocation invocation) {
+        gitDirCommands.add(invocation.positionalArguments[0] as List<String>?);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {
-          when<String>(mockProcessResult.stdout as String)
+          when<String?>(mockProcessResult.stdout as String?)
               .thenReturn(gitDiffResponse);
         } else if (invocation.positionalArguments[0][0] == 'merge-base') {
-          when<String>(mockProcessResult.stdout as String)
+          when<String?>(mockProcessResult.stdout as String?)
               .thenReturn(mergeBaseResponse);
         }
         return Future<ProcessResult>.value(mockProcessResult);
@@ -316,10 +326,11 @@ file2/file2.cc
 file1/pubspec.yaml
 file2/file2.cc
 ''';
+
       final GitVersionFinder finder = GitVersionFinder(gitDir, null);
       await finder.getChangedFiles();
       verify(gitDir.runCommand(
-          <String>['diff', '--name-only', mergeBaseResponse, 'HEAD']));
+          <String>['diff', '--name-only', mergeBaseResponse!, 'HEAD']));
     });
 
     test('use correct base sha if specified', () async {
@@ -334,6 +345,80 @@ file2/file2.cc
           .runCommand(<String>['diff', '--name-only', customBaseSha, 'HEAD']));
     });
   });
+
+  group('$PubVersionFinder', () {
+    test('Package does not exist.', () async {
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response('', 404);
+      });
+      final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
+      final PubVersionFinderResponse response =
+          await finder.getPackageVersion(package: 'some_package');
+
+      expect(response.versions, isNull);
+      expect(response.result, PubVersionFinderResult.noPackageFound);
+      expect(response.httpResponse!.statusCode, 404);
+      expect(response.httpResponse!.body, '');
+    });
+
+    test('HTTP error when getting versions from pub', () async {
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response('', 400);
+      });
+      final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
+      final PubVersionFinderResponse response =
+          await finder.getPackageVersion(package: 'some_package');
+
+      expect(response.versions, isNull);
+      expect(response.result, PubVersionFinderResult.fail);
+      expect(response.httpResponse!.statusCode, 400);
+      expect(response.httpResponse!.body, '');
+    });
+
+    test('Get a correct list of versions when http response is OK.', () async {
+      const Map<String, dynamic> httpResponse = <String, dynamic>{
+        'name': 'some_package',
+        'versions': <String>[
+          '0.0.1',
+          '0.0.2',
+          '0.0.2+2',
+          '0.1.1',
+          '0.0.1+1',
+          '0.1.0',
+          '0.2.0',
+          '0.1.0+1',
+          '0.0.2+1',
+          '2.0.0',
+          '1.2.0',
+          '1.0.0',
+        ],
+      };
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(httpResponse), 200);
+      });
+      final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
+      final PubVersionFinderResponse response =
+          await finder.getPackageVersion(package: 'some_package');
+
+      expect(response.versions, <Version>[
+        Version.parse('2.0.0'),
+        Version.parse('1.2.0'),
+        Version.parse('1.0.0'),
+        Version.parse('0.2.0'),
+        Version.parse('0.1.1'),
+        Version.parse('0.1.0+1'),
+        Version.parse('0.1.0'),
+        Version.parse('0.0.2+2'),
+        Version.parse('0.0.2+1'),
+        Version.parse('0.0.2'),
+        Version.parse('0.0.1+1'),
+        Version.parse('0.0.1'),
+      ]);
+      expect(response.result, PubVersionFinderResult.success);
+      expect(response.httpResponse!.statusCode, 200);
+      expect(response.httpResponse!.body, json.encode(httpResponse));
+    });
+  });
 }
 
 class SamplePluginCommand extends PluginCommand {
@@ -342,7 +427,7 @@ class SamplePluginCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-    GitDir gitDir,
+    GitDir? gitDir,
   }) : super(packagesDir, fileSystem,
             processRunner: processRunner, gitDir: gitDir);
 
@@ -361,7 +446,5 @@ class SamplePluginCommand extends PluginCommand {
     }
   }
 }
-
-class MockGitDir extends Mock implements GitDir {}
 
 class MockProcessResult extends Mock implements ProcessResult {}

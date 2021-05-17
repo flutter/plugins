@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Example app observes `uiMode`, so the WebView isn't reattached when the UI mode changes. (e.g. switching to Dark mode).
+
 ## 2.0.4
 
 * Fix a bug where `allowsInlineMediaPlayback` is not respected on iOS.

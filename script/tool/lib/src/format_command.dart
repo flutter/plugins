@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -13,8 +15,8 @@ import 'package:quiver/iterables.dart';
 
 import 'common.dart';
 
-const String _googleFormatterUrl =
-    'https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar';
+final Uri _googleFormatterUrl = Uri.https('github.com',
+    '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');
 
 /// A command to format all package code.
 class FormatCommand extends PluginCommand {
@@ -47,7 +49,7 @@ class FormatCommand extends PluginCommand {
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['fail-on-change'] == true) {
+    if (getBoolArg('fail-on-change')) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);
@@ -105,7 +107,7 @@ class FormatCommand extends PluginCommand {
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
     for (final List<String> batch in batches) {
-      await processRunner.runAndStream(argResults['clang-format'] as String,
+      await processRunner.runAndStream(getStringArg('clang-format'),
           <String>['-i', '--style=Google', ...batch],
           workingDir: packagesDir, exitOnError: true);
     }
