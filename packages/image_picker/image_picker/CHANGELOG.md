@@ -1,3 +1,6 @@
+## 0.7.5+2
+* Fixes an issue where preferredCameraDevice option is not working for getVideo.
+
 ## 0.7.5+1
 
 * Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked 
