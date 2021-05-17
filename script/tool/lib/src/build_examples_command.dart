@@ -164,7 +164,7 @@ class BuildExamplesCommand extends PluginCommand {
             if (!uwpFolder.existsSync()) {
               print('Creating temporary winuwp folder');
               final int exampleCreateCode = await processRunner.runAndStream(
-                  flutterCommand, <String>['create', '.', '--platforms=winuwp'],
+                  flutterCommand, <String>['create', '--platforms=winuwp', '.'],
                   workingDir: example);
               if (exampleCreateCode == 0) {
                 exampleCreated = true;

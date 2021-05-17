@@ -489,7 +489,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
                 flutterCommand,
-                const <String>['create', '.', '--platforms=winuwp'],
+                const <String>['create', '--platforms=winuwp', '.'],
                 pluginExampleDirectory.path),
             ProcessCall(flutterCommand, const <String>['build', 'winuwp'],
                 pluginExampleDirectory.path),
