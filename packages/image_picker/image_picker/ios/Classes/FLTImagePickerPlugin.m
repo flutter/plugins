@@ -219,15 +219,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                completionHandler:^(BOOL granted) {
                                  dispatch_async(dispatch_get_main_queue(), ^{
                                    if (granted) {
-                                     if (granted) {
-                                       [self showCamera];
-                                     }
+                                     [self showCamera];
                                    } else {
                                      [self errorNoCameraAccess:AVAuthorizationStatusDenied];
                                    }
                                  });
                                }];
-    }; break;
+      break;
+    }
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
     default:
