@@ -86,7 +86,8 @@ public class CameraRegionsTest {
 
   @Test
   public void resetAutoExposureMeteringRectangle_should_reset_aeMeteringRectangle() {
-    io.flutter.plugins.camera.types.CameraRegions cr = new io.flutter.plugins.camera.types.CameraRegions(new Size(100, 50));
+    io.flutter.plugins.camera.types.CameraRegions cr =
+        new io.flutter.plugins.camera.types.CameraRegions(new Size(100, 50));
     cr.setAutoExposureMeteringRectangleFromPoint(0, 0);
     assertNotNull(cr.getAEMeteringRectangle());
     cr.resetAutoExposureMeteringRectangle();
@@ -95,14 +96,16 @@ public class CameraRegionsTest {
 
   @Test
   public void setAutoFocusMeteringRectangleFromPoint_should_set_afMeteringRectangle_for_point() {
-    io.flutter.plugins.camera.types.CameraRegions cr = new io.flutter.plugins.camera.types.CameraRegions(new Size(100, 50));
+    io.flutter.plugins.camera.types.CameraRegions cr =
+        new io.flutter.plugins.camera.types.CameraRegions(new Size(100, 50));
     cr.setAutoFocusMeteringRectangleFromPoint(0, 0);
     assertEquals(new MeteringRectangle(0, 0, 10, 5, 1), cr.getAFMeteringRectangle());
   }
 
   @Test
   public void resetAutoFocusMeteringRectangle_should_reset_afMeteringRectangle() {
-    io.flutter.plugins.camera.types.CameraRegions cr = new io.flutter.plugins.camera.types.CameraRegions(new Size(100, 50));
+    io.flutter.plugins.camera.types.CameraRegions cr =
+        new io.flutter.plugins.camera.types.CameraRegions(new Size(100, 50));
     cr.setAutoFocusMeteringRectangleFromPoint(0, 0);
     assertNotNull(cr.getAFMeteringRectangle());
     cr.resetAutoFocusMeteringRectangle();

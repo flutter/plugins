@@ -8,10 +8,9 @@ import android.hardware.camera2.CaptureRequest;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-/**
- * Controls whether or not the exposure mode is currently locked or automatically metering.
- */
+/** Controls whether or not the exposure mode is currently locked or automatically metering. */
 public class ExposureLockFeature extends CameraFeature<ExposureMode> {
+
   private ExposureMode currentSetting = ExposureMode.auto;
 
   /**

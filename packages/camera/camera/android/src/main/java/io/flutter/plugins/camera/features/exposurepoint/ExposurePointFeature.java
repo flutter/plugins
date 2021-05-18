@@ -13,10 +13,9 @@ import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
 import io.flutter.plugins.camera.types.CameraRegions;
 
-/**
- * Exposure point controls where in the frame exposure metering will come from.
- */
+/** Exposure point controls where in the frame exposure metering will come from. */
 public class ExposurePointFeature extends CameraFeature<Point> {
+
   private final CameraRegions cameraRegions;
   private Point currentSetting = new Point(0.0, 0.0);
 
@@ -26,8 +25,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
    * @param cameraProperties Collection of the characteristics for the current camera device.
    * @param cameraRegions Utility class to assist in calculating exposure boundaries.
    */
-  public ExposurePointFeature(
-      CameraProperties cameraProperties, CameraRegions cameraRegions) {
+  public ExposurePointFeature(CameraProperties cameraProperties, CameraRegions cameraRegions) {
     super(cameraProperties);
     this.cameraRegions = cameraRegions;
   }
@@ -46,14 +44,10 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   public void setValue(@NonNull Point value) {
     this.currentSetting = value;
 
-    try {
-      if (value.x == null || value.y == null) {
-        cameraRegions.resetAutoExposureMeteringRectangle();
-      } else {
-        cameraRegions.setAutoExposureMeteringRectangleFromPoint(value.x, value.y);
-      }
-    } catch (Exception e) {
-      e.printStackTrace();
+    if (value.x == null || value.y == null) {
+      cameraRegions.resetAutoExposureMeteringRectangle();
+    } else {
+      cameraRegions.setAutoExposureMeteringRectangleFromPoint(value.x, value.y);
     }
   }
 

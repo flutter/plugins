@@ -10,10 +10,9 @@ import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-/**
- * Controls the exposure offset making the resulting image brighter or darker.
- */
+/** Controls the exposure offset making the resulting image brighter or darker. */
 public class ExposureOffsetFeature extends CameraFeature<Double> {
+
   private double currentSetting = 0;
 
   /**

@@ -16,20 +16,18 @@ import java.util.Arrays;
 /**
  * Utility class that contains information regarding the camera's regions.
  *
- * The regions information is used to calculate focus and exposure settings.
+ * <p>The regions information is used to calculate focus and exposure settings.
  */
 public final class CameraRegions {
 
-  /**
-   * Factory class that assists in creating a {@link CameraRegions} instance.
-   */
+  /** Factory class that assists in creating a {@link CameraRegions} instance. */
   public static class Factory {
     /**
      * Creates a new instance of the {@link CameraRegions} class.
      *
-     * The {@link CameraProperties} and {@link CaptureRequest.Builder} classed are used to determine
-     * if the device's camera supports distortion correction mode and calculate the correct boundaries
-     * based on the outcome.
+     * <p>The {@link CameraProperties} and {@link CaptureRequest.Builder} classed are used to
+     * determine if the device's camera supports distortion correction mode and calculate the
+     * correct boundaries based on the outcome.
      *
      * @param cameraProperties Collection of the characteristics for the current camera device.
      * @param requestBuilder CaptureRequest builder containing current target and surface settings.
@@ -41,8 +39,8 @@ public final class CameraRegions {
       Size boundaries;
 
       // No distortion correction support
-      if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.P ||
-          !supportsDistortionCorrection(cameraProperties)) {
+      if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.P
+          || !supportsDistortionCorrection(cameraProperties)) {
         boundaries = cameraProperties.getSensorInfoPixelArraySize();
       } else {
         // Get the current distortion correction mode
@@ -119,9 +117,9 @@ public final class CameraRegions {
   /**
    * Gets the area of the image sensor.
    *
-   * If distortion correction is supported the size corresponds to the active pixels after any
-   * geometric distortion correction has been applied. If distortion correction is not supported
-   * the dimensions include the full pixel array, possibly including black calibration pixels.
+   * <p>If distortion correction is supported the size corresponds to the active pixels after any
+   * geometric distortion correction has been applied. If distortion correction is not supported the
+   * dimensions include the full pixel array, possibly including black calibration pixels.
    *
    * @return The area of the image sensor.
    */
@@ -129,9 +127,7 @@ public final class CameraRegions {
     return this.boundaries;
   }
 
-  /**
-   * Resets the {@link MeteringRectangle} on which the auto exposure will be applied.
-   */
+  /** Resets the {@link MeteringRectangle} on which the auto exposure will be applied. */
   public void resetAutoExposureMeteringRectangle() {
     this.aeMeteringRectangle = null;
   }
@@ -146,9 +142,7 @@ public final class CameraRegions {
     this.aeMeteringRectangle = convertPointToMeteringRectangle(x, y);
   }
 
-  /**
-   * Resets the {@link MeteringRectangle} on which the auto focus will be applied.
-   */
+  /** Resets the {@link MeteringRectangle} on which the auto focus will be applied. */
   public void resetAutoFocusMeteringRectangle() {
     this.afMeteringRectangle = null;
   }
@@ -167,11 +161,11 @@ public final class CameraRegions {
    * Converts a point into a {@link MeteringRectangle} with the supplied coordinates as the centre
    * point.
    *
-   * Since the Camera API (due to cross-platform constraints) only accepts a point when configuring
-   * a specific focus or exposure area and Android requires a rectangle to configure these settings
-   * there is a need to convert the point into a rectangle. This method will create the required
-   * rectangle with an arbitrarily size that is a 10th of the current viewport and the coordinates
-   * as the centre point.
+   * <p>Since the Camera API (due to cross-platform constraints) only accepts a point when
+   * configuring a specific focus or exposure area and Android requires a rectangle to configure
+   * these settings there is a need to convert the point into a rectangle. This method will create
+   * the required rectangle with an arbitrarily size that is a 10th of the current viewport and the
+   * coordinates as the centre point.
    *
    * @param x x - coordinate >= 0
    * @param y y - coordinate >= 0
@@ -184,7 +178,8 @@ public final class CameraRegions {
     // Interpolate the target coordinate
     int targetX = (int) Math.round(x * ((double) (boundaries.getWidth() - 1)));
     int targetY = (int) Math.round(y * ((double) (boundaries.getHeight() - 1)));
-    // Since the Camera API only allows Determine the dimensions of the metering rectangle (10th of the viewport)
+    // Since the Camera API only allows Determine the dimensions of the metering rectangle (10th of
+    // the viewport)
     int targetWidth = (int) Math.round(((double) boundaries.getWidth()) / 10d);
     int targetHeight = (int) Math.round(((double) boundaries.getHeight()) / 10d);
     // Adjust target coordinate to represent top-left corner of metering rectangle

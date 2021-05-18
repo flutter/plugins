@@ -18,7 +18,7 @@ public enum ExposureMode {
   /**
    * Tries to convert the supplied string into an {@see ExposureMode} enum value.
    *
-   * When the supplied string doesn't match a valid {@see ExposureMode} enum value, null is
+   * <p>When the supplied string doesn't match a valid {@see ExposureMode} enum value, null is
    * returned.
    *
    * @param modeStr String value to convert into an {@see ExposureMode} enum value.
@@ -26,7 +26,9 @@ public enum ExposureMode {
    */
   public static ExposureMode getValueForString(String modeStr) {
     for (ExposureMode value : values()) {
-      if (value.strValue.equals(modeStr)) return value;
+      if (value.strValue.equals(modeStr)) {
+        return value;
+      }
     }
     return null;
   }

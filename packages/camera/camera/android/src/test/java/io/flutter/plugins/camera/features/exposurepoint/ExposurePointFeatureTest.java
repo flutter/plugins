@@ -191,7 +191,6 @@ public class ExposurePointFeatureTest {
 
     exposurePointFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1))
-        .set(CaptureRequest.CONTROL_AE_REGIONS, null);
+    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_REGIONS, null);
   }
 }
