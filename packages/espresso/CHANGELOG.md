@@ -1,3 +1,8 @@
+## 0.1.0+1
+
+* Minor code cleanup
+* Package metadata updates
+
 ## 0.1.0
 
 * Update SDK requirement for null-safety compatibility.
