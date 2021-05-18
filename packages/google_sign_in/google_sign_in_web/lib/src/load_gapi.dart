@@ -37,8 +37,10 @@ Future<void> inject(String url, {List<String> libraries = const <String>[]}) {
   });
 
   // Attach the onload callback to the main url
-  final List<String> allLibraries = <String>[_addOnloadToScript(url)]
-    ..addAll(libraries);
+  final List<String> allLibraries = <String>[
+    _addOnloadToScript(url),
+    ...libraries
+  ];
 
   return Future.wait(
       <Future<void>>[injectJSLibraries(allLibraries), gapiOnLoad.future]);

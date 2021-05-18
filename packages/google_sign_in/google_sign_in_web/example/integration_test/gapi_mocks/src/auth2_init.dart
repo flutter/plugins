@@ -95,7 +95,7 @@ GapiAuth2.prototype.getAuthInstance = function () {
       return new Promise((resolve, reject) => {
         window.setTimeout(() => {
           reject({
-            error: '${error}'
+            error: '$error'
           });
         }, 30);
       });

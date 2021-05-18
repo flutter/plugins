@@ -33,7 +33,7 @@ const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
 };
 
 final GoogleSignInUserData? kUser = getUserDataFromMap(kUserData);
-final GoogleSignInTokenData? kToken =
+final GoogleSignInTokenData kToken =
     getTokenDataFromMap(kTokenData as Map<String, dynamic>);
 
 void main() {
