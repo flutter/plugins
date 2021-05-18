@@ -1,3 +1,6 @@
+## 0.7.5+4
+* Migrate maven repo from jcenter to mavenCentral.
+
 ## 0.7.5+3
 * Localize `UIAlertController` strings.
 
