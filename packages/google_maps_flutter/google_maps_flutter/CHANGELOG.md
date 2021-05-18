@@ -1,3 +1,7 @@
+## 2.0.5
+
+* Google Maps requires at least Android SDK 20.
+
 ## 2.0.4
 
 * Unpin iOS GoogleMaps pod dependency version.
