@@ -11,19 +11,25 @@ import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
-import io.flutter.plugins.camera.features.regionboundaries.CameraRegions;
-import java.util.concurrent.Callable;
+import io.flutter.plugins.camera.types.CameraRegions;
 
-/** Exposure point controls where in the frame exposure metering will come from. */
+/**
+ * Exposure point controls where in the frame exposure metering will come from.
+ */
 public class ExposurePointFeature extends CameraFeature<Point> {
-  // Used later to always get the correct camera regions instance.
-  private final Callable<CameraRegions> getCameraRegions;
+  private final CameraRegions cameraRegions;
   private Point currentSetting = new Point(0.0, 0.0);
 
+  /**
+   * Creates a new instance of the {@link ExposurePointFeature}.
+   *
+   * @param cameraProperties Collection of the characteristics for the current camera device.
+   * @param cameraRegions Utility class to assist in calculating exposure boundaries.
+   */
   public ExposurePointFeature(
-      CameraProperties cameraProperties, Callable<CameraRegions> getCameraRegions) {
+      CameraProperties cameraProperties, CameraRegions cameraRegions) {
     super(cameraProperties);
-    this.getCameraRegions = getCameraRegions;
+    this.cameraRegions = cameraRegions;
   }
 
   @Override
@@ -42,9 +48,9 @@ public class ExposurePointFeature extends CameraFeature<Point> {
 
     try {
       if (value.x == null || value.y == null) {
-        getCameraRegions.call().resetAutoExposureMeteringRectangle();
+        cameraRegions.resetAutoExposureMeteringRectangle();
       } else {
-        getCameraRegions.call().setAutoExposureMeteringRectangleFromPoint(value.x, value.y);
+        cameraRegions.setAutoExposureMeteringRectangleFromPoint(value.x, value.y);
       }
     } catch (Exception e) {
       e.printStackTrace();
@@ -66,7 +72,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
 
     MeteringRectangle aeRect = null;
     try {
-      aeRect = getCameraRegions.call().getAEMeteringRectangle();
+      aeRect = cameraRegions.getAEMeteringRectangle();
     } catch (Exception e) {
       Log.w("Camera", "Unable to retrieve the Auto Exposure metering rectangle.", e);
     }

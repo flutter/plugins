@@ -1,12 +1,7 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
-// Use of this source code is governed by a BSD-style license that can be
-// found in the LICENSE file.
-
-package io.flutter.plugins.camera.features.regionboundaries;
+package io.flutter.plugins.camera.types;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,7 +16,7 @@ import io.flutter.plugins.camera.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
 
-public class RegionBoundariesFeatureTest {
+public class CameraRegionsFactoryTest {
   private Size mockSize;
 
   @Before
@@ -34,7 +29,7 @@ public class RegionBoundariesFeatureTest {
 
   @Test
   public void
-      ctor_should_initialize_with_sensor_info_pixel_array_size_when_running_pre_android_p() {
+  create_should_initialize_with_sensor_info_pixel_array_size_when_running_pre_android_p() {
     updateSdkVersion(VERSION_CODES.O_MR1);
 
     try {
@@ -43,10 +38,10 @@ public class RegionBoundariesFeatureTest {
 
       when(mockCameraProperties.getSensorInfoPixelArraySize()).thenReturn(mockSize);
 
-      RegionBoundariesFeature regionBoundariesFeature =
-          new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+      CameraRegions cameraRegions =
+          CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-      assertEquals(mockSize, regionBoundariesFeature.getValue());
+      assertEquals(mockSize, cameraRegions.getBoundaries());
       verify(mockCameraProperties, never()).getSensorInfoPreCorrectionActiveArraySize();
       verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
     } finally {
@@ -56,7 +51,7 @@ public class RegionBoundariesFeatureTest {
 
   @Test
   public void
-      ctor_should_initialize_with_sensor_info_pixel_array_size_when_distortion_correction_is_null() {
+  create_should_initialize_with_sensor_info_pixel_array_size_when_distortion_correction_is_null() {
     updateSdkVersion(VERSION_CODES.P);
 
     try {
@@ -66,10 +61,10 @@ public class RegionBoundariesFeatureTest {
       when(mockCameraProperties.getDistortionCorrectionAvailableModes()).thenReturn(null);
       when(mockCameraProperties.getSensorInfoPixelArraySize()).thenReturn(mockSize);
 
-      RegionBoundariesFeature regionBoundariesFeature =
-          new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+      CameraRegions cameraRegions =
+          CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-      assertEquals(mockSize, regionBoundariesFeature.getValue());
+      assertEquals(mockSize, cameraRegions.getBoundaries());
       verify(mockCameraProperties, never()).getSensorInfoPreCorrectionActiveArraySize();
       verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
     } finally {
@@ -79,7 +74,7 @@ public class RegionBoundariesFeatureTest {
 
   @Test
   public void
-      ctor_should_initialize_with_sensor_info_pixel_array_size_when_distortion_correction_is_off() {
+  create_should_initialize_with_sensor_info_pixel_array_size_when_distortion_correction_is_off() {
     updateSdkVersion(VERSION_CODES.P);
 
     try {
@@ -90,10 +85,10 @@ public class RegionBoundariesFeatureTest {
           .thenReturn(new int[] {CaptureRequest.DISTORTION_CORRECTION_MODE_OFF});
       when(mockCameraProperties.getSensorInfoPixelArraySize()).thenReturn(mockSize);
 
-      RegionBoundariesFeature regionBoundariesFeature =
-          new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+      CameraRegions cameraRegions =
+          CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-      assertEquals(mockSize, regionBoundariesFeature.getValue());
+      assertEquals(mockSize, cameraRegions.getBoundaries());
       verify(mockCameraProperties, never()).getSensorInfoPreCorrectionActiveArraySize();
       verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
     } finally {
@@ -103,7 +98,7 @@ public class RegionBoundariesFeatureTest {
 
   @Test
   public void
-      ctor_should_initialize_with_sensor_info_pre_correction_active_array_size_when_distortion_correction_mode_is_set_to_null() {
+  create_should_initialize_with_sensor_info_pre_correction_active_array_size_when_distortion_correction_mode_is_set_to_null() {
     updateSdkVersion(VERSION_CODES.P);
 
     try {
@@ -113,17 +108,17 @@ public class RegionBoundariesFeatureTest {
       when(mockCameraProperties.getDistortionCorrectionAvailableModes())
           .thenReturn(
               new int[] {
-                CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
-                CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
+                  CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
+                  CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
               });
 
       when(mockBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE)).thenReturn(null);
       when(mockCameraProperties.getSensorInfoPreCorrectionActiveArraySize()).thenReturn(null);
 
-      RegionBoundariesFeature regionBoundariesFeature =
-          new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+      CameraRegions cameraRegions =
+          CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-      assertNull(regionBoundariesFeature.getValue());
+      assertNull(cameraRegions.getBoundaries());
       verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
       verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
     } finally {
@@ -133,7 +128,7 @@ public class RegionBoundariesFeatureTest {
 
   @Test
   public void
-      ctor_should_initialize_with_sensor_info_pre_correction_active_array_size_when_distortion_correction_mode_is_set_off() {
+  create_should_initialize_with_sensor_info_pre_correction_active_array_size_when_distortion_correction_mode_is_set_off() {
     updateSdkVersion(VERSION_CODES.P);
 
     try {
@@ -143,18 +138,18 @@ public class RegionBoundariesFeatureTest {
       when(mockCameraProperties.getDistortionCorrectionAvailableModes())
           .thenReturn(
               new int[] {
-                CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
-                CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
+                  CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
+                  CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
               });
 
       when(mockBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE))
           .thenReturn(CaptureRequest.DISTORTION_CORRECTION_MODE_OFF);
       when(mockCameraProperties.getSensorInfoPreCorrectionActiveArraySize()).thenReturn(null);
 
-      RegionBoundariesFeature regionBoundariesFeature =
-          new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+      CameraRegions cameraRegions =
+          CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-      assertNull(regionBoundariesFeature.getValue());
+      assertNull(cameraRegions.getBoundaries());
       verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
       verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
     } finally {
@@ -164,7 +159,7 @@ public class RegionBoundariesFeatureTest {
 
   @Test
   public void
-      ctor_should_initialize_with_sensor_info_active_array_size_when_distortion_correction_mode_is_set() {
+  ctor_should_initialize_with_sensor_info_active_array_size_when_distortion_correction_mode_is_set() {
     updateSdkVersion(VERSION_CODES.P);
 
     try {
@@ -174,18 +169,18 @@ public class RegionBoundariesFeatureTest {
       when(mockCameraProperties.getDistortionCorrectionAvailableModes())
           .thenReturn(
               new int[] {
-                CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
-                CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
+                  CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
+                  CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
               });
 
       when(mockBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE))
           .thenReturn(CaptureRequest.DISTORTION_CORRECTION_MODE_FAST);
       when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(null);
 
-      RegionBoundariesFeature regionBoundariesFeature =
-          new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+      CameraRegions cameraRegions =
+          CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-      assertNull(regionBoundariesFeature.getValue());
+      assertNull(cameraRegions.getBoundaries());
       verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
       verify(mockCameraProperties, never()).getSensorInfoPreCorrectionActiveArraySize();
     } finally {
@@ -194,45 +189,13 @@ public class RegionBoundariesFeatureTest {
   }
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getBoundaries_should_return_null_if_not_set() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    RegionBoundariesFeature regionBoundariesFeature =
-        new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
+    CameraRegions cameraRegions =
+        CameraRegions.Factory.create(mockCameraProperties, mockBuilder);
 
-    assertEquals("RegionBoundariesFeature", regionBoundariesFeature.getDebugName());
-  }
-
-  @Test
-  public void getValue_should_return_null_if_not_set() {
-    CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    RegionBoundariesFeature regionBoundariesFeature =
-        new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
-
-    assertNull(regionBoundariesFeature.getValue());
-  }
-
-  @Test
-  public void getValue_should_echo_setValue() {
-    CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    RegionBoundariesFeature regionBoundariesFeature =
-        new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
-
-    regionBoundariesFeature.setValue(mockSize);
-
-    assertEquals(mockSize, regionBoundariesFeature.getValue());
-  }
-
-  @Test
-  public void checkIsSupport_returns_true() {
-    CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    RegionBoundariesFeature regionBoundariesFeature =
-        new RegionBoundariesFeature(mockCameraProperties, mockBuilder);
-
-    assertTrue(regionBoundariesFeature.checkIsSupported());
+    assertNull(cameraRegions.getBoundaries());
   }
 
   private static void updateSdkVersion(int version) {

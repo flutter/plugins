@@ -17,7 +17,7 @@ public class ExposureOffsetFeature extends CameraFeature<Double> {
   private double currentSetting = 0;
 
   /**
-   * Creates a new instance of the {@see ExposureOffsetFeature}.
+   * Creates a new instance of the {@link ExposureOffsetFeature}.
    *
    * @param cameraProperties Collection of the characteristics for the current camera device.
    */
@@ -57,7 +57,7 @@ public class ExposureOffsetFeature extends CameraFeature<Double> {
   }
 
   /**
-   * Returns the minimum exposure offset value, in counts of {@see #getExposureOffsetStepSize}.
+   * Returns the minimum exposure offset value, in counts of {@link #getExposureOffsetStepSize}.
    *
    * @return double Minimum exposure offset value.
    */
@@ -69,7 +69,7 @@ public class ExposureOffsetFeature extends CameraFeature<Double> {
   }
 
   /**
-   * Returns the maximum exposure offset value, in counts of {@see #getExposureOffsetStepSize}.
+   * Returns the maximum exposure offset value, in counts of {@link #getExposureOffsetStepSize}.
    *
    * @return double Maximum exposure offset value.
    */
