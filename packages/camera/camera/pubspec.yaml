@@ -6,28 +6,9 @@ repository: https://github.com/flutter/plugins/tree/master/packages/camera/camer
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+camera%22
 version: 0.8.1
 
-dependencies:
-  flutter:
-    sdk: flutter
-
-  camera_platform_interface: ^2.0.0
-
-  pedantic: ^1.10.0
-  quiver: ^3.0.0
-
-dev_dependencies:
-  video_player: ^2.0.0
-  flutter_test:
-    sdk: flutter
-  flutter_driver:
-    sdk: flutter
-
-  # TODO(mvanbeusekom): Update to stable 5.0.0 release when dependency conflict
-  # with flutter_driver has been resolved:
-  # Because mockito >=5.0.0 depends on analyzer ^1.0.0 which depends on crypto ^3.0.0 
-  # every version of flutter_driver from sdk depends on crypto 2.1.5.
-  mockito: ^5.0.0-nullsafety.7
-  plugin_platform_interface: ^2.0.0
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -38,6 +19,22 @@ flutter:
       ios:
         pluginClass: CameraPlugin
 
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.22.0"
+dependencies:
+  camera_platform_interface: ^2.0.0
+  flutter:
+    sdk: flutter
+  pedantic: ^1.10.0
+  quiver: ^3.0.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_driver:
+    sdk: flutter
+  # TODO(mvanbeusekom): Update to stable 5.0.0 release when dependency conflict
+  # with flutter_driver has been resolved:
+  # Because mockito >=5.0.0 depends on analyzer ^1.0.0 which depends on crypto ^3.0.0 
+  # every version of flutter_driver from sdk depends on crypto 2.1.5.
+  mockito: ^5.0.0-nullsafety.7
+  plugin_platform_interface: ^2.0.0
+  video_player: ^2.0.0

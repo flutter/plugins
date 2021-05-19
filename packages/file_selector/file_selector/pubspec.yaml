@@ -6,7 +6,7 @@ version: 0.8.2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -15,14 +15,14 @@ flutter:
         default_package: file_selector_web
 
 dependencies:
-  flutter:
-    sdk: flutter
   file_selector_platform_interface: ^2.0.0
   file_selector_web: ^0.8.1
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.16.3
-  plugin_platform_interface: ^2.0.0
   pedantic: ^1.10.0
+  plugin_platform_interface: ^2.0.0
+  test: ^1.16.3

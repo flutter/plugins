@@ -6,7 +6,7 @@ version: 2.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -26,17 +26,17 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  path_provider_platform_interface: ^2.0.0
-  path_provider_macos: ^2.0.0
   path_provider_linux: ^2.0.0
+  path_provider_macos: ^2.0.0
+  path_provider_platform_interface: ^2.0.0
   path_provider_windows: ^2.0.0
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
   flutter_test:
     sdk: flutter
   flutter_driver:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   pedantic: ^1.10.0
   plugin_platform_interface: ^2.0.0

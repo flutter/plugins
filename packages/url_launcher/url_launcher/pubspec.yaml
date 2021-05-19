@@ -7,7 +7,7 @@ version: 6.0.3
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -17,33 +17,33 @@ flutter:
         pluginClass: UrlLauncherPlugin
       ios:
         pluginClass: FLTURLLauncherPlugin
-      web:
-        default_package: url_launcher_web
       linux:
         default_package: url_laucher_linux
       macos:
         default_package: url_laucher_macos
+      web:
+        default_package: url_launcher_web
       windows:
         default_package: url_laucher_windows
 
 dependencies:
   flutter:
     sdk: flutter
-  url_launcher_platform_interface: ^2.0.0
   # The design on https://flutter.dev/go/federated-plugins was to leave
-  # this constraint as "any". We cannot do it right now as it fails pub publish
+  # implementation constraints as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint.
-  # TODO(amirh): Revisit this (either update this part in the  design or the pub tool).
+  # TODO(amirh): Revisit this (either update this part in the design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
   url_launcher_linux: ^2.0.0
   url_launcher_macos: ^2.0.0
-  url_launcher_windows: ^2.0.0
+  url_launcher_platform_interface: ^2.0.0
   url_launcher_web: ^2.0.0
+  url_launcher_windows: ^2.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  test: ^1.16.3
   mockito: ^5.0.0
-  plugin_platform_interface: ^2.0.0
   pedantic: ^1.10.0
+  plugin_platform_interface: ^2.0.0
+  test: ^1.16.3

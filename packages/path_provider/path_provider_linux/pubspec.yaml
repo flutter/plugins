@@ -6,7 +6,7 @@ version: 2.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -17,11 +17,11 @@ flutter:
         pluginClass: none
 
 dependencies:
-  path: ^1.8.0
-  xdg_directories: ^0.2.0
-  path_provider_platform_interface: ^2.0.0
   flutter:
     sdk: flutter
+  path: ^1.8.0
+  path_provider_platform_interface: ^2.0.0
+  xdg_directories: ^0.2.0
 
 dev_dependencies:
   flutter_test:

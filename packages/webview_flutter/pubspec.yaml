@@ -6,18 +6,7 @@ version: 2.0.6
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.22.0"
-
-dependencies:
-  flutter:
-    sdk: flutter
-
-dev_dependencies:
-  flutter_test:
-    sdk: flutter
-  flutter_driver:
-    sdk: flutter
-  pedantic: ^1.10.0
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -27,3 +16,14 @@ flutter:
         pluginClass: WebViewFlutterPlugin
       ios:
         pluginClass: FLTWebViewFlutterPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.10.0
