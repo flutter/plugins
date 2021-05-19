@@ -1,8 +1,15 @@
 name: espresso
 description: Java classes for testing Flutter apps using Espresso.
+repository: https://github.com/flutter/plugins/tree/master/packages/espresso
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+espresso%22
 version: 0.1.0+1
-repository: https://github.com/flutter/plugins/tree/master/packages
-issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+espresso+label%3A%22p%3A+espresso%22
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: com.example.espresso
+        pluginClass: EspressoPlugin
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -16,11 +23,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pedantic: ^1.10.0
-
-# The following section is specific to Flutter.
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: com.example.espresso
-        pluginClass: EspressoPlugin

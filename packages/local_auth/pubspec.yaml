@@ -1,8 +1,13 @@
 name: local_auth
 description: Flutter plugin for Android and iOS devices to allow local
   authentication via fingerprint, touch ID, face ID, passcode, pin, or pattern.
-homepage: https://github.com/flutter/plugins/tree/master/packages/local_auth
+repository: https://github.com/flutter/plugins/tree/master/packages/local_auth
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+local_auth%22
 version: 1.1.5
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"
 
 flutter:
   plugin:
@@ -29,7 +34,3 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pedantic: ^1.10.0
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"
