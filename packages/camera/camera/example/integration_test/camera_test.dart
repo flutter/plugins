@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(mvanbeusekom): Remove this once flutter_driver supports null safety.
-// https://github.com/flutter/flutter/issues/71379
-// @dart = 2.9
 import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
@@ -17,7 +14,7 @@ import 'package:video_player/video_player.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
-  Directory testDir;
+  late Directory testDir;
 
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
@@ -57,7 +54,7 @@ void main() {
   // whether the image is exactly the desired resolution.
   Future<bool> testCaptureImageResolution(
       CameraController controller, ResolutionPreset preset) async {
-    final Size expectedSize = presetExpectedSizes[preset];
+    final Size expectedSize = presetExpectedSizes[preset]!;
     print(
         'Capturing photo at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
@@ -102,7 +99,7 @@ void main() {
   // whether the image is exactly the desired resolution.
   Future<bool> testCaptureVideoResolution(
       CameraController controller, ResolutionPreset preset) async {
-    final Size expectedSize = presetExpectedSizes[preset];
+    final Size expectedSize = presetExpectedSizes[preset]!;
     print(
         'Capturing video at $preset (${expectedSize.width}x${expectedSize.height}) using camera ${controller.description.name}');
 
