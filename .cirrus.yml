@@ -25,7 +25,7 @@ macos_template: &MACOS_TEMPLATE
   # PRs on macOS.
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: big-sur-xcode-12.3
+    image: big-sur-xcode-12.5
   cocoapod_install_script: sudo gem install cocoapods
 
 # Light-workload Linux tasks.
