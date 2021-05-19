@@ -1,4 +1,4 @@
-## 0.8.2
+## 0.8.1+1
 
 * Migrate maven repository from jcenter to mavenCentral.
 
