@@ -5,10 +5,13 @@
 package io.flutter.plugins.camera.features.zoomlevel;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyFloat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,17 +25,21 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 
 public class ZoomLevelFeatureTest {
-  private MockedStatic<CameraZoom> mockedStaticCameraZoom;
+  private MockedStatic<ZoomUtils> mockedStaticCameraZoom;
   private CameraProperties mockCameraProperties;
-  private CameraZoom mockCameraZoom;
+  private ZoomUtils mockCameraZoom;
+  private Rect mockZoomArea;
+  private Rect mockSensorArray;
 
   @Before
   public void before() {
-    mockedStaticCameraZoom = mockStatic(CameraZoom.class);
+    mockedStaticCameraZoom = mockStatic(ZoomUtils.class);
     mockCameraProperties = mock(CameraProperties.class);
-    mockCameraZoom = mock(CameraZoom.class);
+    mockCameraZoom = mock(ZoomUtils.class);
+    mockZoomArea = mock(Rect.class);
+    mockSensorArray = mock(Rect.class);
 
-    mockedStaticCameraZoom.when(() -> CameraZoom.create(any(), any())).thenReturn(mockCameraZoom);
+    mockedStaticCameraZoom.when(() -> ZoomUtils.computeZoom(anyFloat(), any(), anyFloat(), anyFloat())).thenReturn(mockZoomArea);
   }
 
   @After
@@ -41,12 +48,58 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void ctor_should_initiaze_camera_zoom_instance() {
-    ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
+  public void ctor_when_parameters_are_valid() {
+    when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
+    when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
+
+    final ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
     verify(mockCameraProperties, times(1)).getSensorInfoActiveArraySize();
     verify(mockCameraProperties, times(1)).getScalerAvailableMaxDigitalZoom();
-    assertEquals(mockCameraZoom, zoomLevelFeature.getCameraZoom());
+    assertNotNull(zoomLevelFeature);
+    assertEquals(42f, zoomLevelFeature.getMaximumZoomLevel(), 0);
+  }
+
+  @Test
+  public void ctor_when_sensor_size_is_null() {
+    when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(null);
+    when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
+
+    final ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
+
+    verify(mockCameraProperties, times(1)).getSensorInfoActiveArraySize();
+    verify(mockCameraProperties, never()).getScalerAvailableMaxDigitalZoom();
+    assertNotNull(zoomLevelFeature);
+    assertFalse(zoomLevelFeature.checkIsSupported());
+    assertEquals(zoomLevelFeature.getMaximumZoomLevel(), 1.0f, 0);
+  }
+
+  @Test
+  public void ctor_when_max_zoom_is_null() {
+    when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
+    when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(null);
+
+    final ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
+
+    verify(mockCameraProperties, times(1)).getSensorInfoActiveArraySize();
+    verify(mockCameraProperties, times(1)).getScalerAvailableMaxDigitalZoom();
+    assertNotNull(zoomLevelFeature);
+    assertFalse(zoomLevelFeature.checkIsSupported());
+    assertEquals(zoomLevelFeature.getMaximumZoomLevel(), 1.0f, 0);
+  }
+
+  @Test
+  public void ctor_when_max_zoom_is_smaller_then_default_zoom_factor() {
+    when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
+    when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(0.5f);
+
+    final ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
+
+    verify(mockCameraProperties, times(1)).getSensorInfoActiveArraySize();
+    verify(mockCameraProperties, times(1)).getScalerAvailableMaxDigitalZoom();
+    assertNotNull(zoomLevelFeature);
+    assertFalse(zoomLevelFeature.checkIsSupported());
+    assertEquals(zoomLevelFeature.getMaximumZoomLevel(), 1.0f, 0);
   }
 
   @Test
@@ -73,29 +126,39 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_returns_true() {
+  public void checkIsSupport_returns_false_by_default() {
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
-    assertTrue(zoomLevelFeature.checkIsSupported());
+    assertFalse(zoomLevelFeature.checkIsSupported());
   }
 
   @Test
   public void updateBuilder_should_set_scalar_crop_region_when_checkIsSupport_is_true() {
+    when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
+    when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
+
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    Rect mockRect = mock(Rect.class);
-
-    when(mockCameraZoom.computeZoom(1.0f)).thenReturn(mockRect);
 
     zoomLevelFeature.updateBuilder(mockBuilder);
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.SCALER_CROP_REGION, mockRect);
+    verify(mockBuilder, times(1)).set(CaptureRequest.SCALER_CROP_REGION, mockZoomArea);
   }
 
   @Test
-  public void getCameraZoom_should_return_camera_zoom_instance_initialized_in_ctor() {
+  public void getMinimumZoomLevel() {
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
-    assertEquals(mockCameraZoom, zoomLevelFeature.getCameraZoom());
+    assertEquals(1.0f, zoomLevelFeature.getMinimumZoomLevel(), 0);
+  }
+
+  @Test
+  public void getMaximumZoomLevel() {
+    when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
+    when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
+
+    ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
+
+    assertEquals(42f, zoomLevelFeature.getMaximumZoomLevel(), 0);
   }
 }

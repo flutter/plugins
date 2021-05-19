@@ -9,17 +9,39 @@ import android.hardware.camera2.CaptureRequest;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-/** Exposure offset makes the image brighter or darker. */
+/**
+ * Controls the zoom configuration on the {@link android.hardware.camera2} API.
+ */
 public class ZoomLevelFeature extends CameraFeature<Float> {
-  private final CameraZoom cameraZoom;
-  private Float currentSetting = CameraZoom.DEFAULT_ZOOM_FACTOR;
+  private static final float MINIMUM_ZOOM_LEVEL = 1.0f;
+  private final boolean hasSupport;
+  private final Rect sensorArraySize;
+  private Float currentSetting = MINIMUM_ZOOM_LEVEL;
+  private Float maximumZoomLevel = MINIMUM_ZOOM_LEVEL;
 
+  /**
+   * Creates a new instance of the {@link ZoomLevelFeature}.
+   *
+   * @param cameraProperties Collection of characteristics for the current camera device.
+   */
   public ZoomLevelFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
-    this.cameraZoom =
-        CameraZoom.create(
-            cameraProperties.getSensorInfoActiveArraySize(),
-            cameraProperties.getScalerAvailableMaxDigitalZoom());
+
+    sensorArraySize = cameraProperties.getSensorInfoActiveArraySize();
+
+    if (sensorArraySize == null) {
+      maximumZoomLevel = MINIMUM_ZOOM_LEVEL;
+      hasSupport = false;
+      return;
+    }
+
+    Float maxDigitalZoom = cameraProperties.getScalerAvailableMaxDigitalZoom();
+    maximumZoomLevel =
+        ((maxDigitalZoom == null) || (maxDigitalZoom < MINIMUM_ZOOM_LEVEL))
+            ? MINIMUM_ZOOM_LEVEL
+            : maxDigitalZoom;
+
+    hasSupport = (Float.compare(maximumZoomLevel, MINIMUM_ZOOM_LEVEL) > 0);
   }
 
   @Override
@@ -34,13 +56,12 @@ public class ZoomLevelFeature extends CameraFeature<Float> {
 
   @Override
   public void setValue(Float value) {
-    this.currentSetting = value;
+    currentSetting = value;
   }
 
-  // Available on all devices.
   @Override
   public boolean checkIsSupported() {
-    return true;
+    return hasSupport;
   }
 
   @Override
@@ -49,11 +70,27 @@ public class ZoomLevelFeature extends CameraFeature<Float> {
       return;
     }
 
-    final Rect computedZoom = cameraZoom.computeZoom(currentSetting);
+    final Rect computedZoom =
+        ZoomUtils.computeZoom(
+            currentSetting, sensorArraySize, MINIMUM_ZOOM_LEVEL, maximumZoomLevel);
     requestBuilder.set(CaptureRequest.SCALER_CROP_REGION, computedZoom);
   }
 
-  public CameraZoom getCameraZoom() {
-    return this.cameraZoom;
+  /**
+   * Gets the maximum supported zoom level.
+   *
+   * @return The maximum zoom level.
+   */
+  public float getMinimumZoomLevel() {
+    return MINIMUM_ZOOM_LEVEL;
+  }
+
+  /**
+   * Gets the minimum supported zoom level.
+   *
+   * @return The minimum zoom level.
+   */
+  public float getMaximumZoomLevel() {
+    return maximumZoomLevel;
   }
 }
