@@ -1,16 +1,17 @@
 name: shared_preferences_macos
 description: macOS implementation of the shared_preferences plugin.
-version: 2.0.0
+version: 2.0.1
 homepage: https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences_macos
 
 flutter:
   plugin:
+    implements: shared_preferences
     platforms:
       macos:
         pluginClass: SharedPreferencesPlugin
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
