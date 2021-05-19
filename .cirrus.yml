@@ -61,23 +61,15 @@ task:
           CHANNEL: "stable"
       test_script:
         - ./script/tool_runner.sh test
-    - name: analyze_master
+    - name: analyze
       env:
         matrix:
           CHANNEL: "master"
+          CHANNEL: "stable"
       tool_script:
         - cd script/tool
         - dart analyze --fatal-infos
       script:
-        - ./script/tool_runner.sh analyze
-    ## TODO(cyanglaz):
-    ## Combing stable and master analyze jobs when integration test null safety is ready on flutter stable.
-    - name: analyze_stable
-      env:
-        matrix:
-          CHANNEL: "stable"
-      script:
-        - find . -depth -type d -wholename '*_web/example' -exec rm -rf {} \;
         - ./script/tool_runner.sh analyze
     ### Android tasks ###
     - name: build_all_plugins_apk
@@ -182,12 +174,7 @@ task:
       build_script:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
-        # TODO(stuartmorgan): Eliminate this check once 2.1 reaches stable.
-        - if [[ "$CHANNEL" == "master" ]]; then
-        -   ./script/tool_runner.sh drive-examples --web --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
-        - else
-        -   echo "Requires null-safe integration_test; skipping."
-        - fi
+        - ./script/tool_runner.sh drive-examples --web --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
 
 # macOS tasks.
 task:
