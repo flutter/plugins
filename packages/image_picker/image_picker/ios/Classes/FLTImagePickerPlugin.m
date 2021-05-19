@@ -191,10 +191,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                     completion:nil];
   } else {
     UIAlertController *cameraErrorAlert =
-        [UIAlertController alertControllerWithTitle:@"Error"
-                                            message:@"Camera not available."
+        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"Error", @"Alert title when camera unavailable")
+                                            message:NSLocalizedString(@"Camera not available.", "Alert message when camera unavailable")
                                      preferredStyle:UIAlertControllerStyleAlert];
-    [cameraErrorAlert addAction:[UIAlertAction actionWithTitle:@"OK"
+    [cameraErrorAlert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"Alert button when camera unavailable")
                                                          style:UIAlertActionStyleDefault
                                                        handler:^(UIAlertAction *action){
                                                        }]];
