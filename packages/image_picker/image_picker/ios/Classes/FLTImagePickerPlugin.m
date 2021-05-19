@@ -67,6 +67,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return topController;
 }
 
+- (UIImagePickerControllerCameraDevice)getCameraDevice:(NSDictionary *)arguments {
+  NSInteger cameraDevice = [[arguments objectForKey:@"cameraDevice"] intValue];
+  return (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
+                             : UIImagePickerControllerCameraDeviceRear;
+}
+
 - (void)pickImageWithPHPicker:(bool)single API_AVAILABLE(ios(14)) {
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
@@ -91,9 +97,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   switch (imageSource) {
     case SOURCE_CAMERA: {
-      NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
-      _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
-                                    : UIImagePickerControllerCameraDeviceRear;
+      _device = [self getCameraDevice:_arguments];
       [self checkCameraAuthorization];
       break;
     }
@@ -159,9 +163,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     switch (imageSource) {
       case SOURCE_CAMERA: {
-        NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
-        _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
-                                      : UIImagePickerControllerCameraDeviceRear;
+        _device = [self getCameraDevice:_arguments];
         [self checkCameraAuthorization];
         break;
       }
