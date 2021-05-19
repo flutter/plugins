@@ -39,7 +39,9 @@ void main() {
 /// contents when necessary.
 void _verifySampleFile(String? directoryPath, String name) {
   expect(directoryPath, isNotNull);
-  if (directoryPath == null) return;
+  if (directoryPath == null) {
+    return;
+  }
   final Directory directory = Directory(directoryPath);
   final File file = File('${directory.path}${Platform.pathSeparator}$name');
 

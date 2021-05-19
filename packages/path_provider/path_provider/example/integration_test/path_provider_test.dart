@@ -11,23 +11,23 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
-    final Directory? result = await getTemporaryDirectory();
+    final Directory result = await getTemporaryDirectory();
     _verifySampleFile(result, 'temporaryDirectory');
   });
 
   testWidgets('getApplicationDocumentsDirectory', (WidgetTester tester) async {
-    final Directory? result = await getApplicationDocumentsDirectory();
+    final Directory result = await getApplicationDocumentsDirectory();
     _verifySampleFile(result, 'applicationDocuments');
   });
 
   testWidgets('getApplicationSupportDirectory', (WidgetTester tester) async {
-    final Directory? result = await getApplicationSupportDirectory();
+    final Directory result = await getApplicationSupportDirectory();
     _verifySampleFile(result, 'applicationSupport');
   });
 
   testWidgets('getLibraryDirectory', (WidgetTester tester) async {
     if (Platform.isIOS) {
-      final Directory? result = await getLibraryDirectory();
+      final Directory result = await getLibraryDirectory();
       _verifySampleFile(result, 'library');
     } else if (Platform.isAndroid) {
       final Future<Directory?> result = getLibraryDirectory();
@@ -91,7 +91,9 @@ void main() {
 /// contents when necessary.
 void _verifySampleFile(Directory? directory, String name) {
   expect(directory, isNotNull);
-  if (directory == null) return;
+  if (directory == null) {
+    return;
+  }
   final File file = File('${directory.path}/$name');
 
   if (file.existsSync()) {
