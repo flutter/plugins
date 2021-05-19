@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
