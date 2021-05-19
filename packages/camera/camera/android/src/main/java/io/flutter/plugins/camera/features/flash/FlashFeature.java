@@ -8,9 +8,7 @@ import android.hardware.camera2.CaptureRequest;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
-/**
- * Controls the flash configuration on the {@link android.hardware.camera2} API.
- */
+/** Controls the flash configuration on the {@link android.hardware.camera2} API. */
 public class FlashFeature extends CameraFeature<FlashMode> {
   private FlashMode currentSetting = FlashMode.auto;
 
