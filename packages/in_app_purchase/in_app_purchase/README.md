@@ -5,9 +5,6 @@ A storefront-independent API for purchases in Flutter apps.
 This plugin supports in-app purchases (_IAP_) through an _underlying store_,
 which can be the App Store (on iOS) or Google Play (on Android).
 
-> This plugin is in beta. Use it with caution and
-> [file any potential issues you see](https://github.com/flutter/flutter/issues/new/choose).
-
 <p>
   <img src="https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/doc/iap_ios.gif?raw=true"
     alt="An animated image of the iOS in-app purchase UI" height="400"/>

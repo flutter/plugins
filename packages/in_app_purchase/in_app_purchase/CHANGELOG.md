@@ -1,3 +1,7 @@
+## 1.0.0
+
+* Stable release of in_app_purchase plugin.
+
 ## 0.6.0+1
 
 * Added a reference to the in-app purchase codelab in the README.md.
