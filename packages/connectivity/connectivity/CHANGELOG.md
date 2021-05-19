@@ -1,3 +1,7 @@
+## 3.0.4
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 3.0.3
 
 * Re-endorse connectivity_for_web

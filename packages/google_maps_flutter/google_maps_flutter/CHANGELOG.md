@@ -1,3 +1,7 @@
+## 2.0.6
+
+* Migrate maven repo from jcenter to mavenCentral.
+
 ## 2.0.5
 
 * Google Maps requires at least Android SDK 20.
