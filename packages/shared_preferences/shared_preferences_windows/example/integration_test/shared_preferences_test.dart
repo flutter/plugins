@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
@@ -29,7 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferencesWindows preferences;
+    late SharedPreferencesWindows preferences;
 
     setUp(() async {
       preferences = SharedPreferencesWindows.instance;
