@@ -34,7 +34,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 @implementation FLTImagePickerPlugin {
   UIImagePickerController *_imagePickerController;
-  UIImagePickerControllerCameraDevice _device;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -97,7 +96,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   switch (imageSource) {
     case SOURCE_CAMERA: {
-      _device = [self getCameraDevice:_arguments];
       [self checkCameraAuthorization];
       break;
     }
@@ -163,7 +161,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     switch (imageSource) {
       case SOURCE_CAMERA: {
-        _device = [self getCameraDevice:_arguments];
         [self checkCameraAuthorization];
         break;
       }
@@ -189,9 +186,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
-      [UIImagePickerController isCameraDeviceAvailable:_device]) {
+      [UIImagePickerController isCameraDeviceAvailable:[self getCameraDevice:_arguments]]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    _imagePickerController.cameraDevice = _device;
+    _imagePickerController.cameraDevice = [self getCameraDevice:_arguments];
     [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
                                                       animated:YES
                                                     completion:nil];
