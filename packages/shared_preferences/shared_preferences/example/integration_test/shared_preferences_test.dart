@@ -5,6 +5,8 @@
 // @dart=2.9
 
 import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:integration_test/integration_test.dart';
@@ -103,6 +105,34 @@ void main() {
       expect(result.where((element) => !element), isEmpty);
       // The last write should win.
       expect(preferences.getInt('int'), writeCount);
+    });
+
+    testWidgets('string clash with lists, big integers and doubles (Android only)', (WidgetTester _) async {
+      await preferences.clear();
+      // special prefixes plus a string value
+      if (defaultTargetPlatform == TargetPlatform.android) {
+        expect(
+          // prefix for lists
+          preferences.setString('String', 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu' + kTestValues2['flutter.String']),
+          throwsA(isA<PlatformException>())
+        );
+        await preferences.reload();
+        expect(preferences.getString('String'), null);
+        expect(
+          // prefix for big integers
+          preferences.setString('String', 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy' + kTestValues2['flutter.String']),
+          throwsA(isA<PlatformException>())
+        );
+        await preferences.reload();
+        expect(preferences.getString('String'), null);
+        expect(
+          // prefix for doubles
+          preferences.setString('String', 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu' + kTestValues2['flutter.String']),
+          throwsA(isA<PlatformException>())
+        );
+        await preferences.reload();
+        expect(preferences.getString('String'), null);
+      }
     });
   });
 }
