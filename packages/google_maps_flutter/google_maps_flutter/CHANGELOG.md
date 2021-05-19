@@ -1,3 +1,7 @@
+## 2.0.7
+
+* Add possibility to change animation duration
+
 ## 2.0.6
 
 * Migrate maven repo from jcenter to mavenCentral.
