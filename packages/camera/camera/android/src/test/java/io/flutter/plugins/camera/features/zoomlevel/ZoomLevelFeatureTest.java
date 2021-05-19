@@ -39,7 +39,9 @@ public class ZoomLevelFeatureTest {
     mockZoomArea = mock(Rect.class);
     mockSensorArray = mock(Rect.class);
 
-    mockedStaticCameraZoom.when(() -> ZoomUtils.computeZoom(anyFloat(), any(), anyFloat(), anyFloat())).thenReturn(mockZoomArea);
+    mockedStaticCameraZoom
+        .when(() -> ZoomUtils.computeZoom(anyFloat(), any(), anyFloat(), anyFloat()))
+        .thenReturn(mockZoomArea);
   }
 
   @After
