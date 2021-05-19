@@ -107,29 +107,37 @@ void main() {
       expect(preferences.getInt('int'), writeCount);
     });
 
-    testWidgets('string clash with lists, big integers and doubles (Android only)', (WidgetTester _) async {
+    testWidgets(
+        'string clash with lists, big integers and doubles (Android only)',
+        (WidgetTester _) async {
       await preferences.clear();
       // special prefixes plus a string value
       if (defaultTargetPlatform == TargetPlatform.android) {
         expect(
-          // prefix for lists
-          preferences.setString('String', 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu' + kTestValues2['flutter.String']),
-          throwsA(isA<PlatformException>())
-        );
+            // prefix for lists
+            preferences.setString(
+                'String',
+                'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu' +
+                    kTestValues2['flutter.String']),
+            throwsA(isA<PlatformException>()));
         await preferences.reload();
         expect(preferences.getString('String'), null);
         expect(
-          // prefix for big integers
-          preferences.setString('String', 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy' + kTestValues2['flutter.String']),
-          throwsA(isA<PlatformException>())
-        );
+            // prefix for big integers
+            preferences.setString(
+                'String',
+                'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy' +
+                    kTestValues2['flutter.String']),
+            throwsA(isA<PlatformException>()));
         await preferences.reload();
         expect(preferences.getString('String'), null);
         expect(
-          // prefix for doubles
-          preferences.setString('String', 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu' + kTestValues2['flutter.String']),
-          throwsA(isA<PlatformException>())
-        );
+            // prefix for doubles
+            preferences.setString(
+                'String',
+                'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu' +
+                    kTestValues2['flutter.String']),
+            throwsA(isA<PlatformException>()));
         await preferences.reload();
         expect(preferences.getString('String'), null);
       }
