@@ -17,7 +17,7 @@ import 'package:quiver/collection.dart';
 // TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
 // for each test, to eliminate the chance of files from one test interfering
 // with another test.
-FileSystem mockFileSystem = MemoryFileSystem(
+FileSystem mockFileSystem = MemoryFileSystem.test(
     style: const LocalPlatform().isWindows
         ? FileSystemStyle.windows
         : FileSystemStyle.posix);
@@ -244,12 +244,16 @@ class RecordingProcessRunner extends ProcessRunner {
   /// Populate for [io.ProcessResult] to use a String [stderr] instead of a [List] of [int].
   String? resultStderr;
 
+  /// Populate to return from [canRun].
+  bool canRunExecutables = true;
+
   @override
   Future<int> runAndStream(
     String executable,
     List<String> args, {
     Directory? workingDir,
     bool exitOnError = false,
+    Map<String, String>? environment,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
     return Future<int>.value(
@@ -283,6 +287,11 @@ class RecordingProcessRunner extends ProcessRunner {
       {Directory? workingDirectory}) async {
     recordedCalls.add(ProcessCall(executable, args, workingDirectory?.path));
     return Future<io.Process>.value(processToReturn);
+  }
+
+  @override
+  bool canRun(String executable, {String? workingDirectory}) {
+    return canRunExecutables;
   }
 }
 

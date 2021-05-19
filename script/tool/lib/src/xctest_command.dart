@@ -15,10 +15,12 @@ import 'common.dart';
 
 const String _kiOSDestination = 'ios-destination';
 const String _kSkip = 'skip';
+const String _kXclogparserOutput = 'xclogparser';
 const String _kXcodeBuildCommand = 'xcodebuild';
 const String _kXCRunCommand = 'xcrun';
 const String _kFoundNoSimulatorsMessage =
     'Cannot find any available simulators, tests failed';
+const int _noTestSchemeExit = 66;
 
 /// The command to run iOS XCTests in plugins, this should work for both XCUnitTest and XCUITest targets.
 /// The tests target have to be added to the xcode project of the example app. Usually at "example/ios/Runner.xcworkspace".
@@ -32,11 +34,12 @@ class XCTestCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addOption(
       _kiOSDestination,
-      help:
-          'Specify the destination when running the test, used for -destination flag for xcodebuild command.\n'
-          'this is passed to the `-destination` argument in xcodebuild command.\n'
+      help: 'Specify the destination when running the test, used for -destination flag for xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
+    argParser.addOption(_kXclogparserOutput,
+        help: 'Specify where XCLogParser, if installed, should output parsed "xcodebuild" build results.\n'
+            'See https://cirrus-ci.org/examples/#xclogparser for details.');
     argParser.addMultiOption(_kSkip,
         help: 'Plugins to skip while running this command. \n');
   }
@@ -81,11 +84,11 @@ class XCTestCommand extends PluginCommand {
       for (final Directory example in getExamplesForPlugin(plugin)) {
         // Running tests and static analyzer.
         print('Running tests and analyzer for $packageName ...');
-        int exitCode = await _runTests(true, destination, example);
+        int exitCode = await _runTests(true, destination, example, packageName);
         // 66 = there is no test target (this fails fast). Try again with just the analyzer.
-        if (exitCode == 66) {
+        if (exitCode == _noTestSchemeExit) {
           print('Tests not found for $packageName, running analyzer only...');
-          exitCode = await _runTests(false, destination, example);
+          exitCode = await _runTests(false, destination, example, packageName);
         }
         if (exitCode == 0) {
           print('Successfully ran xctest for $packageName');
@@ -108,7 +111,11 @@ class XCTestCommand extends PluginCommand {
     }
   }
 
-  Future<int> _runTests(bool runTests, String destination, Directory example) {
+  Future<int> _runTests(bool runTests, String destination, Directory example, String packageName) async {
+    // Remove non-word characters from the directory name.
+    final String packageDirectoryName = packageName.replaceAll(RegExp(r'[^\w]+'), '');
+    final String derivedData =
+        fileSystem.systemTempDirectory.createTempSync('dd$packageDirectoryName-').path;
     final List<String> xctestArgs = <String>[
       _kXcodeBuildCommand,
       if (runTests) 'test',
@@ -121,13 +128,55 @@ class XCTestCommand extends PluginCommand {
       'Runner',
       '-destination',
       destination,
+      if (derivedData != null) ...<String>['-derivedDataPath', derivedData],
       'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
     ];
     final String completeTestCommand =
         '$_kXCRunCommand ${xctestArgs.join(' ')}';
     print(completeTestCommand);
-    return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
-        workingDir: example, exitOnError: false);
+    final int testResult = await processRunner.runAndStream(
+      _kXCRunCommand,
+      xctestArgs,
+      workingDir: example,
+      exitOnError: false,
+      // Make sure I/O is flushed before finishing the xcodebuild command.
+      environment: <String, String>{'NSUnbufferedIO': 'YES'},
+    );
+    if (testResult == _noTestSchemeExit) {
+      // Don't try to xclogparser parse bad output.
+      return testResult;
+    }
+
+    final String xclogparserOutput = getStringArg(_kXclogparserOutput);
+    if (xclogparserOutput == null || xclogparserOutput.isEmpty) {
+      print('--$_kXclogparserOutput not passed, skipping xclogparser');
+    } else if (processRunner.canRun('xclogparser')) {
+      fileSystem.directory(xclogparserOutput).createSync(recursive: true);
+      final String parsedOutput = p.join(xclogparserOutput, '$packageDirectoryName.json');
+      final io.ProcessResult xclogparserResult = await processRunner.run(
+        'xclogparser',
+        <String>[
+          'parse',
+          '--workspace',
+          'ios/Runner.xcworkspace',
+          '--reporter',
+          'flatJson',
+          '--output',
+          parsedOutput,
+          '--derived_data',
+          derivedData,
+        ],
+        workingDir: example,
+        logOnError: true,
+        exitOnError: false,
+      );
+      if (xclogparserResult.exitCode == 0) {
+        print('xclogparser parsed output to $parsedOutput');
+      }
+    } else {
+      print('xclogparser not installed, skipping. Run "brew install xclogparser"');
+    }
+    return testResult;
   }
 
   Future<String> _findAvailableIphoneSimulator() async {

@@ -79,8 +79,14 @@ dart run ./script/tool/lib/src/main.dart test --plugins plugin_name
 
 ```sh
 cd <repository root>
-dart run ./script/tool/lib/src/main.dart xctest --target RunnerUITests --skip <plugins_to_skip>
+dart run ./script/tool/lib/src/main.dart xctest --xclogparser <path/to/directory> --skip <plugins_to_skip>
 ```
+
+If XCLogParser is installed, optionally pass in a directory to `--xclogparser`
+to parse the xcodebuild output to json.
+
+To install XCLogParser locally, run `brew install xclogparser`.
+See also the [Cirrus XCLogParser documentation](https://cirrus-ci.org/examples/#xclogparser). 
 
 ### Publish a Release
 

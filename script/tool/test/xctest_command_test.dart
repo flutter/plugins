@@ -83,6 +83,7 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
 void main() {
   const String _kDestination = '--ios-destination';
   const String _kSkip = '--skip';
+  const String _kXclogparserOutput = '--xclogparser';
 
   group('test xctest_command', () {
     CommandRunner<void> runner;
@@ -152,7 +153,9 @@ void main() {
         _kDestination,
         'foo_destination',
         _kSkip,
-        'plugin1'
+        'plugin1',
+        _kXclogparserOutput,
+        '~/xclogparser'
       ]);
 
       expect(output, contains('plugin1 was skipped with the --skip flag.'));
@@ -162,22 +165,40 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                'xcrun',
-                const <String>[
-                  'xcodebuild',
-                  'test',
-                  'analyze',
-                  '-workspace',
-                  'ios/Runner.xcworkspace',
-                  '-configuration',
-                  'Debug',
-                  '-scheme',
-                  'Runner',
-                  '-destination',
-                  'foo_destination',
-                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                ],
-                pluginExampleDirectory2.path),
+              'xcrun',
+              <String>[
+                'xcodebuild',
+                'test',
+                'analyze',
+                '-workspace',
+                'ios/Runner.xcworkspace',
+                '-configuration',
+                'Debug',
+                '-scheme',
+                'Runner',
+                '-destination',
+                'foo_destination',
+                '-derivedDataPath',
+                mockFileSystem.systemTempDirectory.childDirectory('ddplugin2-rand0').path,
+                'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+              ],
+              pluginExampleDirectory2.path,
+            ),
+            ProcessCall(
+              'xclogparser',
+              <String>[
+                'parse',
+                '--workspace',
+                'ios/Runner.xcworkspace',
+                '--reporter',
+                'flatJson',
+                '--output',
+                '~/xclogparser/plugin2.json',
+                '--derived_data',
+                mockFileSystem.systemTempDirectory.childDirectory('ddplugin2-rand0').path,
+              ],
+              pluginExampleDirectory2.path,
+            ),
           ]));
 
       cleanupPackages();
@@ -219,7 +240,7 @@ void main() {
                 'xcrun', <String>['simctl', 'list', '--json'], null),
             ProcessCall(
                 'xcrun',
-                const <String>[
+                <String>[
                   'xcodebuild',
                   'test',
                   'analyze',
@@ -231,10 +252,75 @@ void main() {
                   'Runner',
                   '-destination',
                   'id=1E76A0FD-38AC-4537-A989-EA639D7D012A',
+                  '-derivedDataPath',
+                  mockFileSystem.systemTempDirectory.childDirectory('ddplugin-rand0').path,
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
                 pluginExampleDirectory.path),
           ]));
+
+      cleanupPackages();
+    });
+
+    test('skips xclogparser if not installed', () async {
+      createFakePlugin('plugin3',
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test'],
+          ],
+          isIosPlugin: true);
+
+      final Directory pluginExampleDirectory =
+      mockPackagesDir.childDirectory('plugin3').childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      final MockProcess mockProcess = MockProcess();
+      mockProcess.exitCodeCompleter.complete(0);
+      processRunner.resultStdout =
+      '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+      processRunner.processToReturn = mockProcess;
+      //
+      processRunner.canRunExecutables = false;
+      final Map<String, dynamic> schemeCommandResult = <String, dynamic>{
+        'project': <String, dynamic>{
+          'targets': <String>['bar_scheme', 'foo_scheme']
+        }
+      };
+      // For simplicity of the test, we combine all the mock results into a single mock result, each internal command
+      // will get this result and they should still be able to parse them correctly.
+      processRunner.resultStdout =
+          jsonEncode(schemeCommandResult..addAll(_kDeviceListMap));
+      await runner.run(<String>[
+        'xctest',
+        _kDestination,
+        'foo_destination',
+        _kXclogparserOutput,
+        '~/xclogparser',
+      ]);
+
+      expect(
+        processRunner.recordedCalls.single,
+        ProcessCall(
+          'xcrun',
+          <String>[
+            'xcodebuild',
+            'test',
+            'analyze',
+            '-workspace',
+            'ios/Runner.xcworkspace',
+            '-configuration',
+            'Debug',
+            '-scheme',
+            'Runner',
+            '-destination',
+            'foo_destination',
+            '-derivedDataPath',
+            mockFileSystem.systemTempDirectory.childDirectory('ddplugin3-rand0').path,
+            'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+          ],
+          pluginExampleDirectory.path,
+        ),
+      );
 
       cleanupPackages();
     });

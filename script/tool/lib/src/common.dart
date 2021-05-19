@@ -13,6 +13,7 @@ import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
+import 'package:process/process.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
@@ -534,11 +535,16 @@ class ProcessRunner {
     List<String> args, {
     Directory? workingDir,
     bool exitOnError = false,
+    Map<String, String>? environment,
   }) async {
     print(
         'Running command: "$executable ${args.join(' ')}" in ${workingDir?.path ?? io.Directory.current.path}');
-    final io.Process process = await io.Process.start(executable, args,
-        workingDirectory: workingDir?.path);
+    final io.Process process = await io.Process.start(
+      executable,
+      args,
+      workingDirectory: workingDir?.path,
+      environment: environment,
+    );
     await io.stdout.addStream(process.stdout);
     await io.stderr.addStream(process.stderr);
     if (exitOnError && await process.exitCode != 0) {
@@ -577,7 +583,7 @@ class ProcessRunner {
       if (logOnError) {
         final String error =
             _getErrorString(executable, args, workingDir: workingDir);
-        print('$error Stderr:\n${result.stdout}');
+        print('$error Stdout:\n${result.stdout}\nStderr:${result.stderr}');
       }
       if (exitOnError) {
         throw ToolExit(result.exitCode);
@@ -597,6 +603,11 @@ class ProcessRunner {
     final io.Process process = await io.Process.start(executable, args,
         workingDirectory: workingDirectory?.path);
     return process;
+  }
+
+  /// Returns `true` if the [executable] exists and if it can be executed.
+  bool canRun(String executable, {String? workingDirectory}) {
+    return const LocalProcessManager().canRun(executable, workingDirectory: workingDirectory);
   }
 
   String _getErrorString(String executable, List<String> args,
