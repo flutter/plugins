@@ -209,6 +209,9 @@ enum VideoFormat {
   /// Smooth Streaming.
   ss,
 
+  /// Real Time Streaming Protocol.
+  rtsp,
+
   /// Any format other than the other ones defined in this enum.
   other,
 }

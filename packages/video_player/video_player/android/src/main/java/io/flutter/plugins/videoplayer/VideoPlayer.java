@@ -16,7 +16,7 @@ import com.google.android.exoplayer2.Format;
 import com.google.android.exoplayer2.MediaItem;
 import com.google.android.exoplayer2.PlaybackParameters;
 import com.google.android.exoplayer2.Player;
-import com.google.android.exoplayer2.Player.EventListener;
+import com.google.android.exoplayer2.Player.Listener;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.audio.AudioAttributes;
 import com.google.android.exoplayer2.source.MediaSource;
@@ -24,12 +24,12 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.rtsp.RtspMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource;
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.view.TextureRegistry;
@@ -43,6 +43,7 @@ final class VideoPlayer {
   private static final String FORMAT_SS = "ss";
   private static final String FORMAT_DASH = "dash";
   private static final String FORMAT_HLS = "hls";
+  private static final String FORMAT_RTSP = "rtsp";
   private static final String FORMAT_OTHER = "other";
 
   private SimpleExoPlayer exoPlayer;
@@ -77,15 +78,13 @@ final class VideoPlayer {
 
     DataSource.Factory dataSourceFactory;
     if (isHTTP(uri)) {
-      DefaultHttpDataSourceFactory httpDataSourceFactory =
-          new DefaultHttpDataSourceFactory(
-              "ExoPlayer",
-              null,
-              DefaultHttpDataSource.DEFAULT_CONNECT_TIMEOUT_MILLIS,
-              DefaultHttpDataSource.DEFAULT_READ_TIMEOUT_MILLIS,
-              true);
+      DefaultHttpDataSource.Factory httpDataSourceFactory =
+          new DefaultHttpDataSource.Factory()
+              .setUserAgent("ExoPlayer")
+              .setAllowCrossProtocolRedirects(true);
+
       if (httpHeaders != null && !httpHeaders.isEmpty()) {
-        httpDataSourceFactory.getDefaultRequestProperties().set(httpHeaders);
+        httpDataSourceFactory.setDefaultRequestProperties(httpHeaders);
       }
       dataSourceFactory = httpDataSourceFactory;
     } else {
@@ -123,6 +122,9 @@ final class VideoPlayer {
         case FORMAT_HLS:
           type = C.TYPE_HLS;
           break;
+        case FORMAT_RTSP:
+          type = C.TYPE_RTSP;
+          break;
         case FORMAT_OTHER:
           type = C.TYPE_OTHER;
           break;
@@ -145,6 +147,8 @@ final class VideoPlayer {
       case C.TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
+      case C.TYPE_RTSP:
+        return new RtspMediaSource.Factory().createMediaSource(MediaItem.fromUri(uri));
       case C.TYPE_OTHER:
         return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
@@ -176,7 +180,7 @@ final class VideoPlayer {
     setAudioAttributes(exoPlayer, options.mixWithOthers);
 
     exoPlayer.addListener(
-        new EventListener() {
+        new Listener() {
           private boolean isBuffering = false;
 
           public void setBuffering(boolean buffering) {
