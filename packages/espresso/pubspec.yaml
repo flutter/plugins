@@ -1,6 +1,6 @@
 name: espresso
 description: Java classes for testing Flutter apps using Espresso.
-version: 0.1.0+1
+version: 0.1.0+2
 repository: https://github.com/flutter/plugins/tree/master/packages
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+espresso+label%3A%22p%3A+espresso%22
 
