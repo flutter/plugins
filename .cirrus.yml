@@ -45,11 +45,10 @@ task:
         PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "in_app_purchase_ios,ios_platform_images,sensors"
         PLUGINS_TO_RUN: "image_picker,in_app_purchase_ios,share,local_auth"
         matrix:
-          TREEISH: "2.1.0-12.2.pre"
           TREEISH: "2.2.0-10.0.pre"
+          TREEISH: "2.2.0-10.1.pre"
+          TREEISH: "2.2.0-10.2.pre"
           TREEISH: "2.2.0-10.3.pre"
-          TREEISH: "2.3.0-1.0.pre"
-          TREEISH: "2.3.0-12.0.pre"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
