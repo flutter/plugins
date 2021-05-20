@@ -121,8 +121,6 @@ class XCTestCommand extends PluginCommand {
       'Runner',
       '-destination',
       destination,
-      'CODE_SIGN_IDENTITY=""',
-      'CODE_SIGNING_REQUIRED=NO',
       'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
     ];
     final String completeTestCommand =
