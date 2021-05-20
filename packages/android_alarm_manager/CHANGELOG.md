@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Update README to point to Plus Pluginsversion.
+
 ##  2.0.1
 
 * Migrate maven repository from jcenter to mavenCentral.
