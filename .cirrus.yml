@@ -33,12 +33,6 @@ task:
   << : *MACOS_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
-    ### iOS+macOS tasks ***
-    - name: lint_darwin_plugins
-      script:
-        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
-        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
-        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
     - name: build-ipas+drive-examples
       env:
