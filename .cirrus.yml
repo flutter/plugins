@@ -16,8 +16,8 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
-    - flutter channel $CHANNEL
-    - flutter upgrade
+    - cd /Users/admin/flutter/bin
+    - git checkout $TREEISH
   << : *TOOL_SETUP_TEMPLATE
 
 macos_template: &MACOS_TEMPLATE
@@ -44,9 +44,9 @@ task:
         PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "in_app_purchase_ios,ios_platform_images,sensors"
         PLUGINS_TO_RUN: "image_picker,in_app_purchase_ios,share,local_auth"
         matrix:
-          CHANNEL: "master"
-          CHANNEL: "beta"
-          CHANNEL: "stable"
+          TREEISH: "2.0.0"
+          TREEISH: "2.1.0-10.0.pre"
+          TREEISH: "2.3.0-0.0.pre"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
