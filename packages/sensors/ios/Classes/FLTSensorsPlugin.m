@@ -34,7 +34,7 @@
 const double GRAVITY = 9.8;
 CMMotionManager* _motionManager;
 
-void _initMotionManager() {
+void _initMotionManager(void) {
   if (!_motionManager) {
     _motionManager = [[CMMotionManager alloc] init];
   }
