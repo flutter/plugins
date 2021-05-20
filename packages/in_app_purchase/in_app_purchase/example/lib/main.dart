@@ -28,8 +28,8 @@ const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
-const String _kSilverSubscriptionId = 'subscription_silver';
-const String _kGoldSubscriptionId = 'subscription_gold';
+const String _kSilverSubscriptionId = 'subscription_silver1';
+const String _kGoldSubscriptionId = 'subscription_gold1';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
   _kUpgradeId,
@@ -114,8 +114,6 @@ class _MyAppState extends State<_MyApp> {
       return;
     }
 
-    await _inAppPurchase.restorePurchases();
-
     List<String> consumables = await ConsumableStore.load();
     setState(() {
       _isAvailable = isAvailable;
@@ -143,6 +141,7 @@ class _MyAppState extends State<_MyApp> {
             _buildConnectionCheckTile(),
             _buildProductList(),
             _buildConsumableBox(),
+            _buildRestoreButton(),
           ],
         ),
       );
@@ -335,6 +334,30 @@ class _MyAppState extends State<_MyApp> {
         padding: EdgeInsets.all(16.0),
       )
     ]));
+  }
+
+  Widget _buildRestoreButton() {
+    if (_loading) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+            child: Text('Restore purchases'),
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              primary: Colors.white,
+            ),
+            onPressed: () => _inAppPurchase.restorePurchases(),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> consume(String id) async {
