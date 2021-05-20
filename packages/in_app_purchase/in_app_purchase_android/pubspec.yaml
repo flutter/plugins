@@ -1,7 +1,7 @@
 name: in_app_purchase_android
 description: An implementation for the Android platform of the Flutter `in_app_purchase` plugin. This uses the Android BillingClient APIs.
 repository: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase_android
-version: 0.1.0
+version: 0.1.1
 
 flutter:
   plugin:
