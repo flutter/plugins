@@ -51,6 +51,7 @@ task:
         PLUGINS_TO_RUN: "image_picker,in_app_purchase_ios,share,local_auth"
         matrix:
           CHANNEL: "master"
+          CHANNEL: "beta"
           CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
