@@ -212,6 +212,13 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+      override_stable_script:
+        # Force an earlier version of stable as a temporary workaround for https://github.com/flutter/flutter/issues/83048
+        - if [[ "$CHANNEL" == "stable" ]]; then
+        -   cd /Users/admin/flutter/
+        -   git fetch --tags
+        -   git checkout 2.2.0-10.0.pre
+        - fi
       create_simulator_script:
         - xcrun simctl list
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
