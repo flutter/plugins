@@ -203,7 +203,8 @@ abstract class PluginCommand extends Command<void> {
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
             'If the $_pluginsArg is specified, this flag is ignored.\n'
-            'If no plugins have changed, the command runs on all plugins.\n'
+            'If no packages have changed, or if there have been changes that may\n'
+            'affect all packages, the command runs on all packages.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
             'See $_kBaseSha if a custom base is needed to determine the diff.');
     argParser.addOption(_kBaseSha,
@@ -335,7 +336,9 @@ abstract class PluginCommand extends Command<void> {
     final Set<String> excludedPlugins =
         Set<String>.from(getStringListArg(_excludeArg));
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
-    if (plugins.isEmpty && runOnChangedPackages) {
+    if (plugins.isEmpty &&
+        runOnChangedPackages &&
+        !(await _changesRequireFullTest())) {
       plugins = await _getChangedPackages();
     }
 
@@ -458,6 +461,7 @@ abstract class PluginCommand extends Command<void> {
     return gitVersionFinder;
   }
 
+  // Returns packages that have been changed relative to the git base.
   Future<Set<String>> _getChangedPackages() async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
@@ -472,13 +476,39 @@ abstract class PluginCommand extends Command<void> {
         packages.add(pathComponents[packagesIndex + 1]);
       }
     }
-    if (packages.isNotEmpty) {
-      final String changedPackages = packages.join(',');
-      print(changedPackages);
-    } else {
+    if (packages.isEmpty) {
       print('No changed packages.');
+    } else {
+      final String changedPackages = packages.join(',');
+      print('Changed packages: $changedPackages');
     }
     return packages;
+  }
+
+  // Returns true if one or more files changed that have the potential to affect
+  // any plugin (e.g., CI script changes).
+  Future<bool> _changesRequireFullTest() async {
+    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+
+    const List<String> specialFiles = <String>[
+      '.ci.yaml', // LUCI congfig.
+      '.cirrus.yml', // Cirrus config.
+      '.clang-format', // ObjC and C/C++ formatting options.
+      'analysis_options.yaml', // Dart analysis settings.
+    ];
+    const List<String> specialDirectories = <String>[
+      '.ci/', // Support files for CI.
+      'script/', // This tool, and its wrapper scripts.
+    ];
+    // Directory entries must end with / to avoid over-matching, since the
+    // check below is done via string prefixing.
+    assert(specialDirectories.every((String dir) => dir.endsWith('/')));
+
+    final List<String> allChangedFiles =
+        await gitVersionFinder.getChangedFiles();
+    return allChangedFiles.any((String path) =>
+        specialFiles.contains(path) ||
+        specialDirectories.any((String dir) => path.startsWith(dir)));
   }
 }
 
