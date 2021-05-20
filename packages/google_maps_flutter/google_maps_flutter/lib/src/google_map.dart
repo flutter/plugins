@@ -529,6 +529,7 @@ class _GoogleMapOptions {
       'indoorEnabled': indoorViewEnabled,
       'trafficEnabled': trafficEnabled,
       'buildingsEnabled': buildingsEnabled,
+      'gestureHandling': 'greedy',
     };
   }
 
