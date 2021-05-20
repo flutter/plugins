@@ -215,7 +215,7 @@ task:
       override_stable_script:
         # Force an earlier version of stable as a temporary workaround for https://github.com/flutter/flutter/issues/83048
         - if [[ "$CHANNEL" == "stable" ]]; then
-        -   cd /Users/admin/flutter/
+        -   cd "${HOME}/flutter/"
         -   git fetch --tags
         -   git checkout 2.2.0-10.0.pre
         - fi
