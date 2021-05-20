@@ -491,7 +491,7 @@ abstract class PluginCommand extends Command<void> {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     const List<String> specialFiles = <String>[
-      '.ci.yaml', // LUCI congfig.
+      '.ci.yaml', // LUCI config.
       '.cirrus.yml', // Cirrus config.
       '.clang-format', // ObjC and C/C++ formatting options.
       'analysis_options.yaml', // Dart analysis settings.
