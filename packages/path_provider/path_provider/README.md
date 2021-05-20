@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/path_provider.svg)](https://pub.dev/packages/path_provider)
 
-A Flutter plugin for finding commonly used locations on the filesystem. Supports iOS, Android, Linux, MacOS and Windows.
+A Flutter plugin for finding commonly used locations on the filesystem. Supports Android, iOS, Linux, macOS and Windows.
 Not all methods are supported on all platforms.
 
 ## Usage
