@@ -17,6 +17,7 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
     - cd /Users/admin/flutter/bin
+    - git fetch --tags
     - git checkout $TREEISH
   << : *TOOL_SETUP_TEMPLATE
 
