@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Corrected an error in a example snippet displayed in the README.md.
+
 ## 1.0.0
 
 * Stable release of in_app_purchase plugin.
