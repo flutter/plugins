@@ -1,12 +1,15 @@
+## 0.7.5+4
+* Fixes an issue where preferredCameraDevice option is not working for getVideo method.
+
 ## 0.7.5+3
-* Fixes an issue where preferredCameraDevice option is not working for getVideo.
+* Localize `UIAlertController` strings.
 
 ## 0.7.5+2
 * Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
 
 ## 0.7.5+1
 
-* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked 
+* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked
 is not included selected photos and image is scaled.
 
 ## 0.7.5

@@ -25,7 +25,7 @@ macos_template: &MACOS_TEMPLATE
   # PRs on macOS.
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
-    image: big-sur-xcode-12.3
+    image: big-sur-xcode-12.5
   cocoapod_install_script: sudo gem install cocoapods
 
 # Light-workload Linux tasks.
@@ -61,23 +61,15 @@ task:
           CHANNEL: "stable"
       test_script:
         - ./script/tool_runner.sh test
-    - name: analyze_master
+    - name: analyze
       env:
         matrix:
           CHANNEL: "master"
+          CHANNEL: "stable"
       tool_script:
         - cd script/tool
         - dart analyze --fatal-infos
       script:
-        - ./script/tool_runner.sh analyze
-    ## TODO(cyanglaz):
-    ## Combing stable and master analyze jobs when integration test null safety is ready on flutter stable.
-    - name: analyze_stable
-      env:
-        matrix:
-          CHANNEL: "stable"
-      script:
-        - find . -depth -type d -wholename '*_web/example' -exec rm -rf {} \;
         - ./script/tool_runner.sh analyze
     ### Android tasks ###
     - name: build_all_plugins_apk
@@ -182,12 +174,7 @@ task:
       build_script:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
-        # TODO(stuartmorgan): Eliminate this check once 2.1 reaches stable.
-        - if [[ "$CHANNEL" == "master" ]]; then
-        -   ./script/tool_runner.sh drive-examples --web --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
-        - else
-        -   echo "Requires null-safe integration_test; skipping."
-        - fi
+        - ./script/tool_runner.sh drive-examples --web --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
 
 # macOS tasks.
 task:
@@ -227,7 +214,7 @@ task:
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
-        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-3 | xargs xcrun simctl boot
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
       build_script:
         - ./script/tool_runner.sh build-examples --ipa
       xctest_script:
