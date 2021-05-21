@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -159,7 +160,7 @@ public class ImagePickerPluginTest {
 
     ImagePickerDelegate delegate = plugin.constructDelegate(mockActivity);
 
-    verify(mockActivity).getCacheDir();
+    verify(mockActivity, times(1)).getCacheDir();
     assertThat(
         "Delegate uses cache directory for storing camera captures",
         delegate.externalFilesDirectory,
