@@ -1169,12 +1169,12 @@ NSString *const errorMethod = @"error";
     acl.mChannelLayoutTag = kAudioChannelLayoutTag_Mono;
     NSDictionary *audioOutputSettings = nil;
     // Both type of audio inputs causes output video file to be corrupted.
-    audioOutputSettings = [NSDictionary
-        dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
-                                     [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
-                                     [NSNumber numberWithInt:1], AVNumberOfChannelsKey,
-                                     [NSData dataWithBytes:&acl length:sizeof(acl)],
-                                     AVChannelLayoutKey, nil];
+    audioOutputSettings = @{
+      AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatMPEG4AAC],
+      AVSampleRateKey : [NSNumber numberWithFloat:44100.0],
+      AVNumberOfChannelsKey : [NSNumber numberWithInt:1],
+      AVChannelLayoutKey : [NSData dataWithBytes:&acl length:sizeof(acl)],
+    };
     _audioWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
                                                            outputSettings:audioOutputSettings];
     _audioWriterInput.expectsMediaDataInRealTime = YES;

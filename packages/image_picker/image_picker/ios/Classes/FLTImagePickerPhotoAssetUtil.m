@@ -98,11 +98,11 @@
   CGImageDestinationRef destination = CGImageDestinationCreateWithURL(
       (CFURLRef)[NSURL fileURLWithPath:path], kUTTypeGIF, gifInfo.images.count, NULL);
 
-  NSDictionary *frameProperties = [NSDictionary
-      dictionaryWithObject:[NSDictionary
-                               dictionaryWithObject:[NSNumber numberWithFloat:gifInfo.interval]
-                                             forKey:(NSString *)kCGImagePropertyGIFDelayTime]
-                    forKey:(NSString *)kCGImagePropertyGIFDictionary];
+  NSDictionary *frameProperties = @{
+    (NSString *)kCGImagePropertyGIFDictionary : @{
+      (NSString *)kCGImagePropertyGIFDelayTime : [NSNumber numberWithFloat:gifInfo.interval],
+    },
+  };
 
   NSMutableDictionary *gifMetaProperties = [NSMutableDictionary dictionaryWithDictionary:metaData];
   NSMutableDictionary *gifProperties =
