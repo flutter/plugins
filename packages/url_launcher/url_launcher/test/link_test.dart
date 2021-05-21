@@ -9,6 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/link.dart';
+import 'package:url_launcher/src/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 import 'mock_url_launcher_platform.dart';
@@ -108,26 +109,8 @@ void main() {
       expect(mock.launchCalled, isTrue);
     });
 
-    testWidgets('sends navigation platform messages for internal route names',
+    testWidgets('pushes to framework for internal route names',
         (WidgetTester tester) async {
-      // Intercept messages sent to the engine.
-      final List<MethodCall> engineCalls = <MethodCall>[];
-      SystemChannels.navigation.setMockMethodCallHandler((MethodCall call) {
-        engineCalls.add(call);
-        return Future<void>.value();
-      });
-
-      // Intercept messages sent to the framework.
-      final List<MethodCall> frameworkCalls = <MethodCall>[];
-      window.onPlatformMessage = (
-        String name,
-        ByteData? data,
-        PlatformMessageResponseCallback? callback,
-      ) {
-        frameworkCalls.add(_codec.decodeMethodCall(data));
-        realOnPlatformMessage!(name, data, callback);
-      };
-
       final Uri uri = Uri.parse('/foo/bar');
       FollowLink? followLink;
 
@@ -144,34 +127,25 @@ void main() {
         },
       ));
 
-      engineCalls.clear();
-      frameworkCalls.clear();
+      bool frameworkCalled = false;
+      Future<ByteData> Function(Object?, String) originalPushFunction =
+          pushRouteToFrameworkFunction;
+      pushRouteToFrameworkFunction = (Object? _, String __) {
+        frameworkCalled = true;
+        return Future.value(ByteData(0));
+      };
+
       await followLink!();
 
       // Shouldn't use url_launcher when uri is an internal route name.
       expect(mock.canLaunchCalled, isFalse);
       expect(mock.launchCalled, isFalse);
 
-      // A message should've been sent to the engine (by the Navigator, not by
-      // the Link widget).
-      //
-      // Even though this message isn't being sent by Link, we still want to
-      // have a test for it because we rely on it for Link to work correctly.
-      expect(engineCalls, hasLength(1));
-      expect(
-        engineCalls.single,
-        isMethodCall('routeUpdated', arguments: <dynamic, dynamic>{
-          'previousRouteName': '/',
-          'routeName': '/foo/bar',
-        }),
-      );
+      // A route should have been pushed to the framework.
+      expect(frameworkCalled, true);
 
-      // Pushes route to the framework.
-      expect(frameworkCalls, hasLength(1));
-      expect(
-        frameworkCalls.single,
-        isMethodCall('pushRoute', arguments: '/foo/bar'),
-      );
+      // Restore the original function.
+      pushRouteToFrameworkFunction = originalPushFunction;
     });
 
     testWidgets('sends router platform messages for internal route names',
