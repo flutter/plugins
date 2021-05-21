@@ -19,9 +19,6 @@
 'p: device_info':
   - packages/device_info/**/*
 
-'p: e2e':
-  - packages/e2e/**/*
-
 'p: espresso':
   - packages/espresso/**/*
 
@@ -42,9 +39,6 @@
 
 'p: in_app_purchase':
   - packages/in_app_purchase/**/*
-
-'p: integration_test':
-  - packages/integration_test/**/*
 
 'p: ios_platform_images':
   - packages/ios_platform_images/**/*

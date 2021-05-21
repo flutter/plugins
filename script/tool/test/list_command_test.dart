@@ -11,7 +11,7 @@ import 'util.dart';
 
 void main() {
   group('$ListCommand', () {
-    CommandRunner<void> runner;
+    late CommandRunner<void> runner;
 
     setUp(() {
       initializeFakePackages();

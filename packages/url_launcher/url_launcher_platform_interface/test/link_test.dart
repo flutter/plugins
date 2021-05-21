@@ -2,72 +2,87 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
+import 'dart:collection';
 
-import 'package:mockito/mockito.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:url_launcher_platform_interface/link.dart';
 
-final MethodCodec _codec = const JSONMethodCodec();
-
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
-  PlatformMessageCallback? oldHandler;
-  MethodCall? lastCall;
-
-  setUp(() {
-    oldHandler = window.onPlatformMessage;
-    window.onPlatformMessage = (
-      String name,
-      ByteData? data,
-      PlatformMessageResponseCallback? callback,
-    ) {
-      lastCall = _codec.decodeMethodCall(data);
-      if (callback != null) {
-        callback(_codec.encodeSuccessEnvelope(true));
-      }
-    };
+  testWidgets('Link with Navigator', (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: Placeholder(key: Key('home')),
+      routes: <String, WidgetBuilder>{
+        '/a': (BuildContext context) => Placeholder(key: Key('a')),
+      },
+    ));
+    expect(find.byKey(Key('home')), findsOneWidget);
+    expect(find.byKey(Key('a')), findsNothing);
+    await pushRouteNameToFramework(null, '/a');
+    // start animation
+    await tester.pump();
+    // skip past animation (5s is arbitrary, just needs to be long enough)
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.byKey(Key('a')), findsOneWidget);
+    expect(find.byKey(Key('home')), findsNothing);
   });
 
-  tearDown(() {
-    window.onPlatformMessage = oldHandler;
+  testWidgets('Link with Navigator', (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp.router(
+      routeInformationParser: _RouteInformationParser(),
+      routerDelegate: _RouteDelegate(),
+    ));
+    expect(find.byKey(Key('/')), findsOneWidget);
+    expect(find.byKey(Key('/a')), findsNothing);
+    await pushRouteNameToFramework(null, '/a');
+    // start animation
+    await tester.pump();
+    // skip past animation (5s is arbitrary, just needs to be long enough)
+    await tester.pump(const Duration(seconds: 5));
+    expect(find.byKey(Key('/a')), findsOneWidget);
+    expect(find.byKey(Key('/')), findsNothing);
   });
-
-  test('pushRouteNameToFramework() calls pushRoute when no Router', () async {
-    await pushRouteNameToFramework(CustomBuildContext(), '/foo/bar');
-    expect(
-      lastCall,
-      isMethodCall(
-        'pushRoute',
-        arguments: '/foo/bar',
-      ),
-    );
-  });
-
-  test(
-    'pushRouteNameToFramework() calls pushRouteInformation when Router exists',
-    () async {
-      await pushRouteNameToFramework(
-        CustomBuildContext(),
-        '/foo/bar',
-        debugForceRouter: true,
-      );
-      expect(
-        lastCall,
-        isMethodCall(
-          'pushRouteInformation',
-          arguments: <dynamic, dynamic>{
-            'location': '/foo/bar',
-            'state': null,
-          },
-        ),
-      );
-    },
-  );
 }
 
-class CustomBuildContext<T> extends Mock implements BuildContext {}
+class _RouteInformationParser extends RouteInformationParser<RouteInformation> {
+  @override
+  Future<RouteInformation> parseRouteInformation(
+      RouteInformation routeInformation) {
+    return SynchronousFuture(routeInformation);
+  }
+
+  @override
+  RouteInformation? restoreRouteInformation(RouteInformation configuration) {
+    return configuration;
+  }
+}
+
+class _RouteDelegate extends RouterDelegate<RouteInformation>
+    with ChangeNotifier {
+  final Queue<RouteInformation> _history = Queue<RouteInformation>();
+
+  @override
+  Future<void> setNewRoutePath(RouteInformation configuration) {
+    _history.add(configuration);
+    return SynchronousFuture(null);
+  }
+
+  @override
+  Future<bool> popRoute() {
+    if (_history.isEmpty) {
+      return SynchronousFuture(false);
+    }
+    _history.removeLast();
+    return SynchronousFuture(true);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (_history.isEmpty) {
+      return Placeholder(key: Key('empty'));
+    }
+    return Placeholder(key: Key('${_history.last.location}'));
+  }
+}

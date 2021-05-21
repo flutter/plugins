@@ -12,8 +12,8 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  RecordingProcessRunner processRunner;
-  CommandRunner<void> runner;
+  late RecordingProcessRunner processRunner;
+  late CommandRunner<void> runner;
 
   setUp(() {
     initializeFakePackages();
@@ -42,15 +42,13 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-              mockPackagesDir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin1Dir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin2Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
   });
@@ -88,13 +86,9 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-                mockPackagesDir.path),
             ProcessCall(
                 'flutter', const <String>['packages', 'get'], pluginDir.path),
-            ProcessCall(
-                'pub',
-                const <String>['global', 'run', 'tuneup', 'check'],
+            ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
                 pluginDir.path),
           ]));
     });

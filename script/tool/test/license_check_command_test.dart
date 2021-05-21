@@ -11,10 +11,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('$LicenseCheckCommand', () {
-    CommandRunner<void> runner;
-    FileSystem fileSystem;
-    List<String> printedMessages;
-    Directory root;
+    late CommandRunner<void> runner;
+    late FileSystem fileSystem;
+    late List<String> printedMessages;
+    late Directory root;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
@@ -26,7 +26,7 @@ void main() {
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
         fileSystem,
-        print: (Object message) => printedMessages.add(message.toString()),
+        print: (Object? message) => printedMessages.add(message.toString()),
       );
       runner =
           CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');
@@ -266,6 +266,24 @@ void main() {
       // Sanity check that the test did actually check the file.
       expect(printedMessages,
           contains('Checking a_plugin/lib/src/third_party/file.cc'));
+      expect(printedMessages, contains('All source files passed validation!'));
+    });
+
+    test('allows first-party code in a third_party directory', () async {
+      final File firstPartyFileInThirdParty = root
+          .childDirectory('a_plugin')
+          .childDirectory('lib')
+          .childDirectory('src')
+          .childDirectory('third_party')
+          .childFile('first_party.cc');
+      firstPartyFileInThirdParty.createSync(recursive: true);
+      _writeLicense(firstPartyFileInThirdParty);
+
+      await runner.run(<String>['license-check']);
+
+      // Sanity check that the test did actually check the file.
+      expect(printedMessages,
+          contains('Checking a_plugin/lib/src/third_party/first_party.cc'));
       expect(printedMessages, contains('All source files passed validation!'));
     });
 

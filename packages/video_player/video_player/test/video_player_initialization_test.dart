@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:video_player/video_player.dart';
 
@@ -12,7 +11,7 @@ void main() {
   // This test needs to run first and therefore needs to be the only test
   // in this file.
   test('plugin initialized', () async {
-    WidgetsFlutterBinding.ensureInitialized();
+    TestWidgetsFlutterBinding.ensureInitialized();
     FakeVideoPlayerPlatform fakeVideoPlayerPlatform = FakeVideoPlayerPlatform();
 
     final VideoPlayerController controller = VideoPlayerController.network(

@@ -7,6 +7,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <Photos/Photos.h>
+#import <PhotosUI/PHPhotoLibrary+PhotosUISupport.h>
 #import <PhotosUI/PhotosUI.h>
 #import <UIKit/UIKit.h>
 
@@ -21,13 +22,18 @@
 @property(copy, nonatomic) FlutterResult result;
 @property(nonatomic) bool single;
 
+@property(copy, nonatomic) NSDictionary *arguments;
+
+@property(strong, nonatomic) PHPickerViewController *pickerViewController API_AVAILABLE(ios(14));
+
 @end
 
 static const int SOURCE_CAMERA = 0;
 static const int SOURCE_GALLERY = 1;
 
+typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPickerClassType };
+
 @implementation FLTImagePickerPlugin {
-  NSDictionary *_arguments;
   UIImagePickerController *_imagePickerController;
   UIImagePickerControllerCameraDevice _device;
 }
@@ -62,68 +68,44 @@ static const int SOURCE_GALLERY = 1;
   return topController;
 }
 
-- (void)pickImage:(bool)single {
-  if (@available(iOS 14, *)) {
-    PHPickerConfiguration *config = [[PHPickerConfiguration alloc] init];
-    self->_single = single;
-    if (!single) config.selectionLimit = 0;
-    config.filter = [PHPickerFilter imagesFilter];
-
-    PHPickerViewController *pickerViewController =
-        [[PHPickerViewController alloc] initWithConfiguration:config];
-    pickerViewController.delegate = self;
-    [[self viewControllerWithWindow:nil] presentViewController:pickerViewController
-                                                      animated:YES
-                                                    completion:nil];
+- (void)pickImageWithPHPicker:(bool)single API_AVAILABLE(ios(14)) {
+  PHPickerConfiguration *config =
+      [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
+  if (!single) {
+    config.selectionLimit = 0;  // Setting to zero allow us to pick unlimited photos
   }
+  config.filter = [PHPickerFilter imagesFilter];
+
+  _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
+  _pickerViewController.delegate = self;
+
+  [self checkPhotoAuthorizationForAccessLevel];
 }
 
-- (void)picker:(PHPickerViewController *)picker
-    didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
-  [picker dismissViewControllerAnimated:YES completion:nil];
-  NSMutableArray *pathList = [NSMutableArray new];
-  for (PHPickerResult *result in results) {
-    [result.itemProvider
-        loadDataRepresentationForTypeIdentifier:@"public.image"
-                              completionHandler:^(NSData *_Nullable data,
-                                                  NSError *_Nullable error) {
-                                NSLog(@"data: %lu", (unsigned long)data.length);
-                                if (data != nil) {
-                                  NSArray *paths = NSSearchPathForDirectoriesInDomains(
-                                      NSDocumentDirectory, NSUserDomainMask, YES);
-                                  NSString *documentsDirectory = [paths objectAtIndex:0];
+- (void)pickImageWithUIImagePicker {
+  _imagePickerController = [[UIImagePickerController alloc] init];
+  _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
+  _imagePickerController.delegate = self;
+  _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
-                                  NSString *filename =
-                                      [NSString stringWithFormat:@"%@.png",
-                                                                 result.itemProvider.suggestedName];
-                                  NSString *path =
-                                      [documentsDirectory stringByAppendingPathComponent:filename];
-                                  NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
-                                  NSNumber *maxHeight =
-                                      [self->_arguments objectForKey:@"maxHeight"];
-                                  NSNumber *imageQuality =
-                                      [self->_arguments objectForKey:@"imageQuality"];
-                                  if (maxWidth != (id)[NSNull null] ||
-                                      maxHeight != (id)[NSNull null]) {
-                                    path = [FLTImagePickerPhotoAssetUtil
-                                        saveImageWithOriginalImageData:data
-                                                                 image:[UIImage imageWithData:data]
-                                                              maxWidth:maxWidth
-                                                             maxHeight:maxHeight
-                                                          imageQuality:imageQuality];
-                                  } else {
-                                    [data writeToFile:path atomically:YES];
-                                  }
-                                  [pathList addObject:path];
-                                  if (pathList.count == results.count) {
-                                    if (self.single) {
-                                      self.result(pathList[0]);
-                                    } else {
-                                      self.result(pathList);
-                                    }
-                                  }
-                                }
-                              }];
+  int imageSource = [[_arguments objectForKey:@"source"] intValue];
+
+  switch (imageSource) {
+    case SOURCE_CAMERA: {
+      NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
+      _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
+                                    : UIImagePickerControllerCameraDeviceRear;
+      [self checkCameraAuthorization];
+      break;
+    }
+    case SOURCE_GALLERY:
+      [self checkPhotoAuthorization];
+      break;
+    default:
+      self.result([FlutterError errorWithCode:@"invalid_source"
+                                      message:@"Invalid image source."
+                                      details:nil]);
+      break;
   }
 }
 
@@ -136,46 +118,26 @@ static const int SOURCE_GALLERY = 1;
   }
 
   if ([@"pickImage" isEqualToString:call.method]) {
-    if (@available(iOS 14, *)) {
-      self.result = result;
-      _arguments = call.arguments;
-      [self pickImage:true];
-    } else {
-      _imagePickerController = [[UIImagePickerController alloc] init];
-      _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
-      _imagePickerController.delegate = self;
-      _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
+    self.result = result;
+    _arguments = call.arguments;
+    int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
-      self.result = result;
-      _arguments = call.arguments;
-
-      int imageSource = [[_arguments objectForKey:@"source"] intValue];
-
-      switch (imageSource) {
-        case SOURCE_CAMERA: {
-          NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
-          _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
-                                        : UIImagePickerControllerCameraDeviceRear;
-          [self checkCameraAuthorization];
-          break;
-        }
-        case SOURCE_GALLERY:
-          [self checkPhotoAuthorization];
-          break;
-        default:
-          result([FlutterError errorWithCode:@"invalid_source"
-                                     message:@"Invalid image source."
-                                     details:nil]);
-          break;
+    if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
+      if (@available(iOS 14, *)) {
+        // PHPicker is used
+        [self pickImageWithPHPicker:true];
+      } else {
+        // UIImagePicker is used
+        [self pickImageWithUIImagePicker];
       }
+    } else {
+      [self pickImageWithUIImagePicker];
     }
   } else if ([@"pickMultiImage" isEqualToString:call.method]) {
     if (@available(iOS 14, *)) {
       self.result = result;
       _arguments = call.arguments;
-      [self pickImage:false];
-    } else {
-      NSLog(@"pickMultiImage is not supported on versions below iOS14");
+      [self pickImageWithPHPicker:false];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
@@ -229,11 +191,20 @@ static const int SOURCE_GALLERY = 1;
                                                       animated:YES
                                                     completion:nil];
   } else {
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
-                                message:NSLocalizedString(@"Camera not available.", nil)
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                      otherButtonTitles:nil] show];
+    UIAlertController *cameraErrorAlert = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"Error", @"Alert title when camera unavailable")
+                         message:NSLocalizedString(@"Camera not available.",
+                                                   "Alert message when camera unavailable")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [cameraErrorAlert
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(
+                                                     @"OK", @"Alert button when camera unavailable")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *action){
+                                         }]];
+    [[self viewControllerWithWindow:nil] presentViewController:cameraErrorAlert
+                                                      animated:YES
+                                                    completion:nil];
     self.result(nil);
     self.result = nil;
     _arguments = nil;
@@ -250,19 +221,16 @@ static const int SOURCE_GALLERY = 1;
     case AVAuthorizationStatusNotDetermined: {
       [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                completionHandler:^(BOOL granted) {
-                                 if (granted) {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                     if (granted) {
-                                       [self showCamera];
-                                     }
-                                   });
-                                 } else {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                   if (granted) {
+                                     [self showCamera];
+                                   } else {
                                      [self errorNoCameraAccess:AVAuthorizationStatusDenied];
-                                   });
-                                 }
+                                   }
+                                 });
                                }];
-    }; break;
+      break;
+    }
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
     default:
@@ -276,18 +244,49 @@ static const int SOURCE_GALLERY = 1;
   switch (status) {
     case PHAuthorizationStatusNotDetermined: {
       [PHPhotoLibrary requestAuthorization:^(PHAuthorizationStatus status) {
-        if (status == PHAuthorizationStatusAuthorized) {
-          dispatch_async(dispatch_get_main_queue(), ^{
-            [self showPhotoLibrary];
-          });
-        } else {
-          [self errorNoPhotoAccess:status];
-        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+          if (status == PHAuthorizationStatusAuthorized) {
+            [self showPhotoLibrary:UIImagePickerClassType];
+          } else {
+            [self errorNoPhotoAccess:status];
+          }
+        });
       }];
       break;
     }
     case PHAuthorizationStatusAuthorized:
-      [self showPhotoLibrary];
+      [self showPhotoLibrary:UIImagePickerClassType];
+      break;
+    case PHAuthorizationStatusDenied:
+    case PHAuthorizationStatusRestricted:
+    default:
+      [self errorNoPhotoAccess:status];
+      break;
+  }
+}
+
+- (void)checkPhotoAuthorizationForAccessLevel API_AVAILABLE(ios(14)) {
+  PHAuthorizationStatus status = [PHPhotoLibrary authorizationStatus];
+  switch (status) {
+    case PHAuthorizationStatusNotDetermined: {
+      [PHPhotoLibrary
+          requestAuthorizationForAccessLevel:PHAccessLevelReadWrite
+                                     handler:^(PHAuthorizationStatus status) {
+                                       dispatch_async(dispatch_get_main_queue(), ^{
+                                         if (status == PHAuthorizationStatusAuthorized) {
+                                           [self showPhotoLibrary:PHPickerClassType];
+                                         } else if (status == PHAuthorizationStatusLimited) {
+                                           [self showPhotoLibrary:PHPickerClassType];
+                                         } else {
+                                           [self errorNoPhotoAccess:status];
+                                         }
+                                       });
+                                     }];
+      break;
+    }
+    case PHAuthorizationStatusAuthorized:
+    case PHAuthorizationStatusLimited:
+      [self showPhotoLibrary:PHPickerClassType];
       break;
     case PHAuthorizationStatusDenied:
     case PHAuthorizationStatusRestricted:
@@ -329,12 +328,85 @@ static const int SOURCE_GALLERY = 1;
   }
 }
 
-- (void)showPhotoLibrary {
+- (void)showPhotoLibrary:(ImagePickerClassType)imagePickerClassType {
   // No need to check if SourceType is available. It always is.
-  _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-  [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
-                                                    animated:YES
-                                                  completion:nil];
+  switch (imagePickerClassType) {
+    case PHPickerClassType:
+      [[self viewControllerWithWindow:nil] presentViewController:_pickerViewController
+                                                        animated:YES
+                                                      completion:nil];
+      break;
+    case UIImagePickerClassType:
+      _imagePickerController.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
+      [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
+                                                        animated:YES
+                                                      completion:nil];
+      break;
+  }
+}
+
+- (NSNumber *)getDesiredImageQuality:(NSNumber *)imageQuality {
+  if (![imageQuality isKindOfClass:[NSNumber class]]) {
+    imageQuality = @1;
+  } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
+    imageQuality = [NSNumber numberWithInt:1];
+  } else {
+    imageQuality = @([imageQuality floatValue] / 100);
+  }
+  return imageQuality;
+}
+
+- (void)picker:(PHPickerViewController *)picker
+    didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
+  [picker dismissViewControllerAnimated:YES completion:nil];
+
+  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
+  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
+  NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
+  NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
+
+  for (PHPickerResult *result in results) {
+    [result.itemProvider
+        loadObjectOfClass:[UIImage class]
+        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
+                            NSError *_Nullable error) {
+          if ([image isKindOfClass:[UIImage class]]) {
+            __block UIImage *localImage = image;
+            dispatch_async(dispatch_get_main_queue(), ^{
+              PHAsset *originalAsset =
+                  [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
+
+              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                                         maxWidth:maxWidth
+                                                        maxHeight:maxHeight
+                                              isMetadataAvailable:originalAsset != nil];
+              }
+
+              if (!originalAsset) {
+                // Image picked without an original asset (e.g. User took a photo directly)
+                [self saveImageWithPickerInfo:nil
+                                        image:localImage
+                                 imageQuality:desiredImageQuality];
+              } else {
+                [[PHImageManager defaultManager]
+                    requestImageDataForAsset:originalAsset
+                                     options:nil
+                               resultHandler:^(
+                                   NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                                 // maxWidth and maxHeight are used only for GIF images.
+                                 [self saveImageWithOriginalImageData:imageData
+                                                                image:localImage
+                                                             maxWidth:maxWidth
+                                                            maxHeight:maxHeight
+                                                         imageQuality:desiredImageQuality];
+                               }];
+              }
+            });
+          }
+        }];
+  }
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
@@ -378,40 +450,35 @@ static const int SOURCE_GALLERY = 1;
     if (image == nil) {
       image = [info objectForKey:UIImagePickerControllerOriginalImage];
     }
-
     NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
     NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
     NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
-
-    if (![imageQuality isKindOfClass:[NSNumber class]]) {
-      imageQuality = @1;
-    } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
-      imageQuality = [NSNumber numberWithInt:1];
-    } else {
-      imageQuality = @([imageQuality floatValue] / 100);
-    }
-
-    if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-      image = [FLTImagePickerImageUtil scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
-    }
+    NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
 
     PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+
+    if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+      image = [FLTImagePickerImageUtil scaledImage:image
+                                          maxWidth:maxWidth
+                                         maxHeight:maxHeight
+                               isMetadataAvailable:originalAsset != nil];
+    }
+
     if (!originalAsset) {
       // Image picked without an original asset (e.g. User took a photo directly)
-      [self saveImageWithPickerInfo:info image:image imageQuality:imageQuality];
+      [self saveImageWithPickerInfo:info image:image imageQuality:desiredImageQuality];
     } else {
-      __weak typeof(self) weakSelf = self;
       [[PHImageManager defaultManager]
           requestImageDataForAsset:originalAsset
                            options:nil
                      resultHandler:^(NSData *_Nullable imageData, NSString *_Nullable dataUTI,
                                      UIImageOrientation orientation, NSDictionary *_Nullable info) {
                        // maxWidth and maxHeight are used only for GIF images.
-                       [weakSelf saveImageWithOriginalImageData:imageData
-                                                          image:image
-                                                       maxWidth:maxWidth
-                                                      maxHeight:maxHeight
-                                                   imageQuality:imageQuality];
+                       [self saveImageWithOriginalImageData:imageData
+                                                      image:image
+                                                   maxWidth:maxWidth
+                                                  maxHeight:maxHeight
+                                               imageQuality:desiredImageQuality];
                      }];
     }
   }
