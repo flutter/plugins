@@ -74,7 +74,7 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     // Use the Dart SDK override if one was passed in.
-    final String dartSdk = argResults![_analysisSdk] as String;
+    final String? dartSdk = argResults![_analysisSdk] as String?;
     final String dartBinary =
         dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
 
