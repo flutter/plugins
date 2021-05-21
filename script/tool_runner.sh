@@ -74,5 +74,5 @@ if [[ "${BRANCH_NAME}" == "master" ]]; then
   (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 else
   echo running "${ACTIONS[@]}"
-  (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}"  --run-on-changed-packages --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
+  (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --run-on-changed-packages --exclude="$ALL_EXCLUDED" ${PLUGIN_SHARDING[@]})
 fi

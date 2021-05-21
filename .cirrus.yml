@@ -12,7 +12,7 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
     - git fetch origin master # To set FETCH_HEAD for "git merge-base" to work
     - cd script/tool
-    - pub get
+    - dart pub get
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
@@ -168,7 +168,7 @@ task:
       install_script:
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
-        - pub get
+        - dart pub get
         - dart lib/web_driver_installer.dart chromedriver --install-only
         - ./chromedriver/chromedriver --port=4444 &
       build_script:
