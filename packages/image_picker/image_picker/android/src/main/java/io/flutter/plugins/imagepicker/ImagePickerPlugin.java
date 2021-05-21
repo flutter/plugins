@@ -215,7 +215,8 @@ public class ImagePickerPlugin
     application = null;
   }
 
-  private final ImagePickerDelegate constructDelegate(final Activity setupActivity) {
+  @VisibleForTesting
+  final ImagePickerDelegate constructDelegate(final Activity setupActivity) {
     final ImagePickerCache cache = new ImagePickerCache(setupActivity);
 
     final File externalFilesDirectory = setupActivity.getCacheDir();

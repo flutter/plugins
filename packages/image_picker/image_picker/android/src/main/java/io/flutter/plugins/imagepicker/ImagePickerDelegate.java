@@ -86,7 +86,7 @@ public class ImagePickerDelegate
   @VisibleForTesting final String fileProviderName;
 
   private final Activity activity;
-  private final File externalFilesDirectory;
+  @VisibleForTesting final File externalFilesDirectory;
   private final ImageResizer imageResizer;
   private final ImagePickerCache cache;
   private final PermissionManager permissionManager;
