@@ -59,8 +59,8 @@ readonly CUSTOM_FLAG=$(IFS=, ; echo "${CUSTOM_ANALYSIS_PLUGINS[*]}")
 ACTIONS=("$@")
 if [[ "${#ACTIONS[@]}" == 0 ]]; then
   ACTIONS=("analyze" "--custom-analysis" "$CUSTOM_FLAG" "test" "java-test")
-elif [[ "${ACTIONS[@]}" == "analyze" ]]; then
-  ACTIONS=("analyze" "--custom-analysis" "$CUSTOM_FLAG")
+elif [[ "${ACTIONS[0]}" == "analyze" ]]; then
+  ACTIONS=("${ACTIONS[@]}" "--custom-analysis" "$CUSTOM_FLAG")
 fi
 
 BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"

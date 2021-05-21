@@ -21,15 +21,15 @@ class AnalyzeCommand extends PluginCommand {
         help:
             'Directories (comma separated) that are allowed to have their own analysis options.',
         defaultsTo: <String>[]);
-    argParser.addOption(_dartSdk,
-        valueHelp: 'dart-sdk-path',
+    argParser.addOption(_analysisSdk,
+        valueHelp: 'dart-sdk',
         help: 'An optional path to a Dart SDK; this is used to override the '
             'SDK used to provide analysis.');
   }
 
   static const String _customAnalysisFlag = 'custom-analysis';
 
-  static const String _dartSdk = 'dart-sdk';
+  static const String _analysisSdk = 'analysis-sdk';
 
   @override
   final String name = 'analyze';
@@ -74,9 +74,9 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     // Use the Dart SDK override if one was passed in.
-    final String dartSdk = argResults![_dartSdk] as String;
+    final String dartSdk = argResults![_analysisSdk] as String;
     final String dartBinary =
-        dartSdk == null ? ' dart' : p.join(dartSdk, 'bin/dart');
+        dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
 
     final List<String> failingPackages = <String>[];
     await for (final Directory package in getPlugins()) {
