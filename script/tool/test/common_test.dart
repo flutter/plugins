@@ -145,7 +145,103 @@ void main() {
 
     test('all plugins should be tested if there are no plugin related changes.',
         () async {
-      gitDiffResponse = '.cirrus';
+      gitDiffResponse = 'AUTHORS';
+      final Directory plugin1 =
+          createFakePlugin('plugin1', packagesDirectory: packagesDir);
+      final Directory plugin2 =
+          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      await runner.run(
+          <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
+
+      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('all plugins should be tested if .cirrus.yml changes.',
+        () async {
+      gitDiffResponse = '''
+.cirrus.yml
+packages/plugin1/CHANGELOG
+''';
+      final Directory plugin1 =
+          createFakePlugin('plugin1', packagesDirectory: packagesDir);
+      final Directory plugin2 =
+          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      await runner.run(
+          <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
+
+      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('all plugins should be tested if .ci.yaml changes',
+        () async {
+      gitDiffResponse = '''
+.ci.yaml
+packages/plugin1/CHANGELOG
+''';
+      final Directory plugin1 =
+          createFakePlugin('plugin1', packagesDirectory: packagesDir);
+      final Directory plugin2 =
+          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      await runner.run(
+          <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
+
+      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('all plugins should be tested if anything in .ci/ changes',
+        () async {
+      gitDiffResponse = '''
+.ci/Dockerfile
+packages/plugin1/CHANGELOG
+''';
+      final Directory plugin1 =
+          createFakePlugin('plugin1', packagesDirectory: packagesDir);
+      final Directory plugin2 =
+          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      await runner.run(
+          <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
+
+      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('all plugins should be tested if anything in script changes.',
+        () async {
+      gitDiffResponse = '''
+script/tool_runner.sh
+packages/plugin1/CHANGELOG
+''';
+      final Directory plugin1 =
+          createFakePlugin('plugin1', packagesDirectory: packagesDir);
+      final Directory plugin2 =
+          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      await runner.run(
+          <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
+
+      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('all plugins should be tested if the root analysis options change.',
+        () async {
+      gitDiffResponse = '''
+analysis_options.yaml
+packages/plugin1/CHANGELOG
+''';
+      final Directory plugin1 =
+          createFakePlugin('plugin1', packagesDirectory: packagesDir);
+      final Directory plugin2 =
+          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      await runner.run(
+          <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
+
+      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('all plugins should be tested if formatting options change.',
+        () async {
+      gitDiffResponse = '''
+.clang-format
+packages/plugin1/CHANGELOG
+''';
       final Directory plugin1 =
           createFakePlugin('plugin1', packagesDirectory: packagesDir);
       final Directory plugin2 =

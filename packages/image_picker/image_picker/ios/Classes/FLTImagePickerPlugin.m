@@ -190,11 +190,20 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                       animated:YES
                                                     completion:nil];
   } else {
-    [[[UIAlertView alloc] initWithTitle:NSLocalizedString(@"Error", nil)
-                                message:NSLocalizedString(@"Camera not available.", nil)
-                               delegate:nil
-                      cancelButtonTitle:NSLocalizedString(@"OK", nil)
-                      otherButtonTitles:nil] show];
+    UIAlertController *cameraErrorAlert = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"Error", @"Alert title when camera unavailable")
+                         message:NSLocalizedString(@"Camera not available.",
+                                                   "Alert message when camera unavailable")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [cameraErrorAlert
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(
+                                                     @"OK", @"Alert button when camera unavailable")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *action){
+                                         }]];
+    [[self viewControllerWithWindow:nil] presentViewController:cameraErrorAlert
+                                                      animated:YES
+                                                    completion:nil];
     self.result(nil);
     self.result = nil;
     _arguments = nil;
@@ -211,19 +220,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     case AVAuthorizationStatusNotDetermined: {
       [AVCaptureDevice requestAccessForMediaType:AVMediaTypeVideo
                                completionHandler:^(BOOL granted) {
-                                 if (granted) {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                     if (granted) {
-                                       [self showCamera];
-                                     }
-                                   });
-                                 } else {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
+                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                   if (granted) {
+                                     [self showCamera];
+                                   } else {
                                      [self errorNoCameraAccess:AVAuthorizationStatusDenied];
-                                   });
-                                 }
+                                   }
+                                 });
                                }];
-    }; break;
+      break;
+    }
     case AVAuthorizationStatusDenied:
     case AVAuthorizationStatusRestricted:
     default:
@@ -364,41 +370,39 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
-            if (image != nil) {
-              __block UIImage *localImage = image;
-              dispatch_async(dispatch_get_main_queue(), ^{
-                PHAsset *originalAsset =
-                    [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
+            __block UIImage *localImage = image;
+            dispatch_async(dispatch_get_main_queue(), ^{
+              PHAsset *originalAsset =
+                  [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
 
-                if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                  localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                                           maxWidth:maxWidth
-                                                          maxHeight:maxHeight
-                                                isMetadataAvailable:originalAsset != nil];
-                }
+              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+                localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                                         maxWidth:maxWidth
+                                                        maxHeight:maxHeight
+                                              isMetadataAvailable:originalAsset != nil];
+              }
 
-                if (!originalAsset) {
-                  // Image picked without an original asset (e.g. User took a photo directly)
-                  [self saveImageWithPickerInfo:nil
-                                          image:localImage
-                                   imageQuality:desiredImageQuality];
-                } else {
-                  [[PHImageManager defaultManager]
-                      requestImageDataForAsset:originalAsset
-                                       options:nil
-                                 resultHandler:^(
-                                     NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                     UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                                   // maxWidth and maxHeight are used only for GIF images.
-                                   [self saveImageWithOriginalImageData:imageData
-                                                                  image:localImage
-                                                               maxWidth:maxWidth
-                                                              maxHeight:maxHeight
-                                                           imageQuality:desiredImageQuality];
-                                 }];
-                }
-              });
-            }
+              if (!originalAsset) {
+                // Image picked without an original asset (e.g. User took a photo directly)
+                [self saveImageWithPickerInfo:nil
+                                        image:localImage
+                                 imageQuality:desiredImageQuality];
+              } else {
+                [[PHImageManager defaultManager]
+                    requestImageDataForAsset:originalAsset
+                                     options:nil
+                               resultHandler:^(
+                                   NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                                 // maxWidth and maxHeight are used only for GIF images.
+                                 [self saveImageWithOriginalImageData:imageData
+                                                                image:localImage
+                                                             maxWidth:maxWidth
+                                                            maxHeight:maxHeight
+                                                         imageQuality:desiredImageQuality];
+                               }];
+              }
+            });
           }
         }];
   }
