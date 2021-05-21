@@ -118,7 +118,8 @@ Future<bool> launch(
 /// On Android (from API 30), [canLaunch] will return `false` when the required
 /// visibility configuration is not provided in the AndroidManifest.xml file.
 /// For more information see the [Managing package visibility](https://developer.android.com/training/basics/intents/package-visibility)
-/// article in the Android docs.
+/// article in the Android docs or kindly examine
+/// [the plugin example's AndroidManifest.xml](https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/example/android/app/src/main/AndroidManifest.xml).
 Future<bool> canLaunch(String urlString) async {
   return await UrlLauncherPlatform.instance.canLaunch(urlString);
 }
