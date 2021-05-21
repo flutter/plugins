@@ -1,3 +1,9 @@
+## 0.7.6
+
+* Changed storage location for captured images and videos to internal cache on Android,
+to comply with new Google Play storage requirements.
+* Updated Mockito to fix Android tests.
+
 ## 0.7.5+3
 * Localize `UIAlertController` strings.
 
