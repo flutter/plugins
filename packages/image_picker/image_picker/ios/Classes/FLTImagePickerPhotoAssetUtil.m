@@ -99,8 +99,8 @@
       (CFURLRef)[NSURL fileURLWithPath:path], kUTTypeGIF, gifInfo.images.count, NULL);
 
   NSDictionary *frameProperties = @{
-    (NSString *)kCGImagePropertyGIFDictionary : @{
-      (NSString *)kCGImagePropertyGIFDelayTime : [NSNumber numberWithFloat:gifInfo.interval],
+    (__bridge NSString *)kCGImagePropertyGIFDictionary : @{
+      (__bridge NSString *)kCGImagePropertyGIFDelayTime : @(gifInfo.interval),
     },
   };
 
@@ -111,7 +111,7 @@
     gifProperties = [NSMutableDictionary dictionary];
   }
 
-  gifProperties[(NSString *)kCGImagePropertyGIFLoopCount] = [NSNumber numberWithFloat:0];
+  gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount] = @0;
 
   CGImageDestinationSetProperties(destination, (CFDictionaryRef)gifMetaProperties);
 

@@ -35,7 +35,7 @@ NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
         change[NSKeyValueChangeNewKey] ?: 0;          // newValue is anywhere between 0.0 and 1.0
     int newValueAsInt = [newValue floatValue] * 100;  // Anywhere between 0 and 100
     [_methodChannel invokeMethod:@"onProgress"
-                       arguments:@{@"progress" : [NSNumber numberWithInt:newValueAsInt]}];
+                       arguments:@{@"progress" : @(newValueAsInt)}];
   }
 }
 
