@@ -1,6 +1,10 @@
+## 2.0.3
+
+* Do not tear down method channel onDetachedFromActivity.
+
 ## 2.0.2
 
-* Do not tear down method channel onDetachedFromActivity. 
+* Migrate maven repository from jcenter to mavenCentral.
 
 ## 2.0.1
 
