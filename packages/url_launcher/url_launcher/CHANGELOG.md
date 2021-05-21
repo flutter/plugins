@@ -1,3 +1,7 @@
+## 6.0.5
+
+* Adding API level 30 reuired package visibility configuration to the example's AndroidManifest.xml
+
 ## 6.0.4
 
 * Migrate maven repository from jcenter to mavenCentral.
