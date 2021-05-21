@@ -197,7 +197,7 @@ task:
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
-        XCLOGPARSER_OUTPUT: "${HOME}/xclogparser"
+        XCLOGPARSER_OUTPUT: "xclogparser"
         # in_app_purchase_ios is currently missing tests; see https://github.com/flutter/flutter/issues/81695
         # ios_platform_images is currently missing tests; see https://github.com/flutter/flutter/issues/82208
         # sensor hangs on CI.
@@ -222,7 +222,7 @@ task:
         - ./script/tool_runner.sh xctest --skip $PLUGINS_TO_SKIP_XCTESTS --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --xclogparser $XCLOGPARSER_OUTPUT
       always:
         xclogparser_upload_artifacts:
-          path: "**/xclogparser/*.json"
+          path: "${XCLOGPARSER_OUTPUT}/*.json"
           type: text/json
           format: xclogparser
       drive_script:
