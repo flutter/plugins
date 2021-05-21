@@ -848,22 +848,30 @@ void main() {
 
       await tester.pumpAndSettle(Duration(seconds: 3));
 
+      int scrollPosX = await controller.getScrollX();
+      int scrollPosY = await controller.getScrollY();
+
       // Check scrollTo()
       const int X_SCROLL = 123;
       const int Y_SCROLL = 321;
+      // Get the initial position; this ensures that scrollTo is actually
+      // changing something, but also gives the native view's scroll position
+      // time to settle.
+      expect(scrollPosX, isNot(X_SCROLL));
+      expect(scrollPosX, isNot(Y_SCROLL));
 
       await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      int scrollPosX = await controller.getScrollX();
-      int scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL, scrollPosX);
-      expect(Y_SCROLL, scrollPosY);
+      scrollPosX = await controller.getScrollX();
+      scrollPosY = await controller.getScrollY();
+      expect(scrollPosX, X_SCROLL);
+      expect(scrollPosY, Y_SCROLL);
 
       // Check scrollBy() (on top of scrollTo())
       await controller.scrollBy(X_SCROLL, Y_SCROLL);
       scrollPosX = await controller.getScrollX();
       scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL * 2, scrollPosX);
-      expect(Y_SCROLL * 2, scrollPosY);
+      expect(scrollPosX, X_SCROLL * 2);
+      expect(scrollPosY, Y_SCROLL * 2);
     });
   });
 
