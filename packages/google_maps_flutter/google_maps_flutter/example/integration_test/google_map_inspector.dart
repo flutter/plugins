@@ -77,10 +77,10 @@ class GoogleMapInspector {
     return await _channel.invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
-  Future<Map<String, dynamic>> getTileOverlayInfo(String id) async {
+  Future<Map<String, dynamic>?> getTileOverlayInfo(String id) async {
     return (await _channel.invokeMapMethod<String, dynamic>(
         'map#getTileOverlayInfo', <String, String>{
       'tileOverlayId': id,
-    }))!;
+    }));
   }
 }

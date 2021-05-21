@@ -1029,9 +1029,9 @@ void main() {
       final GoogleMapInspector inspector = await inspectorCompleter.future;
 
       Map<String, dynamic> tileOverlayInfo1 =
-          await inspector.getTileOverlayInfo('tile_overlay_1');
+          (await inspector.getTileOverlayInfo('tile_overlay_1'))!;
       Map<String, dynamic> tileOverlayInfo2 =
-          await inspector.getTileOverlayInfo('tile_overlay_2');
+          (await inspector.getTileOverlayInfo('tile_overlay_2'))!;
 
       expect(tileOverlayInfo1['visible'], isTrue);
       expect(tileOverlayInfo1['fadeIn'], isTrue);
@@ -1115,8 +1115,8 @@ void main() {
       await tester.pumpAndSettle(const Duration(seconds: 3));
 
       Map<String, dynamic> tileOverlayInfo1 =
-          await inspector.getTileOverlayInfo('tile_overlay_1');
-      Map<String, dynamic> tileOverlayInfo2 =
+          (await inspector.getTileOverlayInfo('tile_overlay_1'))!;
+      Map<String, dynamic>? tileOverlayInfo2 =
           await inspector.getTileOverlayInfo('tile_overlay_2');
 
       expect(tileOverlayInfo1['visible'], isFalse);
@@ -1177,7 +1177,7 @@ void main() {
       );
 
       await tester.pumpAndSettle(const Duration(seconds: 3));
-      Map<String, dynamic> tileOverlayInfo1 =
+      Map<String, dynamic>? tileOverlayInfo1 =
           await inspector.getTileOverlayInfo('tile_overlay_1');
 
       expect(tileOverlayInfo1, isNull);
