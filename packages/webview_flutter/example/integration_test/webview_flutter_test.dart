@@ -1121,7 +1121,7 @@ void main() {
         expect(error.failingUrl, isNull);
       } else if (Platform.isAndroid) {
         expect(error.errorType, isNotNull);
-        expect(error.failingUrl.startsWith('https://www.notawebsite..com'),
+        expect(error.failingUrl?.startsWith('https://www.notawebsite..com'),
             isTrue);
       }
     });
