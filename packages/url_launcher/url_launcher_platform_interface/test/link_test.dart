@@ -20,7 +20,7 @@ void main() {
     ));
     expect(find.byKey(Key('home')), findsOneWidget);
     expect(find.byKey(Key('a')), findsNothing);
-    await pushRouteNameToFramework(null, '/a');
+    await tester.runAsync(() => pushRouteNameToFramework(null, '/a'));
     // start animation
     await tester.pump();
     // skip past animation (5s is arbitrary, just needs to be long enough)
@@ -36,7 +36,7 @@ void main() {
     ));
     expect(find.byKey(Key('/')), findsOneWidget);
     expect(find.byKey(Key('/a')), findsNothing);
-    await pushRouteNameToFramework(null, '/a');
+    await tester.runAsync(() => pushRouteNameToFramework(null, '/a'));
     // start animation
     await tester.pump();
     // skip past animation (5s is arbitrary, just needs to be long enough)
