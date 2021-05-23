@@ -1250,7 +1250,6 @@ NSString *const errorMethod = @"error";
   _registry = registry;
   _messenger = messenger;
   [self initDeviceEventMethodChannel];
-  [self startOrientationListener];
   return self;
 }
 
