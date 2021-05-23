@@ -1,3 +1,6 @@
+## 0.8.2
+* Solved device auto-rotation issue on android and iOS which caused the preview to be zoomed when auto-rotation is turned off and rotation is locked using SystemChrome.
+
 ## 0.8.1
 
 * Solved a rotation issue on iOS which caused the default preview to be displayed as landscape right instead of portrait.
