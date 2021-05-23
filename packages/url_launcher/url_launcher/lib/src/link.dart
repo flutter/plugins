@@ -4,10 +4,17 @@
 
 import 'dart:async';
 
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:meta/meta.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+
+/// The function used to push routes to the Flutter framework.
+@visibleForTesting
+Future<ByteData> Function(Object?, String) pushRouteToFrameworkFunction =
+    pushRouteNameToFramework;
 
 /// A widget that renders a real link on the web, and uses WebViews in native
 /// platforms to open links.
@@ -98,7 +105,7 @@ class DefaultLinkDelegate extends StatelessWidget {
       // case, we push it via Flutter's navigation system instead of letting the
       // browser handle it.
       final String routeName = link.uri.toString();
-      await pushRouteNameToFramework(context, routeName);
+      await pushRouteToFrameworkFunction(context, routeName);
       return;
     }
 

@@ -1,3 +1,7 @@
+## 2.1.3
+
+* Fix pointer value to boolean conversion analyzer warnings.
+
 ## 2.1.2
 
 * Migrate maven repository from jcenter to mavenCentral.

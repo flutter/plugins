@@ -190,14 +190,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                       animated:YES
                                                     completion:nil];
   } else {
-    UIAlertController *cameraErrorAlert =
-        [UIAlertController alertControllerWithTitle:@"Error"
-                                            message:@"Camera not available."
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    [cameraErrorAlert addAction:[UIAlertAction actionWithTitle:@"OK"
-                                                         style:UIAlertActionStyleDefault
-                                                       handler:^(UIAlertAction *action){
-                                                       }]];
+    UIAlertController *cameraErrorAlert = [UIAlertController
+        alertControllerWithTitle:NSLocalizedString(@"Error", @"Alert title when camera unavailable")
+                         message:NSLocalizedString(@"Camera not available.",
+                                                   "Alert message when camera unavailable")
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [cameraErrorAlert
+        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(
+                                                     @"OK", @"Alert button when camera unavailable")
+                                           style:UIAlertActionStyleDefault
+                                         handler:^(UIAlertAction *action){
+                                         }]];
     [[self viewControllerWithWindow:nil] presentViewController:cameraErrorAlert
                                                       animated:YES
                                                     completion:nil];
@@ -345,7 +348,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if (![imageQuality isKindOfClass:[NSNumber class]]) {
     imageQuality = @1;
   } else if (imageQuality.intValue < 0 || imageQuality.intValue > 100) {
-    imageQuality = [NSNumber numberWithInt:1];
+    imageQuality = @1;
   } else {
     imageQuality = @([imageQuality floatValue] / 100);
   }
