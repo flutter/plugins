@@ -1,6 +1,10 @@
+## 6.0.4
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 6.0.3
 
-* Updat README notes about URL schemes on iOS
+* Update README notes about URL schemes on iOS
 
 ## 6.0.2
 

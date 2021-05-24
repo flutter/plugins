@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:quick_actions/quick_actions.dart';
@@ -12,7 +11,7 @@ void main() {
 
   testWidgets('Can set shortcuts', (WidgetTester tester) async {
     final QuickActions quickActions = QuickActions();
-    await quickActions.initialize(null);
+    await quickActions.initialize((String shortcutType) => {});
 
     const ShortcutItem shortCutItem = ShortcutItem(
       type: 'action_one',

@@ -1,3 +1,11 @@
+## 1.0.0
+
+* Stable release of in_app_purchase plugin.
+
+## 0.6.0+1
+
+* Added a reference to the in-app purchase codelab in the README.md.
+
 ## 0.6.0
 
 As part of implementing federated architecture and making the interface compatible for other platforms this version contains the following **breaking changes**:

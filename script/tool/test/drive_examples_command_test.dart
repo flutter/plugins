@@ -14,8 +14,8 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
-    CommandRunner<void> runner;
-    RecordingProcessRunner processRunner;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
     setUp(() {

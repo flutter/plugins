@@ -1,3 +1,7 @@
+## 5.0.4
+
+* Migrate maven repo from jcenter to mavenCentral.
+
 ## 5.0.3
 
 * Fixed links in `README.md`.

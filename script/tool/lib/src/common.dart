@@ -12,14 +12,13 @@ import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:yaml/yaml.dart';
 
 /// The signature for a print handler for commands that allow overriding the
 /// print destination.
-typedef Print = void Function(Object object);
+typedef Print = void Function(Object? object);
 
 /// Key for windows platform.
 const String kWindows = 'windows';
@@ -50,7 +49,7 @@ const String kEnableExperiment = 'enable-experiment';
 
 /// Returns whether the given directory contains a Flutter package.
 bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
-  if (entity == null || entity is! Directory) {
+  if (entity is! Directory) {
     return false;
   }
 
@@ -59,7 +58,7 @@ bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
         fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
-    final YamlMap dependencies = pubspecYaml['dependencies'] as YamlMap;
+    final YamlMap? dependencies = pubspecYaml['dependencies'] as YamlMap?;
     if (dependencies == null) {
       return false;
     }
@@ -87,7 +86,7 @@ bool pluginSupportsPlatform(
       platform == kMacos ||
       platform == kWindows ||
       platform == kLinux);
-  if (entity == null || entity is! Directory) {
+  if (entity is! Directory) {
     return false;
   }
 
@@ -96,15 +95,15 @@ bool pluginSupportsPlatform(
         fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
-    final YamlMap flutterSection = pubspecYaml['flutter'] as YamlMap;
+    final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
     if (flutterSection == null) {
       return false;
     }
-    final YamlMap pluginSection = flutterSection['plugin'] as YamlMap;
+    final YamlMap? pluginSection = flutterSection['plugin'] as YamlMap?;
     if (pluginSection == null) {
       return false;
     }
-    final YamlMap platforms = pluginSection['platforms'] as YamlMap;
+    final YamlMap? platforms = pluginSection['platforms'] as YamlMap?;
     if (platforms == null) {
       // Legacy plugin specs are assumed to support iOS and Android.
       if (!pluginSection.containsKey('platforms')) {
@@ -151,7 +150,7 @@ bool isLinuxPlugin(FileSystemEntity entity, FileSystem fileSystem) {
 }
 
 /// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
-void printErrorAndExit({@required String errorMessage, int exitCode = 1}) {
+void printErrorAndExit({required String errorMessage, int exitCode = 1}) {
   final Colorize redError = Colorize(errorMessage)..red();
   print(redError);
   throw ToolExit(exitCode);
@@ -204,7 +203,8 @@ abstract class PluginCommand extends Command<void> {
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
             'If the $_pluginsArg is specified, this flag is ignored.\n'
-            'If no plugins have changed, the command runs on all plugins.\n'
+            'If no packages have changed, or if there have been changes that may\n'
+            'affect all packages, the command runs on all packages.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
             'See $_kBaseSha if a custom base is needed to determine the diff.');
     argParser.addOption(_kBaseSha,
@@ -236,17 +236,17 @@ abstract class PluginCommand extends Command<void> {
   /// The git directory to use. By default it uses the parent directory.
   ///
   /// This can be mocked for testing.
-  final GitDir gitDir;
+  final GitDir? gitDir;
 
-  int _shardIndex;
-  int _shardCount;
+  int? _shardIndex;
+  int? _shardCount;
 
   /// The shard of the overall command execution that this instance should run.
   int get shardIndex {
     if (_shardIndex == null) {
       _checkSharding();
     }
-    return _shardIndex;
+    return _shardIndex!;
   }
 
   /// The number of shards this command is divided into.
@@ -254,12 +254,27 @@ abstract class PluginCommand extends Command<void> {
     if (_shardCount == null) {
       _checkSharding();
     }
-    return _shardCount;
+    return _shardCount!;
+  }
+
+  /// Convenience accessor for boolean arguments.
+  bool getBoolArg(String key) {
+    return (argResults![key] as bool?) ?? false;
+  }
+
+  /// Convenience accessor for String arguments.
+  String getStringArg(String key) {
+    return (argResults![key] as String?) ?? '';
+  }
+
+  /// Convenience accessor for List<String> arguments.
+  List<String> getStringListArg(String key) {
+    return (argResults![key] as List<String>?) ?? <String>[];
   }
 
   void _checkSharding() {
-    final int shardIndex = int.tryParse(argResults[_shardIndexArg] as String);
-    final int shardCount = int.tryParse(argResults[_shardCountArg] as String);
+    final int? shardIndex = int.tryParse(getStringArg(_shardIndexArg));
+    final int? shardCount = int.tryParse(getStringArg(_shardCountArg));
     if (shardIndex == null) {
       usageException('$_shardIndexArg must be an integer');
     }
@@ -317,13 +332,13 @@ abstract class PluginCommand extends Command<void> {
   ///    is a sibling of the packages directory. This is used for a small number
   ///    of packages in the flutter/packages repository.
   Stream<Directory> _getAllPlugins() async* {
-    Set<String> plugins =
-        Set<String>.from(argResults[_pluginsArg] as List<String>);
+    Set<String> plugins = Set<String>.from(getStringListArg(_pluginsArg));
     final Set<String> excludedPlugins =
-        Set<String>.from(argResults[_excludeArg] as List<String>);
-    final bool runOnChangedPackages =
-        argResults[_runOnChangedPackagesArg] as bool;
-    if (plugins.isEmpty && runOnChangedPackages) {
+        Set<String>.from(getStringListArg(_excludeArg));
+    final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
+    if (plugins.isEmpty &&
+        runOnChangedPackages &&
+        !(await _changesRequireFullTest())) {
       plugins = await _getChangedPackages();
     }
 
@@ -429,9 +444,9 @@ abstract class PluginCommand extends Command<void> {
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
     final String rootDir = packagesDir.parent.absolute.path;
-    final String baseSha = argResults[_kBaseSha] as String;
+    final String baseSha = getStringArg(_kBaseSha);
 
-    GitDir baseGitDir = gitDir;
+    GitDir? baseGitDir = gitDir;
     if (baseGitDir == null) {
       if (!await GitDir.isGitDir(rootDir)) {
         printErrorAndExit(
@@ -446,6 +461,7 @@ abstract class PluginCommand extends Command<void> {
     return gitVersionFinder;
   }
 
+  // Returns packages that have been changed relative to the git base.
   Future<Set<String>> _getChangedPackages() async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
@@ -460,13 +476,39 @@ abstract class PluginCommand extends Command<void> {
         packages.add(pathComponents[packagesIndex + 1]);
       }
     }
-    if (packages.isNotEmpty) {
-      final String changedPackages = packages.join(',');
-      print(changedPackages);
-    } else {
+    if (packages.isEmpty) {
       print('No changed packages.');
+    } else {
+      final String changedPackages = packages.join(',');
+      print('Changed packages: $changedPackages');
     }
     return packages;
+  }
+
+  // Returns true if one or more files changed that have the potential to affect
+  // any plugin (e.g., CI script changes).
+  Future<bool> _changesRequireFullTest() async {
+    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+
+    const List<String> specialFiles = <String>[
+      '.ci.yaml', // LUCI config.
+      '.cirrus.yml', // Cirrus config.
+      '.clang-format', // ObjC and C/C++ formatting options.
+      'analysis_options.yaml', // Dart analysis settings.
+    ];
+    const List<String> specialDirectories = <String>[
+      '.ci/', // Support files for CI.
+      'script/', // This tool, and its wrapper scripts.
+    ];
+    // Directory entries must end with / to avoid over-matching, since the
+    // check below is done via string prefixing.
+    assert(specialDirectories.every((String dir) => dir.endsWith('/')));
+
+    final List<String> allChangedFiles =
+        await gitVersionFinder.getChangedFiles();
+    return allChangedFiles.any((String path) =>
+        specialFiles.contains(path) ||
+        specialDirectories.any((String dir) => path.startsWith(dir)));
   }
 }
 
@@ -490,7 +532,7 @@ class ProcessRunner {
   Future<int> runAndStream(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
     bool exitOnError = false,
   }) async {
     print(
@@ -522,7 +564,7 @@ class ProcessRunner {
   ///
   /// Returns the [io.ProcessResult] of the [executable].
   Future<io.ProcessResult> run(String executable, List<String> args,
-      {Directory workingDir,
+      {Directory? workingDir,
       bool exitOnError = false,
       bool logOnError = false,
       Encoding stdoutEncoding = io.systemEncoding,
@@ -550,15 +592,15 @@ class ProcessRunner {
   /// passing [workingDir].
   ///
   /// Returns the started [io.Process].
-  Future<io.Process> start(String executable, List<String> args,
-      {Directory workingDirectory}) async {
+  Future<io.Process?> start(String executable, List<String> args,
+      {Directory? workingDirectory}) async {
     final io.Process process = await io.Process.start(executable, args,
         workingDirectory: workingDirectory?.path);
     return process;
   }
 
   String _getErrorString(String executable, List<String> args,
-      {Directory workingDir}) {
+      {Directory? workingDir}) {
     final String workdir = workingDir == null ? '' : ' in ${workingDir.path}';
     return 'ERROR: Unable to execute "$executable ${args.join(' ')}"$workdir.';
   }
@@ -569,7 +611,7 @@ class PubVersionFinder {
   /// Constructor.
   ///
   /// Note: you should manually close the [httpClient] when done using the finder.
-  PubVersionFinder({this.pubHost = defaultPubHost, @required this.httpClient});
+  PubVersionFinder({this.pubHost = defaultPubHost, required this.httpClient});
 
   /// The default pub host to use.
   static const String defaultPubHost = 'https://pub.dev';
@@ -584,8 +626,8 @@ class PubVersionFinder {
 
   /// Get the package version on pub.
   Future<PubVersionFinderResponse> getPackageVersion(
-      {@required String package}) async {
-    assert(package != null && package.isNotEmpty);
+      {required String package}) async {
+    assert(package.isNotEmpty);
     final Uri pubHostUri = Uri.parse(pubHost);
     final Uri url = pubHostUri.replace(path: '/packages/$package.json');
     final http.Response response = await httpClient.get(url);
@@ -618,8 +660,8 @@ class PubVersionFinder {
 class PubVersionFinderResponse {
   /// Constructor.
   PubVersionFinderResponse({this.versions, this.result, this.httpResponse}) {
-    if (versions != null && versions.isNotEmpty) {
-      versions.sort((Version a, Version b) {
+    if (versions != null && versions!.isNotEmpty) {
+      versions!.sort((Version a, Version b) {
         // TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
         // https://github.com/flutter/flutter/issues/82222
         return b.compareTo(a);
@@ -631,13 +673,13 @@ class PubVersionFinderResponse {
   ///
   /// This is sorted by largest to smallest, so the first element in the list is the largest version.
   /// Might be `null` if the [result] is not [PubVersionFinderResult.success].
-  final List<Version> versions;
+  final List<Version>? versions;
 
   /// The result of the version finder.
-  final PubVersionFinderResult result;
+  final PubVersionFinderResult? result;
 
   /// The response object of the http request.
-  final http.Response httpResponse;
+  final http.Response? httpResponse;
 }
 
 /// An enum representing the result of [PubVersionFinder].
@@ -667,7 +709,7 @@ class GitVersionFinder {
   final GitDir baseGitDir;
 
   /// The base sha used to get diff.
-  final String baseSha;
+  final String? baseSha;
 
   static bool _isPubspec(String file) {
     return file.trim().endsWith('pubspec.yaml');
@@ -684,8 +726,7 @@ class GitVersionFinder {
     final io.ProcessResult changedFilesCommand = await baseGitDir
         .runCommand(<String>['diff', '--name-only', baseSha, 'HEAD']);
     print('Determine diff with base sha: $baseSha');
-    final String changedFilesStdout =
-        changedFilesCommand.stdout.toString() ?? '';
+    final String changedFilesStdout = changedFilesCommand.stdout.toString();
     if (changedFilesStdout.isEmpty) {
       return <String>[];
     }
@@ -696,7 +737,8 @@ class GitVersionFinder {
 
   /// Get the package version specified in the pubspec file in `pubspecPath` and
   /// at the revision of `gitRef` (defaulting to the base if not provided).
-  Future<Version> getPackageVersion(String pubspecPath, {String gitRef}) async {
+  Future<Version?> getPackageVersion(String pubspecPath,
+      {String? gitRef}) async {
     final String ref = gitRef ?? (await _getBaseSha());
 
     io.ProcessResult gitShow;
@@ -707,20 +749,19 @@ class GitVersionFinder {
       return null;
     }
     final String fileContent = gitShow.stdout as String;
-    final String versionString = loadYaml(fileContent)['version'] as String;
+    final String? versionString = loadYaml(fileContent)['version'] as String?;
     return versionString == null ? null : Version.parse(versionString);
   }
 
   Future<String> _getBaseSha() async {
-    if (baseSha != null && baseSha.isNotEmpty) {
-      return baseSha;
+    if (baseSha != null && baseSha!.isNotEmpty) {
+      return baseSha!;
     }
 
     io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
         <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
         throwOnError: false);
-    if (baseShaFromMergeBase == null ||
-        baseShaFromMergeBase.stderr != null ||
+    if (baseShaFromMergeBase.stderr != null ||
         baseShaFromMergeBase.stdout == null) {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);

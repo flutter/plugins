@@ -1,3 +1,16 @@
+## 2.0.7
+
+* Republished 2.0.6 with Flutter 2.2 to avoid https://github.com/dart-lang/pub/issues/3001
+
+## 2.0.6
+
+* WebView requires at least Android 19 if you are using
+hybrid composition ([flutter/issues/59894](https://github.com/flutter/flutter/issues/59894)).
+
+## 2.0.5
+
+* Example app observes `uiMode`, so the WebView isn't reattached when the UI mode changes. (e.g. switching to Dark mode).
+
 ## 2.0.4
 
 * Fix a bug where `allowsInlineMediaPlayback` is not respected on iOS.

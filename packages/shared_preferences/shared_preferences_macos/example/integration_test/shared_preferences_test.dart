@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
@@ -29,7 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferencesStorePlatform preferences;
+    late SharedPreferencesStorePlatform preferences;
 
     setUp(() async {
       preferences = SharedPreferencesStorePlatform.instance;
