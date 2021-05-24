@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
-
-  private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
-  private static final String EXTRA_ACTION = "some unique action key";
+  
+  public static final String EXTRA_ACTION = "some unique action key";
+  public static final String GET_LAUNCH_ACTION = "getLaunchAction";
 
   private final Context context;
   private Activity activity;
@@ -55,7 +55,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
         break;
-      case "getLaunchAction":
+      case GET_LAUNCH_ACTION:
         if (activity == null) {
           result.error(
               "quick_action_getlaunchaction_no_activity",
@@ -124,8 +124,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         .getPackageManager()
         .getLaunchIntentForPackage(packageName)
         .setAction(Intent.ACTION_RUN)
-        .putExtra(EXTRA_ACTION, type)
-        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        .putExtra(EXTRA_ACTION, type);
   }
 }

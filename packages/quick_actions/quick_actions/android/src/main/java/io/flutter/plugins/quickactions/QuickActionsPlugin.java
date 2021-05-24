@@ -6,14 +6,18 @@ package io.flutter.plugins.quickactions;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.os.Build;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 
 /** QuickActionsPlugin */
-public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
+public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListener {
   private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
 
   private MethodChannel channel;
@@ -43,6 +47,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     handler.setActivity(binding.getActivity());
+    binding.addOnNewIntentListener(this);
   }
 
   @Override
@@ -52,6 +57,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
+    binding.removeOnNewIntentListener(this);
     onAttachedToActivity(binding);
   }
 
@@ -70,5 +76,16 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware {
     channel.setMethodCallHandler(null);
     channel = null;
     handler = null;
+  }
+
+  @Override
+  public boolean onNewIntent(Intent intent) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
+      if (intent.getExtras().containsKey(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
+          channel.invokeMethod(MethodCallHandlerImpl.GET_LAUNCH_ACTION, null);
+          channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
+      }
+    }
+    return false;
   }
 }
