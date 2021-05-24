@@ -175,7 +175,10 @@ class PublishCheckCommand extends PluginCommand {
       (List<int> event) {
         final String output = String.fromCharCodes(event);
         if (output.isNotEmpty) {
-          _printImportantStatusMessage(output, isError: true);
+          // The final result is always printed on stderr, whether success or
+          // failure.
+          final bool isError = !output.contains('has 0 warnings');
+          _printImportantStatusMessage(output, isError: isError);
           outputBuffer.write(output);
         }
       },
