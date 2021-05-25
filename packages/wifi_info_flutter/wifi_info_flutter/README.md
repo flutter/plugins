@@ -24,9 +24,9 @@ You can get wi-fi related information using:
 ```dart
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 
-var wifiBSSID = await WifiFlutter().getWifiBSSID();
-var wifiIP = await WifiFlutter().getWifiIP();
-var wifiName = await WifiFlutter().getWifiName();
+var wifiBSSID = await WifiInfo().getWifiBSSID();
+var wifiIP = await WifiInfo().getWifiIP();
+var wifiName = await WifiInfo().getWifiName();
 ```
 
 ### iOS 12

@@ -1,43 +1,27 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package io.flutter.plugins.googlemaps;
 
-import android.app.Application;
 import android.content.Context;
-import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.Lifecycle.State;
 import com.google.android.gms.maps.model.CameraPosition;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicReference;
 
 public class GoogleMapFactory extends PlatformViewFactory {
 
-  private final AtomicReference<State> lifecycleState;
   private final BinaryMessenger binaryMessenger;
-  @Nullable private final Application application;
-  @Nullable private final Lifecycle lifecycle;
-  @Nullable private final PluginRegistry.Registrar registrar; // V1 embedding only.
+  private final LifecycleProvider lifecycleProvider;
 
-  GoogleMapFactory(
-      AtomicReference<State> lifecycleState,
-      BinaryMessenger binaryMessenger,
-      @Nullable Application application,
-      @Nullable Lifecycle lifecycle,
-      @Nullable PluginRegistry.Registrar registrar) {
+  GoogleMapFactory(BinaryMessenger binaryMessenger, LifecycleProvider lifecycleProvider) {
     super(StandardMessageCodec.INSTANCE);
-    this.lifecycleState = lifecycleState;
     this.binaryMessenger = binaryMessenger;
-    this.application = application;
-    this.lifecycle = lifecycle;
-    this.registrar = registrar;
+    this.lifecycleProvider = lifecycleProvider;
   }
 
   @SuppressWarnings("unchecked")
@@ -63,7 +47,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     if (params.containsKey("circlesToAdd")) {
       builder.setInitialCircles(params.get("circlesToAdd"));
     }
-    return builder.build(
-        id, context, lifecycleState.get(), binaryMessenger, application, lifecycle, registrar);
+    if (params.containsKey("tileOverlaysToAdd")) {
+      builder.setInitialTileOverlays((List<Map<String, ?>>) params.get("tileOverlaysToAdd"));
+    }
+    return builder.build(id, context, binaryMessenger, lifecycleProvider);
   }
 }

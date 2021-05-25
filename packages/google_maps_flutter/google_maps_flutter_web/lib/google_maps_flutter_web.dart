@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,7 +6,8 @@ library google_maps_flutter_web;
 
 import 'dart:async';
 import 'dart:html';
-import 'dart:ui' as ui;
+import 'dart:js_util';
+import 'src/shims/dart_ui.dart' as ui; // Conditionally imports dart:ui in web
 import 'dart:convert';
 
 import 'package:flutter/rendering.dart';

@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -9,13 +13,11 @@ import 'package:flutter/foundation.dart'
     show SynchronousFuture, describeIdentity;
 
 class _FutureImageStreamCompleter extends ImageStreamCompleter {
-  final Future<double> futureScale;
-  final InformationCollector informationCollector;
-
-  _FutureImageStreamCompleter(
-      {Future<ui.Codec> codec, this.futureScale, this.informationCollector})
-      : assert(codec != null),
-        assert(futureScale != null) {
+  _FutureImageStreamCompleter({
+    required Future<ui.Codec> codec,
+    required this.futureScale,
+    this.informationCollector,
+  }) {
     codec.then<void>(_onCodecReady, onError: (dynamic error, StackTrace stack) {
       reportError(
         context: ErrorDescription('resolving a single-frame image stream'),
@@ -26,6 +28,9 @@ class _FutureImageStreamCompleter extends ImageStreamCompleter {
       );
     });
   }
+
+  final Future<double> futureScale;
+  final InformationCollector? informationCollector;
 
   Future<void> _onCodecReady(ui.Codec codec) async {
     try {
@@ -50,9 +55,7 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
   /// Constructor for FutureMemoryImage.  [_futureBytes] is the bytes that will
   /// be loaded into an image and [_futureScale] is the scale that will be applied to
   /// that image to account for high-resolution images.
-  const _FutureMemoryImage(this._futureBytes, this._futureScale)
-      : assert(_futureBytes != null),
-        assert(_futureScale != null);
+  const _FutureMemoryImage(this._futureBytes, this._futureScale);
 
   final Future<Uint8List> _futureBytes;
   final Future<double> _futureScale;
@@ -73,7 +76,9 @@ class _FutureMemoryImage extends ImageProvider<_FutureMemoryImage> {
   }
 
   Future<ui.Codec> _loadAsync(
-      _FutureMemoryImage key, DecoderCallback decode) async {
+    _FutureMemoryImage key,
+    DecoderCallback decode,
+  ) async {
     assert(key == this);
     return _futureBytes.then((Uint8List bytes) {
       return decode(bytes);
@@ -113,10 +118,19 @@ class IosPlatformImages {
   ///
   /// See [https://developer.apple.com/documentation/uikit/uiimage/1624146-imagenamed?language=objc]
   static ImageProvider load(String name) {
-    Future<Map> loadInfo = _channel.invokeMethod('loadImage', name);
+    Future<Map?> loadInfo = _channel.invokeMapMethod('loadImage', name);
     Completer<Uint8List> bytesCompleter = Completer<Uint8List>();
     Completer<double> scaleCompleter = Completer<double>();
     loadInfo.then((map) {
+      if (map == null) {
+        scaleCompleter.completeError(
+          Exception("Image couldn't be found: $name"),
+        );
+        bytesCompleter.completeError(
+          Exception("Image couldn't be found: $name"),
+        );
+        return;
+      }
       scaleCompleter.complete(map["scale"]);
       bytesCompleter.complete(map["data"]);
     });
@@ -129,7 +143,7 @@ class IosPlatformImages {
   /// Returns null if the resource can't be found.
   ///
   /// See [https://developer.apple.com/documentation/foundation/nsbundle/1411540-urlforresource?language=objc]
-  static Future<String> resolveURL(String name, [String ext]) {
-    return _channel.invokeMethod<String>('resolveURL', [name, ext]);
+  static Future<String?> resolveURL(String name, {String? extension}) {
+    return _channel.invokeMethod<String>('resolveURL', [name, extension]);
   }
 }

@@ -1,3 +1,24 @@
+## 4.1.0
+
+* Add `httpHeaders` to `DataSource`
+
+## 4.0.0
+
+* **Breaking Changes**:
+  * Migrate to null-safety
+  * Update to latest Pigeon. This includes a breaking change to how the test logic is exposed.
+* Add note about the `mixWithOthers` option being ignored on the web.
+* Make DataSource's `uri` parameter nullable.
+* `messages.dart` sets Dart `2.12`.
+
+## 3.0.0
+
+* Version 3 only was published as nullsafety "previews".
+
+## 2.2.1
+
+* Update Flutter SDK constraint.
+
 ## 2.2.0
 
 * Added option to set the video playback speed on the video controller.

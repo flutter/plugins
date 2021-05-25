@@ -1,11 +1,11 @@
 # Battery
 
-[![pub package](https://img.shields.io/pub/v/battery.svg)](https://pub.dartlang.org/packages/battery)
+[![pub package](https://img.shields.io/pub/v/battery.svg)](https://pub.dev/packages/battery)
 
 A Flutter plugin to access various information about the battery of the device the app is running on.
 
 ## Usage
-To use this plugin, add `battery` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+To use this plugin, add `battery` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 ### Example
 

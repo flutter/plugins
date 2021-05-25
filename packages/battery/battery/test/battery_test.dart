@@ -1,18 +1,18 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 
-import 'package:battery_platform_interface/battery_platform_interface.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:test/test.dart';
 import 'package:battery/battery.dart';
-import 'package:mockito/mockito.dart';
+import 'package:battery_platform_interface/battery_platform_interface.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:test/fake.dart';
 
 void main() {
   group('battery', () {
-    Battery battery;
+    late Battery battery;
     MockBatteryPlatform fakePlatform;
     setUp(() async {
       fakePlatform = MockBatteryPlatform();
@@ -30,7 +30,7 @@ void main() {
   });
 }
 
-class MockBatteryPlatform extends Mock
+class MockBatteryPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements BatteryPlatform {
   Future<int> batteryLevel() async {

@@ -1,43 +1,47 @@
-// Copyright 2019, the Chromium project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
-import 'package:e2e/e2e.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
     final PathProviderWindows provider = PathProviderWindows();
-    final String result = await provider.getTemporaryPath();
+    final String? result = await provider.getTemporaryPath();
     _verifySampleFile(result, 'temporaryDirectory');
   });
 
   testWidgets('getApplicationDocumentsDirectory', (WidgetTester tester) async {
     final PathProviderWindows provider = PathProviderWindows();
-    final String result = await provider.getApplicationDocumentsPath();
+    final String? result = await provider.getApplicationDocumentsPath();
     _verifySampleFile(result, 'applicationDocuments');
   });
 
   testWidgets('getApplicationSupportDirectory', (WidgetTester tester) async {
     final PathProviderWindows provider = PathProviderWindows();
-    final String result = await provider.getApplicationSupportPath();
+    final String? result = await provider.getApplicationSupportPath();
     _verifySampleFile(result, 'applicationSupport');
   });
 
   testWidgets('getDownloadsDirectory', (WidgetTester tester) async {
     final PathProviderWindows provider = PathProviderWindows();
-    final String result = await provider.getDownloadsPath();
+    final String? result = await provider.getDownloadsPath();
     _verifySampleFile(result, 'downloads');
   });
 }
 
 /// Verify a file called [name] in [directoryPath] by recreating it with test
 /// contents when necessary.
-void _verifySampleFile(String directoryPath, String name) {
+void _verifySampleFile(String? directoryPath, String name) {
+  expect(directoryPath, isNotNull);
+  if (directoryPath == null) {
+    return;
+  }
   final Directory directory = Directory(directoryPath);
   final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
