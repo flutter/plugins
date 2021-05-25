@@ -20,6 +20,7 @@
                                     PHPickerViewControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult result;
+
 @property(nonatomic) bool single;
 
 @property(copy, nonatomic) NSDictionary *arguments;
@@ -78,6 +79,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
+
+  self.single = single;
 
   [self checkPhotoAuthorizationForAccessLevel];
 }
@@ -364,6 +367,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
   NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
   NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
+  NSMutableArray *pathList = [NSMutableArray new];
 
   for (PHPickerResult *result in results) {
     [result.itemProvider
@@ -382,12 +386,15 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                         maxHeight:maxHeight
                                               isMetadataAvailable:originalAsset != nil];
               }
-
+              __block NSString *savedPath;
               if (!originalAsset) {
                 // Image picked without an original asset (e.g. User took a photo directly)
-                [self saveImageWithPickerInfo:nil
-                                        image:localImage
-                                 imageQuality:desiredImageQuality];
+                savedPath =
+                    [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                                    image:localImage
+                                                             imageQuality:desiredImageQuality];
+                [pathList addObject:savedPath];
+
               } else {
                 [[PHImageManager defaultManager]
                     requestImageDataForAsset:originalAsset
@@ -396,12 +403,20 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                    NSData *_Nullable imageData, NSString *_Nullable dataUTI,
                                    UIImageOrientation orientation, NSDictionary *_Nullable info) {
                                  // maxWidth and maxHeight are used only for GIF images.
-                                 [self saveImageWithOriginalImageData:imageData
-                                                                image:localImage
-                                                             maxWidth:maxWidth
-                                                            maxHeight:maxHeight
-                                                         imageQuality:desiredImageQuality];
+                                 savedPath = [FLTImagePickerPhotoAssetUtil
+                                     saveImageWithOriginalImageData:imageData
+                                                              image:localImage
+                                                           maxWidth:maxWidth
+                                                          maxHeight:maxHeight
+                                                       imageQuality:desiredImageQuality];
+                                 [pathList addObject:savedPath];
+                                 if (pathList.count == results.count) {
+                                   [self handlePath:savedPath listCount:pathList];
+                                 }
                                }];
+              }
+              if (pathList.count == results.count) {
+                [self handlePath:savedPath listCount:pathList];
               }
             });
           }
