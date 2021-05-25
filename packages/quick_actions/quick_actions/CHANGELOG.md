@@ -1,3 +1,7 @@
+## 0.7.0
+
+* Allow Android to trigger quick actions without restarting the app.
+
 ## 0.6.0+1
 
 * Correctly handle iOS Application lifecycle events on cold start of the App.
