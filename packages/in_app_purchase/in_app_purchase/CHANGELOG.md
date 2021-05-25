@@ -1,3 +1,7 @@
+## 1.0.1
+
+* Fix ignoring "autoConsume" param in "InAppPurchase.instance.buyConsumable".
+
 ## 1.0.0
 
 * Stable release of in_app_purchase plugin.
