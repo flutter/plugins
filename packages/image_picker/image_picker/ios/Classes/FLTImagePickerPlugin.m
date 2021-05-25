@@ -547,4 +547,19 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _arguments = nil;
 }
 
+- (void)handleMultiSavedPaths:(NSMutableArray *)pathList {
+  if (!self.result) {
+    return;
+  }
+  if (pathList.count > 0) {
+    self.result(pathList);
+  } else {
+    self.result([FlutterError errorWithCode:@"create_error"
+                                    message:@"Temporary files could not be created"
+                                    details:nil]);
+  }
+  self.result = nil;
+  _arguments = nil;
+}
+
 @end
