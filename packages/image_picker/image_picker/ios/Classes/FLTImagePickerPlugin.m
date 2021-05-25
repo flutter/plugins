@@ -424,6 +424,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
+- (void)handlePath:(NSString *)savedPath listCount:(NSMutableArray *)pathList {
+  if (self.single) {
+    [self handleSavedPath:savedPath];
+  } else {
+    [self handleMultiSavedPaths:pathList];
+  }
+}
+
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
