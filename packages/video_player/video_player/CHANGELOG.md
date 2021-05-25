@@ -1,3 +1,7 @@
+## 2.1.4
+
+* Specify Java 8 for Android build.
+
 ## 2.1.3
 
 * Fix pointer value to boolean conversion analyzer warnings.
