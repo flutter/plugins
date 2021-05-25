@@ -5,7 +5,7 @@ publish_to: none
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.0.0-nullsafety.1
+  shared_preferences: ^2.0.0
 
   in_app_purchase:
     # When depending on this package from a real application you should use:

@@ -4,12 +4,7 @@ publish_to: none
 # Tests require flutter beta or greater to run.
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0" 
-  # Actually, Flutter 2.0.0 shipped with a slightly older version of integration_test that
-  # did *not* support null safety. This flutter constraint should be changed to >=2.1.0 when
-  # that version (or greater) is shipped to the `stable` channel.
-  # This causes integration tests to *not* work in `stable`, for now. Please, run integration tests
-  # in `beta` or newer (flutter/plugins runs these tests in `master`).
+  flutter: ">=2.1.0" 
 
 dependencies:
   google_maps_flutter_web:
@@ -28,9 +23,3 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-
-# Remove these once environment flutter is set to ">=2.1.0".
-# Used to reconcile mockito ^5.0.0 with flutter 2.0.x (current stable).
-dependency_overrides:
-  crypto: ^3.0.0
-  convert: ^3.0.0

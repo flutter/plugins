@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.0
 
 * Migrate to null safety.

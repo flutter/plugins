@@ -106,7 +106,7 @@
 }
 
 - (void)canMakePayments:(FlutterResult)result {
-  result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
+  result(@([SKPaymentQueue canMakePayments]));
 }
 
 - (void)getPendingTransactions:(FlutterResult)result {

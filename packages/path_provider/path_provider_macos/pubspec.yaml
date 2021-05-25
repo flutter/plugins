@@ -1,7 +1,12 @@
 name: path_provider_macos
 description: macOS implementation of the path_provider plugin
+repository: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_macos
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+path_provider%22
 version: 2.0.1
-homepage: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider_macos
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
@@ -9,10 +14,6 @@ flutter:
     platforms:
       macos:
         pluginClass: PathProviderPlugin
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
 
 dependencies:
   flutter:

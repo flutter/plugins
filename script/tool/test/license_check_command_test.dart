@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -13,10 +11,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('$LicenseCheckCommand', () {
-    CommandRunner<void> runner;
-    FileSystem fileSystem;
-    List<String> printedMessages;
-    Directory root;
+    late CommandRunner<void> runner;
+    late FileSystem fileSystem;
+    late List<String> printedMessages;
+    late Directory root;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
@@ -28,7 +26,7 @@ void main() {
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
         fileSystem,
-        print: (Object message) => printedMessages.add(message.toString()),
+        print: (Object? message) => printedMessages.add(message.toString()),
       );
       runner =
           CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');

@@ -81,7 +81,13 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     final StringBuffer newGradle = StringBuffer();
     for (final String line in gradleFile.readAsLinesSync()) {
-      newGradle.writeln(line);
+      if (line.contains('minSdkVersion 16')) {
+        // Android SDK 20 is required by Google maps.
+        // Android SDK 19 is required by WebView.
+        newGradle.writeln('minSdkVersion 20');
+      } else {
+        newGradle.writeln(line);
+      }
       if (line.contains('defaultConfig {')) {
         newGradle.writeln('        multiDexEnabled true');
       } else if (line.contains('dependencies {')) {

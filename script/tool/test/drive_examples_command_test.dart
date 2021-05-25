@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
@@ -16,8 +14,8 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
-    CommandRunner<void> runner;
-    RecordingProcessRunner processRunner;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
     setUp(() {

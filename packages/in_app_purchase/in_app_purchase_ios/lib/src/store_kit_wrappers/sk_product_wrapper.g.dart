@@ -110,14 +110,48 @@ Map<String, dynamic> _$SKProductWrapperToJson(SKProductWrapper instance) =>
 
 SKPriceLocaleWrapper _$SKPriceLocaleWrapperFromJson(Map json) {
   return SKPriceLocaleWrapper(
+    localeIdentifier: json['localeIdentifier'] as String? ?? '',
+    countryCode: json['countryCode'] as String? ?? '',
+    languageCode: json['languageCode'] as String? ?? '',
+    scriptCode: json['scriptCode'] as String? ?? '',
+    variantCode: json['variantCode'] as String? ?? '',
+    collationIdentifier: json['collationIdentifier'] as String? ?? '',
+    collatorIdentifier: json['collatorIdentifier'] as String? ?? '',
+    usesMetricSystem: json['usesMetricSystem'] as bool? ?? true,
+    measurementSystem: json['measurementSystem'] as String? ?? '',
+    decimalSeparator: json['decimalSeparator'] as String? ?? '',
+    groupingSeparator: json['groupingSeparator'] as String? ?? '',
     currencySymbol: json['currencySymbol'] as String? ?? '',
     currencyCode: json['currencyCode'] as String? ?? '',
+    endDelimiterKey: json['endDelimiterKey'] as String? ?? '',
+    beginDelimiterKey: json['beginDelimiterKey'] as String? ?? '',
+    alternateQuotationEndDelimiterKey:
+        json['alternateQuotationEndDelimiterKey'] as String? ?? '',
+    alternateQuotationBeginDelimiterKey:
+        json['alternateQuotationBeginDelimiterKey'] as String? ?? '',
   );
 }
 
 Map<String, dynamic> _$SKPriceLocaleWrapperToJson(
         SKPriceLocaleWrapper instance) =>
     <String, dynamic>{
+      'localeIdentifier': instance.localeIdentifier,
+      'countryCode': instance.countryCode,
+      'languageCode': instance.languageCode,
+      'scriptCode': instance.scriptCode,
+      'variantCode': instance.variantCode,
+      'collationIdentifier': instance.collationIdentifier,
+      'collatorIdentifier': instance.collatorIdentifier,
+      'usesMetricSystem': instance.usesMetricSystem,
+      'measurementSystem': instance.measurementSystem,
+      'decimalSeparator': instance.decimalSeparator,
+      'groupingSeparator': instance.groupingSeparator,
       'currencySymbol': instance.currencySymbol,
       'currencyCode': instance.currencyCode,
+      'endDelimiterKey': instance.endDelimiterKey,
+      'beginDelimiterKey': instance.beginDelimiterKey,
+      'alternateQuotationEndDelimiterKey':
+          instance.alternateQuotationEndDelimiterKey,
+      'alternateQuotationBeginDelimiterKey':
+          instance.alternateQuotationBeginDelimiterKey,
     };

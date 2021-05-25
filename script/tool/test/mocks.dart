@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -35,5 +33,5 @@ class MockIOSink extends Mock implements IOSink {
   List<String> lines = <String>[];
 
   @override
-  void writeln([Object obj = '']) => lines.add(obj.toString());
+  void writeln([Object? obj = '']) => lines.add(obj.toString());
 }

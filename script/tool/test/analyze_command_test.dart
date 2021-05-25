@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/analyze_command.dart';
@@ -14,8 +12,8 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  RecordingProcessRunner processRunner;
-  CommandRunner<void> runner;
+  late RecordingProcessRunner processRunner;
+  late CommandRunner<void> runner;
 
   setUp(() {
     initializeFakePackages();
@@ -53,6 +51,31 @@ void main() {
           ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
+  });
+
+  test('uses a separate analysis sdk', () async {
+    final Directory pluginDir = createFakePlugin('a');
+
+    final MockProcess mockProcess = MockProcess();
+    mockProcess.exitCodeCompleter.complete(0);
+    processRunner.processToReturn = mockProcess;
+    await runner.run(<String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
+
+    expect(
+      processRunner.recordedCalls,
+      orderedEquals(<ProcessCall>[
+        ProcessCall(
+          'flutter',
+          const <String>['packages', 'get'],
+          pluginDir.path,
+        ),
+        ProcessCall(
+          'foo/bar/baz/bin/dart',
+          const <String>['analyze', '--fatal-infos'],
+          pluginDir.path,
+        ),
+      ]),
+    );
   });
 
   group('verifies analysis settings', () {
