@@ -75,18 +75,18 @@ public class ZoomLevelFeature extends CameraFeature<Float> {
   }
 
   /**
-   * Gets the maximum supported zoom level.
+   * Gets the minimum supported zoom level.
    *
-   * @return The maximum zoom level.
+   * @return The minimum zoom level.
    */
   public float getMinimumZoomLevel() {
     return MINIMUM_ZOOM_LEVEL;
   }
 
   /**
-   * Gets the minimum supported zoom level.
+   * Gets the maximum supported zoom level.
    *
-   * @return The minimum zoom level.
+   * @return The maximum zoom level.
    */
   public float getMaximumZoomLevel() {
     return maximumZoomLevel;
