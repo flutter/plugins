@@ -329,101 +329,24 @@ class SKProductWrapper {
 /// Object that indicates the locale of the price
 ///
 /// It is a thin wrapper of [NSLocale](https://developer.apple.com/documentation/foundation/nslocale?language=objc).
+// TODO(cyanglaz): NSLocale is a complex object, want to see the actual need of getting this expanded.
+//                 Matching android to only get the currencySymbol for now.
+//                 https://github.com/flutter/flutter/issues/26610
 @JsonSerializable()
 class SKPriceLocaleWrapper {
   /// Creates a new price locale for `currencySymbol` and `currencyCode`.
-  SKPriceLocaleWrapper({
-    required this.localeIdentifier,
-    required this.countryCode,
-    required this.languageCode,
-    required this.scriptCode,
-    required this.variantCode,
-    required this.collationIdentifier,
-    required this.collatorIdentifier,
-    required this.usesMetricSystem,
-    required this.measurementSystem,
-    required this.decimalSeparator,
-    required this.groupingSeparator,
-    required this.currencySymbol,
-    required this.currencyCode,
-    required this.endDelimiterKey,
-    required this.beginDelimiterKey,
-    required this.alternateQuotationEndDelimiterKey,
-    required this.alternateQuotationBeginDelimiterKey,
-  });
+  SKPriceLocaleWrapper(
+      {required this.currencySymbol, required this.currencyCode});
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
   factory SKPriceLocaleWrapper.fromJson(Map<String, dynamic>? map) {
     if (map == null) {
-      return SKPriceLocaleWrapper(
-        localeIdentifier: '',
-        countryCode: '',
-        languageCode: '',
-        scriptCode: '',
-        variantCode: '',
-        collationIdentifier: '',
-        collatorIdentifier: '',
-        usesMetricSystem: true,
-        measurementSystem: '',
-        decimalSeparator: '',
-        groupingSeparator: '',
-        currencySymbol: '',
-        currencyCode: '',
-        endDelimiterKey: '',
-        beginDelimiterKey: '',
-        alternateQuotationEndDelimiterKey: '',
-        alternateQuotationBeginDelimiterKey: '',
-      );
+      return SKPriceLocaleWrapper(currencyCode: '', currencySymbol: '');
     }
     return _$SKPriceLocaleWrapperFromJson(map);
   }
-
-  ///The identifier for the locale, e.g. "en_US" for US locale.
-  @JsonKey(defaultValue: '')
-  final String localeIdentifier;
-
-  ///The country or region code for the locale, e.g. "US" for en_US locale.
-  @JsonKey(defaultValue: '')
-  final String countryCode;
-
-  ///The language code for the locale, e.g. "en" for en_US locale.
-  @JsonKey(defaultValue: '')
-  final String languageCode;
-
-  ///The script code for the locale, e.g. "Latn" for en_US locale.
-  @JsonKey(defaultValue: '')
-  final String scriptCode;
-
-  ///The variant code for the locale, e.g. "POSIX".
-  @JsonKey(defaultValue: '')
-  final String variantCode;
-
-  ///The collation associated with the locale, e.g. "pinyin".
-  @JsonKey(defaultValue: '')
-  final String collationIdentifier;
-
-  ///The collation identifier for the locale, e.g. "en".
-  @JsonKey(defaultValue: '')
-  final String collatorIdentifier;
-
-  ///A flag whether the locale uses the metric system.
-  ///If the value is false, you can typically assume American measurement units (e.g. miles).
-  @JsonKey(defaultValue: true)
-  final bool usesMetricSystem;
-
-  ///The measurement associated with the locale, e.g. "Metric" or "U.S.".
-  @JsonKey(defaultValue: '')
-  final String measurementSystem;
-
-  ///The decimal separator associated with the locale, e.g. "." or ",".
-  @JsonKey(defaultValue: '')
-  final String decimalSeparator;
-
-  ///The numeric grouping separator associated with the locale, e.g. "," or " ".
-  @JsonKey(defaultValue: '')
-  final String groupingSeparator;
 
   ///The currency symbol for the locale, e.g. $ for US locale.
   @JsonKey(defaultValue: '')
@@ -433,64 +356,19 @@ class SKPriceLocaleWrapper {
   @JsonKey(defaultValue: '')
   final String currencyCode;
 
-  ///The end quotation symbol associated with the locale, e.g. "”", "“", "»", or "」".
-  @JsonKey(defaultValue: '')
-  final String endDelimiterKey;
-
-  ///The begin quotation symbol associated with the locale, e.g. "“", "„", "«", or "「".
-  @JsonKey(defaultValue: '')
-  final String beginDelimiterKey;
-
-  ///The alternate end quotation symbol associated with the locale, e.g. "“", "„", "«", or "「".
-  @JsonKey(defaultValue: '')
-  final String alternateQuotationEndDelimiterKey;
-
-  ///The alternating begin quotation symbol associated with the locale, e.g. "“", "„", "«", or "「".
-  @JsonKey(defaultValue: '')
-  final String alternateQuotationBeginDelimiterKey;
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPriceLocaleWrapper typedOther = other as SKPriceLocaleWrapper;
+    return typedOther.currencySymbol == currencySymbol &&
+        typedOther.currencyCode == currencyCode;
+  }
 
   @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      other is SKPriceLocaleWrapper &&
-          runtimeType == other.runtimeType &&
-          localeIdentifier == other.localeIdentifier &&
-          countryCode == other.countryCode &&
-          languageCode == other.languageCode &&
-          scriptCode == other.scriptCode &&
-          variantCode == other.variantCode &&
-          collationIdentifier == other.collationIdentifier &&
-          collatorIdentifier == other.collatorIdentifier &&
-          usesMetricSystem == other.usesMetricSystem &&
-          measurementSystem == other.measurementSystem &&
-          decimalSeparator == other.decimalSeparator &&
-          groupingSeparator == other.groupingSeparator &&
-          currencySymbol == other.currencySymbol &&
-          currencyCode == other.currencyCode &&
-          endDelimiterKey == other.endDelimiterKey &&
-          beginDelimiterKey == other.beginDelimiterKey &&
-          alternateQuotationEndDelimiterKey ==
-              other.alternateQuotationEndDelimiterKey &&
-          alternateQuotationBeginDelimiterKey ==
-              other.alternateQuotationBeginDelimiterKey;
-
-  @override
-  int get hashCode =>
-      localeIdentifier.hashCode ^
-      countryCode.hashCode ^
-      languageCode.hashCode ^
-      scriptCode.hashCode ^
-      variantCode.hashCode ^
-      collationIdentifier.hashCode ^
-      collatorIdentifier.hashCode ^
-      usesMetricSystem.hashCode ^
-      measurementSystem.hashCode ^
-      decimalSeparator.hashCode ^
-      groupingSeparator.hashCode ^
-      currencySymbol.hashCode ^
-      currencyCode.hashCode ^
-      endDelimiterKey.hashCode ^
-      beginDelimiterKey.hashCode ^
-      alternateQuotationEndDelimiterKey.hashCode ^
-      alternateQuotationBeginDelimiterKey.hashCode;
+  int get hashCode => hashValues(this.currencySymbol, this.currencyCode);
 }
