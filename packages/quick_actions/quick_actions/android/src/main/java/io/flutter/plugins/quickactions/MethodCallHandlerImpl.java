@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
-  
+
   public static final String EXTRA_ACTION = "some unique action key";
   public static final String GET_LAUNCH_ACTION = "getLaunchAction";
 
