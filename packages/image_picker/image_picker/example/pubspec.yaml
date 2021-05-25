@@ -3,7 +3,7 @@ description: Demonstrates how to use the image_picker plugin.
 publish_to: none
 
 dependencies:
-  video_player: ^2.0.0-nullsafety.7
+  video_player: ^2.0.0
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
