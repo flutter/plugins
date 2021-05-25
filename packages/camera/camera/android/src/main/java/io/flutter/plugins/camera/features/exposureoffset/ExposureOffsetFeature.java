@@ -56,9 +56,9 @@ public class ExposureOffsetFeature extends CameraFeature<Double> {
   }
 
   /**
-   * Returns the minimum exposure offset value, in counts of {@link #getExposureOffsetStepSize}.
+   * Returns the minimum exposure offset.
    *
-   * @return double Minimum exposure offset value.
+   * @return double Minimum exposure offset.
    */
   public double getMinExposureOffset() {
     Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
@@ -68,9 +68,9 @@ public class ExposureOffsetFeature extends CameraFeature<Double> {
   }
 
   /**
-   * Returns the maximum exposure offset value, in counts of {@link #getExposureOffsetStepSize}.
+   * Returns the maximum exposure offset.
    *
-   * @return double Maximum exposure offset value.
+   * @return double Maximum exposure offset.
    */
   public double getMaxExposureOffset() {
     Range<Integer> range = cameraProperties.getControlAutoExposureCompensationRange();
