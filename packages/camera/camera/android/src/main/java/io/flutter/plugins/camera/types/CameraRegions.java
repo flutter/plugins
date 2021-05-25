@@ -39,10 +39,8 @@ public final class CameraRegions {
       Size boundaries;
 
       // No distortion correction support
-      if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.P
-          || !supportsDistortionCorrection(cameraProperties)) {
-        boundaries = cameraProperties.getSensorInfoPixelArraySize();
-      } else {
+      if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
+          && supportsDistortionCorrection(cameraProperties)) {
         // Get the current distortion correction mode
         Integer distortionCorrectionMode =
             requestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
@@ -58,6 +56,8 @@ public final class CameraRegions {
 
         // Set new region size
         boundaries = rect == null ? null : new Size(rect.width(), rect.height());
+      } else {   
+        boundaries = cameraProperties.getSensorInfoPixelArraySize();
       }
 
       // Create new camera regions using new size
