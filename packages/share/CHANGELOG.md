@@ -1,3 +1,15 @@
+## 2.0.3
+
+* Do not tear down method channel onDetachedFromActivity.
+
+## 2.0.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.1
+
+* Migrate unit tests to sound null safety.
+
 ## 2.0.0
 
 * Migrate to null safety.

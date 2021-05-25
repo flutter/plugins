@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Add `implements` to pubspec.yaml.
+
 ## 2.0.0
 
 * Update Dart SDK constraint for null safety compatibility.

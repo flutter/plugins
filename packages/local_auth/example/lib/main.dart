@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,8 +22,8 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final LocalAuthentication auth = LocalAuthentication();
   _SupportState _supportState = _SupportState.unknown;
-  bool _canCheckBiometrics;
-  List<BiometricType> _availableBiometrics;
+  bool? _canCheckBiometrics;
+  List<BiometricType>? _availableBiometrics;
   String _authorized = 'Not Authorized';
   bool _isAuthenticating = false;
 
@@ -38,7 +38,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _checkBiometrics() async {
-    bool canCheckBiometrics;
+    late bool canCheckBiometrics;
     try {
       canCheckBiometrics = await auth.canCheckBiometrics;
     } on PlatformException catch (e) {
@@ -53,7 +53,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _getAvailableBiometrics() async {
-    List<BiometricType> availableBiometrics;
+    late List<BiometricType> availableBiometrics;
     try {
       availableBiometrics = await auth.getAvailableBiometrics();
     } on PlatformException catch (e) {
@@ -80,7 +80,6 @@ class _MyAppState extends State<MyApp> {
           stickyAuth: true);
       setState(() {
         _isAuthenticating = false;
-        _authorized = 'Authenticating';
       });
     } on PlatformException catch (e) {
       print(e);

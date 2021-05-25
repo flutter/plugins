@@ -1,9 +1,7 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// TODO(cyanglaz): Remove once Mockito is migrated to null safety.
-// @dart = 2.9
 import 'package:connectivity/connectivity.dart';
 import 'package:connectivity_platform_interface/connectivity_platform_interface.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,8 +16,8 @@ const LocationAuthorizationStatus kGetLocationResult =
 
 void main() {
   group('Connectivity', () {
-    Connectivity connectivity;
-    MockConnectivityPlatform fakePlatform;
+    late Connectivity connectivity;
+    late MockConnectivityPlatform fakePlatform;
     setUp(() async {
       fakePlatform = MockConnectivityPlatform();
       ConnectivityPlatform.instance = fakePlatform;

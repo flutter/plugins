@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,7 +34,7 @@ class LocalAuthentication {
   /// Use `authenticate` with `biometricOnly: true` instead
   @Deprecated("Use `authenticate` with `biometricOnly: true` instead")
   Future<bool> authenticateWithBiometrics({
-    @required String localizedReason,
+    required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
@@ -59,7 +59,7 @@ class LocalAuthentication {
   ///
   /// [localizedReason] is the message to show to user while prompting them
   /// for authentication. This is typically along the lines of: 'Please scan
-  /// your finger to access MyApp.'
+  /// your finger to access MyApp.'. This must not be empty.
   ///
   /// [useErrorDialogs] = true means the system will attempt to handle user
   /// fixable issues encountered while authenticating. For instance, if
@@ -92,7 +92,7 @@ class LocalAuthentication {
   /// [PlatformException] with error code [otherOperatingSystem] on the iOS
   /// simulator.
   Future<bool> authenticate({
-    @required String localizedReason,
+    required String localizedReason,
     bool useErrorDialogs = true,
     bool stickyAuth = false,
     AndroidAuthMessages androidAuthStrings = const AndroidAuthMessages(),
@@ -100,7 +100,8 @@ class LocalAuthentication {
     bool sensitiveTransaction = true,
     bool biometricOnly = false,
   }) async {
-    assert(localizedReason != null);
+    assert(localizedReason.isNotEmpty);
+
     final Map<String, Object> args = <String, Object>{
       'localizedReason': localizedReason,
       'useErrorDialogs': useErrorDialogs,
@@ -139,7 +140,7 @@ class LocalAuthentication {
   ///
   /// Returns a [Future] bool true or false:
   Future<bool> get canCheckBiometrics async =>
-      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))
+      (await _channel.invokeListMethod<String>('getAvailableBiometrics'))!
           .isNotEmpty;
 
   /// Returns true if device is capable of checking biometrics or is able to

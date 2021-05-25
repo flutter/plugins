@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -34,8 +34,7 @@ NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
     NSNumber *newValue =
         change[NSKeyValueChangeNewKey] ?: 0;          // newValue is anywhere between 0.0 and 1.0
     int newValueAsInt = [newValue floatValue] * 100;  // Anywhere between 0 and 100
-    [_methodChannel invokeMethod:@"onProgress"
-                       arguments:@{@"progress" : [NSNumber numberWithInt:newValueAsInt]}];
+    [_methodChannel invokeMethod:@"onProgress" arguments:@{@"progress" : @(newValueAsInt)}];
   }
 }
 

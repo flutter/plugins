@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,6 +151,24 @@
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertTrue([result boolValue]);
+}
+
+- (void)testHostedDomainIfMissed {
+  FlutterMethodCall *methodCall =
+      [FlutterMethodCall methodCallWithMethodName:@"init"
+                                        arguments:@{
+                                          @"signInOption" : @"SignInOption.standard",
+                                          @"hostedDomain" : [NSNull null],
+                                        }];
+
+  XCTestExpectation *expectation =
+      [self expectationWithDescription:@"expect hostedDomain equals nil"];
+  [self.plugin handleMethodCall:methodCall
+                         result:^(id r) {
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertTrue([self.mockSharedInstance.hostedDomain == nil]);
 }
 
 @end

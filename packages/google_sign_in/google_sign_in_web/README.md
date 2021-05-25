@@ -96,7 +96,7 @@ See the [google_sign_in.dart](https://github.com/flutter/plugins/blob/master/pac
 
 ## Contributions and Testing
 
-Tests are a crucial to contributions to this package. All new contributions should be reasonably tested.
+Tests are crucial for contributions to this package. All new contributions should be reasonably tested.
 
 **Check the [`test/README.md` file](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in_web/test/README.md)** for more information on how to run tests on this package.
 
