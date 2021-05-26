@@ -17,6 +17,12 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        // Gradle versions older than 2.13.3 aren't published to the servers
+        // above, so add this URL as a workaround until upgrading past that
+        // version.
+        maven {
+            url 'https://google.bintray.com/exoplayer/'
+        }
     }
 }
 
