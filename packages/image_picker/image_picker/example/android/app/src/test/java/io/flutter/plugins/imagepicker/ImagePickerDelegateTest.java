@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,8 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class ImagePickerDelegateTest {
@@ -190,6 +193,24 @@ public class ImagePickerDelegateTest {
     verify(mockResult)
         .error("no_available_camera", "No cameras available for taking pictures.", null);
     verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void takeImageWithCamera_WritesImageToCacheDirectory() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
+    MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class);
+    mockStaticFile
+        .when(() -> File.createTempFile(any(), any(), any()))
+        .thenReturn(new File("/tmpfile"));
+
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
+
+    mockStaticFile.verify(
+        () -> File.createTempFile(any(), eq(".jpg"), eq(new File("/image_picker_cache"))),
+        times(1));
   }
 
   @Test
@@ -394,7 +415,7 @@ public class ImagePickerDelegateTest {
   private ImagePickerDelegate createDelegate() {
     return new ImagePickerDelegate(
         mockActivity,
-        null,
+        new File("/image_picker_cache"),
         mockImageResizer,
         null,
         null,
