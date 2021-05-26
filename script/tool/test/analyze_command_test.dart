@@ -53,6 +53,31 @@ void main() {
         ]));
   });
 
+  test('uses a separate analysis sdk', () async {
+    final Directory pluginDir = createFakePlugin('a');
+
+    final MockProcess mockProcess = MockProcess();
+    mockProcess.exitCodeCompleter.complete(0);
+    processRunner.processToReturn = mockProcess;
+    await runner.run(<String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
+
+    expect(
+      processRunner.recordedCalls,
+      orderedEquals(<ProcessCall>[
+        ProcessCall(
+          'flutter',
+          const <String>['packages', 'get'],
+          pluginDir.path,
+        ),
+        ProcessCall(
+          'foo/bar/baz/bin/dart',
+          const <String>['analyze', '--fatal-infos'],
+          pluginDir.path,
+        ),
+      ]),
+    );
+  });
+
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
       createFakePlugin('foo', withExtraFiles: <List<String>>[

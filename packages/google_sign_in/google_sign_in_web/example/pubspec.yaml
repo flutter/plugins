@@ -8,6 +8,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  google_sign_in_web:
+    path: ../
 
 dev_dependencies:
   http: ^0.13.0
@@ -18,7 +20,3 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-
-dependency_overrides:
-  google_sign_in_web:
-    path: ../
