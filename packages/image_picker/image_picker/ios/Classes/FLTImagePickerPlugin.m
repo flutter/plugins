@@ -182,11 +182,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       return;
     }
   }
+  UIImagePickerControllerCameraDevice device = [self getCameraDevice:_arguments];
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
-      [UIImagePickerController isCameraDeviceAvailable:[self getCameraDevice:_arguments]]) {
+      [UIImagePickerController isCameraDeviceAvailable:device]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    _imagePickerController.cameraDevice = [self getCameraDevice:_arguments];
+    _imagePickerController.cameraDevice = device;
     [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
                                                       animated:YES
                                                     completion:nil];
