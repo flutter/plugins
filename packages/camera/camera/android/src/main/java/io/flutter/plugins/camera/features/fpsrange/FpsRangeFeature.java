@@ -17,24 +17,25 @@ public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
     super(cameraProperties);
 
     Log.i("Camera", "getAvailableFpsRange");
+    
+    Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
 
-    try {
-      Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
-
-      if (ranges != null) {
-        for (Range<Integer> range : ranges) {
-          int upper = range.getUpper();
-          if (upper >= 10) {
-            if (currentSetting == null || upper > currentSetting.getUpper()) {
-              currentSetting = range;
-            }
+    if (ranges != null) {
+      for (Range<Integer> range : ranges) {
+        int upper = range.getUpper();
+        
+        // There is a bug in the Pixel 4A where it cannot support 60fps modes
+        // even though they are reported as supported by `getControlAutoExposureAvailableTargetFpsRanges`.
+        // For max device compatibility we will keep FPS under 60 even if they report they are
+        // capable of achieving 60 fps.
+        // https://issuetracker.google.com/issues/189237151
+        if (upper >= 10 && upper < 60) {
+          if (currentSetting == null || upper > currentSetting.getUpper()) {
+            currentSetting = range;
           }
         }
       }
-    } catch (Exception e) {
-      // TODO: maybe just send a dart error back
-      //            pictureCaptureRequest.error("cameraAccess", e.getMessage(), null);
-    }
+    }    
   }
 
   @Override
