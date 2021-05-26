@@ -347,6 +347,119 @@ void main() {
       });
     });
   });
+
+  group('$ImagePicker', () {
+    const MethodChannel channel =
+        MethodChannel('plugins.flutter.io/image_picker');
+
+    final List<MethodCall> log = <MethodCall>[];
+
+    final picker = ImagePicker();
+
+    setUp(() {
+      channel.setMockMethodCallHandler((MethodCall methodCall) async {
+        log.add(methodCall);
+        return [];
+      });
+
+      log.clear();
+    });
+
+    test('ImagePicker platform instance overrides the actual platform used',
+        () {
+      final ImagePickerPlatform savedPlatform = ImagePickerPlatform.instance;
+      final MockPlatform mockPlatform = MockPlatform();
+      ImagePickerPlatform.instance = mockPlatform;
+      expect(ImagePicker.platform, mockPlatform);
+      ImagePickerPlatform.instance = savedPlatform;
+    });
+
+    group('#pickMultiImage', () {
+      test('passes the width and height arguments correctly', () async {
+        await picker.getMultiImage();
+        await picker.getMultiImage(
+          maxWidth: 10.0,
+        );
+        await picker.getMultiImage(
+          maxHeight: 10.0,
+        );
+        await picker.getMultiImage(
+          maxWidth: 10.0,
+          maxHeight: 20.0,
+        );
+        await picker.getMultiImage(
+          maxWidth: 10.0,
+          imageQuality: 70,
+        );
+        await picker.getMultiImage(
+          maxHeight: 10.0,
+          imageQuality: 70,
+        );
+        await picker.getMultiImage(
+            maxWidth: 10.0, maxHeight: 20.0, imageQuality: 70);
+
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': null,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': null,
+              'imageQuality': 70,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': null,
+              'maxHeight': 10.0,
+              'imageQuality': 70,
+            }),
+            isMethodCall('pickMultiImage', arguments: <String, dynamic>{
+              'maxWidth': 10.0,
+              'maxHeight': 20.0,
+              'imageQuality': 70,
+            }),
+          ],
+        );
+      });
+
+      test('does not accept a negative width or height argument', () {
+        expect(
+          picker.getMultiImage(maxWidth: -1.0),
+          throwsArgumentError,
+        );
+
+        expect(
+          picker.getMultiImage(maxHeight: -1.0),
+          throwsArgumentError,
+        );
+      });
+
+      test('handles a null image path response gracefully', () async {
+        channel.setMockMethodCallHandler((MethodCall methodCall) => null);
+
+        expect(await picker.getMultiImage(), isNull);
+        expect(await picker.getMultiImage(), isNull);
+      });
+    });
+  });
 }
 
 class MockPlatform extends Mock
