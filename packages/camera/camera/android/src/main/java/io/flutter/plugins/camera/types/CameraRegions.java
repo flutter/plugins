@@ -56,7 +56,7 @@ public final class CameraRegions {
 
         // Set new region size
         boundaries = rect == null ? null : new Size(rect.width(), rect.height());
-      } else {   
+      } else {
         boundaries = cameraProperties.getSensorInfoPixelArraySize();
       }
 
