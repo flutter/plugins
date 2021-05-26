@@ -1,6 +1,6 @@
-## 0.7.6
+## 0.8.0
 
-* Changed storage location for captured images and videos to internal cache on Android,
+* BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,
 to comply with new Google Play storage requirements.
 * Updated Mockito to fix Android tests.
 
