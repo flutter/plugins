@@ -1,3 +1,8 @@
+## 2.1.4
+
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
+
 ## 2.1.3
 
 * Fix pointer value to boolean conversion analyzer warnings.
