@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Fix videos not playing in Safari/Chrome on iOS by setting autoplay to false
+
 ## 2.0.0
 
 * Migrate to null safety.
