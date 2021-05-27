@@ -467,7 +467,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       image = [FLTImagePickerImageUtil scaledImage:image
                                           maxWidth:maxWidth
                                          maxHeight:maxHeight
-                               isMetadataAvailable:YES];
+                               isMetadataAvailable:originalAsset != nil];
     }
 
     if (!originalAsset) {
