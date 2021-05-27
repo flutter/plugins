@@ -61,11 +61,14 @@ environment:
 ''';
     }
 
-    String flutterSection() {
-      return '''
-flutter:
+    String flutterSection({bool isPlugin = false}) {
+      final String pluginEntry = '''
   plugin:
     platforms:
+''';
+      return '''
+flutter:
+${isPlugin ? pluginEntry : ''}
 ''';
     }
 
@@ -92,9 +95,35 @@ dev_dependencies:
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
 ${environmentSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
+''');
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'pubspec-check',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          'Checking plugin...',
+          'Checking plugin/example...',
+          'No pubspec issues found!',
+        ]),
+      );
+    });
+
+    test('passes for a Flutter package following conventions', () async {
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          withSingleExample: true, packagesDirectory: packagesDir);
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin')}
+${environmentSection()}
+${dependenciesSection()}
+${devDependenciesSection()}
+${flutterSection()}
 ''');
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -141,7 +170,7 @@ ${dependenciesSection()}
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeHomepage: true)}
 ${environmentSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
@@ -162,7 +191,7 @@ ${devDependenciesSection()}
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeRepository: false)}
 ${environmentSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
@@ -183,7 +212,7 @@ ${devDependenciesSection()}
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeHomepage: true, includeRepository: false)}
 ${environmentSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
@@ -204,7 +233,7 @@ ${devDependenciesSection()}
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeIssueTracker: false)}
 ${environmentSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
@@ -224,7 +253,7 @@ ${devDependenciesSection()}
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
 ${environmentSection()}
@@ -245,7 +274,7 @@ ${environmentSection()}
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${environmentSection()}
 ${dependenciesSection()}
 ${devDependenciesSection()}
@@ -267,7 +296,7 @@ ${devDependenciesSection()}
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
 ${environmentSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${devDependenciesSection()}
 ${dependenciesSection()}
 ''');
@@ -289,7 +318,7 @@ ${dependenciesSection()}
 ${headerSection('plugin', isPlugin: true)}
 ${environmentSection()}
 ${devDependenciesSection()}
-${flutterSection()}
+${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ''');
 

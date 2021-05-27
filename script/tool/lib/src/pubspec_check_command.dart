@@ -26,11 +26,21 @@ class PubspecCheckCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem,
             processRunner: processRunner, gitDir: gitDir);
 
-  static const List<String> _majorSections = <String>[
+  // Section order for plugins. Because the 'flutter' section is critical
+  // information for plugins, and usually small, it goes near the top unlike in
+  // a normal app or package.
+  static const List<String> _majorPluginSections = <String>[
     'environment:',
     'flutter:',
     'dependencies:',
     'dev_dependencies:',
+  ];
+
+  static const List<String> _majorPackageSections = <String>[
+    'environment:',
+    'dependencies:',
+    'dev_dependencies:',
+    'flutter:',
   ];
 
   static const String _expectedIssueLinkFormat =
@@ -81,12 +91,16 @@ class PubspecCheckCommand extends PluginCommand {
       return false;
     }
 
-    bool passing = _checkSectionOrder(contents);
+    final List<String> pubspecLines = contents.split('\n');
+    final List<String> sectionOrder = pubspecLines.contains('  plugin:')
+        ? _majorPluginSections
+        : _majorPackageSections;
+    bool passing = _checkSectionOrder(pubspecLines, sectionOrder);
     if (!passing) {
       print('${indentation}Major sections should follow standard '
           'repository ordering:');
       const String listIndentation = '$indentation$indentation';
-      print('$listIndentation${_majorSections.join('\n$listIndentation')}');
+      print('$listIndentation${sectionOrder.join('\n$listIndentation')}');
     }
 
     if (pubspec.publishTo != 'none') {
@@ -120,10 +134,11 @@ class PubspecCheckCommand extends PluginCommand {
     return null;
   }
 
-  bool _checkSectionOrder(String pubspecContents) {
+  bool _checkSectionOrder(
+      List<String> pubspecLines, List<String> sectionOrder) {
     int previousSectionIndex = 0;
-    for (final String line in pubspecContents.split('\n')) {
-      final int index = _majorSections.indexOf(line);
+    for (final String line in pubspecLines) {
+      final int index = sectionOrder.indexOf(line);
       if (index == -1) {
         continue;
       }
