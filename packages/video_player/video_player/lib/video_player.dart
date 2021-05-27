@@ -597,6 +597,10 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(position: position, absolutePosition: absolutePosition);
     value = value.copyWith(caption: _getCaptionAt(position));
   }
+
+  void setMixWithOthers(bool mixWithOthers) {
+    _videoPlayerPlatform.setMixWithOthers(mixWithOthers);
+  }
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
