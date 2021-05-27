@@ -63,14 +63,10 @@ class AnalyzeCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
-    await for (final Directory package in getPackages()) {
-      if (isFlutterPackage(package, fileSystem)) {
-        await processRunner.runAndStream('flutter', <String>['packages', 'get'],
-            workingDir: package, exitOnError: true);
-      } else {
-        await processRunner.runAndStream('dart', <String>['pub', 'get'],
-            workingDir: package, exitOnError: true);
-      }
+    final List<Directory> packageDirectories = await getPackages().toList();
+    for (final Directory package in packageDirectories) {
+      await processRunner.runAndStream('flutter', <String>['packages', 'get'],
+          workingDir: package, exitOnError: true);
     }
 
     // Use the Dart SDK override if one was passed in.
@@ -79,7 +75,8 @@ class AnalyzeCommand extends PluginCommand {
         dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
 
     final List<String> failingPackages = <String>[];
-    await for (final Directory package in getPlugins()) {
+    final List<Directory> pluginDirectories = await getPlugins().toList();
+    for (final Directory package in pluginDirectories) {
       final int exitCode = await processRunner.runAndStream(
           dartBinary, <String>['analyze', '--fatal-infos'],
           workingDir: package);
