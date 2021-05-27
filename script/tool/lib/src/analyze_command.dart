@@ -65,8 +65,8 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     final List<Directory> packageDirectories = await getPackages().toList();
-    final List<String> packagePaths =
-        packageDirectories.map((Directory dir) => dir.path).toList();
+    final Set<String> packagePaths =
+        packageDirectories.map((Directory dir) => dir.path).toSet();
     packageDirectories.removeWhere((Directory directory) {
       // We remove the 'example' subdirectories - 'flutter pub get' automatically
       // runs 'pub get' there as part of handling the parent directory.
