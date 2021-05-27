@@ -41,6 +41,7 @@ class AnalyzeCommand extends PluginCommand {
   @override
   Future<void> run() async {
     print('Verifying analysis settings...');
+
     final List<FileSystemEntity> files = packagesDir.listSync(recursive: true);
     for (final FileSystemEntity file in files) {
       if (file.basename != 'analysis_options.yaml' &&
@@ -64,6 +65,14 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     final List<Directory> packageDirectories = await getPackages().toList();
+    final Set<String> packagePaths =
+        packageDirectories.map((Directory dir) => dir.path).toSet();
+    packageDirectories.removeWhere((Directory directory) {
+      // We remove the 'example' subdirectories - 'flutter pub get' automatically
+      // runs 'pub get' there as part of handling the parent directory.
+      return directory.basename == 'example' &&
+          packagePaths.contains(directory.parent.path);
+    });
     for (final Directory package in packageDirectories) {
       await processRunner.runAndStream('flutter', <String>['packages', 'get'],
           workingDir: package, exitOnError: true);
@@ -86,6 +95,7 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     print('\n\n');
+
     if (failingPackages.isNotEmpty) {
       print('The following packages have analyzer errors (see above):');
       for (final String package in failingPackages) {
