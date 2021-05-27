@@ -388,7 +388,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
               }
               __block NSString *savedPath;
               if (!originalAsset) {
-                // Image picked without an original asset (e.g. User took a photo directly)
+                // Image picked without an original asset (e.g. User pick image without permission)
                 savedPath =
                     [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                                     image:localImage
