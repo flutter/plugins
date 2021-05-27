@@ -66,6 +66,13 @@ void main(List<String> args) {
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e as ToolExit;
-    io.exit(toolExit.exitCode);
+    int exitCode = toolExit.exitCode;
+    // This should never happen; this check is here to guarantee that a ToolExit
+    // never accidentally has code 0 thus causing CI to pass.
+    if (exitCode == 0) {
+      assert(false);
+      exitCode = 255;
+    }
+    io.exit(exitCode);
   }, test: (Object e) => e is ToolExit);
 }

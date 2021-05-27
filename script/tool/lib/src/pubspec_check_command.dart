@@ -98,7 +98,7 @@ class PubspecCheckCommand extends PluginCommand {
     if (!passing) {
       print('${indentation}Major sections should follow standard '
           'repository ordering:');
-      const String listIndentation = '$indentation$indentation';
+      final String listIndentation = indentation * 2;
       print('$listIndentation${sectionOrder.join('\n$listIndentation')}');
     }
 
@@ -116,7 +116,7 @@ class PubspecCheckCommand extends PluginCommand {
         print(
             '${indentation}A package should have an "issue_tracker" link to a '
             'search for open flutter/flutter bugs with the relevant label:\n'
-            '$indentation$indentation$_expectedIssueLinkFormat<package label>');
+            '${indentation * 2}$_expectedIssueLinkFormat<package label>');
         passing = false;
       }
     }
