@@ -53,6 +53,24 @@ void main() {
         ]));
   });
 
+  test('skips flutter pub get for examples', () async {
+    final Directory plugin1Dir = createFakePlugin('a', withSingleExample: true);
+
+    final MockProcess mockProcess = MockProcess();
+    mockProcess.exitCodeCompleter.complete(0);
+    processRunner.processToReturn = mockProcess;
+    await runner.run(<String>['analyze']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+              plugin1Dir.path),
+        ]));
+  });
+
   test('uses a separate analysis sdk', () async {
     final Directory pluginDir = createFakePlugin('a');
 
