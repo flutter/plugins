@@ -62,7 +62,7 @@ environment:
     }
 
     String flutterSection({bool isPlugin = false}) {
-      final String pluginEntry = '''
+      const String pluginEntry = '''
   plugin:
     platforms:
 ''';
