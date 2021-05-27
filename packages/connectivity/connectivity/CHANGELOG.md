@@ -1,3 +1,11 @@
+## 3.0.6
+
+* Update README to point to Plus Plugins version.
+
+## 3.0.5
+
+* Ignore Reachability pointer to int cast warning.
+
 ## 3.0.4
 
 * Migrate maven repository from jcenter to mavenCentral.

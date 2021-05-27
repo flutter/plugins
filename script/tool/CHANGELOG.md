@@ -1,8 +1,16 @@
-## NEXT
+## 0.1.3
+
+- Cosmetic fix to `publish-check` output
+- Add a --dart-sdk option to `analyze`
+- Allow reverts in `version-check`
+
+## 0.1.2
 
 - Add `against-pub` flag for version-check, which allows the command to check version with pub.
 - Add `machine` flag for publish-check, which replaces outputs to something parsable by machines.
 - Add `skip-conformation` flag to publish-plugin to allow auto publishing.
+- Change `run-on-changed-packages` to consider all packages as changed if any
+  files have been changed that could affect the entire repository.
 
 ## 0.1.1
 
