@@ -410,25 +410,32 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxHeight:maxHeight
                                                        imageQuality:desiredImageQuality];
                                  [pathList addObject:savedPath];
-                                 if (pathList.count == results.count) {
-                                   [self handlePath:savedPath listCount:pathList];
-                                 }
+                                 [self handlePath:savedPath
+                                         pathList:pathList
+                                      resultCount:results.count
+                                        listCount:pathList.count];
                                }];
               }
-              if (pathList.count == results.count) {
-                [self handlePath:savedPath listCount:pathList];
-              }
+              [self handlePath:savedPath
+                      pathList:pathList
+                   resultCount:results.count
+                     listCount:pathList.count];
             });
           }
         }];
   }
 }
 
-- (void)handlePath:(NSString *)savedPath listCount:(NSMutableArray *)pathList {
-  if (self.single) {
-    [self handleSavedPath:savedPath];
-  } else {
-    [self handleMultiSavedPaths:pathList];
+- (void)handlePath:(NSString *)savedPath
+          pathList:(NSMutableArray *)pathList
+       resultCount:(NSUInteger)resultCount
+         listCount:(NSUInteger)listCount {
+  if (listCount == resultCount) {
+    if (self.single) {
+      [self handleSavedPath:savedPath];
+    } else {
+      [self handleMultiSavedPaths:pathList];
+    }
   }
 }
 
