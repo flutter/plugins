@@ -109,7 +109,7 @@ ${devDependenciesSection()}
         containsAllInOrder(<String>[
           'Checking plugin...',
           'Checking plugin/example...',
-          'No pubspec issues found!',
+          '\nNo pubspec issues found!',
         ]),
       );
     });
@@ -135,7 +135,7 @@ ${flutterSection()}
         containsAllInOrder(<String>[
           'Checking plugin...',
           'Checking plugin/example...',
-          'No pubspec issues found!',
+          '\nNo pubspec issues found!',
         ]),
       );
     });
@@ -158,7 +158,7 @@ ${dependenciesSection()}
         output,
         containsAllInOrder(<String>[
           'Checking package...',
-          'No pubspec issues found!',
+          '\nNo pubspec issues found!',
         ]),
       );
     });
