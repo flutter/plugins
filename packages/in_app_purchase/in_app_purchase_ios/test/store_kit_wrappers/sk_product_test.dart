@@ -44,27 +44,8 @@ void main() {
       final SKProductDiscountWrapper wrapper =
           SKProductDiscountWrapper.fromJson(<String, dynamic>{});
       expect(wrapper.price, '');
-      expect(
-          wrapper.priceLocale,
-          SKPriceLocaleWrapper(
-            localeIdentifier: '',
-            countryCode: '',
-            languageCode: '',
-            scriptCode: '',
-            variantCode: '',
-            collationIdentifier: '',
-            collatorIdentifier: '',
-            usesMetricSystem: true,
-            measurementSystem: '',
-            decimalSeparator: '',
-            groupingSeparator: '',
-            currencySymbol: '',
-            currencyCode: '',
-            endDelimiterKey: '',
-            beginDelimiterKey: '',
-            alternateQuotationEndDelimiterKey: '',
-            alternateQuotationBeginDelimiterKey: '',
-          ));
+      expect(wrapper.priceLocale,
+          SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
       expect(wrapper.numberOfPeriods, 0);
       expect(wrapper.paymentMode, SKProductDiscountPaymentMode.payAsYouGo);
       expect(
@@ -88,27 +69,8 @@ void main() {
       expect(wrapper.productIdentifier, '');
       expect(wrapper.localizedTitle, '');
       expect(wrapper.localizedDescription, '');
-      expect(
-          wrapper.priceLocale,
-          SKPriceLocaleWrapper(
-            localeIdentifier: '',
-            countryCode: '',
-            languageCode: '',
-            scriptCode: '',
-            variantCode: '',
-            collationIdentifier: '',
-            collatorIdentifier: '',
-            usesMetricSystem: true,
-            measurementSystem: '',
-            decimalSeparator: '',
-            groupingSeparator: '',
-            currencySymbol: '',
-            currencyCode: '',
-            endDelimiterKey: '',
-            beginDelimiterKey: '',
-            alternateQuotationEndDelimiterKey: '',
-            alternateQuotationBeginDelimiterKey: '',
-          ));
+      expect(wrapper.priceLocale,
+          SKPriceLocaleWrapper(currencyCode: '', currencySymbol: ''));
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, '');
       expect(wrapper.subscriptionPeriod, null);
