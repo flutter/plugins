@@ -14,9 +14,9 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
   flutter_driver:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   pedantic: ^1.10.0
 
