@@ -242,6 +242,6 @@ linter:
     # separately when moving to a shared file.
     - no_runtimeType_toString # use objectRuntimeType from package:foundation
     - public_member_api_docs # see https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#documentation-dartdocs-javadocs-etc
-    # Flutter has a specific use case for dependencies that intentionally not
-    # sorted, which doesn't apply to this repo.
+    # Flutter has a specific use case for dependencies that are intentionally
+    # not sorted, which doesn't apply to this repo.
     - sort_pub_dependencies
