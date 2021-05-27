@@ -15,9 +15,9 @@ dependencies:
   path_provider_platform_interface: ^2.0.0
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
   flutter_driver:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   pedantic: ^1.8.0
 
