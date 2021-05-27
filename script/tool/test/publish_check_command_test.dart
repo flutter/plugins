@@ -132,6 +132,26 @@ void main() {
       expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
     });
 
+    test('Success message on stderr is not printed as an error', () async {
+      createFakePlugin('d');
+
+      const String publishOutput = 'Package has 0 warnings.';
+
+      final MockProcess process = MockProcess();
+      process.stderrController.add(publishOutput.codeUnits);
+      process.stdoutController.close(); // ignore: unawaited_futures
+      process.stderrController.close(); // ignore: unawaited_futures
+
+      process.exitCodeCompleter.complete(0);
+
+      processRunner.processesToReturn.add(process);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check']);
+
+      expect(output, isNot(contains(contains('ERROR:'))));
+    });
+
     test(
         '--machine: Log JSON with status:no-publish and correct human message, if there are no packages need to be published. ',
         () async {

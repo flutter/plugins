@@ -19,11 +19,17 @@ class AnalyzeCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addMultiOption(_customAnalysisFlag,
         help:
-            'Directories (comma seperated) that are allowed to have their own analysis options.',
+            'Directories (comma separated) that are allowed to have their own analysis options.',
         defaultsTo: <String>[]);
+    argParser.addOption(_analysisSdk,
+        valueHelp: 'dart-sdk',
+        help: 'An optional path to a Dart SDK; this is used to override the '
+            'SDK used to provide analysis.');
   }
 
   static const String _customAnalysisFlag = 'custom-analysis';
+
+  static const String _analysisSdk = 'analysis-sdk';
 
   @override
   final String name = 'analyze';
@@ -57,20 +63,22 @@ class AnalyzeCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
-    await for (final Directory package in getPackages()) {
-      if (isFlutterPackage(package, fileSystem)) {
-        await processRunner.runAndStream('flutter', <String>['packages', 'get'],
-            workingDir: package, exitOnError: true);
-      } else {
-        await processRunner.runAndStream('pub', <String>['get'],
-            workingDir: package, exitOnError: true);
-      }
+    final List<Directory> packageDirectories = await getPackages().toList();
+    for (final Directory package in packageDirectories) {
+      await processRunner.runAndStream('flutter', <String>['packages', 'get'],
+          workingDir: package, exitOnError: true);
     }
 
+    // Use the Dart SDK override if one was passed in.
+    final String? dartSdk = argResults![_analysisSdk] as String?;
+    final String dartBinary =
+        dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
+
     final List<String> failingPackages = <String>[];
-    await for (final Directory package in getPlugins()) {
+    final List<Directory> pluginDirectories = await getPlugins().toList();
+    for (final Directory package in pluginDirectories) {
       final int exitCode = await processRunner.runAndStream(
-          'dart', <String>['analyze', '--fatal-infos'],
+          dartBinary, <String>['analyze', '--fatal-infos'],
           workingDir: package);
       if (exitCode != 0) {
         failingPackages.add(p.basename(package.path));

@@ -33,25 +33,8 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(
-  localeIdentifier: 'en_US',
-  countryCode: 'US',
-  languageCode: 'en',
-  scriptCode: 'Latn',
-  variantCode: 'POSIX',
-  collationIdentifier: '',
-  collatorIdentifier: 'en',
-  usesMetricSystem: true,
-  measurementSystem: 'Metric',
-  decimalSeparator: '.',
-  groupingSeparator: ',',
-  currencySymbol: '\$',
-  currencyCode: 'USD',
-  endDelimiterKey: '”',
-  beginDelimiterKey: '“',
-  alternateQuotationEndDelimiterKey: '”',
-  alternateQuotationBeginDelimiterKey: '“',
-);
+final SKPriceLocaleWrapper dummyLocale =
+    SKPriceLocaleWrapper(currencySymbol: '\$', currencyCode: 'USD');
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
     SKProductSubscriptionPeriodWrapper(
@@ -86,25 +69,8 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
 
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   return {
-    'localeIdentifier': local.localeIdentifier,
-    'countryCode': local.countryCode,
-    'languageCode': local.languageCode,
-    'scriptCode': local.scriptCode,
-    'variantCode': local.variantCode,
-    'collationIdentifier': local.collationIdentifier,
-    'collatorIdentifier': local.collatorIdentifier,
-    'usesMetricSystem': local.usesMetricSystem,
-    'measurementSystem': local.measurementSystem,
-    'decimalSeparator': local.decimalSeparator,
-    'groupingSeparator': local.groupingSeparator,
     'currencySymbol': local.currencySymbol,
-    'currencyCode': local.currencyCode,
-    'endDelimiterKey': local.endDelimiterKey,
-    'beginDelimiterKey': local.beginDelimiterKey,
-    'alternateQuotationEndDelimiterKey':
-        local.alternateQuotationEndDelimiterKey,
-    'alternateQuotationBeginDelimiterKey':
-        local.alternateQuotationBeginDelimiterKey
+    'currencyCode': local.currencyCode
   };
 }
 

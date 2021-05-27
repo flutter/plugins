@@ -1,6 +1,11 @@
-## 2.1.4
+## 2.1.5
 
 * iOS: Update texture on `seekTo`.
+
+## 2.1.4
+
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
 
 ## 2.1.3
 

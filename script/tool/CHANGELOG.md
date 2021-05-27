@@ -1,3 +1,9 @@
+## 0.1.3
+
+- Cosmetic fix to `publish-check` output
+- Add a --dart-sdk option to `analyze`
+- Allow reverts in `version-check`
+
 ## 0.1.2
 
 - Add `against-pub` flag for version-check, which allows the command to check version with pub.
