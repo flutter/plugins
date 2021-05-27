@@ -66,7 +66,6 @@ class PubspecCheckCommand extends PluginCommand {
       if (!passesCheck) {
         failingPackages.add(relativePackagePath);
       }
-      print('');
     }
 
     if (failingPackages.isNotEmpty) {
@@ -77,7 +76,7 @@ class PubspecCheckCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
-    print('No pubspec issues found!');
+    print('\nNo pubspec issues found!');
   }
 
   Future<bool> _checkPubspec(
