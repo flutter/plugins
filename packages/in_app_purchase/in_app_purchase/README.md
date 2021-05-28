@@ -58,7 +58,7 @@ This section has examples of code for the following tasks:
 * [Listening to purchase updates](#listening-to-purchase-updates)
 * [Connecting to the underlying store](#connecting-to-the-underlying-store)
 * [Loading products for sale](#loading-products-for-sale)
-* [Loading previous purchases](#loading-previous-purchases)
+* [Restoring previous purchases](#restoring-previous-purchases)
 * [Making a purchase](#making-a-purchase)
 * [Completing a purchase](#completing-a-purchase)
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
