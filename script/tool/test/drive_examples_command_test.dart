@@ -63,7 +63,6 @@ void main() {
 
       final String deviceTestPath = p.join('test', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -109,7 +108,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -197,7 +195,6 @@ void main() {
 
       final String driverTestPath =
           p.join('test_driver', 'integration_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -252,7 +249,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --linux on a non-Linux
       // plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
@@ -287,7 +283,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -332,7 +327,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
@@ -367,7 +361,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -414,7 +407,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --web on a non-web
       // plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
@@ -449,7 +441,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -498,7 +489,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --windows on a
       // non-Windows plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
@@ -533,7 +523,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -579,7 +568,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
@@ -600,7 +588,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
@@ -627,7 +614,6 @@ void main() {
 
       final String deviceTestPath = p.join('test', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
