@@ -2,6 +2,10 @@ name: path_provider_example
 description: Demonstrates how to use the path_provider plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -14,15 +18,11 @@ dependencies:
     path: ../
 
 dev_dependencies:
-  integration_test:
-    sdk: flutter
   flutter_driver:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   pedantic: ^1.10.0
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"
