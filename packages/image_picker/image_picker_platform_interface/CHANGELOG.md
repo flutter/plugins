@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Refactor `_pickImagePath` method to get List from platforms.
+
 ## 2.1.0
 
 * Add `pickMultiImage` method.
