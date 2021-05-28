@@ -10,7 +10,7 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 
 ## Installation
 
-### iOS 
+### iOS
 Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
 
 Example:  
@@ -47,6 +47,42 @@ void main() => runApp(
 
 void _launchURL() async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+```
+
+### Android
+
+Starting from API 30 Android requires package visibility configuration in your `AndroidManifest.xml` otherwise `canLaunch` would return `false`. Please see the `<queries>` element example below and tailor to your needs. For more information see the [Managing package visibility documentation](https://developer.android.com/training/basics/intents/package-visibility).
+
+``` xml
+<manifest ...>
+
+  ...
+
+  <queries>
+    <!-- If your app opens https URLs -->
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+    </intent>
+    <!-- If your app makes calls -->
+    <intent>
+      <action android:name="android.intent.action.DIAL" />
+      <data android:scheme="tel" />
+    </intent>
+    <!-- If your app emails -->
+    <intent>
+      <action android:name="android.intent.action.SEND" />
+      <data android:mimeType="*/*" />
+    </intent>
+  </queries>
+
+  ...
+
+  <application>
+  ...
+  </application>
+
+</manifest>
 ```
 
 ## Supported URL schemes
