@@ -29,6 +29,7 @@ void main() {
 
     group('#pickImage', () {
       test('passes the image source argument correctly', () async {
+        returnValue = ['0', '1'];
         await picker.pickImage(source: ImageSource.camera);
         await picker.pickImage(source: ImageSource.gallery);
 
@@ -54,6 +55,7 @@ void main() {
       });
 
       test('passes the width and height arguments correctly', () async {
+        returnValue = ['0', '1'];
         await picker.pickImage(source: ImageSource.camera);
         await picker.pickImage(
           source: ImageSource.camera,
@@ -185,6 +187,7 @@ void main() {
       });
 
       test('camera position defaults to back', () async {
+        returnValue = ['0', '1'];
         await picker.pickImage(source: ImageSource.camera);
 
         expect(
@@ -202,6 +205,7 @@ void main() {
       });
 
       test('camera position can set to front', () async {
+        returnValue = ['0', '1'];
         await picker.pickImage(
             source: ImageSource.camera,
             preferredCameraDevice: CameraDevice.front);

@@ -103,7 +103,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
-    List<String>? pathList = await _channel.invokeMethod<List<String>>(
+    List<dynamic>? pathList = await _channel.invokeMethod<List<dynamic>>(
       'pickImage',
       <String, dynamic>{
         'source': source.index,
