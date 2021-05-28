@@ -1,6 +1,6 @@
 ## 1.0.2
 
-* Update README
+* Fix `Restoring previous purchases` link in the README.md.
 
 ## 1.0.1
 
