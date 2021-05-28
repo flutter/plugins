@@ -31,10 +31,6 @@ dev_dependencies:
     sdk: flutter
   flutter_driver:
     sdk: flutter
-  # TODO(mvanbeusekom): Update to stable 5.0.0 release when dependency conflict
-  # with flutter_driver has been resolved:
-  # Because mockito >=5.0.0 depends on analyzer ^1.0.0 which depends on crypto ^3.0.0
-  # every version of flutter_driver from sdk depends on crypto 2.1.5.
-  mockito: ^5.0.0-nullsafety.7
+  mockito: ^5.0.0
   plugin_platform_interface: ^2.0.0
   video_player: ^2.0.0

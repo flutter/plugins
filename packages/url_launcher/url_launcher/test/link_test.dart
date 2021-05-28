@@ -2,11 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/link.dart';
 import 'package:url_launcher/src/link.dart';
@@ -14,19 +11,12 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 
 import 'mock_url_launcher_platform.dart';
 
-final MethodCodec _codec = const JSONMethodCodec();
-
 void main() {
   late MockUrlLauncher mock;
 
-  PlatformMessageCallback? realOnPlatformMessage;
   setUp(() {
     mock = MockUrlLauncher();
     UrlLauncherPlatform.instance = mock;
-    realOnPlatformMessage = window.onPlatformMessage;
-  });
-  tearDown(() {
-    window.onPlatformMessage = realOnPlatformMessage;
   });
 
   group('$Link', () {
@@ -147,99 +137,5 @@ void main() {
       // Restore the original function.
       pushRouteToFrameworkFunction = originalPushFunction;
     });
-
-    testWidgets('sends router platform messages for internal route names',
-        (WidgetTester tester) async {
-      // Intercept messages sent to the engine.
-      final List<MethodCall> engineCalls = <MethodCall>[];
-      SystemChannels.navigation.setMockMethodCallHandler((MethodCall call) {
-        engineCalls.add(call);
-        return Future<void>.value();
-      });
-
-      // Intercept messages sent to the framework.
-      final List<MethodCall> frameworkCalls = <MethodCall>[];
-      window.onPlatformMessage = (
-        String name,
-        ByteData? data,
-        PlatformMessageResponseCallback? callback,
-      ) {
-        frameworkCalls.add(_codec.decodeMethodCall(data));
-        realOnPlatformMessage!(name, data, callback);
-      };
-
-      final Uri uri = Uri.parse('/foo/bar');
-      FollowLink? followLink;
-
-      final Link link = Link(
-        uri: uri,
-        builder: (BuildContext context, FollowLink? followLink2) {
-          followLink = followLink2;
-          return Container();
-        },
-      );
-      await tester.pumpWidget(MaterialApp.router(
-        routeInformationParser: MockRouteInformationParser(),
-        routerDelegate: MockRouterDelegate(
-          builder: (BuildContext context) => link,
-        ),
-      ));
-
-      engineCalls.clear();
-      frameworkCalls.clear();
-      await followLink!();
-
-      // Shouldn't use url_launcher when uri is an internal route name.
-      expect(mock.canLaunchCalled, isFalse);
-      expect(mock.launchCalled, isFalse);
-
-      // Sends route information update to the engine.
-      expect(engineCalls, hasLength(1));
-      expect(
-        engineCalls.single,
-        isMethodCall('routeInformationUpdated', arguments: <dynamic, dynamic>{
-          'location': '/foo/bar',
-          'state': null
-        }),
-      );
-
-      // Also pushes route information update to the Router.
-      expect(frameworkCalls, hasLength(1));
-      expect(
-        frameworkCalls.single,
-        isMethodCall(
-          'pushRouteInformation',
-          arguments: <dynamic, dynamic>{
-            'location': '/foo/bar',
-            'state': null,
-          },
-        ),
-      );
-    });
   });
-}
-
-class MockRouteInformationParser extends Mock
-    implements RouteInformationParser<bool> {
-  @override
-  Future<bool> parseRouteInformation(RouteInformation routeInformation) {
-    return Future<bool>.value(true);
-  }
-}
-
-class MockRouterDelegate extends Mock implements RouterDelegate<Object> {
-  MockRouterDelegate({required this.builder});
-
-  final WidgetBuilder builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return builder(context);
-  }
-
-  @override
-  Future<void> setInitialRoutePath(Object configuration) async {}
-
-  @override
-  Future<void> setNewRoutePath(Object configuration) async {}
 }
