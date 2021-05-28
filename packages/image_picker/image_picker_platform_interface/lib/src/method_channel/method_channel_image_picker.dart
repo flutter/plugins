@@ -90,7 +90,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
+  }) async {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
       throw ArgumentError.value(
           imageQuality, 'imageQuality', 'must be between 0 and 100');
@@ -103,8 +103,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     if (maxHeight != null && maxHeight < 0) {
       throw ArgumentError.value(maxHeight, 'maxHeight', 'cannot be negative');
     }
-
-    return _channel.invokeMethod<String>(
+    List<String>? pathList = await _channel.invokeMethod<List<String>>(
       'pickImage',
       <String, dynamic>{
         'source': source.index,
@@ -114,6 +113,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'cameraDevice': preferredCameraDevice.index
       },
     );
+    return pathList != null ? pathList.first : null;
   }
 
   @override
