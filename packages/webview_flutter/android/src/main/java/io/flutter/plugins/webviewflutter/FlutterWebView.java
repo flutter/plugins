@@ -439,40 +439,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void takeScreenshot(Result result){
     final Result fResult = result;
-    View view = getView();
-
-    float scale = view.getContext().getResources().getDisplayMetrics().density;
-    int height = (int) (webView.getContentHeight() * scale);
-
-    Bitmap b = Bitmap.createBitmap(view.getWidth(),
-                  height, Bitmap.Config.ARGB_8888);
-    Canvas c = new Canvas(b);
-    view.draw(c);
-    int scrollY = webView.getScrollY();
-    int measuredHeight = webView.getMeasuredHeight();
-    int bitmapHeight = b.getHeight();
-
-    int scrollOffset = (scrollY + measuredHeight > bitmapHeight)
-                  ? (bitmapHeight - measuredHeight) : scrollY;
-    
-     if (scrollOffset < 0) {
-          scrollOffset = 0;
-    }
-
-    int rectX = 0;
-    int rectY = scrollOffset;
-    int rectWidth = b.getWidth();
-    int rectHeight = measuredHeight;
-
-    final Bitmap resized = Bitmap.createBitmap(b, rectX, rectY, rectWidth, rectHeight);
 
     // run the compress function in a secondary thread
     new Thread(new Runnable() {
     @Override
     public void run() {
+      webView.setDrawingCacheEnabled(true);
+      final Bitmap b = webView.getDrawingCache(false);
       ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      resized.compress(Bitmap.CompressFormat.PNG, 80, stream);
+      b.compress(Bitmap.CompressFormat.PNG, 80, stream);
       final byte[] imageByteArray = stream.toByteArray();
+      webView.setDrawingCacheEnabled(false);
 
       // make sure to return the result in the main thread
       new Handler(Looper.getMainLooper()).post(new Runnable() {
