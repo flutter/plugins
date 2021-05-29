@@ -81,7 +81,7 @@ public class QuickActionsPlugin
   @Override
   public boolean onNewIntent(Intent intent) {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-      if (intent.getExtras().containsKey(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
+      if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
         channel.invokeMethod(MethodCallHandlerImpl.GET_LAUNCH_ACTION, null);
         channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
       }
