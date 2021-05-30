@@ -1,9 +1,15 @@
+## 0.7.5+4
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 0.7.5+3
+* Localize `UIAlertController` strings.
+
 ## 0.7.5+2
 * Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
 
 ## 0.7.5+1
 
-* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked 
+* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked
 is not included selected photos and image is scaled.
 
 ## 0.7.5

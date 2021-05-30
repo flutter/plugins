@@ -51,7 +51,7 @@
                            result = r;
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  XCTAssertEqual(result, [NSNumber numberWithBool:YES]);
+  XCTAssertEqual(result, @YES);
 }
 
 - (void)testGetProductResponse {
