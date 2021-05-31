@@ -408,9 +408,38 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
+- (void)finishWithURL:(NSURL *)videoURL {
+  if (@available(iOS 13.0, *)) {
+    NSString *fileName = [videoURL lastPathComponent];
+    NSURL *destination =
+        [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+
+    if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
+      NSError *error;
+      if (![[videoURL path] isEqualToString:[destination path]]) {
+        [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:&error];
+
+        if (error) {
+          self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
+                                          message:@"Could not cache the video file."
+                                          details:nil]);
+          self.result = nil;
+          return;
+        }
+      }
+      videoURL = destination;
+    }
+  }
+
+  self.result(videoURL.path);
+  self.result = nil;
+  _arguments = nil;
+}
+
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
   NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
@@ -419,31 +448,23 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if (!self.result) {
     return;
   }
-  if (videoURL != nil) {
-    if (@available(iOS 13.0, *)) {
-      NSString *fileName = [videoURL lastPathComponent];
-      NSURL *destination =
-          [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
+  if (videoURL != nil || [picker.mediaTypes containsObject:(NSString *)kUTTypeMovie]) {
+    if (videoURL == nil) {
+      PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+      __weak typeof(self) weakSelf = self;
+      [[PHImageManager defaultManager]
+          requestAVAssetForVideo:originalAsset
+                         options:nil
+                   resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
+                     __strong typeof(self) strongSelf = self;
+                     NSURL *url = [[(AVURLAsset *)asset URL] fileReferenceURL];
+                     [strongSelf finishWithURL:url];
+                   }];
 
-      if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
-        NSError *error;
-        if (![[videoURL path] isEqualToString:[destination path]]) {
-          [[NSFileManager defaultManager] copyItemAtURL:videoURL toURL:destination error:&error];
-
-          if (error) {
-            self.result([FlutterError errorWithCode:@"flutter_image_picker_copy_video_error"
-                                            message:@"Could not cache the video file."
-                                            details:nil]);
-            self.result = nil;
-            return;
-          }
-        }
-        videoURL = destination;
-      }
+    } else {
+      [self finishWithURL:videoURL];
     }
-    self.result(videoURL.path);
-    self.result = nil;
-    _arguments = nil;
+
   } else {
     UIImage *image = [info objectForKey:UIImagePickerControllerEditedImage];
     if (image == nil) {
