@@ -444,13 +444,29 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     new Thread(new Runnable() {
     @Override
     public void run() {
+      boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
       webView.setDrawingCacheEnabled(true);
-      final Bitmap b = webView.getDrawingCache(false);
+      // copy to a new bitmap, otherwise the bitmap will be
+      // destroyed when the drawing cache is destroyed
+      // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
+      Bitmap cacheBitmap = webView.getDrawingCache();
+      Bitmap b = null;
+      if (cacheBitmap != null) {
+        b = cacheBitmap.copy(Bitmap.Config.RGB_565, false);
+      }
+
+      webView.destroyDrawingCache();
+      webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
+
+
+      webView.destroyDrawingCache();
+      webView.setDrawingCacheEnabled(true);
 
       if (b != null) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         b.compress(Bitmap.CompressFormat.PNG, 80, stream);
         final byte[] imageByteArray = stream.toByteArray();
+        b.recycle();
         // make sure to return the result in the main thread
         new Handler(Looper.getMainLooper()).post(new Runnable() {
           @Override
