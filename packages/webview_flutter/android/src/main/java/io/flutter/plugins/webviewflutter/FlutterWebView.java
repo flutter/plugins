@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -136,7 +137,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (shouldLoad) {
       // allow app cache
       webView.getSettings().setAppCacheEnabled(true);
-      
+
+      // use transparent bg
+      webView.setBackgroundColor(Color.TRANSPARENT);
+
       // Allow local storage.
       webView.getSettings().setDomStorageEnabled(true);
       webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
