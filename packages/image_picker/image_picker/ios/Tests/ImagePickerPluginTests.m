@@ -23,6 +23,7 @@
 @interface FLTImagePickerPlugin (Test)
 @property(copy, nonatomic) FlutterResult result;
 - (void)handleSavedPath:(NSString *)path;
+- (void)handleMultiSavedPaths:(NSMutableArray *)pathList;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 @end
 
@@ -149,4 +150,20 @@
   XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
 }
 
+- (void)testPluginMultiImagePathIsNull {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+
+  dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
+  __block FlutterError *pickImageResult = nil;
+
+  plugin.result = ^(id _Nullable r) {
+    pickImageResult = r;
+    dispatch_semaphore_signal(resultSemaphore);
+  };
+  [plugin handleMultiSavedPaths:nil];
+
+  dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+  XCTAssertEqual(pickImageResult.code, @"create_error");
+}
 @end
