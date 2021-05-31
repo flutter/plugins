@@ -439,34 +439,25 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void takeScreenshot(Result result){
     final Result fResult = result;
+    boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
+    webView.setDrawingCacheEnabled(true);
+    // copy to a new bitmap, otherwise the bitmap will be
+    // destroyed when the drawing cache is destroyed
+    // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
+    final Bitmap cacheBitmap = webView.getDrawingCache();
+    final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
+
+    webView.destroyDrawingCache();
+    webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
 
     // run the compress function in a secondary thread
     new Thread(new Runnable() {
     @Override
     public void run() {
-      boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
-      webView.setDrawingCacheEnabled(true);
-      // copy to a new bitmap, otherwise the bitmap will be
-      // destroyed when the drawing cache is destroyed
-      // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
-      Bitmap cacheBitmap = webView.getDrawingCache();
-      Bitmap b = null;
-      if (cacheBitmap != null) {
-        b = cacheBitmap.copy(Bitmap.Config.RGB_565, false);
-      }
-
-      webView.destroyDrawingCache();
-      webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
-
-
-      webView.destroyDrawingCache();
-      webView.setDrawingCacheEnabled(true);
-
       if (b != null) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
         b.compress(Bitmap.CompressFormat.PNG, 80, stream);
         final byte[] imageByteArray = stream.toByteArray();
-        b.recycle();
         // make sure to return the result in the main thread
         new Handler(Looper.getMainLooper()).post(new Runnable() {
           @Override
@@ -474,6 +465,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             fResult.success(imageByteArray);
           }
         });
+
+        b.recycle();
       } else {
         new Handler(Looper.getMainLooper()).post(new Runnable() {
           @Override
@@ -483,8 +476,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           }
         });
       }
-
-      webView.setDrawingCacheEnabled(false);
     }
    }).start();
 
