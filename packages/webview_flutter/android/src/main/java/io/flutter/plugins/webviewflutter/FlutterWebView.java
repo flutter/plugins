@@ -447,7 +447,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     final Bitmap cacheBitmap = webView.getDrawingCache();
     final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
 
-    webView.destroyDrawingCache();
     webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
 
     // run the compress function in a secondary thread
