@@ -446,18 +446,29 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     public void run() {
       webView.setDrawingCacheEnabled(true);
       final Bitmap b = webView.getDrawingCache(false);
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      b.compress(Bitmap.CompressFormat.PNG, 80, stream);
-      final byte[] imageByteArray = stream.toByteArray();
-      webView.setDrawingCacheEnabled(false);
 
-      // make sure to return the result in the main thread
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-              @Override
-              public void run() {
-                 fResult.success(imageByteArray);
-              }
-            });
+      if (b != null) {
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        b.compress(Bitmap.CompressFormat.PNG, 80, stream);
+        final byte[] imageByteArray = stream.toByteArray();
+        // make sure to return the result in the main thread
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+          @Override
+          public void run() {
+            fResult.success(imageByteArray);
+          }
+        });
+      } else {
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+          @Override
+          public void run() {
+            // treat an empty bitmap as a successful empty screenshot result
+            fResult.success(new byte[0]);
+          }
+        });
+      }
+
+      webView.setDrawingCacheEnabled(false);
     }
    }).start();
 
