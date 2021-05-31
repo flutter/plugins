@@ -213,7 +213,8 @@ public class DeviceOrientationManager {
   /**
    * Gets the current user interface orientation.
    *
-   * This method is visible for testing purposes only and should never be used outside this class.
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
    *
    * @return The current user interface orientation.
    */
@@ -243,7 +244,8 @@ public class DeviceOrientationManager {
   /**
    * Calculates the sensor orientation based on the supplied angle.
    *
-   * This method is visible for testing purposes only and should never be used outside this class.
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
    *
    * @param angle Orientation angle.
    * @return The sensor orientation based on the supplied angle.
@@ -274,7 +276,8 @@ public class DeviceOrientationManager {
   /**
    * Gets the default orientation of the device.
    *
-   * This method is visible for testing purposes only and should never be used outside this class.
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
    *
    * @return The default orientation of the device.
    */
@@ -295,7 +298,8 @@ public class DeviceOrientationManager {
   /**
    * Gets an instance of the Android {@link android.view.Display}.
    *
-   * This method is visible for testing purposes only and should never be used outside this class.
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
    *
    * @return An instance of the Android {@link android.view.Display}.
    */
