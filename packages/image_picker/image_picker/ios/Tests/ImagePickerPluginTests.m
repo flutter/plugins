@@ -184,4 +184,26 @@
 
   XCTAssertEqual(pickImageResult.code, @"create_error");
 }
+
+- (void)testPluginMultiImagePathHasItem {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  NSString *savedPath = @"test";
+  NSMutableArray *pathList = [NSMutableArray new];
+
+  [pathList addObject:savedPath];
+
+  dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
+  __block id pickImageResult = nil;
+
+  plugin.result = ^(id _Nullable r) {
+    pickImageResult = r;
+    dispatch_semaphore_signal(resultSemaphore);
+  };
+  [plugin handleMultiSavedPaths:pathList];
+
+  dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+  XCTAssertEqual(pickImageResult, pathList);
+}
+
 @end
