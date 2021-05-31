@@ -20,6 +20,10 @@ import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.DartMessenger;
 
+/**
+ * Support class to help to determine the media orientation based on the orientation of the
+ * device.
+ */
 public class DeviceOrientationManager {
 
   private static final IntentFilter orientationIntentFilter =
@@ -53,20 +57,61 @@ public class DeviceOrientationManager {
     this.sensorOrientation = sensorOrientation;
   }
 
+  /**
+   * Starts listening to the device's sensors and UI for orientation updates.
+   *
+   * When either the sensor or UI listeners indicate the orientation has changed the updated
+   * orientation is send to the client using the {@link DartMessenger}.
+   */
   public void start() {
     startSensorListener();
     startUIListener();
   }
 
+  /**
+   * Stops listening for orientation updates.
+   */
   public void stop() {
     stopSensorListener();
     stopUIListener();
   }
 
+  /**
+   * Returns the last captured orientation in degrees based on sensor or UI information.
+   *
+   * The orientation is returned in degrees and could be one of the following values:
+   * <p>
+   *   <ul>
+   *     <li>0: Indicates the device is currently in portrait.</li>
+   *     <li>90: Indicates the device is currently in landscape left.</li>
+   *     <li>180: Indicates the device is currently in portrait down.</li>
+   *     <li>270: Indicates the device is currently in landscape right.</li>
+   *   </ul>
+   * </p>
+   *
+   * @return The last captured orientation in degrees
+   */
   public int getMediaOrientation() {
     return this.getMediaOrientation(this.lastOrientation);
   }
 
+  /**
+   * Returns the device's orientation in degrees based on the supplied {@link
+   * PlatformChannel.DeviceOrientation} value.
+   *
+   * <p>
+   *
+   * <ul>
+   *   <li>PORTRAIT_UP: converts to 0 degrees.</li>
+   *   <li>LANDSCAPE_LEFT: converts to 90 degrees.</li>
+   *   <li>PORTRAIT_DOWN: converts to 180 degrees.</li>
+   *   <li>LANDSCAPE_RIGHT: converts to 270 degrees.</li>
+   * </ul>
+   *
+   * @param orientation The {@link PlatformChannel.DeviceOrientation} value that is to be converted
+   *     into degrees.
+   * @return The device's orientation in degrees.
+   */
   public int getMediaOrientation(PlatformChannel.DeviceOrientation orientation) {
     int angle = 0;
 

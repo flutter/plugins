@@ -17,7 +17,7 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 
 public class ResolutionFeatureTest {
-  private static final String cameraId = "1";
+  private static final int cameraId = 1;
   private CamcorderProfile mockProfileLow;
   private MockedStatic<CamcorderProfile> mockedStaticProfile;
 
@@ -143,47 +143,47 @@ public class ResolutionFeatureTest {
     assertEquals(
         mockProfileLow,
         ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
-            "1", ResolutionPreset.max));
+            1, ResolutionPreset.max));
   }
 
   @Test
   public void computeBestPreviewSize_should_use_720P_when_resolution_preset_max() {
-    ResolutionFeature.computeBestPreviewSize("1", ResolutionPreset.max);
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
   public void computeBestPreviewSize_should_use_720P_when_resolution_preset_ultraHigh() {
-    ResolutionFeature.computeBestPreviewSize("1", ResolutionPreset.ultraHigh);
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.ultraHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
   public void computeBestPreviewSize_should_use_720P_when_resolution_preset_veryHigh() {
-    ResolutionFeature.computeBestPreviewSize("1", ResolutionPreset.veryHigh);
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.veryHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
   public void computeBestPreviewSize_should_use_720P_when_resolution_preset_high() {
-    ResolutionFeature.computeBestPreviewSize("1", ResolutionPreset.high);
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.high);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
   public void computeBestPreviewSize_should_use_480P_when_resolution_preset_medium() {
-    ResolutionFeature.computeBestPreviewSize("1", ResolutionPreset.medium);
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.medium);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P));
   }
 
   @Test
   public void computeBestPreviewSize_should_use_QVGA_when_resolution_preset_low() {
-    ResolutionFeature.computeBestPreviewSize("1", ResolutionPreset.low);
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.low);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA));
   }

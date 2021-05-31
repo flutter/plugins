@@ -5,19 +5,25 @@
 package io.flutter.plugins.camera.features.fpsrange;
 
 import android.hardware.camera2.CaptureRequest;
-import android.util.Log;
 import android.util.Range;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
+/**
+ * Controls the frames per seconds (FPS) range configuration on the {@link android.hardware.camera2}
+ * API.
+ */
 public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
   private Range<Integer> currentSetting;
 
+  /**
+   * Creates a new instance of the {@link FpsRangeFeature}.
+   *
+   * @param cameraProperties Collection of characteristics for the current camera device.
+   */
   public FpsRangeFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
 
-    Log.i("Camera", "getAvailableFpsRange");
-    
     Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
 
     if (ranges != null) {

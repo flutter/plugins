@@ -7,31 +7,50 @@ package io.flutter.plugins.camera.features.resolution;
 import android.hardware.camera2.CaptureRequest;
 import android.media.CamcorderProfile;
 import android.util.Size;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
 
+/**
+ * Controls the resolutions configuration on the {@link android.hardware.camera2} API.
+ *
+ * The {@link ResolutionFeature} is responsible for converting the platform independent
+ * {@link ResolutionPreset} into a {@link android.media.CamcorderProfile} which contains all the
+ * properties required to configure the resolution using the {@link android.hardware.camera2} API.
+ */
 public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
-  private final Size captureSize;
-  private final Size previewSize;
-  private final CamcorderProfile recordingProfile;
+  private Size captureSize;
+  private Size previewSize;
+  private CamcorderProfile recordingProfile;
   private ResolutionPreset currentSetting;
+  private int cameraId;
 
+  /**
+   * Creates a new instance of the {@link ResolutionFeature}.
+   *
+   * @param cameraProperties Collection of characteristics for the current camera device.
+   * @param resolutionPreset Platform agnostic enum containing resolution information.
+   * @param cameraId Camera identifier of the camera for which to configure the resolution.
+   */
   public ResolutionFeature(
-      CameraProperties cameraProperties, ResolutionPreset initialSetting, String cameraName) {
+      CameraProperties cameraProperties, ResolutionPreset resolutionPreset, int cameraId) {
     super(cameraProperties);
-    setValue(initialSetting);
+    this.currentSetting = resolutionPreset;
+    this.cameraId = cameraId;
 
-    // Resolution configuration
-    recordingProfile =
-        getBestAvailableCamcorderProfileForResolutionPreset(cameraName, initialSetting);
-    captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
-
-    previewSize = computeBestPreviewSize(cameraName, initialSetting);
+    configureResolution(resolutionPreset, cameraId);
   }
 
+  /**
+   * Gets the best possible {@link android.media.CamcorderProfile} for the supplied {@link ResolutionPreset}.
+   *
+   * @param cameraId Camera identifier which indicates the device's camera for which to select a {@link android.media.CamcorderProfile}.
+   * @param preset The {@link ResolutionPreset} for which is to be translated to a {@link android.media.CamcorderProfile}.
+   * @return The best possible {@link android.media.CamcorderProfile} that matches the supplied {@link ResolutionPreset}.
+   */
   public static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
-      String cameraName, ResolutionPreset preset) {
-    int cameraId = Integer.parseInt(cameraName);
+      int cameraId, ResolutionPreset preset) {
+
     switch (preset) {
         // All of these cases deliberately fall through to get the best available profile.
       case max:
@@ -68,14 +87,23 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
   }
 
-  static Size computeBestPreviewSize(String cameraName, ResolutionPreset preset) {
+  @VisibleForTesting
+  static Size computeBestPreviewSize(int cameraId, ResolutionPreset preset) {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
       preset = ResolutionPreset.high;
     }
 
     CamcorderProfile profile =
-        getBestAvailableCamcorderProfileForResolutionPreset(cameraName, preset);
+        getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
     return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
+  }
+
+  private void configureResolution(ResolutionPreset resolutionPreset, int cameraId) {
+    recordingProfile =
+        getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
+    captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+
+    previewSize = computeBestPreviewSize(cameraId, resolutionPreset);
   }
 
   @Override
@@ -91,6 +119,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   @Override
   public void setValue(ResolutionPreset value) {
     this.currentSetting = value;
+    configureResolution(currentSetting, cameraId);
   }
 
   // Always supported
@@ -104,14 +133,30 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     // No-op: when setting a resolution there is no need to update the request builder.
   }
 
+  /**
+   * Gets the {@link android.media.CamcorderProfile} containing the information to configure the
+   * resolution using the {@link android.hardware.camera2} API.
+   *
+   * @return Resolution information to configure the {@link android.hardware.camera2} API.
+   */
   public CamcorderProfile getRecordingProfile() {
     return this.recordingProfile;
   }
 
+  /**
+   * Gets the optimal preview size based on the configured resolution.
+   *
+   * @return The optimal preview size.
+   */
   public Size getPreviewSize() {
     return this.previewSize;
   }
 
+  /**
+   * Get the optimal capture size based on the configured resolution.
+   *
+   * @return The optimal capture size.
+   */
   public Size getCaptureSize() {
     return this.captureSize;
   }
