@@ -1,3 +1,6 @@
+## 0.7.6
+* Implement functionality to pick multiple images in iOS14+ and Android.
+
 ## 0.7.5+3
 * Localize `UIAlertController` strings.
 
