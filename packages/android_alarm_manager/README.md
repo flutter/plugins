@@ -1,5 +1,20 @@
 # android_alarm_manager
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`android_alarm_manager_plus`](https://pub.dev/packages/android_alarm_manager_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 [![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dev/packages/android_alarm_manager)
 
 A Flutter plugin for accessing the Android AlarmManager service, and running

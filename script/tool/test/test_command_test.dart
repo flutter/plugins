@@ -11,7 +11,7 @@ import 'util.dart';
 
 void main() {
   group('$TestCommand', () {
-    CommandRunner<void> runner;
+    late CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {

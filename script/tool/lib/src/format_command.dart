@@ -13,8 +13,8 @@ import 'package:quiver/iterables.dart';
 
 import 'common.dart';
 
-const String _googleFormatterUrl =
-    'https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar';
+final Uri _googleFormatterUrl = Uri.https('github.com',
+    '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');
 
 /// A command to format all package code.
 class FormatCommand extends PluginCommand {
@@ -47,7 +47,7 @@ class FormatCommand extends PluginCommand {
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['fail-on-change'] == true) {
+    if (getBoolArg('fail-on-change')) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);
@@ -56,9 +56,13 @@ class FormatCommand extends PluginCommand {
   }
 
   Future<bool> _didModifyAnything() async {
-    final io.ProcessResult modifiedFiles = await processRunner
-        .runAndExitOnError('git', <String>['ls-files', '--modified'],
-            workingDir: packagesDir);
+    final io.ProcessResult modifiedFiles = await processRunner.run(
+      'git',
+      <String>['ls-files', '--modified'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
 
     print('\n\n');
 
@@ -76,8 +80,13 @@ class FormatCommand extends PluginCommand {
         'this command into your terminal:');
 
     print('patch -p1 <<DONE');
-    final io.ProcessResult diff = await processRunner
-        .runAndExitOnError('git', <String>['diff'], workingDir: packagesDir);
+    final io.ProcessResult diff = await processRunner.run(
+      'git',
+      <String>['diff'],
+      workingDir: packagesDir,
+      exitOnError: true,
+      logOnError: true,
+    );
     print(diff.stdout);
     print('DONE');
     return true;
@@ -96,7 +105,7 @@ class FormatCommand extends PluginCommand {
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
     for (final List<String> batch in batches) {
-      await processRunner.runAndStream(argResults['clang-format'] as String,
+      await processRunner.runAndStream(getStringArg('clang-format'),
           <String>['-i', '--style=Google', ...batch],
           workingDir: packagesDir, exitOnError: true);
     }

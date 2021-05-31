@@ -12,8 +12,8 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  RecordingProcessRunner processRunner;
-  CommandRunner<void> runner;
+  late RecordingProcessRunner processRunner;
+  late CommandRunner<void> runner;
 
   setUp(() {
     initializeFakePackages();
@@ -42,17 +42,81 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-              mockPackagesDir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin1Dir.path),
           ProcessCall(
               'flutter', const <String>['packages', 'get'], plugin2Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin1Dir.path),
-          ProcessCall('pub', const <String>['global', 'run', 'tuneup', 'check'],
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
               plugin2Dir.path),
         ]));
+  });
+
+  test('skips flutter pub get for examples', () async {
+    final Directory plugin1Dir = createFakePlugin('a', withSingleExample: true);
+
+    final MockProcess mockProcess = MockProcess();
+    mockProcess.exitCodeCompleter.complete(0);
+    processRunner.processToReturn = mockProcess;
+    await runner.run(<String>['analyze']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+              plugin1Dir.path),
+        ]));
+  });
+
+  test('don\'t elide a non-contained example package', () async {
+    final Directory plugin1Dir = createFakePlugin('a');
+    final Directory plugin2Dir = createFakePlugin('example');
+
+    final MockProcess mockProcess = MockProcess();
+    mockProcess.exitCodeCompleter.complete(0);
+    processRunner.processToReturn = mockProcess;
+    await runner.run(<String>['analyze']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin1Dir.path),
+          ProcessCall(
+              'flutter', const <String>['packages', 'get'], plugin2Dir.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+              plugin1Dir.path),
+          ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+              plugin2Dir.path),
+        ]));
+  });
+
+  test('uses a separate analysis sdk', () async {
+    final Directory pluginDir = createFakePlugin('a');
+
+    final MockProcess mockProcess = MockProcess();
+    mockProcess.exitCodeCompleter.complete(0);
+    processRunner.processToReturn = mockProcess;
+    await runner.run(<String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
+
+    expect(
+      processRunner.recordedCalls,
+      orderedEquals(<ProcessCall>[
+        ProcessCall(
+          'flutter',
+          const <String>['packages', 'get'],
+          pluginDir.path,
+        ),
+        ProcessCall(
+          'foo/bar/baz/bin/dart',
+          const <String>['analyze', '--fatal-infos'],
+          pluginDir.path,
+        ),
+      ]),
+    );
   });
 
   group('verifies analysis settings', () {
@@ -88,13 +152,9 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall('pub', const <String>['global', 'activate', 'tuneup'],
-                mockPackagesDir.path),
             ProcessCall(
                 'flutter', const <String>['packages', 'get'], pluginDir.path),
-            ProcessCall(
-                'pub',
-                const <String>['global', 'run', 'tuneup', 'check'],
+            ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
                 pluginDir.path),
           ]));
     });

@@ -4,15 +4,23 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'consumable_store.dart';
 
 void main() {
-  // For play billing library 2.0 on Android, it is mandatory to call
-  // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
-  // as part of initializing the app.
-  InAppPurchaseConnection.enablePendingPurchases();
+  WidgetsFlutterBinding.ensureInitialized();
+
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    // For play billing library 2.0 on Android, it is mandatory to call
+    // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
+    // as part of initializing the app.
+    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+  }
+
   runApp(_MyApp());
 }
 
@@ -35,7 +43,7 @@ class _MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<_MyApp> {
-  final InAppPurchaseConnection _connection = InAppPurchaseConnection.instance;
+  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
@@ -49,7 +57,7 @@ class _MyAppState extends State<_MyApp> {
   @override
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
-        InAppPurchaseConnection.instance.purchaseUpdatedStream;
+        _inAppPurchase.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
@@ -62,7 +70,7 @@ class _MyAppState extends State<_MyApp> {
   }
 
   Future<void> initStoreInfo() async {
-    final bool isAvailable = await _connection.isAvailable();
+    final bool isAvailable = await _inAppPurchase.isAvailable();
     if (!isAvailable) {
       setState(() {
         _isAvailable = isAvailable;
@@ -77,7 +85,7 @@ class _MyAppState extends State<_MyApp> {
     }
 
     ProductDetailsResponse productDetailResponse =
-        await _connection.queryProductDetails(_kProductIds.toSet());
+        await _inAppPurchase.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
         _queryProductError = productDetailResponse.error!.message;
@@ -106,22 +114,12 @@ class _MyAppState extends State<_MyApp> {
       return;
     }
 
-    final QueryPurchaseDetailsResponse purchaseResponse =
-        await _connection.queryPastPurchases();
-    if (purchaseResponse.error != null) {
-      // handle query past purchase error..
-    }
-    final List<PurchaseDetails> verifiedPurchases = [];
-    for (PurchaseDetails purchase in purchaseResponse.pastPurchases) {
-      if (await _verifyPurchase(purchase)) {
-        verifiedPurchases.add(purchase);
-      }
-    }
+    await _inAppPurchase.restorePurchases();
+
     List<String> consumables = await ConsumableStore.load();
     setState(() {
       _isAvailable = isAvailable;
       _products = productDetailResponse.productDetails;
-      _purchases = verifiedPurchases;
       _notFoundIds = productDetailResponse.notFoundIDs;
       _consumables = consumables;
       _purchasePending = false;
@@ -233,7 +231,7 @@ class _MyAppState extends State<_MyApp> {
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
-        InAppPurchaseConnection.instance.completePurchase(purchase);
+        _inAppPurchase.completePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
@@ -256,28 +254,39 @@ class _MyAppState extends State<_MyApp> {
                       primary: Colors.white,
                     ),
                     onPressed: () {
-                      // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
-                      // verify the latest status of you your subscription by using server side receipt validation
-                      // and update the UI accordingly. The subscription purchase status shown
-                      // inside the app may not be accurate.
-                      final oldSubscription =
-                          _getOldSubscription(productDetails, purchases);
-                      PurchaseParam purchaseParam = PurchaseParam(
+                      late PurchaseParam purchaseParam;
+
+                      if (Platform.isAndroid) {
+                        // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
+                        // verify the latest status of you your subscription by using server side receipt validation
+                        // and update the UI accordingly. The subscription purchase status shown
+                        // inside the app may not be accurate.
+                        final oldSubscription =
+                            _getOldSubscription(productDetails, purchases);
+
+                        purchaseParam = GooglePlayPurchaseParam(
+                            productDetails: productDetails,
+                            applicationUserName: null,
+                            changeSubscriptionParam: (oldSubscription != null)
+                                ? ChangeSubscriptionParam(
+                                    oldPurchaseDetails: oldSubscription,
+                                    prorationMode: ProrationMode
+                                        .immediateWithTimeProration,
+                                  )
+                                : null);
+                      } else {
+                        purchaseParam = PurchaseParam(
                           productDetails: productDetails,
                           applicationUserName: null,
-                          changeSubscriptionParam: Platform.isAndroid &&
-                                  oldSubscription != null
-                              ? ChangeSubscriptionParam(
-                                  oldPurchaseDetails: oldSubscription,
-                                  prorationMode:
-                                      ProrationMode.immediateWithTimeProration)
-                              : null);
+                        );
+                      }
+
                       if (productDetails.id == _kConsumableId) {
-                        _connection.buyConsumable(
+                        _inAppPurchase.buyConsumable(
                             purchaseParam: purchaseParam,
                             autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
-                        _connection.buyNonConsumable(
+                        _inAppPurchase.buyNonConsumable(
                             purchaseParam: purchaseParam);
                       }
                     },
@@ -393,19 +402,20 @@ class _MyAppState extends State<_MyApp> {
         }
         if (Platform.isAndroid) {
           if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
-            await InAppPurchaseConnection.instance
-                .consumePurchase(purchaseDetails);
+            final InAppPurchaseAndroidPlatformAddition androidAddition =
+                _inAppPurchase.getPlatformAddition<
+                    InAppPurchaseAndroidPlatformAddition>();
+            await androidAddition.consumePurchase(purchaseDetails);
           }
         }
         if (purchaseDetails.pendingCompletePurchase) {
-          await InAppPurchaseConnection.instance
-              .completePurchase(purchaseDetails);
+          await _inAppPurchase.completePurchase(purchaseDetails);
         }
       }
     });
   }
 
-  PurchaseDetails? _getOldSubscription(
+  GooglePlayPurchaseDetails? _getOldSubscription(
       ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
     // This is just to demonstrate a subscription upgrade or downgrade.
     // This method assumes that you have only 2 subscriptions under a group, 'subscription_silver' & 'subscription_gold'.
@@ -414,13 +424,15 @@ class _MyAppState extends State<_MyApp> {
     // Please remember to replace the logic of finding the old subscription Id as per your app.
     // The old subscription is only required on Android since Apple handles this internally
     // by using the subscription group feature in iTunesConnect.
-    PurchaseDetails? oldSubscription;
+    GooglePlayPurchaseDetails? oldSubscription;
     if (productDetails.id == _kSilverSubscriptionId &&
         purchases[_kGoldSubscriptionId] != null) {
-      oldSubscription = purchases[_kGoldSubscriptionId];
+      oldSubscription =
+          purchases[_kGoldSubscriptionId] as GooglePlayPurchaseDetails;
     } else if (productDetails.id == _kGoldSubscriptionId &&
         purchases[_kSilverSubscriptionId] != null) {
-      oldSubscription = purchases[_kSilverSubscriptionId];
+      oldSubscription =
+          purchases[_kSilverSubscriptionId] as GooglePlayPurchaseDetails;
     }
     return oldSubscription;
   }

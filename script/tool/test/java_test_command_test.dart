@@ -12,7 +12,7 @@ import 'util.dart';
 
 void main() {
   group('$JavaTestCommand', () {
-    CommandRunner<void> runner;
+    late CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {

@@ -17,6 +17,18 @@
   XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:mockData]);
 }
 
+- (void)testGetAssetFromPHPickerResultShouldReturnNilIfNotAvailable API_AVAILABLE(ios(14)) {
+  if (@available(iOS 14, *)) {
+    PHPickerResult *mockData;
+    [mockData.itemProvider
+        loadObjectOfClass:[UIImage class]
+        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
+                            NSError *_Nullable error) {
+          XCTAssertNil([FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:mockData]);
+        }];
+  }
+}
+
 - (void)testSaveImageWithOriginalImageData_ShouldSaveWithTheCorrectExtentionAndMetaData {
   // test jpg
   NSData *dataJPG = ImagePickerTestImages.JPGTestData;

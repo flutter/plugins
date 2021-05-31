@@ -5,6 +5,7 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 
 // A fake VersionInfoQuerier that just returns preset responses.
@@ -18,6 +19,11 @@ class FakeVersionInfoQuerier implements VersionInfoQuerier {
 }
 
 void main() {
+  test('registered instance', () {
+    PathProviderWindows.registerWith();
+    expect(PathProviderPlatform.instance, isA<PathProviderWindows>());
+  });
+
   test('getTemporaryPath', () async {
     final PathProviderWindows pathProvider = PathProviderWindows();
     expect(await pathProvider.getTemporaryPath(), contains(r'C:\'));

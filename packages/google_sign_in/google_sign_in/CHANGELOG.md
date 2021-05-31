@@ -1,3 +1,12 @@
+## 5.0.4
+
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 5.0.3
+
+* Fixed links in `README.md`.
+* Added documentation for usage on the web.
+
 ## 5.0.2
 
 * Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
