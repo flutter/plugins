@@ -375,6 +375,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
+            dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
             __block UIImage *localImage = image;
             dispatch_async(dispatch_get_main_queue(), ^{
               PHAsset *originalAsset =
@@ -395,6 +396,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                              imageQuality:desiredImageQuality];
                 [pathList addObject:savedPath];
 
+                dispatch_semaphore_signal(resultSemaphore);
+
               } else {
                 [[PHImageManager defaultManager]
                     requestImageDataForAsset:originalAsset
@@ -410,17 +413,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxHeight:maxHeight
                                                        imageQuality:desiredImageQuality];
                                  [pathList addObject:savedPath];
-                                 [self handlePath:savedPath
-                                         pathList:pathList
-                                      resultCount:results.count
-                                        listCount:pathList.count];
+
+                                 dispatch_semaphore_signal(resultSemaphore);
                                }];
               }
-              [self handlePath:savedPath
-                      pathList:pathList
-                   resultCount:results.count
-                     listCount:pathList.count];
             });
+            dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+            [self handlePath:pathList resultCount:results.count];
           }
         }];
   }
