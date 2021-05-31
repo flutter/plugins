@@ -446,7 +446,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void takeScreenshot(Result result){
     final Result fResult = result;
-    boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
+    final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
+    
     webView.setDrawingCacheEnabled(true);
     // copy to a new bitmap, otherwise the bitmap will be
     // destroyed when the drawing cache is destroyed
@@ -456,35 +457,39 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
 
-    // run the compress function in a secondary thread
-    new Thread(new Runnable() {
-    @Override
-    public void run() {
-      if (b != null) {
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        b.compress(Bitmap.CompressFormat.PNG, 80, stream);
-        final byte[] imageByteArray = stream.toByteArray();
-        // make sure to return the result in the main thread
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-          @Override
-          public void run() {
-            fResult.success(imageByteArray);
-          }
-        });
+    if (b == null) {
+      // treat an empty bitmap as a successful empty screenshot result
+      fResult.success(new byte[0]);
+    } else {
+      // run the compress function in a secondary thread
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          if (b != null) {
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            b.compress(Bitmap.CompressFormat.PNG, 80, stream);
+            final byte[] imageByteArray = stream.toByteArray();
+            // make sure to return the result in the main thread
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+              @Override
+              public void run() {
+                fResult.success(imageByteArray);
+              }
+            });
 
-        b.recycle();
-      } else {
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-          @Override
-          public void run() {
-            // treat an empty bitmap as a successful empty screenshot result
-            fResult.success(new byte[0]);
+            b.recycle();
+          } else {
+            new Handler(Looper.getMainLooper()).post(new Runnable() {
+              @Override
+              public void run() {
+                // treat an empty bitmap as a successful empty screenshot result
+                fResult.success(new byte[0]);
+              }
+            });
           }
-        });
-      }
+        }
+      }).start();
     }
-   }).start();
-
   }
 
   private void applySettings(Map<String, Object> settings) {
