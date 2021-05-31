@@ -14,9 +14,9 @@ import io.flutter.plugins.camera.features.CameraFeature;
 /**
  * Controls the resolutions configuration on the {@link android.hardware.camera2} API.
  *
- * The {@link ResolutionFeature} is responsible for converting the platform independent
- * {@link ResolutionPreset} into a {@link android.media.CamcorderProfile} which contains all the
- * properties required to configure the resolution using the {@link android.hardware.camera2} API.
+ * <p>The {@link ResolutionFeature} is responsible for converting the platform independent {@link
+ * ResolutionPreset} into a {@link android.media.CamcorderProfile} which contains all the properties
+ * required to configure the resolution using the {@link android.hardware.camera2} API.
  */
 public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   private Size captureSize;
@@ -42,11 +42,15 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   }
 
   /**
-   * Gets the best possible {@link android.media.CamcorderProfile} for the supplied {@link ResolutionPreset}.
+   * Gets the best possible {@link android.media.CamcorderProfile} for the supplied {@link
+   * ResolutionPreset}.
    *
-   * @param cameraId Camera identifier which indicates the device's camera for which to select a {@link android.media.CamcorderProfile}.
-   * @param preset The {@link ResolutionPreset} for which is to be translated to a {@link android.media.CamcorderProfile}.
-   * @return The best possible {@link android.media.CamcorderProfile} that matches the supplied {@link ResolutionPreset}.
+   * @param cameraId Camera identifier which indicates the device's camera for which to select a
+   *     {@link android.media.CamcorderProfile}.
+   * @param preset The {@link ResolutionPreset} for which is to be translated to a {@link
+   *     android.media.CamcorderProfile}.
+   * @return The best possible {@link android.media.CamcorderProfile} that matches the supplied
+   *     {@link ResolutionPreset}.
    */
   public static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
       int cameraId, ResolutionPreset preset) {

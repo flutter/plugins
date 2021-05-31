@@ -25,9 +25,9 @@ public class SensorOrientationFeature extends CameraFeature<Integer> {
    *
    * @param cameraProperties Collection of characteristics for the current camera device.
    * @param activity Current Android {@link android.app.Activity}, used to detect UI orientation
-   *                 changes.
+   *     changes.
    * @param dartMessenger Instance of a {@link DartMessenger} used to communicate orientation
-   *                      updates back to the client.
+   *     updates back to the client.
    */
   public SensorOrientationFeature(
       @NonNull CameraProperties cameraProperties,
@@ -69,6 +69,7 @@ public class SensorOrientationFeature extends CameraFeature<Integer> {
 
   /**
    * Gets the instance of the {@link DeviceOrientationManager} used to detect orientation changes.
+   *
    * @return The instance of the {@link DeviceOrientationManager}.
    */
   public DeviceOrientationManager getDeviceOrientationManager() {

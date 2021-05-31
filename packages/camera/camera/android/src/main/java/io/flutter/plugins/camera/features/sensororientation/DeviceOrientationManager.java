@@ -17,12 +17,12 @@ import android.view.OrientationEventListener;
 import android.view.Surface;
 import android.view.WindowManager;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.DartMessenger;
 
 /**
- * Support class to help to determine the media orientation based on the orientation of the
- * device.
+ * Support class to help to determine the media orientation based on the orientation of the device.
  */
 public class DeviceOrientationManager {
 
@@ -58,19 +58,23 @@ public class DeviceOrientationManager {
   }
 
   /**
-   * Starts listening to the device's sensors and UI for orientation updates.
+   * Starts listening to the device's sensors or UI for orientation updates.
    *
-   * When either the sensor or UI listeners indicate the orientation has changed the updated
-   * orientation is send to the client using the {@link DartMessenger}.
+   * <p>When orientation information is updated the new orientation is send to the client using the
+   * {@link DartMessenger}. This latest value can also be retrieved through the {@link
+   * #getMediaOrientation()} accessor.
+   *
+   * <p>If the device's ACCELEROMETER_ROTATION setting is enabled the {@link
+   * DeviceOrientationManager} will report orientation updates based on the sensor information. If
+   * the ACCELEROMETER_ROTATION is disabled the {@link DeviceOrientationManager} will fallback to
+   * the deliver orientation updates based on the UI orientation.
    */
   public void start() {
     startSensorListener();
     startUIListener();
   }
 
-  /**
-   * Stops listening for orientation updates.
-   */
+  /** Stops listening for orientation updates. */
   public void stop() {
     stopSensorListener();
     stopUIListener();
@@ -79,15 +83,14 @@ public class DeviceOrientationManager {
   /**
    * Returns the last captured orientation in degrees based on sensor or UI information.
    *
-   * The orientation is returned in degrees and could be one of the following values:
-   * <p>
-   *   <ul>
-   *     <li>0: Indicates the device is currently in portrait.</li>
-   *     <li>90: Indicates the device is currently in landscape left.</li>
-   *     <li>180: Indicates the device is currently in portrait down.</li>
-   *     <li>270: Indicates the device is currently in landscape right.</li>
-   *   </ul>
-   * </p>
+   * <p>The orientation is returned in degrees and could be one of the following values:
+   *
+   * <ul>
+   *   <li>0: Indicates the device is currently in portrait.
+   *   <li>90: Indicates the device is currently in landscape left.
+   *   <li>180: Indicates the device is currently in portrait down.
+   *   <li>270: Indicates the device is currently in landscape right.
+   * </ul>
    *
    * @return The last captured orientation in degrees
    */
@@ -102,10 +105,10 @@ public class DeviceOrientationManager {
    * <p>
    *
    * <ul>
-   *   <li>PORTRAIT_UP: converts to 0 degrees.</li>
-   *   <li>LANDSCAPE_LEFT: converts to 90 degrees.</li>
-   *   <li>PORTRAIT_DOWN: converts to 180 degrees.</li>
-   *   <li>LANDSCAPE_RIGHT: converts to 270 degrees.</li>
+   *   <li>PORTRAIT_UP: converts to 0 degrees.
+   *   <li>LANDSCAPE_LEFT: converts to 90 degrees.
+   *   <li>PORTRAIT_DOWN: converts to 180 degrees.
+   *   <li>LANDSCAPE_RIGHT: converts to 270 degrees.
    * </ul>
    *
    * @param orientation The {@link PlatformChannel.DeviceOrientation} value that is to be converted
@@ -134,12 +137,18 @@ public class DeviceOrientationManager {
         angle = 270;
         break;
     }
-    if (isFrontFacing) angle *= -1;
+
+    if (isFrontFacing) {
+      angle *= -1;
+    }
+
     return (angle + sensorOrientation + 360) % 360;
   }
 
   private void startSensorListener() {
-    if (orientationEventListener != null) return;
+    if (orientationEventListener != null) {
+      return;
+    }
     orientationEventListener =
         new OrientationEventListener(activity, SensorManager.SENSOR_DELAY_NORMAL) {
           @Override
@@ -159,7 +168,9 @@ public class DeviceOrientationManager {
   }
 
   private void startUIListener() {
-    if (broadcastReceiver != null) return;
+    if (broadcastReceiver != null) {
+      return;
+    }
     broadcastReceiver =
         new BroadcastReceiver() {
           @Override
@@ -178,13 +189,17 @@ public class DeviceOrientationManager {
   }
 
   private void stopSensorListener() {
-    if (orientationEventListener == null) return;
+    if (orientationEventListener == null) {
+      return;
+    }
     orientationEventListener.disable();
     orientationEventListener = null;
   }
 
   private void stopUIListener() {
-    if (broadcastReceiver == null) return;
+    if (broadcastReceiver == null) {
+      return;
+    }
     activity.unregisterReceiver(broadcastReceiver);
     broadcastReceiver = null;
   }
@@ -195,7 +210,15 @@ public class DeviceOrientationManager {
         != 1;
   }
 
-  private PlatformChannel.DeviceOrientation getUIOrientation() {
+  /**
+   * Gets the current user interface orientation.
+   *
+   * This method is visible for testing purposes only and should never be used outside this class.
+   *
+   * @return The current user interface orientation.
+   */
+  @VisibleForTesting
+  PlatformChannel.DeviceOrientation getUIOrientation() {
     final int rotation = getDisplay().getRotation();
     final int orientation = activity.getResources().getConfiguration().orientation;
 
@@ -217,11 +240,20 @@ public class DeviceOrientationManager {
     }
   }
 
-  private PlatformChannel.DeviceOrientation calculateSensorOrientation(int angle) {
+  /**
+   * Calculates the sensor orientation based on the supplied angle.
+   *
+   * This method is visible for testing purposes only and should never be used outside this class.
+   *
+   * @param angle Orientation angle.
+   * @return The sensor orientation based on the supplied angle.
+   */
+  @VisibleForTesting
+  PlatformChannel.DeviceOrientation calculateSensorOrientation(int angle) {
     final int tolerance = 45;
     angle += tolerance;
 
-    // Orientation is 0 in the default orientation mode. This is portait-mode for phones
+    // Orientation is 0 in the default orientation mode. This is portrait-mode for phones
     // and landscape for tablets. We have to compensate for this by calculating the default
     // orientation, and apply an offset accordingly.
     int defaultDeviceOrientation = getDeviceDefaultOrientation();
@@ -239,7 +271,15 @@ public class DeviceOrientationManager {
         [angle / 90];
   }
 
-  private int getDeviceDefaultOrientation() {
+  /**
+   * Gets the default orientation of the device.
+   *
+   * This method is visible for testing purposes only and should never be used outside this class.
+   *
+   * @return The default orientation of the device.
+   */
+  @VisibleForTesting
+  int getDeviceDefaultOrientation() {
     Configuration config = activity.getResources().getConfiguration();
     int rotation = getDisplay().getRotation();
     if (((rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180)
@@ -252,8 +292,16 @@ public class DeviceOrientationManager {
     }
   }
 
+  /**
+   * Gets an instance of the Android {@link android.view.Display}.
+   *
+   * This method is visible for testing purposes only and should never be used outside this class.
+   *
+   * @return An instance of the Android {@link android.view.Display}.
+   */
   @SuppressWarnings("deprecation")
-  private Display getDisplay() {
+  @VisibleForTesting
+  Display getDisplay() {
     return ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
   }
 }
