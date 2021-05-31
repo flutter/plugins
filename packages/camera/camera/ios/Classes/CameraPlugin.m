@@ -994,15 +994,21 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)applyFocusMode {
+  [self applyFocusMode:_focusMode onDevice:_captureDevice];
+}
+
+- (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
   [_captureDevice lockForConfiguration:nil];
   switch (_focusMode) {
     case FocusModeLocked:
-      [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      }
       break;
     case FocusModeAuto:
       if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
         [_captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-      } else {
+      } else if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
         [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
