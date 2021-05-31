@@ -63,8 +63,7 @@ public class DeviceOrientationManagerTest {
     DeviceOrientationManager orientationManager =
         DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 90);
 
-    int degreesPortraitUp =
-        orientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_UP);
+    int degreesPortraitUp = orientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_UP);
     int degreesPortraitDown =
         orientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_DOWN);
     int degreesLandscapeLeft =
@@ -82,8 +81,7 @@ public class DeviceOrientationManagerTest {
   public void getMediaOrientation_should_fallback_to_sensor_orientation_when_orientation_is_null() {
     setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
 
-    int degrees =
-        deviceOrientationManager.getMediaOrientation(null);
+    int degrees = deviceOrientationManager.getMediaOrientation(null);
 
     assertEquals(90, degrees);
   }
