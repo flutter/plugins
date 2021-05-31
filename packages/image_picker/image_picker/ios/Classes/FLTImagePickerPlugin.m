@@ -426,13 +426,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)handlePath:(NSString *)savedPath
-          pathList:(NSMutableArray *)pathList
-       resultCount:(NSUInteger)resultCount
-         listCount:(NSUInteger)listCount {
-  if (listCount == resultCount) {
+/**
+ * Accepts NSMutableArray to get list of paths that are saved and NSUInteger
+ * as a total length of the results.
+ *
+ * Calls handleSavedPath if method call is equal to pickImage or handleMultiSavedPaths
+ * if method call is equal to pickMultiImage.
+ */
+- (void)handlePath:(NSMutableArray *)pathList resultCount:(NSUInteger)resultCount {
+  if (pathList.count == resultCount) {
     if (self.single) {
-      [self handleSavedPath:savedPath];
+      [self handleSavedPath:pathList.firstObject];
     } else {
       [self handleMultiSavedPaths:pathList];
     }
