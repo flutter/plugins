@@ -166,4 +166,22 @@
 
   XCTAssertEqual(pickImageResult.code, @"create_error");
 }
+
+- (void)testPluginMultiImagePathHasZeroItem {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  NSMutableArray *pathList = [NSMutableArray new];
+
+  dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
+  __block FlutterError *pickImageResult = nil;
+
+  plugin.result = ^(id _Nullable r) {
+    pickImageResult = r;
+    dispatch_semaphore_signal(resultSemaphore);
+  };
+  [plugin handleMultiSavedPaths:pathList];
+
+  dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+  XCTAssertEqual(pickImageResult.code, @"create_error");
+}
 @end
