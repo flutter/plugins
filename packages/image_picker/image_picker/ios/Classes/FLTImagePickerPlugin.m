@@ -566,11 +566,17 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _arguments = nil;
 }
 
+/**
+ * Accepts NSMutableArray as an argument and call result with the array
+ * if the array is not nil and length of the array is bigger than zero.
+ *
+ * Otherwise result is called with FlutterError.
+ */
 - (void)handleMultiSavedPaths:(NSMutableArray *)pathList {
   if (!self.result) {
     return;
   }
-  if (pathList.count > 0) {
+  if (pathList && pathList.count > 0) {
     self.result(pathList);
   } else {
     self.result([FlutterError errorWithCode:@"create_error"
