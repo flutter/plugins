@@ -19,12 +19,12 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-#### API < 29
 No configuration required - the plugin should work out of the box.
 
-#### API 29+
+It is no longer required to add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml, as `image_picker` has been updated to make use of scoped storage.
 
-Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml. The [attribute](https://developer.android.com/training/data-storage/compatibility) is `false` by default on apps targeting Android Q. 
+**Note:** Images and videos picked using the camera are saved to your application's local cache, and should therefore be expected to only be around temporarily.
+If you require your picked image to be stored permanently, it is your responsibility to move it to a more permanent location.
 
 ### Example
 
