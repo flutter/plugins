@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+* Change sizing code of `GoogleMap` widget's `HtmlElementView` so it works well when slotted.
+
 ## 0.3.0
 
 * Migrate package to null-safety.
