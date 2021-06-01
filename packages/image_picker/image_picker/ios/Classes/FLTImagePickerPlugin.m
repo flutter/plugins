@@ -456,7 +456,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
           requestAVAssetForVideo:originalAsset
                          options:nil
                    resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
-                     __strong typeof(self) strongSelf = self;
+                     __strong typeof(self) strongSelf = weakSelf;
                      NSURL *url = [[(AVURLAsset *)asset URL] fileReferenceURL];
                      [strongSelf finishWithVideoURL:url];
                    }];
