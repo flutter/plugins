@@ -998,22 +998,22 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
-  [_captureDevice lockForConfiguration:nil];
-  switch (_focusMode) {
+  [captureDevice lockForConfiguration:nil];
+  switch (focusMode) {
     case FocusModeLocked:
-      if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
-        [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
     case FocusModeAuto:
-      if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
-        [_captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-      } else if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
-        [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+      } else if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
   }
-  [_captureDevice unlockForConfiguration];
+  [captureDevice unlockForConfiguration];
 }
 
 - (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
