@@ -1,3 +1,7 @@
+## 0.1.4
+
+- Add a `pubspec-check` command
+
 ## 0.1.3
 
 - Cosmetic fix to `publish-check` output
