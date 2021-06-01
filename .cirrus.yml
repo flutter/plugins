@@ -51,6 +51,7 @@ task:
         - ./script/tool_runner.sh publish-check
     - name: format
       format_script: ./script/tool_runner.sh format --fail-on-change
+      pubspec_script: ./script/tool_runner.sh pubspec-check
       license_script:
         - dart script/tool/lib/src/main.dart license-check
     - name: test

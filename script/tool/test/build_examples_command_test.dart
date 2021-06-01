@@ -59,7 +59,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -96,7 +95,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -142,7 +140,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --linux with no
       // Linux implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -175,7 +172,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -211,7 +207,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -245,7 +240,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -280,7 +274,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -314,7 +307,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -353,7 +345,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -386,7 +377,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -425,7 +415,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -462,7 +451,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -492,7 +480,6 @@ void main() {
         '--enable-experiment=exp1'
       ]);
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -522,7 +509,6 @@ void main() {
         '--no-macos',
         '--enable-experiment=exp1'
       ]);
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[

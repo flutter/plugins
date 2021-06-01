@@ -1,9 +1,7 @@
 name: plugin_platform_interface
 description: Reusable base class for Flutter plugin platform interfaces.
 repository: https://github.com/flutter/plugins/tree/master/packages/plugin_platform_interface
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+plugin_platform_interface%22
 
 # DO NOT MAKE A BREAKING CHANGE TO THIS PACKAGE
 # DO NOT INCREASE THE MAJOR VERSION OF THIS PACKAGE
@@ -17,6 +15,9 @@ environment:
 # that is forward compatible with 2.0.0 (ideally the ecosystem have migrated to depend on:
 # `plugin_platform_interface: >=1.X.Y <3.0.0`).
 version: 2.0.0
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   meta: ^1.3.0

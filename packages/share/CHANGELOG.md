@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Update README to point to Plus Plugins version.
+
 ## 2.0.3
 
 * Do not tear down method channel onDetachedFromActivity.
