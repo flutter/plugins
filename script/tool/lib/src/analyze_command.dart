@@ -64,6 +64,8 @@ class AnalyzeCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
+    final Stopwatch pubTime = Stopwatch()..start();
+
     final List<Directory> packageDirectories = await getPackages().toList();
     final Set<String> packagePaths =
         packageDirectories.map((Directory dir) => dir.path).toSet();
@@ -78,32 +80,81 @@ class AnalyzeCommand extends PluginCommand {
           workingDir: package, exitOnError: true);
     }
 
+    pubTime.stop();
+
+    final Stopwatch analysisTime = Stopwatch()..start();
+
     // Use the Dart SDK override if one was passed in.
     final String? dartSdk = argResults![_analysisSdk] as String?;
     final String dartBinary =
         dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
 
-    final List<String> failingPackages = <String>[];
+    final List<String> failingDirectories = <String>[];
     final List<Directory> pluginDirectories = await getPlugins().toList();
-    for (final Directory package in pluginDirectories) {
+    final List<Directory> pluginGroupDirectories =
+        _calculatePluginGroups(pluginDirectories);
+    for (final Directory pluginGroup in pluginGroupDirectories) {
       final int exitCode = await processRunner.runAndStream(
           dartBinary, <String>['analyze', '--fatal-infos'],
-          workingDir: package);
+          workingDir: pluginGroup);
       if (exitCode != 0) {
-        failingPackages.add(p.basename(package.path));
+        failingDirectories.add(p.basename(pluginGroup.path));
       }
     }
 
-    print('\n\n');
+    analysisTime.stop();
 
-    if (failingPackages.isNotEmpty) {
-      print('The following packages have analyzer errors (see above):');
-      for (final String package in failingPackages) {
-        print(' * $package');
+    print('');
+    print('[pub time    ] ${pubTime.elapsedMilliseconds / 1000.0}s');
+    print('[analyze time] ${analysisTime.elapsedMilliseconds / 1000.0}s');
+
+    print('\n');
+
+    if (failingDirectories.isNotEmpty) {
+      print('The following directories have analyzer errors (see above):');
+      for (final String dir in failingDirectories) {
+        print(' * $dir');
       }
       throw ToolExit(1);
+    } else {
+      print('No analyzer errors found!');
+    }
+  }
+
+  /// todo: doc
+  List<Directory> _calculatePluginGroups(List<Directory> pluginDirectories) {
+    final Map<String, List<Directory>> groups = <String, List<Directory>>{};
+
+    for (final Directory dir in pluginDirectories) {
+      final String key = dir.parent.path;
+      groups.putIfAbsent(key, () => <Directory>[]);
+      groups[key]!.add(dir);
     }
 
-    print('No analyzer errors found!');
+    final List<Directory> pluginGroups = <Directory>[];
+
+    for (final String groupPath in groups.keys) {
+      final List<Directory> children = groups[groupPath]!;
+
+      if (children.length < 2) {
+        pluginGroups.addAll(children);
+      } else {
+        // todo: determine whether this is a valid group
+        children.sort((Directory a, Directory b) {
+          return a.basename.length - b.basename.length;
+        });
+
+        final String prefix = children.first.basename;
+        if (children.any((Directory dir) => !dir.basename.startsWith(prefix))) {
+          pluginGroups.addAll(children);
+        } else {
+          pluginGroups.add(children.first.parent);
+        }
+      }
+    }
+
+    pluginGroups.sort((Directory a, Directory b) => a.path.compareTo(b.path));
+
+    return pluginGroups;
   }
 }

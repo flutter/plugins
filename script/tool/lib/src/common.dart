@@ -535,8 +535,10 @@ class ProcessRunner {
     Directory? workingDir,
     bool exitOnError = false,
   }) async {
-    print(
-        'Running command: "$executable ${args.join(' ')}" in ${workingDir?.path ?? io.Directory.current.path}');
+    final String pathName = workingDir == null
+        ? io.Directory.current.path
+        : p.relative(workingDir.path);
+    print('Running "$executable ${args.join(' ')}" in $pathName');
     final io.Process process = await io.Process.start(executable, args,
         workingDirectory: workingDir?.path);
     await io.stdout.addStream(process.stdout);
