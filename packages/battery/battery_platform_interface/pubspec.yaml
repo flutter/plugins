@@ -1,9 +1,14 @@
 name: battery_platform_interface
 description: A common platform interface for the battery plugin.
-homepage: https://github.com/flutter/plugins/tree/master/packages/battery
+repository: https://github.com/flutter/plugins/tree/master/packages/battery/battery_platform_interface
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+battery%22
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 version: 2.0.1
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
@@ -16,7 +21,3 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.0.0
   pedantic: ^1.10.0
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"

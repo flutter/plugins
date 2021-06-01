@@ -2,6 +2,10 @@ name: image_picker_example
 description: Demonstrates how to use the image_picker plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.10.0"
+
 dependencies:
   video_player: ^2.1.4
   flutter:
@@ -24,7 +28,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.10.0"

@@ -2,6 +2,10 @@ name: camera_example
 description: Demonstrates how to use the camera plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.22.0"
+
 dependencies:
   camera:
     # When depending on this package from a real application you should use:
@@ -26,7 +30,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.22.0"

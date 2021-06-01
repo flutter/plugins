@@ -1,3 +1,11 @@
+## NEXT
+
+* Add iOS unit and UI integration test targets.
+
+## 2.1.5
+
+* Update example code in README to fix broken url.
+
 ## 2.1.4
 
 * Add an exoplayer URL to the maven repositories to address

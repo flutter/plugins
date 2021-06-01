@@ -66,14 +66,15 @@ class TestCommand extends PluginCommand {
         );
       } else {
         exitCode = await processRunner.runAndStream(
-          'pub',
-          <String>['get'],
+          'dart',
+          <String>['pub', 'get'],
           workingDir: packageDir,
         );
         if (exitCode == 0) {
           exitCode = await processRunner.runAndStream(
-            'pub',
+            'dart',
             <String>[
+              'pub',
               'run',
               if (enableExperiment.isNotEmpty)
                 '--enable-experiment=$enableExperiment',
