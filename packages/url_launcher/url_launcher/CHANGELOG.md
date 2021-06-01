@@ -1,3 +1,8 @@
+## 6.0.5
+
+* Add iOS unit and UI integration test targets.
+* Add a `Link` widget to the example app.
+
 ## 6.0.4
 
 * Migrate maven repository from jcenter to mavenCentral.

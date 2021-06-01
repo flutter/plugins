@@ -198,7 +198,6 @@ linter:
     - slash_for_doc_comments
     # - sort_child_properties_last # not yet tested
     - sort_constructors_first
-    # - sort_pub_dependencies # prevents separating pinned transitive dependencies
     - sort_unnamed_constructors_first
     - test_types_in_equals
     - throw_in_finally
@@ -243,3 +242,6 @@ linter:
     # separately when moving to a shared file.
     - no_runtimeType_toString # use objectRuntimeType from package:foundation
     - public_member_api_docs # see https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo#documentation-dartdocs-javadocs-etc
+    # Flutter has a specific use case for dependencies that are intentionally
+    # not sorted, which doesn't apply to this repo.
+    - sort_pub_dependencies

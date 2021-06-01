@@ -1,8 +1,13 @@
 name: share
 description: Flutter plugin for sharing content via the platform share UI, using
   the ACTION_SEND intent on Android and UIActivityViewController on iOS.
-homepage: https://github.com/flutter/plugins/tree/master/packages/share
+repository: https://github.com/flutter/plugins/tree/master/packages/share
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+share%22
 version: 2.0.4
+
+environment:
+  flutter: ">=1.12.13+hotfix.5"
+  sdk: ">=2.12.0 <3.0.0"
 
 flutter:
   plugin:
@@ -25,7 +30,3 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   pedantic: ^1.10.0
-
-environment:
-  flutter: ">=1.12.13+hotfix.5"
-  sdk: ">=2.12.0 <3.0.0"
