@@ -45,7 +45,7 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromActivity() {
-    tearDownChannel();
+    share.setActivity(null);
   }
 
   @Override
@@ -63,10 +63,5 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
     share = new Share(context, activity);
     handler = new MethodCallHandler(share);
     methodChannel.setMethodCallHandler(handler);
-  }
-
-  private void tearDownChannel() {
-    share.setActivity(null);
-    methodChannel.setMethodCallHandler(null);
   }
 }

@@ -2,6 +2,10 @@ name: device_info_example
 description: Demonstrates how to use the device_info plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -22,7 +26,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"

@@ -1,5 +1,20 @@
 # Android Intent Plugin for Flutter
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`android_intent_plus`](https://pub.dev/packages/android_intent_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 This plugin allows Flutter apps to launch arbitrary intents when the platform
 is Android. If the plugin is invoked on iOS, it will crash your app. In checked
 mode, we assert that the platform should be Android.

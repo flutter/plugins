@@ -1,5 +1,8 @@
+## 0.7.5+5
+* Fixes an issue where `preferredCameraDevice` option is not working for `getVideo` method.
+
 ## 0.7.5+4
-* Fixes an issue where preferredCameraDevice option is not working for getVideo method.
+* Migrate maven repo from jcenter to mavenCentral.
 
 ## 0.7.5+3
 * Localize `UIAlertController` strings.
