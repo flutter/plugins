@@ -1,5 +1,6 @@
 ## 2.0.1
 
+* Fix videos not playing in Safari/Chrome on iOS by setting autoplay to false
 * Change sizing code of `Video` widget's `HtmlElementView` so it works well when slotted.
 * Move tests to `example` directory, so they run as integration_tests with `flutter drive`.
 
