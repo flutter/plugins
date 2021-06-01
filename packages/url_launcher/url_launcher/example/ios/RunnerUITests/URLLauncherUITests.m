@@ -21,7 +21,10 @@
 - (void)testLaunch {
   XCUIApplication* app = self.app;
 
-  NSArray<NSString*>* buttonNames = @[@"Launch in app", @"Launch in app(JavaScript ON)", @"Launch in app(DOM storage ON)", @"Launch a universal link in a native app, fallback to Safari.(Youtube)"];
+  NSArray<NSString*>* buttonNames = @[
+    @"Launch in app", @"Launch in app(JavaScript ON)", @"Launch in app(DOM storage ON)",
+    @"Launch a universal link in a native app, fallback to Safari.(Youtube)"
+  ];
   for (NSString* buttonName in buttonNames) {
     XCUIElement* button = app.buttons[buttonName];
     if (![button waitForExistenceWithTimeout:30.0]) {
