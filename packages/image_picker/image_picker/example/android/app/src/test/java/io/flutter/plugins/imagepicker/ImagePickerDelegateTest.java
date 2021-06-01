@@ -104,20 +104,6 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void chooseImageFromGallery_WhenHasNoExternalStoragePermission_RequestsForPermission() {
-    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
-        .thenReturn(false);
-
-    ImagePickerDelegate delegate = createDelegate();
-    delegate.chooseImageFromGallery(mockMethodCall, mockResult);
-
-    verify(mockPermissionManager)
-        .askForPermission(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION);
-  }
-
-  @Test
   public void
       chooseImageFromGallery_WhenHasExternalStoragePermission_LaunchesChooseFromGalleryIntent() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
@@ -211,50 +197,6 @@ public class ImagePickerDelegateTest {
     mockStaticFile.verify(
         () -> File.createTempFile(any(), eq(".jpg"), eq(new File("/image_picker_cache"))),
         times(1));
-  }
-
-  @Test
-  public void
-      onRequestPermissionsResult_WhenReadExternalStoragePermissionDenied_FinishesWithError() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        new int[] {PackageManager.PERMISSION_DENIED});
-
-    verify(mockResult).error("photo_access_denied", "The user did not allow photo access.", null);
-    verifyNoMoreInteractions(mockResult);
-  }
-
-  @Test
-  public void
-      onRequestChooseImagePermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseImageFromGalleryIntent() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        new int[] {PackageManager.PERMISSION_GRANTED});
-
-    verify(mockActivity)
-        .startActivityForResult(
-            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY));
-  }
-
-  @Test
-  public void
-      onRequestChooseVideoPermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseVideoFromGalleryIntent() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        new int[] {PackageManager.PERMISSION_GRANTED});
-
-    verify(mockActivity)
-        .startActivityForResult(
-            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY));
   }
 
   @Test

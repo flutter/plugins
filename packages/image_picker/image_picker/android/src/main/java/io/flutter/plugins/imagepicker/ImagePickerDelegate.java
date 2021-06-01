@@ -42,8 +42,8 @@ enum CameraDevice {
  * means that the chooseImageFromGallery() or takeImageWithCamera() method was called at least
  * twice. In this case, stop executing and finish with an error.
  *
- * <p>2. Check that a required runtime permission has been granted.
- * The takeImageWithCamera() method checks that {@link Manifest.permission#CAMERA} has been granted.
+ * <p>2. Check that a required runtime permission has been granted. The takeImageWithCamera() method
+ * checks that {@link Manifest.permission#CAMERA} has been granted.
  *
  * <p>The permission check can end up in two different outcomes:
  *
