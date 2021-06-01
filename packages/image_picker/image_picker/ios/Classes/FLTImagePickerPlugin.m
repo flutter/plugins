@@ -408,7 +408,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   }
 }
 
-- (void)finishWithURL:(NSURL *)videoURL {
+- (void)finishWithVideoURL:(NSURL *)videoURL {
   if (@available(iOS 13.0, *)) {
     NSString *fileName = [videoURL lastPathComponent];
     NSURL *destination =
@@ -458,11 +458,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                    resultHandler:^(AVAsset *asset, AVAudioMix *audioMix, NSDictionary *info) {
                      __strong typeof(self) strongSelf = self;
                      NSURL *url = [[(AVURLAsset *)asset URL] fileReferenceURL];
-                     [strongSelf finishWithURL:url];
+                     [strongSelf finishWithVideoURL:url];
                    }];
 
     } else {
-      [self finishWithURL:videoURL];
+      [self finishWithVideoURL:videoURL];
     }
 
   } else {
