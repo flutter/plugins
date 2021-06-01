@@ -110,7 +110,7 @@ typedef enum {
     // AVCaptureFocusModeContinuousAutoFocus is supported
     OCMStub([_mockDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]).andReturn(true);
     // AVCaptureFocusModeContinuousAutoFocus is not supported
-    OCMStub([_mockDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]).andReturn(false);
+    OCMStub([_mockDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]).andReturn(true); //Should be true, but checking CI.
     
     // Don't expect any setFocus
     [[_mockDevice reject] setFocusMode: AVCaptureFocusModeContinuousAutoFocus];
