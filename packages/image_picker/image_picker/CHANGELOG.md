@@ -1,3 +1,11 @@
+## 0.8.0
+
+* BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,
+to comply with new Google Play storage requirements. This means developers are responsible for moving 
+the image or video to a different location in case more permanent storage is required. Other applications 
+will no longer be able to access images or videos captured unless they are moved to a publicly accessible location.
+* Updated Mockito to fix Android tests.
+
 ## 0.7.5+4
 * Migrate maven repo from jcenter to mavenCentral.
 
