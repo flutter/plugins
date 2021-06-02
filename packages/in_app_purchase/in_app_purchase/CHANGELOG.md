@@ -1,3 +1,7 @@
+## 1.0.2
+
+* Fix ignoring "autoConsume" param in "InAppPurchase.instance.buyConsumable".
+
 ## 1.0.1
 
 * Migrate maven repository from jcenter to mavenCentral.
