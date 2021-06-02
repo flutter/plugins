@@ -179,6 +179,20 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
         continue;
       }
 
+      // Check for reverts when doing local validation.
+      if (!getBoolArg(_againstPubFlag) && headVersion < sourceVersion) {
+        final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
+            getAllowedNextVersions(headVersion, sourceVersion);
+        // Since this skips validation, try to ensure that it really is likely
+        // to be a revert rather than a typo by checking that the transition
+        // from the lower version to the new version would have been valid.
+        if (possibleVersionsFromNewVersion.containsKey(sourceVersion)) {
+          print('${indentation}New version is lower than previous version. '
+              'This is assumed to be a revert.');
+          continue;
+        }
+      }
+
       final Map<Version, NextVersionType> allowedNextVersions =
           getAllowedNextVersions(sourceVersion, headVersion);
 

@@ -1,3 +1,11 @@
+## 1.0.2
+
+* Fix ignoring "autoConsume" param in "InAppPurchase.instance.buyConsumable".
+
+## 1.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 1.0.0
 
 * Stable release of in_app_purchase plugin.

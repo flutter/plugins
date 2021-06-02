@@ -10,5 +10,5 @@ function error() {
 # Runs the plugin tools from the plugin_tools git submodule.
 function plugin_tools() {
   (pushd "$REPO_DIR/script/tool" && dart pub get && popd) >/dev/null
-  dart run "$REPO_DIR/script/tool/lib/src/main.dart" "$@"
+  dart run "$REPO_DIR/script/tool/bin/flutter_plugin_tools.dart" "$@"
 }
