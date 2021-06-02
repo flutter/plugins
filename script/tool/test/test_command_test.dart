@@ -94,10 +94,10 @@ void main() {
               'flutter',
               const <String>['test', '--color', '--enable-experiment=exp1'],
               plugin1Dir.path),
-          ProcessCall('pub', const <String>['get'], plugin2Dir.path),
+          ProcessCall('dart', const <String>['pub', 'get'], plugin2Dir.path),
           ProcessCall(
-              'pub',
-              const <String>['run', '--enable-experiment=exp1', 'test'],
+              'dart',
+              const <String>['pub', 'run', '--enable-experiment=exp1', 'test'],
               plugin2Dir.path),
         ]),
       );
@@ -149,10 +149,10 @@ void main() {
               'flutter',
               const <String>['test', '--color', '--enable-experiment=exp1'],
               plugin1Dir.path),
-          ProcessCall('pub', const <String>['get'], plugin2Dir.path),
+          ProcessCall('dart', const <String>['pub', 'get'], plugin2Dir.path),
           ProcessCall(
-              'pub',
-              const <String>['run', '--enable-experiment=exp1', 'test'],
+              'dart',
+              const <String>['pub', 'run', '--enable-experiment=exp1', 'test'],
               plugin2Dir.path),
         ]),
       );
