@@ -29,14 +29,14 @@ static const int kElementWaitingTime = 30;
 
 - (void)testQuickActionWithFreshStart {
   XCUIApplication *springboard =
-      [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
+  [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
   XCUIElement *quickActionsAppIcon = springboard.icons[@"quick_actions_example"];
   if (![quickActionsAppIcon waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
     XCTFail(@"Failed due to not able to find the example app from springboard with %@ seconds",
             @(kElementWaitingTime));
   }
-
+  
   [quickActionsAppIcon pressForDuration:2];
   XCUIElement *actionTwo = springboard.buttons[@"Action two"];
   if (![actionTwo waitForExistenceWithTimeout:kElementWaitingTime]) {
@@ -44,7 +44,7 @@ static const int kElementWaitingTime = 30;
     XCTFail(@"Failed due to not able to find the actionTwo button from springboard with %@ seconds",
             @(kElementWaitingTime));
   }
-
+  
   [actionTwo tap];
   
   XCUIElement *actionTwoConfirmation = _exampleApp.otherElements[@"action_two"];
@@ -58,25 +58,25 @@ static const int kElementWaitingTime = 30;
 
 - (void)testQuickActionWhenAppIsInBackground {
   [_exampleApp launch];
-
+  
   XCUIElement *actionsReady = _exampleApp.otherElements[@"actions ready"];
   if (![actionsReady waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", _exampleApp.debugDescription);
     XCTFail(@"Failed due to not able to find the actionsReady in the app with %@ seconds",
             @(kElementWaitingTime));
   }
-
+  
   [[XCUIDevice sharedDevice] pressButton:XCUIDeviceButtonHome];
-
+  
   XCUIApplication *springboard =
-      [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
+  [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
   XCUIElement *quickActionsAppIcon = springboard.icons[@"quick_actions_example"];
   if (![quickActionsAppIcon waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
     XCTFail(@"Failed due to not able to find the example app from springboard with %@ seconds",
             @(kElementWaitingTime));
   }
-
+  
   [quickActionsAppIcon pressForDuration:2];
   XCUIElement *actionOne = springboard.buttons[@"Action one"];
   if (![actionOne waitForExistenceWithTimeout:kElementWaitingTime]) {
@@ -84,9 +84,9 @@ static const int kElementWaitingTime = 30;
     XCTFail(@"Failed due to not able to find the actionOne button from springboard with %@ seconds",
             @(kElementWaitingTime));
   }
-
+  
   [actionOne tap];
-
+  
   XCUIElement *actionOneConfirmation = _exampleApp.otherElements[@"action_one"];
   if (![actionOneConfirmation waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
