@@ -31,9 +31,9 @@ class _MyAppState extends State<MyApp> {
         body: Center(
           // "flutter" is a resource in Assets.xcassets.
           child: Image(
-              image: IosPlatformImages.load("flutter"),
-              semanticLabel: 'Flutter logo',
-            ),
+            image: IosPlatformImages.load("flutter"),
+            semanticLabel: 'Flutter logo',
+          ),
         ),
       ),
     );
