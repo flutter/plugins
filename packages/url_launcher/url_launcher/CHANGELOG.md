@@ -1,3 +1,7 @@
+## 6.0.6
+
+* Fix `url_launcher_platform_interface` breaking change conflict by changing the version constraint.
+
 ## 6.0.5
 
 * Add iOS unit and UI integration test targets.
