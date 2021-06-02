@@ -112,6 +112,7 @@ public class ImagePickerDelegateTest {
     verifyFinishedWithAlreadyActiveError();
     verifyNoMoreInteractions(mockResult);
   }
+
   public void
       chooseMultiImageFromGallery_WhenHasNoExternalStoragePermission_RequestsForPermission() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
