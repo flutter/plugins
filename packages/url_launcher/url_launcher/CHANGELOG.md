@@ -1,6 +1,9 @@
 ## 6.0.6
 
-* Fix `url_launcher_platform_interface` breaking change conflict by changing the version constraint.
+* Require `url_launcher_platform_interface` 2.0.3. This fixes an issue
+  where 6.0.5 could fail to compile in some projects due to internal
+  changes in that version that were not compatible with earlier versions
+  of `url_launcher_platform_interface`.
 
 ## 6.0.5
 
