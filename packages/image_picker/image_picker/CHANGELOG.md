@@ -1,3 +1,7 @@
+## 0.8.0+1
+
+* Removed redundant request for camera permissions.
+
 ## 0.8.0
 
 * BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,

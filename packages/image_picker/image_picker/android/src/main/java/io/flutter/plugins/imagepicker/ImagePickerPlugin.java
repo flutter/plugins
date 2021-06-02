@@ -192,11 +192,9 @@ public class ImagePickerPlugin
       // V1 embedding setup for activity listeners.
       application.registerActivityLifecycleCallbacks(observer);
       registrar.addActivityResultListener(delegate);
-      registrar.addRequestPermissionsResultListener(delegate);
     } else {
       // V2 embedding setup for activity listeners.
       activityBinding.addActivityResultListener(delegate);
-      activityBinding.addRequestPermissionsResultListener(delegate);
       lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(activityBinding);
       lifecycle.addObserver(observer);
     }
@@ -204,7 +202,6 @@ public class ImagePickerPlugin
 
   private void tearDown() {
     activityBinding.removeActivityResultListener(delegate);
-    activityBinding.removeRequestPermissionsResultListener(delegate);
     activityBinding = null;
     lifecycle.removeObserver(observer);
     lifecycle = null;
