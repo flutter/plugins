@@ -19,10 +19,6 @@ static const int kElementWaitingTime = 30;
 }
 
 - (void)testQuickActionWithFreshStart {
-  XCUIApplication *app = [[XCUIApplication alloc] init];
-  [app launch];
-  [app terminate];
-
   XCUIApplication *springboard =
       [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
   XCUIElement *quickActionsAppIcon = springboard.icons[@"quick_actions_example"];
@@ -41,8 +37,10 @@ static const int kElementWaitingTime = 30;
   }
 
   [actionTwo tap];
-
-  XCUIElement *actionTwoConfirmation = app.otherElements[@"action_two"];
+  
+  XCUIApplication *exampleApp =
+      [[XCUIApplication alloc] initWithBundleIdentifier:@"io.flutter.plugins.quickActionsExample"];
+  XCUIElement *actionTwoConfirmation = exampleApp.otherElements[@"action_two"];
   if (![actionTwoConfirmation waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
     XCTFail(@"Failed due to not able to find the actionTwoConfirmation in the app with %@ seconds",
@@ -50,7 +48,7 @@ static const int kElementWaitingTime = 30;
   }
   XCTAssertTrue(actionTwoConfirmation.exists);
 
-  [app terminate];
+  [exampleApp terminate];
 }
 
 - (void)testQuickActionWhenAppIsInBackground {
