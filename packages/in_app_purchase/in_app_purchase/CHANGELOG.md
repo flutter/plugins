@@ -1,6 +1,6 @@
 ## 1.0.2
 
-* Fix `Restoring previous purchases` link in the README.md.
+* Fix ignoring "autoConsume" param in "InAppPurchase.instance.buyConsumable".
 
 ## 1.0.1
 

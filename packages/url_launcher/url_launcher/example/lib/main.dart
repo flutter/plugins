@@ -7,6 +7,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -194,6 +195,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 }),
                 child: const Text('Launch in app + close after 5 seconds'),
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              Link(
+                uri: Uri.parse(
+                    'https://pub.dev/documentation/url_launcher/latest/link/link-library.html'),
+                target: LinkTarget.blank,
+                builder: (ctx, openLink) {
+                  return TextButton.icon(
+                    onPressed: openLink,
+                    label: Text('Link Widget documentation'),
+                    icon: Icon(Icons.read_more),
+                  );
+                },
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),

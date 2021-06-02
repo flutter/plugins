@@ -170,6 +170,8 @@ class LinkViewController extends PlatformViewController {
     _element.style
       ..opacity = '0'
       ..display = 'block'
+      ..width = '100%'
+      ..height = '100%'
       ..cursor = 'unset';
 
     // This is recommended on MDN:
