@@ -17,7 +17,9 @@ public enum FocusMode {
 
   public static FocusMode getValueForString(String modeStr) {
     for (FocusMode value : values()) {
-      if (value.strValue.equals(modeStr)) return value;
+      if (value.strValue.equals(modeStr)) {
+        return value;
+      }
     }
     return null;
   }

@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -122,9 +124,9 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final String package = argResults[_packageOption] as String;
-    final bool publishAllChanged = argResults[_allChangedFlag] as bool;
-    if (package == null && !publishAllChanged) {
+    final String package = getStringArg(_packageOption);
+    final bool publishAllChanged = getBoolArg(_allChangedFlag);
+    if (package.isEmpty && !publishAllChanged) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
       throw ToolExit(1);
@@ -138,14 +140,14 @@ class PublishPluginCommand extends PluginCommand {
     final GitDir baseGitDir =
         await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
 
-    final bool shouldPushTag = argResults[_pushTagsOption] == true;
-    final String remote = argResults[_remoteOption] as String;
+    final bool shouldPushTag = getBoolArg(_pushTagsOption);
+    final String remote = getStringArg(_remoteOption);
     String remoteUrl;
     if (shouldPushTag) {
       remoteUrl = await _verifyRemote(remote);
     }
     _print('Local repo is ready!');
-    if (argResults[_dryRunFlag] as bool) {
+    if (getBoolArg(_dryRunFlag)) {
       _print('===============  DRY RUN ===============');
     }
 
@@ -244,7 +246,7 @@ class PublishPluginCommand extends PluginCommand {
     if (!await _publishPlugin(packageDir: packageDir)) {
       return false;
     }
-    if (argResults[_tagReleaseOption] as bool) {
+    if (getBoolArg(_tagReleaseOption)) {
       if (!await _tagRelease(
         packageDir: packageDir,
         remote: remote,
@@ -333,7 +335,7 @@ Safe to ignore if the package is deleted in this commit.
   }) async {
     final String tag = _getTag(packageDir);
     _print('Tagging release $tag...');
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
         <String>['tag', tag],
@@ -416,15 +418,14 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<bool> _publish(Directory packageDir) async {
-    final List<String> publishFlags =
-        argResults[_pubFlagsOption] as List<String>;
+    final List<String> publishFlags = getStringListArg(_pubFlagsOption);
     _print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
-    if (argResults[_dryRunFlag] as bool) {
+    if (getBoolArg(_dryRunFlag)) {
       return true;
     }
 
-    if (argResults[_skipConfirmationFlag] as bool) {
+    if (getBoolArg(_skipConfirmationFlag)) {
       publishFlags.add('--force');
     }
     if (publishFlags.contains('--force')) {
@@ -474,7 +475,7 @@ Safe to ignore if the package is deleted in this commit.
     @required String remoteUrl,
   }) async {
     assert(remote != null && tag != null && remoteUrl != null);
-    if (!(argResults[_skipConfirmationFlag] as bool)) {
+    if (!getBoolArg(_skipConfirmationFlag)) {
       _print('Ready to push $tag to $remoteUrl (y/n)?');
       final String input = _stdin.readLineSync();
       if (input.toLowerCase() != 'y') {
@@ -482,7 +483,7 @@ Safe to ignore if the package is deleted in this commit.
         return false;
       }
     }
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
         <String>['push', remote, tag],

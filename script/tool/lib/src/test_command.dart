@@ -44,7 +44,7 @@ class TestCommand extends PluginCommand {
 
       print('RUNNING $packageName tests...');
 
-      final String enableExperiment = argResults[kEnableExperiment] as String;
+      final String enableExperiment = getStringArg(kEnableExperiment);
 
       // `flutter test` automatically gets packages.  `pub run test` does not.  :(
       int exitCode = 0;
@@ -66,14 +66,15 @@ class TestCommand extends PluginCommand {
         );
       } else {
         exitCode = await processRunner.runAndStream(
-          'pub',
-          <String>['get'],
+          'dart',
+          <String>['pub', 'get'],
           workingDir: packageDir,
         );
         if (exitCode == 0) {
           exitCode = await processRunner.runAndStream(
-            'pub',
+            'dart',
             <String>[
+              'pub',
               'run',
               if (enableExperiment.isNotEmpty)
                 '--enable-experiment=$enableExperiment',

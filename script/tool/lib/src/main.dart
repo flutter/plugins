@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
@@ -23,6 +25,7 @@ import 'list_command.dart';
 import 'publish_check_command.dart';
 import 'publish_plugin_command.dart';
 import 'read_json_command.dart';
+import 'pubspec_check_command.dart';
 import 'test_command.dart';
 import 'version_check_command.dart';
 import 'xctest_command.dart';
@@ -57,6 +60,7 @@ void main(List<String> args) {
     ..addCommand(ListCommand(packagesDir, fileSystem))
     ..addCommand(PublishCheckCommand(packagesDir, fileSystem))
     ..addCommand(PublishPluginCommand(packagesDir, fileSystem))
+    ..addCommand(PubspecCheckCommand(packagesDir, fileSystem))
     ..addCommand(TestCommand(packagesDir, fileSystem))
     ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
     ..addCommand(XCTestCommand(packagesDir, fileSystem))
@@ -64,6 +68,13 @@ void main(List<String> args) {
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e as ToolExit;
-    io.exit(toolExit.exitCode);
+    int exitCode = toolExit.exitCode;
+    // This should never happen; this check is here to guarantee that a ToolExit
+    // never accidentally has code 0 thus causing CI to pass.
+    if (exitCode == 0) {
+      assert(false);
+      exitCode = 255;
+    }
+    io.exit(exitCode);
   }, test: (Object e) => e is ToolExit);
 }

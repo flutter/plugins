@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -57,7 +59,8 @@ void main() {
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};
       gitDir = MockGitDir();
-      when(gitDir.runCommand(any)).thenAnswer((Invocation invocation) {
+      when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
+          .thenAnswer((Invocation invocation) {
         gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {
@@ -173,6 +176,40 @@ void main() {
           '${indentation}Unable to find pubspec in master. Safe to ignore if the project is new.',
           'No version check errors found!',
         ]),
+      );
+    });
+
+    test('allows likely reverts.', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.6.1',
+      };
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['version-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          '${indentation}New version is lower than previous version. This is assumed to be a revert.',
+        ]),
+      );
+    });
+
+    test('denies lower version that could not be a simple revert', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.5.1',
+      };
+      final Future<List<String>> result =
+          runCapturingPrint(runner, <String>['version-check']);
+
+      await expectLater(
+        result,
+        throwsA(const TypeMatcher<ToolExit>()),
       );
     });
 

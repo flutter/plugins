@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -128,6 +130,26 @@ void main() {
       processRunner.processesToReturn.add(process);
 
       expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+    });
+
+    test('Success message on stderr is not printed as an error', () async {
+      createFakePlugin('d');
+
+      const String publishOutput = 'Package has 0 warnings.';
+
+      final MockProcess process = MockProcess();
+      process.stderrController.add(publishOutput.codeUnits);
+      process.stdoutController.close(); // ignore: unawaited_futures
+      process.stderrController.close(); // ignore: unawaited_futures
+
+      process.exitCodeCompleter.complete(0);
+
+      processRunner.processesToReturn.add(process);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check']);
+
+      expect(output, isNot(contains(contains('ERROR:'))));
     });
 
     test(
