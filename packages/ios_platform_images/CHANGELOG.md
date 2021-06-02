@@ -1,3 +1,7 @@
+## NEXT
+
+* Add iOS unit and UI integration test targets.
+
 ## 0.2.0
 
 * Migrate to null safety.
