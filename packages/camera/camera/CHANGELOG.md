@@ -1,6 +1,6 @@
 ## 0.8.1+2
 
-* Fix iOS crash when selecting an unsupported FocusMode
+* Fix iOS crash when selecting an unsupported FocusMode.
 
 ## 0.8.1+1
 
