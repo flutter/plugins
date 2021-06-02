@@ -58,7 +58,7 @@ Note that the `plugins` argument, despite the name, applies to any package.
 
 ```sh
 cd <repository root>
-dart run /script/tool/lib/src/main.dart format --plugins plugin_name
+dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
 ```
 
 ### Run the Dart Static Analyzer
