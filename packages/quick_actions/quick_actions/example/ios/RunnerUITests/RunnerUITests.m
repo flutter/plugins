@@ -18,8 +18,7 @@ static const int kElementWaitingTime = 30;
 - (void)setUp {
   [super setUp];
   self.continueAfterFailure = NO;
-  _exampleApp =
-      [[XCUIApplication alloc] initWithBundleIdentifier:@"io.flutter.plugins.quickActionsExample"];
+  _exampleApp = [[XCUIApplication alloc] init];
 }
 
 - (void)tearDown {
