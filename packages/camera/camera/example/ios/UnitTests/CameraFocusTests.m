@@ -4,7 +4,7 @@
 
 @import camera;
 @import XCTest;
-#import <AVFoundation/AVFoundation.h>
+@import AVFoundation;
 #import <OCMock/OCMock.h>
 
 // Mirrors FocusMode in camera.dart
@@ -107,8 +107,7 @@ typedef enum {
   // AVCaptureFocusModeContinuousAutoFocus is supported
   OCMStub([_mockDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]).andReturn(true);
   // AVCaptureFocusModeContinuousAutoFocus is not supported
-  OCMStub([_mockDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus])
-      .andReturn(true);  // Should be true, but checking CI.
+  OCMStub([_mockDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]).andReturn(false);
 
   // Don't expect any setFocus
   [[_mockDevice reject] setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
