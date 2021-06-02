@@ -1,6 +1,6 @@
 ## NEXT
 
-* Add iOS unit and UI integration test targets.
+* Add iOS unit test target.
 
 ## 2.0.2
 

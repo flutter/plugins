@@ -17,18 +17,10 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		F76AC1DF26671E960040C8BC /* PathProviderTests.m in Sources */ = {isa = PBXBuildFile; fileRef = F76AC1DE26671E960040C8BC /* PathProviderTests.m */; };
-		F76AC1ED26671EA10040C8BC /* PathProviderUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = F76AC1EC26671EA10040C8BC /* PathProviderUITests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
 		F76AC1E126671E960040C8BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
-			remoteInfo = Runner;
-		};
-		F76AC1EF26671EA10040C8BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
 			proxyType = 1;
@@ -74,9 +66,6 @@
 		F76AC1DC26671E960040C8BC /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F76AC1DE26671E960040C8BC /* PathProviderTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PathProviderTests.m; sourceTree = "<group>"; };
 		F76AC1E026671E960040C8BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F76AC1EA26671EA10040C8BC /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F76AC1EC26671EA10040C8BC /* PathProviderUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PathProviderUITests.m; sourceTree = "<group>"; };
-		F76AC1EE26671EA10040C8BC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -93,13 +82,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				60774162343BF6F19B3D65CE /* libPods-RunnerTests.a in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F76AC1E726671EA10040C8BC /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -134,7 +116,6 @@
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
 				F76AC1DD26671E960040C8BC /* RunnerTests */,
-				F76AC1EB26671EA10040C8BC /* RunnerUITests */,
 				97C146EF1CF9000F007C117D /* Products */,
 				840012C8B5EDBCF56B0E4AC1 /* Pods */,
 				CF3B75C9A7D2FA2A4C99F110 /* Frameworks */,
@@ -146,7 +127,6 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				F76AC1DC26671E960040C8BC /* RunnerTests.xctest */,
-				F76AC1EA26671EA10040C8BC /* RunnerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -193,15 +173,6 @@
 			path = RunnerTests;
 			sourceTree = "<group>";
 		};
-		F76AC1EB26671EA10040C8BC /* RunnerUITests */ = {
-			isa = PBXGroup;
-			children = (
-				F76AC1EC26671EA10040C8BC /* PathProviderUITests.m */,
-				F76AC1EE26671EA10040C8BC /* Info.plist */,
-			);
-			path = RunnerUITests;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -245,24 +216,6 @@
 			productReference = F76AC1DC26671E960040C8BC /* RunnerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		F76AC1E926671EA10040C8BC /* RunnerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = F76AC1F126671EA10040C8BC /* Build configuration list for PBXNativeTarget "RunnerUITests" */;
-			buildPhases = (
-				F76AC1E626671EA10040C8BC /* Sources */,
-				F76AC1E726671EA10040C8BC /* Frameworks */,
-				F76AC1E826671EA10040C8BC /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				F76AC1F026671EA10040C8BC /* PBXTargetDependency */,
-			);
-			name = RunnerUITests;
-			productName = RunnerUITests;
-			productReference = F76AC1EA26671EA10040C8BC /* RunnerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -276,11 +229,6 @@
 						CreatedOnToolsVersion = 7.3.1;
 					};
 					F76AC1DB26671E960040C8BC = {
-						CreatedOnToolsVersion = 12.5;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 97C146ED1CF9000F007C117D;
-					};
-					F76AC1E926671EA10040C8BC = {
 						CreatedOnToolsVersion = 12.5;
 						ProvisioningStyle = Automatic;
 						TestTargetID = 97C146ED1CF9000F007C117D;
@@ -302,7 +250,6 @@
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
 				F76AC1DB26671E960040C8BC /* RunnerTests */,
-				F76AC1E926671EA10040C8BC /* RunnerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -320,13 +267,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		F76AC1DA26671E960040C8BC /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		F76AC1E826671EA10040C8BC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -425,14 +365,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		F76AC1E626671EA10040C8BC /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				F76AC1ED26671EA10040C8BC /* PathProviderUITests.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -440,11 +372,6 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = F76AC1E126671E960040C8BC /* PBXContainerItemProxy */;
-		};
-		F76AC1F026671EA10040C8BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 97C146ED1CF9000F007C117D /* Runner */;
-			targetProxy = F76AC1EF26671EA10040C8BC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -644,30 +571,6 @@
 			};
 			name = Release;
 		};
-		F76AC1F226671EA10040C8BC /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = RunnerUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = Runner;
-			};
-			name = Debug;
-		};
-		F76AC1F326671EA10040C8BC /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				INFOPLIST_FILE = RunnerUITests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TEST_TARGET_NAME = Runner;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -694,15 +597,6 @@
 			buildConfigurations = (
 				F76AC1E326671E960040C8BC /* Debug */,
 				F76AC1E426671E960040C8BC /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		F76AC1F126671EA10040C8BC /* Build configuration list for PBXNativeTarget "RunnerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				F76AC1F226671EA10040C8BC /* Debug */,
-				F76AC1F326671EA10040C8BC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
