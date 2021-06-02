@@ -997,9 +997,20 @@ NSString *const errorMethod = @"error";
   [self applyFocusMode:_focusMode onDevice:_captureDevice];
 }
 
-/// Apply FocusMode on the AVCaptureDevice.
-/// Applies AVCaptureFocusModeAutoFocus when AVCaptureFocusModeContinuousAutoFocus is not supported
-/// for FocusModeAuto Does not apply the focus mode when no mode is supported.
+/**
+ * Applies FocusMode on the AVCaptureDevice.
+ *
+ * If the @c focusMode is set to FocusModeAuto the AVCaptureDevice is configured to use
+ * AVCaptureFocusModeContinuousModeAutoFocus when supported, otherwise it is set to
+ * AVCaptureFocusModeAutoFocus. If neither AVCaptureFocusModeContinuousModeAutoFocus nor
+ * AVCaptureFocusModeAutoFocus are supported focus mode will not be set.
+ * If @c focusMode is set to FocusModeLocked the AVCaptureDevice is configured to use
+ * AVCaptureFocusModeAutoFocus. If AVCaptureFocusModeAutoFocus is not supported focus mode will not
+ * be set.
+ *
+ * @param focusMode The focus mode that should be applied to the @captureDevice instance.
+ * @param captureDevice The AVCaptureDevice to which the @focusMode will be applied.
+ */
 - (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
   [captureDevice lockForConfiguration:nil];
   switch (focusMode) {
