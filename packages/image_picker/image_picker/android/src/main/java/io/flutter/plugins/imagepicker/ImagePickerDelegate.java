@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.imagepicker;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,7 +14,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -42,19 +40,7 @@ enum CameraDevice {
  * means that the chooseImageFromGallery() or takeImageWithCamera() method was called at least
  * twice. In this case, stop executing and finish with an error.
  *
- * <p>2. Check that a required runtime permission has been granted. The takeImageWithCamera() method
- * checks that {@link Manifest.permission#CAMERA} has been granted.
- *
- * <p>The permission check can end up in two different outcomes:
- *
- * <p>A) If the permission has already been granted, continue with picking the image from gallery or
- * camera.
- *
- * <p>B) If the permission hasn't already been granted, ask for the permission from the user. If the
- * user grants the permission, proceed with step #3. If the user denies the permission, stop doing
- * anything else and finish with a null result.
- *
- * <p>3. Launch the gallery or camera for picking the image, depending on whether
+ * <p>2. Launch the gallery or camera for picking the image, depending on whether
  * chooseImageFromGallery() or takeImageWithCamera() was called.
  *
  * <p>This can end up in three different outcomes:
@@ -69,15 +55,11 @@ enum CameraDevice {
  *
  * <p>C) User cancels picking an image. Finish with null result.
  */
-public class ImagePickerDelegate
-    implements PluginRegistry.ActivityResultListener,
-        PluginRegistry.RequestPermissionsResultListener {
+public class ImagePickerDelegate implements PluginRegistry.ActivityResultListener {
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
-  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
-  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -85,19 +67,10 @@ public class ImagePickerDelegate
   @VisibleForTesting final File externalFilesDirectory;
   private final ImageResizer imageResizer;
   private final ImagePickerCache cache;
-  private final PermissionManager permissionManager;
   private final IntentResolver intentResolver;
   private final FileUriResolver fileUriResolver;
   private final FileUtils fileUtils;
   private CameraDevice cameraDevice;
-
-  interface PermissionManager {
-    boolean isPermissionGranted(String permissionName);
-
-    void askForPermission(String permissionName, int requestCode);
-
-    boolean needRequestCameraPermission();
-  }
 
   interface IntentResolver {
     boolean resolveActivity(Intent intent);
@@ -129,23 +102,6 @@ public class ImagePickerDelegate
         null,
         null,
         cache,
-        new PermissionManager() {
-          @Override
-          public boolean isPermissionGranted(String permissionName) {
-            return ActivityCompat.checkSelfPermission(activity, permissionName)
-                == PackageManager.PERMISSION_GRANTED;
-          }
-
-          @Override
-          public void askForPermission(String permissionName, int requestCode) {
-            ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
-          }
-
-          @Override
-          public boolean needRequestCameraPermission() {
-            return ImagePickerUtils.needRequestCameraPermission(activity);
-          }
-        },
         new IntentResolver() {
           @Override
           public boolean resolveActivity(Intent intent) {
@@ -187,7 +143,6 @@ public class ImagePickerDelegate
       final MethodChannel.Result result,
       final MethodCall methodCall,
       final ImagePickerCache cache,
-      final PermissionManager permissionManager,
       final IntentResolver intentResolver,
       final FileUriResolver fileUriResolver,
       final FileUtils fileUtils) {
@@ -197,7 +152,6 @@ public class ImagePickerDelegate
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
     this.pendingResult = result;
     this.methodCall = methodCall;
-    this.permissionManager = permissionManager;
     this.intentResolver = intentResolver;
     this.fileUriResolver = fileUriResolver;
     this.fileUtils = fileUtils;
@@ -269,13 +223,6 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (needRequestCameraPermission()
-        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
-      permissionManager.askForPermission(
-          Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
-      return;
-    }
-
     launchTakeVideoWithCameraIntent();
   }
 
@@ -328,20 +275,7 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (needRequestCameraPermission()
-        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
-      permissionManager.askForPermission(
-          Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
-      return;
-    }
     launchTakeImageWithCameraIntent();
-  }
-
-  private boolean needRequestCameraPermission() {
-    if (permissionManager == null) {
-      return false;
-    }
-    return permissionManager.needRequestCameraPermission();
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -399,39 +333,6 @@ public class ImagePickerDelegate
           imageUri,
           Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
     }
-  }
-
-  @Override
-  public boolean onRequestPermissionsResult(
-      int requestCode, String[] permissions, int[] grantResults) {
-    boolean permissionGranted =
-        grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
-
-    switch (requestCode) {
-      case REQUEST_CAMERA_IMAGE_PERMISSION:
-        if (permissionGranted) {
-          launchTakeImageWithCameraIntent();
-        }
-        break;
-      case REQUEST_CAMERA_VIDEO_PERMISSION:
-        if (permissionGranted) {
-          launchTakeVideoWithCameraIntent();
-        }
-        break;
-      default:
-        return false;
-    }
-
-    if (!permissionGranted) {
-      switch (requestCode) {
-        case REQUEST_CAMERA_IMAGE_PERMISSION:
-        case REQUEST_CAMERA_VIDEO_PERMISSION:
-          finishWithError("camera_access_denied", "The user did not allow camera access.");
-          break;
-      }
-    }
-
-    return true;
   }
 
   @Override
