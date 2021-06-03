@@ -121,21 +121,6 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void
-      chooseMultiImageFromGallery_WhenHasExternalStoragePermission_LaunchesChooseFromGalleryIntent() {
-    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
-        .thenReturn(true);
-
-    ImagePickerDelegate delegate = createDelegate();
-    delegate.chooseMultiImageFromGallery(mockMethodCall, mockResult);
-
-    verify(mockActivity)
-        .startActivityForResult(
-            any(Intent.class),
-            eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY));
-  }
-
-  @Test
   public void takeImageWithCamera_WhenPendingResultExists_FinishesWithAlreadyActiveError() {
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
 
