@@ -1,3 +1,7 @@
+## 0.8.1+3
+
+* Moved texture registration to the main thread on iOS to improve stability.
+
 ## 0.8.1+2
 
 * Fix iOS crash when selecting an unsupported FocusMode.
