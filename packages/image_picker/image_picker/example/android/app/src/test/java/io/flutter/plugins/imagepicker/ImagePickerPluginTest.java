@@ -182,4 +182,8 @@ public class ImagePickerPluginTest {
 
     return new MethodCall(method, arguments);
   }
+
+  private MethodCall buildMethodCall(String method) {
+    return new MethodCall(method, null);
+  }
 }
