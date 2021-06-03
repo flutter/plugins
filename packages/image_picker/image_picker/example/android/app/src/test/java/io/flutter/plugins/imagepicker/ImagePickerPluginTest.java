@@ -95,7 +95,7 @@ public class ImagePickerPluginTest {
 
   @Test
   public void onMethodCall_InvokesChooseMultiImageFromGallery() {
-    MethodCall call = buildMethodCall(PICK_MULTI_IMAGE, null);
+    MethodCall call = buildMethodCall(PICK_MULTI_IMAGE);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).chooseMultiImageFromGallery(eq(call), any());
     verifyZeroInteractions(mockResult);
