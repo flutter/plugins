@@ -2,39 +2,39 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('browser')
-
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:video_player_platform_interface/video_player_platform_interface.dart';
 import 'package:video_player_web/video_player_web.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('VideoPlayer for Web', () {
-    late int textureId;
+    late Future<int> textureId;
 
-    setUp(() async {
+    setUp(() {
       VideoPlayerPlatform.instance = VideoPlayerPlugin();
-      textureId = (await VideoPlayerPlatform.instance.create(
-        DataSource(
-            sourceType: DataSourceType.network,
-            uri:
-                'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'),
-      ))!;
+      textureId = VideoPlayerPlatform.instance
+          .create(
+            DataSource(
+              sourceType: DataSourceType.network,
+              uri:
+                  'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4',
+            ),
+          )
+          .then((textureId) => textureId!);
     });
 
-    test('$VideoPlayerPlugin is the live instance', () {
-      expect(VideoPlayerPlatform.instance, isA<VideoPlayerPlugin>());
-    });
-
-    test('can init', () {
+    testWidgets('can init', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.init(), completes);
     });
 
-    test('can create from network', () {
+    testWidgets('can create from network', (WidgetTester tester) async {
       expect(
           VideoPlayerPlatform.instance.create(
             DataSource(
@@ -45,7 +45,7 @@ void main() {
           completion(isNonZero));
     });
 
-    test('can create from asset', () {
+    testWidgets('can create from asset', (WidgetTester tester) async {
       expect(
           VideoPlayerPlatform.instance.create(
             DataSource(
@@ -57,7 +57,7 @@ void main() {
           completion(isNonZero));
     });
 
-    test('cannot create from file', () {
+    testWidgets('cannot create from file', (WidgetTester tester) async {
       expect(
           VideoPlayerPlatform.instance.create(
             DataSource(
@@ -68,22 +68,25 @@ void main() {
           throwsUnimplementedError);
     });
 
-    test('can dispose', () {
-      expect(VideoPlayerPlatform.instance.dispose(textureId), completes);
+    testWidgets('can dispose', (WidgetTester tester) async {
+      expect(VideoPlayerPlatform.instance.dispose(await textureId), completes);
     });
 
-    test('can set looping', () {
+    testWidgets('can set looping', (WidgetTester tester) async {
       expect(
-          VideoPlayerPlatform.instance.setLooping(textureId, true), completes);
+        VideoPlayerPlatform.instance.setLooping(await textureId, true),
+        completes,
+      );
     });
 
-    test('can play', () async {
+    testWidgets('can play', (WidgetTester tester) async {
       // Mute video to allow autoplay (See https://goo.gl/xX8pDD)
-      await VideoPlayerPlatform.instance.setVolume(textureId, 0);
-      expect(VideoPlayerPlatform.instance.play(textureId), completes);
+      await VideoPlayerPlatform.instance.setVolume(await textureId, 0);
+      expect(VideoPlayerPlatform.instance.play(await textureId), completes);
     });
 
-    test('throws PlatformException when playing bad media', () async {
+    testWidgets('throws PlatformException when playing bad media',
+        (WidgetTester tester) async {
       int videoPlayerId = (await VideoPlayerPlatform.instance.create(
         DataSource(
             sourceType: DataSourceType.network,
@@ -103,43 +106,50 @@ void main() {
       }, throwsA(isA<PlatformException>()));
     });
 
-    test('can pause', () {
-      expect(VideoPlayerPlatform.instance.pause(textureId), completes);
+    testWidgets('can pause', (WidgetTester tester) async {
+      expect(VideoPlayerPlatform.instance.pause(await textureId), completes);
     });
 
-    test('can set volume', () {
-      expect(VideoPlayerPlatform.instance.setVolume(textureId, 0.8), completes);
-    });
-
-    test('can set playback speed', () {
+    testWidgets('can set volume', (WidgetTester tester) async {
       expect(
-        VideoPlayerPlatform.instance.setPlaybackSpeed(textureId, 2.0),
+        VideoPlayerPlatform.instance.setVolume(await textureId, 0.8),
         completes,
       );
     });
 
-    test('can seek to position', () {
+    testWidgets('can set playback speed', (WidgetTester tester) async {
       expect(
-          VideoPlayerPlatform.instance.seekTo(textureId, Duration(seconds: 1)),
-          completes);
+        VideoPlayerPlatform.instance.setPlaybackSpeed(await textureId, 2.0),
+        completes,
+      );
     });
 
-    test('can get position', () {
-      expect(VideoPlayerPlatform.instance.getPosition(textureId),
+    testWidgets('can seek to position', (WidgetTester tester) async {
+      expect(
+        VideoPlayerPlatform.instance.seekTo(
+          await textureId,
+          Duration(seconds: 1),
+        ),
+        completes,
+      );
+    });
+
+    testWidgets('can get position', (WidgetTester tester) async {
+      expect(VideoPlayerPlatform.instance.getPosition(await textureId),
           completion(isInstanceOf<Duration>()));
     });
 
-    test('can get video event stream', () {
-      expect(VideoPlayerPlatform.instance.videoEventsFor(textureId),
+    testWidgets('can get video event stream', (WidgetTester tester) async {
+      expect(VideoPlayerPlatform.instance.videoEventsFor(await textureId),
           isInstanceOf<Stream<VideoEvent>>());
     });
 
-    test('can build view', () {
-      expect(VideoPlayerPlatform.instance.buildView(textureId),
+    testWidgets('can build view', (WidgetTester tester) async {
+      expect(VideoPlayerPlatform.instance.buildView(await textureId),
           isInstanceOf<Widget>());
     });
 
-    test('ignores setting mixWithOthers', () {
+    testWidgets('ignores setting mixWithOthers', (WidgetTester tester) async {
       expect(VideoPlayerPlatform.instance.setMixWithOthers(true), completes);
       expect(VideoPlayerPlatform.instance.setMixWithOthers(false), completes);
     });
