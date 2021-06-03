@@ -150,7 +150,7 @@
   XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
 }
 
-- (void)testPluginMultiImagePathIsNull {
+- (void)testPluginMultiImagePathIsNil {
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
 
   dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
