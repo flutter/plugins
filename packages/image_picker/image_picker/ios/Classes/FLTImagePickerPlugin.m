@@ -67,9 +67,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Returns chosen UIImagePickerControllerCameraDevice from the arguments.
+ * Applies UIImagePickerControllerCameraDevice on the UIImagePickerController.
  *
- * Returns UIImagePickerControllerCameraDeviceRear as a default if any option is not choosen.
+ * If the cameraDevice value that is fetched from @c arguments is 1 then returns
+ * UIImagePickerControllerCameraDeviceFront. If the cameraDevice value that is fetched
+ * from @c arguments is 0 then returns UIImagePickerControllerCameraDeviceRear.
+ *
+ * @param @arguments that should be used to get cameraDevice value.
  */
 - (UIImagePickerControllerCameraDevice)getCameraDeviceFromArguments:(NSDictionary *)arguments {
   NSInteger cameraDevice = [[arguments objectForKey:@"cameraDevice"] intValue];
