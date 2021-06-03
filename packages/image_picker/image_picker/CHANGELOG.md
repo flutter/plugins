@@ -1,4 +1,5 @@
 ## 0.8.0+2
+
 * Fixes an issue where `preferredCameraDevice` option is not working for `getVideo` method.
 
 ## 0.8.0+1
