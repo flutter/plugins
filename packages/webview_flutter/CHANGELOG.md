@@ -1,3 +1,11 @@
+## NEXT
+
+* Add iOS UI integration test target.
+
+## 2.0.8
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.7
 
 * Republished 2.0.6 with Flutter 2.2 to avoid https://github.com/dart-lang/pub/issues/3001

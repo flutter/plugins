@@ -7,7 +7,7 @@ _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/m
 ## Welcome
 
 For an introduction to contributing to Flutter, see [our contributor
-guide][https://github.com/flutter/flutter/blob/master/CONTRIBUTING.md].
+guide](https://github.com/flutter/flutter/blob/master/CONTRIBUTING.md).
 
 Additional resources specific to the plugins repository:
 - [Setting up the Plugins development

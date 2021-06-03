@@ -162,6 +162,7 @@ class InAppPurchase implements InAppPurchasePlatformAdditionProvider {
   }) =>
       InAppPurchasePlatform.instance.buyConsumable(
         purchaseParam: purchaseParam,
+        autoConsume: autoConsume,
       );
 
   /// Mark that purchased content has been delivered to the user.

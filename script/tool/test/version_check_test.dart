@@ -187,6 +187,40 @@ void main() {
       );
     });
 
+    test('allows likely reverts.', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.6.1',
+      };
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['version-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          '${indentation}New version is lower than previous version. This is assumed to be a revert.',
+        ]),
+      );
+    });
+
+    test('denies lower version that could not be a simple revert', () async {
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.5.1',
+      };
+      final Future<List<String>> result =
+          runCapturingPrint(runner, <String>['version-check']);
+
+      await expectLater(
+        result,
+        throwsA(const TypeMatcher<ToolExit>()),
+      );
+    });
+
     test('denies invalid version without explicit base-sha', () async {
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
