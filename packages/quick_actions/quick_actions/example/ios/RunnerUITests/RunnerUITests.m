@@ -11,18 +11,23 @@ static const int kElementWaitingTime = 30;
 
 @end
 
-@implementation RunnerUITests
+@implementation RunnerUITests {
+  XCUIApplication *_exampleApp;
+}
 
 - (void)setUp {
   [super setUp];
   self.continueAfterFailure = NO;
+  _exampleApp = [[XCUIApplication alloc] init];
+}
+
+- (void)tearDown {
+  [super tearDown];
+  [_exampleApp terminate];
+  _exampleApp = nil;
 }
 
 - (void)testQuickActionWithFreshStart {
-  XCUIApplication *app = [[XCUIApplication alloc] init];
-  [app launch];
-  [app terminate];
-
   XCUIApplication *springboard =
       [[XCUIApplication alloc] initWithBundleIdentifier:@"com.apple.springboard"];
   XCUIElement *quickActionsAppIcon = springboard.icons[@"quick_actions_example"];
@@ -42,24 +47,21 @@ static const int kElementWaitingTime = 30;
 
   [actionTwo tap];
 
-  XCUIElement *actionTwoConfirmation = app.otherElements[@"action_two"];
+  XCUIElement *actionTwoConfirmation = _exampleApp.otherElements[@"action_two"];
   if (![actionTwoConfirmation waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
     XCTFail(@"Failed due to not able to find the actionTwoConfirmation in the app with %@ seconds",
             @(kElementWaitingTime));
   }
   XCTAssertTrue(actionTwoConfirmation.exists);
-
-  [app terminate];
 }
 
 - (void)testQuickActionWhenAppIsInBackground {
-  XCUIApplication *app = [[XCUIApplication alloc] init];
-  [app launch];
+  [_exampleApp launch];
 
-  XCUIElement *actionsReady = app.otherElements[@"actions ready"];
+  XCUIElement *actionsReady = _exampleApp.otherElements[@"actions ready"];
   if (![actionsReady waitForExistenceWithTimeout:kElementWaitingTime]) {
-    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+    os_log_error(OS_LOG_DEFAULT, "%@", _exampleApp.debugDescription);
     XCTFail(@"Failed due to not able to find the actionsReady in the app with %@ seconds",
             @(kElementWaitingTime));
   }
@@ -85,15 +87,13 @@ static const int kElementWaitingTime = 30;
 
   [actionOne tap];
 
-  XCUIElement *actionOneConfirmation = app.otherElements[@"action_one"];
+  XCUIElement *actionOneConfirmation = _exampleApp.otherElements[@"action_one"];
   if (![actionOneConfirmation waitForExistenceWithTimeout:kElementWaitingTime]) {
     os_log_error(OS_LOG_DEFAULT, "%@", springboard.debugDescription);
     XCTFail(@"Failed due to not able to find the actionOneConfirmation in the app with %@ seconds",
             @(kElementWaitingTime));
   }
   XCTAssertTrue(actionOneConfirmation.exists);
-
-  [app terminate];
 }
 
 @end

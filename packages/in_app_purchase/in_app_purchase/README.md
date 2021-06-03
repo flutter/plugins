@@ -136,7 +136,6 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
           _deliverProduct(purchaseDetails);
         } else {
           _handleInvalidPurchase(purchaseDetails);
-          return;
         }
       }
       if (purchaseDetails.pendingCompletePurchase) {
