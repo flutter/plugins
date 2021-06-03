@@ -1,3 +1,7 @@
+## 6.0.7
+
+* Adding API level 30 reuired package visibility configuration to the example's AndroidManifest.xml
+
 ## 6.0.6
 
 * Require `url_launcher_platform_interface` 2.0.3. This fixes an issue
