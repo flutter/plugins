@@ -427,11 +427,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Accepts NSMutableArray to get list of paths that are saved and NSUInteger
- * as a total length of the results.
+ * Calls the correct method
  *
- * Calls handleSavedPath if method call is equal to pickImage or handleMultiSavedPaths
- * if method call is equal to pickMultiImage.
+ * If the @c pathList count and the @c resultCount are equal then checks
+ * single which is true if the pickImage method call is invoked and false if the
+ * pickMultiImage method call is invoked. If single is true then calls handleSavedPath
+ * with the firstObject of the @c pathList. If single is false then calls
+ * handleMultiSavedPaths with the @c pathList.
+ *
+ * @param @pathList that is used to get its count.
+ * @param @resultCount that is used to compared with @c pathList.
  */
 - (void)handlePath:(NSMutableArray *)pathList resultCount:(NSUInteger)resultCount {
   if (pathList.count == resultCount) {
@@ -567,10 +572,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Accepts NSMutableArray as an argument and call result with the array
- * if the array is not nil and length of the array is bigger than zero.
+ * Applies NSMutableArray on the FLutterResult.
  *
- * Otherwise result is called with FlutterError.
+ * If the @c pathList is not nill and count of the @c pathList is
+ * greater than 0 then call FlutterResult with the @c pathList. If
+ * the @c pathList is nill or count of the @c pathList is not
+ * greater than 0 then call FlutterResult with FlutterError.
+ *
+ * @param @pathList that should be applied to FlutterResult.
  */
 - (void)handleMultiSavedPaths:(NSMutableArray *)pathList {
   if (!self.result) {
