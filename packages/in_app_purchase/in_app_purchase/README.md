@@ -62,6 +62,7 @@ This section has examples of code for the following tasks:
 * [Making a purchase](#making-a-purchase)
 * [Completing a purchase](#completing-a-purchase)
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
+* [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
 * [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
 
 ### Initializing the plugin
@@ -244,6 +245,63 @@ PurchaseParam purchaseParam = GooglePlayPurchaseParam(
 InAppPurchase.instance
     .buyNonConsumable(purchaseParam: purchaseParam);
 ```
+
+### Accessing platform specific product or purchase properties
+
+The function `_inAppPurchase.queryProductDetails(productIds);` will give you a `ProductDetailsResponse` with a list of 
+purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class 
+with only properties available on both platforms. However, when you want to access some specific
+platform properties this is also possible. The `ProductDetails` object is of subtype `GooglePlayProductDetails`
+when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails, resp. skProduct gives
+you all the information that is available in the original platform objects.
+
+This is an example on how to get the `introductoryPricePeriod` on Android:
+```dart
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+
+if (productDetails is GooglePlayProductDetails) {
+  var skuDetails = (productDetails as GooglePlayProductDetails).skuDetails;
+  print(skuDetails.introductoryPricePeriod);
+}
+```
+
+And this way you get the subscriptionGroupIdentifier of a subscription on iOS:
+```dart
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+
+if (productDetails is AppStoreProductDetails) {
+  var skProduct = (productDetails as AppStoreProductDetails).skProduct;
+  print(skProduct.subscriptionGroupIdentifier);
+}
+```
+
+The `purchaseStream` gives you objects of type `PurchaseDetails`. This object gives you all information that is 
+available on any platform, such as purchaseID and transactionDate, but here you can also access the platform 
+specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
+when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp. 
+skPaymentTransaction gives you all the information that is available in the original platform objects.
+
+This is an example on how to get the `originalJson` on Android:
+```dart
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+
+if (purchaseDetails is GooglePlayPurchaseDetails) {
+  var billingClientPurchase = (purchaseDetails as GooglePlayPurchaseDetails).billingClientPurchase;
+  print(billingClientPurchase.originalJson);
+}
+```
+
+And this way you get the `transactionState` of a purchase on iOS:
+```dart
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+
+if (purchaseDetails is AppStorePurchaseDetails) {
+  var skProduct = (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
+  print(skProduct.transactionState);
+}
+```
+
+Note that you need to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
 
 ### Presenting a code redemption sheet (iOS 14)
 

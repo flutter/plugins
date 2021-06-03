@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Add explanation for casting `ProductDetails` and `PurchaseDetails` to platform specific implementations in the readme.
+
 ## 1.0.3
 
 * Added a "Restore purchases" button to conform to Apple's StoreKit guidelines on [restoring products](https://developer.apple.com/documentation/storekit/in-app_purchase/restoring_purchased_products?language=objc);
