@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -441,6 +442,15 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
+  /// Set [GoogleMapsFlutterPlatform] to uses [AndroidViewSurface] to build the Google Maps widget.
+  ///
+  /// This implementation uses hybrid composition to render the Google Maps
+  /// Widget on Android. This comes at the cost of some performance on Android
+  /// versions below 10. See
+  /// https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
+  /// information.
+  bool useAndroidViewSurface = false;
+
   @override
   Widget buildView(
     int creationId,
@@ -463,7 +473,43 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       'circlesToAdd': serializeCircleSet(circles),
       'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
     };
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    if (defaultTargetPlatform == TargetPlatform.android &&
+        useAndroidViewSurface) {
+      return PlatformViewLink(
+        viewType: 'plugins.flutter.io/google_maps',
+        surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+        ) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: gestureRecognizers ??
+                const <Factory<OneSequenceGestureRecognizer>>{},
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          );
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          final SurfaceAndroidViewController controller =
+              PlatformViewsService.initSurfaceAndroidView(
+            id: params.id,
+            viewType: 'plugins.flutter.io/google_maps',
+            layoutDirection: TextDirection.rtl,
+            creationParams: creationParams,
+            creationParamsCodec: const StandardMessageCodec(),
+          );
+          controller.addOnPlatformViewCreatedListener(
+            params.onPlatformViewCreated,
+          );
+          controller.addOnPlatformViewCreatedListener(
+            onPlatformViewCreated,
+          );
+
+          controller.create();
+          return controller;
+        },
+      );
+    } else if (defaultTargetPlatform == TargetPlatform.android &&
+        !useAndroidViewSurface) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
