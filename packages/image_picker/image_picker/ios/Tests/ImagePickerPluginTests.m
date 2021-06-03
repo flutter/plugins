@@ -6,6 +6,7 @@
 
 @import image_picker;
 @import XCTest;
+#import <OCMock/OCMock.h>
 
 @interface MockViewController : UIViewController
 @property(nonatomic, retain) UIViewController *mockPresented;
@@ -27,9 +28,19 @@
 @end
 
 @interface ImagePickerPluginTests : XCTestCase
+@property(readonly, nonatomic) id mockDevice;
 @end
 
 @implementation ImagePickerPluginTests
+
+- (void)setUp {
+  _mockDevice = OCMClassMock([UIImagePickerController class]);
+}
+
+- (void)tearDown {
+  // Put teardown code here. This method is called after the invocation of each test method in the
+  // class.
+}
 
 #pragma mark - Test camera devices, no op on simulators
 - (void)testPluginPickImageDeviceBack {
