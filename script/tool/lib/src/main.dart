@@ -32,11 +32,11 @@ import 'xctest_command.dart';
 void main(List<String> args) {
   const FileSystem fileSystem = LocalFileSystem();
 
-  Directory packagesDir = fileSystem
-      .directory(p.join(fileSystem.currentDirectory.path, 'packages'));
+  Directory packagesDir =
+      fileSystem.currentDirectory.childDirectory('packages');
 
   if (!packagesDir.existsSync()) {
-    if (p.basename(fileSystem.currentDirectory.path) == 'packages') {
+    if (fileSystem.currentDirectory.basename == 'packages') {
       packagesDir = fileSystem.currentDirectory;
     } else {
       print('Error: Cannot find a "packages" sub-directory');
