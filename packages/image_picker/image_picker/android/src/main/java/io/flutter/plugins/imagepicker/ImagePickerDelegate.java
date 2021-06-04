@@ -464,7 +464,7 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
       ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
       for (int i = 0; i < paths.size(); i++) {
-        String finalImagePath = resizeImage(paths.get(i));
+        String finalImagePath = getResizedImagePath(paths.get(i));
 
         //delete original file if scaled
         if (finalImagePath != null
@@ -480,7 +480,7 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
-      String finalImagePath = resizeImage(path);
+      String finalImagePath = getResizedImagePath(path);
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
@@ -491,7 +491,7 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
     }
   }
 
-  private String resizeImage(String path) {
+  private String getResizedImagePath(String path) {
     Double maxWidth = methodCall.argument("maxWidth");
     Double maxHeight = methodCall.argument("maxHeight");
     Integer imageQuality = methodCall.argument("imageQuality");
