@@ -1,6 +1,10 @@
-## 0.8.1+3
+## 0.8.1+4
 
 * Moved texture registration to the main thread on iOS to improve stability.
+
+## 0.8.1+3
+
+* Do not change camera orientation when iOS device is flat.
 
 ## 0.8.1+2
 

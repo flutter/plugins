@@ -1,3 +1,7 @@
+## 1.0.4
+
+* Fix `Restoring previous purchases` link in the README.md.
+
 ## 1.0.3
 
 * Added a "Restore purchases" button to conform to Apple's StoreKit guidelines on [restoring products](https://developer.apple.com/documentation/storekit/in-app_purchase/restoring_purchased_products?language=objc);

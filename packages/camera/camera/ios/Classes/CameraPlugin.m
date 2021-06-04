@@ -1292,6 +1292,11 @@ NSString *const errorMethod = @"error";
   UIDevice *device = note.object;
   UIDeviceOrientation orientation = device.orientation;
 
+  if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown) {
+    // Do not change when oriented flat.
+    return;
+  }
+
   if (_camera) {
     [_camera setDeviceOrientation:orientation];
   }

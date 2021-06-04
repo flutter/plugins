@@ -7,27 +7,36 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		334733FC266813EE00DCC49E /* ImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */; };
+		334733FD266813F100DCC49E /* MetaDataUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 680049252280D736006DD6AB /* MetaDataUtilTests.m */; };
+		334733FE266813F400DCC49E /* PhotoAssetUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */; };
+		334733FF266813FA00DCC49E /* ImagePickerTestImages.m in Sources */ = {isa = PBXBuildFile; fileRef = F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */; };
+		33473400266813FD00DCC49E /* ImagePickerPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */; };
+		3A72BAD3FAE6E0FA9D80826B /* libPods-RunnerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 35AE65F25E0B8C8214D8372B /* libPods-RunnerTests.a */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
+		56E9C6956BC15C647C89EB23 /* libPods-RunnerUITests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = A908FAEEA2A9B26D903C09C5 /* libPods-RunnerUITests.a */; };
 		5C9513011EC38BD300040975 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 5C9513001EC38BD300040975 /* GeneratedPluginRegistrant.m */; };
-		680049262280D736006DD6AB /* MetaDataUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 680049252280D736006DD6AB /* MetaDataUtilTests.m */; };
 		680049382280F2B9006DD6AB /* pngImage.png in Resources */ = {isa = PBXBuildFile; fileRef = 680049352280F2B8006DD6AB /* pngImage.png */; };
 		680049392280F2B9006DD6AB /* jpgImage.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 680049362280F2B8006DD6AB /* jpgImage.jpg */; };
 		6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */; };
-		68B9AF72243E4B3F00927CE4 /* ImagePickerPluginTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */; };
-		68F4B464228B3AB500C25614 /* PhotoAssetUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */; };
 		978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */; };
 		97C146F31CF9000F007C117D /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 97C146F21CF9000F007C117D /* main.m */; };
 		97C146FC1CF9000F007C117D /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FA1CF9000F007C117D /* Main.storyboard */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
-		9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */; };
 		BE7AEE7926403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BE7AEE7826403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
-		F78AF3192342D9D7008449C7 /* ImagePickerTestImages.m in Sources */ = {isa = PBXBuildFile; fileRef = F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		334733F72668136400DCC49E /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
+			remoteInfo = Runner;
+		};
 		6801C83B2555D726009DAF8D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
@@ -58,21 +67,25 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		0C7B151765FD4249454C49AD /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
 		15BE72415096DFE5D077E563 /* Pods-RunnerUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerUITests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerUITests/Pods-RunnerUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		334733F22668136400DCC49E /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		334733F62668136400DCC49E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		35AE65F25E0B8C8214D8372B /* libPods-RunnerTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RunnerTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = AppFrameworkInfo.plist; path = Flutter/AppFrameworkInfo.plist; sourceTree = "<group>"; };
 		515A7EC9B4C971C01E672CF8 /* Pods-RunnerUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerUITests.release.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerUITests/Pods-RunnerUITests.release.xcconfig"; sourceTree = "<group>"; };
 		5A9D31B91557877A0E8EF3E7 /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		5C9512FF1EC38BD300040975 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		5C9513001EC38BD300040975 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
-		680049252280D736006DD6AB /* MetaDataUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = MetaDataUtilTests.m; path = ../../../ios/Tests/MetaDataUtilTests.m; sourceTree = "<group>"; };
+		680049252280D736006DD6AB /* MetaDataUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MetaDataUtilTests.m; sourceTree = "<group>"; };
 		680049352280F2B8006DD6AB /* pngImage.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pngImage.png; sourceTree = "<group>"; };
 		680049362280F2B8006DD6AB /* jpgImage.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = jpgImage.jpg; sourceTree = "<group>"; };
 		6801632E632668F4349764C9 /* Pods-Runner.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Runner/Pods-Runner.debug.xcconfig"; sourceTree = "<group>"; };
 		6801C8362555D726009DAF8D /* RunnerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromGalleryUITests.m; sourceTree = "<group>"; };
 		6801C83A2555D726009DAF8D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = ImagePickerPluginTests.m; path = ../../../ios/Tests/ImagePickerPluginTests.m; sourceTree = "<group>"; };
-		68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = PhotoAssetUtilTests.m; path = ../../../ios/Tests/PhotoAssetUtilTests.m; sourceTree = "<group>"; };
+		68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImagePickerPluginTests.m; sourceTree = "<group>"; };
+		68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = PhotoAssetUtilTests.m; sourceTree = "<group>"; };
 		7AFA3C8E1D35360C0083082E /* Release.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; name = Release.xcconfig; path = Flutter/Release.xcconfig; sourceTree = "<group>"; };
 		7AFFD8ED1D35381100E5BB4D /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7AFFD8EE1D35381100E5BB4D /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -85,21 +98,31 @@
 		97C147001CF9000F007C117D /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9FC8F0E8229FA49E00C8D58F /* gifImage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gifImage.gif; sourceTree = "<group>"; };
-		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImageUtilTests.m; path = ../../../ios/Tests/ImageUtilTests.m; sourceTree = "<group>"; };
+		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtilTests.m; sourceTree = "<group>"; };
 		A908FAEEA2A9B26D903C09C5 /* libPods-RunnerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RunnerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE7AEE6C26403C46006181AA /* RunnerUITestiOS14.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITestiOS14.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		BE7AEE7026403C46006181AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE7AEE7826403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromLimitedGalleryUITests.m; sourceTree = "<group>"; };
+		DC6FCAAD4E7580C9B3C2E21D /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
 		EC32F6993F4529982D9519F1 /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ImagePickerTestImages.h; path = ../../../ios/Tests/ImagePickerTestImages.h; sourceTree = "<group>"; };
-		F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = ImagePickerTestImages.m; path = ../../../ios/Tests/ImagePickerTestImages.m; sourceTree = "<group>"; };
+		F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImagePickerTestImages.h; sourceTree = "<group>"; };
+		F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerTestImages.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		334733EF2668136400DCC49E /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				3A72BAD3FAE6E0FA9D80826B /* libPods-RunnerTests.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6801C8332555D726009DAF8D /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				56E9C6956BC15C647C89EB23 /* libPods-RunnerUITests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -121,6 +144,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		334733F32668136400DCC49E /* RunnerTests */ = {
+			isa = PBXGroup;
+			children = (
+				9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */,
+				680049252280D736006DD6AB /* MetaDataUtilTests.m */,
+				68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */,
+				F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */,
+				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
+				68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */,
+				334733F62668136400DCC49E /* Info.plist */,
+			);
+			path = RunnerTests;
+			sourceTree = "<group>";
+		};
 		680049282280E33D006DD6AB /* TestImages */ = {
 			isa = PBXGroup;
 			children = (
@@ -135,12 +172,6 @@
 			isa = PBXGroup;
 			children = (
 				6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */,
-				9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */,
-				680049252280D736006DD6AB /* MetaDataUtilTests.m */,
-				68F4B463228B3AB500C25614 /* PhotoAssetUtilTests.m */,
-				F78AF3172342D9D7008449C7 /* ImagePickerTestImages.h */,
-				F78AF3182342D9D7008449C7 /* ImagePickerTestImages.m */,
-				68B9AF71243E4B3F00927CE4 /* ImagePickerPluginTests.m */,
 				6801C83A2555D726009DAF8D /* Info.plist */,
 			);
 			path = RunnerUITests;
@@ -153,6 +184,8 @@
 				5A9D31B91557877A0E8EF3E7 /* Pods-Runner.release.xcconfig */,
 				15BE72415096DFE5D077E563 /* Pods-RunnerUITests.debug.xcconfig */,
 				515A7EC9B4C971C01E672CF8 /* Pods-RunnerUITests.release.xcconfig */,
+				DC6FCAAD4E7580C9B3C2E21D /* Pods-RunnerTests.debug.xcconfig */,
+				0C7B151765FD4249454C49AD /* Pods-RunnerTests.release.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -174,6 +207,7 @@
 				680049282280E33D006DD6AB /* TestImages */,
 				9740EEB11CF90186004384FC /* Flutter */,
 				97C146F01CF9000F007C117D /* Runner */,
+				334733F32668136400DCC49E /* RunnerTests */,
 				6801C8372555D726009DAF8D /* RunnerUITests */,
 				BE7AEE6D26403C46006181AA /* RunnerUITestiOS14 */,
 				97C146EF1CF9000F007C117D /* Products */,
@@ -188,6 +222,7 @@
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				6801C8362555D726009DAF8D /* RunnerUITests.xctest */,
 				BE7AEE6C26403C46006181AA /* RunnerUITestiOS14.xctest */,
+				334733F22668136400DCC49E /* RunnerTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -230,6 +265,7 @@
 			children = (
 				EC32F6993F4529982D9519F1 /* libPods-Runner.a */,
 				A908FAEEA2A9B26D903C09C5 /* libPods-RunnerUITests.a */,
+				35AE65F25E0B8C8214D8372B /* libPods-RunnerTests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -237,6 +273,25 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		334733F12668136400DCC49E /* RunnerTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 334733F92668136400DCC49E /* Build configuration list for PBXNativeTarget "RunnerTests" */;
+			buildPhases = (
+				B8739A4353234497CF76B597 /* [CP] Check Pods Manifest.lock */,
+				334733EE2668136400DCC49E /* Sources */,
+				334733EF2668136400DCC49E /* Frameworks */,
+				334733F02668136400DCC49E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				334733F82668136400DCC49E /* PBXTargetDependency */,
+			);
+			name = RunnerTests;
+			productName = RunnerTests;
+			productReference = 334733F22668136400DCC49E /* RunnerTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		6801C8352555D726009DAF8D /* RunnerUITests */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 6801C83F2555D726009DAF8D /* Build configuration list for PBXNativeTarget "RunnerUITests" */;
@@ -305,6 +360,11 @@
 				LastUpgradeCheck = 1100;
 				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
+					334733F12668136400DCC49E = {
+						CreatedOnToolsVersion = 12.5;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 97C146ED1CF9000F007C117D;
+					};
 					6801C8352555D726009DAF8D = {
 						CreatedOnToolsVersion = 11.7;
 						ProvisioningStyle = Automatic;
@@ -339,6 +399,7 @@
 			projectRoot = "";
 			targets = (
 				97C146ED1CF9000F007C117D /* Runner */,
+				334733F12668136400DCC49E /* RunnerTests */,
 				6801C8352555D726009DAF8D /* RunnerUITests */,
 				BE7AEE6B26403C46006181AA /* RunnerUITestiOS14 */,
 			);
@@ -346,6 +407,13 @@
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		334733F02668136400DCC49E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6801C8342555D726009DAF8D /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -445,19 +513,48 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		B8739A4353234497CF76B597 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-RunnerTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		334733EE2668136400DCC49E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				334733FD266813F100DCC49E /* MetaDataUtilTests.m in Sources */,
+				334733FF266813FA00DCC49E /* ImagePickerTestImages.m in Sources */,
+				334733FC266813EE00DCC49E /* ImageUtilTests.m in Sources */,
+				33473400266813FD00DCC49E /* ImagePickerPluginTests.m in Sources */,
+				334733FE266813F400DCC49E /* PhotoAssetUtilTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		6801C8322555D726009DAF8D /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */,
-				9FC8F0EE229FB90B00C8D58F /* ImageUtilTests.m in Sources */,
-				F78AF3192342D9D7008449C7 /* ImagePickerTestImages.m in Sources */,
-				680049262280D736006DD6AB /* MetaDataUtilTests.m in Sources */,
-				68B9AF72243E4B3F00927CE4 /* ImagePickerPluginTests.m in Sources */,
-				68F4B464228B3AB500C25614 /* PhotoAssetUtilTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -482,6 +579,11 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		334733F82668136400DCC49E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 97C146ED1CF9000F007C117D /* Runner */;
+			targetProxy = 334733F72668136400DCC49E /* PBXContainerItemProxy */;
+		};
 		6801C83C2555D726009DAF8D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
@@ -514,6 +616,34 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		334733FA2668136400DCC49E /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = DC6FCAAD4E7580C9B3C2E21D /* Pods-RunnerTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = RunnerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
+			};
+			name = Debug;
+		};
+		334733FB2668136400DCC49E /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0C7B151765FD4249454C49AD /* Pods-RunnerTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				INFOPLIST_FILE = RunnerTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
+			};
+			name = Release;
+		};
 		6801C83D2555D726009DAF8D /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 9740EEB21CF90195004384FC /* Debug.xcconfig */;
@@ -763,6 +893,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		334733F92668136400DCC49E /* Build configuration list for PBXNativeTarget "RunnerTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				334733FA2668136400DCC49E /* Debug */,
+				334733FB2668136400DCC49E /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		6801C83F2555D726009DAF8D /* Build configuration list for PBXNativeTarget "RunnerUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
