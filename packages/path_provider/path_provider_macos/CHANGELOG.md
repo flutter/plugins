@@ -1,3 +1,7 @@
+## NEXT
+
+* Add Swift language version to podspec.
+
 ## 2.0.1
 
 * Add `implements` to pubspec.yaml.
