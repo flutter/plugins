@@ -311,7 +311,7 @@ if (purchaseDetails is AppStorePurchaseDetails) {
 }
 ```
 
-Please note that it is required need to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
+Please note that it is required to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
 
 ### Presenting a code redemption sheet (iOS 14)
 
