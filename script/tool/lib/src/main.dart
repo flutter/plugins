@@ -9,7 +9,6 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:path/path.dart' as p;
 
 import 'analyze_command.dart';
 import 'build_examples_command.dart';
