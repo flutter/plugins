@@ -54,6 +54,8 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  ///
+  /// See also [getMultiImage] to allow users to select multiple images at once.
   Future<PickedFile?> getImage({
     required ImageSource source,
     double? maxWidth,
@@ -87,6 +89,8 @@ class ImagePicker {
   /// the original quality will be returned. Compression is only supported for certain
   /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
   /// a warning message will be logged.
+  ///
+  /// See also [getImage] to allow users to only pick a single image.
   Future<List<PickedFile>?> getMultiImage({
     double? maxWidth,
     double? maxHeight,
