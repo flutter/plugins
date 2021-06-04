@@ -14,7 +14,6 @@ import 'package:path/path.dart' as p;
 import 'common.dart';
 
 const String _kiOSDestination = 'ios-destination';
-const String _kSkip = 'skip';
 const String _kXcodeBuildCommand = 'xcodebuild';
 const String _kXCRunCommand = 'xcrun';
 const String _kFoundNoSimulatorsMessage =
@@ -36,8 +35,6 @@ class XCTestCommand extends PluginCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
-    argParser.addMultiOption(_kSkip,
-        help: 'Plugins to skip while running this command. \n');
   }
 
   @override
@@ -59,8 +56,6 @@ class XCTestCommand extends PluginCommand {
       destination = 'id=$simulatorId';
     }
 
-    final List<String> skipped = getStringListArg(_kSkip);
-
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {
       // Start running for package.
@@ -69,11 +64,6 @@ class XCTestCommand extends PluginCommand {
       print('Start running for $packageName ...');
       if (!isIosPlugin(plugin)) {
         print('iOS is not supported by this plugin.');
-        print('\n\n');
-        continue;
-      }
-      if (skipped.contains(packageName)) {
-        print('$packageName was skipped with the --skip flag.');
         print('\n\n');
         continue;
       }
