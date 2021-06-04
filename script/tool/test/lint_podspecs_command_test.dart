@@ -87,6 +87,7 @@ void main() {
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--use-libraries'
               ],
               mockPackagesDir.path),
@@ -98,6 +99,7 @@ void main() {
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
               ],
               mockPackagesDir.path),
         ]),
@@ -147,6 +149,7 @@ void main() {
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--allow-warnings',
                 '--use-libraries'
               ],
@@ -159,6 +162,7 @@ void main() {
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--allow-warnings',
               ],
               mockPackagesDir.path),
