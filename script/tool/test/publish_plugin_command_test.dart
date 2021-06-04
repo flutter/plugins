@@ -14,7 +14,6 @@ import 'package:file/local.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:git/git.dart';
-import 'package:matcher/matcher.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
