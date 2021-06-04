@@ -1,3 +1,7 @@
+## 0.8.1+3
+
+* Do not change camera orientation when iOS device is flat.
+
 ## 0.8.1+2
 
 * Fix iOS crash when selecting an unsupported FocusMode.
