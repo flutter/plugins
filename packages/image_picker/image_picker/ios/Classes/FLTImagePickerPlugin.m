@@ -21,7 +21,7 @@
 
 @property(copy, nonatomic) FlutterResult result;
 
-@property(nonatomic) bool single;
+@property(assign, nonatomic) int maxImagesAllowed;
 
 @property(copy, nonatomic) NSDictionary *arguments;
 
@@ -69,18 +69,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return topController;
 }
 
-- (void)pickImageWithPHPicker:(bool)single API_AVAILABLE(ios(14)) {
+- (void)pickImageWithPHPicker:(bool)maxImagesAllowed API_AVAILABLE(ios(14)) {
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  if (!single) {
-    config.selectionLimit = 0;  // Setting to zero allow us to pick unlimited photos
-  }
+  config.selectionLimit = maxImagesAllowed;  // Setting to zero allow us to pick unlimited photos
   config.filter = [PHPickerFilter imagesFilter];
 
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
 
-  self.single = single;
+  self.maxImagesAllowed = maxImagesAllowed;
 
   [self checkPhotoAuthorizationForAccessLevel];
 }
@@ -128,7 +126,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
-        [self pickImageWithPHPicker:true];
+        [self pickImageWithPHPicker:1];
       } else {
         // UIImagePicker is used
         [self pickImageWithUIImagePicker];
@@ -140,7 +138,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     if (@available(iOS 14, *)) {
       self.result = result;
       _arguments = call.arguments;
-      [self pickImageWithPHPicker:false];
+      [self pickImageWithPHPicker:0];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
@@ -440,7 +438,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  */
 - (void)handlePath:(NSMutableArray *)pathList resultCount:(NSUInteger)resultCount {
   if (pathList.count == resultCount) {
-    if (self.single) {
+    if (self.maxImagesAllowed) {
       [self handleSavedPath:pathList.firstObject];
     } else {
       [self handleMultiSavedPaths:pathList];
