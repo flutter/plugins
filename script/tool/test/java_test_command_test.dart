@@ -19,9 +19,10 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      final Directory packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
       final JavaTestCommand command =
-          JavaTestCommand(mockPackagesDir, processRunner: processRunner);
+          JavaTestCommand(packagesDir, processRunner: processRunner);
 
       runner =
           CommandRunner<void>('java_test_test', 'Test for $JavaTestCommand');

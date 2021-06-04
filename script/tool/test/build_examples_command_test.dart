@@ -15,6 +15,7 @@ import 'util.dart';
 void main() {
   group('test build_example_command', () {
     late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
     final String flutterCommand =
@@ -22,10 +23,11 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final BuildExamplesCommand command =
-          BuildExamplesCommand(mockPackagesDir, processRunner: processRunner);
+          BuildExamplesCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');
@@ -41,14 +43,14 @@ void main() {
           isLinuxPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--ipa', '--no-macos']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -73,7 +75,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -84,7 +86,7 @@ void main() {
         '--enable-experiment=exp1'
       ]);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -120,14 +122,14 @@ void main() {
           isLinuxPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--linux']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -152,14 +154,14 @@ void main() {
           isLinuxPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--linux']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -185,14 +187,14 @@ void main() {
       ]);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--macos']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -218,14 +220,14 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--macos']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -250,14 +252,14 @@ void main() {
       ]);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--web']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -283,14 +285,14 @@ void main() {
           isWebPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--web']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -319,14 +321,14 @@ void main() {
           isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--windows']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -351,14 +353,14 @@ void main() {
           isWindowsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--windows']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -387,14 +389,14 @@ void main() {
           isLinuxPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--apk', '--no-ipa']);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -419,7 +421,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -430,7 +432,7 @@ void main() {
         '--no-macos',
       ]);
       final String packageName =
-          p.relative(pluginExampleDirectory.path, from: mockPackagesDir.path);
+          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
@@ -457,7 +459,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -487,7 +489,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 

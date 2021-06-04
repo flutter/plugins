@@ -16,6 +16,7 @@ import 'util.dart';
 void main() {
   group('test drive_example_command', () {
     late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
     final String flutterCommand =
@@ -23,10 +24,11 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final DriveExamplesCommand command =
-          DriveExamplesCommand(mockPackagesDir, processRunner: processRunner);
+          DriveExamplesCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
@@ -43,7 +45,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -88,7 +90,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -133,7 +135,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -152,7 +154,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -175,7 +177,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -229,7 +231,7 @@ void main() {
           isMacOsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -262,7 +264,7 @@ void main() {
           isLinuxPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -307,7 +309,7 @@ void main() {
       ]);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -340,7 +342,7 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -387,7 +389,7 @@ void main() {
           isWebPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -420,7 +422,7 @@ void main() {
           isWebPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -469,7 +471,7 @@ void main() {
           isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -502,7 +504,7 @@ void main() {
           isWindowsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -549,7 +551,7 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -602,7 +604,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          packagesDir.childDirectory('plugin').childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 

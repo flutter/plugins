@@ -13,12 +13,14 @@ import 'util.dart';
 void main() {
   group('$ListCommand', () {
     late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
-      final ListCommand command = ListCommand(mockPackagesDir);
+      packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      final ListCommand command = ListCommand(packagesDir);
 
       runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
       runner.addCommand(command);
@@ -108,8 +110,8 @@ void main() {
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
-      final Directory federatedPlugin =
-          mockPackagesDir.childDirectory('my_plugin')..createSync();
+      final Directory federatedPlugin = packagesDir.childDirectory('my_plugin')
+        ..createSync();
       final Directory clientLibrary =
           federatedPlugin.childDirectory('my_plugin')..createSync();
       createFakePubspec(clientLibrary);
@@ -140,8 +142,8 @@ void main() {
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
-      final Directory federatedPlugin =
-          mockPackagesDir.childDirectory('my_plugin')..createSync();
+      final Directory federatedPlugin = packagesDir.childDirectory('my_plugin')
+        ..createSync();
       final Directory clientLibrary =
           federatedPlugin.childDirectory('my_plugin')..createSync();
       createFakePubspec(clientLibrary);

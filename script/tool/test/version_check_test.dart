@@ -93,7 +93,7 @@ void main() {
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
       processRunner = RecordingProcessRunner();
-      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir);
 
       runner = CommandRunner<void>(
@@ -327,10 +327,8 @@ void main() {
 
     test('Allow empty lines in front of the first version in CHANGELOG',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -356,10 +354,8 @@ void main() {
     });
 
     test('Throws if versions in changelog and pubspec do not match', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -393,10 +389,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
     });
 
     test('Success if CHANGELOG and pubspec versions match', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -421,10 +415,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
     test(
         'Fail if pubspec version only matches an older version listed in CHANGELOG',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.0');
@@ -465,10 +457,8 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
     test('Allow NEXT as a placeholder for gathering CHANGELOG entries',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.0');
@@ -496,10 +486,8 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
     test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -542,10 +530,8 @@ into the new version's release notes.
     });
 
     test('Fail if the version changes without replacing NEXT', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -597,7 +583,7 @@ The first version listed in CHANGELOG.md is 1.0.0.
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -633,7 +619,7 @@ The first version listed in CHANGELOG.md is 1.0.0.
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -677,7 +663,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('xx', 400);
       });
-      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -720,7 +706,7 @@ ${indentation}HTTP response: xx
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('xx', 404);
       });
-      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(

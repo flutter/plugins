@@ -18,9 +18,10 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      final Directory packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
       final TestCommand command =
-          TestCommand(mockPackagesDir, processRunner: processRunner);
+          TestCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>('test_test', 'Test for $TestCommand');
       runner.addCommand(command);

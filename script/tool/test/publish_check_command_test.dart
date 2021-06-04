@@ -23,25 +23,23 @@ import 'util.dart';
 void main() {
   group('$PublishCheckProcessRunner tests', () {
     FileSystem fileSystem;
+    Directory packagesDir;
     PublishCheckProcessRunner processRunner;
     CommandRunner<void> runner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = PublishCheckProcessRunner();
       final PublishCheckCommand publishCheckCommand =
-          PublishCheckCommand(mockPackagesDir, processRunner: processRunner);
+          PublishCheckCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
         'publish_check_command',
         'Test for publish-check command.',
       );
       runner.addCommand(publishCheckCommand);
-    });
-
-    tearDown(() {
-      mockPackagesDir.deleteSync(recursive: true);
     });
 
     test('publish check all packages', () async {
@@ -182,7 +180,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(mockPackagesDir,
+      final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -248,7 +246,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(mockPackagesDir,
+      final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -317,7 +315,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(mockPackagesDir,
+      final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(

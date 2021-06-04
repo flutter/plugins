@@ -19,6 +19,7 @@ import 'util.dart';
 void main() {
   group('$LintPodspecsCommand', () {
     FileSystem fileSystem;
+    Directory packagesDir;
     CommandRunner<void> runner;
     MockPlatform mockPlatform;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
@@ -26,13 +27,14 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
 
       printedMessages = <String>[];
       mockPlatform = MockPlatform();
       when(mockPlatform.isMacOS).thenReturn(true);
       final LintPodspecsCommand command = LintPodspecsCommand(
-        mockPackagesDir,
+        packagesDir,
         processRunner: processRunner,
         platform: mockPlatform,
         print: (Object message) => printedMessages.add(message.toString()),
@@ -76,7 +78,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -88,7 +90,7 @@ void main() {
                 '--use-modular-headers',
                 '--use-libraries'
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -99,7 +101,7 @@ void main() {
                 '--skip-tests',
                 '--use-modular-headers',
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
         ]),
       );
 
@@ -122,7 +124,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
         ]),
       );
     });
@@ -138,7 +140,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -151,7 +153,7 @@ void main() {
                 '--allow-warnings',
                 '--use-libraries'
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -163,7 +165,7 @@ void main() {
                 '--use-modular-headers',
                 '--allow-warnings',
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
         ]),
       );
 

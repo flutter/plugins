@@ -19,17 +19,14 @@ void main() {
 
   setUp(() {
     fileSystem = MemoryFileSystem();
-    initializeFakePackages(parentDir: fileSystem.currentDirectory);
+    final Directory packagesDir =
+        initializeFakePackages(parentDir: fileSystem.currentDirectory);
     processRunner = RecordingProcessRunner();
     final AnalyzeCommand analyzeCommand =
-        AnalyzeCommand(mockPackagesDir, processRunner: processRunner);
+        AnalyzeCommand(packagesDir, processRunner: processRunner);
 
     runner = CommandRunner<void>('analyze_command', 'Test for analyze_command');
     runner.addCommand(analyzeCommand);
-  });
-
-  tearDown(() {
-    mockPackagesDir.deleteSync(recursive: true);
   });
 
   test('analyzes all packages', () async {
