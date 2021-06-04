@@ -11,26 +11,23 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
-import 'package:platform/platform.dart';
 import 'package:quiver/collection.dart';
 
-// TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
-// for each test, to eliminate the chance of files from one test interfering
-// with another test.
-FileSystem mockFileSystem = MemoryFileSystem(
-    style: const LocalPlatform().isWindows
-        ? FileSystemStyle.windows
-        : FileSystemStyle.posix);
+// TODO(stuartmorgan): Eliminate this in favor of a local variable in each test.
 late Directory mockPackagesDir;
 
 /// Creates a mock packages directory in the mock file system.
 ///
 /// If [parentDir] is set the mock packages dir will be creates as a child of
-/// it. If not [mockFileSystem] will be used instead.
-void initializeFakePackages({Directory? parentDir}) {
+/// it. If not [fileSystem] will be used instead.
+/// TODO(stuartmorgan): Remove fileSystem argument and make parentDir required.
+Directory initializeFakePackages(
+    {Directory? parentDir, MemoryFileSystem? fileSystem}) {
+  assert(parentDir != null || fileSystem != null);
   mockPackagesDir =
-      (parentDir ?? mockFileSystem.currentDirectory).childDirectory('packages');
+      (parentDir ?? fileSystem!.currentDirectory).childDirectory('packages');
   mockPackagesDir.createSync();
+  return mockPackagesDir;
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory],
@@ -196,13 +193,6 @@ publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being 
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
-}
-
-/// Cleans up the mock packages directory, making it an empty directory again.
-void cleanupPackages() {
-  mockPackagesDir.listSync().forEach((FileSystemEntity entity) {
-    entity.deleteSync(recursive: true);
-  });
 }
 
 typedef _ErrorHandler = void Function(Error error);

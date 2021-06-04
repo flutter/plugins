@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/drive_examples_command.dart';
 import 'package:path/path.dart' as p;
@@ -14,12 +15,15 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
+    late FileSystem fileSystem;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final DriveExamplesCommand command =
           DriveExamplesCommand(mockPackagesDir, processRunner: processRunner);
@@ -27,10 +31,6 @@ void main() {
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
       runner.addCommand(command);
-    });
-
-    tearDown(() {
-      cleanupPackages();
     });
 
     test('driving under folder "test"', () async {

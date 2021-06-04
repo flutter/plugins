@@ -22,9 +22,10 @@ import 'util.dart';
 
 void main() {
   const String testPluginName = 'foo';
-  final List<String> printedMessages = <String>[];
+  List<String> printedMessages;
 
-  Directory parentDir;
+  Directory testRoot;
+  Directory packagesDir;
   Directory pluginDir;
   GitDir gitDir;
   TestProcessRunner processRunner;
@@ -43,34 +44,34 @@ void main() {
   }
 
   setUp(() async {
-    parentDir = fileSystem.systemTempDirectory
+    testRoot = fileSystem.systemTempDirectory
         .createTempSync('publish_plugin_command_test-');
     // The temp directory can have symbolic links, which won't match git output;
     // use a fully resolved version to avoid potential path comparison issues.
-    parentDir = fileSystem.directory(parentDir.resolveSymbolicLinksSync());
-    initializeFakePackages(parentDir: parentDir);
+    testRoot = fileSystem.directory(testRoot.resolveSymbolicLinksSync());
+    packagesDir = initializeFakePackages(parentDir: testRoot);
     pluginDir = createFakePlugin(testPluginName,
-        withSingleExample: false, packagesDirectory: parentDir);
+        withSingleExample: false, packagesDirectory: packagesDir);
     assert(pluginDir != null && pluginDir.existsSync());
     createFakePubspec(pluginDir, includeVersion: true);
     io.Process.runSync('git', <String>['init'],
-        workingDirectory: parentDir.path);
-    gitDir = await GitDir.fromExisting(parentDir.path);
+        workingDirectory: testRoot.path);
+    gitDir = await GitDir.fromExisting(testRoot.path);
     await gitDir.runCommand(<String>['add', '-A']);
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
+    printedMessages = <String>[];
     commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(parentDir,
+      ..addCommand(PublishPluginCommand(packagesDir,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
-          gitDir: await GitDir.fromExisting(parentDir.path)));
+          gitDir: gitDir));
   });
 
   tearDown(() {
-    parentDir.deleteSync(recursive: true);
-    printedMessages.clear();
+    testRoot.deleteSync(recursive: true);
   });
 
   group('Initial validation', () {
@@ -109,7 +110,7 @@ void main() {
       expect(
           printedMessages,
           containsAllInOrder(<String>[
-            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
+            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? packages/foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
             'Failed, see above for details.',
           ]));
     });
@@ -140,8 +141,8 @@ void main() {
     test('can publish non-flutter package', () async {
       createFakePubspec(pluginDir, includeVersion: true, isFlutter: false);
       io.Process.runSync('git', <String>['init'],
-          workingDirectory: parentDir.path);
-      gitDir = await GitDir.fromExisting(parentDir.path);
+          workingDirectory: testRoot.path);
+      gitDir = await GitDir.fromExisting(testRoot.path);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
       // Immediately return 0 when running `pub publish`.
@@ -420,8 +421,8 @@ void main() {
   group('Auto release (all-changed flag)', () {
     setUp(() async {
       io.Process.runSync('git', <String>['init'],
-          workingDirectory: parentDir.path);
-      gitDir = await GitDir.fromExisting(parentDir.path);
+          workingDirectory: testRoot.path);
+      gitDir = await GitDir.fromExisting(testRoot.path);
       await gitDir.runCommand(
           <String>['remote', 'add', 'upstream', 'http://localhost:8000']);
     });
@@ -429,12 +430,12 @@ void main() {
     test('can release newly created plugins', () async {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -476,7 +477,7 @@ void main() {
         () async {
       // Prepare an exiting plugin and tag it
       final Directory pluginDir0 = createFakePlugin('plugin0',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       createFakePubspec(pluginDir0,
           name: 'plugin0',
           includeVersion: true,
@@ -493,12 +494,12 @@ void main() {
 
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -537,12 +538,12 @@ void main() {
     test('can release newly created plugins, dry run', () async {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -586,12 +587,12 @@ void main() {
     test('version change triggers releases.', () async {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -677,12 +678,12 @@ void main() {
         () async {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -765,12 +766,12 @@ void main() {
         () async {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -847,12 +848,12 @@ void main() {
     test('No version change does not release any plugins', () async {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+          withSingleExample: true, packagesDirectory: packagesDir);
       // federated
       final Directory pluginDir2 = createFakePlugin('plugin2',
           withSingleExample: true,
           parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
+          packagesDirectory: packagesDir);
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -865,8 +866,8 @@ void main() {
           version: '0.0.1');
 
       io.Process.runSync('git', <String>['init'],
-          workingDirectory: parentDir.path);
-      gitDir = await GitDir.fromExisting(parentDir.path);
+          workingDirectory: testRoot.path);
+      gitDir = await GitDir.fromExisting(testRoot.path);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
 

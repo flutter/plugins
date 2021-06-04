@@ -34,7 +34,8 @@ void main() {
 
   setUp(() {
     fileSystem = MemoryFileSystem();
-    packagesDir = fileSystem.currentDirectory.childDirectory('packages');
+    packagesDir =
+        initializeFakePackages(parentDir: fileSystem.currentDirectory);
     thirdPartyPackagesDir = packagesDir.parent
         .childDirectory('third_party')
         .childDirectory('packages');
@@ -52,7 +53,6 @@ void main() {
       }
       return Future<ProcessResult>.value(mockProcessResult);
     });
-    initializeFakePackages(parentDir: packagesDir.parent);
     processRunner = RecordingProcessRunner();
     plugins = <String>[];
     final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
@@ -352,12 +352,15 @@ packages/plugin3/plugin3.dart
   });
 
   group('$GitVersionFinder', () {
+    late FileSystem fileSystem;
     late List<List<String>?> gitDirCommands;
     late String gitDiffResponse;
     String? mergeBaseResponse;
     late MockGitDir gitDir;
 
     setUp(() {
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       gitDirCommands = <List<String>?>[];
       gitDiffResponse = '';
       gitDir = MockGitDir();
@@ -374,12 +377,7 @@ packages/plugin3/plugin3.dart
         }
         return Future<ProcessResult>.value(mockProcessResult);
       });
-      initializeFakePackages();
       processRunner = RecordingProcessRunner();
-    });
-
-    tearDown(() {
-      cleanupPackages();
     });
 
     test('No git diff should result no files changed', () async {

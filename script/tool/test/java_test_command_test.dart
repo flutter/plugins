@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/java_test_command.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -12,11 +13,13 @@ import 'util.dart';
 
 void main() {
   group('$JavaTestCommand', () {
+    late FileSystem fileSystem;
     late CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       final JavaTestCommand command =
           JavaTestCommand(mockPackagesDir, processRunner: processRunner);
 
@@ -26,7 +29,6 @@ void main() {
     });
 
     tearDown(() {
-      cleanupPackages();
       processRunner.recordedCalls.clear();
     });
 

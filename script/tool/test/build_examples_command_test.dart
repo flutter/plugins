@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/build_examples_command.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
@@ -13,13 +14,15 @@ import 'util.dart';
 
 void main() {
   group('test build_example_command', () {
+    late FileSystem fileSystem;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final BuildExamplesCommand command =
           BuildExamplesCommand(mockPackagesDir, processRunner: processRunner);
@@ -27,7 +30,6 @@ void main() {
       runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');
       runner.addCommand(command);
-      cleanupPackages();
     });
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
@@ -61,7 +63,6 @@ void main() {
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-      cleanupPackages();
     });
 
     test('building for ios', () async {
@@ -107,7 +108,6 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test(
@@ -142,7 +142,6 @@ void main() {
       // Output should be empty since running build-examples --linux with no
       // Linux implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-      cleanupPackages();
     });
 
     test('building for Linux', () async {
@@ -177,7 +176,6 @@ void main() {
             ProcessCall(flutterCommand, const <String>['build', 'linux'],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test('building for macos with no implementation results in no-op',
@@ -209,7 +207,6 @@ void main() {
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-      cleanupPackages();
     });
 
     test('building for macos', () async {
@@ -245,7 +242,6 @@ void main() {
             ProcessCall(flutterCommand, const <String>['build', 'macos'],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test('building for web with no implementation results in no-op', () async {
@@ -276,7 +272,6 @@ void main() {
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-      cleanupPackages();
     });
 
     test('building for web', () async {
@@ -312,7 +307,6 @@ void main() {
             ProcessCall(flutterCommand, const <String>['build', 'web'],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test(
@@ -347,7 +341,6 @@ void main() {
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-      cleanupPackages();
     });
 
     test('building for windows', () async {
@@ -382,7 +375,6 @@ void main() {
             ProcessCall(flutterCommand, const <String>['build', 'windows'],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test(
@@ -417,7 +409,6 @@ void main() {
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-      cleanupPackages();
     });
 
     test('building for android', () async {
@@ -456,7 +447,6 @@ void main() {
             ProcessCall(flutterCommand, const <String>['build', 'apk'],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test('enable-experiment flag for Android', () async {
@@ -487,7 +477,6 @@ void main() {
                 const <String>['build', 'apk', '--enable-experiment=exp1'],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
 
     test('enable-experiment flag for ios', () async {
@@ -521,7 +510,6 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
           ]));
-      cleanupPackages();
     });
   });
 }

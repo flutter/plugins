@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/list_command.dart';
 import 'package:test/test.dart';
 
@@ -11,10 +12,12 @@ import 'util.dart';
 
 void main() {
   group('$ListCommand', () {
+    late FileSystem fileSystem;
     late CommandRunner<void> runner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       final ListCommand command = ListCommand(mockPackagesDir);
 
       runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
@@ -35,8 +38,6 @@ void main() {
           '/packages/plugin2',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists examples', () async {
@@ -56,8 +57,6 @@ void main() {
           '/packages/plugin2/example/example2',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists packages', () async {
@@ -80,8 +79,6 @@ void main() {
           '/packages/plugin3',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists files', () async {
@@ -104,8 +101,6 @@ void main() {
           '/packages/plugin3/pubspec.yaml',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists plugins using federated plugin layout', () async {
@@ -138,8 +133,6 @@ void main() {
           '/packages/my_plugin/my_plugin_macos',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('can filter plugins with the --plugins argument', () async {

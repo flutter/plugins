@@ -6,6 +6,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/lint_podspecs_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
@@ -17,13 +18,15 @@ import 'util.dart';
 
 void main() {
   group('$LintPodspecsCommand', () {
+    FileSystem fileSystem;
     CommandRunner<void> runner;
     MockPlatform mockPlatform;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
     List<String> printedMessages;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
 
       printedMessages = <String>[];
       mockPlatform = MockPlatform();
@@ -42,10 +45,6 @@ void main() {
       mockLintProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockLintProcess;
       processRunner.recordedCalls.clear();
-    });
-
-    tearDown(() {
-      cleanupPackages();
     });
 
     test('only runs on macOS', () async {

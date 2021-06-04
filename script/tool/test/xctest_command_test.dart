@@ -8,6 +8,7 @@ import 'dart:convert';
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/xctest_command.dart';
 import 'package:test/test.dart';
 
@@ -85,18 +86,19 @@ void main() {
   const String _kSkip = '--skip';
 
   group('test xctest_command', () {
+    FileSystem fileSystem;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final XCTestCommand command =
           XCTestCommand(mockPackagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
-      cleanupPackages();
     });
 
     test('skip if ios is not supported', () async {
@@ -118,8 +120,6 @@ void main() {
           runner, <String>['xctest', _kDestination, 'foo_destination']);
       expect(output, contains('iOS is not supported by this plugin.'));
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-
-      cleanupPackages();
     });
 
     test('running with correct destination, skip 1 plugin', () async {
@@ -178,8 +178,6 @@ void main() {
                 ],
                 pluginExampleDirectory2.path),
           ]));
-
-      cleanupPackages();
     });
 
     test('Not specifying --ios-destination assigns an available simulator',
@@ -234,8 +232,6 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
           ]));
-
-      cleanupPackages();
     });
   });
 }

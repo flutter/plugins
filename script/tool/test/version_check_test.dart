@@ -10,6 +10,7 @@ import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/version_check_command.dart';
 import 'package:git/git.dart';
@@ -55,6 +56,8 @@ String _redColorString(String string) {
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
+    FileSystem fileSystem;
+    Directory packagesDir;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     List<List<String>> gitDirCommands;
@@ -63,6 +66,9 @@ void main() {
     MockGitDir gitDir;
 
     setUp(() {
+      fileSystem = MemoryFileSystem();
+      packagesDir =
+          initializeFakePackages(parentDir: fileSystem.currentDirectory);
       gitDirCommands = <List<String>>[];
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};
@@ -86,7 +92,6 @@ void main() {
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
-      initializeFakePackages();
       processRunner = RecordingProcessRunner();
       final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
           processRunner: processRunner, gitDir: gitDir);
@@ -94,10 +99,6 @@ void main() {
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
-    });
-
-    tearDown(() {
-      cleanupPackages();
     });
 
     test('allows valid version', () async {

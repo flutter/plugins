@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/test_command.dart';
 import 'package:test/test.dart';
 
@@ -11,11 +12,13 @@ import 'util.dart';
 
 void main() {
   group('$TestCommand', () {
+    late FileSystem fileSystem;
     late CommandRunner<void> runner;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       final TestCommand command =
           TestCommand(mockPackagesDir, processRunner: processRunner);
 
@@ -24,7 +27,6 @@ void main() {
     });
 
     tearDown(() {
-      cleanupPackages();
       processRunner.recordedCalls.clear();
     });
 
@@ -49,8 +51,6 @@ void main() {
               'flutter', const <String>['test', '--color'], plugin2Dir.path),
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('skips testing plugins without test directory', () async {
@@ -69,8 +69,6 @@ void main() {
               'flutter', const <String>['test', '--color'], plugin2Dir.path),
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('runs pub run test on non-Flutter packages', () async {
@@ -101,8 +99,6 @@ void main() {
               plugin2Dir.path),
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('runs on Chrome for web plugins', () async {
@@ -156,8 +152,6 @@ void main() {
               plugin2Dir.path),
         ]),
       );
-
-      cleanupPackages();
     });
   });
 }

@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/analyze_command.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:test/test.dart';
@@ -12,11 +13,13 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
+  late FileSystem fileSystem;
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
 
   setUp(() {
-    initializeFakePackages();
+    fileSystem = MemoryFileSystem();
+    initializeFakePackages(parentDir: fileSystem.currentDirectory);
     processRunner = RecordingProcessRunner();
     final AnalyzeCommand analyzeCommand =
         AnalyzeCommand(mockPackagesDir, processRunner: processRunner);

@@ -7,6 +7,8 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/firebase_test_lab_command.dart';
 import 'package:test/test.dart';
@@ -16,12 +18,14 @@ import 'util.dart';
 
 void main() {
   group('$FirebaseTestLabCommand', () {
+    FileSystem fileSystem;
     final List<String> printedMessages = <String>[];
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final FirebaseTestLabCommand command = FirebaseTestLabCommand(
           mockPackagesDir,
@@ -134,7 +138,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -144,7 +148,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -225,7 +229,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -235,7 +239,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -255,8 +259,6 @@ void main() {
               '/packages/plugin/example'),
         ]),
       );
-
-      cleanupPackages();
     });
   });
 }
