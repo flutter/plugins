@@ -73,8 +73,7 @@ Map<Version, NextVersionType> getAllowedNextVersions(
 class VersionCheckCommand extends PluginCommand {
   /// Creates an instance of the version check command.
   VersionCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
     this.httpClient,

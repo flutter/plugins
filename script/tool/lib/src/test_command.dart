@@ -13,8 +13,7 @@ import 'common.dart';
 class TestCommand extends PluginCommand {
   /// Creates an instance of the test command.
   TestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
     argParser.addOption(

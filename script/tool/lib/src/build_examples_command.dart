@@ -15,8 +15,7 @@ import 'common.dart';
 class BuildExamplesCommand extends PluginCommand {
   /// Creates an instance of the build command.
   BuildExamplesCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(kLinux, defaultsTo: false);

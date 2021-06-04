@@ -13,8 +13,7 @@ import 'common.dart';
 class JavaTestCommand extends PluginCommand {
   /// Creates an instance of the test runner.
   JavaTestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner);
 

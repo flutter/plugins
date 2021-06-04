@@ -20,8 +20,7 @@ import 'common.dart';
 class LintPodspecsCommand extends PluginCommand {
   /// Creates an instance of the linter command.
   LintPodspecsCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
     Print print = print,

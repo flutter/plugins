@@ -15,7 +15,7 @@ void main() {
 
     setUp(() {
       initializeFakePackages();
-      final ListCommand command = ListCommand(mockPackagesDir, mockFileSystem);
+      final ListCommand command = ListCommand(mockPackagesDir);
 
       runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
       runner.addCommand(command);

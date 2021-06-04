@@ -30,7 +30,6 @@ void main() {
       when(mockPlatform.isMacOS).thenReturn(true);
       final LintPodspecsCommand command = LintPodspecsCommand(
         mockPackagesDir,
-        mockFileSystem,
         processRunner: processRunner,
         platform: mockPlatform,
         print: (Object message) => printedMessages.add(message.toString()),

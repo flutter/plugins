@@ -17,9 +17,8 @@ void main() {
 
     setUp(() {
       initializeFakePackages();
-      final JavaTestCommand command = JavaTestCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final JavaTestCommand command =
+          JavaTestCommand(mockPackagesDir, processRunner: processRunner);
 
       runner =
           CommandRunner<void>('java_test_test', 'Test for $JavaTestCommand');

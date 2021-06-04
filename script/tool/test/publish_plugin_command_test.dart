@@ -59,7 +59,7 @@ void main() {
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(parentDir, fileSystem,
+      ..addCommand(PublishPluginCommand(parentDir,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,

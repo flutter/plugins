@@ -32,8 +32,7 @@ import 'common.dart';
 class PublishPluginCommand extends PluginCommand {
   /// Creates an instance of the publish command.
   PublishPluginCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
     io.Stdin stdinput,

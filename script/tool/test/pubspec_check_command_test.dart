@@ -23,9 +23,8 @@ void main() {
       packagesDir = fileSystem.currentDirectory.childDirectory('packages');
       initializeFakePackages(parentDir: packagesDir.parent);
       processRunner = RecordingProcessRunner();
-      final PubspecCheckCommand command = PubspecCheckCommand(
-          packagesDir, fileSystem,
-          processRunner: processRunner);
+      final PubspecCheckCommand command =
+          PubspecCheckCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'pubspec_check_command', 'Test for pubspec_check_command');

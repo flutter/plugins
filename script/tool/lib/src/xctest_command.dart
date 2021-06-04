@@ -26,8 +26,7 @@ const String _kFoundNoSimulatorsMessage =
 class XCTestCommand extends PluginCommand {
   /// Creates an instance of the test command.
   XCTestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
     argParser.addOption(

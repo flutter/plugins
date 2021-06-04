@@ -16,8 +16,8 @@ void main() {
 
     setUp(() {
       initializeFakePackages();
-      final TestCommand command = TestCommand(mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final TestCommand command =
+          TestCommand(mockPackagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>('test_test', 'Test for $TestCommand');
       runner.addCommand(command);

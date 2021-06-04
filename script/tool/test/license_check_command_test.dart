@@ -25,7 +25,6 @@ void main() {
       printedMessages = <String>[];
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
-        fileSystem,
         print: (Object? message) => printedMessages.add(message.toString()),
       );
       runner =

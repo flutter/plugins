@@ -21,9 +21,8 @@ void main() {
     setUp(() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
-      final BuildExamplesCommand command = BuildExamplesCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final BuildExamplesCommand command =
+          BuildExamplesCommand(mockPackagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');

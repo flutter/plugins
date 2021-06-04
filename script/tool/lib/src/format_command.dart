@@ -20,8 +20,7 @@ final Uri _googleFormatterUrl = Uri.https('github.com',
 class FormatCommand extends PluginCommand {
   /// Creates an instance of the format command.
   FormatCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag('fail-on-change', hide: true);

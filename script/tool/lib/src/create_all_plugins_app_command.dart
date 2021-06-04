@@ -18,11 +18,10 @@ import 'common.dart';
 class CreateAllPluginsAppCommand extends PluginCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     this.pluginsRoot,
   }) : super(packagesDir) {
-    pluginsRoot ??= fileSystem.currentDirectory;
+    pluginsRoot ??= packagesDir.fileSystem.currentDirectory;
     appDirectory = pluginsRoot.childDirectory('all_plugins');
   }
 

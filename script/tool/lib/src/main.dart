@@ -47,22 +47,22 @@ void main(List<String> args) {
   final CommandRunner<void> commandRunner = CommandRunner<void>(
       'pub global run flutter_plugin_tools',
       'Productivity utils for hosting multiple plugins within one repository.')
-    ..addCommand(AnalyzeCommand(packagesDir, fileSystem))
-    ..addCommand(BuildExamplesCommand(packagesDir, fileSystem))
-    ..addCommand(CreateAllPluginsAppCommand(packagesDir, fileSystem))
-    ..addCommand(DriveExamplesCommand(packagesDir, fileSystem))
-    ..addCommand(FirebaseTestLabCommand(packagesDir, fileSystem))
-    ..addCommand(FormatCommand(packagesDir, fileSystem))
-    ..addCommand(JavaTestCommand(packagesDir, fileSystem))
-    ..addCommand(LicenseCheckCommand(packagesDir, fileSystem))
-    ..addCommand(LintPodspecsCommand(packagesDir, fileSystem))
-    ..addCommand(ListCommand(packagesDir, fileSystem))
-    ..addCommand(PublishCheckCommand(packagesDir, fileSystem))
-    ..addCommand(PublishPluginCommand(packagesDir, fileSystem))
-    ..addCommand(PubspecCheckCommand(packagesDir, fileSystem))
-    ..addCommand(TestCommand(packagesDir, fileSystem))
-    ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
-    ..addCommand(XCTestCommand(packagesDir, fileSystem));
+    ..addCommand(AnalyzeCommand(packagesDir))
+    ..addCommand(BuildExamplesCommand(packagesDir))
+    ..addCommand(CreateAllPluginsAppCommand(packagesDir))
+    ..addCommand(DriveExamplesCommand(packagesDir))
+    ..addCommand(FirebaseTestLabCommand(packagesDir))
+    ..addCommand(FormatCommand(packagesDir))
+    ..addCommand(JavaTestCommand(packagesDir))
+    ..addCommand(LicenseCheckCommand(packagesDir))
+    ..addCommand(LintPodspecsCommand(packagesDir))
+    ..addCommand(ListCommand(packagesDir))
+    ..addCommand(PublishCheckCommand(packagesDir))
+    ..addCommand(PublishPluginCommand(packagesDir))
+    ..addCommand(PubspecCheckCommand(packagesDir))
+    ..addCommand(TestCommand(packagesDir))
+    ..addCommand(VersionCheckCommand(packagesDir))
+    ..addCommand(XCTestCommand(packagesDir));
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e as ToolExit;

@@ -24,7 +24,7 @@ void main() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
       final FirebaseTestLabCommand command = FirebaseTestLabCommand(
-          mockPackagesDir, mockFileSystem,
+          mockPackagesDir,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()));
 

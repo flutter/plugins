@@ -21,8 +21,7 @@ import 'common.dart';
 class PublishCheckCommand extends PluginCommand {
   /// Creates an instance of the publish command.
   PublishCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     this.httpClient,
   })  : _pubVersionFinder =

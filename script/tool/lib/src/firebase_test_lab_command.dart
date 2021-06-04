@@ -17,8 +17,7 @@ import 'common.dart';
 class FirebaseTestLabCommand extends PluginCommand {
   /// Creates an instance of the test runner command.
   FirebaseTestLabCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
   })  : _print = print,

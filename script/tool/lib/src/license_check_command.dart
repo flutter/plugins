@@ -98,8 +98,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class LicenseCheckCommand extends PluginCommand {
   /// Creates a new license check command for [packagesDir].
   LicenseCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     Print print = print,
   })  : _print = print,
         super(packagesDir);

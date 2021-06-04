@@ -58,7 +58,6 @@ void main() {
     final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
       plugins,
       packagesDir,
-      fileSystem,
       processRunner: processRunner,
       gitDir: gitDir,
     );
@@ -517,8 +516,7 @@ file2/file2.cc
 class SamplePluginCommand extends PluginCommand {
   SamplePluginCommand(
     this._plugins,
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);

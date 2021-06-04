@@ -12,8 +12,7 @@ import 'common.dart';
 class DriveExamplesCommand extends PluginCommand {
   /// Creates an instance of the drive command.
   DriveExamplesCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(kAndroid,
