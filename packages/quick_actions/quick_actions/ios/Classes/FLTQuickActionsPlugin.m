@@ -8,6 +8,7 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
 
 @interface FLTQuickActionsPlugin ()
 @property(nonatomic, retain) FlutterMethodChannel *channel;
+@property(nonatomic, retain) NSString *shortcutType;
 @end
 
 @implementation FLTQuickActionsPlugin
@@ -50,11 +51,43 @@ static NSString *const CHANNEL_NAME = @"plugins.flutter.io/quick_actions";
     performActionForShortcutItem:(UIApplicationShortcutItem *)shortcutItem
                completionHandler:(void (^)(BOOL succeeded))completionHandler
     API_AVAILABLE(ios(9.0)) {
-  [self.channel invokeMethod:@"launch" arguments:shortcutItem.type];
+  [self handleShortcut:shortcutItem.type];
   return YES;
 }
 
+- (BOOL)application:(UIApplication *)application
+    didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  if (@available(iOS 9.0, *)) {
+    UIApplicationShortcutItem *shortcutItem =
+        launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+    if (shortcutItem) {
+      // Keep hold of the shortcut type and handle it in the
+      // `applicationDidBecomeActure:` method once the Dart MethodChannel
+      // is initialized.
+      self.shortcutType = shortcutItem.type;
+
+      // Return NO to indicate we handled the quick action to ensure
+      // the `application:performActionFor:` method is not called (as
+      // per Apple's documentation:
+      // https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1622935-application?language=objc).
+      return NO;
+    }
+  }
+  return YES;
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application {
+  if (self.shortcutType) {
+    [self handleShortcut:self.shortcutType];
+    self.shortcutType = nil;
+  }
+}
+
 #pragma mark Private functions
+
+- (void)handleShortcut:(NSString *)shortcut {
+  [self.channel invokeMethod:@"launch" arguments:shortcut];
+}
 
 NS_INLINE void _setShortcutItems(NSArray *items) API_AVAILABLE(ios(9.0)) {
   NSMutableArray<UIApplicationShortcutItem *> *newShortcuts = [[NSMutableArray alloc] init];

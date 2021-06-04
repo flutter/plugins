@@ -19,22 +19,29 @@ class AnalyzeCommand extends PluginCommand {
   }) : super(packagesDir, fileSystem, processRunner: processRunner) {
     argParser.addMultiOption(_customAnalysisFlag,
         help:
-            'Directories (comma seperated) that are allowed to have their own analysis options.',
+            'Directories (comma separated) that are allowed to have their own analysis options.',
         defaultsTo: <String>[]);
+    argParser.addOption(_analysisSdk,
+        valueHelp: 'dart-sdk',
+        help: 'An optional path to a Dart SDK; this is used to override the '
+            'SDK used to provide analysis.');
   }
 
   static const String _customAnalysisFlag = 'custom-analysis';
+
+  static const String _analysisSdk = 'analysis-sdk';
 
   @override
   final String name = 'analyze';
 
   @override
-  final String description = 'Analyzes all packages using package:tuneup.\n\n'
-      'This command requires "pub" and "flutter" to be in your path.';
+  final String description = 'Analyzes all packages using dart analyze.\n\n'
+      'This command requires "dart" and "flutter" to be in your path.';
 
   @override
   Future<void> run() async {
     print('Verifying analysis settings...');
+
     final List<FileSystemEntity> files = packagesDir.listSync(recursive: true);
     for (final FileSystemEntity file in files) {
       if (file.basename != 'analysis_options.yaml' &&
@@ -42,8 +49,8 @@ class AnalyzeCommand extends PluginCommand {
         continue;
       }
 
-      final bool allowed = (argResults[_customAnalysisFlag] as List<String>)
-          .any((String directory) =>
+      final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
+          (String directory) =>
               directory != null &&
               directory.isNotEmpty &&
               p.isWithin(p.join(packagesDir.path, directory), file.path));
@@ -57,25 +64,30 @@ class AnalyzeCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
-    print('Activating tuneup package...');
-    await processRunner.runAndStream(
-        'pub', <String>['global', 'activate', 'tuneup'],
-        workingDir: packagesDir, exitOnError: true);
-
-    await for (final Directory package in getPackages()) {
-      if (isFlutterPackage(package, fileSystem)) {
-        await processRunner.runAndStream('flutter', <String>['packages', 'get'],
-            workingDir: package, exitOnError: true);
-      } else {
-        await processRunner.runAndStream('pub', <String>['get'],
-            workingDir: package, exitOnError: true);
-      }
+    final List<Directory> packageDirectories = await getPackages().toList();
+    final Set<String> packagePaths =
+        packageDirectories.map((Directory dir) => dir.path).toSet();
+    packageDirectories.removeWhere((Directory directory) {
+      // We remove the 'example' subdirectories - 'flutter pub get' automatically
+      // runs 'pub get' there as part of handling the parent directory.
+      return directory.basename == 'example' &&
+          packagePaths.contains(directory.parent.path);
+    });
+    for (final Directory package in packageDirectories) {
+      await processRunner.runAndStream('flutter', <String>['packages', 'get'],
+          workingDir: package, exitOnError: true);
     }
 
+    // Use the Dart SDK override if one was passed in.
+    final String? dartSdk = argResults![_analysisSdk] as String?;
+    final String dartBinary =
+        dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
+
     final List<String> failingPackages = <String>[];
-    await for (final Directory package in getPlugins()) {
+    final List<Directory> pluginDirectories = await getPlugins().toList();
+    for (final Directory package in pluginDirectories) {
       final int exitCode = await processRunner.runAndStream(
-          'pub', <String>['global', 'run', 'tuneup', 'check'],
+          dartBinary, <String>['analyze', '--fatal-infos'],
           workingDir: package);
       if (exitCode != 0) {
         failingPackages.add(p.basename(package.path));
@@ -83,6 +95,7 @@ class AnalyzeCommand extends PluginCommand {
     }
 
     print('\n\n');
+
     if (failingPackages.isNotEmpty) {
       print('The following packages have analyzer errors (see above):');
       for (final String package in failingPackages) {

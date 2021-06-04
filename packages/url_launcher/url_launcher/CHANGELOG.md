@@ -1,6 +1,22 @@
+## 6.0.6
+
+* Require `url_launcher_platform_interface` 2.0.3. This fixes an issue
+  where 6.0.5 could fail to compile in some projects due to internal
+  changes in that version that were not compatible with earlier versions
+  of `url_launcher_platform_interface`.
+
+## 6.0.5
+
+* Add iOS unit and UI integration test targets.
+* Add a `Link` widget to the example app.
+
+## 6.0.4
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 6.0.3
 
-* Updat README notes about URL schemes on iOS
+* Update README notes about URL schemes on iOS
 
 ## 6.0.2
 

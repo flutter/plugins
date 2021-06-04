@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter_plugin_tools/src/publish_check_command.dart';
-import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:path/path.dart' as p;
 
 import 'analyze_command.dart';
@@ -22,6 +22,9 @@ import 'java_test_command.dart';
 import 'license_check_command.dart';
 import 'lint_podspecs_command.dart';
 import 'list_command.dart';
+import 'publish_check_command.dart';
+import 'publish_plugin_command.dart';
+import 'pubspec_check_command.dart';
 import 'test_command.dart';
 import 'version_check_command.dart';
 import 'xctest_command.dart';
@@ -56,12 +59,20 @@ void main(List<String> args) {
     ..addCommand(ListCommand(packagesDir, fileSystem))
     ..addCommand(PublishCheckCommand(packagesDir, fileSystem))
     ..addCommand(PublishPluginCommand(packagesDir, fileSystem))
+    ..addCommand(PubspecCheckCommand(packagesDir, fileSystem))
     ..addCommand(TestCommand(packagesDir, fileSystem))
     ..addCommand(VersionCheckCommand(packagesDir, fileSystem))
     ..addCommand(XCTestCommand(packagesDir, fileSystem));
 
   commandRunner.run(args).catchError((Object e) {
     final ToolExit toolExit = e as ToolExit;
-    io.exit(toolExit.exitCode);
+    int exitCode = toolExit.exitCode;
+    // This should never happen; this check is here to guarantee that a ToolExit
+    // never accidentally has code 0 thus causing CI to pass.
+    if (exitCode == 0) {
+      assert(false);
+      exitCode = 255;
+    }
+    io.exit(exitCode);
   }, test: (Object e) => e is ToolExit);
 }

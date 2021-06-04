@@ -1,10 +1,18 @@
+## 0.6.0+2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 0.6.0+1
+
+* Correctly handle iOS Application lifecycle events on cold start of the App.
+
 ## 0.6.0
 
 * Migrate to federated architecture.
 
 ## 0.5.0+1
 
-* Updated example app implementation. 
+* Updated example app implementation.
 
 ## 0.5.0
 

@@ -7,14 +7,29 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  PathProviderLinux.register();
+  PathProviderLinux.registerWith();
 
-  setUp(() {});
-
-  tearDown(() {});
+  test('registered instance', () {
+    expect(PathProviderPlatform.instance, isA<PathProviderLinux>());
+  });
 
   test('getTemporaryPath', () async {
     final PathProviderPlatform plugin = PathProviderPlatform.instance;
     expect(await plugin.getTemporaryPath(), '/tmp');
+  });
+
+  test('getApplicationSupportPath', () async {
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    expect(await plugin.getApplicationSupportPath(), startsWith('/'));
+  });
+
+  test('getApplicationDocumentsPath', () async {
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    expect(await plugin.getApplicationDocumentsPath(), startsWith('/'));
+  });
+
+  test('getDownloadsPath', () async {
+    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    expect(await plugin.getDownloadsPath(), startsWith('/'));
   });
 }

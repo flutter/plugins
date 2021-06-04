@@ -5,7 +5,7 @@ def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -16,7 +16,7 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -49,7 +49,7 @@ android {
 dependencies {
     compileOnly 'androidx.annotation:annotation:1.1.0'
     testImplementation 'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:3.5.13'
+    testImplementation 'org.mockito:mockito-inline:3.5.13'
     testImplementation 'androidx.test:core:1.3.0'
     testImplementation 'org.robolectric:robolectric:4.3'
 }
