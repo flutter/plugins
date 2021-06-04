@@ -248,60 +248,72 @@ InAppPurchase.instance
 
 ### Accessing platform specific product or purchase properties
 
-The function `_inAppPurchase.queryProductDetails(productIds);` provides you with a `ProductDetailsResponse` with a 
+The function `_inAppPurchase.queryProductDetails(productIds);` provides a `ProductDetailsResponse` with a 
 list of purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class 
-with only properties available on both platforms. However, if you need to access some specific
+with only properties available on both platforms. However, sometimes it is necessary to access some specific
 platform properties this is also possible. The `ProductDetails` object is of subtype `GooglePlayProductDetails`
 when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails, resp. skProduct provides
-you all the information that is available in the original platform objects.
+all the information that is available in the original platform objects.
 
 This is an example on how to get the `introductoryPricePeriod` on Android:
 ```dart
+//import for GooglePlayProductDetails
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for SkuDetailsWrapper
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 
 if (productDetails is GooglePlayProductDetails) {
-  var skuDetails = (productDetails as GooglePlayProductDetails).skuDetails;
+  SkuDetailsWrapper skuDetails = (productDetails as GooglePlayProductDetails).skuDetails;
   print(skuDetails.introductoryPricePeriod);
 }
 ```
 
-And this way you get the subscriptionGroupIdentifier of a subscription on iOS:
+And this is the way to get the subscriptionGroupIdentifier of a subscription on iOS:
 ```dart
+//import for AppStoreProductDetails
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for SKProductWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
 if (productDetails is AppStoreProductDetails) {
-  var skProduct = (productDetails as AppStoreProductDetails).skProduct;
+  SKProductWrapper skProduct = (productDetails as AppStoreProductDetails).skProduct;
   print(skProduct.subscriptionGroupIdentifier);
 }
 ```
 
-The `purchaseStream` provides you with objects of type `PurchaseDetails`. PurchaseDetails' provides you with all 
-information that is available on any platform, such as purchaseID and transactionDate. In addition, you will be able 
-to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
+The `purchaseStream` provides objects of type `PurchaseDetails`. PurchaseDetails' provides all 
+information that is available on all endorsed platforms, such as purchaseID and transactionDate. In addition, it is 
+also possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
 when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp. 
-skPaymentTransaction provides you with all the information that is available in the original platform objects.
+skPaymentTransaction provides all the information that is available in the original platform objects.
 
 This is an example on how to get the `originalJson` on Android:
 ```dart
+//import for GooglePlayPurchaseDetails
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for PurchaseWrapper
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 
 if (purchaseDetails is GooglePlayPurchaseDetails) {
-  var billingClientPurchase = (purchaseDetails as GooglePlayPurchaseDetails).billingClientPurchase;
+  PurchaseWrapper billingClientPurchase = (purchaseDetails as GooglePlayPurchaseDetails).billingClientPurchase;
   print(billingClientPurchase.originalJson);
 }
 ```
 
 How to get the `transactionState` of a purchase in iOS:
 ```dart
+//import for AppStorePurchaseDetails
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for SKProductWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 
 if (purchaseDetails is AppStorePurchaseDetails) {
-  var skProduct = (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
+  SKPaymentTransactionWrapper skProduct = (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
   print(skProduct.transactionState);
 }
 ```
 
-Please note that you need to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
+Please note that it is required need to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
 
 ### Presenting a code redemption sheet (iOS 14)
 
