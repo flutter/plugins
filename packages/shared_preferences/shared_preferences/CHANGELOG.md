@@ -1,3 +1,7 @@
+## NEXT
+
+* Add iOS unit test target.
+
 ## 2.0.6
 
 * Migrate maven repository from jcenter to mavenCentral.
