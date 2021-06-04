@@ -46,6 +46,9 @@ void main() {
   setUp(() async {
     parentDir = fileSystem.systemTempDirectory
         .createTempSync('publish_plugin_command_test-');
+    // The temp directory can have symbolic links, which won't match git output;
+    // use a fully resolved version to avoid potential path comparison issues.
+    parentDir = fileSystem.directory(parentDir.resolveSymbolicLinksSync());
     initializeFakePackages(parentDir: parentDir);
     pluginDir = createFakePlugin(testPluginName,
         withSingleExample: false, packagesDirectory: parentDir);
