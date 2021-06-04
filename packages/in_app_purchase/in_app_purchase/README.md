@@ -250,10 +250,8 @@ InAppPurchase.instance
 
 The function `_inAppPurchase.queryProductDetails(productIds);` provides a `ProductDetailsResponse` with a 
 list of purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class 
-with only properties available on both platforms. However, sometimes it is necessary to access some specific
-platform properties this is also possible. The `ProductDetails` object is of subtype `GooglePlayProductDetails`
-when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails, resp. skProduct provides
-all the information that is available in the original platform objects.
+containing properties only available on all endorsed platforms. However, in some cases it is necessary to access platform specific properties. The `ProductDetails` instance is of subtype `GooglePlayProductDetails`
+when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails (on Android) or the skProduct (on iOS) provides all the information that is available in the original platform objects.
 
 This is an example on how to get the `introductoryPricePeriod` on Android:
 ```dart
@@ -283,7 +281,7 @@ if (productDetails is AppStoreProductDetails) {
 
 The `purchaseStream` provides objects of type `PurchaseDetails`. PurchaseDetails' provides all 
 information that is available on all endorsed platforms, such as purchaseID and transactionDate. In addition, it is 
-also possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
+possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
 when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp. 
 skPaymentTransaction provides all the information that is available in the original platform objects.
 
