@@ -29,8 +29,8 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-  
-  target 'UnitTests' do
+
+  target 'RunnerTests' do
     platform :ios, '9.0'
     inherit! :search_paths
     # Pods for testing
