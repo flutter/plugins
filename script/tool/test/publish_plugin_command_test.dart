@@ -70,10 +70,6 @@ void main() {
           gitDir: gitDir));
   });
 
-  tearDown(() {
-    testRoot.deleteSync(recursive: true);
-  });
-
   group('Initial validation', () {
     test('requires a package flag', () async {
       await expectLater(() => commandRunner.run(<String>['publish-plugin']),

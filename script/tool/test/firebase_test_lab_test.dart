@@ -19,7 +19,7 @@ import 'util.dart';
 void main() {
   group('$FirebaseTestLabCommand', () {
     FileSystem fileSystem;
-    final List<String> printedMessages = <String>[];
+    List<String> printedMessages;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
@@ -27,6 +27,7 @@ void main() {
       fileSystem = MemoryFileSystem();
       final Directory packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      printedMessages = <String>[];
       processRunner = RecordingProcessRunner();
       final FirebaseTestLabCommand command = FirebaseTestLabCommand(packagesDir,
           processRunner: processRunner,
@@ -35,10 +36,6 @@ void main() {
       runner = CommandRunner<void>(
           'firebase_test_lab_command', 'Test for $FirebaseTestLabCommand');
       runner.addCommand(command);
-    });
-
-    tearDown(() {
-      printedMessages.clear();
     });
 
     test('retries gcloud set', () async {

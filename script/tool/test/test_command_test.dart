@@ -14,21 +14,18 @@ void main() {
   group('$TestCommand', () {
     late FileSystem fileSystem;
     late CommandRunner<void> runner;
-    final RecordingProcessRunner processRunner = RecordingProcessRunner();
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
       final Directory packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      processRunner = RecordingProcessRunner();
       final TestCommand command =
           TestCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>('test_test', 'Test for $TestCommand');
       runner.addCommand(command);
-    });
-
-    tearDown(() {
-      processRunner.recordedCalls.clear();
     });
 
     test('runs flutter test on each plugin', () async {

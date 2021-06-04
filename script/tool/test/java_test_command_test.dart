@@ -15,22 +15,19 @@ void main() {
   group('$JavaTestCommand', () {
     late FileSystem fileSystem;
     late CommandRunner<void> runner;
-    final RecordingProcessRunner processRunner = RecordingProcessRunner();
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
       final Directory packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      processRunner = RecordingProcessRunner();
       final JavaTestCommand command =
           JavaTestCommand(packagesDir, processRunner: processRunner);
 
       runner =
           CommandRunner<void>('java_test_test', 'Test for $JavaTestCommand');
       runner.addCommand(command);
-    });
-
-    tearDown(() {
-      processRunner.recordedCalls.clear();
     });
 
     test('Should run Java tests in Android implementation folder', () async {

@@ -38,10 +38,6 @@ void main() {
       runner.addCommand(command);
     });
 
-    tearDown(() {
-      testRoot.deleteSync(recursive: true);
-    });
-
     test('pubspec includes all plugins', () async {
       createFakePlugin('plugina', packagesDirectory: packagesDir);
       createFakePlugin('pluginb', packagesDirectory: packagesDir);
