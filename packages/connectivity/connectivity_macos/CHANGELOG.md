@@ -1,3 +1,7 @@
+## NEXT
+
+* Add Swift language version to podspec.
+
 ## 0.2.1+1
 
 * Ignore Reachability pointer to int cast warning.
