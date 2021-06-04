@@ -1271,6 +1271,7 @@ NSString *const errorMethod = @"error";
   _messenger = messenger;
   [self initDeviceEventMethodChannel];
   [self startOrientationListener];
+
   return self;
 }
 
@@ -1356,7 +1357,7 @@ NSString *const errorMethod = @"error";
   return false;
 }
 
-- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
+- (BOOL)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     if (@available(iOS 10.0, *)) {
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
@@ -1388,6 +1389,7 @@ NSString *const errorMethod = @"error";
       result(reply);
     } else {
       result(FlutterMethodNotImplemented);
+      return false;
     }
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
@@ -1493,8 +1495,10 @@ NSString *const errorMethod = @"error";
       [_camera setFocusPointWithResult:result x:x y:y];
     } else {
       result(FlutterMethodNotImplemented);
+      return false;
     }
   }
+  return true;
 }
 
 @end
