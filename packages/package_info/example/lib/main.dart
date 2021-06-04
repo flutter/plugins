@@ -39,6 +39,7 @@ class _MyHomePageState extends State<MyHomePage> {
     packageName: 'Unknown',
     version: 'Unknown',
     buildNumber: 'Unknown',
+    buildSignature: 'Unknown',
   );
 
   @override
@@ -74,6 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
           _infoTile('Package name', _packageInfo.packageName),
           _infoTile('App version', _packageInfo.version),
           _infoTile('Build number', _packageInfo.buildNumber),
+          _infoTile('Build signature', _packageInfo.buildSignature),
         ],
       ),
     );
