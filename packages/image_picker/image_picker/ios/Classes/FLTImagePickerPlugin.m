@@ -425,13 +425,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Calls the correct method
- *
- * If the @c pathList count and the @c resultCount are equal then checks
- * single which is true if the pickImage method call is invoked and false if the
- * pickMultiImage method call is invoked. If single is true then calls handleSavedPath
- * with the firstObject of the @c pathList. If single is false then calls
- * handleMultiSavedPaths with the @c pathList.
+ * Handle the result based on the count of pathList.
  *
  * @param @pathList that is used to get its count.
  * @param @resultCount that is used to compared with @c pathList.
