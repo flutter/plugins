@@ -28,13 +28,15 @@
 @end
 
 @interface ImagePickerPluginTests : XCTestCase
-@property(readonly, nonatomic) id mockDevice;
+@property(readonly, nonatomic) id mockUIImagePicker;
+@property(readonly, nonatomic) id mockAVCaptureDevice;
 @end
 
 @implementation ImagePickerPluginTests
 
 - (void)setUp {
-  _mockDevice = OCMClassMock([UIImagePickerController class]);
+  _mockUIImagePicker = OCMClassMock([UIImagePickerController class]);
+  _mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
 }
 
 - (void)tearDown {
@@ -44,13 +46,17 @@
 
 - (void)testPluginPickImageDeviceBack {
   // UIImagePickerControllerSourceTypeCamera is supported
-  OCMStub(ClassMethod([_mockDevice isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+  OCMStub(ClassMethod(
+              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(true);
 
   // UIImagePickerControllerCameraDeviceRear is supported
-  OCMStub(
-      ClassMethod([_mockDevice isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
+  OCMStub(ClassMethod(
+              [_mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
       .andReturn(true);
+
+  // AVAuthorizationStatusAuthorized is supported
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
@@ -68,13 +74,17 @@
 
 - (void)testPluginPickImageDeviceFront {
   // UIImagePickerControllerSourceTypeCamera is supported
-  OCMStub(ClassMethod([_mockDevice isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+  OCMStub(ClassMethod(
+              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(true);
 
   // UIImagePickerControllerCameraDeviceFront is supported
-  OCMStub(
-      ClassMethod([_mockDevice isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
+  OCMStub(ClassMethod([_mockUIImagePicker
+              isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
       .andReturn(true);
+
+  // AVAuthorizationStatusAuthorized is supported
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
@@ -92,13 +102,17 @@
 
 - (void)testPluginPickVideoDeviceBack {
   // UIImagePickerControllerSourceTypeCamera is supported
-  OCMStub(ClassMethod([_mockDevice isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+  OCMStub(ClassMethod(
+              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(true);
 
   // UIImagePickerControllerCameraDeviceRear is supported
-  OCMStub(
-      ClassMethod([_mockDevice isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
+  OCMStub(ClassMethod(
+              [_mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
       .andReturn(true);
+
+  // AVAuthorizationStatusAuthorized is supported
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
@@ -116,13 +130,17 @@
 
 - (void)testPluginPickVideoDeviceFront {
   // UIImagePickerControllerSourceTypeCamera is supported
-  OCMStub(ClassMethod([_mockDevice isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
+  OCMStub(ClassMethod(
+              [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
       .andReturn(true);
 
   // UIImagePickerControllerCameraDeviceFront is supported
-  OCMStub(
-      ClassMethod([_mockDevice isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
+  OCMStub(ClassMethod([_mockUIImagePicker
+              isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
       .andReturn(true);
+
+  // AVAuthorizationStatusAuthorized is supported
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
