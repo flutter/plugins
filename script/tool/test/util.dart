@@ -13,9 +13,6 @@ import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/collection.dart';
 
-// TODO(stuartmorgan): Eliminate this in favor of a local variable in each test.
-late Directory mockPackagesDir;
-
 /// Creates a mock packages directory in the mock file system.
 ///
 /// If [parentDir] is set the mock packages dir will be creates as a child of
@@ -24,10 +21,10 @@ late Directory mockPackagesDir;
 Directory initializeFakePackages(
     {Directory? parentDir, MemoryFileSystem? fileSystem}) {
   assert(parentDir != null || fileSystem != null);
-  mockPackagesDir =
+  final Directory packagesDir =
       (parentDir ?? fileSystem!.currentDirectory).childDirectory('packages');
-  mockPackagesDir.createSync();
-  return mockPackagesDir;
+  packagesDir.createSync();
+  return packagesDir;
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
