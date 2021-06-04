@@ -16,7 +16,7 @@ class TestCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
@@ -37,7 +37,7 @@ class TestCommand extends PluginCommand {
     await for (final Directory packageDir in getPackages()) {
       final String packageName =
           p.relative(packageDir.path, from: packagesDir.path);
-      if (!fileSystem.directory(p.join(packageDir.path, 'test')).existsSync()) {
+      if (!packageDir.childDirectory('test').existsSync()) {
         print('SKIPPING $packageName - no test subdirectory');
         continue;
       }
@@ -48,7 +48,7 @@ class TestCommand extends PluginCommand {
 
       // `flutter test` automatically gets packages.  `pub run test` does not.  :(
       int exitCode = 0;
-      if (isFlutterPackage(packageDir, fileSystem)) {
+      if (isFlutterPackage(packageDir)) {
         final List<String> args = <String>[
           'test',
           '--color',
@@ -56,7 +56,7 @@ class TestCommand extends PluginCommand {
             '--enable-experiment=$enableExperiment',
         ];
 
-        if (isWebPlugin(packageDir, fileSystem)) {
+        if (isWebPlugin(packageDir)) {
           args.add('--platform=chrome');
         }
         exitCode = await processRunner.runAndStream(

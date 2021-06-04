@@ -27,7 +27,7 @@ class PublishCheckCommand extends PluginCommand {
     this.httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(
       _allowPrereleaseFlag,
       help: 'Allows the pre-release SDK warning to pass.\n'

@@ -23,7 +23,7 @@ class FormatCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
         defaultsTo: 'clang-format',
@@ -144,7 +144,8 @@ class FormatCommand extends PluginCommand {
     final String javaFormatterPath = p.join(
         p.dirname(p.fromUri(io.Platform.script)),
         'google-java-format-1.3-all-deps.jar');
-    final File javaFormatterFile = fileSystem.file(javaFormatterPath);
+    final File javaFormatterFile =
+        packagesDir.fileSystem.file(javaFormatterPath);
 
     if (!javaFormatterFile.existsSync()) {
       print('Downloading Google Java Format...');

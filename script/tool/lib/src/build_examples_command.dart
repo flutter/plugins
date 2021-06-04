@@ -18,7 +18,7 @@ class BuildExamplesCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(kLinux, defaultsTo: false);
     argParser.addFlag(kMacos, defaultsTo: false);
     argParser.addFlag(kWeb, defaultsTo: false);
@@ -69,7 +69,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kLinux)) {
           print('\nBUILDING Linux for $packageName');
-          if (isLinuxPlugin(plugin, fileSystem)) {
+          if (isLinuxPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -89,7 +89,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kMacos)) {
           print('\nBUILDING macOS for $packageName');
-          if (isMacOsPlugin(plugin, fileSystem)) {
+          if (isMacOsPlugin(plugin)) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -109,7 +109,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kWeb)) {
           print('\nBUILDING web for $packageName');
-          if (isWebPlugin(plugin, fileSystem)) {
+          if (isWebPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -129,7 +129,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kWindows)) {
           print('\nBUILDING Windows for $packageName');
-          if (isWindowsPlugin(plugin, fileSystem)) {
+          if (isWindowsPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -149,7 +149,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kIpa)) {
           print('\nBUILDING IPA for $packageName');
-          if (isIosPlugin(plugin, fileSystem)) {
+          if (isIosPlugin(plugin)) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -170,7 +170,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kApk)) {
           print('\nBUILDING APK for $packageName');
-          if (isAndroidPlugin(plugin, fileSystem)) {
+          if (isAndroidPlugin(plugin)) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[

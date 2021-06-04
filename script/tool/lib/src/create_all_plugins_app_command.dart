@@ -21,7 +21,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     this.pluginsRoot,
-  }) : super(packagesDir, fileSystem) {
+  }) : super(packagesDir) {
     pluginsRoot ??= fileSystem.currentDirectory;
     appDirectory = pluginsRoot.childDirectory('all_plugins');
   }
@@ -161,8 +161,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     await for (final Directory package in getPlugins()) {
       final String pluginName = package.path.split('/').last;
-      final File pubspecFile =
-          fileSystem.file(p.join(package.path, 'pubspec.yaml'));
+      final File pubspecFile = package.childFile('pubspec.yaml');
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {

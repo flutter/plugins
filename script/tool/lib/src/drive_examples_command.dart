@@ -15,7 +15,7 @@ class DriveExamplesCommand extends PluginCommand {
     Directory packagesDir,
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(kAndroid,
         help: 'Runs the Android implementation of the examples');
     argParser.addFlag(kIos,
@@ -67,7 +67,7 @@ class DriveExamplesCommand extends PluginCommand {
         continue;
       }
       print('\n==========\nChecking $pluginName...');
-      if (!(await _pluginSupportedOnCurrentPlatform(plugin, fileSystem))) {
+      if (!(await _pluginSupportedOnCurrentPlatform(plugin))) {
         print('Not supported for the target platform; skipping.');
         continue;
       }
@@ -79,8 +79,7 @@ class DriveExamplesCommand extends PluginCommand {
         ++examplesFound;
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
-        final Directory driverTests =
-            fileSystem.directory(p.join(example.path, 'test_driver'));
+        final Directory driverTests = example.childDirectory('test_driver');
         if (!driverTests.existsSync()) {
           print('No driver tests found for $packageName');
           continue;
@@ -98,7 +97,7 @@ class DriveExamplesCommand extends PluginCommand {
             '.dart',
           );
           String deviceTestPath = p.join('test', deviceTestName);
-          if (!fileSystem
+          if (!example.fileSystem
               .file(p.join(example.path, deviceTestPath))
               .existsSync()) {
             // If the app isn't in test/ folder, look in test_driver/ instead.
@@ -106,13 +105,13 @@ class DriveExamplesCommand extends PluginCommand {
           }
 
           final List<String> targetPaths = <String>[];
-          if (fileSystem
+          if (example.fileSystem
               .file(p.join(example.path, deviceTestPath))
               .existsSync()) {
             targetPaths.add(deviceTestPath);
           } else {
             final Directory integrationTests =
-                fileSystem.directory(p.join(example.path, 'integration_test'));
+                example.childDirectory('integration_test');
 
             if (await integrationTests.exists()) {
               await for (final FileSystemEntity integrationTest
@@ -145,19 +144,19 @@ Tried searching for the following:
             driveArgs.add('--enable-experiment=$enableExperiment');
           }
 
-          if (isLinux && isLinuxPlugin(plugin, fileSystem)) {
+          if (isLinux && isLinuxPlugin(plugin)) {
             driveArgs.addAll(<String>[
               '-d',
               'linux',
             ]);
           }
-          if (isMacos && isMacOsPlugin(plugin, fileSystem)) {
+          if (isMacos && isMacOsPlugin(plugin)) {
             driveArgs.addAll(<String>[
               '-d',
               'macos',
             ]);
           }
-          if (isWeb && isWebPlugin(plugin, fileSystem)) {
+          if (isWeb && isWebPlugin(plugin)) {
             driveArgs.addAll(<String>[
               '-d',
               'web-server',
@@ -165,7 +164,7 @@ Tried searching for the following:
               '--browser-name=chrome',
             ]);
           }
-          if (isWindows && isWindowsPlugin(plugin, fileSystem)) {
+          if (isWindows && isWindowsPlugin(plugin)) {
             driveArgs.addAll(<String>[
               '-d',
               'windows',
@@ -220,7 +219,7 @@ Tried searching for the following:
   }
 
   Future<bool> _pluginSupportedOnCurrentPlatform(
-      FileSystemEntity plugin, FileSystem fileSystem) async {
+      FileSystemEntity plugin) async {
     final bool isAndroid = getBoolArg(kAndroid);
     final bool isIOS = getBoolArg(kIos);
     final bool isLinux = getBoolArg(kLinux);
@@ -228,27 +227,27 @@ Tried searching for the following:
     final bool isWeb = getBoolArg(kWeb);
     final bool isWindows = getBoolArg(kWindows);
     if (isAndroid) {
-      return isAndroidPlugin(plugin, fileSystem);
+      return isAndroidPlugin(plugin);
     }
     if (isIOS) {
-      return isIosPlugin(plugin, fileSystem);
+      return isIosPlugin(plugin);
     }
     if (isLinux) {
-      return isLinuxPlugin(plugin, fileSystem);
+      return isLinuxPlugin(plugin);
     }
     if (isMacos) {
-      return isMacOsPlugin(plugin, fileSystem);
+      return isMacOsPlugin(plugin);
     }
     if (isWeb) {
-      return isWebPlugin(plugin, fileSystem);
+      return isWebPlugin(plugin);
     }
     if (isWindows) {
-      return isWindowsPlugin(plugin, fileSystem);
+      return isWindowsPlugin(plugin);
     }
     // When we are here, no flags are specified. Only return true if the plugin
     // supports Android for legacy command support.
     // TODO(cyanglaz): Make Android flag also required like other platforms
     // (breaking change). https://github.com/flutter/flutter/issues/58285
-    return isAndroidPlugin(plugin, fileSystem);
+    return isAndroidPlugin(plugin);
   }
 }

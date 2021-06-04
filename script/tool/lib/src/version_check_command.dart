@@ -80,8 +80,7 @@ class VersionCheckCommand extends PluginCommand {
     this.httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir) {
+        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
     argParser.addFlag(
       _againstPubFlag,
       help: 'Whether the version check should run against the version on pub.\n'
@@ -117,7 +116,7 @@ class VersionCheckCommand extends PluginCommand {
     const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
       print('Checking versions for $pubspecPath...');
-      final File pubspecFile = fileSystem.file(pubspecPath);
+      final File pubspecFile = packagesDir.fileSystem.file(pubspecPath);
       if (!pubspecFile.existsSync()) {
         print('${indentation}Deleted; skipping.');
         continue;

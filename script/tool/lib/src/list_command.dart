@@ -13,7 +13,7 @@ class ListCommand extends PluginCommand {
   /// Creates an instance of the list command, whose behavior depends on the
   /// 'type' argument it provides.
   ListCommand(Directory packagesDir, FileSystem fileSystem)
-      : super(packagesDir, fileSystem) {
+      : super(packagesDir) {
     argParser.addOption(
       _type,
       defaultsTo: _plugin,

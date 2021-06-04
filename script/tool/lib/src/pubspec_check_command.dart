@@ -23,8 +23,7 @@ class PubspecCheckCommand extends PluginCommand {
     FileSystem fileSystem, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
-  }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   // Section order for plugins. Because the 'flutter' section is critical
   // information for plugins, and usually small, it goes near the top unlike in

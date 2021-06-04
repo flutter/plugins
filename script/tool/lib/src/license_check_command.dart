@@ -102,7 +102,7 @@ class LicenseCheckCommand extends PluginCommand {
     FileSystem fileSystem, {
     Print print = print,
   })  : _print = print,
-        super(packagesDir, fileSystem);
+        super(packagesDir);
 
   final Print _print;
 

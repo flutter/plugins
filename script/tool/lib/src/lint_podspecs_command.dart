@@ -27,7 +27,7 @@ class LintPodspecsCommand extends PluginCommand {
     Print print = print,
   })  : _platform = platform,
         _print = print,
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addMultiOption('skip',
         help:
             'Skip all linting for podspecs with this basename (example: federated plugins with placeholder podspecs)',
