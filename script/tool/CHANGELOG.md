@@ -1,3 +1,8 @@
+## 0.1.5
+
+- Ask `version-check` to make sure the latest version has been published when `against-pub` flag is enabled.
+- Enable `against-pub` flag on ci.
+
 ## 0.1.4
 
 - Add a `pubspec-check` command

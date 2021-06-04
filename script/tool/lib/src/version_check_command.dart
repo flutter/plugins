@@ -136,6 +136,8 @@ class VersionCheckCommand extends PluginCommand {
                 'intentionally has no version should be marked '
                 '"publish_to: none".');
       }
+      final Version gitSourceVersion =
+          await gitVersionFinder.getPackageVersion(pubspecPath);
       Version sourceVersion;
       if (getBoolArg(_againstPubFlag)) {
         final String packageName = pubspecFile.parent.basename;
@@ -146,6 +148,14 @@ class VersionCheckCommand extends PluginCommand {
             sourceVersion = pubVersionFinderResponse.versions.first;
             print(
                 '$indentation$packageName: Current largest version on pub: $sourceVersion');
+            if (headVersion > gitSourceVersion &&
+                sourceVersion != gitSourceVersion) {
+              // If this commit is not a revert, we make sure the latest version is published.
+              printErrorAndExit(errorMessage: '''
+The latest version of $packageName on git ($sourceVersion) has not been published on pub.
+A publisher should make sure the latest version is published before landing more updates.
+''');
+            }
             break;
           case PubVersionFinderResult.fail:
             printErrorAndExit(errorMessage: '''
@@ -159,7 +169,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
             break;
         }
       } else {
-        sourceVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
+        sourceVersion = gitSourceVersion;
       }
       if (sourceVersion == null) {
         String safeToIgnoreMessage;
@@ -179,8 +189,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
         continue;
       }
 
-      // Check for reverts when doing local validation.
-      if (!getBoolArg(_againstPubFlag) && headVersion < sourceVersion) {
+      // Check for reverts.
+      if (headVersion < sourceVersion) {
         final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
             getAllowedNextVersions(headVersion, sourceVersion);
         // Since this skips validation, try to ensure that it really is likely

@@ -47,7 +47,7 @@ task:
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
       script:
-        - ./script/tool_runner.sh version-check
+        - ./script/tool_runner.sh version-check against-pub
         - ./script/tool_runner.sh publish-check
     - name: format
       format_script: ./script/tool_runner.sh format --fail-on-change

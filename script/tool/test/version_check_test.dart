@@ -626,6 +626,98 @@ The first version listed in CHANGELOG.md is 1.0.0.
       );
     });
 
+    test('fail if last version on base-sha is not published', () async {
+      const Map<String, dynamic> httpResponse = <String, dynamic>{
+        'name': 'some_package',
+        'versions': <String>[
+          '0.0.1',
+          '0.0.2',
+          '1.0.0',
+        ],
+      };
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(httpResponse), 200);
+      });
+      final VersionCheckCommand command = VersionCheckCommand(
+          mockPackagesDir, mockFileSystem,
+          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
+
+      runner = CommandRunner<void>(
+          'version_check_command', 'Test for $VersionCheckCommand');
+      runner.addCommand(command);
+
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.1',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+      };
+
+      bool hasError = false;
+      final List<String> result = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
+        result,
+        containsAllInOrder(<String>[
+          _redColorString(
+            '''
+The latest version of plugin on git (1.0.0) has not been published on pub.
+A publisher should make sure the latest version is published before landing more updates.
+''',
+          )
+        ]),
+      );
+    });
+
+    test(
+        'success if last version on base-sha is not published, but the commit is a revert (head version < current version)',
+        () async {
+      const Map<String, dynamic> httpResponse = <String, dynamic>{
+        'name': 'some_package',
+        'versions': <String>[
+          '0.0.1',
+          '0.0.2',
+          '1.0.0',
+        ],
+      };
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(httpResponse), 200);
+      });
+      final VersionCheckCommand command = VersionCheckCommand(
+          mockPackagesDir, mockFileSystem,
+          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
+
+      runner = CommandRunner<void>(
+          'version_check_command', 'Test for $VersionCheckCommand');
+      runner.addCommand(command);
+
+      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      gitDiffResponse = 'packages/plugin/pubspec.yaml';
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.1',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      final List<String> result = await runCapturingPrint(runner,
+          <String>['version-check', '--base-sha=master', '--against-pub']);
+
+      expect(
+        result,
+        containsAllInOrder(<String>[
+          '${indentation}plugin: Current largest version on pub: 1.0.0',
+          'No version check errors found!',
+        ]),
+      );
+    });
+
     test('denies invalid against pub', () async {
       const Map<String, dynamic> httpResponse = <String, dynamic>{
         'name': 'some_package',
@@ -648,7 +740,7 @@ The first version listed in CHANGELOG.md is 1.0.0.
       createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'master:packages/plugin/pubspec.yaml': 'version: 0.0.2',
         'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
       };
 
