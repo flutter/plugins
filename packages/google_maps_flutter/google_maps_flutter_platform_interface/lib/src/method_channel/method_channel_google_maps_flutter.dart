@@ -449,6 +449,8 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// versions below 10. See
   /// https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
   /// information.
+  ///
+  /// Defaults to false.
   bool useAndroidViewSurface = false;
 
   @override
