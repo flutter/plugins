@@ -50,8 +50,8 @@ void main() {
     // use a fully resolved version to avoid potential path comparison issues.
     testRoot = fileSystem.directory(testRoot.resolveSymbolicLinksSync());
     packagesDir = initializeFakePackages(parentDir: testRoot);
-    pluginDir = createFakePlugin(testPluginName,
-        withSingleExample: false, packagesDirectory: packagesDir);
+    pluginDir =
+        createFakePlugin(testPluginName, packagesDir, withSingleExample: false);
     assert(pluginDir != null && pluginDir.existsSync());
     createFakePubspec(pluginDir, includeVersion: true);
     io.Process.runSync('git', <String>['init'],
@@ -425,13 +425,11 @@ void main() {
 
     test('can release newly created plugins', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -472,8 +470,8 @@ void main() {
     test('can release newly created plugins, while there are existing plugins',
         () async {
       // Prepare an exiting plugin and tag it
-      final Directory pluginDir0 = createFakePlugin('plugin0',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir0 =
+          createFakePlugin('plugin0', packagesDir, withSingleExample: true);
       createFakePubspec(pluginDir0,
           name: 'plugin0',
           includeVersion: true,
@@ -489,13 +487,11 @@ void main() {
       processRunner.pushTagsArgs.clear();
 
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -533,13 +529,11 @@ void main() {
 
     test('can release newly created plugins, dry run', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -582,13 +576,11 @@ void main() {
 
     test('version change triggers releases.', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -673,13 +665,11 @@ void main() {
         'delete package will not trigger publish but exit the command successfully.',
         () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -761,13 +751,11 @@ void main() {
         'versions revert do not trigger releases. Also prints out warning message.',
         () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,
@@ -843,13 +831,11 @@ void main() {
 
     test('No version change does not release any plugins', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, withSingleExample: true);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: packagesDir);
+      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
+          withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
           name: 'plugin1',
           includeVersion: true,

@@ -36,7 +36,7 @@ void main() {
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
         () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -68,7 +68,7 @@ void main() {
     });
 
     test('building for ios', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -115,7 +115,7 @@ void main() {
     test(
         'building for Linux when plugin is not set up for Linux results in no-op',
         () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -147,7 +147,7 @@ void main() {
     });
 
     test('building for Linux', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -182,10 +182,10 @@ void main() {
 
     test('building for macos with no implementation results in no-op',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', withExtraFiles: <List<String>>[
-        <String>['example', 'test'],
-      ]);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test'],
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -213,7 +213,7 @@ void main() {
     });
 
     test('building for macos', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
             <String>['example', 'macos', 'macos.swift'],
@@ -248,10 +248,10 @@ void main() {
     });
 
     test('building for web with no implementation results in no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', withExtraFiles: <List<String>>[
-        <String>['example', 'test'],
-      ]);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test'],
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -279,7 +279,7 @@ void main() {
     });
 
     test('building for web', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
             <String>['example', 'web', 'index.html'],
@@ -316,7 +316,7 @@ void main() {
     test(
         'building for Windows when plugin is not set up for Windows results in no-op',
         () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -348,7 +348,7 @@ void main() {
     });
 
     test('building for windows', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -384,7 +384,7 @@ void main() {
     test(
         'building for Android when plugin is not set up for Android results in no-op',
         () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -416,7 +416,7 @@ void main() {
     });
 
     test('building for android', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -454,7 +454,7 @@ void main() {
     });
 
     test('enable-experiment flag for Android', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -484,7 +484,7 @@ void main() {
     });
 
     test('enable-experiment flag for ios', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],

@@ -13,12 +13,13 @@ import 'util.dart';
 void main() {
   group('$TestCommand', () {
     late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      final Directory packagesDir =
+      packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final TestCommand command =
@@ -29,14 +30,14 @@ void main() {
     });
 
     test('runs flutter test on each plugin', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['test', 'empty_test.dart'],
-      ]);
-      final Directory plugin2Dir =
-          createFakePlugin('plugin2', withExtraFiles: <List<String>>[
-        <String>['test', 'empty_test.dart'],
-      ]);
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['test', 'empty_test.dart'],
+          ]);
+      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['test', 'empty_test.dart'],
+          ]);
 
       await runner.run(<String>['test']);
 
@@ -52,11 +53,11 @@ void main() {
     });
 
     test('skips testing plugins without test directory', () async {
-      createFakePlugin('plugin1');
-      final Directory plugin2Dir =
-          createFakePlugin('plugin2', withExtraFiles: <List<String>>[
-        <String>['test', 'empty_test.dart'],
-      ]);
+      createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['test', 'empty_test.dart'],
+          ]);
 
       await runner.run(<String>['test']);
 
@@ -70,12 +71,12 @@ void main() {
     });
 
     test('runs pub run test on non-Flutter packages', () async {
-      final Directory plugin1Dir = createFakePlugin('plugin1',
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
           isFlutter: true,
           withExtraFiles: <List<String>>[
             <String>['test', 'empty_test.dart'],
           ]);
-      final Directory plugin2Dir = createFakePlugin('plugin2',
+      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
           isFlutter: false,
           withExtraFiles: <List<String>>[
             <String>['test', 'empty_test.dart'],
@@ -102,6 +103,7 @@ void main() {
     test('runs on Chrome for web plugins', () async {
       final Directory pluginDir = createFakePlugin(
         'plugin',
+        packagesDir,
         withExtraFiles: <List<String>>[
           <String>['test', 'empty_test.dart'],
         ],
@@ -123,12 +125,12 @@ void main() {
     });
 
     test('enable-experiment flag', () async {
-      final Directory plugin1Dir = createFakePlugin('plugin1',
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
           isFlutter: true,
           withExtraFiles: <List<String>>[
             <String>['test', 'empty_test.dart'],
           ]);
-      final Directory plugin2Dir = createFakePlugin('plugin2',
+      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
           isFlutter: false,
           withExtraFiles: <List<String>>[
             <String>['test', 'empty_test.dart'],

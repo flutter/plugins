@@ -14,12 +14,13 @@ import 'util.dart';
 
 void main() {
   late FileSystem fileSystem;
+  late Directory packagesDir;
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
-    final Directory packagesDir =
+    packagesDir =
         initializeFakePackages(parentDir: fileSystem.currentDirectory);
     processRunner = RecordingProcessRunner();
     final AnalyzeCommand analyzeCommand =
@@ -30,8 +31,8 @@ void main() {
   });
 
   test('analyzes all packages', () async {
-    final Directory plugin1Dir = createFakePlugin('a');
-    final Directory plugin2Dir = createFakePlugin('b');
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
+    final Directory plugin2Dir = createFakePlugin('b', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
@@ -53,7 +54,8 @@ void main() {
   });
 
   test('skips flutter pub get for examples', () async {
-    final Directory plugin1Dir = createFakePlugin('a', withSingleExample: true);
+    final Directory plugin1Dir =
+        createFakePlugin('a', packagesDir, withSingleExample: true);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
@@ -71,8 +73,8 @@ void main() {
   });
 
   test('don\'t elide a non-contained example package', () async {
-    final Directory plugin1Dir = createFakePlugin('a');
-    final Directory plugin2Dir = createFakePlugin('example');
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
+    final Directory plugin2Dir = createFakePlugin('example', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
@@ -94,7 +96,7 @@ void main() {
   });
 
   test('uses a separate analysis sdk', () async {
-    final Directory pluginDir = createFakePlugin('a');
+    final Directory pluginDir = createFakePlugin('a', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
@@ -120,7 +122,7 @@ void main() {
 
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
-      createFakePlugin('foo', withExtraFiles: <List<String>>[
+      createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 
@@ -129,7 +131,7 @@ void main() {
     });
 
     test('fails .analysis_options', () async {
-      createFakePlugin('foo', withExtraFiles: <List<String>>[
+      createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
         <String>['.analysis_options']
       ]);
 
@@ -139,7 +141,7 @@ void main() {
 
     test('takes an allow list', () async {
       final Directory pluginDir =
-          createFakePlugin('foo', withExtraFiles: <List<String>>[
+          createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 
@@ -160,7 +162,7 @@ void main() {
 
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
-      createFakePlugin('foo', withExtraFiles: <List<String>>[
+      createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 

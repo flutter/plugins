@@ -14,12 +14,13 @@ import 'util.dart';
 void main() {
   group('$JavaTestCommand', () {
     late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      final Directory packagesDir =
+      packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final JavaTestCommand command =
@@ -33,6 +34,7 @@ void main() {
     test('Should run Java tests in Android implementation folder', () async {
       final Directory plugin = createFakePlugin(
         'plugin1',
+        packagesDir,
         isAndroidPlugin: true,
         isFlutter: true,
         withSingleExample: true,
@@ -59,6 +61,7 @@ void main() {
     test('Should run Java tests in example folder', () async {
       final Directory plugin = createFakePlugin(
         'plugin1',
+        packagesDir,
         isAndroidPlugin: true,
         isFlutter: true,
         withSingleExample: true,

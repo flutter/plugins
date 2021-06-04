@@ -27,8 +27,8 @@ void main() {
     });
 
     test('lists plugins', () async {
-      createFakePlugin('plugin1');
-      createFakePlugin('plugin2');
+      createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
 
       final List<String> plugins =
           await runCapturingPrint(runner, <String>['list', '--type=plugin']);
@@ -43,10 +43,10 @@ void main() {
     });
 
     test('lists examples', () async {
-      createFakePlugin('plugin1', withSingleExample: true);
-      createFakePlugin('plugin2',
+      createFakePlugin('plugin1', packagesDir, withSingleExample: true);
+      createFakePlugin('plugin2', packagesDir,
           withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3');
+      createFakePlugin('plugin3', packagesDir);
 
       final List<String> examples =
           await runCapturingPrint(runner, <String>['list', '--type=example']);
@@ -62,10 +62,10 @@ void main() {
     });
 
     test('lists packages', () async {
-      createFakePlugin('plugin1', withSingleExample: true);
-      createFakePlugin('plugin2',
+      createFakePlugin('plugin1', packagesDir, withSingleExample: true);
+      createFakePlugin('plugin2', packagesDir,
           withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3');
+      createFakePlugin('plugin3', packagesDir);
 
       final List<String> packages =
           await runCapturingPrint(runner, <String>['list', '--type=package']);
@@ -84,10 +84,10 @@ void main() {
     });
 
     test('lists files', () async {
-      createFakePlugin('plugin1', withSingleExample: true);
-      createFakePlugin('plugin2',
+      createFakePlugin('plugin1', packagesDir, withSingleExample: true);
+      createFakePlugin('plugin2', packagesDir,
           withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3');
+      createFakePlugin('plugin3', packagesDir);
 
       final List<String> examples =
           await runCapturingPrint(runner, <String>['list', '--type=file']);
@@ -106,7 +106,7 @@ void main() {
     });
 
     test('lists plugins using federated plugin layout', () async {
-      createFakePlugin('plugin1');
+      createFakePlugin('plugin1', packagesDir);
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
@@ -138,7 +138,7 @@ void main() {
     });
 
     test('can filter plugins with the --plugins argument', () async {
-      createFakePlugin('plugin1');
+      createFakePlugin('plugin1', packagesDir);
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.

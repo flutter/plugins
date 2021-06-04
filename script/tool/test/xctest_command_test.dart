@@ -87,12 +87,13 @@ void main() {
 
   group('test xctest_command', () {
     FileSystem fileSystem;
+    Directory packagesDir;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      final Directory packagesDir =
+      packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
       processRunner = RecordingProcessRunner();
       final XCTestCommand command =
@@ -103,7 +104,7 @@ void main() {
     });
 
     test('skip if ios is not supported', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
@@ -122,16 +123,18 @@ void main() {
     });
 
     test('running with correct destination, skip 1 plugin', () async {
-      final Directory pluginDirectory1 = createFakePlugin('plugin1',
-          withExtraFiles: <List<String>>[
-            <String>['example', 'test'],
-          ],
-          isIosPlugin: true);
-      final Directory pluginDirectory2 = createFakePlugin('plugin2',
-          withExtraFiles: <List<String>>[
-            <String>['example', 'test'],
-          ],
-          isIosPlugin: true);
+      final Directory pluginDirectory1 =
+          createFakePlugin('plugin1', packagesDir,
+              withExtraFiles: <List<String>>[
+                <String>['example', 'test'],
+              ],
+              isIosPlugin: true);
+      final Directory pluginDirectory2 =
+          createFakePlugin('plugin2', packagesDir,
+              withExtraFiles: <List<String>>[
+                <String>['example', 'test'],
+              ],
+              isIosPlugin: true);
 
       final Directory pluginExampleDirectory1 =
           pluginDirectory1.childDirectory('example');
@@ -181,7 +184,7 @@ void main() {
 
     test('Not specifying --ios-destination assigns an available simulator',
         () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],

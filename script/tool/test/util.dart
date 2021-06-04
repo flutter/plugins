@@ -30,10 +30,10 @@ Directory initializeFakePackages(
   return mockPackagesDir;
 }
 
-/// Creates a plugin package with the given [name] in [packagesDirectory],
-/// defaulting to [mockPackagesDir].
+/// Creates a plugin package with the given [name] in [packagesDirectory].
 Directory createFakePlugin(
-  String name, {
+  String name,
+  Directory packagesDirectory, {
   bool withSingleExample = false,
   List<String> withExamples = const <String>[],
   List<List<String>> withExtraFiles = const <List<String>>[],
@@ -48,12 +48,11 @@ Directory createFakePlugin(
   bool includeVersion = false,
   String version = '0.0.1',
   String parentDirectoryName = '',
-  Directory? packagesDirectory,
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
       'cannot pass withSingleExample and withExamples simultaneously');
 
-  Directory parentDirectory = packagesDirectory ?? mockPackagesDir;
+  Directory parentDirectory = packagesDirectory;
   if (parentDirectoryName != '') {
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }

@@ -19,13 +19,14 @@ import 'util.dart';
 void main() {
   group('$FirebaseTestLabCommand', () {
     FileSystem fileSystem;
+    Directory packagesDir;
     List<String> printedMessages;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      final Directory packagesDir =
+      packagesDir =
           initializeFakePackages(parentDir: fileSystem.currentDirectory);
       printedMessages = <String>[];
       processRunner = RecordingProcessRunner();
@@ -42,7 +43,7 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(1);
       processRunner.processToReturn = mockProcess;
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
         <String>['lib/test/should_not_run_e2e.dart'],
         <String>['example', 'test_driver', 'plugin_e2e.dart'],
         <String>['example', 'test_driver', 'plugin_e2e_test.dart'],
@@ -67,7 +68,7 @@ void main() {
     });
 
     test('runs e2e tests', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
         <String>['test', 'plugin_test.dart'],
         <String>['test', 'plugin_e2e.dart'],
         <String>['should_not_run_e2e.dart'],
@@ -168,7 +169,7 @@ void main() {
     });
 
     test('experimental flag', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
         <String>['test', 'plugin_test.dart'],
         <String>['test', 'plugin_e2e.dart'],
         <String>['should_not_run_e2e.dart'],
