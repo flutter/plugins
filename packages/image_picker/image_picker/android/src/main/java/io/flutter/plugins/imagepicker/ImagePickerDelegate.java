@@ -395,14 +395,12 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
 
   private void handleChooseMultiImageResult(int resultCode, Intent data) {
     if (resultCode == Activity.RESULT_OK && data != null) {
-      ArrayList<String> paths;
+      ArrayList<String> paths = new ArrayList<>();
       if (data.getClipData() != null) {
-        paths = new ArrayList<>();
         for (int i = 0; i < data.getClipData().getItemCount(); i++) {
           paths.add(fileUtils.getPathFromUri(activity, data.getClipData().getItemAt(i).getUri()));
         }
       } else {
-        paths = new ArrayList<>();
         paths.add(fileUtils.getPathFromUri(activity, data.getData()));
       }
       handleMultiImageResult(paths, false);
