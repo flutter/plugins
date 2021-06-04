@@ -21,7 +21,7 @@ void main() {
     setUp(() {
       fileSystem = MemoryFileSystem();
       packagesDir = fileSystem.currentDirectory.childDirectory('packages');
-      initializeFakePackages(parentDir: packagesDir.parent);
+      createPackagesDirectory(parentDir: packagesDir.parent);
       processRunner = RecordingProcessRunner();
       final PubspecCheckCommand command =
           PubspecCheckCommand(packagesDir, processRunner: processRunner);

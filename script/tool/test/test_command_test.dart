@@ -19,8 +19,7 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      packagesDir =
-          initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
       final TestCommand command =
           TestCommand(packagesDir, processRunner: processRunner);

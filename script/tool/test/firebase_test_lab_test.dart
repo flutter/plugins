@@ -26,8 +26,7 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      packagesDir =
-          initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       printedMessages = <String>[];
       processRunner = RecordingProcessRunner();
       final FirebaseTestLabCommand command = FirebaseTestLabCommand(packagesDir,

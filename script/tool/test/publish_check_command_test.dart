@@ -29,8 +29,7 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      packagesDir =
-          initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = PublishCheckProcessRunner();
       final PublishCheckCommand publishCheckCommand =
           PublishCheckCommand(packagesDir, processRunner: processRunner);

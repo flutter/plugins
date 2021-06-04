@@ -20,8 +20,7 @@ void main() {
 
   setUp(() {
     fileSystem = MemoryFileSystem();
-    packagesDir =
-        initializeFakePackages(parentDir: fileSystem.currentDirectory);
+    packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = RecordingProcessRunner();
     final AnalyzeCommand analyzeCommand =
         AnalyzeCommand(packagesDir, processRunner: processRunner);

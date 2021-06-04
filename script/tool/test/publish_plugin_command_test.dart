@@ -49,7 +49,7 @@ void main() {
     // The temp directory can have symbolic links, which won't match git output;
     // use a fully resolved version to avoid potential path comparison issues.
     testRoot = fileSystem.directory(testRoot.resolveSymbolicLinksSync());
-    packagesDir = initializeFakePackages(parentDir: testRoot);
+    packagesDir = createPackagesDirectory(parentDir: testRoot);
     pluginDir =
         createFakePlugin(testPluginName, packagesDir, withSingleExample: false);
     assert(pluginDir != null && pluginDir.existsSync());

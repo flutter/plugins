@@ -67,8 +67,7 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      packagesDir =
-          initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       gitDirCommands = <List<String>>[];
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};

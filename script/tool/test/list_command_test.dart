@@ -18,8 +18,7 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      packagesDir =
-          initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       final ListCommand command = ListCommand(packagesDir);
 
       runner = CommandRunner<void>('list_test', 'Test for $ListCommand');

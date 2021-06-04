@@ -34,8 +34,7 @@ void main() {
 
   setUp(() {
     fileSystem = MemoryFileSystem();
-    packagesDir =
-        initializeFakePackages(parentDir: fileSystem.currentDirectory);
+    packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     thirdPartyPackagesDir = packagesDir.parent
         .childDirectory('third_party')
         .childDirectory('packages');
@@ -330,7 +329,7 @@ packages/plugin3/plugin3.dart
 
     setUp(() {
       fileSystem = MemoryFileSystem();
-      initializeFakePackages(parentDir: fileSystem.currentDirectory);
+      createPackagesDirectory(fileSystem: fileSystem);
       gitDirCommands = <List<String>?>[];
       gitDiffResponse = '';
       gitDir = MockGitDir();

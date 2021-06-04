@@ -13,14 +13,17 @@ import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
 import 'package:quiver/collection.dart';
 
-/// Creates a mock packages directory in the mock file system.
+/// Creates a packages directory in the given location.
 ///
-/// If [parentDir] is set the mock packages dir will be creates as a child of
-/// it. If not [fileSystem] will be used instead.
-/// TODO(stuartmorgan): Remove fileSystem argument and make parentDir required.
-Directory initializeFakePackages(
-    {Directory? parentDir, MemoryFileSystem? fileSystem}) {
-  assert(parentDir != null || fileSystem != null);
+/// If [parentDir] is set the packages directory will be created there,
+/// otherwise [fileSystem] must be provided and it will be created an arbitrary
+/// location in that filesystem.
+Directory createPackagesDirectory(
+    {Directory? parentDir, FileSystem? fileSystem}) {
+  assert(parentDir != null || fileSystem != null,
+      'One of parentDir or fileSystem must be provided');
+  assert(fileSystem == null || fileSystem is MemoryFileSystem,
+      'If using a real filesystem, parentDir must be provided');
   final Directory packagesDir =
       (parentDir ?? fileSystem!.currentDirectory).childDirectory('packages');
   packagesDir.createSync();
