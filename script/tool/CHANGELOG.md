@@ -1,3 +1,7 @@
+##
+
+- Remove `xctest`'s `--skip`, which is redundant with `--ignore`.
+
 ## 0.1.4
 
 - Add a `pubspec-check` command
