@@ -1,3 +1,6 @@
+## 2.0.3
+* Add `buildSignature` to Android package info to retrieve the signing certifiate SHA1 at runtime.
+
 ## 2.0.2
 
 * Update README to point to Plus Plugins version.
