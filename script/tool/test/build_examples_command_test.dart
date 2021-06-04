@@ -36,14 +36,14 @@ void main() {
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isLinuxPlugin: false);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -68,14 +68,14 @@ void main() {
     });
 
     test('building for ios', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -115,14 +115,14 @@ void main() {
     test(
         'building for Linux when plugin is not set up for Linux results in no-op',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isLinuxPlugin: false);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -147,14 +147,14 @@ void main() {
     });
 
     test('building for Linux', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isLinuxPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -182,12 +182,13 @@ void main() {
 
     test('building for macos with no implementation results in no-op',
         () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', withExtraFiles: <List<String>>[
         <String>['example', 'test'],
       ]);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -212,7 +213,7 @@ void main() {
     });
 
     test('building for macos', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
             <String>['example', 'macos', 'macos.swift'],
@@ -220,7 +221,7 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -247,12 +248,13 @@ void main() {
     });
 
     test('building for web with no implementation results in no-op', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', withExtraFiles: <List<String>>[
         <String>['example', 'test'],
       ]);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -277,7 +279,7 @@ void main() {
     });
 
     test('building for web', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
             <String>['example', 'web', 'index.html'],
@@ -285,7 +287,7 @@ void main() {
           isWebPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -314,14 +316,14 @@ void main() {
     test(
         'building for Windows when plugin is not set up for Windows results in no-op',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -346,14 +348,14 @@ void main() {
     });
 
     test('building for windows', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isWindowsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -382,14 +384,14 @@ void main() {
     test(
         'building for Android when plugin is not set up for Android results in no-op',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isLinuxPlugin: false);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -414,14 +416,14 @@ void main() {
     });
 
     test('building for android', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -452,14 +454,14 @@ void main() {
     });
 
     test('enable-experiment flag for Android', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -482,14 +484,14 @@ void main() {
     });
 
     test('enable-experiment flag for ios', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin',
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
