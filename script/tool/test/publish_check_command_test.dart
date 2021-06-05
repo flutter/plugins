@@ -27,9 +27,8 @@ void main() {
     setUp(() {
       initializeFakePackages();
       processRunner = PublishCheckProcessRunner();
-      final PublishCheckCommand publishCheckCommand = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final PublishCheckCommand publishCheckCommand =
+          PublishCheckCommand(mockPackagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
         'publish_check_command',
@@ -146,8 +145,8 @@ void main() {
 
       processRunner.processesToReturn.add(process);
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['publish-check']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['publish-check']);
 
       expect(output, isNot(contains(contains('ERROR:'))));
     });
@@ -180,8 +179,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final PublishCheckCommand command = PublishCheckCommand(mockPackagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -247,8 +245,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final PublishCheckCommand command = PublishCheckCommand(mockPackagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -317,8 +314,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final PublishCheckCommand command = PublishCheckCommand(mockPackagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(

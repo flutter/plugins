@@ -58,7 +58,6 @@ void main() {
     final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
       plugins,
       packagesDir,
-      fileSystem,
       processRunner: processRunner,
       gitDir: gitDir,
     );
@@ -156,8 +155,7 @@ void main() {
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
-    test('all plugins should be tested if .cirrus.yml changes.',
-        () async {
+    test('all plugins should be tested if .cirrus.yml changes.', () async {
       gitDiffResponse = '''
 .cirrus.yml
 packages/plugin1/CHANGELOG
@@ -172,8 +170,7 @@ packages/plugin1/CHANGELOG
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
-    test('all plugins should be tested if .ci.yaml changes',
-        () async {
+    test('all plugins should be tested if .ci.yaml changes', () async {
       gitDiffResponse = '''
 .ci.yaml
 packages/plugin1/CHANGELOG
@@ -188,8 +185,7 @@ packages/plugin1/CHANGELOG
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
-    test('all plugins should be tested if anything in .ci/ changes',
-        () async {
+    test('all plugins should be tested if anything in .ci/ changes', () async {
       gitDiffResponse = '''
 .ci/Dockerfile
 packages/plugin1/CHANGELOG
@@ -520,12 +516,10 @@ file2/file2.cc
 class SamplePluginCommand extends PluginCommand {
   SamplePluginCommand(
     this._plugins,
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
-  }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   final List<String> _plugins;
 

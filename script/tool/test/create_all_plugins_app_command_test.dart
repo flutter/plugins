@@ -30,7 +30,6 @@ void main() {
 
       final CreateAllPluginsAppCommand command = CreateAllPluginsAppCommand(
         packagesDir,
-        fileSystem,
         pluginsRoot: testRoot,
       );
       appDir = command.appDirectory;
