@@ -1,7 +1,3 @@
-## 2.2.0
-
-* Add support to opt into hybrid composition on Android.
-
 ## 2.1.0
 
 * Add support for Hybrid Composition when building the Google Maps widget on Android. Set
