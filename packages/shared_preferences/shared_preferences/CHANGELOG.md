@@ -1,5 +1,7 @@
-## 2.0.7
+=======
+## NEXT
 
+* Add iOS unit test target.
 * Fix string clash with double entries on Android
 
 ## 2.0.6
