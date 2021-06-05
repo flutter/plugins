@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,7 @@ List<Caption> _parseCaptionsFromSubRipString(String file) {
       end: startAndEnd.end,
       text: text,
     );
-
-    if (newCaption.start != null && newCaption.end != null) {
+    if (newCaption.start != newCaption.end) {
       captions.add(newCaption);
     }
   }
@@ -64,7 +63,7 @@ class _StartAndEnd {
         RegExp(_subRipTimeStamp + _subRipArrow + _subRipTimeStamp);
 
     if (!format.hasMatch(line)) {
-      return _StartAndEnd(null, null);
+      return _StartAndEnd(Duration.zero, Duration.zero);
     }
 
     final List<String> times = line.split(_subRipArrow);
@@ -84,7 +83,7 @@ class _StartAndEnd {
 // Duration(hours: 0, minutes: 1, seconds: 59, milliseconds: 084)
 Duration _parseSubRipTimestamp(String timestampString) {
   if (!RegExp(_subRipTimeStamp).hasMatch(timestampString)) {
-    return null;
+    return Duration.zero;
   }
 
   final List<String> commaSections = timestampString.split(',');

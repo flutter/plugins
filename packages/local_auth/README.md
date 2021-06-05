@@ -23,8 +23,8 @@ bool canCheckBiometrics =
 
 Currently the following biometric types are implemented:
 
-* BiometricType.face
-* BiometricType.fingerprint
+- BiometricType.face
+- BiometricType.fingerprint
 
 To get a list of enrolled biometrics, call getAvailableBiometrics:
 
@@ -44,10 +44,10 @@ if (Platform.isIOS) {
 We have default dialogs with an 'OK' button to show authentication error
 messages for the following 2 cases:
 
-1.  Passcode/PIN/Pattern Not Set. The user has not yet configured a passcode on
-    iOS or PIN/pattern on Android.
-2.  Touch ID/Fingerprint Not Enrolled. The user has not enrolled any
-    fingerprints on the device.
+1. Passcode/PIN/Pattern Not Set. The user has not yet configured a passcode on
+   iOS or PIN/pattern on Android.
+2. Touch ID/Fingerprint Not Enrolled. The user has not enrolled any
+   fingerprints on the device.
 
 Which means, if there's no fingerprint on the user's device, a dialog with
 instructions will pop up to let the user set up fingerprint. If the user clicks
@@ -55,11 +55,24 @@ instructions will pop up to let the user set up fingerprint. If the user clicks
 
 Use the exported APIs to trigger local authentication with default dialogs:
 
+The `authenticate()` method uses biometric authentication, but also allows
+users to use pin, pattern, or passcode.
+
 ```dart
 var localAuth = LocalAuthentication();
 bool didAuthenticate =
-    await localAuth.authenticateWithBiometrics(
+    await localAuth.authenticate(
         localizedReason: 'Please authenticate to show account balance');
+```
+
+To authenticate using biometric authentication only, set `biometricOnly` to `true`.
+
+```dart
+var localAuth = LocalAuthentication();
+bool didAuthenticate =
+    await localAuth.authenticate(
+        localizedReason: 'Please authenticate to show account balance',
+        biometricOnly: true);
 ```
 
 If you don't want to use the default dialogs, call this API with
@@ -68,7 +81,7 @@ and you need to handle them in your dart code:
 
 ```dart
 bool didAuthenticate =
-    await localAuth.authenticateWithBiometrics(
+    await localAuth.authenticate(
         localizedReason: 'Please authenticate to show account balance',
         useErrorDialogs: false);
 ```
@@ -84,7 +97,7 @@ const iosStrings = const IOSAuthMessages(
     goToSettingsButton: 'settings',
     goToSettingsDescription: 'Please set up your Touch ID.',
     lockOut: 'Please reenable your Touch ID');
-await localAuth.authenticateWithBiometrics(
+await localAuth.authenticate(
     localizedReason: 'Please authenticate to show account balance',
     useErrorDialogs: false,
     iOSAuthStrings: iosStrings);
@@ -112,7 +125,7 @@ import 'package:flutter/services.dart';
 import 'package:local_auth/error_codes.dart' as auth_error;
 
 try {
-  bool didAuthenticate = await local_auth.authenticateWithBiometrics(
+  bool didAuthenticate = await local_auth.authenticate(
       localizedReason: 'Please authenticate to show account balance');
 } on PlatformException catch (e) {
   if (e.code == auth_error.notAvailable) {
@@ -123,7 +136,7 @@ try {
 
 ## iOS Integration
 
-Note that this plugin works with both TouchID and FaceID. However, to use the latter,
+Note that this plugin works with both Touch ID and Face ID. However, to use the latter,
 you need to also add:
 
 ```xml
@@ -132,8 +145,7 @@ you need to also add:
 ```
 
 to your Info.plist file. Failure to do so results in a dialog that tells the user your
-app has not been updated to use TouchID.
-
+app has not been updated to use Face ID.
 
 ## Android Integration
 
@@ -141,6 +153,42 @@ Note that local_auth plugin requires the use of a FragmentActivity as
 opposed to Activity. This can be easily done by switching to use
 `FlutterFragmentActivity` as opposed to `FlutterActivity` in your
 manifest (or your own Activity class if you are extending the base class).
+
+Update your MainActivity.java:
+
+```java
+import android.os.Bundle;
+import io.flutter.app.FlutterFragmentActivity;
+import io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin;
+import io.flutter.plugins.localauth.LocalAuthPlugin;
+
+public class MainActivity extends FlutterFragmentActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        FlutterAndroidLifecyclePlugin.registerWith(
+                registrarFor(
+                        "io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin"));
+        LocalAuthPlugin.registerWith(registrarFor("io.flutter.plugins.localauth.LocalAuthPlugin"));
+    }
+}
+```
+
+OR
+
+Update your MainActivity.kt:
+
+```kotlin
+import io.flutter.embedding.android.FlutterFragmentActivity
+import io.flutter.embedding.engine.FlutterEngine
+import io.flutter.plugins.GeneratedPluginRegistrant
+
+class MainActivity: FlutterFragmentActivity() {
+    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
+    }
+}
+```
 
 Update your project's `AndroidManifest.xml` file to include the
 `USE_FINGERPRINT` permissions:
@@ -155,7 +203,7 @@ Update your project's `AndroidManifest.xml` file to include the
 On Android, you can check only for existence of fingerprint hardware prior
 to API 29 (Android Q). Therefore, if you would like to support other biometrics
 types (such as face scanning) and you want to support SDKs lower than Q,
-*do not* call `getAvailableBiometrics`. Simply call `authenticateWithBiometrics`.
+_do not_ call `getAvailableBiometrics`. Simply call `authenticate` with `biometricOnly: true`.
 This will return an error if there was no hardware available.
 
 ## Sticky Auth
@@ -170,6 +218,6 @@ app resumes.
 ## Getting Started
 
 For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+[documentation](https://flutter.dev/).
 
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).

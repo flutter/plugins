@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,14 +11,17 @@ import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
+final pathPrefix =
+    Directory.current.path.endsWith('test') ? './assets/' : './test/assets/';
+final path = pathPrefix + 'hello.txt';
 final String expectedStringContents = 'Hello, world!';
-final Uint8List bytes = utf8.encode(expectedStringContents);
-final File textFile = File('./assets/hello.txt');
+final Uint8List bytes = Uint8List.fromList(utf8.encode(expectedStringContents));
+final File textFile = File(path);
 final String textFilePath = textFile.path;
 
 void main() {
   group('Create with an objectUrl', () {
-    final pickedFile = PickedFile(textFilePath);
+    final PickedFile pickedFile = PickedFile(textFilePath);
 
     test('Can be read as a string', () async {
       expect(await pickedFile.readAsString(), equals(expectedStringContents));

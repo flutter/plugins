@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -53,5 +53,14 @@ public class FileUtilTest {
     assertTrue(bytes.length > 0);
     String imageStream = new String(bytes, UTF_8);
     assertTrue(imageStream.equals("imageStream"));
+  }
+
+  @Test
+  public void FileUtil_getImageExtension() throws IOException {
+    Uri uri = Uri.parse("content://dummy/dummy.png");
+    shadowContentResolver.registerInputStream(
+        uri, new ByteArrayInputStream("imageStream".getBytes(UTF_8)));
+    String path = fileUtils.getPathFromUri(context, uri);
+    assertTrue(path.endsWith(".jpg"));
   }
 }

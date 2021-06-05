@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -46,7 +46,9 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
 @property(nonatomic, readonly) bool isInitialized;
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater;
+- (instancetype)initWithURL:(NSURL*)url
+               frameUpdater:(FLTFrameUpdater*)frameUpdater
+                httpHeaders:(NSDictionary<NSString*, NSString*>*)headers;
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
@@ -62,7 +64,7 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
 @implementation FLTVideoPlayer
 - (instancetype)initWithAsset:(NSString*)asset frameUpdater:(FLTFrameUpdater*)frameUpdater {
   NSString* path = [[NSBundle mainBundle] pathForResource:asset ofType:nil];
-  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater];
+  return [self initWithURL:[NSURL fileURLWithPath:path] frameUpdater:frameUpdater httpHeaders:nil];
 }
 
 - (void)addObservers:(AVPlayerItem*)item {
@@ -162,8 +164,15 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = YES;
 }
 
-- (instancetype)initWithURL:(NSURL*)url frameUpdater:(FLTFrameUpdater*)frameUpdater {
-  AVPlayerItem* item = [AVPlayerItem playerItemWithURL:url];
+- (instancetype)initWithURL:(NSURL*)url
+               frameUpdater:(FLTFrameUpdater*)frameUpdater
+                httpHeaders:(NSDictionary<NSString*, NSString*>*)headers {
+  NSDictionary<NSString*, id>* options = nil;
+  if (headers != nil && [headers count] != 0) {
+    options = @{@"AVURLAssetHTTPHeaderFieldsKey" : headers};
+  }
+  AVURLAsset* urlAsset = [AVURLAsset URLAssetWithURL:url options:options];
+  AVPlayerItem* item = [AVPlayerItem playerItemWithAsset:urlAsset];
   return [self initWithPlayerItem:item frameUpdater:frameUpdater];
 }
 
@@ -359,6 +368,30 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
 
+- (void)setPlaybackSpeed:(double)speed {
+  // See https://developer.apple.com/library/archive/qa/qa1772/_index.html for an explanation of
+  // these checks.
+  if (speed > 2.0 && !_player.currentItem.canPlayFastForward) {
+    if (_eventSink != nil) {
+      _eventSink([FlutterError errorWithCode:@"VideoError"
+                                     message:@"Video cannot be fast-forwarded beyond 2.0x"
+                                     details:nil]);
+    }
+    return;
+  }
+
+  if (speed < 1.0 && !_player.currentItem.canPlaySlowForward) {
+    if (_eventSink != nil) {
+      _eventSink([FlutterError errorWithCode:@"VideoError"
+                                     message:@"Video cannot be slow-forwarded"
+                                     details:nil]);
+    }
+    return;
+  }
+
+  _player.rate = speed;
+}
+
 - (CVPixelBufferRef)copyPixelBuffer {
   CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
   if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
@@ -368,7 +401,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
 }
 
-- (void)onTextureUnregistered {
+- (void)onTextureUnregistered:(NSObject<FlutterTexture>*)texture {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self dispose];
   });
@@ -498,7 +531,8 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else if (input.uri) {
     player = [[FLTVideoPlayer alloc] initWithURL:[NSURL URLWithString:input.uri]
-                                    frameUpdater:frameUpdater];
+                                    frameUpdater:frameUpdater
+                                     httpHeaders:input.httpHeaders];
     return [self onPlayerSetup:player frameUpdater:frameUpdater];
   } else {
     *error = [FlutterError errorWithCode:@"video_player" message:@"not implemented" details:nil];
@@ -536,6 +570,11 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 - (void)setVolume:(FLTVolumeMessage*)input error:(FlutterError**)error {
   FLTVideoPlayer* player = _players[input.textureId];
   [player setVolume:[input.volume doubleValue]];
+}
+
+- (void)setPlaybackSpeed:(FLTPlaybackSpeedMessage*)input error:(FlutterError**)error {
+  FLTVideoPlayer* player = _players[input.textureId];
+  [player setPlaybackSpeed:[input.speed doubleValue]];
 }
 
 - (void)play:(FLTTextureMessage*)input error:(FlutterError**)error {

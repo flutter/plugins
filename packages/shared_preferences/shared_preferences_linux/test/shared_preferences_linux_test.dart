@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 import 'package:file/memory.dart';
@@ -6,20 +6,21 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
-
-MemoryFileSystem fs;
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
+  late MemoryFileSystem fs;
+
+  SharedPreferencesLinux.registerWith();
+
   setUp(() {
     fs = MemoryFileSystem.test();
   });
 
-  tearDown(() {});
-
   Future<String> _getFilePath() async {
     final pathProvider = PathProviderLinux();
     final directory = await pathProvider.getApplicationSupportPath();
-    return path.join(directory, 'shared_preferences.json');
+    return path.join(directory!, 'shared_preferences.json');
   }
 
   _writeTestFile(String value) async {
@@ -37,6 +38,11 @@ void main() {
     prefs.fs = fs;
     return prefs;
   }
+
+  test('registered instance', () {
+    expect(
+        SharedPreferencesStorePlatform.instance, isA<SharedPreferencesLinux>());
+  });
 
   test('getAll', () async {
     await _writeTestFile('{"key1": "one", "key2": 2}');
