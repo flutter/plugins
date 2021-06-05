@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -587,4 +588,36 @@ void main() {
 
     expect(platformGoogleMap.buildingsEnabled, true);
   });
+
+  testWidgets(
+    'Default Android widget is AndroidView',
+    (WidgetTester tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.android;
+      await tester.pumpWidget(
+        const Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          ),
+        ),
+      );
+
+      expect(find.byType(AndroidView), findsOneWidget);
+    },
+  );
+
+  // TODO(bparrishMines):
+  // testWidgets('Use AndroidViewSurface on Android', (WidgetTester tester) async {
+  //   debugDefaultTargetPlatformOverride = TargetPlatform.android;
+  //   await tester.pumpWidget(
+  //     const Directionality(
+  //       textDirection: TextDirection.ltr,
+  //       child: GoogleMap(
+  //         initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+  //       ),
+  //     ),
+  //   );
+  //
+  //   expect(find.byType(AndroidViewSurface), findsOneWidget);
+  // });
 }
