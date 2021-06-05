@@ -21,9 +21,8 @@ void main() {
     setUp(() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
-      final DriveExamplesCommand command = DriveExamplesCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final DriveExamplesCommand command =
+          DriveExamplesCommand(mockPackagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');

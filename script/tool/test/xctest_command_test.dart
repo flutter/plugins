@@ -91,9 +91,8 @@ void main() {
     setUp(() {
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
-      final XCTestCommand command = XCTestCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final XCTestCommand command =
+          XCTestCommand(mockPackagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);

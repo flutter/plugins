@@ -18,9 +18,8 @@ void main() {
   setUp(() {
     initializeFakePackages();
     processRunner = RecordingProcessRunner();
-    final AnalyzeCommand analyzeCommand = AnalyzeCommand(
-        mockPackagesDir, mockFileSystem,
-        processRunner: processRunner);
+    final AnalyzeCommand analyzeCommand =
+        AnalyzeCommand(mockPackagesDir, processRunner: processRunner);
 
     runner = CommandRunner<void>('analyze_command', 'Test for analyze_command');
     runner.addCommand(analyzeCommand);

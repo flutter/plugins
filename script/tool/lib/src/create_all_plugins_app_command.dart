@@ -8,7 +8,6 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -18,11 +17,10 @@ import 'common.dart';
 class CreateAllPluginsAppCommand extends PluginCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     this.pluginsRoot,
-  }) : super(packagesDir, fileSystem) {
-    pluginsRoot ??= fileSystem.currentDirectory;
+  }) : super(packagesDir) {
+    pluginsRoot ??= packagesDir.fileSystem.currentDirectory;
     appDirectory = pluginsRoot.childDirectory('all_plugins');
   }
 
@@ -161,8 +159,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     await for (final Directory package in getPlugins()) {
       final String pluginName = package.path.split('/').last;
-      final File pubspecFile =
-          fileSystem.file(p.join(package.path, 'pubspec.yaml'));
+      final File pubspecFile = package.childFile('pubspec.yaml');
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {

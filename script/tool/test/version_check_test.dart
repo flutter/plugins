@@ -88,8 +88,7 @@ void main() {
       });
       initializeFakePackages();
       processRunner = RecordingProcessRunner();
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
           processRunner: processRunner, gitDir: gitDir);
 
       runner = CommandRunner<void>(
@@ -238,13 +237,10 @@ void main() {
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      final Directory pluginDir = createFakePlugin('plugin',
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
-      mockFileSystem.currentDirectory
-          .childDirectory('packages')
-          .childDirectory('plugin')
-          .childFile('pubspec.yaml')
-          .deleteSync();
+      pluginDir.childFile('pubspec.yaml').deleteSync();
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
 
@@ -600,8 +596,7 @@ The first version listed in CHANGELOG.md is 1.0.0.
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -637,8 +632,7 @@ The first version listed in CHANGELOG.md is 1.0.0.
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -682,8 +676,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('xx', 400);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -726,8 +719,7 @@ ${indentation}HTTP response: xx
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('xx', 404);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(mockPackagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(

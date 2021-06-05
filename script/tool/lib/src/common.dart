@@ -48,14 +48,13 @@ const String kApk = 'apk';
 const String kEnableExperiment = 'enable-experiment';
 
 /// Returns whether the given directory contains a Flutter package.
-bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
+bool isFlutterPackage(FileSystemEntity entity) {
   if (entity is! Directory) {
     return false;
   }
 
   try {
-    final File pubspecFile =
-        fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
+    final File pubspecFile = entity.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final YamlMap? dependencies = pubspecYaml['dependencies'] as YamlMap?;
@@ -78,8 +77,7 @@ bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
 ///       plugin:
 ///         platforms:
 ///           [platform]:
-bool pluginSupportsPlatform(
-    String platform, FileSystemEntity entity, FileSystem fileSystem) {
+bool pluginSupportsPlatform(String platform, FileSystemEntity entity) {
   assert(platform == kIos ||
       platform == kAndroid ||
       platform == kWeb ||
@@ -91,8 +89,7 @@ bool pluginSupportsPlatform(
   }
 
   try {
-    final File pubspecFile =
-        fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
+    final File pubspecFile = entity.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
@@ -120,33 +117,33 @@ bool pluginSupportsPlatform(
 }
 
 /// Returns whether the given directory contains a Flutter Android plugin.
-bool isAndroidPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kAndroid, entity, fileSystem);
+bool isAndroidPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kAndroid, entity);
 }
 
 /// Returns whether the given directory contains a Flutter iOS plugin.
-bool isIosPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kIos, entity, fileSystem);
+bool isIosPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kIos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter web plugin.
-bool isWebPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kWeb, entity, fileSystem);
+bool isWebPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kWeb, entity);
 }
 
 /// Returns whether the given directory contains a Flutter Windows plugin.
-bool isWindowsPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kWindows, entity, fileSystem);
+bool isWindowsPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kWindows, entity);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.
-bool isMacOsPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kMacos, entity, fileSystem);
+bool isMacOsPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kMacos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter linux plugin.
-bool isLinuxPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kLinux, entity, fileSystem);
+bool isLinuxPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kLinux, entity);
 }
 
 /// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
@@ -169,8 +166,7 @@ class ToolExit extends Error {
 abstract class PluginCommand extends Command<void> {
   /// Creates a command to operate on [packagesDir] with the given environment.
   PluginCommand(
-    this.packagesDir,
-    this.fileSystem, {
+    this.packagesDir, {
     this.processRunner = const ProcessRunner(),
     this.gitDir,
   }) {
@@ -222,11 +218,6 @@ abstract class PluginCommand extends Command<void> {
 
   /// The directory containing the plugin packages.
   final Directory packagesDir;
-
-  /// The file system.
-  ///
-  /// This can be overridden for testing.
-  final FileSystem fileSystem;
 
   /// The process runner.
   ///
@@ -414,19 +405,17 @@ abstract class PluginCommand extends Command<void> {
   /// Returns whether the specified entity is a directory containing a
   /// `pubspec.yaml` file.
   bool _isDartPackage(FileSystemEntity entity) {
-    return entity is Directory &&
-        fileSystem.file(p.join(entity.path, 'pubspec.yaml')).existsSync();
+    return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
   /// Returns the example Dart packages contained in the specified plugin, or
   /// an empty List, if the plugin has no examples.
   Iterable<Directory> getExamplesForPlugin(Directory plugin) {
-    final Directory exampleFolder =
-        fileSystem.directory(p.join(plugin.path, 'example'));
+    final Directory exampleFolder = plugin.childDirectory('example');
     if (!exampleFolder.existsSync()) {
       return <Directory>[];
     }
-    if (isFlutterPackage(exampleFolder, fileSystem)) {
+    if (isFlutterPackage(exampleFolder)) {
       return <Directory>[exampleFolder];
     }
     // Only look at the subdirectories of the example directory if the example
@@ -434,8 +423,7 @@ abstract class PluginCommand extends Command<void> {
     // example directory for other dart packages.
     return exampleFolder
         .listSync()
-        .where(
-            (FileSystemEntity entity) => isFlutterPackage(entity, fileSystem))
+        .where((FileSystemEntity entity) => isFlutterPackage(entity))
         .cast<Directory>();
   }
 

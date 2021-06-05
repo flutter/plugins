@@ -26,10 +26,9 @@ const String _kFoundNoSimulatorsMessage =
 class XCTestCommand extends PluginCommand {
   /// Creates an instance of the test command.
   XCTestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addOption(
       _kiOSDestination,
       help:
@@ -68,7 +67,7 @@ class XCTestCommand extends PluginCommand {
       final String packageName =
           p.relative(plugin.path, from: packagesDir.path);
       print('Start running for $packageName ...');
-      if (!isIosPlugin(plugin, fileSystem)) {
+      if (!isIosPlugin(plugin)) {
         print('iOS is not supported by this plugin.');
         print('\n\n');
         continue;
