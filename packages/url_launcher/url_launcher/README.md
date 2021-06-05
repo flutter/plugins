@@ -51,38 +51,32 @@ void _launchURL() async =>
 
 ### Android
 
-Starting from API 30 Android requires package visibility configuration in your `AndroidManifest.xml` otherwise `canLaunch` would return `false`. Please see the `<queries>` element example below and tailor to your needs. For more information see the [Managing package visibility documentation](https://developer.android.com/training/basics/intents/package-visibility).
+Starting from API 30 Android requires package visibility configuration in your
+`AndroidManifest.xml` otherwise `canLaunch` would return `false`. A `<queries>`
+element could be added to your manifest as a child of the root element. The
+snippet below shows a variation, feel free to tailor it to your needs. The
+example application demonstrates a version as well. For more information see the
+[Package visibility filtering on Android](https://developer.android.com/training/basics/intents/package-visibility)
+article.
 
 ``` xml
-<manifest ...>
-
-  ...
-
-  <queries>
-    <!-- If your app opens https URLs -->
-    <intent>
-      <action android:name="android.intent.action.VIEW" />
-      <data android:scheme="https" />
-    </intent>
-    <!-- If your app makes calls -->
-    <intent>
-      <action android:name="android.intent.action.DIAL" />
-      <data android:scheme="tel" />
-    </intent>
-    <!-- If your app emails -->
-    <intent>
-      <action android:name="android.intent.action.SEND" />
-      <data android:mimeType="*/*" />
-    </intent>
-  </queries>
-
-  ...
-
-  <application>
-  ...
-  </application>
-
-</manifest>
+<queries>
+  <!-- If your app opens https URLs -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="https" />
+  </intent>
+  <!-- If your app makes calls -->
+  <intent>
+    <action android:name="android.intent.action.DIAL" />
+    <data android:scheme="tel" />
+  </intent>
+  <!-- If your app emails -->
+  <intent>
+    <action android:name="android.intent.action.SEND" />
+    <data android:mimeType="*/*" />
+  </intent>
+</queries>
 ```
 
 ## Supported URL schemes
@@ -109,7 +103,8 @@ apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Encoding URLs
 
-URLs must be properly encoded, especially when including spaces or other special characters. This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
+URLs must be properly encoded, especially when including spaces or other special characters.
+This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
 ```dart
 import 'dart:core';
 import 'package:url_launcher/url_launcher.dart';
