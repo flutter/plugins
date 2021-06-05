@@ -606,7 +606,7 @@ void main() {
     },
   );
 
-  // TODO(bparrishMines):
+  // TODO(bparrishMines): Uncomment once https://github.com/flutter/plugins/pull/4017 has landed.
   // testWidgets('Use AndroidViewSurface on Android', (WidgetTester tester) async {
   //   debugDefaultTargetPlatformOverride = TargetPlatform.android;
   //   await tester.pumpWidget(
