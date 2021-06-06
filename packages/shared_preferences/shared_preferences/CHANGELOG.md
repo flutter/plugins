@@ -1,4 +1,3 @@
-=======
 ## NEXT
 
 * Add iOS unit test target.
