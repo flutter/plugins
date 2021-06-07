@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -48,7 +46,7 @@ class XCTestCommand extends PluginCommand {
   Future<void> run() async {
     String destination = getStringArg(_kiOSDestination);
     if (destination.isEmpty) {
-      final String simulatorId = await _findAvailableIphoneSimulator();
+      final String? simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
         print(_kFoundNoSimulatorsMessage);
         throw ToolExit(1);
@@ -119,7 +117,7 @@ class XCTestCommand extends PluginCommand {
         workingDir: example, exitOnError: false);
   }
 
-  Future<String> _findAvailableIphoneSimulator() async {
+  Future<String?> _findAvailableIphoneSimulator() async {
     // Find the first available destination if not specified.
     final List<String> findSimulatorsArguments = <String>[
       'simctl',
@@ -143,30 +141,40 @@ class XCTestCommand extends PluginCommand {
     final List<Map<String, dynamic>> runtimes =
         (simulatorListJson['runtimes'] as List<dynamic>)
             .cast<Map<String, dynamic>>();
-    final Map<String, dynamic> devices =
-        simulatorListJson['devices'] as Map<String, dynamic>;
+    final Map<String, Object> devices =
+        (simulatorListJson['devices'] as Map<String, dynamic>)
+            .cast<String, Object>();
     if (runtimes.isEmpty || devices.isEmpty) {
       return null;
     }
-    String id;
+    String? id;
     // Looking for runtimes, trying to find one with highest OS version.
-    for (final Map<String, dynamic> runtimeMap in runtimes.reversed) {
-      if (!(runtimeMap['name'] as String).contains('iOS')) {
+    for (final Map<String, dynamic> rawRuntimeMap in runtimes.reversed) {
+      final Map<String, Object> runtimeMap =
+          rawRuntimeMap.cast<String, Object>();
+      if ((runtimeMap['name'] as String?)?.contains('iOS') != true) {
         continue;
       }
-      final String runtimeID = runtimeMap['identifier'] as String;
-      final List<Map<String, dynamic>> devicesForRuntime =
-          (devices[runtimeID] as List<dynamic>).cast<Map<String, dynamic>>();
-      if (devicesForRuntime.isEmpty) {
+      final String? runtimeID = runtimeMap['identifier'] as String?;
+      if (runtimeID == null) {
+        continue;
+      }
+      final List<Map<String, dynamic>>? devicesForRuntime =
+          (devices[runtimeID] as List<dynamic>?)?.cast<Map<String, dynamic>>();
+      if (devicesForRuntime == null || devicesForRuntime.isEmpty) {
         continue;
       }
       // Looking for runtimes, trying to find latest version of device.
-      for (final Map<String, dynamic> device in devicesForRuntime.reversed) {
+      for (final Map<String, dynamic> rawDevice in devicesForRuntime.reversed) {
+        final Map<String, Object> device = rawDevice.cast<String, Object>();
         if (device['availabilityError'] != null ||
-            (device['isAvailable'] as bool == false)) {
+            (device['isAvailable'] as bool?) == false) {
           continue;
         }
-        id = device['udid'] as String;
+        id = device['udid'] as String?;
+        if (id == null) {
+          continue;
+        }
         print('device selected: $device');
         return id;
       }
