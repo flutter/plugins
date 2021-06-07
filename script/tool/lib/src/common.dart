@@ -146,11 +146,10 @@ bool isLinuxPlugin(FileSystemEntity entity) {
   return pluginSupportsPlatform(kLinux, entity);
 }
 
-/// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
-void printErrorAndExit({required String errorMessage, int exitCode = 1}) {
+/// Prints `errorMessage` in red.
+void printError(String errorMessage) {
   final Colorize redError = Colorize(errorMessage)..red();
   print(redError);
-  throw ToolExit(exitCode);
 }
 
 /// Error thrown when a command needs to exit with a non-zero exit code.
@@ -437,9 +436,10 @@ abstract class PluginCommand extends Command<void> {
     GitDir? baseGitDir = gitDir;
     if (baseGitDir == null) {
       if (!await GitDir.isGitDir(rootDir)) {
-        printErrorAndExit(
-            errorMessage: '$rootDir is not a valid Git repository.',
-            exitCode: 2);
+        printError(
+          '$rootDir is not a valid Git repository.',
+        );
+        throw ToolExit(2);
       }
       baseGitDir = await GitDir.fromExisting(rootDir);
     }

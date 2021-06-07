@@ -507,10 +507,11 @@ Safe to ignore if the package is deleted in this commit.
     }
     final String credential = io.Platform.environment[_pubCredentialName];
     if (credential == null) {
-      printErrorAndExit(errorMessage: '''
+      printError('''
 No pub credential available. Please check if `~/.pub-cache/credentials.json` is valid.
 If running this command on CI, you can set the pub credential content in the $_pubCredentialName environment variable.
 ''');
+      throw ToolExit(1);
     }
     credentialFile.openSync(mode: FileMode.writeOnlyAppend)
       ..writeStringSync(credential)

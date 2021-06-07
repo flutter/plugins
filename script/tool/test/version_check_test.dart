@@ -30,7 +30,7 @@ void testAllowedVersion(
   final Version master = Version.parse(masterVersion);
   final Version head = Version.parse(headVersion);
   final Map<Version, NextVersionType> allowedVersions =
-      getAllowedNextVersions(master, head);
+      getAllowedNextVersions(masterVersion: master, headVersion: head);
   if (allowed) {
     expect(allowedVersions, contains(head));
     if (nextVersionType != null) {

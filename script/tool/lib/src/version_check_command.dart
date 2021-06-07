@@ -37,7 +37,7 @@ enum NextVersionType {
 /// those have different semver rules.
 @visibleForTesting
 Map<Version, NextVersionType> getAllowedNextVersions(
-    Version masterVersion, Version headVersion) {
+    {@required Version masterVersion, @required Version /*!*/ headVersion}) {
   final Map<Version, NextVersionType> allowedNextVersions =
       <Version, NextVersionType>{
     masterVersion.nextMajor: NextVersionType.BREAKING_MAJOR,
@@ -76,7 +76,7 @@ class VersionCheckCommand extends PluginCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
-    this.httpClient,
+    http.Client httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
         super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
@@ -100,9 +100,6 @@ class VersionCheckCommand extends PluginCommand {
       'Also checks if the latest version in CHANGELOG matches the version in pubspec.\n\n'
       'This command requires "pub" and "flutter" to be in your path.';
 
-  /// The http client used to query pub server.
-  final http.Client httpClient;
-
   final PubVersionFinder _pubVersionFinder;
 
   @override
@@ -111,6 +108,8 @@ class VersionCheckCommand extends PluginCommand {
 
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
+
+    final List<String> badVersionChangePubspecs = <String>[];
 
     const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
@@ -129,10 +128,11 @@ class VersionCheckCommand extends PluginCommand {
       final Version headVersion =
           await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
       if (headVersion == null) {
-        printErrorAndExit(
-            errorMessage: '${indentation}No version found. A package that '
-                'intentionally has no version should be marked '
-                '"publish_to: none".');
+        printError('${indentation}No version found. A package that '
+            'intentionally has no version should be marked '
+            '"publish_to: none".');
+        badVersionChangePubspecs.add(pubspecPath);
+        continue;
       }
       Version sourceVersion;
       if (getBoolArg(_againstPubFlag)) {
@@ -146,11 +146,13 @@ class VersionCheckCommand extends PluginCommand {
                 '$indentation$packageName: Current largest version on pub: $sourceVersion');
             break;
           case PubVersionFinderResult.fail:
-            printErrorAndExit(errorMessage: '''
+            printError('''
 ${indentation}Error fetching version on pub for $packageName.
 ${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
 ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');
+            badVersionChangePubspecs.add(pubspecPath);
+            continue;
             break;
           case PubVersionFinderResult.noPackageFound:
             sourceVersion = null;
@@ -180,7 +182,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       // Check for reverts when doing local validation.
       if (!getBoolArg(_againstPubFlag) && headVersion < sourceVersion) {
         final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
-            getAllowedNextVersions(headVersion, sourceVersion);
+            getAllowedNextVersions(
+                masterVersion: headVersion, headVersion: sourceVersion);
         // Since this skips validation, try to ensure that it really is likely
         // to be a revert rather than a typo by checking that the transition
         // from the lower version to the new version would have been valid.
@@ -192,14 +195,16 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       }
 
       final Map<Version, NextVersionType> allowedNextVersions =
-          getAllowedNextVersions(sourceVersion, headVersion);
+          getAllowedNextVersions(
+              masterVersion: sourceVersion, headVersion: headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
         final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
-        final String error = '${indentation}Incorrectly updated version.\n'
+        printError('${indentation}Incorrectly updated version.\n'
             '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
-            '${indentation}Allowed versions: $allowedNextVersions';
-        printErrorAndExit(errorMessage: error);
+            '${indentation}Allowed versions: $allowedNextVersions');
+        badVersionChangePubspecs.add(pubspecPath);
+        continue;
       } else {
         print('$indentation$headVersion -> $sourceVersion');
       }
@@ -208,21 +213,48 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
           pubspec.name.endsWith('_platform_interface');
       if (isPlatformInterface &&
           allowedNextVersions[headVersion] == NextVersionType.BREAKING_MAJOR) {
-        final String error = '$pubspecPath breaking change detected.\n'
-            'Breaking changes to platform interfaces are strongly discouraged.\n';
-        printErrorAndExit(errorMessage: error);
+        printError('$pubspecPath breaking change detected.\n'
+            'Breaking changes to platform interfaces are strongly discouraged.\n');
+        badVersionChangePubspecs.add(pubspecPath);
+        continue;
+      }
+    }
+    _pubVersionFinder.httpClient.close();
+
+    // TODO(stuartmorgan): Unify the way iteration works for these checks; the
+    // two checks shouldn't be operating independently on different lists.
+    final List<String> mismatchedVersionPlugins = <String>[];
+    await for (final Directory plugin in getPlugins()) {
+      if (!(await _checkVersionsMatch(plugin))) {
+        mismatchedVersionPlugins.add(plugin.basename);
       }
     }
 
-    await for (final Directory plugin in getPlugins()) {
-      await _checkVersionsMatch(plugin);
+    bool passed = true;
+    if (badVersionChangePubspecs.isNotEmpty) {
+      passed = false;
+      printError('''
+The following pubspecs failed validaton:
+$indentation${badVersionChangePubspecs.join('\n$indentation')}
+''');
     }
-    _pubVersionFinder.httpClient.close();
+    if (mismatchedVersionPlugins.isNotEmpty) {
+      passed = false;
+      printError('''
+The following pubspecs failed validaton:
+$indentation${badVersionChangePubspecs.join('\n$indentation')}
+''');
+    }
+    if (!passed) {
+      throw ToolExit(1);
+    }
 
     print('No version check errors found!');
   }
 
-  Future<void> _checkVersionsMatch(Directory plugin) async {
+  /// Returns whether or not the pubspec version and CHANGELOG version for
+  /// [plugin] match.
+  Future<bool> _checkVersionsMatch(Directory plugin) async {
     // get version from pubspec
     final String packageName = plugin.basename;
     print('-----------------------------------------');
@@ -231,8 +263,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
     final Pubspec pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
-      const String error = 'Cannot parse version from pubspec.yaml';
-      printErrorAndExit(errorMessage: error);
+      printError('Cannot parse version from pubspec.yaml');
+      return false;
     }
     final Version fromPubspec = pubspec.version;
 
@@ -268,32 +300,34 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
     final Version fromChangeLog = Version.parse(versionString);
     if (fromChangeLog == null) {
-      final String error =
-          'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md';
-      printErrorAndExit(errorMessage: error);
+      printError(
+          'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md');
+      return false;
     }
 
     if (fromPubspec != fromChangeLog) {
-      final String error = '''
+      printError('''
 versions for $packageName in CHANGELOG.md and pubspec.yaml do not match.
 The version in pubspec.yaml is $fromPubspec.
 The first version listed in CHANGELOG.md is $fromChangeLog.
-''';
-      printErrorAndExit(errorMessage: error);
+''');
+      return false;
     }
 
     // If NEXT wasn't the first section, it should not exist at all.
     if (!hasNextSection) {
       final RegExp nextRegex = RegExp(r'^#+\s*NEXT\s*$');
       if (lines.any((String line) => nextRegex.hasMatch(line))) {
-        printErrorAndExit(errorMessage: '''
+        printError('''
 When bumping the version for release, the NEXT section should be incorporated
 into the new version's release notes.
 ''');
+        return false;
       }
     }
 
     print('$packageName passed version check');
+    return true;
   }
 
   Pubspec _tryParsePubspec(Directory package) {
@@ -301,16 +335,10 @@ into the new version's release notes.
 
     try {
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
-      if (pubspec == null) {
-        final String error =
-            'Failed to parse `pubspec.yaml` at ${pubspecFile.path}';
-        printErrorAndExit(errorMessage: error);
-      }
       return pubspec;
     } on Exception catch (exception) {
-      final String error =
-          'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}';
-      printErrorAndExit(errorMessage: error);
+      printError(
+          'Failed to parse `pubspec.yaml` at ${pubspecFile.path}: $exception}');
     }
     return null;
   }
