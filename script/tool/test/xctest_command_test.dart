@@ -83,7 +83,6 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
 
 void main() {
   const String _kDestination = '--ios-destination';
-  const String _kSkip = '--skip';
 
   group('test xctest_command', () {
     FileSystem fileSystem;
@@ -121,7 +120,7 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('running with correct destination, skip 1 plugin', () async {
+    test('running with correct destination, exclude 1 plugin', () async {
       final Directory pluginDirectory1 =
           createFakePlugin('plugin1', packagesDir,
               withExtraFiles: <List<String>>[
@@ -151,11 +150,11 @@ void main() {
         'xctest',
         _kDestination,
         'foo_destination',
-        _kSkip,
+        '--exclude',
         'plugin1'
       ]);
 
-      expect(output, contains('plugin1 was skipped with the --skip flag.'));
+      expect(output, isNot(contains('Successfully ran xctest for plugin1')));
       expect(output, contains('Successfully ran xctest for plugin2'));
 
       expect(
