@@ -202,9 +202,13 @@ public class TranslatorTest {
     assertEquals(expected.isAcknowledged(), serialized.get("isAcknowledged"));
     assertEquals(expected.getPurchaseState(), serialized.get("purchaseState"));
     assertNotNull(expected.getAccountIdentifiers().getObfuscatedAccountId());
-    assertEquals(expected.getAccountIdentifiers().getObfuscatedAccountId(), serialized.get("obfuscatedAccountId"));
+    assertEquals(
+        expected.getAccountIdentifiers().getObfuscatedAccountId(),
+        serialized.get("obfuscatedAccountId"));
     assertNotNull(expected.getAccountIdentifiers().getObfuscatedProfileId());
-    assertEquals(expected.getAccountIdentifiers().getObfuscatedProfileId(), serialized.get("obfuscatedProfileId"));
+    assertEquals(
+        expected.getAccountIdentifiers().getObfuscatedProfileId(),
+        serialized.get("obfuscatedProfileId"));
   }
 
   private void assertSerialized(PurchaseHistoryRecord expected, Map<String, Object> serialized) {
