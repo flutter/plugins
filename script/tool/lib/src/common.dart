@@ -580,7 +580,7 @@ class ProcessRunner {
   /// passing [workingDir].
   ///
   /// Returns the started [io.Process].
-  Future<io.Process?> start(String executable, List<String> args,
+  Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
     final io.Process process = await io.Process.start(executable, args,
         workingDirectory: workingDirectory?.path);
@@ -622,12 +622,12 @@ class PubVersionFinder {
 
     if (response.statusCode == 404) {
       return PubVersionFinderResponse(
-          versions: null,
+          versions: <Version>[],
           result: PubVersionFinderResult.noPackageFound,
           httpResponse: response);
     } else if (response.statusCode != 200) {
       return PubVersionFinderResponse(
-          versions: null,
+          versions: <Version>[],
           result: PubVersionFinderResult.fail,
           httpResponse: response);
     }
@@ -647,9 +647,12 @@ class PubVersionFinder {
 /// Represents a response for [PubVersionFinder].
 class PubVersionFinderResponse {
   /// Constructor.
-  PubVersionFinderResponse({this.versions, this.result, this.httpResponse}) {
-    if (versions != null && versions!.isNotEmpty) {
-      versions!.sort((Version a, Version b) {
+  PubVersionFinderResponse(
+      {required this.versions,
+      required this.result,
+      required this.httpResponse}) {
+    if (versions.isNotEmpty) {
+      versions.sort((Version a, Version b) {
         // TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
         // https://github.com/flutter/flutter/issues/82222
         return b.compareTo(a);
@@ -661,13 +664,13 @@ class PubVersionFinderResponse {
   ///
   /// This is sorted by largest to smallest, so the first element in the list is the largest version.
   /// Might be `null` if the [result] is not [PubVersionFinderResult.success].
-  final List<Version>? versions;
+  final List<Version> versions;
 
   /// The result of the version finder.
-  final PubVersionFinderResult? result;
+  final PubVersionFinderResult result;
 
   /// The response object of the http request.
-  final http.Response? httpResponse;
+  final http.Response httpResponse;
 }
 
 /// An enum representing the result of [PubVersionFinder].
