@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
-import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
@@ -18,17 +15,17 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
     Directory packagesDir, {
-    this.pluginsRoot,
-  }) : super(packagesDir) {
-    pluginsRoot ??= packagesDir.fileSystem.currentDirectory;
-    appDirectory = pluginsRoot.childDirectory('all_plugins');
+    Directory? pluginsRoot,
+  })  : pluginsRoot = pluginsRoot ?? packagesDir.fileSystem.currentDirectory,
+        super(packagesDir) {
+    appDirectory = this.pluginsRoot.childDirectory('all_plugins');
   }
 
   /// The root directory of the plugin repository.
   Directory pluginsRoot;
 
   /// The location of the synthesized app project.
-  Directory appDirectory;
+  late Directory appDirectory;
 
   @override
   String get description =>
@@ -177,7 +174,7 @@ description: ${pubspec.description}
 
 version: ${pubspec.version}
 
-environment:${_pubspecMapString(pubspec.environment)}
+environment:${_pubspecMapString(pubspec.environment!)}
 
 dependencies:${_pubspecMapString(pubspec.dependencies)}
 
