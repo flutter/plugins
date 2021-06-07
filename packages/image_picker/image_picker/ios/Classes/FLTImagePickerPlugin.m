@@ -360,68 +360,76 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)picker:(PHPickerViewController *)picker
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
-
+  if (results.count == 0) {
+    self.result(nil);
+    self.result = nil;
+    _arguments = nil;
+    return;
+  }
   NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
   NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
   NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
   NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
   NSMutableArray *pathList = [NSMutableArray new];
-
+  __block NSUInteger resultsInProgress = results.count;
+  __block dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
   for (PHPickerResult *result in results) {
     [result.itemProvider
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
                             NSError *_Nullable error) {
           if ([image isKindOfClass:[UIImage class]]) {
-            dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
             __block UIImage *localImage = image;
-            dispatch_async(dispatch_get_main_queue(), ^{
-              PHAsset *originalAsset =
-                  [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
+            PHAsset *originalAsset =
+                [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
 
-              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                localImage = [FLTImagePickerImageUtil scaledImage:localImage
+            if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
+              localImage = [FLTImagePickerImageUtil scaledImage:localImage
+                                                       maxWidth:maxWidth
+                                                      maxHeight:maxHeight
+                                            isMetadataAvailable:originalAsset != nil];
+            }
+            __block NSString *savedPath;
+            if (!originalAsset) {
+              // Image picked without an original asset (e.g. User pick image without permission)
+              savedPath =
+                  [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
+                                                                  image:localImage
+                                                           imageQuality:desiredImageQuality];
+              [pathList addObject:savedPath];
+              if (--resultsInProgress == 0) {
+                dispatch_semaphore_signal(resultSemaphore);
+              }
+
+            } else {
+              [[PHImageManager defaultManager]
+                  requestImageDataForAsset:originalAsset
+                                   options:nil
+                             resultHandler:^(
+                                 NSData *_Nullable imageData, NSString *_Nullable dataUTI,
+                                 UIImageOrientation orientation, NSDictionary *_Nullable info) {
+                               // maxWidth and maxHeight are used only for GIF images.
+                               savedPath = [FLTImagePickerPhotoAssetUtil
+                                   saveImageWithOriginalImageData:imageData
+                                                            image:localImage
                                                          maxWidth:maxWidth
                                                         maxHeight:maxHeight
-                                              isMetadataAvailable:originalAsset != nil];
-              }
-              __block NSString *savedPath;
-              if (!originalAsset) {
-                // Image picked without an original asset (e.g. User pick image without permission)
-                savedPath =
-                    [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
-                                                                    image:localImage
-                                                             imageQuality:desiredImageQuality];
-                [pathList addObject:savedPath];
+                                                     imageQuality:desiredImageQuality];
+                               [pathList addObject:savedPath];
 
-                dispatch_semaphore_signal(resultSemaphore);
-
-              } else {
-                [[PHImageManager defaultManager]
-                    requestImageDataForAsset:originalAsset
-                                     options:nil
-                               resultHandler:^(
-                                   NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                                 // maxWidth and maxHeight are used only for GIF images.
-                                 savedPath = [FLTImagePickerPhotoAssetUtil
-                                     saveImageWithOriginalImageData:imageData
-                                                              image:localImage
-                                                           maxWidth:maxWidth
-                                                          maxHeight:maxHeight
-                                                       imageQuality:desiredImageQuality];
-                                 [pathList addObject:savedPath];
-
+                               if (--resultsInProgress == 0) {
                                  dispatch_semaphore_signal(resultSemaphore);
-                               }];
-              }
-            });
-            dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
-
-            [self handlePath:pathList resultCount:results.count];
+                               }
+                             }];
+            }
           }
         }];
   }
+  while (dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_NOW)) {
+    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
+                             beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
+  }
+  [self handlePath:pathList];
 }
 
 /**
@@ -430,13 +438,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * @param @pathList that is used to get its count.
  * @param @resultCount that is used to compared with @c pathList.
  */
-- (void)handlePath:(NSMutableArray *)pathList resultCount:(NSUInteger)resultCount {
-  if (pathList.count == resultCount) {
-    if (self.maxImagesAllowed) {
-      [self handleSavedPath:pathList.firstObject];
-    } else {
-      [self handleMultiSavedPaths:pathList];
-    }
+- (void)handlePath:(NSMutableArray *)pathList {
+  if (self.maxImagesAllowed) {
+    [self handleSavedPath:pathList.firstObject];
+  } else {
+    [self handleMultiSavedPaths:pathList];
   }
 }
 
