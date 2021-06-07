@@ -4,6 +4,7 @@
 
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'enum_converters.dart';
 import 'billing_client_wrapper.dart';
@@ -140,12 +141,18 @@ class PurchaseWrapper {
   /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   final PurchaseStateWrapper purchaseState;
 
-  /// The obfuscated account id specified in [BillingClient
-  /// .setObfuscatedAccountId//TODO]
+  /// The obfuscatedAccountId specified when making a purchase.
+  ///
+  /// The [obfuscatedAccountId] can either be set in
+  /// [PurchaseParam.applicationUserName] when using the [InAppPurchasePlatform]
+  /// or by setting the [accountId] in [BillingClient.launchBillingFlow].
   final String? obfuscatedAccountId;
 
-  /// The obfuscated profile id specified in [BillingClient
-  /// .setObfuscatedProfileId//TODO]
+  /// The obfuscatedProfileId can be used when there are multiple profiles
+  /// withing one account. The obfuscatedProfileId should be specified when
+  /// making a purchase. This property can only be set on a purchase by
+  /// directly calling [BillingClient.launchBillingFlow] and is not available
+  /// on the generic [InAppPurchasePlatform].
   final String? obfuscatedProfileId;
 }
 
