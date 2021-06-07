@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -27,15 +25,25 @@ class FirebaseTestLabCommand extends PluginCommand {
       defaultsTo: 'flutter-infra',
       help: 'The Firebase project name.',
     );
+    final String? homeDir = io.Platform.environment['HOME'];
     argParser.addOption('service-key',
         defaultsTo:
-            p.join(io.Platform.environment['HOME'], 'gcloud-service-key.json'));
+            homeDir == null ? null : p.join(homeDir, 'gcloud-service-key.json'),
+        help: 'The path to the service key for gcloud authentication.\n'
+            r'If not provided, \$HOME/gcloud-service-key.json will be '
+            r'assumed if $HOME is set.');
     argParser.addOption('test-run-id',
         defaultsTo: const Uuid().v4(),
         help:
             'Optional string to append to the results path, to avoid conflicts. '
             'Randomly chosen on each invocation if none is provided. '
             'The default shown here is just an example.');
+    argParser.addOption('build-id',
+        defaultsTo:
+            io.Platform.environment['CIRRUS_BUILD_ID'] ?? 'unknown_build',
+        help:
+            'Optional string to append to the results path, to avoid conflicts. '
+            r'Defaults to $CIRRUS_BUILD_ID if that is set.');
     argParser.addMultiOption('device',
         splitCommas: false,
         defaultsTo: <String>[
@@ -66,38 +74,43 @@ class FirebaseTestLabCommand extends PluginCommand {
 
   final Print _print;
 
-  Completer<void> _firebaseProjectConfigured;
+  Completer<void>? _firebaseProjectConfigured;
 
   Future<void> _configureFirebaseProject() async {
     if (_firebaseProjectConfigured != null) {
-      return _firebaseProjectConfigured.future;
-    } else {
-      _firebaseProjectConfigured = Completer<void>();
+      return _firebaseProjectConfigured!.future;
     }
-    await processRunner.run(
-      'gcloud',
-      <String>[
-        'auth',
-        'activate-service-account',
-        '--key-file=${getStringArg('service-key')}',
-      ],
-      exitOnError: true,
-      logOnError: true,
-    );
-    final int exitCode = await processRunner.runAndStream('gcloud', <String>[
-      'config',
-      'set',
-      'project',
-      getStringArg('project'),
-    ]);
-    if (exitCode == 0) {
-      _print('\nFirebase project configured.');
-      return;
+    _firebaseProjectConfigured = Completer<void>();
+
+    final String serviceKey = getStringArg('service-key');
+    if (serviceKey.isEmpty) {
+      _print('No --service-key provided; skipping gcloud authorization');
     } else {
-      _print(
-          '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
+      await processRunner.run(
+        'gcloud',
+        <String>[
+          'auth',
+          'activate-service-account',
+          '--key-file=$serviceKey',
+        ],
+        exitOnError: true,
+        logOnError: true,
+      );
+      final int exitCode = await processRunner.runAndStream('gcloud', <String>[
+        'config',
+        'set',
+        'project',
+        getStringArg('project'),
+      ]);
+      if (exitCode == 0) {
+        _print('\nFirebase project configured.');
+        return;
+      } else {
+        _print(
+            '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
+      }
     }
-    _firebaseProjectConfigured.complete(null);
+    _firebaseProjectConfigured!.complete(null);
   }
 
   @override
@@ -212,7 +225,7 @@ class FirebaseTestLabCommand extends PluginCommand {
             failingPackages.add(packageName);
             continue;
           }
-          final String buildId = io.Platform.environment['CIRRUS_BUILD_ID'];
+          final String buildId = getStringArg('build-id');
           final String testRunId = getStringArg('test-run-id');
           final String resultsDir =
               'plugins_android_test/$packageName/$buildId/$testRunId/${resultsCounter++}/';
