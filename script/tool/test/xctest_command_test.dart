@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:convert';
 
 import 'package:args/command_runner.dart';
@@ -15,6 +13,9 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
+// Note: This uses `dynamic` deliberately, and should not be updated to Object,
+// in order to ensure that the code correctly handles this return type from
+// JSON decoding.
 final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   'runtimes': <Map<String, dynamic>>[
     <String, dynamic>{
@@ -85,10 +86,10 @@ void main() {
   const String _kDestination = '--ios-destination';
 
   group('test xctest_command', () {
-    FileSystem fileSystem;
-    Directory packagesDir;
-    CommandRunner<void> runner;
-    RecordingProcessRunner processRunner;
+    late FileSystem fileSystem;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
