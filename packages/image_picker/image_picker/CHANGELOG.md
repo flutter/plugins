@@ -1,3 +1,7 @@
+## 0.8.0+2
+
+* Fix a rotation problem where when camera is chosen as a source and additional parameters are added.
+
 ## 0.8.0+1
 
 * Removed redundant request for camera permissions.
