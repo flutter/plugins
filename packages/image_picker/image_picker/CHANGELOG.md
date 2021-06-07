@@ -1,3 +1,7 @@
+## 0.8.0+2
+
+* Readded request for camera permissions.
+
 ## 0.8.0+1
 
 * Removed redundant request for camera permissions.
