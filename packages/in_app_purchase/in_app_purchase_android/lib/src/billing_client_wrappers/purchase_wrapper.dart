@@ -26,18 +26,21 @@ part 'purchase_wrapper.g.dart';
 class PurchaseWrapper {
   /// Creates a purchase wrapper with the given purchase details.
   @visibleForTesting
-  PurchaseWrapper(
-      {required this.orderId,
-      required this.packageName,
-      required this.purchaseTime,
-      required this.purchaseToken,
-      required this.signature,
-      required this.sku,
-      required this.isAutoRenewing,
-      required this.originalJson,
-      this.developerPayload,
-      required this.isAcknowledged,
-      required this.purchaseState});
+  PurchaseWrapper({
+    required this.orderId,
+    required this.packageName,
+    required this.purchaseTime,
+    required this.purchaseToken,
+    required this.signature,
+    required this.sku,
+    required this.isAutoRenewing,
+    required this.originalJson,
+    this.developerPayload,
+    required this.isAcknowledged,
+    required this.purchaseState,
+    this.obfuscatedAccountId,
+    this.obfuscatedProfileId,
+  });
 
   /// Factory for creating a [PurchaseWrapper] from a [Map] with the purchase details.
   factory PurchaseWrapper.fromJson(Map<String, dynamic> map) =>
@@ -136,6 +139,14 @@ class PurchaseWrapper {
   /// [BillingClient.acknowledgePurchase] should only be called when the `purchaseState` is [PurchaseStateWrapper.purchased].
   /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   final PurchaseStateWrapper purchaseState;
+
+  /// The obfuscated account id specified in [BillingClient
+  /// .setObfuscatedAccountId//TODO]
+  final String? obfuscatedAccountId;
+
+  /// The obfuscated profile id specified in [BillingClient
+  /// .setObfuscatedProfileId//TODO]
+  final String? obfuscatedProfileId;
 }
 
 /// Data structure representing a purchase history record.

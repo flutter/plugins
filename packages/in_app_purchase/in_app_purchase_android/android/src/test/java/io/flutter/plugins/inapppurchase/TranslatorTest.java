@@ -5,6 +5,7 @@
 package io.flutter.plugins.inapppurchase;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -26,7 +27,7 @@ public class TranslatorTest {
   private static final String SKU_DETAIL_EXAMPLE_JSON =
       "{\"productId\":\"example\",\"type\":\"inapp\",\"price\":\"$0.99\",\"price_amount_micros\":990000,\"price_currency_code\":\"USD\",\"title\":\"Example title\",\"description\":\"Example description.\",\"original_price\":\"$0.99\",\"original_price_micros\":990000}";
   private static final String PURCHASE_EXAMPLE_JSON =
-      "{\"orderId\":\"foo\",\"packageName\":\"bar\",\"productId\":\"consumable\",\"purchaseTime\":11111111,\"purchaseState\":0,\"purchaseToken\":\"baz\",\"developerPayload\":\"dummy payload\",\"isAcknowledged\":\"true\"}";
+      "{\"orderId\":\"foo\",\"packageName\":\"bar\",\"productId\":\"consumable\",\"purchaseTime\":11111111,\"purchaseState\":0,\"purchaseToken\":\"baz\",\"developerPayload\":\"dummy payload\",\"isAcknowledged\":\"true\", \"obfuscatedAccountId\":\"Account101\", \"obfuscatedProfileId\": \"Profile105\"}";
 
   @Test
   public void fromSkuDetail() throws JSONException {
@@ -200,6 +201,10 @@ public class TranslatorTest {
     assertEquals(expected.getDeveloperPayload(), serialized.get("developerPayload"));
     assertEquals(expected.isAcknowledged(), serialized.get("isAcknowledged"));
     assertEquals(expected.getPurchaseState(), serialized.get("purchaseState"));
+    assertNotNull(expected.getAccountIdentifiers().getObfuscatedAccountId());
+    assertEquals(expected.getAccountIdentifiers().getObfuscatedAccountId(), serialized.get("obfuscatedAccountId"));
+    assertNotNull(expected.getAccountIdentifiers().getObfuscatedProfileId());
+    assertEquals(expected.getAccountIdentifiers().getObfuscatedProfileId(), serialized.get("obfuscatedProfileId"));
   }
 
   private void assertSerialized(PurchaseHistoryRecord expected, Map<String, Object> serialized) {
