@@ -1,4 +1,4 @@
-##
+## 0.2.0
 
 - Remove `xctest`'s `--skip`, which is redundant with `--ignore`.
 
