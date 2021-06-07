@@ -370,10 +370,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
   NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
   NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-  NSMutableArray *pathList = [NSMutableArray new];
+  NSMutableArray *pathList = [[NSMutableArray alloc] initWithCapacity:results.count];
+  for (int i = 0; i < results.count; [pathList addObject:[NSNull null]], i++)
+    ;
+
   __block NSUInteger resultsInProgress = results.count;
   __block dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
-  for (PHPickerResult *result in results) {
+
+  for (int i = 0; i < results.count; i++) {
+    PHPickerResult *result = results[i];
+
     [result.itemProvider
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
@@ -396,7 +402,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                   [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                                   image:localImage
                                                            imageQuality:desiredImageQuality];
-              [pathList addObject:savedPath];
+              pathList[i] = savedPath;
               if (--resultsInProgress == 0) {
                 dispatch_semaphore_signal(resultSemaphore);
               }
@@ -415,7 +421,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                          maxWidth:maxWidth
                                                         maxHeight:maxHeight
                                                      imageQuality:desiredImageQuality];
-                               [pathList addObject:savedPath];
+                               pathList[i] = savedPath;
 
                                if (--resultsInProgress == 0) {
                                  dispatch_semaphore_signal(resultSemaphore);
