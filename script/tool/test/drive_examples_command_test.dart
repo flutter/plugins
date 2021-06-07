@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/drive_examples_command.dart';
 import 'package:path/path.dart' as p;
@@ -14,27 +15,27 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
+    late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
       final DriveExamplesCommand command =
-          DriveExamplesCommand(mockPackagesDir, processRunner: processRunner);
+          DriveExamplesCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
       runner.addCommand(command);
     });
 
-    tearDown(() {
-      cleanupPackages();
-    });
-
     test('driving under folder "test"', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test', 'plugin.dart'],
@@ -43,7 +44,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -79,7 +80,7 @@ void main() {
     });
 
     test('driving under folder "test_driver"', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -88,7 +89,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -125,7 +126,7 @@ void main() {
 
     test('driving under folder "test_driver" when test files are missing"',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
           ],
@@ -133,7 +134,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -144,7 +145,7 @@ void main() {
 
     test('a plugin without any integration test files is reported as an error',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'lib', 'main.dart'],
           ],
@@ -152,7 +153,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -164,7 +165,7 @@ void main() {
     test(
         'driving under folder "test_driver" when targets are under "integration_test"',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'integration_test.dart'],
             <String>['example', 'integration_test', 'bar_test.dart'],
@@ -175,7 +176,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -221,7 +222,7 @@ void main() {
     });
 
     test('driving when plugin does not support Linux is a no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -229,7 +230,7 @@ void main() {
           isMacOsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -254,7 +255,7 @@ void main() {
     });
 
     test('driving on a Linux plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -262,7 +263,7 @@ void main() {
           isLinuxPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -301,13 +302,14 @@ void main() {
     });
 
     test('driving when plugin does not suppport macOS is a no-op', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ]);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test_driver', 'plugin_test.dart'],
+            <String>['example', 'test_driver', 'plugin.dart'],
+          ]);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -331,7 +333,7 @@ void main() {
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
     test('driving on a macOS plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -340,7 +342,7 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -379,7 +381,7 @@ void main() {
     });
 
     test('driving when plugin does not suppport web is a no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -387,7 +389,7 @@ void main() {
           isWebPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -412,7 +414,7 @@ void main() {
     });
 
     test('driving a web plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -420,7 +422,7 @@ void main() {
           isWebPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -461,7 +463,7 @@ void main() {
     });
 
     test('driving when plugin does not suppport Windows is a no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -469,7 +471,7 @@ void main() {
           isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -494,7 +496,7 @@ void main() {
     });
 
     test('driving on a Windows plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -502,7 +504,7 @@ void main() {
           isWindowsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -541,7 +543,7 @@ void main() {
     });
 
     test('driving when plugin does not support mobile is no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -549,7 +551,7 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -573,7 +575,7 @@ void main() {
     });
 
     test('platform interface plugins are silently skipped', () async {
-      createFakePlugin('aplugin_platform_interface');
+      createFakePlugin('aplugin_platform_interface', packagesDir);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -593,7 +595,7 @@ void main() {
     });
 
     test('enable-experiment flag', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test', 'plugin.dart'],
@@ -602,7 +604,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 

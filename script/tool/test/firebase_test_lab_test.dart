@@ -7,6 +7,8 @@
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/firebase_test_lab_command.dart';
 import 'package:test/test.dart';
@@ -16,15 +18,18 @@ import 'util.dart';
 
 void main() {
   group('$FirebaseTestLabCommand', () {
-    final List<String> printedMessages = <String>[];
+    FileSystem fileSystem;
+    Directory packagesDir;
+    List<String> printedMessages;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
+      printedMessages = <String>[];
       processRunner = RecordingProcessRunner();
-      final FirebaseTestLabCommand command = FirebaseTestLabCommand(
-          mockPackagesDir,
+      final FirebaseTestLabCommand command = FirebaseTestLabCommand(packagesDir,
           processRunner: processRunner,
           print: (Object message) => printedMessages.add(message.toString()));
 
@@ -33,15 +38,11 @@ void main() {
       runner.addCommand(command);
     });
 
-    tearDown(() {
-      printedMessages.clear();
-    });
-
     test('retries gcloud set', () async {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(1);
       processRunner.processToReturn = mockProcess;
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
         <String>['lib/test/should_not_run_e2e.dart'],
         <String>['example', 'test_driver', 'plugin_e2e.dart'],
         <String>['example', 'test_driver', 'plugin_e2e_test.dart'],
@@ -66,7 +67,7 @@ void main() {
     });
 
     test('runs e2e tests', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
         <String>['test', 'plugin_test.dart'],
         <String>['test', 'plugin_e2e.dart'],
         <String>['should_not_run_e2e.dart'],
@@ -134,7 +135,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -144,7 +145,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -167,7 +168,7 @@ void main() {
     });
 
     test('experimental flag', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
         <String>['test', 'plugin_test.dart'],
         <String>['test', 'plugin_e2e.dart'],
         <String>['should_not_run_e2e.dart'],
@@ -225,7 +226,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -235,7 +236,7 @@ void main() {
               '/packages/plugin/example'),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
-              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin/example/test_driver/plugin_e2e.dart -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
                   .split(' '),
               '/packages/plugin/example/android'),
           ProcessCall(
@@ -255,8 +256,6 @@ void main() {
               '/packages/plugin/example'),
         ]),
       );
-
-      cleanupPackages();
     });
   });
 }
