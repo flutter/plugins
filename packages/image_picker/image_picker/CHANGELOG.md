@@ -1,7 +1,11 @@
-## 0.8.0+3
+## 0.8.0+4
 
 * Fixes an issue where `preferredCameraDevice` option is not working for `getVideo` method.
 * Refactor unit tests that were device-only before.
+
+## 0.8.0+3
+
+* Readded request for camera permissions.
 
 ## 0.8.0+2
 
