@@ -1,0 +1,26 @@
+package io.flutter.plugins.camera.features.fpsrange;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+
+import android.os.Build;
+import android.util.Range;
+import io.flutter.plugins.camera.CameraProperties;
+import io.flutter.plugins.camera.utils.TestUtils;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.robolectric.RobolectricTestRunner;
+
+@RunWith(RobolectricTestRunner.class)
+public class FpsRangeFeaturePixel4aTest {
+  @Test
+  public void ctor_should_initialize_fps_range_with_30_when_device_is_pixel_4a() {
+    TestUtils.setFinalStatic(Build.class, "BRAND", "google");
+    TestUtils.setFinalStatic(Build.class, "MODEL", "Pixel 4a");
+
+    FpsRangeFeature fpsRangeFeature = new FpsRangeFeature(mock(CameraProperties.class));
+    Range<Integer> range = fpsRangeFeature.getValue();
+    assertEquals(30, (int) range.getLower());
+    assertEquals(30, (int) range.getUpper());
+  }
+}

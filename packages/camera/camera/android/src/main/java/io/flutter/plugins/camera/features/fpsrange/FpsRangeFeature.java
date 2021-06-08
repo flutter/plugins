@@ -15,6 +15,7 @@ import io.flutter.plugins.camera.features.CameraFeature;
  * API.
  */
 public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
+  private final static Range<Integer> MAX_PIXEL4A_RANGE = new Range<>(30, 30);
   private Range<Integer> currentSetting;
 
   /**
@@ -32,7 +33,7 @@ public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
       // For max device compatibility we will keep FPS under 60 even if they report they are
       // capable of achieving 60 fps. Highest working FPS is 30.
       // https://issuetracker.google.com/issues/189237151
-      currentSetting = new Range<>(30, 30);
+      currentSetting = MAX_PIXEL4A_RANGE;
     } else {
       Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
 

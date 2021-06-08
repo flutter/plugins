@@ -13,11 +13,27 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.hardware.camera2.CaptureRequest;
+import android.os.Build;
 import android.util.Range;
 import io.flutter.plugins.camera.CameraProperties;
+import io.flutter.plugins.camera.utils.TestUtils;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 public class FpsRangeFeatureTest {
+  @Before
+  public void before() {
+    TestUtils.setFinalStatic(Build.class, "BRAND", "Test Brand");
+    TestUtils.setFinalStatic(Build.class, "MODEL", "Test Model");
+  }
+
+  @After
+  public void after() {
+    TestUtils.setFinalStatic(Build.class, "BRAND", null);
+    TestUtils.setFinalStatic(Build.class, "MODEL", null);
+  }
+
   @Test
   public void ctor_should_initialize_fps_range_with_highest_upper_value_from_range_array() {
     FpsRangeFeature fpsRangeFeature = createTestInstance();
