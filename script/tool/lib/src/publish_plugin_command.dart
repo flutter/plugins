@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -20,7 +18,7 @@ import 'common.dart';
 
 @immutable
 class _RemoteInfo {
-  const _RemoteInfo({@required this.name, @required this.url});
+  const _RemoteInfo({required this.name, required this.url});
 
   /// The git name for the remote.
   final String name;
@@ -46,8 +44,8 @@ class PublishPluginCommand extends PluginCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
-    io.Stdin stdinput,
-    GitDir gitDir,
+    io.Stdin? stdinput,
+    GitDir? gitDir,
   })  : _print = print,
         _stdin = stdinput ?? io.stdin,
         super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
@@ -129,7 +127,7 @@ class PublishPluginCommand extends PluginCommand {
 
   final Print _print;
   final io.Stdin _stdin;
-  StreamSubscription<String> _stdinSubscription;
+  StreamSubscription<String>? _stdinSubscription;
 
   @override
   Future<void> run() async {
@@ -153,10 +151,10 @@ class PublishPluginCommand extends PluginCommand {
         await GitDir.fromExisting(packagesPath, allowSubdirectory: true);
 
     final bool shouldPushTag = getBoolArg(_pushTagsOption);
-    _RemoteInfo remote;
+    _RemoteInfo? remote;
     if (shouldPushTag) {
       final String remoteName = getStringArg(_remoteOption);
-      final String remoteUrl = await _verifyRemote(remoteName);
+      final String? remoteUrl = await _verifyRemote(remoteName);
       if (remoteUrl == null) {
         printError(
             'Unable to find URL for remote $remoteName; cannot push tags');
@@ -185,8 +183,8 @@ class PublishPluginCommand extends PluginCommand {
   }
 
   Future<bool> _publishAllChangedPackages({
-    @required GitDir baseGitDir,
-    _RemoteInfo remoteForTagPush,
+    required GitDir baseGitDir,
+    _RemoteInfo? remoteForTagPush,
   }) async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
     final List<String> changedPubspecs =
@@ -249,8 +247,8 @@ class PublishPluginCommand extends PluginCommand {
   // If `remoteForTagPush` is non-null, the tag will be pushed to that remote.
   // Returns `true` if publishing and tagging are successful.
   Future<bool> _publishAndTagPackage({
-    @required Directory packageDir,
-    _RemoteInfo remoteForTagPush,
+    required Directory packageDir,
+    _RemoteInfo? remoteForTagPush,
   }) async {
     if (!await _publishPlugin(packageDir: packageDir)) {
       return false;
@@ -269,9 +267,9 @@ class PublishPluginCommand extends PluginCommand {
 
   // Returns a [_CheckNeedsReleaseResult] that indicates the result.
   Future<_CheckNeedsReleaseResult> _checkNeedsRelease({
-    @required File pubspecFile,
-    @required GitVersionFinder gitVersionFinder,
-    @required List<String> existingTags,
+    required File pubspecFile,
+    required GitVersionFinder gitVersionFinder,
+    required List<String> existingTags,
   }) async {
     if (!pubspecFile.existsSync()) {
       _print('''
@@ -292,10 +290,6 @@ Safe to ignore if the package is deleted in this commit.
       return _CheckNeedsReleaseResult.failure;
     }
 
-    if (pubspec.name == null) {
-      _print('Fatal: Package name is null.');
-      return _CheckNeedsReleaseResult.failure;
-    }
     // Get latest tagged version and compare with the current version.
     // TODO(cyanglaz): Check latest version of the package on pub instead of git
     // https://github.com/flutter/flutter/issues/81047
@@ -306,7 +300,7 @@ Safe to ignore if the package is deleted in this commit.
     if (latestTag.isNotEmpty) {
       final String latestTaggedVersion = latestTag.split('-v').last;
       final Version latestVersion = Version.parse(latestTaggedVersion);
-      if (pubspec.version < latestVersion) {
+      if (pubspec.version! < latestVersion) {
         _print(
             'The new version (${pubspec.version}) is lower than the current version ($latestVersion) for ${pubspec.name}.\nThis git commit is a revert, no release is tagged.');
         return _CheckNeedsReleaseResult.noRelease;
@@ -318,7 +312,7 @@ Safe to ignore if the package is deleted in this commit.
   // Publish the plugin.
   //
   // Returns `true` if successful, `false` otherwise.
-  Future<bool> _publishPlugin({@required Directory packageDir}) async {
+  Future<bool> _publishPlugin({required Directory packageDir}) async {
     final bool gitStatusOK = await _checkGitStatus(packageDir);
     if (!gitStatusOK) {
       return false;
@@ -336,8 +330,8 @@ Safe to ignore if the package is deleted in this commit.
   //
   // Return `true` if successful, `false` otherwise.
   Future<bool> _tagRelease({
-    @required Directory packageDir,
-    _RemoteInfo remoteForPush,
+    required Directory packageDir,
+    _RemoteInfo? remoteForPush,
   }) async {
     final String tag = _getTag(packageDir);
     _print('Tagging release $tag...');
@@ -409,7 +403,7 @@ Safe to ignore if the package is deleted in this commit.
     return statusOutput.isEmpty;
   }
 
-  Future<String> _verifyRemote(String remote) async {
+  Future<String?> _verifyRemote(String remote) async {
     final io.ProcessResult remoteInfo = await processRunner.run(
       'git',
       <String>['remote', 'get-url', remote],
@@ -417,7 +411,7 @@ Safe to ignore if the package is deleted in this commit.
       exitOnError: true,
       logOnError: true,
     );
-    return remoteInfo.stdout as String;
+    return remoteInfo.stdout as String?;
   }
 
   Future<bool> _publish(Directory packageDir) async {
@@ -472,13 +466,13 @@ Safe to ignore if the package is deleted in this commit.
   //
   // Return `true` if successful, `false` otherwise.
   Future<bool> _pushTagToRemote({
-    @required String tag,
-    @required _RemoteInfo remote,
+    required String tag,
+    required _RemoteInfo remote,
   }) async {
     assert(remote != null && tag != null);
     if (!getBoolArg(_skipConfirmationFlag)) {
       _print('Ready to push $tag to ${remote.url} (y/n)?');
-      final String /*?*/ input = _stdin.readLineSync();
+      final String? input = _stdin.readLineSync();
       if (input?.toLowerCase() != 'y') {
         _print('Tag push canceled.');
         return false;
@@ -500,7 +494,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   void _ensureValidPubCredential() {
-    final String credentialsPath = _credentialsPath;
+    final String? credentialsPath = _credentialsPath;
     if (credentialsPath == null) {
       printError('Unable to determine pub credentials path');
       throw ToolExit(1);
@@ -510,7 +504,7 @@ Safe to ignore if the package is deleted in this commit.
         credentialFile.readAsStringSync().isNotEmpty) {
       return;
     }
-    final String credential = io.Platform.environment[_pubCredentialName];
+    final String? credential = io.Platform.environment[_pubCredentialName];
     if (credential == null) {
       printError('''
 No pub credential available. Please check if `$credentialsPath` is valid.
@@ -525,29 +519,29 @@ If running this command on CI, you can set the pub credential content in the $_p
 
   /// Returns the correct path where the pub credential is stored.
   @visibleForTesting
-  static String getCredentialPath() {
+  static String? getCredentialPath() {
     return _credentialsPath;
   }
 }
 
 /// The path in which pub expects to find its credentials file.
-final String _credentialsPath = () {
+final String? _credentialsPath = () {
   // This follows the same logic as pub:
   // https://github.com/dart-lang/pub/blob/d99b0d58f4059d7bb4ac4616fd3d54ec00a2b5d4/lib/src/system_cache.dart#L34-L43
   String cacheDir;
-  final String pubCache = io.Platform.environment['PUB_CACHE'];
+  final String? pubCache = io.Platform.environment['PUB_CACHE'];
   print(pubCache);
   if (pubCache != null) {
     cacheDir = pubCache;
   } else if (io.Platform.isWindows) {
-    final String appData = io.Platform.environment['APPDATA'];
+    final String? appData = io.Platform.environment['APPDATA'];
     if (appData == null) {
       printError('"APPDATA" environment variable is not set.');
       return null;
     }
     cacheDir = p.join(appData, 'Pub', 'Cache');
   } else {
-    final String home = io.Platform.environment['HOME'];
+    final String? home = io.Platform.environment['HOME'];
     if (home == null) {
       printError('"HOME" environment variable is not set.');
       return null;
