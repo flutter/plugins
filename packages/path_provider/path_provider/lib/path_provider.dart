@@ -5,6 +5,7 @@
 import 'dart:io' show Directory, Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb, visibleForTesting;
+import 'package:flutter/widgets.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 // ignore: implementation_imports
@@ -38,6 +39,20 @@ class MissingPlatformDirectoryException implements Exception {
   String toString() {
     final String detailsAddition = details == null ? '' : ': $details';
     return 'MissingPlatformDirectoryException($message)$detailsAddition';
+  }
+}
+
+// ignore: public_member_api_docs
+class MissingFlutterWidgetInitialized implements Exception {
+  // ignore: public_member_api_docs
+  MissingFlutterWidgetInitialized(this.message);
+
+  // ignore: public_member_api_docs
+  final String message;
+
+  @override
+  String toString() {
+    return 'MissingFlutterWidgetInitializedException($message)';
   }
 }
 
@@ -135,6 +150,11 @@ Future<Directory> getLibraryDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
+  if (WidgetsBinding.instance == null) {
+    throw MissingFlutterWidgetInitialized(
+        'widget flutter binding not initialized');
+  }
+
   final String? path = await _platform.getApplicationDocumentsPath();
   if (path == null) {
     throw MissingPlatformDirectoryException(
