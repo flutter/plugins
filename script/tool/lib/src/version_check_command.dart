@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -37,7 +35,7 @@ enum NextVersionType {
 /// those have different semver rules.
 @visibleForTesting
 Map<Version, NextVersionType> getAllowedNextVersions(
-    {@required Version masterVersion, @required Version /*!*/ headVersion}) {
+    {required Version masterVersion, required Version headVersion}) {
   final Map<Version, NextVersionType> allowedNextVersions =
       <Version, NextVersionType>{
     masterVersion.nextMajor: NextVersionType.BREAKING_MAJOR,
@@ -75,8 +73,8 @@ class VersionCheckCommand extends PluginCommand {
   VersionCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-    GitDir gitDir,
-    http.Client httpClient,
+    GitDir? gitDir,
+    http.Client? httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
         super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
@@ -125,7 +123,7 @@ class VersionCheckCommand extends PluginCommand {
         continue;
       }
 
-      final Version headVersion =
+      final Version? headVersion =
           await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
       if (headVersion == null) {
         printError('${indentation}No version found. A package that '
@@ -134,7 +132,7 @@ class VersionCheckCommand extends PluginCommand {
         badVersionChangePubspecs.add(pubspecPath);
         continue;
       }
-      Version sourceVersion;
+      Version? sourceVersion;
       if (getBoolArg(_againstPubFlag)) {
         final String packageName = pubspecFile.parent.basename;
         final PubVersionFinderResponse pubVersionFinderResponse =
@@ -153,7 +151,6 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');
             badVersionChangePubspecs.add(pubspecPath);
             continue;
-            break;
           case PubVersionFinderResult.noPackageFound:
             sourceVersion = null;
             break;
@@ -261,17 +258,17 @@ $indentation${badVersionChangePubspecs.join('\n$indentation')}
     print(
         'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for $packageName.');
 
-    final Pubspec pubspec = _tryParsePubspec(plugin);
+    final Pubspec? pubspec = _tryParsePubspec(plugin);
     if (pubspec == null) {
       printError('Cannot parse version from pubspec.yaml');
       return false;
     }
-    final Version fromPubspec = pubspec.version;
+    final Version? fromPubspec = pubspec.version;
 
     // get first version from CHANGELOG
     final File changelog = plugin.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
-    String firstLineWithText;
+    String? firstLineWithText;
     final Iterator<String> iterator = lines.iterator;
     while (iterator.moveNext()) {
       if (iterator.current.trim().isNotEmpty) {
@@ -280,7 +277,7 @@ $indentation${badVersionChangePubspecs.join('\n$indentation')}
       }
     }
     // Remove all leading mark down syntax from the version line.
-    String versionString = firstLineWithText.split(' ').last;
+    String? versionString = firstLineWithText?.split(' ').last;
 
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
@@ -298,7 +295,8 @@ $indentation${badVersionChangePubspecs.join('\n$indentation')}
       }
     }
 
-    final Version fromChangeLog = Version.parse(versionString);
+    final Version? fromChangeLog =
+        versionString == null ? null : Version.parse(versionString);
     if (fromChangeLog == null) {
       printError(
           'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md');
@@ -330,7 +328,7 @@ into the new version's release notes.
     return true;
   }
 
-  Pubspec _tryParsePubspec(Directory package) {
+  Pubspec? _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
     try {
