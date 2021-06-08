@@ -156,7 +156,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   }
 
   /**
-   * Get the optimal capture size based on the configured resolution.
+   * Gets the optimal capture size based on the configured resolution.
    *
    * @return The optimal capture size.
    */
