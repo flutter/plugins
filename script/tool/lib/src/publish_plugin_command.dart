@@ -32,16 +32,14 @@ import 'common.dart';
 class PublishPluginCommand extends PluginCommand {
   /// Creates an instance of the publish command.
   PublishPluginCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
     io.Stdin stdinput,
     GitDir gitDir,
   })  : _print = print,
         _stdin = stdinput ?? io.stdin,
-        super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir) {
+        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
     argParser.addOption(
       _packageOption,
       help: 'The package to publish.'
@@ -133,12 +131,15 @@ class PublishPluginCommand extends PluginCommand {
     }
 
     _print('Checking local repo...');
-    if (!await GitDir.isGitDir(packagesDir.path)) {
-      _print('$packagesDir is not a valid Git repository.');
+    // Ensure there are no symlinks in the path, as it can break
+    // GitDir's allowSubdirectory:true.
+    final String packagesPath = packagesDir.resolveSymbolicLinksSync();
+    if (!await GitDir.isGitDir(packagesPath)) {
+      _print('$packagesPath is not a valid Git repository.');
       throw ToolExit(1);
     }
     final GitDir baseGitDir =
-        await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
+        await GitDir.fromExisting(packagesPath, allowSubdirectory: true);
 
     final bool shouldPushTag = getBoolArg(_pushTagsOption);
     final String remote = getStringArg(_remoteOption);
@@ -194,8 +195,9 @@ class PublishPluginCommand extends PluginCommand {
     final List<String> packagesFailed = <String>[];
 
     for (final String pubspecPath in changedPubspecs) {
-      final File pubspecFile =
-          fileSystem.directory(baseGitDir.path).childFile(pubspecPath);
+      final File pubspecFile = packagesDir.fileSystem
+          .directory(baseGitDir.path)
+          .childFile(pubspecPath);
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
         pubspecFile: pubspecFile,
         gitVersionFinder: gitVersionFinder,
@@ -453,8 +455,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   String _getTag(Directory packageDir) {
-    final File pubspecFile =
-        fileSystem.file(p.join(packageDir.path, 'pubspec.yaml'));
+    final File pubspecFile = packageDir.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final String name = pubspecYaml['name'] as String;
@@ -499,7 +500,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   void _ensureValidPubCredential() {
-    final File credentialFile = fileSystem.file(_credentialsPath);
+    final File credentialFile = packagesDir.fileSystem.file(_credentialsPath);
     if (credentialFile.existsSync() &&
         credentialFile.readAsStringSync().isNotEmpty) {
       return;

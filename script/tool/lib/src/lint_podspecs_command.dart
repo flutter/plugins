@@ -20,14 +20,13 @@ import 'common.dart';
 class LintPodspecsCommand extends PluginCommand {
   /// Creates an instance of the linter command.
   LintPodspecsCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
     Print print = print,
   })  : _platform = platform,
         _print = print,
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addMultiOption('skip',
         help:
             'Skip all linting for podspecs with this basename (example: federated plugins with placeholder podspecs)',
@@ -132,6 +131,7 @@ class LintPodspecsCommand extends PluginCommand {
       podspecPath,
       '--configuration=Debug', // Release targets unsupported arm64 simulators. Use Debug to only build against targeted x86_64 simulator devices.
       '--skip-tests',
+      '--use-modular-headers', // Flutter sets use_modular_headers! in its templates.
       if (allowWarnings) '--allow-warnings',
       if (libraryLint) '--use-libraries'
     ];

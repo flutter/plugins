@@ -34,7 +34,7 @@ void main() {
 
   setUp(() {
     fileSystem = MemoryFileSystem();
-    packagesDir = fileSystem.currentDirectory.childDirectory('packages');
+    packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     thirdPartyPackagesDir = packagesDir.parent
         .childDirectory('third_party')
         .childDirectory('packages');
@@ -52,13 +52,11 @@ void main() {
       }
       return Future<ProcessResult>.value(mockProcessResult);
     });
-    initializeFakePackages(parentDir: packagesDir.parent);
     processRunner = RecordingProcessRunner();
     plugins = <String>[];
     final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
       plugins,
       packagesDir,
-      fileSystem,
       processRunner: processRunner,
       gitDir: gitDir,
     );
@@ -68,47 +66,40 @@ void main() {
   });
 
   test('all plugins from file system', () async {
-    final Directory plugin1 =
-        createFakePlugin('plugin1', packagesDirectory: packagesDir);
-    final Directory plugin2 =
-        createFakePlugin('plugin2', packagesDirectory: packagesDir);
+    final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+    final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
     await runner.run(<String>['sample']);
     expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
   });
 
   test('all plugins includes third_party/packages', () async {
-    final Directory plugin1 =
-        createFakePlugin('plugin1', packagesDirectory: packagesDir);
-    final Directory plugin2 =
-        createFakePlugin('plugin2', packagesDirectory: packagesDir);
+    final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+    final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
     final Directory plugin3 =
-        createFakePlugin('plugin3', packagesDirectory: thirdPartyPackagesDir);
+        createFakePlugin('plugin3', thirdPartyPackagesDir);
     await runner.run(<String>['sample']);
     expect(plugins,
         unorderedEquals(<String>[plugin1.path, plugin2.path, plugin3.path]));
   });
 
   test('exclude plugins when plugins flag is specified', () async {
-    createFakePlugin('plugin1', packagesDirectory: packagesDir);
-    final Directory plugin2 =
-        createFakePlugin('plugin2', packagesDirectory: packagesDir);
+    createFakePlugin('plugin1', packagesDir);
+    final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
     await runner.run(
         <String>['sample', '--plugins=plugin1,plugin2', '--exclude=plugin1']);
     expect(plugins, unorderedEquals(<String>[plugin2.path]));
   });
 
   test('exclude plugins when plugins flag isn\'t specified', () async {
-    createFakePlugin('plugin1', packagesDirectory: packagesDir);
-    createFakePlugin('plugin2', packagesDirectory: packagesDir);
+    createFakePlugin('plugin1', packagesDir);
+    createFakePlugin('plugin2', packagesDir);
     await runner.run(<String>['sample', '--exclude=plugin1,plugin2']);
     expect(plugins, unorderedEquals(<String>[]));
   });
 
   test('exclude federated plugins when plugins flag is specified', () async {
-    createFakePlugin('plugin1',
-        parentDirectoryName: 'federated', packagesDirectory: packagesDir);
-    final Directory plugin2 =
-        createFakePlugin('plugin2', packagesDirectory: packagesDir);
+    createFakePlugin('plugin1', packagesDir, parentDirectoryName: 'federated');
+    final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
     await runner.run(<String>[
       'sample',
       '--plugins=federated/plugin1,plugin2',
@@ -119,10 +110,8 @@ void main() {
 
   test('exclude entire federated plugins when plugins flag is specified',
       () async {
-    createFakePlugin('plugin1',
-        parentDirectoryName: 'federated', packagesDirectory: packagesDir);
-    final Directory plugin2 =
-        createFakePlugin('plugin2', packagesDirectory: packagesDir);
+    createFakePlugin('plugin1', packagesDir, parentDirectoryName: 'federated');
+    final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
     await runner.run(<String>[
       'sample',
       '--plugins=federated/plugin1,plugin2',
@@ -133,10 +122,8 @@ void main() {
 
   group('test run-on-changed-packages', () {
     test('all plugins should be tested if there are no changes.', () async {
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -146,58 +133,47 @@ void main() {
     test('all plugins should be tested if there are no plugin related changes.',
         () async {
       gitDiffResponse = 'AUTHORS';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
-    test('all plugins should be tested if .cirrus.yml changes.',
-        () async {
+    test('all plugins should be tested if .cirrus.yml changes.', () async {
       gitDiffResponse = '''
 .cirrus.yml
 packages/plugin1/CHANGELOG
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
-    test('all plugins should be tested if .ci.yaml changes',
-        () async {
+    test('all plugins should be tested if .ci.yaml changes', () async {
       gitDiffResponse = '''
 .ci.yaml
 packages/plugin1/CHANGELOG
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
-    test('all plugins should be tested if anything in .ci/ changes',
-        () async {
+    test('all plugins should be tested if anything in .ci/ changes', () async {
       gitDiffResponse = '''
 .ci/Dockerfile
 packages/plugin1/CHANGELOG
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -210,10 +186,8 @@ packages/plugin1/CHANGELOG
 script/tool_runner.sh
 packages/plugin1/CHANGELOG
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -226,10 +200,8 @@ packages/plugin1/CHANGELOG
 analysis_options.yaml
 packages/plugin1/CHANGELOG
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -242,10 +214,8 @@ packages/plugin1/CHANGELOG
 .clang-format
 packages/plugin1/CHANGELOG
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -254,9 +224,8 @@ packages/plugin1/CHANGELOG
 
     test('Only changed plugin should be tested.', () async {
       gitDiffResponse = 'packages/plugin1/plugin1.dart';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -268,9 +237,8 @@ packages/plugin1/CHANGELOG
 packages/plugin1/plugin1.dart
 packages/plugin1/ios/plugin1.m
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      createFakePlugin('plugin2', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -283,11 +251,9 @@ packages/plugin1/ios/plugin1.m
 packages/plugin1/plugin1.dart
 packages/plugin2/ios/plugin2.m
 ''';
-      final Directory plugin1 =
-          createFakePlugin('plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
-      createFakePlugin('plugin3', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      createFakePlugin('plugin3', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -302,10 +268,10 @@ packages/plugin1/plugin1/plugin1.dart
 packages/plugin1/plugin1_platform_interface/plugin1_platform_interface.dart
 packages/plugin1/plugin1_web/plugin1_web.dart
 ''';
-      final Directory plugin1 = createFakePlugin('plugin1',
-          parentDirectoryName: 'plugin1', packagesDirectory: packagesDir);
-      createFakePlugin('plugin2', packagesDirectory: packagesDir);
-      createFakePlugin('plugin3', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir,
+          parentDirectoryName: 'plugin1');
+      createFakePlugin('plugin2', packagesDir);
+      createFakePlugin('plugin3', packagesDir);
       await runner.run(
           <String>['sample', '--base-sha=master', '--run-on-changed-packages']);
 
@@ -319,11 +285,10 @@ packages/plugin1/plugin1.dart
 packages/plugin2/ios/plugin2.m
 packages/plugin3/plugin3.dart
 ''';
-      final Directory plugin1 = createFakePlugin('plugin1',
-          parentDirectoryName: 'plugin1', packagesDirectory: packagesDir);
-      final Directory plugin2 =
-          createFakePlugin('plugin2', packagesDirectory: packagesDir);
-      createFakePlugin('plugin3', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir,
+          parentDirectoryName: 'plugin1');
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      createFakePlugin('plugin3', packagesDir);
       await runner.run(<String>[
         'sample',
         '--plugins=plugin1,plugin2',
@@ -340,10 +305,10 @@ packages/plugin1/plugin1.dart
 packages/plugin2/ios/plugin2.m
 packages/plugin3/plugin3.dart
 ''';
-      final Directory plugin1 = createFakePlugin('plugin1',
-          parentDirectoryName: 'plugin1', packagesDirectory: packagesDir);
-      createFakePlugin('plugin2', packagesDirectory: packagesDir);
-      createFakePlugin('plugin3', packagesDirectory: packagesDir);
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir,
+          parentDirectoryName: 'plugin1');
+      createFakePlugin('plugin2', packagesDir);
+      createFakePlugin('plugin3', packagesDir);
       await runner.run(<String>[
         'sample',
         '--exclude=plugin2,plugin3',
@@ -356,12 +321,15 @@ packages/plugin3/plugin3.dart
   });
 
   group('$GitVersionFinder', () {
+    late FileSystem fileSystem;
     late List<List<String>?> gitDirCommands;
     late String gitDiffResponse;
     String? mergeBaseResponse;
     late MockGitDir gitDir;
 
     setUp(() {
+      fileSystem = MemoryFileSystem();
+      createPackagesDirectory(fileSystem: fileSystem);
       gitDirCommands = <List<String>?>[];
       gitDiffResponse = '';
       gitDir = MockGitDir();
@@ -378,12 +346,7 @@ packages/plugin3/plugin3.dart
         }
         return Future<ProcessResult>.value(mockProcessResult);
       });
-      initializeFakePackages();
       processRunner = RecordingProcessRunner();
-    });
-
-    tearDown(() {
-      cleanupPackages();
     });
 
     test('No git diff should result no files changed', () async {
@@ -520,12 +483,10 @@ file2/file2.cc
 class SamplePluginCommand extends PluginCommand {
   SamplePluginCommand(
     this._plugins,
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
-  }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   final List<String> _plugins;
 

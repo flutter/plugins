@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -14,7 +12,6 @@ import 'package:path/path.dart' as p;
 import 'common.dart';
 
 const String _kiOSDestination = 'ios-destination';
-const String _kSkip = 'skip';
 const String _kXcodeBuildCommand = 'xcodebuild';
 const String _kXCRunCommand = 'xcrun';
 const String _kFoundNoSimulatorsMessage =
@@ -26,10 +23,9 @@ const String _kFoundNoSimulatorsMessage =
 class XCTestCommand extends PluginCommand {
   /// Creates an instance of the test command.
   XCTestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addOption(
       _kiOSDestination,
       help:
@@ -37,8 +33,6 @@ class XCTestCommand extends PluginCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
-    argParser.addMultiOption(_kSkip,
-        help: 'Plugins to skip while running this command. \n');
   }
 
   @override
@@ -52,7 +46,7 @@ class XCTestCommand extends PluginCommand {
   Future<void> run() async {
     String destination = getStringArg(_kiOSDestination);
     if (destination.isEmpty) {
-      final String simulatorId = await _findAvailableIphoneSimulator();
+      final String? simulatorId = await _findAvailableIphoneSimulator();
       if (simulatorId == null) {
         print(_kFoundNoSimulatorsMessage);
         throw ToolExit(1);
@@ -60,21 +54,14 @@ class XCTestCommand extends PluginCommand {
       destination = 'id=$simulatorId';
     }
 
-    final List<String> skipped = getStringListArg(_kSkip);
-
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {
       // Start running for package.
       final String packageName =
           p.relative(plugin.path, from: packagesDir.path);
       print('Start running for $packageName ...');
-      if (!isIosPlugin(plugin, fileSystem)) {
+      if (!isIosPlugin(plugin)) {
         print('iOS is not supported by this plugin.');
-        print('\n\n');
-        continue;
-      }
-      if (skipped.contains(packageName)) {
-        print('$packageName was skipped with the --skip flag.');
         print('\n\n');
         continue;
       }
@@ -130,7 +117,7 @@ class XCTestCommand extends PluginCommand {
         workingDir: example, exitOnError: false);
   }
 
-  Future<String> _findAvailableIphoneSimulator() async {
+  Future<String?> _findAvailableIphoneSimulator() async {
     // Find the first available destination if not specified.
     final List<String> findSimulatorsArguments = <String>[
       'simctl',
@@ -154,30 +141,40 @@ class XCTestCommand extends PluginCommand {
     final List<Map<String, dynamic>> runtimes =
         (simulatorListJson['runtimes'] as List<dynamic>)
             .cast<Map<String, dynamic>>();
-    final Map<String, dynamic> devices =
-        simulatorListJson['devices'] as Map<String, dynamic>;
+    final Map<String, Object> devices =
+        (simulatorListJson['devices'] as Map<String, dynamic>)
+            .cast<String, Object>();
     if (runtimes.isEmpty || devices.isEmpty) {
       return null;
     }
-    String id;
+    String? id;
     // Looking for runtimes, trying to find one with highest OS version.
-    for (final Map<String, dynamic> runtimeMap in runtimes.reversed) {
-      if (!(runtimeMap['name'] as String).contains('iOS')) {
+    for (final Map<String, dynamic> rawRuntimeMap in runtimes.reversed) {
+      final Map<String, Object> runtimeMap =
+          rawRuntimeMap.cast<String, Object>();
+      if ((runtimeMap['name'] as String?)?.contains('iOS') != true) {
         continue;
       }
-      final String runtimeID = runtimeMap['identifier'] as String;
-      final List<Map<String, dynamic>> devicesForRuntime =
-          (devices[runtimeID] as List<dynamic>).cast<Map<String, dynamic>>();
-      if (devicesForRuntime.isEmpty) {
+      final String? runtimeID = runtimeMap['identifier'] as String?;
+      if (runtimeID == null) {
+        continue;
+      }
+      final List<Map<String, dynamic>>? devicesForRuntime =
+          (devices[runtimeID] as List<dynamic>?)?.cast<Map<String, dynamic>>();
+      if (devicesForRuntime == null || devicesForRuntime.isEmpty) {
         continue;
       }
       // Looking for runtimes, trying to find latest version of device.
-      for (final Map<String, dynamic> device in devicesForRuntime.reversed) {
+      for (final Map<String, dynamic> rawDevice in devicesForRuntime.reversed) {
+        final Map<String, Object> device = rawDevice.cast<String, Object>();
         if (device['availabilityError'] != null ||
-            (device['isAvailable'] as bool == false)) {
+            (device['isAvailable'] as bool?) == false) {
           continue;
         }
-        id = device['udid'] as String;
+        id = device['udid'] as String?;
+        if (id == null) {
+          continue;
+        }
         print('device selected: $device');
         return id;
       }

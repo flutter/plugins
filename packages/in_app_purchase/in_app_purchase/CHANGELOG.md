@@ -1,3 +1,7 @@
+## 1.0.5
+
+* Add explanation for casting `ProductDetails` and `PurchaseDetails` to platform specific implementations in the readme.
+
 ## 1.0.4
 
 * Fix `Restoring previous purchases` link in the README.md.
