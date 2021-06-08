@@ -5,6 +5,7 @@
 package io.flutter.plugins.camera.features.fpsrange;
 
 import android.hardware.camera2.CaptureRequest;
+import android.os.Build;
 import android.util.Range;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.features.CameraFeature;
@@ -24,25 +25,33 @@ public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
   public FpsRangeFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
 
-    Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
+    if (isPixel4A()) {
+      // HACK: There is a bug in the Pixel 4A where it cannot support 60fps modes
+      // even though they are reported as supported by
+      // `getControlAutoExposureAvailableTargetFpsRanges`.
+      // For max device compatibility we will keep FPS under 60 even if they report they are
+      // capable of achieving 60 fps. Highest working FPS is 30.
+      // https://issuetracker.google.com/issues/189237151
+      currentSetting = new Range<>(30, 30);
+    } else {
+      Range<Integer>[] ranges = cameraProperties.getControlAutoExposureAvailableTargetFpsRanges();
 
-    if (ranges != null) {
-      for (Range<Integer> range : ranges) {
-        int upper = range.getUpper();
+      if (ranges != null) {
+        for (Range<Integer> range : ranges) {
+          int upper = range.getUpper();
 
-        // There is a bug in the Pixel 4A where it cannot support 60fps modes
-        // even though they are reported as supported by
-        // `getControlAutoExposureAvailableTargetFpsRanges`.
-        // For max device compatibility we will keep FPS under 60 even if they report they are
-        // capable of achieving 60 fps.
-        // https://issuetracker.google.com/issues/189237151
-        if (upper >= 10 && upper < 60) {
-          if (currentSetting == null || upper > currentSetting.getUpper()) {
-            currentSetting = range;
+          if (upper >= 10) {
+            if (currentSetting == null || upper > currentSetting.getUpper()) {
+              currentSetting = range;
+            }
           }
         }
       }
     }
+  }
+
+  private boolean isPixel4A() {
+    return Build.BRAND.equals("google") && Build.MODEL.equals("Pixel 4a");
   }
 
   @Override
