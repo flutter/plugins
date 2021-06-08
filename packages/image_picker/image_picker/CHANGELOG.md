@@ -2,6 +2,10 @@
 
 * Implement functionality to pick multiple images in iOS14+ and Android.
 
+## 0.8.0+3
+
+* Readded request for camera permissions.
+
 ## 0.8.0+2
 
 * Fix a rotation problem where when camera is chosen as a source and additional parameters are added.
