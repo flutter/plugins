@@ -42,6 +42,7 @@ class MissingPlatformDirectoryException implements Exception {
   }
 }
 
+// * the error handler for missing flutter widgets
 // ignore: public_member_api_docs
 class MissingFlutterWidgetInitialized implements Exception {
   // ignore: public_member_api_docs
@@ -150,6 +151,7 @@ Future<Directory> getLibraryDirectory() async {
 /// Throws a `MissingPlatformDirectoryException` if the system is unable to
 /// provide the directory.
 Future<Directory> getApplicationDocumentsDirectory() async {
+  // ? check if the widgetsbinding is intialze or not
   if (WidgetsBinding.instance == null) {
     throw MissingFlutterWidgetInitialized(
         'widget flutter binding not initialized');
