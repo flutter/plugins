@@ -6,9 +6,12 @@ package io.flutter.plugins.inapppurchase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import androidx.annotation.NonNull;
+import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.BillingClient;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
@@ -62,6 +65,16 @@ public class TranslatorTest {
   public void fromPurchase() throws JSONException {
     final Purchase expected = new Purchase(PURCHASE_EXAMPLE_JSON, "signature");
     assertSerialized(expected, Translator.fromPurchase(expected));
+  }
+
+  @Test
+  public void fromPurchaseWithoutAccountIds() throws JSONException {
+    final Purchase expected =
+        new PurchaseWithAccountIdentifiers(PURCHASE_EXAMPLE_JSON, "signature");
+    Map<String, Object> serialized = Translator.fromPurchase(expected);
+    assertNotNull(serialized.get("orderId"));
+    assertNull(serialized.get("obfuscatedProfileId"));
+    assertNull(serialized.get("obfuscatedAccountId"));
   }
 
   @Test
@@ -218,5 +231,17 @@ public class TranslatorTest {
     assertEquals(expected.getOriginalJson(), serialized.get("originalJson"));
     assertEquals(expected.getSku(), serialized.get("sku"));
     assertEquals(expected.getDeveloperPayload(), serialized.get("developerPayload"));
+  }
+}
+
+class PurchaseWithAccountIdentifiers extends Purchase {
+  public PurchaseWithAccountIdentifiers(@NonNull String s, @NonNull String s1)
+      throws JSONException {
+    super(s, s1);
+  }
+
+  @Override
+  public AccountIdentifiers getAccountIdentifiers() {
+    return null;
   }
 }
