@@ -458,6 +458,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
+    required TextDirection textDirection,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
@@ -495,9 +496,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
               PlatformViewsService.initSurfaceAndroidView(
             id: params.id,
             viewType: 'plugins.flutter.io/google_maps',
-            layoutDirection: TextDirection.rtl,
+            layoutDirection: textDirection,
             creationParams: creationParams,
             creationParamsCodec: const StandardMessageCodec(),
+            onFocus: () => params.onFocusChanged(true),
           );
           controller.addOnPlatformViewCreatedListener(
             params.onPlatformViewCreated,
@@ -510,8 +512,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           return controller;
         },
       );
-    } else if (defaultTargetPlatform == TargetPlatform.android &&
-        !useAndroidViewSurface) {
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
