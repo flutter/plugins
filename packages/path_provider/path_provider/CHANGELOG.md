@@ -1,5 +1,7 @@
 ## NEXT
 
+## 2.0.3
+
 * Add iOS unit test target.
 * Add error handler for WidgetsBinding init.
 
