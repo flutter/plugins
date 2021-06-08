@@ -164,7 +164,7 @@
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
-  XCTAssertEqual(pickImageResult.code, @"create_error");
+  XCTAssertEqualObjects(pickImageResult.code, @"create_error");
 }
 
 - (void)testPluginMultiImagePathHasZeroItem {
@@ -182,7 +182,7 @@
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
-  XCTAssertEqual(pickImageResult.code, @"create_error");
+  XCTAssertEqualObjects(pickImageResult.code, @"create_error");
 }
 
 - (void)testPluginMultiImagePathHasItem {
