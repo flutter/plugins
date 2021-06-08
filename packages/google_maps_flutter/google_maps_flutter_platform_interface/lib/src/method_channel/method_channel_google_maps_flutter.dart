@@ -458,7 +458,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
-    required TextDirection textDirection,
+    TextDirection? textDirection,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
@@ -478,6 +478,10 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     };
     if (defaultTargetPlatform == TargetPlatform.android &&
         useAndroidViewSurface) {
+      assert(
+        textDirection != null,
+        'textDirection must not be null when MethodChannelGoogleMapsFlutter.useAndroidViewSurface is set to true.',
+      );
       return PlatformViewLink(
         viewType: 'plugins.flutter.io/google_maps',
         surfaceFactory: (
@@ -496,7 +500,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
               PlatformViewsService.initSurfaceAndroidView(
             id: params.id,
             viewType: 'plugins.flutter.io/google_maps',
-            layoutDirection: textDirection,
+            layoutDirection: textDirection!,
             creationParams: creationParams,
             creationParamsCodec: const StandardMessageCodec(),
             onFocus: () => params.onFocusChanged(true),
