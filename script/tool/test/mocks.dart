@@ -17,6 +17,9 @@ class MockProcess extends Mock implements io.Process {
   final MockIOSink stdinMock = MockIOSink();
 
   @override
+  int get pid => 99;
+
+  @override
   Future<int> get exitCode => exitCodeCompleter.future;
 
   @override

@@ -21,13 +21,12 @@ import 'common.dart';
 class PublishCheckCommand extends PluginCommand {
   /// Creates an instance of the publish command.
   PublishCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     this.httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(
       _allowPrereleaseFlag,
       help: 'Allows the pre-release SDK warning to pass.\n'

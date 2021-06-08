@@ -46,7 +46,7 @@ dart pub global run flutter_plugin_tools <args>
 ## Commands
 
 Run with `--help` for a full list of commands and arguments, but the
-following shows a number of common commands.
+following shows a number of common commands being run for a specific plugin.
 
 All examples assume running from source; see above for running the
 published version instead.
@@ -79,7 +79,7 @@ dart run ./script/tool/lib/src/main.dart test --plugins plugin_name
 
 ```sh
 cd <repository root>
-dart run ./script/tool/lib/src/main.dart xctest --target RunnerUITests --skip <plugins_to_skip>
+dart run ./script/tool/lib/src/main.dart xctest --plugins plugin_name
 ```
 
 ### Publish a Release
