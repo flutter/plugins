@@ -370,10 +370,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
   NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
   NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-  NSMutableArray *pathList = [[NSMutableArray alloc] initWithCapacity:results.count];
-  for (int i = 0; i < results.count; [pathList addObject:[NSNull null]], i++)
-    ;
 
+  __block NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
   __block NSUInteger resultsInProgress = results.count;
   __block dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
 
@@ -436,6 +434,22 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                              beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
   }
   [self handlePath:pathList];
+}
+
+/**
+ * Creates an NSMutableArray of a certain size filled with NSNull objects.
+ *
+ * The difference with initWithCapacity is that initWithCapacity still gives an empty array making
+ * it impossible to add objects on an index larger than the size.
+ *
+ * @param @size The length of the required array
+ * @return @NSMutableArray An array of a specified size
+ */
+- (NSMutableArray *)createNSMutableArrayWithSize:(NSUInteger)size {
+  NSMutableArray *mutableArray = [[NSMutableArray alloc] initWithCapacity:size];
+  for (int i = 0; i < size; [mutableArray addObject:[NSNull null]], i++)
+    ;
+  return mutableArray;
 }
 
 /**
