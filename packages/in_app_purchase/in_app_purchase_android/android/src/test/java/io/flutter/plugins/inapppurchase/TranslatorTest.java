@@ -70,7 +70,7 @@ public class TranslatorTest {
   @Test
   public void fromPurchaseWithoutAccountIds() throws JSONException {
     final Purchase expected =
-        new PurchaseWithAccountIdentifiers(PURCHASE_EXAMPLE_JSON, "signature");
+        new PurchaseWithoutAccountIdentifiers(PURCHASE_EXAMPLE_JSON, "signature");
     Map<String, Object> serialized = Translator.fromPurchase(expected);
     assertNotNull(serialized.get("orderId"));
     assertNull(serialized.get("obfuscatedProfileId"));
@@ -234,8 +234,8 @@ public class TranslatorTest {
   }
 }
 
-class PurchaseWithAccountIdentifiers extends Purchase {
-  public PurchaseWithAccountIdentifiers(@NonNull String s, @NonNull String s1)
+class PurchaseWithoutAccountIdentifiers extends Purchase {
+  public PurchaseWithoutAccountIdentifiers(@NonNull String s, @NonNull String s1)
       throws JSONException {
     super(s, s1);
   }
