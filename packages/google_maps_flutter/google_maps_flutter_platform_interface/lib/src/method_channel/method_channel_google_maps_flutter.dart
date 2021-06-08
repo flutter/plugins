@@ -442,7 +442,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
   }
 
-  /// Set [GoogleMapsFlutterPlatform] to uses [AndroidViewSurface] to build the Google Maps widget.
+  /// Set [GoogleMapsFlutterPlatform] to use [AndroidViewSurface] to build the Google Maps widget.
   ///
   /// This implementation uses hybrid composition to render the Google Maps
   /// Widget on Android. This comes at the cost of some performance on Android
