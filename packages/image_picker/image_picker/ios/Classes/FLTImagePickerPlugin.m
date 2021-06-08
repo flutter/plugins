@@ -456,7 +456,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * Handle the result based on the count of pathList.
  *
  * @param @pathList that is used to get its count.
- * @param @resultCount that is used to compared with @c pathList.
  */
 - (void)handlePath:(NSMutableArray *)pathList {
   if (self.maxImagesAllowed) {
