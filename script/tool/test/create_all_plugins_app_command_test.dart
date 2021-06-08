@@ -30,7 +30,6 @@ void main() {
 
       final CreateAllPluginsAppCommand command = CreateAllPluginsAppCommand(
         packagesDir,
-        fileSystem,
         pluginsRoot: testRoot,
       );
       appDir = command.appDirectory;
@@ -44,9 +43,9 @@ void main() {
     });
 
     test('pubspec includes all plugins', () async {
-      createFakePlugin('plugina', packagesDirectory: packagesDir);
-      createFakePlugin('pluginb', packagesDirectory: packagesDir);
-      createFakePlugin('pluginc', packagesDirectory: packagesDir);
+      createFakePlugin('plugina', packagesDir);
+      createFakePlugin('pluginb', packagesDir);
+      createFakePlugin('pluginc', packagesDir);
 
       await runner.run(<String>['all-plugins-app']);
       final List<String> pubspec =
@@ -62,9 +61,9 @@ void main() {
     });
 
     test('pubspec has overrides for all plugins', () async {
-      createFakePlugin('plugina', packagesDirectory: packagesDir);
-      createFakePlugin('pluginb', packagesDirectory: packagesDir);
-      createFakePlugin('pluginc', packagesDirectory: packagesDir);
+      createFakePlugin('plugina', packagesDir);
+      createFakePlugin('pluginb', packagesDir);
+      createFakePlugin('pluginc', packagesDir);
 
       await runner.run(<String>['all-plugins-app']);
       final List<String> pubspec =
@@ -81,7 +80,7 @@ void main() {
     });
 
     test('pubspec is compatible with null-safe app code', () async {
-      createFakePlugin('plugina', packagesDirectory: packagesDir);
+      createFakePlugin('plugina', packagesDir);
 
       await runner.run(<String>['all-plugins-app']);
       final String pubspec =

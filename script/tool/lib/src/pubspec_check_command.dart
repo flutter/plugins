@@ -19,12 +19,10 @@ import 'common.dart';
 class PubspecCheckCommand extends PluginCommand {
   /// Creates an instance of the version check command.
   PubspecCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
-  }) : super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   // Section order for plugins. Because the 'flutter' section is critical
   // information for plugins, and usually small, it goes near the top unlike in

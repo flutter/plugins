@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:convert';
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/xctest_command.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
 import 'util.dart';
 
+// Note: This uses `dynamic` deliberately, and should not be updated to Object,
+// in order to ensure that the code correctly handles this return type from
+// JSON decoding.
 final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   'runtimes': <Map<String, dynamic>>[
     <String, dynamic>{
@@ -82,35 +84,33 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
 
 void main() {
   const String _kDestination = '--ios-destination';
-  const String _kSkip = '--skip';
 
   group('test xctest_command', () {
-    CommandRunner<void> runner;
-    RecordingProcessRunner processRunner;
+    late FileSystem fileSystem;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final XCTestCommand command = XCTestCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final XCTestCommand command =
+          XCTestCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
-      cleanupPackages();
     });
 
     test('skip if ios is not supported', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isIosPlugin: false);
 
-      final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+      createFakePubspec(pluginDirectory.childDirectory('example'),
+          isFlutter: true);
 
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
@@ -119,27 +119,27 @@ void main() {
           runner, <String>['xctest', _kDestination, 'foo_destination']);
       expect(output, contains('iOS is not supported by this plugin.'));
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
-
-      cleanupPackages();
     });
 
-    test('running with correct destination, skip 1 plugin', () async {
-      createFakePlugin('plugin1',
-          withExtraFiles: <List<String>>[
-            <String>['example', 'test'],
-          ],
-          isIosPlugin: true);
-      createFakePlugin('plugin2',
-          withExtraFiles: <List<String>>[
-            <String>['example', 'test'],
-          ],
-          isIosPlugin: true);
+    test('running with correct destination, exclude 1 plugin', () async {
+      final Directory pluginDirectory1 =
+          createFakePlugin('plugin1', packagesDir,
+              withExtraFiles: <List<String>>[
+                <String>['example', 'test'],
+              ],
+              isIosPlugin: true);
+      final Directory pluginDirectory2 =
+          createFakePlugin('plugin2', packagesDir,
+              withExtraFiles: <List<String>>[
+                <String>['example', 'test'],
+              ],
+              isIosPlugin: true);
 
       final Directory pluginExampleDirectory1 =
-          mockPackagesDir.childDirectory('plugin1').childDirectory('example');
+          pluginDirectory1.childDirectory('example');
       createFakePubspec(pluginExampleDirectory1, isFlutter: true);
       final Directory pluginExampleDirectory2 =
-          mockPackagesDir.childDirectory('plugin2').childDirectory('example');
+          pluginDirectory2.childDirectory('example');
       createFakePubspec(pluginExampleDirectory2, isFlutter: true);
 
       final MockProcess mockProcess = MockProcess();
@@ -151,11 +151,11 @@ void main() {
         'xctest',
         _kDestination,
         'foo_destination',
-        _kSkip,
+        '--exclude',
         'plugin1'
       ]);
 
-      expect(output, contains('plugin1 was skipped with the --skip flag.'));
+      expect(output, isNot(contains('Successfully ran xctest for plugin1')));
       expect(output, contains('Successfully ran xctest for plugin2'));
 
       expect(
@@ -179,20 +179,18 @@ void main() {
                 ],
                 pluginExampleDirectory2.path),
           ]));
-
-      cleanupPackages();
     });
 
     test('Not specifying --ios-destination assigns an available simulator',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -235,8 +233,6 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
           ]));
-
-      cleanupPackages();
     });
   });
 }

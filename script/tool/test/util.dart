@@ -11,32 +11,29 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:meta/meta.dart';
-import 'package:platform/platform.dart';
 import 'package:quiver/collection.dart';
 
-// TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
-// for each test, to eliminate the chance of files from one test interfering
-// with another test.
-FileSystem mockFileSystem = MemoryFileSystem(
-    style: const LocalPlatform().isWindows
-        ? FileSystemStyle.windows
-        : FileSystemStyle.posix);
-late Directory mockPackagesDir;
-
-/// Creates a mock packages directory in the mock file system.
+/// Creates a packages directory in the given location.
 ///
-/// If [parentDir] is set the mock packages dir will be creates as a child of
-/// it. If not [mockFileSystem] will be used instead.
-void initializeFakePackages({Directory? parentDir}) {
-  mockPackagesDir =
-      (parentDir ?? mockFileSystem.currentDirectory).childDirectory('packages');
-  mockPackagesDir.createSync();
+/// If [parentDir] is set the packages directory will be created there,
+/// otherwise [fileSystem] must be provided and it will be created an arbitrary
+/// location in that filesystem.
+Directory createPackagesDirectory(
+    {Directory? parentDir, FileSystem? fileSystem}) {
+  assert(parentDir != null || fileSystem != null,
+      'One of parentDir or fileSystem must be provided');
+  assert(fileSystem == null || fileSystem is MemoryFileSystem,
+      'If using a real filesystem, parentDir must be provided');
+  final Directory packagesDir =
+      (parentDir ?? fileSystem!.currentDirectory).childDirectory('packages');
+  packagesDir.createSync();
+  return packagesDir;
 }
 
-/// Creates a plugin package with the given [name] in [packagesDirectory],
-/// defaulting to [mockPackagesDir].
+/// Creates a plugin package with the given [name] in [packagesDirectory].
 Directory createFakePlugin(
-  String name, {
+  String name,
+  Directory packagesDirectory, {
   bool withSingleExample = false,
   List<String> withExamples = const <String>[],
   List<List<String>> withExtraFiles = const <List<String>>[],
@@ -51,12 +48,11 @@ Directory createFakePlugin(
   bool includeVersion = false,
   String version = '0.0.1',
   String parentDirectoryName = '',
-  Directory? packagesDirectory,
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
       'cannot pass withSingleExample and withExamples simultaneously');
 
-  Directory parentDirectory = packagesDirectory ?? mockPackagesDir;
+  Directory parentDirectory = packagesDirectory;
   if (parentDirectoryName != '') {
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }
@@ -196,13 +192,6 @@ publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being 
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
-}
-
-/// Cleans up the mock packages directory, making it an empty directory again.
-void cleanupPackages() {
-  mockPackagesDir.listSync().forEach((FileSystemEntity entity) {
-    entity.deleteSync(recursive: true);
-  });
 }
 
 typedef _ErrorHandler = void Function(Error error);
