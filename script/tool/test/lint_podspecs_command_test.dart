@@ -6,6 +6,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/lint_podspecs_command.dart';
 import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
@@ -17,20 +18,22 @@ import 'util.dart';
 
 void main() {
   group('$LintPodspecsCommand', () {
+    FileSystem fileSystem;
+    Directory packagesDir;
     CommandRunner<void> runner;
     MockPlatform mockPlatform;
     final RecordingProcessRunner processRunner = RecordingProcessRunner();
     List<String> printedMessages;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
 
       printedMessages = <String>[];
       mockPlatform = MockPlatform();
       when(mockPlatform.isMacOS).thenReturn(true);
       final LintPodspecsCommand command = LintPodspecsCommand(
-        mockPackagesDir,
-        mockFileSystem,
+        packagesDir,
         processRunner: processRunner,
         platform: mockPlatform,
         print: (Object message) => printedMessages.add(message.toString()),
@@ -45,12 +48,8 @@ void main() {
       processRunner.recordedCalls.clear();
     });
 
-    tearDown(() {
-      cleanupPackages();
-    });
-
     test('only runs on macOS', () async {
-      createFakePlugin('plugin1', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin1', packagesDir, withExtraFiles: <List<String>>[
         <String>['plugin1.podspec'],
       ]);
 
@@ -64,11 +63,11 @@ void main() {
     });
 
     test('runs pod lib lint on a podspec', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['ios', 'plugin1.podspec'],
-        <String>['bogus.dart'], // Ignore non-podspecs.
-      ]);
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['ios', 'plugin1.podspec'],
+            <String>['bogus.dart'], // Ignore non-podspecs.
+          ]);
 
       processRunner.resultStdout = 'Foo';
       processRunner.resultStderr = 'Bar';
@@ -78,7 +77,7 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -87,9 +86,10 @@ void main() {
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--use-libraries'
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -98,8 +98,9 @@ void main() {
                 p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
         ]),
       );
 
@@ -109,10 +110,10 @@ void main() {
     });
 
     test('skips podspecs with known issues', () async {
-      createFakePlugin('plugin1', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin1', packagesDir, withExtraFiles: <List<String>>[
         <String>['plugin1.podspec']
       ]);
-      createFakePlugin('plugin2', withExtraFiles: <List<String>>[
+      createFakePlugin('plugin2', packagesDir, withExtraFiles: <List<String>>[
         <String>['plugin2.podspec']
       ]);
 
@@ -122,23 +123,23 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
         ]),
       );
     });
 
     test('allow warnings for podspecs with known warnings', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['plugin1.podspec'],
-      ]);
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['plugin1.podspec'],
+          ]);
 
       await runner.run(<String>['podspecs', '--ignore-warnings=plugin1']);
 
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -147,10 +148,11 @@ void main() {
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--allow-warnings',
                 '--use-libraries'
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
@@ -159,9 +161,10 @@ void main() {
                 p.join(plugin1Dir.path, 'plugin1.podspec'),
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--allow-warnings',
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
         ]),
       );
 

@@ -17,12 +17,11 @@ import 'common.dart';
 class FirebaseTestLabCommand extends PluginCommand {
   /// Creates an instance of the test runner command.
   FirebaseTestLabCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
   })  : _print = print,
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addOption(
       'project',
       defaultsTo: 'flutter-infra',
@@ -105,10 +104,13 @@ class FirebaseTestLabCommand extends PluginCommand {
   Future<void> run() async {
     final Stream<Directory> packagesWithTests = getPackages().where(
         (Directory d) =>
-            isFlutterPackage(d, fileSystem) &&
-            fileSystem
-                .directory(p.join(
-                    d.path, 'example', 'android', 'app', 'src', 'androidTest'))
+            isFlutterPackage(d) &&
+            d
+                .childDirectory('example')
+                .childDirectory('android')
+                .childDirectory('app')
+                .childDirectory('src')
+                .childDirectory('androidTest')
                 .existsSync());
 
     final List<String> failingPackages = <String>[];
@@ -118,23 +120,20 @@ class FirebaseTestLabCommand extends PluginCommand {
     await for (final Directory package in packagesWithTests) {
       // See https://github.com/flutter/flutter/issues/38983
 
-      final Directory exampleDirectory =
-          fileSystem.directory(p.join(package.path, 'example'));
+      final Directory exampleDirectory = package.childDirectory('example');
       final String packageName =
           p.relative(package.path, from: packagesDir.path);
       _print('\nRUNNING FIREBASE TEST LAB TESTS for $packageName');
 
       final Directory androidDirectory =
-          fileSystem.directory(p.join(exampleDirectory.path, 'android'));
+          exampleDirectory.childDirectory('android');
 
       final String enableExperiment = getStringArg(kEnableExperiment);
       final String encodedEnableExperiment =
           Uri.encodeComponent('--enable-experiment=$enableExperiment');
 
       // Ensures that gradle wrapper exists
-      if (!fileSystem
-          .file(p.join(androidDirectory.path, _gradleWrapper))
-          .existsSync()) {
+      if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
         final int exitCode = await processRunner.runAndStream(
             'flutter',
             <String>[
@@ -181,8 +180,7 @@ class FirebaseTestLabCommand extends PluginCommand {
 
       final List<Directory> testDirs =
           package.listSync().where(isTestDir).cast<Directory>().toList();
-      final Directory example =
-          fileSystem.directory(p.join(package.path, 'example'));
+      final Directory example = package.childDirectory('example');
       testDirs.addAll(
           example.listSync().where(isTestDir).cast<Directory>().toList());
       for (final Directory testDir in testDirs) {

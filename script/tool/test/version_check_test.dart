@@ -10,6 +10,7 @@ import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/version_check_command.dart';
 import 'package:git/git.dart';
@@ -55,6 +56,8 @@ String _redColorString(String string) {
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
+    FileSystem fileSystem;
+    Directory packagesDir;
     CommandRunner<void> runner;
     RecordingProcessRunner processRunner;
     List<List<String>> gitDirCommands;
@@ -63,6 +66,8 @@ void main() {
     MockGitDir gitDir;
 
     setUp(() {
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       gitDirCommands = <List<String>>[];
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};
@@ -86,10 +91,8 @@ void main() {
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
-      initializeFakePackages();
       processRunner = RecordingProcessRunner();
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir);
 
       runner = CommandRunner<void>(
@@ -97,12 +100,9 @@ void main() {
       runner.addCommand(command);
     });
 
-    tearDown(() {
-      cleanupPackages();
-    });
-
     test('allows valid version', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -128,7 +128,8 @@ void main() {
     });
 
     test('denies invalid version', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 0.0.1',
@@ -152,7 +153,8 @@ void main() {
     });
 
     test('allows valid version without explicit base-sha', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -170,7 +172,8 @@ void main() {
     });
 
     test('allows valid version for new package.', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'HEAD:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -188,7 +191,8 @@ void main() {
     });
 
     test('allows likely reverts.', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
@@ -206,7 +210,8 @@ void main() {
     });
 
     test('denies lower version that could not be a simple revert', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
@@ -222,7 +227,8 @@ void main() {
     });
 
     test('denies invalid version without explicit base-sha', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.0.1',
@@ -238,13 +244,10 @@ void main() {
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      final Directory pluginDir = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
-      mockFileSystem.currentDirectory
-          .childDirectory('packages')
-          .childDirectory('plugin')
-          .childFile('pubspec.yaml')
-          .deleteSync();
+      pluginDir.childFile('pubspec.yaml').deleteSync();
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
 
@@ -263,7 +266,7 @@ void main() {
     });
 
     test('allows minor changes to platform interfaces', () async {
-      createFakePlugin('plugin_platform_interface',
+      createFakePlugin('plugin_platform_interface', packagesDir,
           includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin_platform_interface/pubspec.yaml';
       gitShowResponses = <String, String>{
@@ -297,7 +300,7 @@ void main() {
     });
 
     test('disallows breaking changes to platform interfaces', () async {
-      createFakePlugin('plugin_platform_interface',
+      createFakePlugin('plugin_platform_interface', packagesDir,
           includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin_platform_interface/pubspec.yaml';
       gitShowResponses = <String, String>{
@@ -330,10 +333,8 @@ void main() {
 
     test('Allow empty lines in front of the first version in CHANGELOG',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -359,10 +360,8 @@ void main() {
     });
 
     test('Throws if versions in changelog and pubspec do not match', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -396,10 +395,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
     });
 
     test('Success if CHANGELOG and pubspec versions match', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -424,10 +421,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
     test(
         'Fail if pubspec version only matches an older version listed in CHANGELOG',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.0');
@@ -468,10 +463,8 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
     test('Allow NEXT as a placeholder for gathering CHANGELOG entries',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.0');
@@ -499,10 +492,8 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
     test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
         () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -545,10 +536,8 @@ into the new version's release notes.
     });
 
     test('Fail if the version changes without replacing NEXT', () async {
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
-
-      final Directory pluginDirectory =
-          mockPackagesDir.childDirectory('plugin');
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
 
       createFakePubspec(pluginDirectory,
           isFlutter: true, includeVersion: true, version: '1.0.1');
@@ -600,15 +589,15 @@ The first version listed in CHANGELOG.md is 1.0.0.
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -637,15 +626,15 @@ The first version listed in CHANGELOG.md is 1.0.0.
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response(json.encode(httpResponse), 200);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -682,15 +671,15 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('xx', 400);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
@@ -726,15 +715,15 @@ ${indentation}HTTP response: xx
       final MockClient mockClient = MockClient((http.Request request) async {
         return http.Response('xx', 404);
       });
-      final VersionCheckCommand command = VersionCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
           processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', includeChangeLog: true, includeVersion: true);
+      createFakePlugin('plugin', packagesDir,
+          includeChangeLog: true, includeVersion: true);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',

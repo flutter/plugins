@@ -174,7 +174,7 @@ class FakeIOSPlatform {
         assert(productIDS is List<String>, 'invalid argument type');
         startProductRequestParam = call.arguments;
         if (getProductRequestFailTest) {
-          return Future<Map<String, dynamic>>.value(null);
+          return Future<dynamic>.value(null);
         }
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(dummyProductResponseWrapper));
