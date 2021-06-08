@@ -50,7 +50,7 @@ analyzer:
     unnecessary_null_comparison: false
     always_require_non_null_named_parameters: false # not needed with nnbd
     # TODO(https://github.com/flutter/flutter/issues/74381)
-    unnecessary_imports: ignore
+    unnecessary_import: ignore
   exclude:
     # Ignore generated files
     - '**/*.g.dart'
