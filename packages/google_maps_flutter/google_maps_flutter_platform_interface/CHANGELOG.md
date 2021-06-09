@@ -1,4 +1,4 @@
-## 2.0.5
+## 2.1.0
 
 * Add possibility to change animation duration with a new `animationDuration` parameter in `MethodChannelGoogleMapsFlutter.animateCamera`.
 
