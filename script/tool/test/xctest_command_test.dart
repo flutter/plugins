@@ -159,8 +159,10 @@ void main() {
           'plugin1'
         ]);
 
-        expect(output, isNot(contains('Successfully ran xctest for plugin1')));
-        expect(output, contains('Successfully ran xctest for plugin2'));
+        expect(output, isNot(contains('Start running for plugin1...')));
+        expect(output, contains('Start running for plugin2...'));
+        expect(output,
+            contains('Successfully ran iOS xctest for plugin2/example'));
 
         expect(
             processRunner.recordedCalls,

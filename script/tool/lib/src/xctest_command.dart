@@ -58,32 +58,21 @@ class XCTestCommand extends PluginCommand {
       }
       destination = 'id=$simulatorId';
     }
+    final List<String> destinationFlags = <String>[
+      '-destination',
+      destination,
+    ];
 
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {
-      // Start running for package.
       final String packageName =
           p.relative(plugin.path, from: packagesDir.path);
-      print('Start running for $packageName ...');
-      if (!isIosPlugin(plugin)) {
-        print('iOS is not supported by this plugin.');
-        print('\n\n');
-        continue;
-      }
-      for (final Directory example in getExamplesForPlugin(plugin)) {
-        // Running tests and static analyzer.
-        print('Running tests and analyzer for $packageName ...');
-        int exitCode = await _runTests(true, destination, example);
-        // 66 = there is no test target (this fails fast). Try again with just the analyzer.
-        if (exitCode == 66) {
-          print('Tests not found for $packageName, running analyzer only...');
-          exitCode = await _runTests(false, destination, example);
-        }
-        if (exitCode == 0) {
-          print('Successfully ran xctest for $packageName');
-        } else {
-          failingPackages.add(packageName);
-        }
+      print('============================================================');
+      print('Start running for $packageName...');
+      bool passed =
+          await _testPlugin(plugin, extraXcrunFlags: destinationFlags);
+      if (!passed) {
+        failingPackages.add(packageName);
       }
     }
 
@@ -100,7 +89,44 @@ class XCTestCommand extends PluginCommand {
     }
   }
 
-  Future<int> _runTests(bool runTests, String destination, Directory example) {
+  /// Runs all applicable tests for [plugin], printing status and returning
+  /// success if the tests passed (or did not exist).
+  Future<bool> _testPlugin(
+    Directory plugin, {
+    List<String> extraXcrunFlags = const <String>[],
+  }) async {
+    if (!isIosPlugin(plugin)) {
+      print('iOS is not supported by this plugin.');
+      print('\n\n');
+      return true;
+    }
+    bool passing = true;
+    for (final Directory example in getExamplesForPlugin(plugin)) {
+      // Running tests and static analyzer.
+      final String examplePath =
+          p.relative(example.path, from: plugin.parent.path);
+      print('Running iOS tests and analyzer for $examplePath...');
+      int exitCode =
+          await _runTests(true, example, extraFlags: extraXcrunFlags);
+      // 66 = there is no test target (this fails fast). Try again with just the analyzer.
+      if (exitCode == 66) {
+        print('Tests not found for $examplePath, running analyzer only...');
+        exitCode = await _runTests(false, example, extraFlags: extraXcrunFlags);
+      }
+      if (exitCode == 0) {
+        print('Successfully ran iOS xctest for $examplePath');
+      } else {
+        passing = false;
+      }
+    }
+    return passing;
+  }
+
+  Future<int> _runTests(
+    bool runTests,
+    Directory example, {
+    List<String> extraFlags = const <String>[],
+  }) {
     final List<String> xctestArgs = <String>[
       _kXcodeBuildCommand,
       if (runTests) 'test',
@@ -111,8 +137,7 @@ class XCTestCommand extends PluginCommand {
       'Debug',
       '-scheme',
       'Runner',
-      '-destination',
-      destination,
+      ...extraFlags,
       'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
     ];
     final String completeTestCommand =
