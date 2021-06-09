@@ -119,9 +119,11 @@ final class GoogleMapController
   }
 
   private void animateCamera(CameraUpdate cameraUpdate, Integer animationDuration) {
-    if(animationDuration != null)
-        googleMap.animateCamera(cameraUpdate, animationDuration, null);
-    else googleMap.animateCamera(cameraUpdate);
+    if (animationDuration != null) {
+      googleMap.animateCamera(cameraUpdate, animationDuration, null);
+    } else {
+      googleMap.animateCamera(cameraUpdate);
+    }
   }
 
   private CameraPosition getCameraPosition() {
@@ -524,17 +526,21 @@ final class GoogleMapController
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
-  // does. This will override it when available even with the annotation commented out.
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView
+  // interface, but the maximum does.
+  // This will override it when available even with the annotation commented out.
   public void onInputConnectionLocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126
+    //  is fixed in stable.
   }
 
   // @Override
-  // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
-  // does. This will override it when available even with the annotation commented out.
+  // The minimum supported version of Flutter doesn't have this method on the PlatformView
+  // interface, but the maximum does.
+  // This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
-    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+    // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126
+    //  is fixed in stable.
   }
 
   // DefaultLifecycleObserver

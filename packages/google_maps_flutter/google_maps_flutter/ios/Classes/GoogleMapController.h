@@ -40,7 +40,8 @@ NS_ASSUME_NONNULL_BEGIN
                     registrar:(NSObject<FlutterPluginRegistrar> *)registrar;
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
-- (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
+- (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate
+              animationDuration:(NSNumber *)duration;
 - (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
 - (nullable GMSCameraPosition *)cameraPosition;
 @end
