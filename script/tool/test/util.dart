@@ -257,13 +257,13 @@ class RecordingProcessRunner extends ProcessRunner {
     Encoding stderrEncoding = io.systemEncoding,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    io.ProcessResult? result;
 
     final io.Process? process = processToReturn;
-    if (process != null) {
-      result = io.ProcessResult(process.pid, await process.exitCode,
-          resultStdout ?? process.stdout, resultStderr ?? process.stderr);
-    }
+    final io.ProcessResult result = process == null
+        ? io.ProcessResult(1, 1, '', '')
+        : io.ProcessResult(process.pid, await process.exitCode,
+            resultStdout ?? process.stdout, resultStderr ?? process.stderr);
+
     return Future<io.ProcessResult>.value(result);
   }
 
