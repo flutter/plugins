@@ -79,7 +79,10 @@ dart run ./script/tool/lib/src/main.dart test --plugins plugin_name
 
 ```sh
 cd <repository root>
-dart run ./script/tool/lib/src/main.dart xctest --plugins plugin_name
+# For iOS:
+dart run ./script/tool/lib/src/main.dart xctest --ios --plugins plugin_name
+# For macOS:
+dart run ./script/tool/lib/src/main.dart xctest --macos --plugins plugin_name
 ```
 
 ### Publish a Release

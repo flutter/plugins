@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/xctest_command.dart';
 import 'package:test/test.dart';
 
@@ -100,6 +101,13 @@ void main() {
 
       runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
+    });
+
+    test('Fails if no platforms are provided', () async {
+      expect(
+        () => runner.run(<String>['xctest']),
+        throwsA(isA<ToolExit>()),
+      );
     });
 
     group('iOS', () {

@@ -49,19 +49,30 @@ class XCTestCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    String destination = getStringArg(_kiOSDestination);
-    if (destination.isEmpty) {
-      final String? simulatorId = await _findAvailableIphoneSimulator();
-      if (simulatorId == null) {
-        print(_kFoundNoSimulatorsMessage);
-        throw ToolExit(1);
-      }
-      destination = 'id=$simulatorId';
+    final bool testIos = getBoolArg(kIos);
+    final bool testMacos = getBoolArg(kMacos);
+
+    if (!(testIos || testMacos)) {
+      print('At least one platform flag must be provided.');
+      throw ToolExit(2);
     }
-    final List<String> destinationFlags = <String>[
-      '-destination',
-      destination,
-    ];
+
+    List<String> iosDestinationFlags = <String>[];
+    if (testIos) {
+      String destination = getStringArg(_kiOSDestination);
+      if (destination.isEmpty) {
+        final String? simulatorId = await _findAvailableIphoneSimulator();
+        if (simulatorId == null) {
+          print(_kFoundNoSimulatorsMessage);
+          throw ToolExit(1);
+        }
+        destination = 'id=$simulatorId';
+      }
+      iosDestinationFlags = <String>[
+        '-destination',
+        destination,
+      ];
+    }
 
     final List<String> failingPackages = <String>[];
     await for (final Directory plugin in getPlugins()) {
@@ -70,7 +81,7 @@ class XCTestCommand extends PluginCommand {
       print('============================================================');
       print('Start running for $packageName...');
       bool passed =
-          await _testPlugin(plugin, extraXcrunFlags: destinationFlags);
+          await _testPlugin(plugin, extraXcrunFlags: iosDestinationFlags);
       if (!passed) {
         failingPackages.add(packageName);
       }
