@@ -21,28 +21,22 @@ import 'package:yaml/yaml.dart';
 typedef Print = void Function(Object? object);
 
 /// Key for windows platform.
-const String kWindows = 'windows';
+const String kPlatformFlagWindows = 'windows';
 
 /// Key for macos platform.
-const String kMacos = 'macos';
+const String kPlatformFlagMacos = 'macos';
 
 /// Key for linux platform.
-const String kLinux = 'linux';
+const String kPlatformFlagLinux = 'linux';
 
 /// Key for IPA (iOS) platform.
-const String kIos = 'ios';
+const String kPlatformFlagIos = 'ios';
 
 /// Key for APK (Android) platform.
-const String kAndroid = 'android';
+const String kPlatformFlagAndroid = 'android';
 
 /// Key for Web platform.
-const String kWeb = 'web';
-
-/// Key for IPA.
-const String kIpa = 'ipa';
-
-/// Key for APK.
-const String kApk = 'apk';
+const String kPlatformFlagWeb = 'web';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
@@ -78,12 +72,12 @@ bool isFlutterPackage(FileSystemEntity entity) {
 ///         platforms:
 ///           [platform]:
 bool pluginSupportsPlatform(String platform, FileSystemEntity entity) {
-  assert(platform == kIos ||
-      platform == kAndroid ||
-      platform == kWeb ||
-      platform == kMacos ||
-      platform == kWindows ||
-      platform == kLinux);
+  assert(platform == kPlatformFlagIos ||
+      platform == kPlatformFlagAndroid ||
+      platform == kPlatformFlagWeb ||
+      platform == kPlatformFlagMacos ||
+      platform == kPlatformFlagWindows ||
+      platform == kPlatformFlagLinux);
   if (entity is! Directory) {
     return false;
   }
@@ -104,7 +98,7 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity) {
     if (platforms == null) {
       // Legacy plugin specs are assumed to support iOS and Android.
       if (!pluginSection.containsKey('platforms')) {
-        return platform == kIos || platform == kAndroid;
+        return platform == kPlatformFlagIos || platform == kPlatformFlagAndroid;
       }
       return false;
     }
@@ -118,32 +112,32 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity) {
 
 /// Returns whether the given directory contains a Flutter Android plugin.
 bool isAndroidPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kAndroid, entity);
+  return pluginSupportsPlatform(kPlatformFlagAndroid, entity);
 }
 
 /// Returns whether the given directory contains a Flutter iOS plugin.
 bool isIosPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kIos, entity);
+  return pluginSupportsPlatform(kPlatformFlagIos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter web plugin.
 bool isWebPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kWeb, entity);
+  return pluginSupportsPlatform(kPlatformFlagWeb, entity);
 }
 
 /// Returns whether the given directory contains a Flutter Windows plugin.
 bool isWindowsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kWindows, entity);
+  return pluginSupportsPlatform(kPlatformFlagWindows, entity);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.
 bool isMacOsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kMacos, entity);
+  return pluginSupportsPlatform(kPlatformFlagMacos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter linux plugin.
 bool isLinuxPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kLinux, entity);
+  return pluginSupportsPlatform(kPlatformFlagLinux, entity);
 }
 
 /// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.

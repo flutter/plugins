@@ -293,7 +293,8 @@ void main() {
           '--macos',
         ]);
 
-        expect(output, contains('Successfully ran xctest for plugin'));
+        expect(output,
+            contains('Successfully ran macOS xctest for plugin/example'));
 
         expect(
             processRunner.recordedCalls,

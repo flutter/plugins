@@ -35,8 +35,8 @@ class XCTestCommand extends PluginCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
-    argParser.addFlag(kIos, help: 'Runs the iOS tests');
-    argParser.addFlag(kMacos, help: 'Runs the macOS tests');
+    argParser.addFlag(kPlatformFlagIos, help: 'Runs the iOS tests');
+    argParser.addFlag(kPlatformFlagMacos, help: 'Runs the macOS tests');
   }
 
   @override
@@ -49,8 +49,8 @@ class XCTestCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final bool testIos = getBoolArg(kIos);
-    final bool testMacos = getBoolArg(kMacos);
+    final bool testIos = getBoolArg(kPlatformFlagIos);
+    final bool testMacos = getBoolArg(kPlatformFlagMacos);
 
     if (!(testIos || testMacos)) {
       print('At least one platform flag must be provided.');
@@ -80,8 +80,14 @@ class XCTestCommand extends PluginCommand {
           p.relative(plugin.path, from: packagesDir.path);
       print('============================================================');
       print('Start running for $packageName...');
-      bool passed =
-          await _testPlugin(plugin, extraXcrunFlags: iosDestinationFlags);
+      bool passed = true;
+      if (testIos) {
+        passed &= await _testPlugin(plugin, 'iOS',
+            extraXcrunFlags: iosDestinationFlags);
+      }
+      if (testMacos) {
+        passed &= await _testPlugin(plugin, 'macOS');
+      }
       if (!passed) {
         failingPackages.add(packageName);
       }
@@ -103,11 +109,12 @@ class XCTestCommand extends PluginCommand {
   /// Runs all applicable tests for [plugin], printing status and returning
   /// success if the tests passed (or did not exist).
   Future<bool> _testPlugin(
-    Directory plugin, {
+    Directory plugin,
+    String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
-    if (!isIosPlugin(plugin)) {
-      print('iOS is not supported by this plugin.');
+    if (!pluginSupportsPlatform(platform.toLowerCase(), plugin)) {
+      print('$platform is not supported by this plugin.');
       print('\n\n');
       return true;
     }
@@ -116,16 +123,17 @@ class XCTestCommand extends PluginCommand {
       // Running tests and static analyzer.
       final String examplePath =
           p.relative(example.path, from: plugin.parent.path);
-      print('Running iOS tests and analyzer for $examplePath...');
+      print('Running $platform tests and analyzer for $examplePath...');
       int exitCode =
-          await _runTests(true, example, extraFlags: extraXcrunFlags);
+          await _runTests(true, example, platform, extraFlags: extraXcrunFlags);
       // 66 = there is no test target (this fails fast). Try again with just the analyzer.
       if (exitCode == 66) {
         print('Tests not found for $examplePath, running analyzer only...');
-        exitCode = await _runTests(false, example, extraFlags: extraXcrunFlags);
+        exitCode = await _runTests(false, example, platform,
+            extraFlags: extraXcrunFlags);
       }
       if (exitCode == 0) {
-        print('Successfully ran iOS xctest for $examplePath');
+        print('Successfully ran $platform xctest for $examplePath');
       } else {
         passing = false;
       }
@@ -135,7 +143,8 @@ class XCTestCommand extends PluginCommand {
 
   Future<int> _runTests(
     bool runTests,
-    Directory example, {
+    Directory example,
+    String platform, {
     List<String> extraFlags = const <String>[],
   }) {
     final List<String> xctestArgs = <String>[
@@ -143,7 +152,7 @@ class XCTestCommand extends PluginCommand {
       if (runTests) 'test',
       'analyze',
       '-workspace',
-      'ios/Runner.xcworkspace',
+      '${platform.toLowerCase()}/Runner.xcworkspace',
       '-configuration',
       'Debug',
       '-scheme',
