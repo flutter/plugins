@@ -29,6 +29,7 @@ class FakeIOSPlatform {
   PlatformException? queryProductException;
   PlatformException? restoreException;
   SKError? testRestoredError;
+  bool queueIsActive = false;
 
   void reset() {
     transactions = [];
@@ -175,6 +176,12 @@ class FakeIOSPlatform {
         finishedTransactions.add(createPurchasedTransaction(
             call.arguments["productIdentifier"],
             call.arguments["transactionIdentifier"]));
+        break;
+      case '-[SKPaymentQueue startObservingTransactionQueue]':
+        queueIsActive = true;
+        break;
+      case '-[SKPaymentQueue stopObservingTransactionQueue]':
+        queueIsActive = false;
         break;
     }
     return Future<void>.sync(() {});
