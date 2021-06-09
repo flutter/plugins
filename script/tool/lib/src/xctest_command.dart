@@ -17,8 +17,10 @@ const String _kXCRunCommand = 'xcrun';
 const String _kFoundNoSimulatorsMessage =
     'Cannot find any available simulators, tests failed';
 
-/// The command to run iOS XCTests in plugins, this should work for both XCUnitTest and XCUITest targets.
-/// The tests target have to be added to the xcode project of the example app. Usually at "example/ios/Runner.xcworkspace".
+/// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
+/// The tests target have to be added to the Xcode project of the example app,
+/// usually at "example/{ios,macos}/Runner.xcworkspace".
+///
 /// The static analyzer is also run.
 class XCTestCommand extends PluginCommand {
   /// Creates an instance of the test command.
@@ -33,13 +35,16 @@ class XCTestCommand extends PluginCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
+    argParser.addFlag(kIos, help: 'Runs the iOS tests');
+    argParser.addFlag(kMacos, help: 'Runs the macOS tests');
   }
 
   @override
   final String name = 'xctest';
 
   @override
-  final String description = 'Runs the xctests in the iOS example apps.\n\n'
+  final String description =
+      'Runs the xctests in the iOS and/or macOS example apps.\n\n'
       'This command requires "flutter" and "xcrun" to be in your path.';
 
   @override
