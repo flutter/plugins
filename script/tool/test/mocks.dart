@@ -7,6 +7,14 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
+
+class MockPlatform extends Mock implements Platform {
+  MockPlatform({this.isMacOS = false});
+
+  @override
+  bool isMacOS;
+}
 
 class MockProcess extends Mock implements io.Process {
   final Completer<int> exitCodeCompleter = Completer<int>();
