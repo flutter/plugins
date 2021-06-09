@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Fix -Wstrict-prototypes analyzer warning in iOS plugin.
+
 ## 2.0.1
 
 * Migrate maven repository from jcenter to mavenCentral.
