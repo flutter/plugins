@@ -144,6 +144,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
 
   /// Starts an animated change of the map camera position.
   ///
+  /// The [animationDuration] parameter indicates how long the animation should
+  /// last. If [animationDuration] is null the platform default animation
+  /// duration will be used.
+  ///
   /// The returned [Future] completes after the change has been started on the
   /// platform side.
   Future<void> animateCamera(
