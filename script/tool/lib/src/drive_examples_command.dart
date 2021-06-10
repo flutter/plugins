@@ -15,17 +15,17 @@ class DriveExamplesCommand extends PluginCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
-    argParser.addFlag(kAndroid,
+    argParser.addFlag(kPlatformFlagAndroid,
         help: 'Runs the Android implementation of the examples');
-    argParser.addFlag(kIos,
+    argParser.addFlag(kPlatformFlagIos,
         help: 'Runs the iOS implementation of the examples');
-    argParser.addFlag(kLinux,
+    argParser.addFlag(kPlatformFlagLinux,
         help: 'Runs the Linux implementation of the examples');
-    argParser.addFlag(kMacos,
+    argParser.addFlag(kPlatformFlagMacos,
         help: 'Runs the macOS implementation of the examples');
-    argParser.addFlag(kWeb,
+    argParser.addFlag(kPlatformFlagWeb,
         help: 'Runs the web implementation of the examples');
-    argParser.addFlag(kWindows,
+    argParser.addFlag(kPlatformFlagWindows,
         help: 'Runs the Windows implementation of the examples');
     argParser.addOption(
       kEnableExperiment,
@@ -52,10 +52,10 @@ class DriveExamplesCommand extends PluginCommand {
   Future<void> run() async {
     final List<String> failingTests = <String>[];
     final List<String> pluginsWithoutTests = <String>[];
-    final bool isLinux = getBoolArg(kLinux);
-    final bool isMacos = getBoolArg(kMacos);
-    final bool isWeb = getBoolArg(kWeb);
-    final bool isWindows = getBoolArg(kWindows);
+    final bool isLinux = getBoolArg(kPlatformFlagLinux);
+    final bool isMacos = getBoolArg(kPlatformFlagMacos);
+    final bool isWeb = getBoolArg(kPlatformFlagWeb);
+    final bool isWindows = getBoolArg(kPlatformFlagWindows);
     await for (final Directory plugin in getPlugins()) {
       final String pluginName = plugin.basename;
       if (pluginName.endsWith('_platform_interface') &&
@@ -219,12 +219,12 @@ Tried searching for the following:
 
   Future<bool> _pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin) async {
-    final bool isAndroid = getBoolArg(kAndroid);
-    final bool isIOS = getBoolArg(kIos);
-    final bool isLinux = getBoolArg(kLinux);
-    final bool isMacos = getBoolArg(kMacos);
-    final bool isWeb = getBoolArg(kWeb);
-    final bool isWindows = getBoolArg(kWindows);
+    final bool isAndroid = getBoolArg(kPlatformFlagAndroid);
+    final bool isIOS = getBoolArg(kPlatformFlagIos);
+    final bool isLinux = getBoolArg(kPlatformFlagLinux);
+    final bool isMacos = getBoolArg(kPlatformFlagMacos);
+    final bool isWeb = getBoolArg(kPlatformFlagWeb);
+    final bool isWindows = getBoolArg(kPlatformFlagWindows);
     if (isAndroid) {
       return isAndroidPlugin(plugin);
     }

@@ -38,6 +38,7 @@ Directory createFakePlugin(
   List<String> withExamples = const <String>[],
   List<List<String>> withExtraFiles = const <List<String>>[],
   bool isFlutter = true,
+  // TODO(stuartmorgan): Change these platform switches to support type enums.
   bool isAndroidPlugin = false,
   bool isIosPlugin = false,
   bool isWebPlugin = false,
@@ -62,14 +63,13 @@ Directory createFakePlugin(
   createFakePubspec(pluginDirectory,
       name: name,
       isFlutter: isFlutter,
-      isAndroidPlugin: isAndroidPlugin,
-      isIosPlugin: isIosPlugin,
-      isWebPlugin: isWebPlugin,
-      isLinuxPlugin: isLinuxPlugin,
-      isMacOsPlugin: isMacOsPlugin,
-      isWindowsPlugin: isWindowsPlugin,
-      includeVersion: includeVersion,
-      version: version);
+      androidSupport: isAndroidPlugin ? PlatformSupport.inline : null,
+      iosSupport: isIosPlugin ? PlatformSupport.inline : null,
+      webSupport: isWebPlugin ? PlatformSupport.inline : null,
+      linuxSupport: isLinuxPlugin ? PlatformSupport.inline : null,
+      macosSupport: isMacOsPlugin ? PlatformSupport.inline : null,
+      windowsSupport: isWindowsPlugin ? PlatformSupport.inline : null,
+      version: includeVersion ? version : null);
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
 ## 0.0.1
@@ -81,10 +81,7 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: '${name}_example',
-        isFlutter: isFlutter,
-        includeVersion: false,
-        publishTo: 'none');
+        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
@@ -92,10 +89,7 @@ Directory createFakePlugin(
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
       createFakePubspec(currentExample,
-          name: example,
-          isFlutter: isFlutter,
-          includeVersion: false,
-          publishTo: 'none');
+          name: example, isFlutter: isFlutter, publishTo: 'none');
     }
   }
 
@@ -119,15 +113,14 @@ void createFakePubspec(
   Directory parent, {
   String name = 'fake_package',
   bool isFlutter = true,
-  bool includeVersion = false,
-  bool isAndroidPlugin = false,
-  bool isIosPlugin = false,
-  bool isWebPlugin = false,
-  bool isLinuxPlugin = false,
-  bool isMacOsPlugin = false,
-  bool isWindowsPlugin = false,
+  PlatformSupport? androidSupport,
+  PlatformSupport? iosSupport,
+  PlatformSupport? linuxSupport,
+  PlatformSupport? macosSupport,
+  PlatformSupport? webSupport,
+  PlatformSupport? windowsSupport,
   String publishTo = 'http://no_pub_server.com',
-  String version = '0.0.1',
+  String? version,
 }) {
   parent.childFile('pubspec.yaml').createSync();
   String yaml = '''
@@ -136,43 +129,23 @@ flutter:
   plugin:
     platforms:
 ''';
-  if (isAndroidPlugin) {
-    yaml += '''
-      android:
-        package: io.flutter.plugins.fake
-        pluginClass: FakePlugin
-''';
+  if (androidSupport != null) {
+    yaml += _pluginPlatformSection('android', androidSupport, name);
   }
-  if (isIosPlugin) {
-    yaml += '''
-      ios:
-        pluginClass: FLTFakePlugin
-''';
+  if (iosSupport != null) {
+    yaml += _pluginPlatformSection('ios', iosSupport, name);
   }
-  if (isWebPlugin) {
-    yaml += '''
-      web:
-        pluginClass: FakePlugin
-        fileName: ${name}_web.dart
-''';
+  if (webSupport != null) {
+    yaml += _pluginPlatformSection('web', webSupport, name);
   }
-  if (isLinuxPlugin) {
-    yaml += '''
-      linux:
-        pluginClass: FakePlugin
-''';
+  if (linuxSupport != null) {
+    yaml += _pluginPlatformSection('linux', linuxSupport, name);
   }
-  if (isMacOsPlugin) {
-    yaml += '''
-      macos:
-        pluginClass: FakePlugin
-''';
+  if (macosSupport != null) {
+    yaml += _pluginPlatformSection('macos', macosSupport, name);
   }
-  if (isWindowsPlugin) {
-    yaml += '''
-      windows:
-        pluginClass: FakePlugin
-''';
+  if (windowsSupport != null) {
+    yaml += _pluginPlatformSection('windows', windowsSupport, name);
   }
   if (isFlutter) {
     yaml += '''
@@ -181,7 +154,7 @@ dependencies:
     sdk: flutter
 ''';
   }
-  if (includeVersion) {
+  if (version != null) {
     yaml += '''
 version: $version
 ''';
@@ -192,6 +165,53 @@ publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being 
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
+}
+
+String _pluginPlatformSection(
+    String platform, PlatformSupport type, String packageName) {
+  if (type == PlatformSupport.federated) {
+    return '''
+      $platform:
+        default_package: ${packageName}_$platform
+''';
+  }
+  switch (platform) {
+    case 'android':
+      return '''
+      android:
+        package: io.flutter.plugins.fake
+        pluginClass: FakePlugin
+''';
+    case 'ios':
+      return '''
+      ios:
+        pluginClass: FLTFakePlugin
+''';
+    case 'linux':
+      return '''
+      linux:
+        pluginClass: FakePlugin
+''';
+    case 'macos':
+      return '''
+      macos:
+        pluginClass: FakePlugin
+''';
+    case 'web':
+      return '''
+      web:
+        pluginClass: FakePlugin
+        fileName: ${packageName}_web.dart
+''';
+    case 'windows':
+      return '''
+      windows:
+        pluginClass: FakePlugin
+''';
+    default:
+      assert(false);
+      return '';
+  }
 }
 
 typedef _ErrorHandler = void Function(Error error);

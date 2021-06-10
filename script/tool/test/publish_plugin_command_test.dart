@@ -53,7 +53,7 @@ void main() {
     pluginDir =
         createFakePlugin(testPluginName, packagesDir, withSingleExample: false);
     assert(pluginDir != null && pluginDir.existsSync());
-    createFakePubspec(pluginDir, includeVersion: true);
+    createFakePubspec(pluginDir, version: '0.0.1');
     io.Process.runSync('git', <String>['init'],
         workingDirectory: testRoot.path);
     gitDir = await GitDir.fromExisting(testRoot.path);
@@ -139,7 +139,7 @@ void main() {
     });
 
     test('can publish non-flutter package', () async {
-      createFakePubspec(pluginDir, includeVersion: true, isFlutter: false);
+      createFakePubspec(pluginDir, version: '0.0.1', isFlutter: false);
       io.Process.runSync('git', <String>['init'],
           workingDirectory: testRoot.path);
       gitDir = await GitDir.fromExisting(testRoot.path);
@@ -435,15 +435,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin1', isFlutter: false, version: '0.0.1');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin2', isFlutter: false, version: '0.0.1');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -477,10 +471,7 @@ void main() {
       final Directory pluginDir0 =
           createFakePlugin('plugin0', packagesDir, withSingleExample: true);
       createFakePubspec(pluginDir0,
-          name: 'plugin0',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin0', isFlutter: false, version: '0.0.1');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -497,15 +488,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin1', isFlutter: false, version: '0.0.1');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin2', isFlutter: false, version: '0.0.1');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -539,15 +524,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin1', isFlutter: false, version: '0.0.1');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin2', isFlutter: false, version: '0.0.1');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
@@ -586,15 +565,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin1', isFlutter: false, version: '0.0.1');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin2', isFlutter: false, version: '0.0.1');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -675,15 +648,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin1', isFlutter: false, version: '0.0.1');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin2', isFlutter: false, version: '0.0.1');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -761,15 +728,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.2');
+          name: 'plugin1', isFlutter: false, version: '0.0.2');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.2');
+          name: 'plugin2', isFlutter: false, version: '0.0.2');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -841,15 +802,9 @@ void main() {
       final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
           withSingleExample: true, parentDirectoryName: 'plugin2');
       createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin1', isFlutter: false, version: '0.0.1');
       createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+          name: 'plugin2', isFlutter: false, version: '0.0.1');
 
       io.Process.runSync('git', <String>['init'],
           workingDirectory: testRoot.path);
