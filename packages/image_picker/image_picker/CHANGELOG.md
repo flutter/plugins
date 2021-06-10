@@ -1,3 +1,7 @@
+## 0.8.0+4
+
+* Migrate example in the README to null-safety. 
+
 ## 0.8.0+3
 
 * Readded request for camera permissions.
