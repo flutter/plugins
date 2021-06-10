@@ -19,6 +19,7 @@ import android.view.WindowManager;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel.DeviceOrientation;
 import io.flutter.plugins.camera.DartMessenger;
 
 /**
@@ -153,13 +154,7 @@ public class DeviceOrientationManager {
         new OrientationEventListener(activity, SensorManager.SENSOR_DELAY_NORMAL) {
           @Override
           public void onOrientationChanged(int angle) {
-            if (!isSystemAutoRotationLocked()) {
-              PlatformChannel.DeviceOrientation newOrientation = calculateSensorOrientation(angle);
-              if (!newOrientation.equals(lastOrientation)) {
-                lastOrientation = newOrientation;
-                messenger.sendDeviceOrientationChangeEvent(newOrientation);
-              }
-            }
+            handleSensorOrientationChange(angle);
           }
         };
     if (orientationEventListener.canDetectOrientation()) {
@@ -175,17 +170,60 @@ public class DeviceOrientationManager {
         new BroadcastReceiver() {
           @Override
           public void onReceive(Context context, Intent intent) {
-            if (isSystemAutoRotationLocked()) {
-              PlatformChannel.DeviceOrientation orientation = getUIOrientation();
-              if (!orientation.equals(lastOrientation)) {
-                lastOrientation = orientation;
-                messenger.sendDeviceOrientationChangeEvent(orientation);
-              }
-            }
+            handleUIOrientationChange();
           }
         };
     activity.registerReceiver(broadcastReceiver, orientationIntentFilter);
     broadcastReceiver.onReceive(activity, null);
+  }
+
+  /**
+   * Handles orientation changes based on information from the device's sensors.
+   *
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
+   *
+   * @param angle of the current orientation.
+   */
+  @VisibleForTesting
+  void handleSensorOrientationChange(int angle) {
+    if (!isAccelerometerRotationLocked()) {
+      PlatformChannel.DeviceOrientation orientation = calculateSensorOrientation(angle);
+      lastOrientation = handleOrientationChange(orientation, lastOrientation, messenger);
+    }
+  }
+
+  /**
+   * Handles orientation changes based on change events triggered by the OrientationIntentFilter.
+   *
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
+   */
+  @VisibleForTesting
+  void handleUIOrientationChange() {
+    if (isAccelerometerRotationLocked()) {
+      PlatformChannel.DeviceOrientation orientation = getUIOrientation();
+      lastOrientation = handleOrientationChange(orientation, lastOrientation, messenger);
+    }
+  }
+
+  /**
+   * Handles orientation changes coming from either the device's sensors or the
+   * OrientationIntentFilter.
+   *
+   * <p>This method is visible for testing purposes only and should never be used outside this
+   * class.
+   */
+  @VisibleForTesting
+  static DeviceOrientation handleOrientationChange(
+      DeviceOrientation newOrientation,
+      DeviceOrientation previousOrientation,
+      DartMessenger messenger) {
+    if (!newOrientation.equals(previousOrientation)) {
+      messenger.sendDeviceOrientationChangeEvent(newOrientation);
+    }
+
+    return newOrientation;
   }
 
   private void stopSensorListener() {
@@ -204,7 +242,7 @@ public class DeviceOrientationManager {
     broadcastReceiver = null;
   }
 
-  private boolean isSystemAutoRotationLocked() {
+  private boolean isAccelerometerRotationLocked() {
     return android.provider.Settings.System.getInt(
             activity.getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, 0)
         != 1;
