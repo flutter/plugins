@@ -15,7 +15,7 @@ import io.flutter.plugins.camera.features.CameraFeature;
  * API.
  */
 public class FpsRangeFeature extends CameraFeature<Range<Integer>> {
-  private final static Range<Integer> MAX_PIXEL4A_RANGE = new Range<>(30, 30);
+  private static final Range<Integer> MAX_PIXEL4A_RANGE = new Range<>(30, 30);
   private Range<Integer> currentSetting;
 
   /**
