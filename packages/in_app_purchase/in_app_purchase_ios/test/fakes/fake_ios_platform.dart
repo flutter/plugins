@@ -67,6 +67,7 @@ class FakeIOSPlatform {
     queryProductException = null;
     restoreException = null;
     testRestoredError = null;
+    queueIsActive = false;
   }
 
   SKPaymentTransactionWrapper createPendingTransaction(String id) {

@@ -22,6 +22,7 @@ void main() {
 
   tearDown(() {
     fakeIOSPlatform.testReturnNull = false;
+    fakeIOSPlatform.queueIsActive = null;
   });
 
   group('sk_request_maker', () {
@@ -137,14 +138,12 @@ void main() {
       expect(fakeIOSPlatform.queueIsActive, isNot(true));
       await SKPaymentQueueWrapper().startObservingTransactionQueue();
       expect(fakeIOSPlatform.queueIsActive, true);
-      fakeIOSPlatform.queueIsActive = null;
     });
 
     test('stopObservingTransactionQueue should call methodChannel', () async {
       expect(fakeIOSPlatform.queueIsActive, isNot(false));
       await SKPaymentQueueWrapper().stopObservingTransactionQueue();
       expect(fakeIOSPlatform.queueIsActive, false);
-      fakeIOSPlatform.queueIsActive = null;
     });
   });
 
