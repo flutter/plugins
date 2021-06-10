@@ -336,8 +336,7 @@ void main() {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
 
 
@@ -363,8 +362,7 @@ void main() {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
 ## 1.0.2
 
@@ -398,8 +396,7 @@ The first version listed in CHANGELOG.md is 1.0.2.
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
 ## 1.0.1
 
@@ -424,8 +421,7 @@ The first version listed in CHANGELOG.md is 1.0.2.
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.0');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.0');
       const String changelog = '''
 ## 1.0.1
 
@@ -466,8 +462,7 @@ The first version listed in CHANGELOG.md is 1.0.1.
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.0');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.0');
       const String changelog = '''
 ## NEXT
 
@@ -495,8 +490,7 @@ The first version listed in CHANGELOG.md is 1.0.1.
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
 ## 1.0.1
 
@@ -539,8 +533,7 @@ into the new version's release notes.
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           includeChangeLog: true, includeVersion: true);
 
-      createFakePubspec(pluginDirectory,
-          isFlutter: true, includeVersion: true, version: '1.0.1');
+      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
 ## NEXT
 
