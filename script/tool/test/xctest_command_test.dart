@@ -128,7 +128,31 @@ void main() {
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
-        expect(output, contains('iOS is not supported by this plugin.'));
+        expect(
+            output, contains('iOS is not implemented by this plugin package.'));
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('skip if iOS is implemented in a federated package', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir,
+                withExtraFiles: <List<String>>[
+                  <String>['example', 'test'],
+                ],
+                isIosPlugin: true);
+        createFakePubspec(pluginDirectory,
+            iosSupport: PlatformSupport.federated);
+
+        createFakePubspec(pluginDirectory.childDirectory('example'),
+            isFlutter: true);
+
+        final MockProcess mockProcess = MockProcess();
+        mockProcess.exitCodeCompleter.complete(0);
+        processRunner.processToReturn = mockProcess;
+        final List<String> output = await runCapturingPrint(runner,
+            <String>['xctest', '--ios', _kDestination, 'foo_destination']);
+        expect(
+            output, contains('iOS is not implemented by this plugin package.'));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -267,7 +291,31 @@ void main() {
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output, contains('macOS is not supported by this plugin.'));
+        expect(output,
+            contains('macOS is not implemented by this plugin package.'));
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('skip if macOS is implemented in a federated package', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir,
+                withExtraFiles: <List<String>>[
+                  <String>['example', 'test'],
+                ],
+                isMacOsPlugin: true);
+        createFakePubspec(pluginDirectory,
+            macosSupport: PlatformSupport.federated);
+
+        createFakePubspec(pluginDirectory.childDirectory('example'),
+            isFlutter: true);
+
+        final MockProcess mockProcess = MockProcess();
+        mockProcess.exitCodeCompleter.complete(0);
+        processRunner.processToReturn = mockProcess;
+        final List<String> output = await runCapturingPrint(runner,
+            <String>['xctest', '--macos', _kDestination, 'foo_destination']);
+        expect(output,
+            contains('macOS is not implemented by this plugin package.'));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 

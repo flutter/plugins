@@ -113,9 +113,10 @@ class XCTestCommand extends PluginCommand {
     String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
-    if (!pluginSupportsPlatform(platform.toLowerCase(), plugin)) {
-      print('$platform is not supported by this plugin.');
-      print('\n\n');
+    if (!pluginSupportsPlatform(platform.toLowerCase(), plugin,
+        requiredMode: PlatformSupport.inline)) {
+      print('$platform is not implemented by this plugin package.');
+      print('\n');
       return true;
     }
     bool passing = true;
