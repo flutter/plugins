@@ -61,6 +61,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       }
       build.put("tags", Build.TAGS);
       build.put("type", Build.TYPE);
+      build.put("serial", Build.SERIAL);
       build.put("isPhysicalDevice", !isEmulator());
       build.put("androidId", getAndroidId());
 
