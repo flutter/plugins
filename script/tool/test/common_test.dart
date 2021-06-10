@@ -523,7 +523,7 @@ file2/file2.cc
   });
 
   group('pluginSupportsPlatform', () {
-    test('No platforms', () async {
+    test('no platforms', () async {
       final Directory plugin = createFakePlugin('plugin', packagesDir);
 
       expect(pluginSupportsPlatform('android', plugin), isFalse);
@@ -534,7 +534,7 @@ file2/file2.cc
       expect(pluginSupportsPlatform('windows', plugin), isFalse);
     });
 
-    test('All platforms', () async {
+    test('all platforms', () async {
       final Directory plugin = createFakePlugin(
         'plugin',
         packagesDir,
@@ -554,7 +554,7 @@ file2/file2.cc
       expect(pluginSupportsPlatform('windows', plugin), isTrue);
     });
 
-    test('Some platforms', () async {
+    test('some platforms', () async {
       final Directory plugin = createFakePlugin(
         'plugin',
         packagesDir,
@@ -572,6 +572,143 @@ file2/file2.cc
       expect(pluginSupportsPlatform('macos', plugin), isFalse);
       expect(pluginSupportsPlatform('web', plugin), isTrue);
       expect(pluginSupportsPlatform('windows', plugin), isFalse);
+    });
+
+    test('inline plugins are only detected as inline', () async {
+      // createFakePlugin makes non-federated pubspec entries.
+      final Directory plugin = createFakePlugin(
+        'plugin',
+        packagesDir,
+        isAndroidPlugin: true,
+        isIosPlugin: true,
+        isLinuxPlugin: true,
+        isMacOsPlugin: true,
+        isWebPlugin: true,
+        isWindowsPlugin: true,
+      );
+
+      expect(
+          pluginSupportsPlatform('android', plugin,
+              requiredMode: PlatformSupport.inline),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('android', plugin,
+              requiredMode: PlatformSupport.federated),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('ios', plugin,
+              requiredMode: PlatformSupport.inline),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('ios', plugin,
+              requiredMode: PlatformSupport.federated),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('linux', plugin,
+              requiredMode: PlatformSupport.inline),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('linux', plugin,
+              requiredMode: PlatformSupport.federated),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('macos', plugin,
+              requiredMode: PlatformSupport.inline),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('macos', plugin,
+              requiredMode: PlatformSupport.federated),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('web', plugin,
+              requiredMode: PlatformSupport.inline),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('web', plugin,
+              requiredMode: PlatformSupport.federated),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('windows', plugin,
+              requiredMode: PlatformSupport.inline),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('windows', plugin,
+              requiredMode: PlatformSupport.federated),
+          isFalse);
+    });
+
+    test('federated plugins are only detected as federated', () async {
+      const String pluginName = 'plugin';
+      final Directory plugin = createFakePlugin(
+        pluginName,
+        packagesDir,
+        isAndroidPlugin: true,
+        isIosPlugin: true,
+        isLinuxPlugin: true,
+        isMacOsPlugin: true,
+        isWebPlugin: true,
+        isWindowsPlugin: true,
+      );
+
+      createFakePubspec(
+        plugin,
+        name: pluginName,
+        androidSupport: PlatformSupport.federated,
+        iosSupport: PlatformSupport.federated,
+        linuxSupport: PlatformSupport.federated,
+        macosSupport: PlatformSupport.federated,
+        webSupport: PlatformSupport.federated,
+        windowsSupport: PlatformSupport.federated,
+      );
+
+      expect(
+          pluginSupportsPlatform('android', plugin,
+              requiredMode: PlatformSupport.federated),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('android', plugin,
+              requiredMode: PlatformSupport.inline),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('ios', plugin,
+              requiredMode: PlatformSupport.federated),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('ios', plugin,
+              requiredMode: PlatformSupport.inline),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('linux', plugin,
+              requiredMode: PlatformSupport.federated),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('linux', plugin,
+              requiredMode: PlatformSupport.inline),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('macos', plugin,
+              requiredMode: PlatformSupport.federated),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('macos', plugin,
+              requiredMode: PlatformSupport.inline),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('web', plugin,
+              requiredMode: PlatformSupport.federated),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('web', plugin,
+              requiredMode: PlatformSupport.inline),
+          isFalse);
+      expect(
+          pluginSupportsPlatform('windows', plugin,
+              requiredMode: PlatformSupport.federated),
+          isTrue);
+      expect(
+          pluginSupportsPlatform('windows', plugin,
+              requiredMode: PlatformSupport.inline),
+          isFalse);
     });
   });
 }

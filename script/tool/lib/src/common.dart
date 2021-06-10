@@ -63,6 +63,15 @@ bool isFlutterPackage(FileSystemEntity entity) {
   }
 }
 
+/// Possible plugin support options for a platform.
+enum PlatformSupport {
+  /// The platform has an implementation in the package.
+  inline,
+
+  /// The platform has an endorsed federated implementation in another package.
+  federated,
+}
+
 /// Returns whether the given directory contains a Flutter [platform] plugin.
 ///
 /// It checks this by looking for the following pattern in the pubspec:
@@ -71,7 +80,11 @@ bool isFlutterPackage(FileSystemEntity entity) {
 ///       plugin:
 ///         platforms:
 ///           [platform]:
-bool pluginSupportsPlatform(String platform, FileSystemEntity entity) {
+///
+/// If [requiredMode] is provided, the plugin must have the given type of
+/// implementation in order to return true.
+bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
+    {PlatformSupport? requiredMode}) {
   assert(platform == kPlatformFlagIos ||
       platform == kPlatformFlagAndroid ||
       platform == kPlatformFlagWeb ||
@@ -96,13 +109,25 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity) {
     }
     final YamlMap? platforms = pluginSection['platforms'] as YamlMap?;
     if (platforms == null) {
-      // Legacy plugin specs are assumed to support iOS and Android.
+      // Legacy plugin specs are assumed to support iOS and Android. They are
+      // never federated.
+      if (requiredMode == PlatformSupport.federated) {
+        return false;
+      }
       if (!pluginSection.containsKey('platforms')) {
         return platform == kPlatformFlagIos || platform == kPlatformFlagAndroid;
       }
       return false;
     }
-    return platforms.containsKey(platform);
+    final YamlMap? platformEntry = platforms[platform] as YamlMap?;
+    if (platformEntry == null) {
+      return false;
+    }
+    // If the platform entry is present, then it supports the platform. Check
+    // for required mode if specified.
+    final bool federated = platformEntry.containsKey('default_package');
+    return requiredMode == null ||
+        federated == (requiredMode == PlatformSupport.federated);
   } on FileSystemException {
     return false;
   } on YamlException {
