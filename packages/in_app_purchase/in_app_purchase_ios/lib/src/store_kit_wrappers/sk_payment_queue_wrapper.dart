@@ -65,7 +65,10 @@ class SKPaymentQueueWrapper {
     channel.setMethodCallHandler(_handleObserverCallbacks);
   }
 
-  /// Call this when the first listener is subscribed to the
+  /// Instructs the iOS implementation to register a transaction observer and
+  /// start listening to it.
+  /// 
+  /// Call this method when the first listener is subscribed to the
   /// [InAppPurchaseIosPlatform.purchaseStream].
   Future startObservingTransactionQueue() async =>
       await channel.invokeListMethod<void>(
