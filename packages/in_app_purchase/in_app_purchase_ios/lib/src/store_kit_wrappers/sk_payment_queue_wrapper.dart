@@ -74,6 +74,9 @@ class SKPaymentQueueWrapper {
       await channel.invokeListMethod<void>(
           '-[SKPaymentQueue startObservingTransactionQueue]');
 
+  /// Instructs the iOS implementation to remove the transaction observer and
+  /// stop listening to it.
+  ///
   /// Call this when there are no longer any listeners subscribed to the
   /// [InAppPurchaseIosPlatform.purchaseStream].
   Future stopObservingTransactionQueue() async =>
