@@ -112,15 +112,11 @@ void main() {
 
     group('iOS', () {
       test('skip if iOS is not supported', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
           <String>['example', 'test'],
         ], platformSupport: <String, PlatformDetails>{
           kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
         });
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -133,15 +129,11 @@ void main() {
       });
 
       test('skip if iOS is implemented in a federated package', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
           <String>['example', 'test'],
         ], platformSupport: <String, PlatformDetails>{
           'ios': const PlatformDetails(PlatformSupport.federated)
         });
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -265,15 +257,11 @@ void main() {
 
     group('macOS', () {
       test('skip if macOS is not supported', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
           <String>['example', 'test'],
         ], platformSupport: <String, PlatformDetails>{
           kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         });
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -290,15 +278,8 @@ void main() {
             createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
           <String>['example', 'test'],
         ], platformSupport: <String, PlatformDetails>{
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
         });
-        createFakePubspec(pluginDirectory,
-            platformSupport: <String, PlatformDetails>{
-              'macos': const PlatformDetails(PlatformSupport.federated)
-            });
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
