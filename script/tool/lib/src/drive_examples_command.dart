@@ -66,7 +66,7 @@ class DriveExamplesCommand extends PluginCommand {
         continue;
       }
       print('\n==========\nChecking $pluginName...');
-      if (!(await _pluginSupportedOnCurrentPlatform(plugin))) {
+      if (!(await _pluginSupportedOnTargetPlatform(plugin))) {
         print('Not supported for the target platform; skipping.');
         continue;
       }
@@ -163,7 +163,8 @@ Tried searching for the following:
               '--browser-name=chrome',
             ]);
           }
-          if (isWindows && isWindowsPlugin(plugin)) {
+          if (isWindows &&
+              isWindowsPlugin(plugin, variant: kPlatformVariantWin32)) {
             driveArgs.addAll(<String>[
               '-d',
               'windows',
@@ -217,8 +218,7 @@ Tried searching for the following:
     print('All driver tests successful!');
   }
 
-  Future<bool> _pluginSupportedOnCurrentPlatform(
-      FileSystemEntity plugin) async {
+  Future<bool> _pluginSupportedOnTargetPlatform(FileSystemEntity plugin) async {
     final bool isAndroid = getBoolArg(kPlatformAndroid);
     final bool isIOS = getBoolArg(kPlatformIos);
     final bool isLinux = getBoolArg(kPlatformLinux);
@@ -241,7 +241,7 @@ Tried searching for the following:
       return isWebPlugin(plugin);
     }
     if (isWindows) {
-      return isWindowsPlugin(plugin);
+      return isWindowsPlugin(plugin, variant: kPlatformVariantWin32);
     }
     // When we are here, no flags are specified. Only return true if the plugin
     // supports Android for legacy command support.

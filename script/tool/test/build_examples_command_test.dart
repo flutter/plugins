@@ -6,6 +6,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
 import 'package:flutter_plugin_tools/src/build_examples_command.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
@@ -325,7 +326,7 @@ void main() {
     });
 
     test(
-        'building for Windows when plugin is not set up for Windows results in no-op',
+        'building for win32 when plugin is not set up for Windows results in no-op',
         () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
@@ -346,8 +347,8 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
-          '\nBUILDING Windows for $packageName',
-          'Windows is not supported by this plugin',
+          '\nBUILDING Windows (Win32) for $packageName',
+          'Win32 is not supported by this plugin',
           '\n\n',
           'All builds successful!',
         ]),
@@ -358,7 +359,7 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for windows', () async {
+    test('building for win32', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
@@ -378,7 +379,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
-          '\nBUILDING Windows for $packageName',
+          '\nBUILDING Windows (Win32) for $packageName',
           '\n\n',
           'All builds successful!',
         ]),
@@ -392,17 +393,16 @@ void main() {
           ]));
     });
 
-    test(
-        'building for UWP when plugin is not set up for Windows results in no-op',
+    test('building for UWP when plugin does not support UWP is a no-op',
         () async {
-      createFakePlugin('plugin', packagesDir,
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -415,7 +415,7 @@ void main() {
         output,
         orderedEquals(<String>[
           '\nBUILDING UWP for $packageName',
-          'Windows is not supported by this plugin',
+          'UWP is not supported by this plugin',
           '\n\n',
           'All builds successful!',
         ]),
@@ -428,14 +428,25 @@ void main() {
     });
 
     test('building for UWP', () async {
-      createFakePlugin('plugin', packagesDir,
-          withExtraFiles: <List<String>>[
-            <String>['example', 'test'],
-          ],
-          isWindowsPlugin: true);
+      const String pluginName = 'plugin';
+      final Directory pluginDirectory =
+          createFakePlugin(pluginName, packagesDir,
+              withExtraFiles: <List<String>>[
+                <String>['example', 'test'],
+              ],
+              isWindowsPlugin: true);
+      // Declare UWP support.
+      createFakePubspec(
+        pluginDirectory,
+        name: pluginName,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+              variants: <String>[kPlatformVariantWinUwp]),
+        },
+      );
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -464,14 +475,24 @@ void main() {
     });
 
     test('building for UWP creates a folder if necessary', () async {
-      createFakePlugin('plugin', packagesDir,
+      const String pluginName = 'plugin';
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
           isWindowsPlugin: true);
+      // Declare UWP support.
+      createFakePubspec(
+        pluginDirectory,
+        name: pluginName,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+              variants: <String>[kPlatformVariantWinUwp]),
+        },
+      );
 
       final Directory pluginExampleDirectory =
-          packagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 

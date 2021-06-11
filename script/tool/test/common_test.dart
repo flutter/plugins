@@ -742,11 +742,10 @@ file2/file2.cc
         plugin,
         name: pluginName,
         platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
-              variants: <String>[
-                kPlatformVariantWin32,
-                kPlatformVariantWinUwp
-              ]),
+          kPlatformWindows: const PlatformDetails(
+            PlatformSupport.federated,
+            variants: <String>[kPlatformVariantWin32, kPlatformVariantWinUwp],
+          ),
         },
       );
 
@@ -772,8 +771,10 @@ file2/file2.cc
         plugin,
         name: pluginName,
         platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
-              variants: <String>[kPlatformVariantWin32]),
+          kPlatformWindows: const PlatformDetails(
+            PlatformSupport.federated,
+            variants: <String>[kPlatformVariantWin32],
+          ),
         },
       );
 

@@ -195,9 +195,10 @@ bool isWebPlugin(FileSystemEntity entity) {
   return pluginSupportsPlatform(kPlatformWeb, entity);
 }
 
-/// Returns whether the given directory contains a Flutter Windows plugin.
-bool isWindowsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformWindows, entity);
+/// Returns whether the given directory contains a Flutter Windows plugin
+/// supporting the given variant.
+bool isWindowsPlugin(FileSystemEntity entity, {required String variant}) {
+  return pluginSupportsPlatform(kPlatformWindows, entity, variant: variant);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.
