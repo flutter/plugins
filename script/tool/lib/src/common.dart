@@ -21,25 +21,37 @@ import 'package:yaml/yaml.dart';
 typedef Print = void Function(Object? object);
 
 /// Key for APK (Android) platform.
-const String kPlatformFlagAndroid = 'android';
+const String kPlatformAndroid = 'android';
 
 /// Key for IPA (iOS) platform.
-const String kPlatformFlagIos = 'ios';
+const String kPlatformIos = 'ios';
 
 /// Key for linux platform.
-const String kPlatformFlagLinux = 'linux';
+const String kPlatformLinux = 'linux';
 
 /// Key for macos platform.
-const String kPlatformFlagMacos = 'macos';
+const String kPlatformMacos = 'macos';
 
 /// Key for Web platform.
-const String kPlatformFlagWeb = 'web';
+const String kPlatformWeb = 'web';
 
 /// Key for windows platform.
-const String kPlatformFlagWindows = 'windows';
+const String kPlatformWindows = 'windows';
 
-/// Key for windows platform.
-const String kPlatformFlagWinUwp = 'winuwp';
+/// Key for WinUWP platform.
+///
+/// Note that winuwp is a platform for the purposes of flutter commands like
+/// `build` and `run`, but a variant of the `windows` platform for the purposes
+/// of plugin pubspecs).
+const String kPlatformWinUwp = 'winuwp';
+
+/// Key for Win32 variant of the Windows platform.
+const String kPlatformVariantWin32 = 'win32';
+
+/// Key for UWP variant of the Windows platform.
+///
+/// See the note on [kPlatformWinUwp].
+const String kPlatformVariantWinUwp = 'winuwp';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
@@ -86,14 +98,18 @@ enum PlatformSupport {
 ///
 /// If [requiredMode] is provided, the plugin must have the given type of
 /// implementation in order to return true.
-bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
-    {PlatformSupport? requiredMode}) {
-  assert(platform == kPlatformFlagIos ||
-      platform == kPlatformFlagAndroid ||
-      platform == kPlatformFlagWeb ||
-      platform == kPlatformFlagMacos ||
-      platform == kPlatformFlagWindows ||
-      platform == kPlatformFlagLinux);
+bool pluginSupportsPlatform(
+  String platform,
+  FileSystemEntity entity, {
+  PlatformSupport? requiredMode,
+  String? variant,
+}) {
+  assert(platform == kPlatformIos ||
+      platform == kPlatformAndroid ||
+      platform == kPlatformWeb ||
+      platform == kPlatformMacos ||
+      platform == kPlatformWindows ||
+      platform == kPlatformLinux);
   if (entity is! Directory) {
     return false;
   }
@@ -118,7 +134,7 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
         return false;
       }
       if (!pluginSection.containsKey('platforms')) {
-        return platform == kPlatformFlagIos || platform == kPlatformFlagAndroid;
+        return platform == kPlatformIos || platform == kPlatformAndroid;
       }
       return false;
     }
@@ -126,11 +142,37 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
     if (platformEntry == null) {
       return false;
     }
+
     // If the platform entry is present, then it supports the platform. Check
     // for required mode if specified.
-    final bool federated = platformEntry.containsKey('default_package');
-    return requiredMode == null ||
-        federated == (requiredMode == PlatformSupport.federated);
+    if (requiredMode != null) {
+      final bool federated = platformEntry.containsKey('default_package');
+      if (federated != (requiredMode == PlatformSupport.federated)) {
+        return false;
+      }
+    }
+
+    // If a variant is specified, check for that variant.
+    if (variant != null) {
+      const String variantsKey = 'supportedVariants';
+      if (platformEntry.containsKey(variantsKey)) {
+        if (!(platformEntry['supportedVariants']! as YamlList)
+            .contains(variant)) {
+          return false;
+        }
+      } else {
+        // Platforms with variants have a default variant when unspecified for
+        // backward compatibility. Must match the flutter tool logic.
+        const Map<String, String> defaultVariants = <String, String>{
+          kPlatformWindows: kPlatformVariantWin32,
+        };
+        if (variant != defaultVariants[platform]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   } on FileSystemException {
     return false;
   } on YamlException {
@@ -140,32 +182,32 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
 
 /// Returns whether the given directory contains a Flutter Android plugin.
 bool isAndroidPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagAndroid, entity);
+  return pluginSupportsPlatform(kPlatformAndroid, entity);
 }
 
 /// Returns whether the given directory contains a Flutter iOS plugin.
 bool isIosPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagIos, entity);
+  return pluginSupportsPlatform(kPlatformIos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter web plugin.
 bool isWebPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagWeb, entity);
+  return pluginSupportsPlatform(kPlatformWeb, entity);
 }
 
 /// Returns whether the given directory contains a Flutter Windows plugin.
 bool isWindowsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagWindows, entity);
+  return pluginSupportsPlatform(kPlatformWindows, entity);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.
 bool isMacOsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagMacos, entity);
+  return pluginSupportsPlatform(kPlatformMacos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter linux plugin.
 bool isLinuxPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagLinux, entity);
+  return pluginSupportsPlatform(kPlatformLinux, entity);
 }
 
 /// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.

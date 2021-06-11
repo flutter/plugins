@@ -38,7 +38,8 @@ Directory createFakePlugin(
   List<String> withExamples = const <String>[],
   List<List<String>> withExtraFiles = const <List<String>>[],
   bool isFlutter = true,
-  // TODO(stuartmorgan): Change these platform switches to support type enums.
+  // TODO(stuartmorgan): Change these platform switches to PlatformDetails so
+  // that tests with specific needs don't have to overwrite the pubspec.
   bool isAndroidPlugin = false,
   bool isIosPlugin = false,
   bool isWebPlugin = false,
@@ -63,12 +64,20 @@ Directory createFakePlugin(
   createFakePubspec(pluginDirectory,
       name: name,
       isFlutter: isFlutter,
-      androidSupport: isAndroidPlugin ? PlatformSupport.inline : null,
-      iosSupport: isIosPlugin ? PlatformSupport.inline : null,
-      webSupport: isWebPlugin ? PlatformSupport.inline : null,
-      linuxSupport: isLinuxPlugin ? PlatformSupport.inline : null,
-      macosSupport: isMacOsPlugin ? PlatformSupport.inline : null,
-      windowsSupport: isWindowsPlugin ? PlatformSupport.inline : null,
+      platformSupport: <String, PlatformDetails>{
+        if (isAndroidPlugin)
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+        if (isIosPlugin)
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+        if (isLinuxPlugin)
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+        if (isMacOsPlugin)
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+        if (isWebPlugin)
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+        if (isWindowsPlugin)
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+      },
       version: includeVersion ? version : null);
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
@@ -108,17 +117,31 @@ void createFakeCHANGELOG(Directory parent, String texts) {
   parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
 }
 
+/// Details for platform support in a plugin.
+@immutable
+class PlatformDetails {
+  const PlatformDetails(
+    this.type, {
+    this.variants = const <String>[],
+  });
+
+  /// The type of support for the platform.
+  final PlatformSupport type;
+
+  /// Any 'supportVariants' to list in the pubspec.
+  final List<String> variants;
+}
+
 /// Creates a `pubspec.yaml` file with a flutter dependency.
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform.
 void createFakePubspec(
   Directory parent, {
   String name = 'fake_package',
   bool isFlutter = true,
-  PlatformSupport? androidSupport,
-  PlatformSupport? iosSupport,
-  PlatformSupport? linuxSupport,
-  PlatformSupport? macosSupport,
-  PlatformSupport? webSupport,
-  PlatformSupport? windowsSupport,
+  Map<String, PlatformDetails> platformSupport =
+      const <String, PlatformDetails>{},
   String publishTo = 'http://no_pub_server.com',
   String? version,
 }) {
@@ -129,23 +152,9 @@ flutter:
   plugin:
     platforms:
 ''';
-  if (androidSupport != null) {
-    yaml += _pluginPlatformSection('android', androidSupport, name);
-  }
-  if (iosSupport != null) {
-    yaml += _pluginPlatformSection('ios', iosSupport, name);
-  }
-  if (webSupport != null) {
-    yaml += _pluginPlatformSection('web', webSupport, name);
-  }
-  if (linuxSupport != null) {
-    yaml += _pluginPlatformSection('linux', linuxSupport, name);
-  }
-  if (macosSupport != null) {
-    yaml += _pluginPlatformSection('macos', macosSupport, name);
-  }
-  if (windowsSupport != null) {
-    yaml += _pluginPlatformSection('windows', windowsSupport, name);
+  for (final MapEntry<String, PlatformDetails> platform
+      in platformSupport.entries) {
+    yaml += _pluginPlatformSection(platform.key, platform.value, name);
   }
   if (isFlutter) {
     yaml += '''
@@ -168,50 +177,73 @@ publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being 
 }
 
 String _pluginPlatformSection(
-    String platform, PlatformSupport type, String packageName) {
-  if (type == PlatformSupport.federated) {
-    return '''
+    String platform, PlatformDetails support, String packageName) {
+  String entry = '';
+  // Build the main plugin entry.
+  if (support.type == PlatformSupport.federated) {
+    entry = '''
       $platform:
         default_package: ${packageName}_$platform
 ''';
-  }
-  switch (platform) {
-    case 'android':
-      return '''
+  } else {
+    switch (platform) {
+      case kPlatformAndroid:
+        entry = '''
       android:
         package: io.flutter.plugins.fake
         pluginClass: FakePlugin
 ''';
-    case 'ios':
-      return '''
+        break;
+      case kPlatformIos:
+        entry = '''
       ios:
         pluginClass: FLTFakePlugin
 ''';
-    case 'linux':
-      return '''
+        break;
+      case kPlatformLinux:
+        entry = '''
       linux:
         pluginClass: FakePlugin
 ''';
-    case 'macos':
-      return '''
+        break;
+      case kPlatformMacos:
+        entry = '''
       macos:
         pluginClass: FakePlugin
 ''';
-    case 'web':
-      return '''
+        break;
+      case kPlatformWeb:
+        entry = '''
       web:
         pluginClass: FakePlugin
         fileName: ${packageName}_web.dart
 ''';
-    case 'windows':
-      return '''
+        break;
+      case kPlatformWindows:
+        entry = '''
       windows:
         pluginClass: FakePlugin
 ''';
-    default:
-      assert(false);
-      return '';
+        break;
+      default:
+        assert(false, 'Unrecognized platform: $platform');
+        break;
+    }
   }
+
+  // Add any variants.
+  if (support.variants.isNotEmpty) {
+    entry += '''
+        supportedVariants:
+''';
+    for (final String variant in support.variants) {
+      entry += '''
+          - $variant
+''';
+    }
+  }
+
+  return entry;
 }
 
 typedef _ErrorHandler = void Function(Error error);

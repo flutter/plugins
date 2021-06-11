@@ -24,11 +24,11 @@ class BuildExamplesCommand extends PluginCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
-    argParser.addFlag(kPlatformFlagLinux, defaultsTo: false);
-    argParser.addFlag(kPlatformFlagMacos, defaultsTo: false);
-    argParser.addFlag(kPlatformFlagWeb, defaultsTo: false);
-    argParser.addFlag(kPlatformFlagWindows, defaultsTo: false);
-    argParser.addFlag(kPlatformFlagWinUwp, defaultsTo: false);
+    argParser.addFlag(kPlatformLinux, defaultsTo: false);
+    argParser.addFlag(kPlatformMacos, defaultsTo: false);
+    argParser.addFlag(kPlatformWeb, defaultsTo: false);
+    argParser.addFlag(kPlatformWindows, defaultsTo: false);
+    argParser.addFlag(kPlatformWinUwp, defaultsTo: false);
     argParser.addFlag(kIpa, defaultsTo: io.Platform.isMacOS);
     argParser.addFlag(kApk);
     argParser.addOption(
@@ -51,11 +51,11 @@ class BuildExamplesCommand extends PluginCommand {
     final List<String> platformSwitches = <String>[
       kApk,
       kIpa,
-      kPlatformFlagLinux,
-      kPlatformFlagMacos,
-      kPlatformFlagWeb,
-      kPlatformFlagWindows,
-      kPlatformFlagWinUwp,
+      kPlatformLinux,
+      kPlatformMacos,
+      kPlatformWeb,
+      kPlatformWindows,
+      kPlatformWinUwp,
     ];
     if (!platformSwitches.any((String platform) => getBoolArg(platform))) {
       print(
@@ -74,14 +74,14 @@ class BuildExamplesCommand extends PluginCommand {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
 
-        if (getBoolArg(kPlatformFlagLinux)) {
+        if (getBoolArg(kPlatformLinux)) {
           print('\nBUILDING Linux for $packageName');
           if (isLinuxPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kPlatformFlagLinux,
+                  kPlatformLinux,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -94,14 +94,14 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kPlatformFlagMacos)) {
+        if (getBoolArg(kPlatformMacos)) {
           print('\nBUILDING macOS for $packageName');
           if (isMacOsPlugin(plugin)) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kPlatformFlagMacos,
+                  kPlatformMacos,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -114,14 +114,14 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kPlatformFlagWeb)) {
+        if (getBoolArg(kPlatformWeb)) {
           print('\nBUILDING web for $packageName');
           if (isWebPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kPlatformFlagWeb,
+                  kPlatformWeb,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -134,14 +134,14 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kPlatformFlagWindows)) {
+        if (getBoolArg(kPlatformWindows)) {
           print('\nBUILDING Windows for $packageName');
           if (isWindowsPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kPlatformFlagWindows,
+                  kPlatformWindows,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -154,7 +154,7 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kPlatformFlagWinUwp)) {
+        if (getBoolArg(kPlatformWinUwp)) {
           print('\nBUILDING UWP for $packageName');
           if (isWindowsPlugin(plugin)) {
             // The UWP template is not yet stable, so the UWP directory
@@ -174,7 +174,7 @@ class BuildExamplesCommand extends PluginCommand {
                 flutterCommand,
                 <String>[
                   'build',
-                  kPlatformFlagWinUwp,
+                  kPlatformWinUwp,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],

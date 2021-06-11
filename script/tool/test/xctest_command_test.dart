@@ -141,7 +141,9 @@ void main() {
                 ],
                 isIosPlugin: true);
         createFakePubspec(pluginDirectory,
-            iosSupport: PlatformSupport.federated);
+            platformSupport: <String, PlatformDetails>{
+              'ios': const PlatformDetails(PlatformSupport.federated)
+            });
 
         createFakePubspec(pluginDirectory.childDirectory('example'),
             isFlutter: true);
@@ -304,7 +306,9 @@ void main() {
                 ],
                 isMacOsPlugin: true);
         createFakePubspec(pluginDirectory,
-            macosSupport: PlatformSupport.federated);
+            platformSupport: <String, PlatformDetails>{
+              'macos': const PlatformDetails(PlatformSupport.federated)
+            });
 
         createFakePubspec(pluginDirectory.childDirectory('example'),
             isFlutter: true);
