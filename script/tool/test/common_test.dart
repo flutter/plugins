@@ -457,10 +457,10 @@ file2/file2.cc
       final PubVersionFinderResponse response =
           await finder.getPackageVersion(package: 'some_package');
 
-      expect(response.versions, isNull);
+      expect(response.versions, isEmpty);
       expect(response.result, PubVersionFinderResult.noPackageFound);
-      expect(response.httpResponse!.statusCode, 404);
-      expect(response.httpResponse!.body, '');
+      expect(response.httpResponse.statusCode, 404);
+      expect(response.httpResponse.body, '');
     });
 
     test('HTTP error when getting versions from pub', () async {
@@ -471,10 +471,10 @@ file2/file2.cc
       final PubVersionFinderResponse response =
           await finder.getPackageVersion(package: 'some_package');
 
-      expect(response.versions, isNull);
+      expect(response.versions, isEmpty);
       expect(response.result, PubVersionFinderResult.fail);
-      expect(response.httpResponse!.statusCode, 400);
-      expect(response.httpResponse!.body, '');
+      expect(response.httpResponse.statusCode, 400);
+      expect(response.httpResponse.body, '');
     });
 
     test('Get a correct list of versions when http response is OK.', () async {
@@ -517,8 +517,8 @@ file2/file2.cc
         Version.parse('0.0.1'),
       ]);
       expect(response.result, PubVersionFinderResult.success);
-      expect(response.httpResponse!.statusCode, 200);
-      expect(response.httpResponse!.body, json.encode(httpResponse));
+      expect(response.httpResponse.statusCode, 200);
+      expect(response.httpResponse.body, json.encode(httpResponse));
     });
   });
 
