@@ -30,93 +30,6 @@ Directory createPackagesDirectory(
   return packagesDir;
 }
 
-/// Creates a plugin package with the given [name] in [packagesDirectory].
-Directory createFakePlugin(
-  String name,
-  Directory packagesDirectory, {
-  bool withSingleExample = false,
-  List<String> withExamples = const <String>[],
-  List<List<String>> withExtraFiles = const <List<String>>[],
-  bool isFlutter = true,
-  // TODO(stuartmorgan): Change these platform switches to PlatformDetails so
-  // that tests with specific needs don't have to overwrite the pubspec.
-  bool isAndroidPlugin = false,
-  bool isIosPlugin = false,
-  bool isWebPlugin = false,
-  bool isLinuxPlugin = false,
-  bool isMacOsPlugin = false,
-  bool isWindowsPlugin = false,
-  bool includeChangeLog = false,
-  bool includeVersion = false,
-  String version = '0.0.1',
-  String parentDirectoryName = '',
-}) {
-  assert(!(withSingleExample && withExamples.isNotEmpty),
-      'cannot pass withSingleExample and withExamples simultaneously');
-
-  Directory parentDirectory = packagesDirectory;
-  if (parentDirectoryName != '') {
-    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
-  }
-  final Directory pluginDirectory = parentDirectory.childDirectory(name);
-  pluginDirectory.createSync(recursive: true);
-
-  createFakePubspec(pluginDirectory,
-      name: name,
-      isFlutter: isFlutter,
-      platformSupport: <String, PlatformDetails>{
-        if (isAndroidPlugin)
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-        if (isIosPlugin)
-          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-        if (isLinuxPlugin)
-          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
-        if (isMacOsPlugin)
-          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
-        if (isWebPlugin)
-          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
-        if (isWindowsPlugin)
-          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
-      },
-      version: includeVersion ? version : null);
-  if (includeChangeLog) {
-    createFakeCHANGELOG(pluginDirectory, '''
-## 0.0.1
-  * Some changes.
-  ''');
-  }
-
-  if (withSingleExample) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
-  } else if (withExamples.isNotEmpty) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    for (final String example in withExamples) {
-      final Directory currentExample = exampleDir.childDirectory(example)
-        ..createSync();
-      createFakePubspec(currentExample,
-          name: example, isFlutter: isFlutter, publishTo: 'none');
-    }
-  }
-
-  final FileSystem fileSystem = pluginDirectory.fileSystem;
-  for (final List<String> file in withExtraFiles) {
-    final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
-    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
-    newFile.createSync(recursive: true);
-  }
-
-  return pluginDirectory;
-}
-
-void createFakeCHANGELOG(Directory parent, String texts) {
-  parent.childFile('CHANGELOG.md').createSync();
-  parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
-}
-
 /// Details for platform support in a plugin.
 @immutable
 class PlatformDetails {
@@ -130,6 +43,93 @@ class PlatformDetails {
 
   /// Any 'supportVariants' to list in the pubspec.
   final List<String> variants;
+}
+
+/// Creates a plugin package with the given [name] in [packagesDirectory].
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform.
+Directory createFakePlugin(
+  String name,
+  Directory packagesDirectory, {
+  bool withSingleExample = false,
+  List<String> withExamples = const <String>[],
+  List<List<String>> withExtraFiles = const <List<String>>[],
+  Map<String, PlatformDetails> platformSupport =
+      const <String, PlatformDetails>{},
+  bool includeChangeLog = false,
+  String? version = '0.0.1',
+  String parentDirectoryName = '',
+}) {
+  assert(!(withSingleExample && withExamples.isNotEmpty),
+      'cannot pass withSingleExample and withExamples simultaneously');
+
+  Directory parentDirectory = packagesDirectory;
+  if (parentDirectoryName != '') {
+    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
+  }
+  final Directory pluginDirectory =
+      createFakePackage(name, parentDirectory, withExtraFiles: withExtraFiles);
+
+  createFakePubspec(pluginDirectory,
+      name: name,
+      isFlutter: true,
+      platformSupport: platformSupport,
+      version: version);
+  if (includeChangeLog) {
+    createFakeCHANGELOG(pluginDirectory, '''
+## $version
+  * Some changes.
+  ''');
+  }
+
+  if (withSingleExample) {
+    final Directory exampleDir = pluginDirectory.childDirectory('example')
+      ..createSync();
+    createFakePubspec(exampleDir,
+        name: '${name}_example', isFlutter: true, publishTo: 'none');
+  } else if (withExamples.isNotEmpty) {
+    final Directory exampleDir = pluginDirectory.childDirectory('example')
+      ..createSync();
+    for (final String example in withExamples) {
+      final Directory currentExample = exampleDir.childDirectory(example)
+        ..createSync();
+      createFakePubspec(currentExample,
+          name: example, isFlutter: true, publishTo: 'none');
+    }
+  }
+
+  return pluginDirectory;
+}
+
+/// Creates a plugin package with the given [name] in [packagesDirectory].
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform.
+Directory createFakePackage(
+  String name,
+  Directory parentDirectory, {
+  List<List<String>> withExtraFiles = const <List<String>>[],
+  bool isFlutter = false,
+}) {
+  final Directory packageDirectory = parentDirectory.childDirectory(name);
+  packageDirectory.createSync(recursive: true);
+
+  createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
+
+  final FileSystem fileSystem = packageDirectory.fileSystem;
+  for (final List<String> file in withExtraFiles) {
+    final List<String> newFilePath = <String>[packageDirectory.path, ...file];
+    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
+    newFile.createSync(recursive: true);
+  }
+
+  return packageDirectory;
+}
+
+void createFakeCHANGELOG(Directory parent, String texts) {
+  parent.childFile('CHANGELOG.md').createSync();
+  parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
 }
 
 /// Creates a `pubspec.yaml` file with a flutter dependency.

@@ -5,6 +5,7 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/test_command.dart';
 import 'package:test/test.dart';
 
@@ -70,16 +71,14 @@ void main() {
     });
 
     test('runs pub run test on non-Flutter packages', () async {
-      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
-          isFlutter: true,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
-      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
-          isFlutter: false,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
+      final Directory pluginDir =
+          createFakePlugin('a', packagesDir, withExtraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
+      final Directory packageDir =
+          createFakePackage('b', packagesDir, withExtraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
 
       await runner.run(<String>['test', '--enable-experiment=exp1']);
 
@@ -89,12 +88,12 @@ void main() {
           ProcessCall(
               'flutter',
               const <String>['test', '--color', '--enable-experiment=exp1'],
-              plugin1Dir.path),
-          ProcessCall('dart', const <String>['pub', 'get'], plugin2Dir.path),
+              pluginDir.path),
+          ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),
           ProcessCall(
               'dart',
               const <String>['pub', 'run', '--enable-experiment=exp1', 'test'],
-              plugin2Dir.path),
+              packageDir.path),
         ]),
       );
     });
@@ -106,8 +105,9 @@ void main() {
         withExtraFiles: <List<String>>[
           <String>['test', 'empty_test.dart'],
         ],
-        isFlutter: true,
-        isWebPlugin: true,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+        },
       );
 
       await runner.run(<String>['test']);
@@ -124,16 +124,14 @@ void main() {
     });
 
     test('enable-experiment flag', () async {
-      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
-          isFlutter: true,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
-      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
-          isFlutter: false,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
+      final Directory pluginDir =
+          createFakePlugin('a', packagesDir, withExtraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
+      final Directory packageDir =
+          createFakePackage('b', packagesDir, withExtraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
 
       await runner.run(<String>['test', '--enable-experiment=exp1']);
 
@@ -143,12 +141,12 @@ void main() {
           ProcessCall(
               'flutter',
               const <String>['test', '--color', '--enable-experiment=exp1'],
-              plugin1Dir.path),
-          ProcessCall('dart', const <String>['pub', 'get'], plugin2Dir.path),
+              pluginDir.path),
+          ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),
           ProcessCall(
               'dart',
               const <String>['pub', 'run', '--enable-experiment=exp1', 'test'],
-              plugin2Dir.path),
+              packageDir.path),
         ]),
       );
     });

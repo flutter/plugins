@@ -535,16 +535,15 @@ file2/file2.cc
     });
 
     test('all platforms', () async {
-      final Directory plugin = createFakePlugin(
-        'plugin',
-        packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: true,
-        isLinuxPlugin: true,
-        isMacOsPlugin: true,
-        isWebPlugin: true,
-        isWindowsPlugin: true,
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          });
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isTrue);
@@ -555,16 +554,12 @@ file2/file2.cc
     });
 
     test('some platforms', () async {
-      final Directory plugin = createFakePlugin(
-        'plugin',
-        packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: false,
-        isLinuxPlugin: true,
-        isMacOsPlugin: false,
-        isWebPlugin: true,
-        isWindowsPlugin: false,
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          });
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isFalse);
@@ -575,17 +570,15 @@ file2/file2.cc
     });
 
     test('inline plugins are only detected as inline', () async {
-      // createFakePlugin makes non-federated pubspec entries.
-      final Directory plugin = createFakePlugin(
-        'plugin',
-        packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: true,
-        isLinuxPlugin: true,
-        isMacOsPlugin: true,
-        isWebPlugin: true,
-        isWindowsPlugin: true,
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          });
 
       expect(
           pluginSupportsPlatform(kPlatformAndroid, plugin,
@@ -638,30 +631,15 @@ file2/file2.cc
     });
 
     test('federated plugins are only detected as federated', () async {
-      const String pluginName = 'plugin';
-      final Directory plugin = createFakePlugin(
-        pluginName,
-        packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: true,
-        isLinuxPlugin: true,
-        isMacOsPlugin: true,
-        isWebPlugin: true,
-        isWindowsPlugin: true,
-      );
-
-      createFakePubspec(
-        plugin,
-        name: pluginName,
-        platformSupport: <String, PlatformDetails>{
-          kPlatformAndroid: const PlatformDetails(PlatformSupport.federated),
-          kPlatformIos: const PlatformDetails(PlatformSupport.federated),
-          kPlatformLinux: const PlatformDetails(PlatformSupport.federated),
-          kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
-          kPlatformWeb: const PlatformDetails(PlatformSupport.federated),
-          kPlatformWindows: const PlatformDetails(PlatformSupport.federated),
-        },
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.federated),
+            kPlatformIos: const PlatformDetails(PlatformSupport.federated),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.federated),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.federated),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.federated),
+          });
 
       expect(
           pluginSupportsPlatform(kPlatformAndroid, plugin,
@@ -717,7 +695,9 @@ file2/file2.cc
       final Directory plugin = createFakePlugin(
         'plugin',
         packagesDir,
-        isWindowsPlugin: true,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+        },
       );
 
       expect(
@@ -731,23 +711,13 @@ file2/file2.cc
     });
 
     test('windows with both variants matches win32 and winuwp', () async {
-      const String pluginName = 'plugin';
-      final Directory plugin = createFakePlugin(
-        pluginName,
-        packagesDir,
-        isWindowsPlugin: true,
-      );
-
-      createFakePubspec(
-        plugin,
-        name: pluginName,
-        platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(
-            PlatformSupport.federated,
-            variants: <String>[kPlatformVariantWin32, kPlatformVariantWinUwp],
-          ),
-        },
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWindows: const PlatformDetails(
+              PlatformSupport.federated,
+              variants: <String>[kPlatformVariantWin32, kPlatformVariantWinUwp],
+            ),
+          });
 
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
@@ -760,23 +730,13 @@ file2/file2.cc
     });
 
     test('win32 plugin is only win32', () async {
-      const String pluginName = 'plugin';
-      final Directory plugin = createFakePlugin(
-        pluginName,
-        packagesDir,
-        isWindowsPlugin: true,
-      );
-
-      createFakePubspec(
-        plugin,
-        name: pluginName,
-        platformSupport: <String, PlatformDetails>{
-          kPlatformWindows: const PlatformDetails(
-            PlatformSupport.federated,
-            variants: <String>[kPlatformVariantWin32],
-          ),
-        },
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWindows: const PlatformDetails(
+              PlatformSupport.federated,
+              variants: <String>[kPlatformVariantWin32],
+            ),
+          });
 
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
@@ -789,16 +749,9 @@ file2/file2.cc
     });
 
     test('winup plugin is only winuwp', () async {
-      const String pluginName = 'plugin';
       final Directory plugin = createFakePlugin(
-        pluginName,
+        'plugin',
         packagesDir,
-        isWindowsPlugin: true,
-      );
-
-      createFakePubspec(
-        plugin,
-        name: pluginName,
         platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
               variants: <String>[kPlatformVariantWinUwp]),

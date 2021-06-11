@@ -42,8 +42,10 @@ void main() {
     });
 
     test('publish check all packages', () async {
-      final Directory plugin1Dir = createFakePlugin('a', packagesDir);
-      final Directory plugin2Dir = createFakePlugin('b', packagesDir);
+      final Directory plugin1Dir =
+          createFakePlugin('plugin_tools_test_package_a', packagesDir);
+      final Directory plugin2Dir =
+          createFakePlugin('plugin_tools_test_package_b', packagesDir);
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -68,7 +70,7 @@ void main() {
     });
 
     test('fail on negative test', () async {
-      createFakePlugin('a', packagesDir);
+      createFakePlugin('plugin_tools_test_package_a', packagesDir);
 
       final MockProcess process = MockProcess();
       process.stdoutController.close(); // ignore: unawaited_futures
@@ -188,13 +190,8 @@ void main() {
       );
       runner.addCommand(command);
 
-      final Directory plugin1Dir =
-          createFakePlugin('no_publish_a', packagesDir, includeVersion: true);
-      final Directory plugin2Dir =
-          createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
-
-      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
-      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
+      createFakePlugin('no_publish_a', packagesDir, version: '0.1.0');
+      createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -252,13 +249,8 @@ void main() {
       );
       runner.addCommand(command);
 
-      final Directory plugin1Dir =
-          createFakePlugin('no_publish_a', packagesDir, includeVersion: true);
-      final Directory plugin2Dir =
-          createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
-
-      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
-      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
+      createFakePlugin('no_publish_a', packagesDir, version: '0.1.0');
+      createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -320,12 +312,9 @@ void main() {
       runner.addCommand(command);
 
       final Directory plugin1Dir =
-          createFakePlugin('no_publish_a', packagesDir, includeVersion: true);
-      final Directory plugin2Dir =
-          createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
+          createFakePlugin('no_publish_a', packagesDir, version: '0.1.0');
+      createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
-      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
-      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
       await plugin1Dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
       processRunner.processesToReturn.add(
