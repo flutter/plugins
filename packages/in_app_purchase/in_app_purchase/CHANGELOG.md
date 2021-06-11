@@ -1,3 +1,7 @@
+## 1.0.6
+
+* Fixed repository link in the package's pubspec.yaml
+
 ## 1.0.5
 
 * Add explanation for casting `ProductDetails` and `PurchaseDetails` to platform specific implementations in the readme.
