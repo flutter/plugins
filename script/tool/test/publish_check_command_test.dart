@@ -193,10 +193,8 @@ void main() {
       final Directory plugin2Dir =
           createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
 
-      createFakePubspec(plugin1Dir,
-          name: 'no_publish_a', includeVersion: true, version: '0.1.0');
-      createFakePubspec(plugin2Dir,
-          name: 'no_publish_b', includeVersion: true, version: '0.2.0');
+      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
+      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -259,10 +257,8 @@ void main() {
       final Directory plugin2Dir =
           createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
 
-      createFakePubspec(plugin1Dir,
-          name: 'no_publish_a', includeVersion: true, version: '0.1.0');
-      createFakePubspec(plugin2Dir,
-          name: 'no_publish_b', includeVersion: true, version: '0.2.0');
+      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
+      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -328,10 +324,8 @@ void main() {
       final Directory plugin2Dir =
           createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
 
-      createFakePubspec(plugin1Dir,
-          name: 'no_publish_a', includeVersion: true, version: '0.1.0');
-      createFakePubspec(plugin2Dir,
-          name: 'no_publish_b', includeVersion: true, version: '0.2.0');
+      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
+      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
       await plugin1Dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
       processRunner.processesToReturn.add(

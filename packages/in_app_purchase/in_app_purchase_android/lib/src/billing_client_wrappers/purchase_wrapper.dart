@@ -4,6 +4,7 @@
 
 import 'dart:ui' show hashValues;
 import 'package:flutter/foundation.dart';
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'enum_converters.dart';
 import 'billing_client_wrapper.dart';
@@ -26,18 +27,21 @@ part 'purchase_wrapper.g.dart';
 class PurchaseWrapper {
   /// Creates a purchase wrapper with the given purchase details.
   @visibleForTesting
-  PurchaseWrapper(
-      {required this.orderId,
-      required this.packageName,
-      required this.purchaseTime,
-      required this.purchaseToken,
-      required this.signature,
-      required this.sku,
-      required this.isAutoRenewing,
-      required this.originalJson,
-      this.developerPayload,
-      required this.isAcknowledged,
-      required this.purchaseState});
+  PurchaseWrapper({
+    required this.orderId,
+    required this.packageName,
+    required this.purchaseTime,
+    required this.purchaseToken,
+    required this.signature,
+    required this.sku,
+    required this.isAutoRenewing,
+    required this.originalJson,
+    this.developerPayload,
+    required this.isAcknowledged,
+    required this.purchaseState,
+    this.obfuscatedAccountId,
+    this.obfuscatedProfileId,
+  });
 
   /// Factory for creating a [PurchaseWrapper] from a [Map] with the purchase details.
   factory PurchaseWrapper.fromJson(Map<String, dynamic> map) =>
@@ -136,6 +140,20 @@ class PurchaseWrapper {
   /// [BillingClient.acknowledgePurchase] should only be called when the `purchaseState` is [PurchaseStateWrapper.purchased].
   /// * See also [BillingClient.acknowledgePurchase] for more details on acknowledging purchases.
   final PurchaseStateWrapper purchaseState;
+
+  /// The obfuscatedAccountId specified when making a purchase.
+  ///
+  /// The [obfuscatedAccountId] can either be set in
+  /// [PurchaseParam.applicationUserName] when using the [InAppPurchasePlatform]
+  /// or by setting the [accountId] in [BillingClient.launchBillingFlow].
+  final String? obfuscatedAccountId;
+
+  /// The obfuscatedProfileId can be used when there are multiple profiles
+  /// withing one account. The obfuscatedProfileId should be specified when
+  /// making a purchase. This property can only be set on a purchase by
+  /// directly calling [BillingClient.launchBillingFlow] and is not available
+  /// on the generic [InAppPurchasePlatform].
+  final String? obfuscatedProfileId;
 }
 
 /// Data structure representing a purchase history record.

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/lint_podspecs_command.dart';
-import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -19,24 +15,24 @@ import 'util.dart';
 void main() {
   group('$LintPodspecsCommand', () {
     FileSystem fileSystem;
-    Directory packagesDir;
-    CommandRunner<void> runner;
-    MockPlatform mockPlatform;
-    final RecordingProcessRunner processRunner = RecordingProcessRunner();
-    List<String> printedMessages;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late MockPlatform mockPlatform;
+    late RecordingProcessRunner processRunner;
+    late List<String> printedMessages;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
 
       printedMessages = <String>[];
-      mockPlatform = MockPlatform();
-      when(mockPlatform.isMacOS).thenReturn(true);
+      mockPlatform = MockPlatform(isMacOS: true);
+      processRunner = RecordingProcessRunner();
       final LintPodspecsCommand command = LintPodspecsCommand(
         packagesDir,
         processRunner: processRunner,
         platform: mockPlatform,
-        print: (Object message) => printedMessages.add(message.toString()),
+        print: (Object? message) => printedMessages.add(message.toString()),
       );
 
       runner =
@@ -53,7 +49,7 @@ void main() {
         <String>['plugin1.podspec'],
       ]);
 
-      when(mockPlatform.isMacOS).thenReturn(false);
+      mockPlatform.isMacOS = false;
       await runner.run(<String>['podspecs']);
 
       expect(
@@ -172,5 +168,3 @@ void main() {
     });
   });
 }
-
-class MockPlatform extends Mock implements Platform {}
