@@ -323,7 +323,7 @@
                               }
                                    updatedDownloads:nil];
 
-  // Check if there is no observer to start with
+  // Check that there is no observer to start with.
   XCTAssertNil(queue.observer);
 
   // Start observing
