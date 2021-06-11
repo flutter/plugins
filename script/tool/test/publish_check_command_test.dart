@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/publish_check_command.dart';
 import 'package:http/http.dart' as http;
@@ -19,15 +22,17 @@ import 'util.dart';
 
 void main() {
   group('$PublishCheckProcessRunner tests', () {
+    FileSystem fileSystem;
+    Directory packagesDir;
     PublishCheckProcessRunner processRunner;
     CommandRunner<void> runner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = PublishCheckProcessRunner();
-      final PublishCheckCommand publishCheckCommand = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final PublishCheckCommand publishCheckCommand =
+          PublishCheckCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
         'publish_check_command',
@@ -36,13 +41,9 @@ void main() {
       runner.addCommand(publishCheckCommand);
     });
 
-    tearDown(() {
-      mockPackagesDir.deleteSync(recursive: true);
-    });
-
     test('publish check all packages', () async {
-      final Directory plugin1Dir = createFakePlugin('a');
-      final Directory plugin2Dir = createFakePlugin('b');
+      final Directory plugin1Dir = createFakePlugin('a', packagesDir);
+      final Directory plugin2Dir = createFakePlugin('b', packagesDir);
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -67,7 +68,7 @@ void main() {
     });
 
     test('fail on negative test', () async {
-      createFakePlugin('a');
+      createFakePlugin('a', packagesDir);
 
       final MockProcess process = MockProcess();
       process.stdoutController.close(); // ignore: unawaited_futures
@@ -83,7 +84,7 @@ void main() {
     });
 
     test('fail on bad pubspec', () async {
-      final Directory dir = createFakePlugin('c');
+      final Directory dir = createFakePlugin('c', packagesDir);
       await dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
       final MockProcess process = MockProcess();
@@ -94,7 +95,7 @@ void main() {
     });
 
     test('pass on prerelease if --allow-pre-release flag is on', () async {
-      createFakePlugin('d');
+      createFakePlugin('d', packagesDir);
 
       const String preReleaseOutput = 'Package has 1 warning.'
           'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
@@ -113,7 +114,7 @@ void main() {
     });
 
     test('fail on prerelease if --allow-pre-release flag is off', () async {
-      createFakePlugin('d');
+      createFakePlugin('d', packagesDir);
 
       const String preReleaseOutput = 'Package has 1 warning.'
           'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
@@ -128,6 +129,26 @@ void main() {
       processRunner.processesToReturn.add(process);
 
       expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+    });
+
+    test('Success message on stderr is not printed as an error', () async {
+      createFakePlugin('d', packagesDir);
+
+      const String publishOutput = 'Package has 0 warnings.';
+
+      final MockProcess process = MockProcess();
+      process.stderrController.add(publishOutput.codeUnits);
+      process.stdoutController.close(); // ignore: unawaited_futures
+      process.stderrController.close(); // ignore: unawaited_futures
+
+      process.exitCodeCompleter.complete(0);
+
+      processRunner.processesToReturn.add(process);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['publish-check']);
+
+      expect(output, isNot(contains(contains('ERROR:'))));
     });
 
     test(
@@ -158,8 +179,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -169,14 +189,12 @@ void main() {
       runner.addCommand(command);
 
       final Directory plugin1Dir =
-          createFakePlugin('no_publish_a', includeVersion: true);
+          createFakePlugin('no_publish_a', packagesDir, includeVersion: true);
       final Directory plugin2Dir =
-          createFakePlugin('no_publish_b', includeVersion: true);
+          createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
 
-      createFakePubspec(plugin1Dir,
-          name: 'no_publish_a', includeVersion: true, version: '0.1.0');
-      createFakePubspec(plugin2Dir,
-          name: 'no_publish_b', includeVersion: true, version: '0.2.0');
+      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
+      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -225,8 +243,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -236,14 +253,12 @@ void main() {
       runner.addCommand(command);
 
       final Directory plugin1Dir =
-          createFakePlugin('no_publish_a', includeVersion: true);
+          createFakePlugin('no_publish_a', packagesDir, includeVersion: true);
       final Directory plugin2Dir =
-          createFakePlugin('no_publish_b', includeVersion: true);
+          createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
 
-      createFakePubspec(plugin1Dir,
-          name: 'no_publish_a', includeVersion: true, version: '0.1.0');
-      createFakePubspec(plugin2Dir,
-          name: 'no_publish_b', includeVersion: true, version: '0.2.0');
+      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
+      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
 
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
@@ -295,8 +310,7 @@ void main() {
         }
         return null;
       });
-      final PublishCheckCommand command = PublishCheckCommand(
-          mockPackagesDir, mockFileSystem,
+      final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
 
       runner = CommandRunner<void>(
@@ -306,14 +320,12 @@ void main() {
       runner.addCommand(command);
 
       final Directory plugin1Dir =
-          createFakePlugin('no_publish_a', includeVersion: true);
+          createFakePlugin('no_publish_a', packagesDir, includeVersion: true);
       final Directory plugin2Dir =
-          createFakePlugin('no_publish_b', includeVersion: true);
+          createFakePlugin('no_publish_b', packagesDir, includeVersion: true);
 
-      createFakePubspec(plugin1Dir,
-          name: 'no_publish_a', includeVersion: true, version: '0.1.0');
-      createFakePubspec(plugin2Dir,
-          name: 'no_publish_b', includeVersion: true, version: '0.2.0');
+      createFakePubspec(plugin1Dir, name: 'no_publish_a', version: '0.1.0');
+      createFakePubspec(plugin2Dir, name: 'no_publish_b', version: '0.2.0');
       await plugin1Dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
       processRunner.processesToReturn.add(

@@ -42,10 +42,8 @@ enum CameraDevice {
  * means that the chooseImageFromGallery() or takeImageWithCamera() method was called at least
  * twice. In this case, stop executing and finish with an error.
  *
- * <p>2. Check that a required runtime permission has been granted. The chooseImageFromGallery()
- * method checks if the {@link Manifest.permission#READ_EXTERNAL_STORAGE} permission has been
- * granted. Similarly, the takeImageWithCamera() method checks that {@link
- * Manifest.permission#CAMERA} has been granted.
+ * <p>2. Check that a required runtime permission has been granted. The takeImageWithCamera() method
+ * checks that {@link Manifest.permission#CAMERA} has been granted.
  *
  * <p>The permission check can end up in two different outcomes:
  *
@@ -76,17 +74,15 @@ public class ImagePickerDelegate
         PluginRegistry.RequestPermissionsResultListener {
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
   @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
   private final Activity activity;
-  private final File externalFilesDirectory;
+  @VisibleForTesting final File externalFilesDirectory;
   private final ImageResizer imageResizer;
   private final ImagePickerCache cache;
   private final PermissionManager permissionManager;
@@ -257,12 +253,6 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      permissionManager.askForPermission(
-          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION);
-      return;
-    }
-
     launchPickVideoFromGalleryIntent();
   }
 
@@ -319,12 +309,6 @@ public class ImagePickerDelegate
   public void chooseImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
     if (!setPendingMethodCallAndResult(methodCall, result)) {
       finishWithAlreadyActiveError(result);
-      return;
-    }
-
-    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      permissionManager.askForPermission(
-          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION);
       return;
     }
 
@@ -424,16 +408,6 @@ public class ImagePickerDelegate
         grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
     switch (requestCode) {
-      case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
-        if (permissionGranted) {
-          launchPickImageFromGalleryIntent();
-        }
-        break;
-      case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
-        if (permissionGranted) {
-          launchPickVideoFromGalleryIntent();
-        }
-        break;
       case REQUEST_CAMERA_IMAGE_PERMISSION:
         if (permissionGranted) {
           launchTakeImageWithCameraIntent();
@@ -450,10 +424,6 @@ public class ImagePickerDelegate
 
     if (!permissionGranted) {
       switch (requestCode) {
-        case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
-        case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
-          finishWithError("photo_access_denied", "The user did not allow photo access.");
-          break;
         case REQUEST_CAMERA_IMAGE_PERMISSION:
         case REQUEST_CAMERA_VIDEO_PERMISSION:
           finishWithError("camera_access_denied", "The user did not allow camera access.");

@@ -12,8 +12,7 @@ import 'common.dart';
 class ListCommand extends PluginCommand {
   /// Creates an instance of the list command, whose behavior depends on the
   /// 'type' argument it provides.
-  ListCommand(Directory packagesDir, FileSystem fileSystem)
-      : super(packagesDir, fileSystem) {
+  ListCommand(Directory packagesDir) : super(packagesDir) {
     argParser.addOption(
       _type,
       defaultsTo: _plugin,
@@ -36,7 +35,7 @@ class ListCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    switch (argResults[_type] as String) {
+    switch (getStringArg(_type)) {
       case _plugin:
         await for (final Directory package in getPlugins()) {
           print(package.path);

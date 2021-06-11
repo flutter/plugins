@@ -994,20 +994,40 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)applyFocusMode {
-  [_captureDevice lockForConfiguration:nil];
-  switch (_focusMode) {
+  [self applyFocusMode:_focusMode onDevice:_captureDevice];
+}
+
+/**
+ * Applies FocusMode on the AVCaptureDevice.
+ *
+ * If the @c focusMode is set to FocusModeAuto the AVCaptureDevice is configured to use
+ * AVCaptureFocusModeContinuousModeAutoFocus when supported, otherwise it is set to
+ * AVCaptureFocusModeAutoFocus. If neither AVCaptureFocusModeContinuousModeAutoFocus nor
+ * AVCaptureFocusModeAutoFocus are supported focus mode will not be set.
+ * If @c focusMode is set to FocusModeLocked the AVCaptureDevice is configured to use
+ * AVCaptureFocusModeAutoFocus. If AVCaptureFocusModeAutoFocus is not supported focus mode will not
+ * be set.
+ *
+ * @param focusMode The focus mode that should be applied to the @captureDevice instance.
+ * @param captureDevice The AVCaptureDevice to which the @focusMode will be applied.
+ */
+- (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
+  [captureDevice lockForConfiguration:nil];
+  switch (focusMode) {
     case FocusModeLocked:
-      [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      }
       break;
     case FocusModeAuto:
-      if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
-        [_captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-      } else {
-        [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+      } else if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
   }
-  [_captureDevice unlockForConfiguration];
+  [captureDevice unlockForConfiguration];
 }
 
 - (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
@@ -1169,12 +1189,12 @@ NSString *const errorMethod = @"error";
     acl.mChannelLayoutTag = kAudioChannelLayoutTag_Mono;
     NSDictionary *audioOutputSettings = nil;
     // Both type of audio inputs causes output video file to be corrupted.
-    audioOutputSettings = [NSDictionary
-        dictionaryWithObjectsAndKeys:[NSNumber numberWithInt:kAudioFormatMPEG4AAC], AVFormatIDKey,
-                                     [NSNumber numberWithFloat:44100.0], AVSampleRateKey,
-                                     [NSNumber numberWithInt:1], AVNumberOfChannelsKey,
-                                     [NSData dataWithBytes:&acl length:sizeof(acl)],
-                                     AVChannelLayoutKey, nil];
+    audioOutputSettings = @{
+      AVFormatIDKey : [NSNumber numberWithInt:kAudioFormatMPEG4AAC],
+      AVSampleRateKey : [NSNumber numberWithFloat:44100.0],
+      AVNumberOfChannelsKey : [NSNumber numberWithInt:1],
+      AVChannelLayoutKey : [NSData dataWithBytes:&acl length:sizeof(acl)],
+    };
     _audioWriterInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeAudio
                                                            outputSettings:audioOutputSettings];
     _audioWriterInput.expectsMediaDataInRealTime = YES;
@@ -1271,6 +1291,11 @@ NSString *const errorMethod = @"error";
 - (void)orientationChanged:(NSNotification *)note {
   UIDevice *device = note.object;
   UIDeviceOrientation orientation = device.orientation;
+
+  if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown) {
+    // Do not change when oriented flat.
+    return;
+  }
 
   if (_camera) {
     [_camera setDeviceOrientation:orientation];

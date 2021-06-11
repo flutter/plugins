@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -16,19 +14,18 @@ import 'common.dart';
 class CreateAllPluginsAppCommand extends PluginCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
-    this.pluginsRoot,
-  }) : super(packagesDir, fileSystem) {
-    pluginsRoot ??= fileSystem.currentDirectory;
-    appDirectory = pluginsRoot.childDirectory('all_plugins');
+    Directory packagesDir, {
+    Directory? pluginsRoot,
+  })  : pluginsRoot = pluginsRoot ?? packagesDir.fileSystem.currentDirectory,
+        super(packagesDir) {
+    appDirectory = this.pluginsRoot.childDirectory('all_plugins');
   }
 
   /// The root directory of the plugin repository.
   Directory pluginsRoot;
 
   /// The location of the synthesized app project.
-  Directory appDirectory;
+  late Directory appDirectory;
 
   @override
   String get description =>
@@ -79,7 +76,13 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     final StringBuffer newGradle = StringBuffer();
     for (final String line in gradleFile.readAsLinesSync()) {
-      newGradle.writeln(line);
+      if (line.contains('minSdkVersion 16')) {
+        // Android SDK 20 is required by Google maps.
+        // Android SDK 19 is required by WebView.
+        newGradle.writeln('minSdkVersion 20');
+      } else {
+        newGradle.writeln(line);
+      }
       if (line.contains('defaultConfig {')) {
         newGradle.writeln('        multiDexEnabled true');
       } else if (line.contains('dependencies {')) {
@@ -153,8 +156,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     await for (final Directory package in getPlugins()) {
       final String pluginName = package.path.split('/').last;
-      final File pubspecFile =
-          fileSystem.file(p.join(package.path, 'pubspec.yaml'));
+      final File pubspecFile = package.childFile('pubspec.yaml');
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {
@@ -172,7 +174,7 @@ description: ${pubspec.description}
 
 version: ${pubspec.version}
 
-environment:${_pubspecMapString(pubspec.environment)}
+environment:${_pubspecMapString(pubspec.environment!)}
 
 dependencies:${_pubspecMapString(pubspec.dependencies)}
 

@@ -13,17 +13,16 @@ import 'package:quiver/iterables.dart';
 
 import 'common.dart';
 
-const String _googleFormatterUrl =
-    'https://github.com/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar';
+final Uri _googleFormatterUrl = Uri.https('github.com',
+    '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');
 
 /// A command to format all package code.
 class FormatCommand extends PluginCommand {
   /// Creates an instance of the format command.
   FormatCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
         defaultsTo: 'clang-format',
@@ -47,7 +46,7 @@ class FormatCommand extends PluginCommand {
     await _formatJava(googleFormatterPath);
     await _formatCppAndObjectiveC();
 
-    if (argResults['fail-on-change'] == true) {
+    if (getBoolArg('fail-on-change')) {
       final bool modified = await _didModifyAnything();
       if (modified) {
         throw ToolExit(1);
@@ -105,7 +104,7 @@ class FormatCommand extends PluginCommand {
     // 'ProcessException: Argument list too long'.
     final Iterable<List<String>> batches = partition(allFiles, 100);
     for (final List<String> batch in batches) {
-      await processRunner.runAndStream(argResults['clang-format'] as String,
+      await processRunner.runAndStream(getStringArg('clang-format'),
           <String>['-i', '--style=Google', ...batch],
           workingDir: packagesDir, exitOnError: true);
     }
@@ -144,7 +143,8 @@ class FormatCommand extends PluginCommand {
     final String javaFormatterPath = p.join(
         p.dirname(p.fromUri(io.Platform.script)),
         'google-java-format-1.3-all-deps.jar');
-    final File javaFormatterFile = fileSystem.file(javaFormatterPath);
+    final File javaFormatterFile =
+        packagesDir.fileSystem.file(javaFormatterPath);
 
     if (!javaFormatterFile.existsSync()) {
       print('Downloading Google Java Format...');

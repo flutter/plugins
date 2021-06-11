@@ -2,10 +2,14 @@ name: in_app_purchase_example
 description: Demonstrates how to use the in_app_purchase plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.20.0"
+
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.0.0-nullsafety.1
+  shared_preferences: ^2.0.0
 
   in_app_purchase:
     # When depending on this package from a real application you should use:
@@ -25,7 +29,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"

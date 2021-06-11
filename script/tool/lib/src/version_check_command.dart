@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 
 import 'package:file/file.dart';
@@ -71,15 +73,13 @@ Map<Version, NextVersionType> getAllowedNextVersions(
 class VersionCheckCommand extends PluginCommand {
   /// Creates an instance of the version check command.
   VersionCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir gitDir,
     this.httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir) {
+        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
     argParser.addFlag(
       _againstPubFlag,
       help: 'Whether the version check should run against the version on pub.\n'
@@ -115,7 +115,7 @@ class VersionCheckCommand extends PluginCommand {
     const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
       print('Checking versions for $pubspecPath...');
-      final File pubspecFile = fileSystem.file(pubspecPath);
+      final File pubspecFile = packagesDir.fileSystem.file(pubspecPath);
       if (!pubspecFile.existsSync()) {
         print('${indentation}Deleted; skipping.');
         continue;
@@ -135,7 +135,7 @@ class VersionCheckCommand extends PluginCommand {
                 '"publish_to: none".');
       }
       Version sourceVersion;
-      if (argResults[_againstPubFlag] as bool) {
+      if (getBoolArg(_againstPubFlag)) {
         final String packageName = pubspecFile.parent.basename;
         final PubVersionFinderResponse pubVersionFinderResponse =
             await _pubVersionFinder.getPackageVersion(package: packageName);
@@ -161,7 +161,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       }
       if (sourceVersion == null) {
         String safeToIgnoreMessage;
-        if (argResults[_againstPubFlag] as bool) {
+        if (getBoolArg(_againstPubFlag)) {
           safeToIgnoreMessage =
               '${indentation}Unable to find package on pub server.';
         } else {
@@ -177,12 +177,25 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
         continue;
       }
 
+      // Check for reverts when doing local validation.
+      if (!getBoolArg(_againstPubFlag) && headVersion < sourceVersion) {
+        final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
+            getAllowedNextVersions(headVersion, sourceVersion);
+        // Since this skips validation, try to ensure that it really is likely
+        // to be a revert rather than a typo by checking that the transition
+        // from the lower version to the new version would have been valid.
+        if (possibleVersionsFromNewVersion.containsKey(sourceVersion)) {
+          print('${indentation}New version is lower than previous version. '
+              'This is assumed to be a revert.');
+          continue;
+        }
+      }
+
       final Map<Version, NextVersionType> allowedNextVersions =
           getAllowedNextVersions(sourceVersion, headVersion);
 
       if (!allowedNextVersions.containsKey(headVersion)) {
-        final String source =
-            (argResults[_againstPubFlag] as bool) ? 'pub' : 'master';
+        final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
         final String error = '${indentation}Incorrectly updated version.\n'
             '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
             '${indentation}Allowed versions: $allowedNextVersions';

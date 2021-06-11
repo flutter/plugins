@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// @dart=2.9
+
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -30,16 +32,14 @@ import 'common.dart';
 class PublishPluginCommand extends PluginCommand {
   /// Creates an instance of the publish command.
   PublishPluginCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
     io.Stdin stdinput,
     GitDir gitDir,
   })  : _print = print,
         _stdin = stdinput ?? io.stdin,
-        super(packagesDir, fileSystem,
-            processRunner: processRunner, gitDir: gitDir) {
+        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
     argParser.addOption(
       _packageOption,
       help: 'The package to publish.'
@@ -122,30 +122,33 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final String package = argResults[_packageOption] as String;
-    final bool publishAllChanged = argResults[_allChangedFlag] as bool;
-    if (package == null && !publishAllChanged) {
+    final String package = getStringArg(_packageOption);
+    final bool publishAllChanged = getBoolArg(_allChangedFlag);
+    if (package.isEmpty && !publishAllChanged) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
       throw ToolExit(1);
     }
 
     _print('Checking local repo...');
-    if (!await GitDir.isGitDir(packagesDir.path)) {
-      _print('$packagesDir is not a valid Git repository.');
+    // Ensure there are no symlinks in the path, as it can break
+    // GitDir's allowSubdirectory:true.
+    final String packagesPath = packagesDir.resolveSymbolicLinksSync();
+    if (!await GitDir.isGitDir(packagesPath)) {
+      _print('$packagesPath is not a valid Git repository.');
       throw ToolExit(1);
     }
     final GitDir baseGitDir =
-        await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
+        await GitDir.fromExisting(packagesPath, allowSubdirectory: true);
 
-    final bool shouldPushTag = argResults[_pushTagsOption] == true;
-    final String remote = argResults[_remoteOption] as String;
+    final bool shouldPushTag = getBoolArg(_pushTagsOption);
+    final String remote = getStringArg(_remoteOption);
     String remoteUrl;
     if (shouldPushTag) {
       remoteUrl = await _verifyRemote(remote);
     }
     _print('Local repo is ready!');
-    if (argResults[_dryRunFlag] as bool) {
+    if (getBoolArg(_dryRunFlag)) {
       _print('===============  DRY RUN ===============');
     }
 
@@ -192,8 +195,9 @@ class PublishPluginCommand extends PluginCommand {
     final List<String> packagesFailed = <String>[];
 
     for (final String pubspecPath in changedPubspecs) {
-      final File pubspecFile =
-          fileSystem.directory(baseGitDir.path).childFile(pubspecPath);
+      final File pubspecFile = packagesDir.fileSystem
+          .directory(baseGitDir.path)
+          .childFile(pubspecPath);
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
         pubspecFile: pubspecFile,
         gitVersionFinder: gitVersionFinder,
@@ -244,7 +248,7 @@ class PublishPluginCommand extends PluginCommand {
     if (!await _publishPlugin(packageDir: packageDir)) {
       return false;
     }
-    if (argResults[_tagReleaseOption] as bool) {
+    if (getBoolArg(_tagReleaseOption)) {
       if (!await _tagRelease(
         packageDir: packageDir,
         remote: remote,
@@ -333,7 +337,7 @@ Safe to ignore if the package is deleted in this commit.
   }) async {
     final String tag = _getTag(packageDir);
     _print('Tagging release $tag...');
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
         <String>['tag', tag],
@@ -416,15 +420,14 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<bool> _publish(Directory packageDir) async {
-    final List<String> publishFlags =
-        argResults[_pubFlagsOption] as List<String>;
+    final List<String> publishFlags = getStringListArg(_pubFlagsOption);
     _print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
-    if (argResults[_dryRunFlag] as bool) {
+    if (getBoolArg(_dryRunFlag)) {
       return true;
     }
 
-    if (argResults[_skipConfirmationFlag] as bool) {
+    if (getBoolArg(_skipConfirmationFlag)) {
       publishFlags.add('--force');
     }
     if (publishFlags.contains('--force')) {
@@ -452,8 +455,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   String _getTag(Directory packageDir) {
-    final File pubspecFile =
-        fileSystem.file(p.join(packageDir.path, 'pubspec.yaml'));
+    final File pubspecFile = packageDir.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final String name = pubspecYaml['name'] as String;
@@ -474,7 +476,7 @@ Safe to ignore if the package is deleted in this commit.
     @required String remoteUrl,
   }) async {
     assert(remote != null && tag != null && remoteUrl != null);
-    if (!(argResults[_skipConfirmationFlag] as bool)) {
+    if (!getBoolArg(_skipConfirmationFlag)) {
       _print('Ready to push $tag to $remoteUrl (y/n)?');
       final String input = _stdin.readLineSync();
       if (input.toLowerCase() != 'y') {
@@ -482,7 +484,7 @@ Safe to ignore if the package is deleted in this commit.
         return false;
       }
     }
-    if (!(argResults[_dryRunFlag] as bool)) {
+    if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
         <String>['push', remote, tag],
@@ -498,7 +500,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   void _ensureValidPubCredential() {
-    final File credentialFile = fileSystem.file(_credentialsPath);
+    final File credentialFile = packagesDir.fileSystem.file(_credentialsPath);
     if (credentialFile.existsSync() &&
         credentialFile.readAsStringSync().isNotEmpty) {
       return;

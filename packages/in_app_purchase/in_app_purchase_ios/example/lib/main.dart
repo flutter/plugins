@@ -110,8 +110,6 @@ class _MyAppState extends State<_MyApp> {
       return;
     }
 
-    await _iapIosPlatform.restorePurchases();
-
     List<String> consumables = await ConsumableStore.load();
     setState(() {
       _isAvailable = isAvailable;
@@ -139,6 +137,7 @@ class _MyAppState extends State<_MyApp> {
             _buildConnectionCheckTile(),
             _buildProductList(),
             _buildConsumableBox(),
+            _buildRestoreButton(),
           ],
         ),
       );
@@ -308,6 +307,30 @@ class _MyAppState extends State<_MyApp> {
         padding: EdgeInsets.all(16.0),
       )
     ]));
+  }
+
+  Widget _buildRestoreButton() {
+    if (_loading) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+            child: Text('Restore purchases'),
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              primary: Colors.white,
+            ),
+            onPressed: () => _iapIosPlatform.restorePurchases(),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> consume(String id) async {

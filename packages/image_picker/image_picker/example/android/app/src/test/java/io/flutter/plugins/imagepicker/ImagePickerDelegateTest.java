@@ -9,6 +9,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
@@ -25,6 +26,8 @@ import java.io.File;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 public class ImagePickerDelegateTest {
@@ -98,20 +101,6 @@ public class ImagePickerDelegateTest {
 
     verifyFinishedWithAlreadyActiveError();
     verifyNoMoreInteractions(mockResult);
-  }
-
-  @Test
-  public void chooseImageFromGallery_WhenHasNoExternalStoragePermission_RequestsForPermission() {
-    when(mockPermissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE))
-        .thenReturn(false);
-
-    ImagePickerDelegate delegate = createDelegate();
-    delegate.chooseImageFromGallery(mockMethodCall, mockResult);
-
-    verify(mockPermissionManager)
-        .askForPermission(
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION);
   }
 
   @Test
@@ -193,47 +182,21 @@ public class ImagePickerDelegateTest {
   }
 
   @Test
-  public void
-      onRequestPermissionsResult_WhenReadExternalStoragePermissionDenied_FinishesWithError() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+  public void takeImageWithCamera_WritesImageToCacheDirectory() {
+    when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
+    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
-    delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        new int[] {PackageManager.PERMISSION_DENIED});
+    MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class);
+    mockStaticFile
+        .when(() -> File.createTempFile(any(), any(), any()))
+        .thenReturn(new File("/tmpfile"));
 
-    verify(mockResult).error("photo_access_denied", "The user did not allow photo access.", null);
-    verifyNoMoreInteractions(mockResult);
-  }
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
 
-  @Test
-  public void
-      onRequestChooseImagePermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseImageFromGalleryIntent() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        new int[] {PackageManager.PERMISSION_GRANTED});
-
-    verify(mockActivity)
-        .startActivityForResult(
-            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY));
-  }
-
-  @Test
-  public void
-      onRequestChooseVideoPermissionsResult_WhenReadExternalStorageGranted_LaunchesChooseVideoFromGalleryIntent() {
-    ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
-
-    delegate.onRequestPermissionsResult(
-        ImagePickerDelegate.REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION,
-        new String[] {Manifest.permission.READ_EXTERNAL_STORAGE},
-        new int[] {PackageManager.PERMISSION_GRANTED});
-
-    verify(mockActivity)
-        .startActivityForResult(
-            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY));
+    mockStaticFile.verify(
+        () -> File.createTempFile(any(), eq(".jpg"), eq(new File("/image_picker_cache"))),
+        times(1));
   }
 
   @Test
@@ -394,7 +357,7 @@ public class ImagePickerDelegateTest {
   private ImagePickerDelegate createDelegate() {
     return new ImagePickerDelegate(
         mockActivity,
-        null,
+        new File("/image_picker_cache"),
         mockImageResizer,
         null,
         null,
