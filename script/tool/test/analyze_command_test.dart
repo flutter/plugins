@@ -53,8 +53,7 @@ void main() {
   });
 
   test('skips flutter pub get for examples', () async {
-    final Directory plugin1Dir =
-        createFakePlugin('a', packagesDir, withSingleExample: true);
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
@@ -121,7 +120,7 @@ void main() {
 
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
-      createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
+      createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 
@@ -130,7 +129,7 @@ void main() {
     });
 
     test('fails .analysis_options', () async {
-      createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
+      createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
         <String>['.analysis_options']
       ]);
 
@@ -140,7 +139,7 @@ void main() {
 
     test('takes an allow list', () async {
       final Directory pluginDir =
-          createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
+          createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 
@@ -161,7 +160,7 @@ void main() {
 
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
-      createFakePlugin('foo', packagesDir, withExtraFiles: <List<String>>[
+      createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
         <String>['analysis_options.yaml']
       ]);
 

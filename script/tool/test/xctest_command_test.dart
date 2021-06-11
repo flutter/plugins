@@ -112,14 +112,12 @@ void main() {
 
     group('iOS', () {
       test('skip if iOS is not supported', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
-            });
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+        });
 
         createFakePubspec(pluginDirectory.childDirectory('example'),
             isFlutter: true);
@@ -135,14 +133,12 @@ void main() {
       });
 
       test('skip if iOS is implemented in a federated package', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              'ios': const PlatformDetails(PlatformSupport.federated)
-            });
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          'ios': const PlatformDetails(PlatformSupport.federated)
+        });
 
         createFakePubspec(pluginDirectory.childDirectory('example'),
             isFlutter: true);
@@ -158,23 +154,17 @@ void main() {
       });
 
       test('running with correct destination, exclude 1 plugin', () async {
-        createFakePlugin('plugin1', packagesDir,
-            withSingleExample: true,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            });
-        final Directory pluginDirectory2 = createFakePlugin(
-            'plugin2', packagesDir,
-            withSingleExample: true,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            });
+        createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+        });
+        final Directory pluginDirectory2 =
+            createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+        });
 
         final Directory pluginExampleDirectory2 =
             pluginDirectory2.childDirectory('example');
@@ -223,15 +213,12 @@ void main() {
 
       test('Not specifying --ios-destination assigns an available simulator',
           () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir,
-            withSingleExample: true,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            });
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+        });
 
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
@@ -278,14 +265,12 @@ void main() {
 
     group('macOS', () {
       test('skip if macOS is not supported', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformIos: const PlatformDetails(PlatformSupport.inline),
-            });
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+        });
 
         createFakePubspec(pluginDirectory.childDirectory('example'),
             isFlutter: true);
@@ -301,14 +286,12 @@ void main() {
       });
 
       test('skip if macOS is implemented in a federated package', () async {
-        final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
-            });
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+        });
         createFakePubspec(pluginDirectory,
             platformSupport: <String, PlatformDetails>{
               'macos': const PlatformDetails(PlatformSupport.federated)
@@ -328,15 +311,12 @@ void main() {
       });
 
       test('runs for macOS plugin', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
-            withSingleExample: true,
-            withExtraFiles: <List<String>>[
-              <String>['example', 'test'],
-            ],
-            platformSupport: <String, PlatformDetails>{
-              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
-            });
+        final Directory pluginDirectory1 =
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+        });
 
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');

@@ -52,46 +52,39 @@ class PlatformDetails {
 Directory createFakePlugin(
   String name,
   Directory packagesDirectory, {
-  bool withSingleExample = false,
-  List<String> withExamples = const <String>[],
-  List<List<String>> withExtraFiles = const <List<String>>[],
+  List<String> examples = const <String>['example'],
+  List<List<String>> extraFiles = const <List<String>>[],
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
-  bool includeChangeLog = false,
   String? version = '0.0.1',
   String parentDirectoryName = '',
 }) {
-  assert(!(withSingleExample && withExamples.isNotEmpty),
-      'cannot pass withSingleExample and withExamples simultaneously');
-
   Directory parentDirectory = packagesDirectory;
   if (parentDirectoryName != '') {
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }
   final Directory pluginDirectory =
-      createFakePackage(name, parentDirectory, withExtraFiles: withExtraFiles);
+      createFakePackage(name, parentDirectory, extraFiles: extraFiles);
 
   createFakePubspec(pluginDirectory,
       name: name,
       isFlutter: true,
       platformSupport: platformSupport,
       version: version);
-  if (includeChangeLog) {
-    createFakeCHANGELOG(pluginDirectory, '''
+  createFakeCHANGELOG(pluginDirectory, '''
 ## $version
   * Some changes.
   ''');
-  }
 
-  if (withSingleExample) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
+  if (examples.length == 1) {
+    final Directory exampleDir = pluginDirectory.childDirectory(examples.first)
       ..createSync();
     createFakePubspec(exampleDir,
         name: '${name}_example', isFlutter: true, publishTo: 'none');
-  } else if (withExamples.isNotEmpty) {
+  } else if (examples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
-    for (final String example in withExamples) {
+    for (final String example in examples) {
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
       createFakePubspec(currentExample,
@@ -109,7 +102,7 @@ Directory createFakePlugin(
 Directory createFakePackage(
   String name,
   Directory parentDirectory, {
-  List<List<String>> withExtraFiles = const <List<String>>[],
+  List<List<String>> extraFiles = const <List<String>>[],
   bool isFlutter = false,
 }) {
   final Directory packageDirectory = parentDirectory.childDirectory(name);
@@ -118,7 +111,7 @@ Directory createFakePackage(
   createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
 
   final FileSystem fileSystem = packageDirectory.fileSystem;
-  for (final List<String> file in withExtraFiles) {
+  for (final List<String> file in extraFiles) {
     final List<String> newFilePath = <String>[packageDirectory.path, ...file];
     final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);

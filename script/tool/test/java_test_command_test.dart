@@ -35,8 +35,7 @@ void main() {
       final Directory plugin = createFakePlugin(
         'plugin1',
         packagesDir,
-        withSingleExample: true,
-        withExtraFiles: <List<String>>[
+        extraFiles: <List<String>>[
           <String>['example/android', 'gradlew'],
           <String>['android/src/test', 'example_test.java'],
         ],
@@ -63,8 +62,7 @@ void main() {
       final Directory plugin = createFakePlugin(
         'plugin1',
         packagesDir,
-        withSingleExample: true,
-        withExtraFiles: <List<String>>[
+        extraFiles: <List<String>>[
           <String>['example/android', 'gradlew'],
           <String>['example/android/app/src/test', 'example_test.java'],
         ],
