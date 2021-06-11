@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -13,24 +11,25 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/version_check_command.dart';
-import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
+
+import 'common_test.mocks.dart';
 import 'util.dart';
 
 void testAllowedVersion(
   String masterVersion,
   String headVersion, {
   bool allowed = true,
-  NextVersionType nextVersionType,
+  NextVersionType? nextVersionType,
 }) {
   final Version master = Version.parse(masterVersion);
   final Version head = Version.parse(headVersion);
   final Map<Version, NextVersionType> allowedVersions =
-      getAllowedNextVersions(master, head);
+      getAllowedNextVersions(masterVersion: master, headVersion: head);
   if (allowed) {
     expect(allowedVersions, contains(head));
     if (nextVersionType != null) {
@@ -40,8 +39,6 @@ void testAllowedVersion(
     expect(allowedVersions, isNot(contains(head)));
   }
 }
-
-class MockGitDir extends Mock implements GitDir {}
 
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
@@ -57,13 +54,13 @@ void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
     FileSystem fileSystem;
-    Directory packagesDir;
-    CommandRunner<void> runner;
-    RecordingProcessRunner processRunner;
-    List<List<String>> gitDirCommands;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
+    late List<List<String>> gitDirCommands;
     String gitDiffResponse;
     Map<String, String> gitShowResponses;
-    MockGitDir gitDir;
+    late MockGitDir gitDir;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
@@ -77,17 +74,19 @@ void main() {
         gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
         final MockProcessResult mockProcessResult = MockProcessResult();
         if (invocation.positionalArguments[0][0] == 'diff') {
-          when<String>(mockProcessResult.stdout as String)
+          when<String?>(mockProcessResult.stdout as String?)
               .thenReturn(gitDiffResponse);
         } else if (invocation.positionalArguments[0][0] == 'show') {
-          final String response =
+          final String? response =
               gitShowResponses[invocation.positionalArguments[0][1]];
           if (response == null) {
             throw const io.ProcessException('git', <String>['show']);
           }
-          when<String>(mockProcessResult.stdout as String).thenReturn(response);
+          when<String?>(mockProcessResult.stdout as String?)
+              .thenReturn(response);
         } else if (invocation.positionalArguments[0][0] == 'merge-base') {
-          when<String>(mockProcessResult.stdout as String).thenReturn('abc123');
+          when<String?>(mockProcessResult.stdout as String?)
+              .thenReturn('abc123');
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });

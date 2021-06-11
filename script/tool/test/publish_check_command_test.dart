@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -23,9 +21,9 @@ import 'util.dart';
 void main() {
   group('$PublishCheckProcessRunner tests', () {
     FileSystem fileSystem;
-    Directory packagesDir;
-    PublishCheckProcessRunner processRunner;
-    CommandRunner<void> runner;
+    late Directory packagesDir;
+    late PublishCheckProcessRunner processRunner;
+    late CommandRunner<void> runner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
@@ -177,7 +175,7 @@ void main() {
         } else if (request.url.pathSegments.last == 'no_publish_b.json') {
           return http.Response(json.encode(httpResponseB), 200);
         }
-        return null;
+        return http.Response('', 500);
       });
       final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
@@ -241,7 +239,7 @@ void main() {
         } else if (request.url.pathSegments.last == 'no_publish_b.json') {
           return http.Response(json.encode(httpResponseB), 200);
         }
-        return null;
+        return http.Response('', 500);
       });
       final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
@@ -308,7 +306,7 @@ void main() {
         } else if (request.url.pathSegments.last == 'no_publish_b.json') {
           return http.Response(json.encode(httpResponseB), 200);
         }
-        return null;
+        return http.Response('', 500);
       });
       final PublishCheckCommand command = PublishCheckCommand(packagesDir,
           processRunner: processRunner, httpClient: mockClient);
