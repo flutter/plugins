@@ -450,15 +450,22 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
   /// information.
   ///
+  /// If set to true, the google map widget should be built with
+  /// [buildViewWithTextDirection] instead of [buildView].
+  ///
   /// Defaults to false.
   bool useAndroidViewSurface = false;
 
-  @override
-  Widget buildView(
+  /// Returns a widget displaying the map view.
+  ///
+  /// This method includes a parameter for platforms that require a text
+  /// direction. For example, this should be used when using hybrid composition
+  /// on Android.
+  Widget buildViewWithTextDirection(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
-    TextDirection? textDirection,
+    required TextDirection textDirection,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
@@ -467,21 +474,17 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
-    final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': initialCameraPosition.toMap(),
-      'options': mapOptions,
-      'markersToAdd': serializeMarkerSet(markers),
-      'polygonsToAdd': serializePolygonSet(polygons),
-      'polylinesToAdd': serializePolylineSet(polylines),
-      'circlesToAdd': serializeCircleSet(circles),
-      'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
-    };
     if (defaultTargetPlatform == TargetPlatform.android &&
         useAndroidViewSurface) {
-      assert(
-        textDirection != null,
-        'textDirection must not be null when MethodChannelGoogleMapsFlutter.useAndroidViewSurface is set to true.',
-      );
+      final Map<String, dynamic> creationParams = <String, dynamic>{
+        'initialCameraPosition': initialCameraPosition.toMap(),
+        'options': mapOptions,
+        'markersToAdd': serializeMarkerSet(markers),
+        'polygonsToAdd': serializePolygonSet(polygons),
+        'polylinesToAdd': serializePolylineSet(polylines),
+        'circlesToAdd': serializeCircleSet(circles),
+        'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+      };
       return PlatformViewLink(
         viewType: 'plugins.flutter.io/google_maps',
         surfaceFactory: (
@@ -500,7 +503,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
               PlatformViewsService.initSurfaceAndroidView(
             id: params.id,
             viewType: 'plugins.flutter.io/google_maps',
-            layoutDirection: textDirection!,
+            layoutDirection: textDirection,
             creationParams: creationParams,
             creationParamsCodec: const StandardMessageCodec(),
             onFocus: () => params.onFocusChanged(true),
@@ -516,7 +519,44 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           return controller;
         },
       );
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
+    }
+    return buildView(
+      creationId,
+      onPlatformViewCreated,
+      initialCameraPosition: initialCameraPosition,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      tileOverlays: tileOverlays,
+      gestureRecognizers: gestureRecognizers,
+      mapOptions: mapOptions,
+    );
+  }
+
+  @override
+  Widget buildView(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    final Map<String, dynamic> creationParams = <String, dynamic>{
+      'initialCameraPosition': initialCameraPosition.toMap(),
+      'options': mapOptions,
+      'markersToAdd': serializeMarkerSet(markers),
+      'polygonsToAdd': serializePolygonSet(polygons),
+      'polylinesToAdd': serializePolylineSet(polylines),
+      'circlesToAdd': serializeCircleSet(circles),
+      'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+    };
+    if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
