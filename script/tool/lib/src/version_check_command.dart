@@ -238,8 +238,8 @@ $indentation${badVersionChangePubspecs.join('\n$indentation')}
     if (mismatchedVersionPlugins.isNotEmpty) {
       passed = false;
       printError('''
-The following pubspecs failed validaton:
-$indentation${badVersionChangePubspecs.join('\n$indentation')}
+The following pubspecs have different versions in pubspec.yaml and CHANGELOG.md:
+$indentation${mismatchedVersionPlugins.join('\n$indentation')}
 ''');
     }
     if (!passed) {
