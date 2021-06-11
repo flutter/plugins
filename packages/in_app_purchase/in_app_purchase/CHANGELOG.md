@@ -1,6 +1,6 @@
 ## 1.0.6
 
-* Fixed repository link in the package's pubspec.yaml
+* Fixed repository location in the package's pubspec.yaml
 
 ## 1.0.5
 
