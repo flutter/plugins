@@ -5,6 +5,7 @@
   compatibility.
 - `xctest` now supports running macOS tests in addition to iOS
   - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
+- `build-examples` now supports UWP plugins via a `--winuwp` flag.
 
 ## 0.2.0
 
