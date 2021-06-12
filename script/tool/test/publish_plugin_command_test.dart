@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -22,15 +20,15 @@ import 'util.dart';
 
 void main() {
   const String testPluginName = 'foo';
-  List<String> printedMessages;
+  late List<String> printedMessages;
 
-  Directory testRoot;
-  Directory packagesDir;
-  Directory pluginDir;
-  GitDir gitDir;
-  TestProcessRunner processRunner;
-  CommandRunner<void> commandRunner;
-  MockStdin mockStdin;
+  late Directory testRoot;
+  late Directory packagesDir;
+  late Directory pluginDir;
+  late GitDir gitDir;
+  late TestProcessRunner processRunner;
+  late CommandRunner<void> commandRunner;
+  late MockStdin mockStdin;
   // This test uses a local file system instead of an in memory one throughout
   // so that git actually works. In setup we initialize a mono repo of plugins
   // with one package and commit everything to Git.
@@ -65,7 +63,7 @@ void main() {
     commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object message) => printedMessages.add(message.toString()),
+          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           gitDir: gitDir));
   });
@@ -285,9 +283,9 @@ void main() {
         '--no-push-tags',
       ]);
 
-      final String tag =
+      final String? tag =
           (await gitDir.runCommand(<String>['show-ref', 'fake_package-v0.0.1']))
-              .stdout as String;
+              .stdout as String?;
       expect(tag, isNotEmpty);
     });
 
@@ -303,10 +301,10 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(printedMessages, contains('Publish foo failed.'));
-      final String tag = (await gitDir.runCommand(
+      final String? tag = (await gitDir.runCommand(
               <String>['show-ref', 'fake_package-v0.0.1'],
               throwOnError: false))
-          .stdout as String;
+          .stdout as String?;
       expect(tag, isEmpty);
     });
   });
@@ -838,20 +836,20 @@ void main() {
 class TestProcessRunner extends ProcessRunner {
   final List<io.ProcessResult> results = <io.ProcessResult>[];
   // Most recent returned publish process.
-  MockProcess mockPublishProcess;
+  late MockProcess mockPublishProcess;
   final List<String> mockPublishArgs = <String>[];
   final MockProcessResult mockPushTagsResult = MockProcessResult();
   final List<String> pushTagsArgs = <String>[];
 
-  String mockPublishStdout;
-  String mockPublishStderr;
-  int mockPublishCompleteCode;
+  String? mockPublishStdout;
+  String? mockPublishStderr;
+  int? mockPublishCompleteCode;
 
   @override
   Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
     bool exitOnError = false,
     bool logOnError = false,
     Encoding stdoutEncoding = io.systemEncoding,
@@ -874,7 +872,7 @@ class TestProcessRunner extends ProcessRunner {
 
   @override
   Future<io.Process> start(String executable, List<String> args,
-      {Directory workingDirectory}) async {
+      {Directory? workingDirectory}) async {
     /// Never actually publish anything. Start is always and only used for this
     /// since it returns something we can route stdin through.
     assert(executable == 'flutter' &&
@@ -884,10 +882,10 @@ class TestProcessRunner extends ProcessRunner {
     mockPublishArgs.addAll(args);
     mockPublishProcess = MockProcess();
     if (mockPublishStdout != null) {
-      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout));
+      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout!));
     }
     if (mockPublishStderr != null) {
-      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr));
+      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr!));
     }
     if (mockPublishCompleteCode != null) {
       mockPublishProcess.exitCodeCompleter.complete(mockPublishCompleteCode);
@@ -899,8 +897,8 @@ class TestProcessRunner extends ProcessRunner {
 
 class MockStdin extends Mock implements io.Stdin {
   List<List<int>> mockUserInputs = <List<int>>[];
-  StreamController<List<int>> _controller;
-  String readLineOutput;
+  late StreamController<List<int>> _controller;
+  String? readLineOutput;
 
   @override
   Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
@@ -915,14 +913,14 @@ class MockStdin extends Mock implements io.Stdin {
   }
 
   @override
-  StreamSubscription<List<int>> listen(void onData(List<int> event),
-      {Function onError, void onDone(), bool cancelOnError}) {
+  StreamSubscription<List<int>> listen(void onData(List<int> event)?,
+      {Function? onError, void onDone()?, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override
-  String readLineSync(
+  String? readLineSync(
           {Encoding encoding = io.systemEncoding,
           bool retainNewlines = false}) =>
       readLineOutput;
