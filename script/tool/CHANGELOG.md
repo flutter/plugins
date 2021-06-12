@@ -1,4 +1,4 @@
-## NEXT
+## 0.3.0
 
 - Add a --build-id flag to `firebase-test-lab` instead of hard-coding the use of
   `CIRRUS_BUILD_ID`. `CIRRUS_BUILD_ID` is the default value for that flag, for backward
@@ -6,6 +6,7 @@
 - `xctest` now supports running macOS tests in addition to iOS
   - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
 - `build-examples` now supports UWP plugins via a `--winuwp` flag.
+- The tooling now runs in strong null-safe mode.
 
 ## 0.2.0
 

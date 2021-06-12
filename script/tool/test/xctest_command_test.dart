@@ -274,8 +274,7 @@ void main() {
       });
 
       test('skip if macOS is implemented in a federated package', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
           <String>['example', 'test'],
         ], platformSupport: <String, PlatformDetails>{
           kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
