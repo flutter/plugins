@@ -404,14 +404,14 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<String?> _verifyRemote(String remote) async {
-    final io.ProcessResult remoteInfo = await processRunner.run(
+    final io.ProcessResult getRemoteUrlResult = await processRunner.run(
       'git',
       <String>['remote', 'get-url', remote],
       workingDir: packagesDir,
       exitOnError: true,
       logOnError: true,
     );
-    return remoteInfo.stdout as String?;
+    return getRemoteUrlResult.stdout as String?;
   }
 
   Future<bool> _publish(Directory packageDir) async {
@@ -494,11 +494,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   void _ensureValidPubCredential() {
-    final String? credentialsPath = _credentialsPath;
-    if (credentialsPath == null) {
-      printError('Unable to determine pub credentials path');
-      throw ToolExit(1);
-    }
+    final String credentialsPath = _credentialsPath;
     final File credentialFile = packagesDir.fileSystem.file(_credentialsPath);
     if (credentialFile.existsSync() &&
         credentialFile.readAsStringSync().isNotEmpty) {
@@ -519,16 +515,16 @@ If running this command on CI, you can set the pub credential content in the $_p
 
   /// Returns the correct path where the pub credential is stored.
   @visibleForTesting
-  static String? getCredentialPath() {
+  static String getCredentialPath() {
     return _credentialsPath;
   }
 }
 
 /// The path in which pub expects to find its credentials file.
-final String? _credentialsPath = () {
+final String _credentialsPath = () {
   // This follows the same logic as pub:
   // https://github.com/dart-lang/pub/blob/d99b0d58f4059d7bb4ac4616fd3d54ec00a2b5d4/lib/src/system_cache.dart#L34-L43
-  String cacheDir;
+  String? cacheDir;
   final String? pubCache = io.Platform.environment['PUB_CACHE'];
   print(pubCache);
   if (pubCache != null) {
@@ -537,17 +533,23 @@ final String? _credentialsPath = () {
     final String? appData = io.Platform.environment['APPDATA'];
     if (appData == null) {
       printError('"APPDATA" environment variable is not set.');
-      return null;
+    } else {
+      cacheDir = p.join(appData, 'Pub', 'Cache');
     }
-    cacheDir = p.join(appData, 'Pub', 'Cache');
   } else {
     final String? home = io.Platform.environment['HOME'];
     if (home == null) {
       printError('"HOME" environment variable is not set.');
-      return null;
+    } else {
+      cacheDir = p.join(home, '.pub-cache');
     }
-    cacheDir = p.join(home, '.pub-cache');
   }
+
+  if (cacheDir == null) {
+    printError('Unable to determine pub cache location');
+    throw ToolExit(1);
+  }
+
   return p.join(cacheDir, 'credentials.json');
 }();
 
