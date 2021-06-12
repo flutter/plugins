@@ -35,7 +35,7 @@ void main() {
   const FileSystem fileSystem = LocalFileSystem();
 
   void _createMockCredentialFile() {
-    final String? credentialPath = PublishPluginCommand.getCredentialPath();
+    final String credentialPath = PublishPluginCommand.getCredentialPath();
     fileSystem.file(credentialPath)
       ..createSync(recursive: true)
       ..writeAsStringSync('some credential');

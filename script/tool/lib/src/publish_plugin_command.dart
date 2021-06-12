@@ -495,7 +495,7 @@ Safe to ignore if the package is deleted in this commit.
 
   void _ensureValidPubCredential() {
     final String credentialsPath = _credentialsPath;
-    final File credentialFile = packagesDir.fileSystem.file(_credentialsPath);
+    final File credentialFile = packagesDir.fileSystem.file(credentialsPath);
     if (credentialFile.existsSync() &&
         credentialFile.readAsStringSync().isNotEmpty) {
       return;
