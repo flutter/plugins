@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Fixed typos.
+
 ## 0.1.2
 
 * Added support for the obfuscatedAccountId and obfuscatedProfileId in the PurchaseWrapper.
