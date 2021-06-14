@@ -578,7 +578,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if (!self.result) {
     return;
   }
-  if (pathList && self.maxImagesAllowed) {
+  if (pathList && (self.maxImagesAllowed == 1)) {
     self.result(pathList.firstObject);
   } else if (pathList.count > 0) {
     self.result(pathList);
