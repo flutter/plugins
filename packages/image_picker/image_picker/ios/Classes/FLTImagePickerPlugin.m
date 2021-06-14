@@ -431,7 +431,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                              beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
   }
-  [self handleMultiSavedPaths:pathList];
+  [self handleSavedPathList:pathList];
 }
 
 /**
@@ -549,7 +549,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
   [mutableArray addObject:savedPath];
 
-  [self handleMultiSavedPaths:mutableArray];
+  [self handleSavedPathList:mutableArray];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
@@ -561,20 +561,23 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
   [mutableArray addObject:savedPath];
 
-  [self handleMultiSavedPaths:mutableArray];
+  [self handleSavedPathList:mutableArray];
 }
 
 /**
  * Applies NSMutableArray on the FLutterResult.
  *
- * If the @c pathList is not nill and count of the @c pathList is
- * greater than 0 then call FlutterResult with the @c pathList. If
- * the @c pathList is nill or count of the @c pathList is not
- * greater than 0 then call FlutterResult with FlutterError.
+ * NSString must be returned by FlutterResult if the single image
+ * mode is active. It is checked by @c maxImagesAllowed and
+ * returns the first object of the @c pathlist.
+ *
+ * NSMutableArray must be returned by FlutterResult if the multi-image
+ * mode is active. After the @c pathlist count is checked then it returns
+ * the @c pathlist.
  *
  * @param @pathList that should be applied to FlutterResult.
  */
-- (void)handleMultiSavedPaths:(NSMutableArray *)pathList {
+- (void)handleSavedPathList:(NSMutableArray *)pathList {
   if (!self.result) {
     return;
   }

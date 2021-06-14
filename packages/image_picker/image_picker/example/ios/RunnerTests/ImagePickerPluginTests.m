@@ -22,7 +22,7 @@
 
 @interface FLTImagePickerPlugin (Test)
 @property(copy, nonatomic) FlutterResult result;
-- (void)handleMultiSavedPaths:(NSMutableArray *)pathList;
+- (void)handleSavedPathList:(NSMutableArray *)pathList;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 @end
 
@@ -144,7 +144,7 @@
     pickImageResult = r;
     dispatch_semaphore_signal(resultSemaphore);
   };
-  [plugin handleMultiSavedPaths:nil];
+  [plugin handleSavedPathList:nil];
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
@@ -162,7 +162,7 @@
     pickImageResult = r;
     dispatch_semaphore_signal(resultSemaphore);
   };
-  [plugin handleMultiSavedPaths:pathList];
+  [plugin handleSavedPathList:pathList];
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
@@ -183,7 +183,7 @@
     pickImageResult = r;
     dispatch_semaphore_signal(resultSemaphore);
   };
-  [plugin handleMultiSavedPaths:pathList];
+  [plugin handleSavedPathList:pathList];
 
   dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
 
