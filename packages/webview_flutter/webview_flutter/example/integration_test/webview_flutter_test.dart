@@ -1379,6 +1379,38 @@ void main() {
     },
     skip: !Platform.isAndroid,
   );
+
+  testWidgets('basic auth request works', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final StreamController<String> pageLoads = StreamController<String>();
+    final initialUrl = 'https://jigsaw.w3.org/HTTP/Basic/';
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: initialUrl,
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            pageLoads.add(url);
+          },
+          onReceivedHttpAuthRequest: (String host, String realm) {
+            return WebViewAuthInfo(username: 'guest', password: 'guest');
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await pageLoads.stream.firstWhere((String url) => url == initialUrl);
+
+    final String content = await controller
+        .evaluateJavascript('document.documentElement.innerText');
+    expect(content.contains('Your browser made it!'), isTrue);
+  });
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.

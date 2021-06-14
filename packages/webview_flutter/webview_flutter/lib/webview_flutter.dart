@@ -151,6 +151,10 @@ typedef void PageLoadingCallback(int progress);
 /// Signature for when a [WebView] has failed to load a resource.
 typedef void WebResourceErrorCallback(WebResourceError error);
 
+/// Signature for when a [WebView] is requesting authentication.
+typedef WebViewAuthInfo OnReceivedHttpAuthRequestCallback(
+    String host, String realm);
+
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
@@ -225,6 +229,7 @@ class WebView extends StatefulWidget {
     this.onPageFinished,
     this.onProgress,
     this.onWebResourceError,
+    this.onReceivedHttpAuthRequest,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
@@ -372,6 +377,12 @@ class WebView extends StatefulWidget {
   /// This can be called for any resource (iframe, image, etc.), not just for
   /// the main page.
   final WebResourceErrorCallback? onWebResourceError;
+
+  /// Invoked when a page requests authentication.
+  ///
+  /// If provided, this can be used to visit pages that are protected by Basic
+  /// auth.
+  final OnReceivedHttpAuthRequestCallback? onReceivedHttpAuthRequest;
 
   /// Controls whether WebView debugging is enabled.
   ///
@@ -609,6 +620,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
       _javascriptChannels[channel.name] = channel;
     }
   }
+
+  @override
+  WebViewAuthInfo? onReceivedHttpAuthRequest(String host, String realm) {
+    if (_widget.onReceivedHttpAuthRequest != null) {
+      return _widget.onReceivedHttpAuthRequest!(host, realm);
+    }
+  }
 }
 
 /// Controls a [WebView].
@@ -832,4 +850,19 @@ void _validateUrlString(String url) {
   } on FormatException catch (e) {
     throw ArgumentError(e);
   }
+}
+
+/// Simple credentials wrapper for authorization requests
+class WebViewAuthInfo {
+  /// Creates a new AuthInfo
+  const WebViewAuthInfo({
+    required this.username,
+    required this.password,
+  });
+
+  /// authentication username
+  final String username;
+
+  /// authentication password
+  final String password;
 }

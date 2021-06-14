@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.webkit.HttpAuthHandler;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -157,6 +158,40 @@ class FlutterWebViewClient {
     }
   }
 
+  private void onReceivedHttpAuthRequest(final HttpAuthHandler handler, String host, String realm) {
+    HashMap<String, String> arguments = new HashMap<>();
+    arguments.put("host", host);
+    arguments.put("realm", realm);
+    methodChannel.invokeMethod(
+        "onReceivedHttpAuthRequest",
+        arguments,
+        new MethodChannel.Result() {
+          @Override
+          public void success(Object args) {
+            if (args instanceof Map) {
+              Map<?, ?> argsMap = (Map<?, ?>) args;
+              Object username = argsMap.get("username");
+              Object password = argsMap.get("password");
+              if (username != null && password != null) {
+                handler.proceed(username.toString(), password.toString());
+                return;
+              }
+            }
+            handler.cancel();
+          }
+
+          @Override
+          public void error(String error, String detailedException, Object args) {
+            handler.cancel();
+          }
+
+          @Override
+          public void notImplemented() {
+            handler.cancel();
+          }
+        });
+  }
+
   // This method attempts to avoid using WebViewClientCompat due to bug
   // https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
   // https://github.com/flutter/flutter/issues/29446.
@@ -208,6 +243,12 @@ class FlutterWebViewClient {
         // handled even though they were handled. We don't want to propagate those as they're not
         // truly lost.
       }
+
+      @Override
+      public void onReceivedHttpAuthRequest(
+          WebView view, HttpAuthHandler handler, String host, String realm) {
+        FlutterWebViewClient.this.onReceivedHttpAuthRequest(handler, host, realm);
+      }
     };
   }
 
@@ -248,6 +289,12 @@ class FlutterWebViewClient {
       public void onReceivedError(
           WebView view, int errorCode, String description, String failingUrl) {
         FlutterWebViewClient.this.onWebResourceError(errorCode, description, failingUrl);
+      }
+
+      @Override
+      public void onReceivedHttpAuthRequest(
+          WebView view, HttpAuthHandler handler, String host, String realm) {
+        FlutterWebViewClient.this.onReceivedHttpAuthRequest(handler, host, realm);
       }
 
       @Override

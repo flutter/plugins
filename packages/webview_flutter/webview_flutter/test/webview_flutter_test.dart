@@ -920,6 +920,41 @@ void main() {
 
     expect(platformWebView.userAgent, 'UA');
   });
+
+  group('$OnReceivedHttpAuthRequestCallback', () {
+    testWidgets('onReceivedHttpAuthRequest is not null',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onReceivedHttpAuthRequest: (String host, String realm) {
+          return WebViewAuthInfo(username: 'user', password: 'pass');
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      await platformWebView.fakeOnReceivedHttpAuthRequestCallback();
+
+      expect(platformWebView.username, 'user');
+      expect(platformWebView.password, 'pass');
+    });
+
+    testWidgets('onReceivedHttpAuthRequest is null',
+        (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onReceivedHttpAuthRequest: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      // The platform side will always invoke a call for onPageFinished. This is
+      // to test that it does not crash on a null callback.
+      await platformWebView.fakeOnReceivedHttpAuthRequestCallback();
+    });
+  });
 }
 
 class FakePlatformWebView {
@@ -959,6 +994,8 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
+  String? username;
+  String? password;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -1101,6 +1138,25 @@ class FakePlatformWebView {
     history.add(url);
     currentPosition++;
     amountOfReloadsOnCurrentUrl = 0;
+  }
+
+  Future<void> fakeOnReceivedHttpAuthRequestCallback() async {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'host': 'fakehost',
+      'realm': 'fakerealm'
+    };
+    final ByteData data = codec
+        .encodeMethodCall(MethodCall('onReceivedHttpAuthRequest', arguments));
+    await ServicesBinding.instance!.defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData? data) {
+      if (data != null) {
+        final Map<dynamic, dynamic> result = codec.decodeEnvelope(data);
+        username = result['username'];
+        password = result['password'];
+      }
+    });
   }
 }
 

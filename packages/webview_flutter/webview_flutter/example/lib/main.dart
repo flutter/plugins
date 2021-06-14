@@ -62,6 +62,9 @@ class _WebViewExampleState extends State<WebViewExample> {
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },
+          onReceivedHttpAuthRequest: (String host, String realm) {
+            return WebViewAuthInfo(username: 'guest', password: 'guest');
+          },
           onProgress: (int progress) {
             print("WebView is loading (progress : $progress%)");
           },
@@ -130,6 +133,7 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  navigateToBasicAuth,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -168,6 +172,9 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case MenuOptions.navigateToBasicAuth:
+                _onNavigateToBasicAuth(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -199,6 +206,10 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.navigateToBasicAuth,
+              child: Text('Basic auth (guest/guest)'),
             ),
           ],
         );
@@ -271,6 +282,11 @@ class SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _onNavigateToBasicAuth(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadUrl('https://jigsaw.w3.org/HTTP/Basic/');
   }
 
   Widget _getCookieList(String cookies) {
