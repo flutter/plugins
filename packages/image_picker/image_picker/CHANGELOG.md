@@ -1,6 +1,7 @@
 ## 0.8.1
 
-* Implement functionality to pick multiple images in iOS14+ and Android.
+* Add a new method `getMultiImage` to allow picking multiple images on iOS 14 or higher and Android 4.3 or higher.
+* Known issue: On Android, `getLostData` will only get the last picked image when picking multiple images, see: https://github.com/...
 
 ## 0.8.0+3
 
