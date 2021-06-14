@@ -1,8 +1,8 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package io.flutter.plugins.camera.features.exposurepoint;
+package io.flutter.plugins.camera.features.focuspoint;
 
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
@@ -12,53 +12,53 @@ import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
 
-/** Exposure point controls where in the frame exposure metering will come from. */
-public class ExposurePointFeature extends CameraFeature<Point> {
+/** Focus point controls where in the frame focus will come from. */
+public class FocusPointFeature extends CameraFeature<Point> {
 
   private Size cameraBoundaries;
-  private Point exposurePoint;
-  private MeteringRectangle exposureRectangle;
+  private Point focusPoint;
+  private MeteringRectangle focusRectangle;
 
   /**
-   * Creates a new instance of the {@link ExposurePointFeature}.
+   * Creates a new instance of the {@link FocusPointFeature}.
    *
    * @param cameraProperties Collection of the characteristics for the current camera device.
    */
-  public ExposurePointFeature(CameraProperties cameraProperties) {
+  public FocusPointFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
   }
 
   /**
-   * Sets the camera boundaries that are required for the exposure point feature to function.
+   * Sets the camera boundaries that are required for the focus point feature to function.
    *
    * @param cameraBoundaries - The camera boundaries to set.
    */
   public void setCameraBoundaries(Size cameraBoundaries) {
     this.cameraBoundaries = cameraBoundaries;
-    this.buildExposureRectangle();
+    this.buildFocusRectangle();
   }
 
   @Override
   public String getDebugName() {
-    return "ExposurePointFeature";
+    return "FocusPointFeature";
   }
 
   @Override
   public Point getValue() {
-    return exposurePoint;
+    return focusPoint;
   }
 
   @Override
   public void setValue(Point value) {
-    this.exposurePoint = value == null || value.x == null || value.y == null ? null : value;
-    this.buildExposureRectangle();
+    this.focusPoint = value == null || value.x == null || value.y == null ? null : value;
+    this.buildFocusRectangle();
   }
 
   // Whether or not this camera can set the exposure point.
   @Override
   public boolean checkIsSupported() {
     if (cameraBoundaries == null) return false;
-    Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoExposure();
+    Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoFocus();
     return supportedRegions != null && supportedRegions > 0;
   }
 
@@ -68,20 +68,20 @@ public class ExposurePointFeature extends CameraFeature<Point> {
       return;
     }
     requestBuilder.set(
-        CaptureRequest.CONTROL_AE_REGIONS,
-        exposureRectangle == null ? null : new MeteringRectangle[] {exposureRectangle});
+        CaptureRequest.CONTROL_AF_REGIONS,
+        focusRectangle == null ? null : new MeteringRectangle[] {focusRectangle});
   }
 
-  private void buildExposureRectangle() {
+  private void buildFocusRectangle() {
     if (!checkIsSupported()) {
       return;
     }
-    if (this.exposurePoint == null) {
-      this.exposureRectangle = null;
+    if (this.focusPoint == null) {
+      this.focusRectangle = null;
     } else {
-      this.exposureRectangle =
+      this.focusRectangle =
           CameraRegionUtils.convertPointToMeteringRectangle(
-              this.cameraBoundaries, this.exposurePoint.x, this.exposurePoint.y);
+              this.cameraBoundaries, this.focusPoint.x, this.focusPoint.y);
     }
   }
 }
