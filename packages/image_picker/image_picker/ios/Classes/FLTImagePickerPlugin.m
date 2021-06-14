@@ -91,6 +91,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   int imageSource = [[_arguments objectForKey:@"source"] intValue];
 
+  self.maxImagesAllowed = 1;
+
   switch (imageSource) {
     case SOURCE_CAMERA: {
       NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
@@ -401,9 +403,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                                   image:localImage
                                                            imageQuality:desiredImageQuality];
               pathList[i] = savedPath;
-              if (--resultsInProgress == 0) {
-                dispatch_semaphore_signal(resultSemaphore);
-              }
 
             } else {
               [[PHImageManager defaultManager]
@@ -420,11 +419,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                         maxHeight:maxHeight
                                                      imageQuality:desiredImageQuality];
                                pathList[i] = savedPath;
-
-                               if (--resultsInProgress == 0) {
-                                 dispatch_semaphore_signal(resultSemaphore);
-                               }
                              }];
+            }
+            if (--resultsInProgress == 0) {
+              dispatch_semaphore_signal(resultSemaphore);
             }
           }
         }];
@@ -433,7 +431,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
                              beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
   }
-  [self handlePath:pathList];
+  [self handleMultiSavedPaths:pathList];
 }
 
 /**
@@ -450,19 +448,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   for (int i = 0; i < size; [mutableArray addObject:[NSNull null]], i++)
     ;
   return mutableArray;
-}
-
-/**
- * Handle the result based on the count of pathList.
- *
- * @param @pathList that is used to get its count.
- */
-- (void)handlePath:(NSMutableArray *)pathList {
-  if (self.maxImagesAllowed) {
-    [self handleSavedPath:pathList.firstObject];
-  } else {
-    [self handleMultiSavedPaths:pathList];
-  }
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
@@ -561,7 +546,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxWidth:maxWidth
                                                          maxHeight:maxHeight
                                                       imageQuality:imageQuality];
-  [self handleSavedPath:savedPath];
+  NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
+  [mutableArray addObject:savedPath];
+
+  [self handleMultiSavedPaths:mutableArray];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
@@ -570,22 +558,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                         image:image
                                                                  imageQuality:imageQuality];
-  [self handleSavedPath:savedPath];
-}
+  NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
+  [mutableArray addObject:savedPath];
 
-- (void)handleSavedPath:(NSString *)path {
-  if (!self.result) {
-    return;
-  }
-  if (path) {
-    self.result(path);
-  } else {
-    self.result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary file could not be created"
-                                    details:nil]);
-  }
-  self.result = nil;
-  _arguments = nil;
+  [self handleMultiSavedPaths:mutableArray];
 }
 
 /**
@@ -602,11 +578,13 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if (!self.result) {
     return;
   }
-  if (pathList && pathList.count > 0) {
+  if (pathList && self.maxImagesAllowed) {
+    self.result(pathList.firstObject);
+  } else if (pathList.count > 0) {
     self.result(pathList);
   } else {
     self.result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary files could not be created"
+                                    message:@"Temporary file(s) could not be created"
                                     details:nil]);
   }
   self.result = nil;
