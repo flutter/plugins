@@ -403,6 +403,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                                   image:localImage
                                                            imageQuality:desiredImageQuality];
               pathList[i] = savedPath;
+              if (--resultsInProgress == 0) {
+                dispatch_semaphore_signal(resultSemaphore);
+              }
 
             } else {
               [[PHImageManager defaultManager]
@@ -419,10 +422,10 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                         maxHeight:maxHeight
                                                      imageQuality:desiredImageQuality];
                                pathList[i] = savedPath;
+                               if (--resultsInProgress == 0) {
+                                 dispatch_semaphore_signal(resultSemaphore);
+                               }
                              }];
-            }
-            if (--resultsInProgress == 0) {
-              dispatch_semaphore_signal(resultSemaphore);
             }
           }
         }];
