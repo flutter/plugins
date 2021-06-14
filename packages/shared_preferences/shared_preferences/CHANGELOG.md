@@ -1,3 +1,11 @@
+## NEXT
+
+* Add iOS unit test target.
+
+## 2.0.6
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.5
 
 * Fix missing declaration of windows' default_package

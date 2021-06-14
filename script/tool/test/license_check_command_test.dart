@@ -11,10 +11,10 @@ import 'package:test/test.dart';
 
 void main() {
   group('$LicenseCheckCommand', () {
-    CommandRunner<void> runner;
-    FileSystem fileSystem;
-    List<String> printedMessages;
-    Directory root;
+    late CommandRunner<void> runner;
+    late FileSystem fileSystem;
+    late List<String> printedMessages;
+    late Directory root;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
@@ -25,8 +25,7 @@ void main() {
       printedMessages = <String>[];
       final LicenseCheckCommand command = LicenseCheckCommand(
         packagesDir,
-        fileSystem,
-        print: (Object message) => printedMessages.add(message.toString()),
+        print: (Object? message) => printedMessages.add(message.toString()),
       );
       runner =
           CommandRunner<void>('license_test', 'Test for $LicenseCheckCommand');

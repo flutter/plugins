@@ -96,7 +96,10 @@ class GoogleMapController {
     // Register the view factory that will hold the `_div` that holds the map in the DOM.
     // The `_div` needs to be created outside of the ViewFactory (and cached!) so we can
     // use it to create the [gmaps.GMap] in the `init()` method of this class.
-    _div = DivElement()..id = _getViewType(mapId);
+    _div = DivElement()
+      ..id = _getViewType(mapId)
+      ..style.width = '100%'
+      ..style.height = '100%';
 
     ui.platformViewRegistry.registerViewFactory(
       _getViewType(mapId),

@@ -73,7 +73,6 @@
       updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
         [weakSelf updatedDownloads:downloads];
       }];
-  [_paymentQueueHandler startObservingPaymentQueue];
   _callbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
                                   binaryMessenger:[registrar messenger]];
@@ -100,13 +99,17 @@
     [self retrieveReceiptData:call result:result];
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
     [self refreshReceipt:call result:result];
+  } else if ([@"-[SKPaymentQueue startObservingTransactionQueue]" isEqualToString:call.method]) {
+    [_paymentQueueHandler startObservingPaymentQueue];
+  } else if ([@"-[SKPaymentQueue stopObservingTransactionQueue]" isEqualToString:call.method]) {
+    [_paymentQueueHandler stopObservingPaymentQueue];
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
 - (void)canMakePayments:(FlutterResult)result {
-  result([NSNumber numberWithBool:[SKPaymentQueue canMakePayments]]);
+  result(@([SKPaymentQueue canMakePayments]));
 }
 
 - (void)getPendingTransactions:(FlutterResult)result {

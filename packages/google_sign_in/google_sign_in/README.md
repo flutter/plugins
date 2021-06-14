@@ -6,7 +6,9 @@ _Note_: This plugin is still under development, and some APIs might not be
 available yet. [Feedback](https://github.com/flutter/flutter/issues) and
 [Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
 
-## Android integration
+## Platform integration
+
+### Android integration
 
 To access Google Sign-In, you'll need to make sure to
 [register your application](https://firebase.google.com/docs/android/setup).
@@ -23,7 +25,7 @@ Make sure you've filled out all required fields in the console for
 [OAuth consent screen](https://console.developers.google.com/apis/credentials/consent).
 Otherwise, you may encounter `APIException` errors.
 
-## iOS integration
+### iOS integration
 
 1. [First register your application](https://firebase.google.com/docs/ios/setup).
 2. Make sure the file you download in step 1 is named
@@ -57,7 +59,7 @@ Otherwise, you may encounter `APIException` errors.
 <!-- End of the Google Sign-in Section -->
 ```
 
-### iOS additional requirement
+#### iOS additional requirement
 
 Note that according to
 https://developer.apple.com/sign-in-with-apple/get-started, starting June 30,
@@ -70,12 +72,17 @@ The Flutter Favorite
 [sign_in_with_apple](https://pub.dev/packages/sign_in_with_apple) plugin could
 be an option.
 
+### Web integration
+
+For web integration details, see the
+[`google_sign_in_web` package](https://pub.dev/packages/google_sign_in_web).
+
 ## Usage
 
 ### Import the package
 
 To use this plugin, follow the
-[plugin installation instructions](https://pub.dev/packages/google_sign_in#pub-pkg-tab-installing).
+[plugin installation instructions](https://pub.dev/packages/google_sign_in/install).
 
 ### Use the plugin
 
@@ -114,4 +121,3 @@ Future<void> _handleSignIn() async {
 
 Find the example wiring in the
 [Google sign-in example application](https://github.com/flutter/plugins/blob/master/packages/google_sign_in/google_sign_in/example/lib/main.dart).
-
