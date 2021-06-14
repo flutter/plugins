@@ -69,7 +69,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return topController;
 }
 
-- (void)pickImageWithPHPicker:(bool)maxImagesAllowed API_AVAILABLE(ios(14)) {
+- (void)pickImageWithPHPicker:(int)maxImagesAllowed API_AVAILABLE(ios(14)) {
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
   config.selectionLimit = maxImagesAllowed;  // Setting to zero allow us to pick unlimited photos
