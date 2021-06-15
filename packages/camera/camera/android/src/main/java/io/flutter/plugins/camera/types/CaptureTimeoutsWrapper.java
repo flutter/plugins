@@ -1,0 +1,36 @@
+package io.flutter.plugins.camera.types;
+
+public class CaptureTimeoutsWrapper {
+  private final Timeout preCaptureFocusing;
+  private final Timeout preCaptureMetering;
+
+  /**
+   * Create a new wrapper instance with the specified timeout values.
+   *
+   * @param preCaptureFocusingTimeoutMs focusing timeout milliseconds.
+   * @param preCaptureMeteringTimeoutMs metering timeout milliseconds.
+   */
+  public CaptureTimeoutsWrapper(
+      long preCaptureFocusingTimeoutMs, long preCaptureMeteringTimeoutMs) {
+    this.preCaptureFocusing = Timeout.create(preCaptureFocusingTimeoutMs);
+    this.preCaptureMetering = Timeout.create(preCaptureMeteringTimeoutMs);
+  }
+
+  /**
+   * Returns the timeout instance related to precapture focusing.
+   *
+   * @return - The timeout object
+   */
+  public Timeout getPreCaptureFocusing() {
+    return preCaptureFocusing;
+  }
+
+  /**
+   * Returns the timeout instance related to precapture metering.
+   *
+   * @return - The timeout object
+   */
+  public Timeout getPreCaptureMetering() {
+    return preCaptureMetering;
+  }
+}
