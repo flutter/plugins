@@ -19,9 +19,7 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - cd $FLUTTER_HOME
     - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     - git fetch origin
-    # For debugging, DO NOT MERGE
-    - git remote -v
-    - git branch -a
+    # Switch to the requested branch.
     - flutter channel $CHANNEL
     - flutter upgrade
   << : *TOOL_SETUP_TEMPLATE
