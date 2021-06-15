@@ -1,6 +1,10 @@
-## 0.1.2
+## 0.1.3
 
 * Add payment proxy.
+
+## 0.1.2
+
+* Added support for the obfuscatedAccountId and obfuscatedProfileId in the PurchaseWrapper.
 
 ## 0.1.1
 

@@ -13,10 +13,9 @@ import 'common.dart';
 class JavaTestCommand extends PluginCommand {
   /// Creates an instance of the test runner.
   JavaTestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner);
+  }) : super(packagesDir, processRunner: processRunner);
 
   @override
   final String name = 'java-test';
@@ -32,12 +31,17 @@ class JavaTestCommand extends PluginCommand {
   Future<void> run() async {
     final Stream<Directory> examplesWithTests = getExamples().where(
         (Directory d) =>
-            isFlutterPackage(d, fileSystem) &&
-            (fileSystem
-                    .directory(p.join(d.path, 'android', 'app', 'src', 'test'))
+            isFlutterPackage(d) &&
+            (d
+                    .childDirectory('android')
+                    .childDirectory('app')
+                    .childDirectory('src')
+                    .childDirectory('test')
                     .existsSync() ||
-                fileSystem
-                    .directory(p.join(d.path, '..', 'android', 'src', 'test'))
+                d.parent
+                    .childDirectory('android')
+                    .childDirectory('src')
+                    .childDirectory('test')
                     .existsSync()));
 
     final List<String> failingPackages = <String>[];
@@ -47,11 +51,8 @@ class JavaTestCommand extends PluginCommand {
           p.relative(example.path, from: packagesDir.path);
       print('\nRUNNING JAVA TESTS for $packageName');
 
-      final Directory androidDirectory =
-          fileSystem.directory(p.join(example.path, 'android'));
-      if (!fileSystem
-          .file(p.join(androidDirectory.path, _gradleWrapper))
-          .existsSync()) {
+      final Directory androidDirectory = example.childDirectory('android');
+      if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
         print('ERROR: Run "flutter build apk" on example app of $packageName'
             'before executing tests.');
         missingFlutterBuild.add(packageName);

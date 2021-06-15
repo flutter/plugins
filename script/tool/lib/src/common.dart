@@ -21,41 +21,34 @@ import 'package:yaml/yaml.dart';
 typedef Print = void Function(Object? object);
 
 /// Key for windows platform.
-const String kWindows = 'windows';
+const String kPlatformFlagWindows = 'windows';
 
 /// Key for macos platform.
-const String kMacos = 'macos';
+const String kPlatformFlagMacos = 'macos';
 
 /// Key for linux platform.
-const String kLinux = 'linux';
+const String kPlatformFlagLinux = 'linux';
 
 /// Key for IPA (iOS) platform.
-const String kIos = 'ios';
+const String kPlatformFlagIos = 'ios';
 
 /// Key for APK (Android) platform.
-const String kAndroid = 'android';
+const String kPlatformFlagAndroid = 'android';
 
 /// Key for Web platform.
-const String kWeb = 'web';
-
-/// Key for IPA.
-const String kIpa = 'ipa';
-
-/// Key for APK.
-const String kApk = 'apk';
+const String kPlatformFlagWeb = 'web';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
 
 /// Returns whether the given directory contains a Flutter package.
-bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
+bool isFlutterPackage(FileSystemEntity entity) {
   if (entity is! Directory) {
     return false;
   }
 
   try {
-    final File pubspecFile =
-        fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
+    final File pubspecFile = entity.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final YamlMap? dependencies = pubspecYaml['dependencies'] as YamlMap?;
@@ -70,6 +63,15 @@ bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
   }
 }
 
+/// Possible plugin support options for a platform.
+enum PlatformSupport {
+  /// The platform has an implementation in the package.
+  inline,
+
+  /// The platform has an endorsed federated implementation in another package.
+  federated,
+}
+
 /// Returns whether the given directory contains a Flutter [platform] plugin.
 ///
 /// It checks this by looking for the following pattern in the pubspec:
@@ -78,21 +80,23 @@ bool isFlutterPackage(FileSystemEntity entity, FileSystem fileSystem) {
 ///       plugin:
 ///         platforms:
 ///           [platform]:
-bool pluginSupportsPlatform(
-    String platform, FileSystemEntity entity, FileSystem fileSystem) {
-  assert(platform == kIos ||
-      platform == kAndroid ||
-      platform == kWeb ||
-      platform == kMacos ||
-      platform == kWindows ||
-      platform == kLinux);
+///
+/// If [requiredMode] is provided, the plugin must have the given type of
+/// implementation in order to return true.
+bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
+    {PlatformSupport? requiredMode}) {
+  assert(platform == kPlatformFlagIos ||
+      platform == kPlatformFlagAndroid ||
+      platform == kPlatformFlagWeb ||
+      platform == kPlatformFlagMacos ||
+      platform == kPlatformFlagWindows ||
+      platform == kPlatformFlagLinux);
   if (entity is! Directory) {
     return false;
   }
 
   try {
-    final File pubspecFile =
-        fileSystem.file(p.join(entity.path, 'pubspec.yaml'));
+    final File pubspecFile = entity.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
@@ -105,13 +109,25 @@ bool pluginSupportsPlatform(
     }
     final YamlMap? platforms = pluginSection['platforms'] as YamlMap?;
     if (platforms == null) {
-      // Legacy plugin specs are assumed to support iOS and Android.
+      // Legacy plugin specs are assumed to support iOS and Android. They are
+      // never federated.
+      if (requiredMode == PlatformSupport.federated) {
+        return false;
+      }
       if (!pluginSection.containsKey('platforms')) {
-        return platform == kIos || platform == kAndroid;
+        return platform == kPlatformFlagIos || platform == kPlatformFlagAndroid;
       }
       return false;
     }
-    return platforms.containsKey(platform);
+    final YamlMap? platformEntry = platforms[platform] as YamlMap?;
+    if (platformEntry == null) {
+      return false;
+    }
+    // If the platform entry is present, then it supports the platform. Check
+    // for required mode if specified.
+    final bool federated = platformEntry.containsKey('default_package');
+    return requiredMode == null ||
+        federated == (requiredMode == PlatformSupport.federated);
   } on FileSystemException {
     return false;
   } on YamlException {
@@ -120,40 +136,39 @@ bool pluginSupportsPlatform(
 }
 
 /// Returns whether the given directory contains a Flutter Android plugin.
-bool isAndroidPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kAndroid, entity, fileSystem);
+bool isAndroidPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kPlatformFlagAndroid, entity);
 }
 
 /// Returns whether the given directory contains a Flutter iOS plugin.
-bool isIosPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kIos, entity, fileSystem);
+bool isIosPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kPlatformFlagIos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter web plugin.
-bool isWebPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kWeb, entity, fileSystem);
+bool isWebPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kPlatformFlagWeb, entity);
 }
 
 /// Returns whether the given directory contains a Flutter Windows plugin.
-bool isWindowsPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kWindows, entity, fileSystem);
+bool isWindowsPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kPlatformFlagWindows, entity);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.
-bool isMacOsPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kMacos, entity, fileSystem);
+bool isMacOsPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kPlatformFlagMacos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter linux plugin.
-bool isLinuxPlugin(FileSystemEntity entity, FileSystem fileSystem) {
-  return pluginSupportsPlatform(kLinux, entity, fileSystem);
+bool isLinuxPlugin(FileSystemEntity entity) {
+  return pluginSupportsPlatform(kPlatformFlagLinux, entity);
 }
 
-/// Throws a [ToolExit] with `exitCode` and log the `errorMessage` in red.
-void printErrorAndExit({required String errorMessage, int exitCode = 1}) {
+/// Prints `errorMessage` in red.
+void printError(String errorMessage) {
   final Colorize redError = Colorize(errorMessage)..red();
   print(redError);
-  throw ToolExit(exitCode);
 }
 
 /// Error thrown when a command needs to exit with a non-zero exit code.
@@ -169,8 +184,7 @@ class ToolExit extends Error {
 abstract class PluginCommand extends Command<void> {
   /// Creates a command to operate on [packagesDir] with the given environment.
   PluginCommand(
-    this.packagesDir,
-    this.fileSystem, {
+    this.packagesDir, {
     this.processRunner = const ProcessRunner(),
     this.gitDir,
   }) {
@@ -222,11 +236,6 @@ abstract class PluginCommand extends Command<void> {
 
   /// The directory containing the plugin packages.
   final Directory packagesDir;
-
-  /// The file system.
-  ///
-  /// This can be overridden for testing.
-  final FileSystem fileSystem;
 
   /// The process runner.
   ///
@@ -414,19 +423,17 @@ abstract class PluginCommand extends Command<void> {
   /// Returns whether the specified entity is a directory containing a
   /// `pubspec.yaml` file.
   bool _isDartPackage(FileSystemEntity entity) {
-    return entity is Directory &&
-        fileSystem.file(p.join(entity.path, 'pubspec.yaml')).existsSync();
+    return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
   /// Returns the example Dart packages contained in the specified plugin, or
   /// an empty List, if the plugin has no examples.
   Iterable<Directory> getExamplesForPlugin(Directory plugin) {
-    final Directory exampleFolder =
-        fileSystem.directory(p.join(plugin.path, 'example'));
+    final Directory exampleFolder = plugin.childDirectory('example');
     if (!exampleFolder.existsSync()) {
       return <Directory>[];
     }
-    if (isFlutterPackage(exampleFolder, fileSystem)) {
+    if (isFlutterPackage(exampleFolder)) {
       return <Directory>[exampleFolder];
     }
     // Only look at the subdirectories of the example directory if the example
@@ -434,8 +441,7 @@ abstract class PluginCommand extends Command<void> {
     // example directory for other dart packages.
     return exampleFolder
         .listSync()
-        .where(
-            (FileSystemEntity entity) => isFlutterPackage(entity, fileSystem))
+        .where((FileSystemEntity entity) => isFlutterPackage(entity))
         .cast<Directory>();
   }
 
@@ -449,9 +455,10 @@ abstract class PluginCommand extends Command<void> {
     GitDir? baseGitDir = gitDir;
     if (baseGitDir == null) {
       if (!await GitDir.isGitDir(rootDir)) {
-        printErrorAndExit(
-            errorMessage: '$rootDir is not a valid Git repository.',
-            exitCode: 2);
+        printError(
+          '$rootDir is not a valid Git repository.',
+        );
+        throw ToolExit(2);
       }
       baseGitDir = await GitDir.fromExisting(rootDir);
     }
@@ -592,7 +599,7 @@ class ProcessRunner {
   /// passing [workingDir].
   ///
   /// Returns the started [io.Process].
-  Future<io.Process?> start(String executable, List<String> args,
+  Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
     final io.Process process = await io.Process.start(executable, args,
         workingDirectory: workingDirectory?.path);
@@ -634,12 +641,12 @@ class PubVersionFinder {
 
     if (response.statusCode == 404) {
       return PubVersionFinderResponse(
-          versions: null,
+          versions: <Version>[],
           result: PubVersionFinderResult.noPackageFound,
           httpResponse: response);
     } else if (response.statusCode != 200) {
       return PubVersionFinderResponse(
-          versions: null,
+          versions: <Version>[],
           result: PubVersionFinderResult.fail,
           httpResponse: response);
     }
@@ -659,9 +666,12 @@ class PubVersionFinder {
 /// Represents a response for [PubVersionFinder].
 class PubVersionFinderResponse {
   /// Constructor.
-  PubVersionFinderResponse({this.versions, this.result, this.httpResponse}) {
-    if (versions != null && versions!.isNotEmpty) {
-      versions!.sort((Version a, Version b) {
+  PubVersionFinderResponse(
+      {required this.versions,
+      required this.result,
+      required this.httpResponse}) {
+    if (versions.isNotEmpty) {
+      versions.sort((Version a, Version b) {
         // TODO(cyanglaz): Think about how to handle pre-release version with [Version.prioritize].
         // https://github.com/flutter/flutter/issues/82222
         return b.compareTo(a);
@@ -673,13 +683,13 @@ class PubVersionFinderResponse {
   ///
   /// This is sorted by largest to smallest, so the first element in the list is the largest version.
   /// Might be `null` if the [result] is not [PubVersionFinderResult.success].
-  final List<Version>? versions;
+  final List<Version> versions;
 
   /// The result of the version finder.
-  final PubVersionFinderResult? result;
+  final PubVersionFinderResult result;
 
   /// The response object of the http request.
-  final http.Response? httpResponse;
+  final http.Response httpResponse;
 }
 
 /// An enum representing the result of [PubVersionFinder].

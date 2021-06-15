@@ -49,3 +49,5 @@ There's no "My Location" widget in web ([tracking issue](https://github.com/flut
 There's no `defaultMarkerWithHue` in web. If you need colored pins/markers, you may need to use your own asset images.
 
 Indoor and building layers are still not available on the web. Traffic is.
+
+Only Android supports "[Lite Mode](https://developers.google.com/maps/documentation/android-sdk/lite)", so the `liteModeEnabled` constructor argument can't be set to `true` on web apps.

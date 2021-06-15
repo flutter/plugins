@@ -34,6 +34,8 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 // This method needs to be called before any other methods.
 - (void)startObservingPaymentQueue;
+// Call this method when the Flutter app is no longer listening
+- (void)stopObservingPaymentQueue;
 
 // Appends a payment to the SKPaymentQueue.
 //
