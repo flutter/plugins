@@ -78,6 +78,12 @@ characters. This can be done using the
 [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html).
 For example:
 ```dart
+String? encodeQueryParameters(Map<String, String> params) {
+  return params.entries
+      .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+}
+
 final Uri emailLaunchUri = Uri(
   scheme: 'mailto',
   path: 'smith@example.com',
@@ -89,17 +95,9 @@ final Uri emailLaunchUri = Uri(
 launch(emailLaunchUri.toString());
 ```
 
-**Warning**: For any scheme other than `http` or `https`, you should use this
-package's utility method for query parameters:
-
-```dart
-Uri(
-  // ...
-  query: encodeQueryParameters(yourParameters),
-);
-```
-
-rather than `Uri`'s `queryParameters` constructor argument, due to
+**Warning**: For any scheme other than `http` or `https`, you should use the
+`query` parameter and the `encodeQueryParameters` function shown above rather
+than `Uri`'s `queryParameters` constructor argument, due to
 [a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
 encodes query parameters. Using `queryParameters` will result in spaces being
 converted to `+` in many cases.
