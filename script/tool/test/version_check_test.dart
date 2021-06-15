@@ -17,7 +17,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
-import 'common_test.mocks.dart';
+import 'common/plugin_command_test.mocks.dart';
 import 'util.dart';
 
 void testAllowedVersion(
