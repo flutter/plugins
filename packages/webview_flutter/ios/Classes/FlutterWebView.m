@@ -194,12 +194,12 @@
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
-  result([NSNumber numberWithBool:canGoBack]);
+  result(@(canGoBack));
 }
 
 - (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoForward = [_webView canGoForward];
-  result([NSNumber numberWithBool:canGoForward]);
+  result(@(canGoForward));
 }
 
 - (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -314,12 +314,12 @@
 
 - (void)getScrollX:(FlutterMethodCall*)call result:(FlutterResult)result {
   int offsetX = _webView.scrollView.contentOffset.x;
-  result([NSNumber numberWithInt:offsetX]);
+  result(@(offsetX));
 }
 
 - (void)getScrollY:(FlutterMethodCall*)call result:(FlutterResult)result {
   int offsetY = _webView.scrollView.contentOffset.y;
-  result([NSNumber numberWithInt:offsetY]);
+  result(@(offsetY));
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.

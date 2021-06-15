@@ -438,7 +438,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.sensorsExample;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.sensorsExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -460,7 +460,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.sensorsExample;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.sensorsExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

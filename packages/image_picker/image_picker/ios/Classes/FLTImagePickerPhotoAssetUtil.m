@@ -23,6 +23,12 @@
   return result.firstObject;
 }
 
++ (PHAsset *)getAssetFromPHPickerResult:(PHPickerResult *)result API_AVAILABLE(ios(14)) {
+  PHFetchResult *fetchResult = [PHAsset fetchAssetsWithLocalIdentifiers:@[ result.assetIdentifier ]
+                                                                options:nil];
+  return fetchResult.firstObject;
+}
+
 + (NSString *)saveImageWithOriginalImageData:(NSData *)originalImageData
                                        image:(UIImage *)image
                                     maxWidth:(NSNumber *)maxWidth
@@ -92,11 +98,11 @@
   CGImageDestinationRef destination = CGImageDestinationCreateWithURL(
       (CFURLRef)[NSURL fileURLWithPath:path], kUTTypeGIF, gifInfo.images.count, NULL);
 
-  NSDictionary *frameProperties = [NSDictionary
-      dictionaryWithObject:[NSDictionary
-                               dictionaryWithObject:[NSNumber numberWithFloat:gifInfo.interval]
-                                             forKey:(NSString *)kCGImagePropertyGIFDelayTime]
-                    forKey:(NSString *)kCGImagePropertyGIFDictionary];
+  NSDictionary *frameProperties = @{
+    (__bridge NSString *)kCGImagePropertyGIFDictionary : @{
+      (__bridge NSString *)kCGImagePropertyGIFDelayTime : @(gifInfo.interval),
+    },
+  };
 
   NSMutableDictionary *gifMetaProperties = [NSMutableDictionary dictionaryWithDictionary:metaData];
   NSMutableDictionary *gifProperties =
@@ -105,7 +111,7 @@
     gifProperties = [NSMutableDictionary dictionary];
   }
 
-  gifProperties[(NSString *)kCGImagePropertyGIFLoopCount] = [NSNumber numberWithFloat:0];
+  gifProperties[(__bridge NSString *)kCGImagePropertyGIFLoopCount] = @0;
 
   CGImageDestinationSetProperties(destination, (CFDictionaryRef)gifMetaProperties);
 

@@ -18,8 +18,6 @@ readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
 
-check_changed_packages > /dev/null
-
 # This list should be kept as short as possible, and things should remain here
 # only as long as necessary, since in general the goal is for all of the latest
 # versions of plugins to be mutually compatible.
@@ -63,18 +61,10 @@ for version in "${BUILD_MODES[@]}"; do
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
-    echo "All first party plugins compile together."
+    echo "All first-party plugins compile together."
   else
     error "Failed to build $version all_plugins app."
-    if [[ "${#CHANGED_PACKAGE_LIST[@]}" == 0 ]]; then
-      error "There was a failure to compile all first party plugins together, but there were no changes detected in packages."
-    else
-      error "Changes to the following packages may prevent all first party plugins from compiling together:"
-      for package in "${CHANGED_PACKAGE_LIST[@]}"; do
-        error "$package"
-      done
-      echo ""
-    fi
+    error "This indicates a conflict between two or more first-party plugins."
     failures=$(($failures + 1))
   fi
 done
