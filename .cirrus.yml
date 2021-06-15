@@ -19,6 +19,7 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - git fetch origin
     - git remote -v
     - git branch -a
+    - git config --get remote.origin.fetch
     - flutter channel $CHANNEL
     - flutter upgrade
   << : *TOOL_SETUP_TEMPLATE
