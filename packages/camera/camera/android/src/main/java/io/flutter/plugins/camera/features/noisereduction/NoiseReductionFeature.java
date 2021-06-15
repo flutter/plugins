@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -35,6 +35,11 @@ public class NoiseReductionFeature extends CameraFeature<NoiseReductionMode> {
     }
   }
 
+  /**
+   * Creates a new instance of the {@link NoiseReductionFeature}.
+   *
+   * @param cameraProperties Collection of the characteristics for the current camera device.
+   */
   public NoiseReductionFeature(CameraProperties cameraProperties) {
     super(cameraProperties);
   }
