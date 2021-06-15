@@ -29,8 +29,11 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          // "pug" is a resource in Assets.xcassets.
-          child: Image(image: IosPlatformImages.load("flutter")),
+          // "flutter" is a resource in Assets.xcassets.
+          child: Image(
+            image: IosPlatformImages.load("flutter"),
+            semanticLabel: 'Flutter logo',
+          ),
         ),
       ),
     );

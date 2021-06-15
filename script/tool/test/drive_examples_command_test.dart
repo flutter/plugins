@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
 import 'package:flutter_plugin_tools/src/drive_examples_command.dart';
 import 'package:path/path.dart' as p;
@@ -14,28 +15,27 @@ import 'util.dart';
 
 void main() {
   group('test drive_example_command', () {
-    CommandRunner<void> runner;
-    RecordingProcessRunner processRunner;
+    late FileSystem fileSystem;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
     final String flutterCommand =
         const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final DriveExamplesCommand command = DriveExamplesCommand(
-          mockPackagesDir, mockFileSystem,
-          processRunner: processRunner);
+      final DriveExamplesCommand command =
+          DriveExamplesCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
       runner.addCommand(command);
     });
 
-    tearDown(() {
-      cleanupPackages();
-    });
-
     test('driving under folder "test"', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test', 'plugin.dart'],
@@ -44,7 +44,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -55,6 +55,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -62,7 +63,6 @@ void main() {
 
       final String deviceTestPath = p.join('test', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -80,7 +80,7 @@ void main() {
     });
 
     test('driving under folder "test_driver"', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -89,7 +89,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -100,6 +100,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -107,7 +108,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -126,7 +126,7 @@ void main() {
 
     test('driving under folder "test_driver" when test files are missing"',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
           ],
@@ -134,7 +134,26 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
+
+      createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      await expectLater(
+          () => runCapturingPrint(runner, <String>['drive-examples']),
+          throwsA(const TypeMatcher<ToolExit>()));
+    });
+
+    test('a plugin without any integration test files is reported as an error',
+        () async {
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['example', 'lib', 'main.dart'],
+          ],
+          isAndroidPlugin: true,
+          isIosPlugin: true);
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -146,7 +165,7 @@ void main() {
     test(
         'driving under folder "test_driver" when targets are under "integration_test"',
         () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'integration_test.dart'],
             <String>['example', 'integration_test', 'bar_test.dart'],
@@ -157,7 +176,7 @@ void main() {
           isIosPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -168,6 +187,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -175,7 +195,6 @@ void main() {
 
       final String driverTestPath =
           p.join('test_driver', 'integration_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -203,7 +222,7 @@ void main() {
     });
 
     test('driving when plugin does not support Linux is a no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -211,7 +230,7 @@ void main() {
           isMacOsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -223,19 +242,20 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --linux on a non-Linux
       // plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
 
     test('driving on a Linux plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -243,7 +263,7 @@ void main() {
           isLinuxPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -255,6 +275,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -262,7 +283,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -282,13 +302,14 @@ void main() {
     });
 
     test('driving when plugin does not suppport macOS is a no-op', () async {
-      createFakePlugin('plugin', withExtraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ]);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          withExtraFiles: <List<String>>[
+            <String>['example', 'test_driver', 'plugin_test.dart'],
+            <String>['example', 'test_driver', 'plugin.dart'],
+          ]);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -300,18 +321,19 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
     test('driving on a macOS plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -320,7 +342,7 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -332,6 +354,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -339,7 +362,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -359,7 +381,7 @@ void main() {
     });
 
     test('driving when plugin does not suppport web is a no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -367,7 +389,7 @@ void main() {
           isWebPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -379,19 +401,20 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --web on a non-web
       // plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
 
     test('driving a web plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -399,7 +422,7 @@ void main() {
           isWebPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -411,6 +434,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -418,7 +442,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -440,7 +463,7 @@ void main() {
     });
 
     test('driving when plugin does not suppport Windows is a no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -448,7 +471,7 @@ void main() {
           isWindowsPlugin: false);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -460,19 +483,20 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
           '\n\n',
           'All driver tests successful!',
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --windows on a
       // non-Windows plugin is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
 
     test('driving on a Windows plugin', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -480,7 +504,7 @@ void main() {
           isWindowsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -492,6 +516,7 @@ void main() {
       expect(
         output,
         orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
           '\n\n',
           'All driver tests successful!',
         ]),
@@ -499,7 +524,6 @@ void main() {
 
       final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -519,7 +543,7 @@ void main() {
     });
 
     test('driving when plugin does not support mobile is no-op', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
@@ -527,9 +551,31 @@ void main() {
           isMacOsPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'drive-examples',
+      ]);
+
+      expect(
+        output,
+        orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
+          '\n\n',
+          'All driver tests successful!',
+        ]),
+      );
+
+      // Output should be empty since running drive-examples --macos with no macos
+      // implementation is a no-op.
+      expect(processRunner.recordedCalls, <ProcessCall>[]);
+    });
+
+    test('platform interface plugins are silently skipped', () async {
+      createFakePlugin('aplugin_platform_interface', packagesDir);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -543,14 +589,13 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running drive-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
 
     test('enable-experiment flag', () async {
-      createFakePlugin('plugin',
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test', 'plugin.dart'],
@@ -559,7 +604,7 @@ void main() {
           isAndroidPlugin: true);
 
       final Directory pluginExampleDirectory =
-          mockPackagesDir.childDirectory('plugin').childDirectory('example');
+          pluginDirectory.childDirectory('example');
 
       createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
@@ -570,7 +615,6 @@ void main() {
 
       final String deviceTestPath = p.join('test', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[

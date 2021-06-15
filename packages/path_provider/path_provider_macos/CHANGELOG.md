@@ -1,3 +1,12 @@
+## NEXT
+
+* Add Swift language version to podspec.
+* Add native unit tests.
+
+## 2.0.1
+
+* Add `implements` to pubspec.yaml.
+
 ## 2.0.0
 
 * Update Dart SDK constraint for null safety compatibility.

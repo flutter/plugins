@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
@@ -36,7 +34,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    final String currentUrl = await controller.currentUrl();
+    final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
   });
 
@@ -57,7 +55,7 @@ void main() {
     );
     final WebViewController controller = await controllerCompleter.future;
     await controller.loadUrl('https://www.google.com/');
-    final String currentUrl = await controller.currentUrl();
+    final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
   });
 
@@ -91,7 +89,7 @@ void main() {
     };
     await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
         headers: headers);
-    final String currentUrl = await controller.currentUrl();
+    final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
     await pageStarts.stream.firstWhere((String url) => url == currentUrl);
@@ -328,7 +326,7 @@ void main() {
   });
 
   group('Video playback policy', () {
-    String videoTestBase64;
+    late String videoTestBase64;
     setUpAll(() async {
       final ByteData videoData =
           await rootBundle.load('assets/sample_video.mp4');
@@ -587,7 +585,7 @@ void main() {
   });
 
   group('Audio playback policy', () {
-    String audioTestBase64;
+    late String audioTestBase64;
     setUpAll(() async {
       final ByteData audioData =
           await rootBundle.load('assets/sample_audio.ogg');
@@ -793,7 +791,7 @@ void main() {
     await pageStarted.future;
     await pageLoaded.future;
 
-    final String title = await controller.getTitle();
+    final String? title = await controller.getTitle();
     expect(title, 'Some title');
   });
 
@@ -848,22 +846,30 @@ void main() {
 
       await tester.pumpAndSettle(Duration(seconds: 3));
 
+      int scrollPosX = await controller.getScrollX();
+      int scrollPosY = await controller.getScrollY();
+
       // Check scrollTo()
       const int X_SCROLL = 123;
       const int Y_SCROLL = 321;
+      // Get the initial position; this ensures that scrollTo is actually
+      // changing something, but also gives the native view's scroll position
+      // time to settle.
+      expect(scrollPosX, isNot(X_SCROLL));
+      expect(scrollPosX, isNot(Y_SCROLL));
 
       await controller.scrollTo(X_SCROLL, Y_SCROLL);
-      int scrollPosX = await controller.getScrollX();
-      int scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL, scrollPosX);
-      expect(Y_SCROLL, scrollPosY);
+      scrollPosX = await controller.getScrollX();
+      scrollPosY = await controller.getScrollY();
+      expect(scrollPosX, X_SCROLL);
+      expect(scrollPosY, Y_SCROLL);
 
       // Check scrollBy() (on top of scrollTo())
       await controller.scrollBy(X_SCROLL, Y_SCROLL);
       scrollPosX = await controller.getScrollX();
       scrollPosY = await controller.getScrollY();
-      expect(X_SCROLL * 2, scrollPosX);
-      expect(Y_SCROLL * 2, scrollPosY);
+      expect(scrollPosX, X_SCROLL * 2);
+      expect(scrollPosY, Y_SCROLL * 2);
     });
   });
 
@@ -1086,7 +1092,7 @@ void main() {
           .evaluateJavascript('location.href = "https://www.google.com/"');
 
       await pageLoads.stream.first; // Wait for the next page load.
-      final String currentUrl = await controller.currentUrl();
+      final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, 'https://www.google.com/');
     });
 
@@ -1115,7 +1121,7 @@ void main() {
         expect(error.failingUrl, isNull);
       } else if (Platform.isAndroid) {
         expect(error.errorType, isNotNull);
-        expect(error.failingUrl.startsWith('https://www.notawebsite..com'),
+        expect(error.failingUrl?.startsWith('https://www.notawebsite..com'),
             isTrue);
       }
     });
@@ -1176,8 +1182,8 @@ void main() {
       // blocked. Still wait for a potential page change for some time in order
       // to give the test a chance to fail.
       await pageLoads.stream.first
-          .timeout(const Duration(milliseconds: 500), onTimeout: () => null);
-      final String currentUrl = await controller.currentUrl();
+          .timeout(const Duration(milliseconds: 500), onTimeout: () => '');
+      final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, isNot(contains('youtube.com')));
     });
 
@@ -1214,7 +1220,7 @@ void main() {
           .evaluateJavascript('location.href = "https://www.google.com"');
 
       await pageLoads.stream.first; // Wait for second page to load.
-      final String currentUrl = await controller.currentUrl();
+      final String? currentUrl = await controller.currentUrl();
       expect(currentUrl, 'https://www.google.com/');
     });
   });
@@ -1241,7 +1247,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    final String currentUrl = await controller.currentUrl();
+    final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
   });
 
@@ -1268,7 +1274,7 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     await controller.evaluateJavascript('window.open("about:blank", "_blank")');
     await pageLoaded.future;
-    final String currentUrl = await controller.currentUrl();
+    final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'about:blank');
   });
 
