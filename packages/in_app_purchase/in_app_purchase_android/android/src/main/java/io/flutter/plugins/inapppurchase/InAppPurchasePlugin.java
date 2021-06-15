@@ -7,7 +7,6 @@ package io.flutter.plugins.inapppurchase;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -52,8 +51,8 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
+    // Setting the package proxy to match library's build config. which matches the <package> in AndroidManifest.xml.
     registrar.activity().getIntent().putExtra(PROXY_PACKAGE_KEY, BuildConfig.APPLICATION_ID);
-    Log.e("IAP", registrar.context().getPackageName());
     ((Application) registrar.context().getApplicationContext())
         .registerActivityLifecycleCallbacks(plugin.methodCallHandler);
   }
