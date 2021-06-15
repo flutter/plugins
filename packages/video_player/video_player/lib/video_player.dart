@@ -44,7 +44,10 @@ class VideoPlayerValue {
 
   /// Returns an instance for a video that hasn't been loaded.
   VideoPlayerValue.uninitialized()
-      : this(duration: Duration.zero, isInitialized: false);
+      : this(
+          duration: Duration.zero,
+          isInitialized: false,
+        );
 
   /// Returns an instance with the given [errorDescription].
   VideoPlayerValue.erroneous(String errorDescription)
