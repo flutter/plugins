@@ -7,6 +7,7 @@ package io.flutter.plugins.inapppurchase;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
+import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -14,6 +15,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
+import java.lang.reflect.Field;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
@@ -52,7 +54,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
     // Setting the package proxy to match library's build config. which matches the <package> in AndroidManifest.xml.
-    registrar.activity().getIntent().putExtra(PROXY_PACKAGE_KEY, BuildConfig.APPLICATION_ID);
+    registrar.activity().getIntent().putExtra(PROXY_PACKAGE_KEY, getLibraryPackageName());
     ((Application) registrar.context().getApplicationContext())
         .registerActivityLifecycleCallbacks(plugin.methodCallHandler);
   }
@@ -71,7 +73,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     // Setting the package proxy to match library's build config. which matches the <package> in AndroidManifest.xml.
-    binding.getActivity().getIntent().putExtra(PROXY_PACKAGE_KEY, BuildConfig.APPLICATION_ID);
+    binding.getActivity().getIntent().putExtra(PROXY_PACKAGE_KEY, getLibraryPackageName());
     methodCallHandler.setActivity(binding.getActivity());
   }
 
@@ -107,5 +109,26 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @VisibleForTesting
   void setMethodCallHandler(MethodCallHandlerImpl methodCallHandler) {
     this.methodCallHandler = methodCallHandler;
+  }
+
+  private static String getLibraryPackageName() {
+    String packageName = null;
+    try {
+      Field libraryPackageName = BuildConfig.class.getField("LIBRARY_PACKAGE_NAME");
+      packageName = (String) (libraryPackageName.get(null));
+    } catch (Exception e) {
+      // Ignore exceptions, the error will get logged in the next catch below.
+    }
+    if (packageName == null) {
+      try {
+        // Lower version uses APPLICATION_ID instead.
+        Field applicationIdField = BuildConfig.class.getField("APPLICATION_ID");
+        packageName = (String) (applicationIdField.get(null));
+      } catch (Exception e) {
+        // Log the exception for debugging purpose.
+        Log.e("in_app_purchase_android", "Library package name not found.");
+      }
+    }
+    return packageName;
   }
 }
