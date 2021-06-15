@@ -15,8 +15,7 @@ tool_setup_template: &TOOL_SETUP_TEMPLATE
 
 flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   upgrade_flutter_script:
-    - which flutter
-    - env
+    - cd $FLUTTER_HOME
     - git fetch origin
     - flutter channel $CHANNEL
     - flutter upgrade
