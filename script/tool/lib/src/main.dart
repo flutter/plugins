@@ -10,7 +10,7 @@ import 'package:file/local.dart';
 
 import 'analyze_command.dart';
 import 'build_examples_command.dart';
-import 'common.dart';
+import 'common/core.dart';
 import 'create_all_plugins_app_command.dart';
 import 'drive_examples_command.dart';
 import 'firebase_test_lab_command.dart';
