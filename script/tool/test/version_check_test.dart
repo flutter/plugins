@@ -9,7 +9,7 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/version_check_command.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -17,7 +17,7 @@ import 'package:mockito/mockito.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
-import 'common_test.mocks.dart';
+import 'common/plugin_command_test.mocks.dart';
 import 'util.dart';
 
 void testAllowedVersion(
