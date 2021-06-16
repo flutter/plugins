@@ -1,5 +1,5 @@
 # The Flutter version is not important here, since the CI scripts update Flutter
-# before running; what matters is that the base image is pinned to minimize
+# before running. What matters is that the base image is pinned to minimize
 # unintended changes when modifying this file.
 FROM cirrusci/flutter:2.2.2
 
