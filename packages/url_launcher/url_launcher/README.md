@@ -52,12 +52,13 @@ void _launchURL() async =>
 ### Android
 
 Starting from API 30 Android requires package visibility configuration in your
-`AndroidManifest.xml` otherwise `canLaunch` would return `false`. A `<queries>`
-element could be added to your manifest as a child of the root element. The
-snippet below shows a variation, feel free to tailor it to your needs. The
-example application demonstrates a version as well. For more information see the
-[Package visibility filtering on Android](https://developer.android.com/training/basics/intents/package-visibility)
-article.
+`AndroidManifest.xml` otherwise `canLaunch` will return `false`. A `<queries>`
+element must be added to your manifest as a child of the root element.
+
+The snippet below shows an example for an application that uses `https`, `tel`,
+and `mailto` URLs with `url_launcher`. See
+[the Android documentation](https://developer.android.com/training/package-visibility/use-cases)
+for examples of other queries.
 
 ``` xml
 <queries>
