@@ -113,11 +113,13 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   private static String getLibraryPackageName() {
     String packageName = null;
+    Exception errorGettingLibraryPackageName = null;
+    Exception errorGettingApplicationID = null;
     try {
       Field libraryPackageName = BuildConfig.class.getField("LIBRARY_PACKAGE_NAME");
       packageName = (String) (libraryPackageName.get(null));
     } catch (Exception e) {
-      // Ignore exceptions, the error will get logged in the next catch below.
+      errorGettingLibraryPackageName = e;
     }
     if (packageName == null) {
       try {
@@ -125,9 +127,21 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
         Field applicationIdField = BuildConfig.class.getField("APPLICATION_ID");
         packageName = (String) (applicationIdField.get(null));
       } catch (Exception e) {
-        // Log the exception for debugging purpose.
+        errorGettingApplicationID = e;
         Log.e("in_app_purchase_android", "Library package name not found.");
       }
+    }
+    if (errorGettingLibraryPackageName != null) {
+      Log.e(
+          "in_app_purchase_android",
+          "Error getting BuildConfig.LIBRARY_PACKAGE_NAME at getLibraryPackageName: "
+              + errorGettingLibraryPackageName.getMessage());
+    }
+    if (errorGettingApplicationID != null) {
+      Log.e(
+          "in_app_purchase_android",
+          "Error getting BuildConfig.APPLICATION_ID at getLibraryPackageName: "
+              + errorGettingApplicationID.getMessage());
     }
     return packageName;
   }
