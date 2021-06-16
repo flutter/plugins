@@ -13,6 +13,10 @@ import android.util.Log;
 import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 
+/**
+ * A callback object for tracking the progress of a {@link android.hardware.camera2.CaptureRequest}
+ * submitted to the camera device.
+ */
 class CameraCaptureCallback extends CaptureCallback {
   private final CameraCaptureStateListener cameraStateListener;
   private CameraState cameraState;
@@ -26,16 +30,34 @@ class CameraCaptureCallback extends CaptureCallback {
     this.captureTimeouts = captureTimeouts;
   }
 
+  /**
+   * Creates a new instance of the {@link CameraCaptureCallback} class.
+   *
+   * @param cameraStateListener instance which will be called when the camera state changes.
+   * @param captureTimeouts specifying the different timeout counters that should be taken into
+   *                        account.
+   * @return a configured instance of the {@link CameraCaptureCallback} class.
+   */
   public static CameraCaptureCallback create(
       @NonNull CameraCaptureStateListener cameraStateListener,
       @NonNull CaptureTimeoutsWrapper captureTimeouts) {
     return new CameraCaptureCallback(cameraStateListener, captureTimeouts);
   }
 
+  /**
+   * Gets the current {@link CameraState}.
+   *
+   * @return the current {@link CameraState}.
+   */
   public CameraState getCameraState() {
     return cameraState;
   }
 
+  /**
+   * Sets the {@link CameraState}.
+   *
+   * @param state the camera is currently in.
+   */
   public void setCameraState(@NonNull CameraState state) {
     cameraState = state;
   }
@@ -134,9 +156,19 @@ class CameraCaptureCallback extends CaptureCallback {
     process(result);
   }
 
+  /**
+   * An interface that describes the different state changes implementers can be informed about.
+   */
   interface CameraCaptureStateListener {
+
+    /**
+     * Called when the {@link android.hardware.camera2.CaptureRequest} has been converged.
+     */
     void onConverged();
 
+    /**
+     * Called when the {@link android.hardware.camera2.CaptureRequest} enters the pre-capture state.
+     */
     void onPrecapture();
   }
 }
