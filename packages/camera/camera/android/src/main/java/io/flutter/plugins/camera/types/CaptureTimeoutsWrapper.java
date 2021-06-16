@@ -1,5 +1,9 @@
 package io.flutter.plugins.camera.types;
 
+/**
+ * Wrapper class that provides a container for all {@link Timeout} instances
+ * that are required for the capture flow.
+ */
 public class CaptureTimeoutsWrapper {
   private final Timeout preCaptureFocusing;
   private final Timeout preCaptureMetering;
