@@ -31,4 +31,3 @@ RUN yes | sdkmanager --licenses
 RUN apt-get install -y clang-format
 # Required by Roboeletric and the Android SDK.
 RUN apt-get install -y openjdk-8-jdk
-
