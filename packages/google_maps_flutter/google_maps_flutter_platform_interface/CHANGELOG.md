@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add possibility to change animation duration with a new `animationDuration` parameter in `MethodChannelGoogleMapsFlutter.animateCamera`.
+
 ## 2.0.4
 
 * Preserve the `TileProvider` when copying `TileOverlay`, fixing a
