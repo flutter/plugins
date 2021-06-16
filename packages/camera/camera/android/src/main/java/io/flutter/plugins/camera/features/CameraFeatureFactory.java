@@ -21,6 +21,10 @@ import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 
+/**
+ * Factory for creating the supported feature implementation controlling different aspects
+ * of the {@link android.hardware.camera2.CaptureRequest}.
+ */
 public interface CameraFeatureFactory {
 
   /**
