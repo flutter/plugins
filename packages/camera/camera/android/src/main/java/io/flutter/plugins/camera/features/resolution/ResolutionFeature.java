@@ -30,14 +30,18 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
    *
    * @param cameraProperties Collection of characteristics for the current camera device.
    * @param resolutionPreset Platform agnostic enum containing resolution information.
-   * @param cameraId Camera identifier of the camera for which to configure the resolution.
+   * @param cameraName Camera identifier of the camera for which to configure the resolution.
    */
   public ResolutionFeature(
-      CameraProperties cameraProperties, ResolutionPreset resolutionPreset, int cameraId) {
+      CameraProperties cameraProperties, ResolutionPreset resolutionPreset, String cameraName) {
     super(cameraProperties);
     this.currentSetting = resolutionPreset;
-    this.cameraId = cameraId;
-
+    try {
+      this.cameraId = Integer.parseInt(cameraName, 10);
+    } catch (NumberFormatException e) {
+      this.cameraId = -1;
+      return;
+    }
     configureResolution(resolutionPreset, cameraId);
   }
 
@@ -54,6 +58,10 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
    */
   public static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
       int cameraId, ResolutionPreset preset) {
+    if (cameraId < 0) {
+      throw new AssertionError(
+          "getBestAvailableCamcorderProfileForResolutionPreset can only be used with valid (>=0) camera identifiers.");
+    }
 
     switch (preset) {
         // All of these cases deliberately fall through to get the best available profile.
@@ -103,6 +111,9 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   }
 
   private void configureResolution(ResolutionPreset resolutionPreset, int cameraId) {
+    if (!checkIsSupported()) {
+      return;
+    }
     recordingProfile =
         getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
@@ -128,7 +139,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   // Always supported
   @Override
   public boolean checkIsSupported() {
-    return true;
+    return cameraId >= 0;
   }
 
   @Override
