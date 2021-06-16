@@ -18,6 +18,7 @@ import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
  * submitted to the camera device.
  */
 class CameraCaptureCallback extends CaptureCallback {
+  private static final String TAG = "CameraCaptureCallback";
   private final CameraCaptureStateListener cameraStateListener;
   private CameraState cameraState;
   private final CaptureTimeoutsWrapper captureTimeouts;
@@ -67,8 +68,8 @@ class CameraCaptureCallback extends CaptureCallback {
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
     if (cameraState != CameraState.STATE_PREVIEW) {
-      Log.i(
-          "Camera",
+      Log.d(
+          TAG,
           "CameraCaptureCallback | state: "
               + cameraState
               + " | afState: "
@@ -91,7 +92,7 @@ class CameraCaptureCallback extends CaptureCallback {
               || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
             handleWaitingFocusState(aeState);
           } else if (captureTimeouts.getPreCaptureFocusing().getIsExpired()) {
-            Log.w("Camera", "Focus timeout, moving on with capture");
+            Log.w(TAG, "Focus timeout, moving on with capture");
             handleWaitingFocusState(aeState);
           }
 
@@ -107,7 +108,7 @@ class CameraCaptureCallback extends CaptureCallback {
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
           } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
             Log.w(
-                "Camera",
+                TAG,
                 "Metering timeout waiting for pre-capture to start, moving on with capture");
 
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
@@ -121,7 +122,7 @@ class CameraCaptureCallback extends CaptureCallback {
             cameraStateListener.onConverged();
           } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
             Log.w(
-                "Camera",
+                TAG,
                 "Metering timeout waiting for pre-capture to finish, moving on with capture");
             cameraStateListener.onConverged();
           }
