@@ -17,49 +17,68 @@ import java.nio.ByteBuffer;
 public class ImageSaver implements Runnable {
 
   /** The JPEG image */
-  private final Image mImage;
+  private final Image image;
 
   /** The file we save the image into. */
-  private final File mFile;
+  private final File file;
 
   /** Used to report the status of the save action. */
-  private final Callback mCallback;
+  private final Callback callback;
 
+  /**
+   * Creates an instance of the ImageSaver runnable
+   * @param image - The image to save
+   * @param file - The file to save the image to
+   * @param callback - The callback that is run on completion, or when an error is encountered.
+   */
   ImageSaver(@NonNull Image image, @NonNull File file, @NonNull Callback callback) {
-    mImage = image;
-    mFile = file;
-    mCallback = callback;
+    this.image = image;
+    this.file = file;
+    this.callback = callback;
   }
 
   @Override
   public void run() {
-    ByteBuffer buffer = mImage.getPlanes()[0].getBuffer();
+    ByteBuffer buffer = image.getPlanes()[0].getBuffer();
     byte[] bytes = new byte[buffer.remaining()];
     buffer.get(bytes);
     FileOutputStream output = null;
     try {
-      output = FileOutputStreamFactory.create(mFile);
+      output = FileOutputStreamFactory.create(file);
       output.write(bytes);
 
-      mCallback.onComplete(mFile.getAbsolutePath());
+      callback.onComplete(file.getAbsolutePath());
 
     } catch (IOException e) {
-      mCallback.onError("IOError", "Failed saving image");
+      callback.onError("IOError", "Failed saving image");
     } finally {
-      mImage.close();
+      image.close();
       if (null != output) {
         try {
           output.close();
         } catch (IOException e) {
-          mCallback.onError("cameraAccess", e.getMessage());
+          callback.onError("cameraAccess", e.getMessage());
         }
       }
     }
   }
 
+  /**
+   * The interface for the callback that is passed to ImageSaver,
+   * for detecting completion or failure of the image saving task.
+   */
   public interface Callback {
+    /**
+     * Called when the image file has been saved successfully.
+     * @param absolutePath - The absolute path of the file that was saved.
+     */
     void onComplete(String absolutePath);
 
+    /**
+     * Called when an error is encountered while saving the image file.
+     * @param errorCode - The error code.
+     * @param errorMessage - The human readable error message.
+     */
     void onError(String errorCode, String errorMessage);
   }
 
