@@ -112,13 +112,17 @@ task:
       drive_script:
         - xvfb-run ./script/tool_runner.sh drive-examples --linux
 
-# Heavy-workload Linux tasks.
+# Heavy-workload Android tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
 # for non-credit runs.
+#
+# This has been temporarily split out from the other heavy tasks to use a
+# different Docker image due to space constraints; see
+# https://github.com/flutter/flutter/issues/84706
 task:
   << : *FLUTTER_UPGRADE_TEMPLATE
   gke_container:
-    dockerfile: .ci/Dockerfile
+    dockerfile: .ci/java8.Dockerfile
     builder_image_name: docker-builder # gce vm image
     builder_image_project: flutter-cirrus
     cluster_name: test-cluster
@@ -161,6 +165,22 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
+
+# Heavy-workload web tasks.
+# These use machines with more CPUs and memory, so will reduce parallelization
+# for non-credit runs.
+task:
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  gke_container:
+    dockerfile: .ci/Dockerfile
+    builder_image_name: docker-builder # gce vm image
+    builder_image_project: flutter-cirrus
+    cluster_name: test-cluster
+    zone: us-central1-a
+    namespace: default
+    cpu: 4
+    memory: 12G
+  matrix:
     ### Web tasks ###
     - name: build-web+drive-examples
       env:
