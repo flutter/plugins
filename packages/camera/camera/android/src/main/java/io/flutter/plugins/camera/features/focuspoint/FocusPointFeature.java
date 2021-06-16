@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@ package io.flutter.plugins.camera.features.focuspoint;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
+import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.CameraFeature;
@@ -33,7 +34,7 @@ public class FocusPointFeature extends CameraFeature<Point> {
    *
    * @param cameraBoundaries - The camera boundaries to set.
    */
-  public void setCameraBoundaries(Size cameraBoundaries) {
+  public void setCameraBoundaries(@NonNull Size cameraBoundaries) {
     this.cameraBoundaries = cameraBoundaries;
     this.buildFocusRectangle();
   }
@@ -54,10 +55,9 @@ public class FocusPointFeature extends CameraFeature<Point> {
     this.buildFocusRectangle();
   }
 
-  // Whether or not this camera can set the exposure point.
+  // Whether or not this camera can set the focus point.
   @Override
   public boolean checkIsSupported() {
-    if (cameraBoundaries == null) return false;
     Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoFocus();
     return supportedRegions != null && supportedRegions > 0;
   }
@@ -73,8 +73,9 @@ public class FocusPointFeature extends CameraFeature<Point> {
   }
 
   private void buildFocusRectangle() {
-    if (!checkIsSupported()) {
-      return;
+    if (this.cameraBoundaries == null) {
+      throw new AssertionError(
+          "The cameraBoundaries should be set (using `FocusPointFeature.setCameraBoundaries(Size)`) before updating the focus point.");
     }
     if (this.focusPoint == null) {
       this.focusRectangle = null;

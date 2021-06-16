@@ -7,6 +7,7 @@ package io.flutter.plugins.camera.features.exposurepoint;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
+import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.CameraFeature;
@@ -33,7 +34,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
    *
    * @param cameraBoundaries - The camera boundaries to set.
    */
-  public void setCameraBoundaries(Size cameraBoundaries) {
+  public void setCameraBoundaries(@NonNull Size cameraBoundaries) {
     this.cameraBoundaries = cameraBoundaries;
     this.buildExposureRectangle();
   }
@@ -57,7 +58,6 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   // Whether or not this camera can set the exposure point.
   @Override
   public boolean checkIsSupported() {
-    if (cameraBoundaries == null) return false;
     Integer supportedRegions = cameraProperties.getControlMaxRegionsAutoExposure();
     return supportedRegions != null && supportedRegions > 0;
   }
@@ -73,8 +73,9 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   }
 
   private void buildExposureRectangle() {
-    if (!checkIsSupported()) {
-      return;
+    if (this.cameraBoundaries == null) {
+      throw new AssertionError(
+          "The cameraBoundaries should be set (using `ExposurePointFeature.setCameraBoundaries(Size)`) before updating the exposure point.");
     }
     if (this.exposurePoint == null) {
       this.exposureRectangle = null;
