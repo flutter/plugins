@@ -36,7 +36,7 @@ class CameraCaptureCallback extends CaptureCallback {
    *
    * @param cameraStateListener instance which will be called when the camera state changes.
    * @param captureTimeouts specifying the different timeout counters that should be taken into
-   *                        account.
+   *     account.
    * @return a configured instance of the {@link CameraCaptureCallback} class.
    */
   public static CameraCaptureCallback create(
@@ -107,9 +107,7 @@ class CameraCaptureCallback extends CaptureCallback {
               || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
           } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
-            Log.w(
-                TAG,
-                "Metering timeout waiting for pre-capture to start, moving on with capture");
+            Log.w(TAG, "Metering timeout waiting for pre-capture to start, moving on with capture");
 
             setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
           }
@@ -122,8 +120,7 @@ class CameraCaptureCallback extends CaptureCallback {
             cameraStateListener.onConverged();
           } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
             Log.w(
-                TAG,
-                "Metering timeout waiting for pre-capture to finish, moving on with capture");
+                TAG, "Metering timeout waiting for pre-capture to finish, moving on with capture");
             cameraStateListener.onConverged();
           }
 
@@ -157,14 +154,10 @@ class CameraCaptureCallback extends CaptureCallback {
     process(result);
   }
 
-  /**
-   * An interface that describes the different state changes implementers can be informed about.
-   */
+  /** An interface that describes the different state changes implementers can be informed about. */
   interface CameraCaptureStateListener {
 
-    /**
-     * Called when the {@link android.hardware.camera2.CaptureRequest} has been converged.
-     */
+    /** Called when the {@link android.hardware.camera2.CaptureRequest} has been converged. */
     void onConverged();
 
     /**

@@ -27,6 +27,7 @@ public class ImageSaver implements Runnable {
 
   /**
    * Creates an instance of the ImageSaver runnable
+   *
    * @param image - The image to save
    * @param file - The file to save the image to
    * @param callback - The callback that is run on completion, or when an error is encountered.
@@ -64,18 +65,20 @@ public class ImageSaver implements Runnable {
   }
 
   /**
-   * The interface for the callback that is passed to ImageSaver,
-   * for detecting completion or failure of the image saving task.
+   * The interface for the callback that is passed to ImageSaver, for detecting completion or
+   * failure of the image saving task.
    */
   public interface Callback {
     /**
      * Called when the image file has been saved successfully.
+     *
      * @param absolutePath - The absolute path of the file that was saved.
      */
     void onComplete(String absolutePath);
 
     /**
      * Called when an error is encountered while saving the image file.
+     *
      * @param errorCode - The error code.
      * @param errorMessage - The human readable error message.
      */

@@ -23,7 +23,8 @@ import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 
 /**
  * Implementation of the {@link CameraFeatureFactory} interface creating the supported feature
- * implementation controlling different aspects of the {@link android.hardware.camera2.CaptureRequest}.
+ * implementation controlling different aspects of the {@link
+ * android.hardware.camera2.CaptureRequest}.
  */
 public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
 
@@ -51,7 +52,9 @@ public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
 
   @Override
   public ResolutionFeature createResolutionFeature(
-      @NonNull CameraProperties cameraProperties, ResolutionPreset initialSetting, String cameraName) {
+      @NonNull CameraProperties cameraProperties,
+      ResolutionPreset initialSetting,
+      String cameraName) {
     return new ResolutionFeature(cameraProperties, initialSetting, cameraName);
   }
 

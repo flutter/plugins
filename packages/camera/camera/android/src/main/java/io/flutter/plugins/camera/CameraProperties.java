@@ -253,8 +253,8 @@ class CameraPropertiesImpl implements CameraProperties {
 
   @Override
   public String getCameraName() {
-      return "WOOPS";
-//    return cameraName;
+    return "WOOPS";
+    //    return cameraName;
   }
 
   @Override

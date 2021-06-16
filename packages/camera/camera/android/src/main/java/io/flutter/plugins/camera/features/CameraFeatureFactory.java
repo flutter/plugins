@@ -22,8 +22,8 @@ import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFea
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 
 /**
- * Factory for creating the supported feature implementation controlling different aspects
- * of the {@link android.hardware.camera2.CaptureRequest}.
+ * Factory for creating the supported feature implementation controlling different aspects of the
+ * {@link android.hardware.camera2.CaptureRequest}.
  */
 public interface CameraFeatureFactory {
 
@@ -75,7 +75,9 @@ public interface CameraFeatureFactory {
    * @return newly created instance of the ResolutionFeature class.
    */
   ResolutionFeature createResolutionFeature(
-      @NonNull CameraProperties cameraProperties, ResolutionPreset initialSetting, String cameraName);
+      @NonNull CameraProperties cameraProperties,
+      ResolutionPreset initialSetting,
+      String cameraName);
 
   /**
    * Creates a new instance of the focus point feature.
