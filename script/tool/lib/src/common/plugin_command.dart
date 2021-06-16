@@ -14,6 +14,7 @@ import 'git_version_finder.dart';
 import 'process_runner.dart';
 
 /// Interface definition for all commands in this tool.
+// TODO(stuartmorgan): Move most of this logic to PackageLoopingCommand.
 abstract class PluginCommand extends Command<void> {
   /// Creates a command to operate on [packagesDir] with the given environment.
   PluginCommand(
@@ -136,6 +137,8 @@ abstract class PluginCommand extends Command<void> {
 
   /// Returns the root Dart package folders of the plugins involved in this
   /// command execution.
+  // TODO(stuartmorgan): Rename/restructure this, _getAllPlugins, and
+  // getPackages, as the current naming is very confusing.
   Stream<Directory> getPlugins() async* {
     // To avoid assuming consistency of `Directory.list` across command
     // invocations, we collect and sort the plugin folders before sharding.

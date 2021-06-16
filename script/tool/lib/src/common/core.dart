@@ -53,10 +53,14 @@ bool isFlutterPackage(FileSystemEntity entity) {
   }
 }
 
+/// Prints `successMessage` in green.
+void printSuccess(String successMessage) {
+  print(Colorize(successMessage)..green());
+}
+
 /// Prints `errorMessage` in red.
 void printError(String errorMessage) {
-  final Colorize redError = Colorize(errorMessage)..red();
-  print(redError);
+  print(Colorize(errorMessage)..red());
 }
 
 /// Error thrown when a command needs to exit with a non-zero exit code.
