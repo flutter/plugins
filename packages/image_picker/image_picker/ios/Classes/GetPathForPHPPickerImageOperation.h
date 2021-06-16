@@ -9,7 +9,7 @@
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
-@interface FLTPHPickerImageHandlingOperation : NSOperation
+@interface GetPathForPHPPickerImageOperation : NSOperation
 
 - (instancetype)initWithResult:(PHPickerResult *)result
                       pathlist:(NSMutableArray *)pathList

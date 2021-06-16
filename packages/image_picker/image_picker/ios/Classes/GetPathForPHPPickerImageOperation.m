@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLTPHPickerImageHandlingOperation.h"
+#import "GetPathForPHPPickerImageOperation.h"
 
 API_AVAILABLE(ios(14))
-@interface FLTPHPickerImageHandlingOperation ()
+@interface GetPathForPHPPickerImageOperation ()
 
 @property(strong, nonatomic) PHPickerResult *result;
 @property(weak, nonatomic) NSMutableArray *pathList;
@@ -16,7 +16,7 @@ API_AVAILABLE(ios(14))
 
 @end
 
-@implementation FLTPHPickerImageHandlingOperation {
+@implementation GetPathForPHPPickerImageOperation {
   BOOL executing;
   BOOL finished;
 }

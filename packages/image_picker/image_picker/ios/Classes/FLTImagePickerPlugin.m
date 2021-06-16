@@ -14,7 +14,7 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
-#import "FLTPHPickerImageHandlingOperation.h"
+#import "GetPathForPHPPickerImageOperation.h"
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
                                     UIImagePickerControllerDelegate,
@@ -381,8 +381,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-      FLTPHPickerImageHandlingOperation *operation =
-          [[FLTPHPickerImageHandlingOperation alloc] initWithResult:result
+        GetPathForPHPPickerImageOperation *operation =
+          [[GetPathForPHPPickerImageOperation alloc] initWithResult:result
                                                            pathlist:pathList
                                                           maxHeight:maxHeight
                                                            maxWidth:maxWidth
