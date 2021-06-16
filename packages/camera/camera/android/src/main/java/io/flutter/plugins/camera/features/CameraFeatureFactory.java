@@ -71,11 +71,11 @@ public interface CameraFeatureFactory {
    * @param cameraProperties instance of the CameraProperties class containing information about the
    *     cameras features.
    * @param initialSetting initial resolution preset.
-   * @param cameraId - the id of the camera which can be used to identify the camera device.
+   * @param cameraName the name of the camera which can be used to identify the camera device.
    * @return newly created instance of the ResolutionFeature class.
    */
   ResolutionFeature createResolutionFeature(
-      @NonNull CameraProperties cameraProperties, ResolutionPreset initialSetting, int cameraId);
+      @NonNull CameraProperties cameraProperties, ResolutionPreset initialSetting, String cameraName);
 
   /**
    * Creates a new instance of the focus point feature.
