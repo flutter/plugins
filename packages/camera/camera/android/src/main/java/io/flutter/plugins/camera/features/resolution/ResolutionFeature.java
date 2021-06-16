@@ -136,7 +136,6 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     configureResolution(currentSetting, cameraId);
   }
 
-  // Always supported
   @Override
   public boolean checkIsSupported() {
     return cameraId >= 0;
