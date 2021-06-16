@@ -1,3 +1,9 @@
+## 0.8.2
+
+* Complete rewrite of Android plugin to fix all capture, focus, flash, and exposure issues.
+* Fixed crash when opening front-facing cameras on some legacy android devices like Sony XZ.
+* Android Flash mode works with full precapture sequence.
+
 ## 0.8.1+3
 
 * Do not change camera orientation when iOS device is flat.
