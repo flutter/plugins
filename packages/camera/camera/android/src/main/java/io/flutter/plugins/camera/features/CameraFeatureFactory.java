@@ -22,8 +22,8 @@ import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFea
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 
 /**
- * Factory for creating the supported feature implementation controlling different aspects
- * of the {@link android.hardware.camera2.CaptureRequest}.
+ * Factory for creating the supported feature implementation controlling different aspects of the
+ * {@link android.hardware.camera2.CaptureRequest}.
  */
 public interface CameraFeatureFactory {
 
@@ -36,7 +36,7 @@ public interface CameraFeatureFactory {
    * @return newly created instance of the AutoFocusFeature class.
    */
   AutoFocusFeature createAutoFocusFeature(
-      @NonNull CameraProperties cameraProperties, boolean recordingVideo);
+          @NonNull CameraProperties cameraProperties, boolean recordingVideo);
 
   /**
    * Creates a new instance of the exposure lock feature.
@@ -71,11 +71,13 @@ public interface CameraFeatureFactory {
    * @param cameraProperties instance of the CameraProperties class containing information about the
    *     cameras features.
    * @param initialSetting initial resolution preset.
-   * @param cameraId - the id of the camera which can be used to identify the camera device.
+   * @param cameraName the name of the camera which can be used to identify the camera device.
    * @return newly created instance of the ResolutionFeature class.
    */
   ResolutionFeature createResolutionFeature(
-      @NonNull CameraProperties cameraProperties, ResolutionPreset initialSetting, int cameraId);
+          @NonNull CameraProperties cameraProperties,
+          ResolutionPreset initialSetting,
+          String cameraName);
 
   /**
    * Creates a new instance of the focus point feature.
@@ -106,9 +108,9 @@ public interface CameraFeatureFactory {
    * @return newly created instance of the SensorOrientationFeature class.
    */
   SensorOrientationFeature createSensorOrientationFeature(
-      @NonNull CameraProperties cameraProperties,
-      @NonNull Activity activity,
-      @NonNull DartMessenger dartMessenger);
+          @NonNull CameraProperties cameraProperties,
+          @NonNull Activity activity,
+          @NonNull DartMessenger dartMessenger);
 
   /**
    * Creates a new instance of the zoom level feature.

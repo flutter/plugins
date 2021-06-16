@@ -246,14 +246,15 @@ class CameraPropertiesImpl implements CameraProperties {
   private final String cameraName;
 
   public CameraPropertiesImpl(String cameraName, CameraManager cameraManager)
-      throws CameraAccessException {
+          throws CameraAccessException {
     this.cameraName = cameraName;
     this.cameraCharacteristics = cameraManager.getCameraCharacteristics(cameraName);
   }
 
   @Override
   public String getCameraName() {
-    return cameraName;
+    return "WOOPS";
+    //    return cameraName;
   }
 
   @Override
@@ -269,7 +270,7 @@ class CameraPropertiesImpl implements CameraProperties {
   @Override
   public double getControlAutoExposureCompensationStep() {
     Rational rational =
-        cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
+            cameraCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP);
 
     return rational == null ? 0.0 : rational.doubleValue();
   }
@@ -329,7 +330,7 @@ class CameraPropertiesImpl implements CameraProperties {
   @Override
   public Rect getSensorInfoPreCorrectionActiveArraySize() {
     return cameraCharacteristics.get(
-        CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
+            CameraCharacteristics.SENSOR_INFO_PRE_CORRECTION_ACTIVE_ARRAY_SIZE);
   }
 
   @Override
@@ -345,6 +346,6 @@ class CameraPropertiesImpl implements CameraProperties {
   @Override
   public int[] getAvailableNoiseReductionModes() {
     return cameraCharacteristics.get(
-        CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
+            CameraCharacteristics.NOISE_REDUCTION_AVAILABLE_NOISE_REDUCTION_MODES);
   }
 }
