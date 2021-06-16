@@ -36,7 +36,7 @@ public interface CameraFeatureFactory {
    * @return newly created instance of the AutoFocusFeature class.
    */
   AutoFocusFeature createAutoFocusFeature(
-          @NonNull CameraProperties cameraProperties, boolean recordingVideo);
+      @NonNull CameraProperties cameraProperties, boolean recordingVideo);
 
   /**
    * Creates a new instance of the exposure lock feature.
@@ -75,9 +75,9 @@ public interface CameraFeatureFactory {
    * @return newly created instance of the ResolutionFeature class.
    */
   ResolutionFeature createResolutionFeature(
-          @NonNull CameraProperties cameraProperties,
-          ResolutionPreset initialSetting,
-          String cameraName);
+      @NonNull CameraProperties cameraProperties,
+      ResolutionPreset initialSetting,
+      String cameraName);
 
   /**
    * Creates a new instance of the focus point feature.
@@ -108,9 +108,9 @@ public interface CameraFeatureFactory {
    * @return newly created instance of the SensorOrientationFeature class.
    */
   SensorOrientationFeature createSensorOrientationFeature(
-          @NonNull CameraProperties cameraProperties,
-          @NonNull Activity activity,
-          @NonNull DartMessenger dartMessenger);
+      @NonNull CameraProperties cameraProperties,
+      @NonNull Activity activity,
+      @NonNull DartMessenger dartMessenger);
 
   /**
    * Creates a new instance of the zoom level feature.

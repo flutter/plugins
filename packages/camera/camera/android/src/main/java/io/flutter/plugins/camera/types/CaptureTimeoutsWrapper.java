@@ -21,7 +21,7 @@ public class CaptureTimeoutsWrapper {
    * @param preCaptureMeteringTimeoutMs metering timeout milliseconds.
    */
   public CaptureTimeoutsWrapper(
-          long preCaptureFocusingTimeoutMs, long preCaptureMeteringTimeoutMs) {
+      long preCaptureFocusingTimeoutMs, long preCaptureMeteringTimeoutMs) {
     this.preCaptureFocusingTimeoutMs = preCaptureFocusingTimeoutMs;
     this.preCaptureMeteringTimeoutMs = preCaptureMeteringTimeoutMs;
   }

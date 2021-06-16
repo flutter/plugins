@@ -24,8 +24,8 @@ class CameraCaptureCallback extends CaptureCallback {
   private final CaptureTimeoutsWrapper captureTimeouts;
 
   private CameraCaptureCallback(
-          @NonNull CameraCaptureStateListener cameraStateListener,
-          @NonNull CaptureTimeoutsWrapper captureTimeouts) {
+      @NonNull CameraCaptureStateListener cameraStateListener,
+      @NonNull CaptureTimeoutsWrapper captureTimeouts) {
     cameraState = CameraState.STATE_PREVIEW;
     this.cameraStateListener = cameraStateListener;
     this.captureTimeouts = captureTimeouts;
@@ -40,8 +40,8 @@ class CameraCaptureCallback extends CaptureCallback {
    * @return a configured instance of the {@link CameraCaptureCallback} class.
    */
   public static CameraCaptureCallback create(
-          @NonNull CameraCaptureStateListener cameraStateListener,
-          @NonNull CaptureTimeoutsWrapper captureTimeouts) {
+      @NonNull CameraCaptureStateListener cameraStateListener,
+      @NonNull CaptureTimeoutsWrapper captureTimeouts) {
     return new CameraCaptureCallback(cameraStateListener, captureTimeouts);
   }
 
@@ -69,63 +69,63 @@ class CameraCaptureCallback extends CaptureCallback {
 
     if (cameraState != CameraState.STATE_PREVIEW) {
       Log.d(
-              TAG,
-              "CameraCaptureCallback | state: "
-                      + cameraState
-                      + " | afState: "
-                      + afState
-                      + " | aeState: "
-                      + aeState);
+          TAG,
+          "CameraCaptureCallback | state: "
+              + cameraState
+              + " | afState: "
+              + afState
+              + " | aeState: "
+              + aeState);
     }
 
     switch (cameraState) {
       case STATE_PREVIEW:
-      {
-        // We have nothing to do when the camera preview is working normally.
-        break;
-      }
+        {
+          // We have nothing to do when the camera preview is working normally.
+          break;
+        }
       case STATE_WAITING_FOCUS:
-      {
-        if (afState == null) {
-          return;
-        } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED
-                || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
-          handleWaitingFocusState(aeState);
-        } else if (captureTimeouts.getPreCaptureFocusing().getIsExpired()) {
-          Log.w(TAG, "Focus timeout, moving on with capture");
-          handleWaitingFocusState(aeState);
-        }
+        {
+          if (afState == null) {
+            return;
+          } else if (afState == CaptureResult.CONTROL_AF_STATE_FOCUSED_LOCKED
+              || afState == CaptureResult.CONTROL_AF_STATE_NOT_FOCUSED_LOCKED) {
+            handleWaitingFocusState(aeState);
+          } else if (captureTimeouts.getPreCaptureFocusing().getIsExpired()) {
+            Log.w(TAG, "Focus timeout, moving on with capture");
+            handleWaitingFocusState(aeState);
+          }
 
-        break;
-      }
+          break;
+        }
       case STATE_WAITING_PRECAPTURE_START:
-      {
-        // CONTROL_AE_STATE can be null on some devices
-        if (aeState == null
-                || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
-                || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
-                || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
-          setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
-        } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
-          Log.w(TAG, "Metering timeout waiting for pre-capture to start, moving on with capture");
+        {
+          // CONTROL_AE_STATE can be null on some devices
+          if (aeState == null
+              || aeState == CaptureResult.CONTROL_AE_STATE_CONVERGED
+              || aeState == CaptureResult.CONTROL_AE_STATE_PRECAPTURE
+              || aeState == CaptureResult.CONTROL_AE_STATE_FLASH_REQUIRED) {
+            setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
+          } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
+            Log.w(TAG, "Metering timeout waiting for pre-capture to start, moving on with capture");
 
-          setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
+            setCameraState(CameraState.STATE_WAITING_PRECAPTURE_DONE);
+          }
+          break;
         }
-        break;
-      }
       case STATE_WAITING_PRECAPTURE_DONE:
-      {
-        // CONTROL_AE_STATE can be null on some devices
-        if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
-          cameraStateListener.onConverged();
-        } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
-          Log.w(
-                  TAG, "Metering timeout waiting for pre-capture to finish, moving on with capture");
-          cameraStateListener.onConverged();
-        }
+        {
+          // CONTROL_AE_STATE can be null on some devices
+          if (aeState == null || aeState != CaptureResult.CONTROL_AE_STATE_PRECAPTURE) {
+            cameraStateListener.onConverged();
+          } else if (captureTimeouts.getPreCaptureMetering().getIsExpired()) {
+            Log.w(
+                TAG, "Metering timeout waiting for pre-capture to finish, moving on with capture");
+            cameraStateListener.onConverged();
+          }
 
-        break;
-      }
+          break;
+        }
     }
   }
 
@@ -140,17 +140,17 @@ class CameraCaptureCallback extends CaptureCallback {
 
   @Override
   public void onCaptureProgressed(
-          @NonNull CameraCaptureSession session,
-          @NonNull CaptureRequest request,
-          @NonNull CaptureResult partialResult) {
+      @NonNull CameraCaptureSession session,
+      @NonNull CaptureRequest request,
+      @NonNull CaptureResult partialResult) {
     process(partialResult);
   }
 
   @Override
   public void onCaptureCompleted(
-          @NonNull CameraCaptureSession session,
-          @NonNull CaptureRequest request,
-          @NonNull TotalCaptureResult result) {
+      @NonNull CameraCaptureSession session,
+      @NonNull CaptureRequest request,
+      @NonNull TotalCaptureResult result) {
     process(result);
   }
 
