@@ -1,4 +1,4 @@
-FROM cirrusci/flutter:stable
+FROM cirrusci/flutter:1.22.6
 
 RUN sudo apt-get update -y
 
