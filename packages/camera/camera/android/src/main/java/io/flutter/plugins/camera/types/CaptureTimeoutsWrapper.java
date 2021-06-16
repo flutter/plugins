@@ -1,5 +1,13 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.camera.types;
 
+/**
+ * Wrapper class that provides a container for all {@link Timeout} instances
+ * that are required for the capture flow.
+ */
 public class CaptureTimeoutsWrapper {
   private final Timeout preCaptureFocusing;
   private final Timeout preCaptureMetering;
