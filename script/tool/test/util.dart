@@ -9,6 +9,7 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
@@ -177,34 +178,34 @@ String _pluginPlatformSection(
 ''';
   }
   switch (platform) {
-    case 'android':
+    case kPlatformAndroid:
       return '''
       android:
         package: io.flutter.plugins.fake
         pluginClass: FakePlugin
 ''';
-    case 'ios':
+    case kPlatformIos:
       return '''
       ios:
         pluginClass: FLTFakePlugin
 ''';
-    case 'linux':
+    case kPlatformLinux:
       return '''
       linux:
         pluginClass: FakePlugin
 ''';
-    case 'macos':
+    case kPlatformMacos:
       return '''
       macos:
         pluginClass: FakePlugin
 ''';
-    case 'web':
+    case kPlatformWeb:
       return '''
       web:
         pluginClass: FakePlugin
         fileName: ${packageName}_web.dart
 ''';
-    case 'windows':
+    case kPlatformWindows:
       return '''
       windows:
         pluginClass: FakePlugin
