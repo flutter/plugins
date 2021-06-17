@@ -31,14 +31,14 @@ void main() {
     });
 
     test('runs flutter test on each plugin', () async {
-      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
-      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
+      final Directory plugin1Dir =
+          createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
+      final Directory plugin2Dir =
+          createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
 
       await runner.run(<String>['test']);
 
@@ -55,10 +55,10 @@ void main() {
 
     test('skips testing plugins without test directory', () async {
       createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
-          withExtraFiles: <List<String>>[
-            <String>['test', 'empty_test.dart'],
-          ]);
+      final Directory plugin2Dir =
+          createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
+        <String>['test', 'empty_test.dart'],
+      ]);
 
       await runner.run(<String>['test']);
 
@@ -73,7 +73,7 @@ void main() {
 
     test('runs pub run test on non-Flutter packages', () async {
       final Directory pluginDir =
-          createFakePlugin('a', packagesDir, withExtraFiles: <List<String>>[
+          createFakePlugin('a', packagesDir, extraFiles: <List<String>>[
         <String>['test', 'empty_test.dart'],
       ]);
       final Directory packageDir =
@@ -103,7 +103,7 @@ void main() {
       final Directory pluginDir = createFakePlugin(
         'plugin',
         packagesDir,
-        withExtraFiles: <List<String>>[
+        extraFiles: <List<String>>[
           <String>['test', 'empty_test.dart'],
         ],
         platformSupport: <String, PlatformSupport>{
@@ -126,7 +126,7 @@ void main() {
 
     test('enable-experiment flag', () async {
       final Directory pluginDir =
-          createFakePlugin('a', packagesDir, withExtraFiles: <List<String>>[
+          createFakePlugin('a', packagesDir, extraFiles: <List<String>>[
         <String>['test', 'empty_test.dart'],
       ]);
       final Directory packageDir =

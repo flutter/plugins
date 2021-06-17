@@ -41,7 +41,7 @@ Directory createFakePlugin(
   Directory packagesDirectory, {
   bool withSingleExample = false,
   List<String> withExamples = const <String>[],
-  List<List<String>> withExtraFiles = const <List<String>>[],
+  List<List<String>> extraFiles = const <List<String>>[],
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
   bool includeChangeLog = false,
@@ -57,7 +57,7 @@ Directory createFakePlugin(
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }
   final Directory pluginDirectory = createFakePackage(name, parentDirectory,
-      isFlutter: true, extraFiles: withExtraFiles);
+      isFlutter: true, extraFiles: extraFiles);
 
   createFakePubspec(
     pluginDirectory,
@@ -91,7 +91,7 @@ Directory createFakePlugin(
   }
 
   final FileSystem fileSystem = pluginDirectory.fileSystem;
-  for (final List<String> file in withExtraFiles) {
+  for (final List<String> file in extraFiles) {
     final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
     final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
