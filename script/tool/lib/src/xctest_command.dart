@@ -2,14 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/plugin_utils.dart';
+import 'common/process_runner.dart';
 
 const String _kiOSDestination = 'ios-destination';
 const String _kXcodeBuildCommand = 'xcodebuild';
