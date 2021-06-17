@@ -17,15 +17,12 @@ jobs:
         cd $HOME
         git clone https://github.com/flutter/flutter.git --depth 1 -b stable _flutter
         echo "$HOME/_flutter/bin" >> $GITHUB_PATH
-        echo "$HOME/.pub-cache/bin" >> $GITHUB_PATH
-        echo "$HOME/_flutter/.pub-cache/bin" >> $GITHUB_PATH
-        echo "$HOME/_flutter/bin/cache/dart-sdk/bin" >> $GITHUB_PATH
         cd $GITHUB_WORKSPACE
     # Checks out a copy of the repo.
-    - name: Checkout code
+    - name: Check out code
       uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
       with:
-        fetch-depth: 0 # Fetch all history so the tool can get all the tag to determine version.
+        fetch-depth: 0 # Fetch all history so the tool can get all the tags to determine version.
     - name: Set up tools
       run: dart pub get
       working-directory: ${{ github.workspace }}/script/tool
@@ -49,4 +46,3 @@ jobs:
 
     env:
       DEFAULT_BRANCH: master
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
