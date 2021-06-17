@@ -9,7 +9,7 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
@@ -24,7 +24,7 @@ const String _kFoundNoSimulatorsMessage =
 /// usually at "example/{ios,macos}/Runner.xcworkspace".
 ///
 /// The static analyzer is also run.
-class XCTestCommand extends PluginCommand {
+class XCTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   XCTestCommand(
     Directory packagesDir, {
@@ -41,6 +41,9 @@ class XCTestCommand extends PluginCommand {
     argParser.addFlag(kPlatformFlagMacos, help: 'Runs the macOS tests');
   }
 
+  // The device destination flags for iOS tests.
+  List<String> _iosDestinationFlags = <String>[];
+
   @override
   final String name = 'xctest';
 
@@ -50,62 +53,53 @@ class XCTestCommand extends PluginCommand {
       'This command requires "flutter" and "xcrun" to be in your path.';
 
   @override
-  Future<void> run() async {
+  String get failureListHeader => 'The following packages are failing XCTests:';
+
+  @override
+  Future<void> initializeRun() async {
     final bool testIos = getBoolArg(kPlatformFlagIos);
     final bool testMacos = getBoolArg(kPlatformFlagMacos);
 
     if (!(testIos || testMacos)) {
       print('At least one platform flag must be provided.');
-      throw ToolExit(2);
+      throw ToolExit(kExitInvalidArguments);
     }
 
-    List<String> iosDestinationFlags = <String>[];
     if (testIos) {
       String destination = getStringArg(_kiOSDestination);
       if (destination.isEmpty) {
         final String? simulatorId = await _findAvailableIphoneSimulator();
         if (simulatorId == null) {
           print(_kFoundNoSimulatorsMessage);
-          throw ToolExit(1);
+          throw ToolExit(3);
         }
         destination = 'id=$simulatorId';
       }
-      iosDestinationFlags = <String>[
+      _iosDestinationFlags = <String>[
         '-destination',
         destination,
       ];
     }
+  }
 
-    final List<String> failingPackages = <String>[];
-    await for (final Directory plugin in getPlugins()) {
-      final String packageName =
-          p.relative(plugin.path, from: packagesDir.path);
-      print('============================================================');
-      print('Start running for $packageName...');
-      bool passed = true;
-      if (testIos) {
-        passed &= await _testPlugin(plugin, 'iOS',
-            extraXcrunFlags: iosDestinationFlags);
-      }
-      if (testMacos) {
-        passed &= await _testPlugin(plugin, 'macOS');
-      }
-      if (!passed) {
-        failingPackages.add(packageName);
-      }
-    }
+  @override
+  Future<List<String>> runForPackage(Directory package) async {
+    final List<String> failures = <String>[];
+    final bool testIos = getBoolArg(kPlatformFlagIos);
+    final bool testMacos = getBoolArg(kPlatformFlagMacos);
+    // Only provide the failing platform(s) in the summary if testing multiple
+    // platforms, otherwise it's just noise.
+    final bool provideErrorDetails = testIos && testMacos;
 
-    // Command end, print reports.
-    if (failingPackages.isEmpty) {
-      print('All XCTests have passed!');
-    } else {
-      print(
-          'The following packages are failing XCTests (see above for details):');
-      for (final String package in failingPackages) {
-        print(' * $package');
-      }
-      throw ToolExit(1);
+    if (testIos &&
+        !await _testPlugin(package, 'iOS',
+            extraXcrunFlags: _iosDestinationFlags)) {
+      failures.add(provideErrorDetails ? 'iOS' : '');
     }
+    if (testMacos && !await _testPlugin(package, 'macOS')) {
+      failures.add(provideErrorDetails ? 'macOS' : '');
+    }
+    return failures;
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
@@ -117,8 +111,7 @@ class XCTestCommand extends PluginCommand {
   }) async {
     if (!pluginSupportsPlatform(platform.toLowerCase(), plugin,
         requiredMode: PlatformSupport.inline)) {
-      print('$platform is not implemented by this plugin package.');
-      print('\n');
+      printSkip('$platform is not implemented by this plugin package.\n');
       return true;
     }
     bool passing = true;
@@ -186,7 +179,7 @@ class XCTestCommand extends PluginCommand {
     if (findSimulatorsResult.exitCode != 0) {
       print('Error occurred while running "$findSimulatorCompleteCommand":\n'
           '${findSimulatorsResult.stderr}');
-      throw ToolExit(1);
+      throw ToolExit(4);
     }
     final Map<String, dynamic> simulatorListJson =
         jsonDecode(findSimulatorsResult.stdout as String)

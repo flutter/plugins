@@ -24,14 +24,14 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   /// Called during [run] before any calls to [runForPackage]. This provides an
   /// opportunity to fail early if the command can't be run (e.g., because the
-  /// arguments are invalid).
-  void validate() {}
+  /// arguments are invalid), and to set up any run-level state.
+  Future<void> initializeRun() async {}
 
   /// Runs the command for [package], returning a list of errors.
   ///
   /// Errors may either be an empty string if there is no context that should
   /// be included in the final error summary (e.g., a command that only has a
-  /// single failure mode), or strings that should be listed for that plugin
+  /// single failure mode), or strings that should be listed for that package
   /// in the final summary. An empty list indicates success.
   Future<List<String>> runForPackage(Directory package);
 
@@ -67,6 +67,12 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// context that's more self-documenting than the value.
   static const List<String> kFailure = <String>[];
 
+  /// Prints a message using a standard format indicating that the package was
+  /// skipped, with an explanation of why.
+  void printSkip(String reason) {
+    print(Colorize('SKIPPING: $reason')..darkGray());
+  }
+
   /// Returns the identifying name to use for [package].
   ///
   /// Implementations should not expect a specific format for this string, since
@@ -89,6 +95,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    await initializeRun();
+
     final List<Directory> packages = await getPackages().toList();
 
     final Map<Directory, List<String>> results = <Directory, List<String>>{};
@@ -134,7 +142,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
 || $heading
 ============================================================
 ''';
+    } else {
+      heading = '$heading...';
     }
-    print(Colorize('$heading...')..cyan());
+    print(Colorize(heading)..cyan());
   }
 }
