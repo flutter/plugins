@@ -119,6 +119,8 @@ Future<void> retrieveLostData() async {
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
 
+On Android, `getLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634)
+
 ## Deprecation warnings in `pickImage`, `pickVideo` and `LostDataResponse`
 
 Starting with version **0.6.7** of the image_picker plugin, the API of the plugin changed slightly to allow for web implementations to exist.
