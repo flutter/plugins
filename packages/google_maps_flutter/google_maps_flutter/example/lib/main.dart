@@ -72,7 +72,7 @@ void main() {
   if (defaultTargetPlatform == TargetPlatform.android) {
     final MethodChannelGoogleMapsFlutter platform =
         GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter;
-    platform.useAndroidViewSurface;
+    platform.useAndroidViewSurface = true;
   }
   runApp(MaterialApp(home: MapsDemo()));
 }

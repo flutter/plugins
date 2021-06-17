@@ -46,6 +46,19 @@ This means that app will only be available for users that run Android SDK 20 or 
                android:value="YOUR KEY HERE"/>
 ```
 
+#### Hybrid Composition
+
+To use Hybrid Composition to render the `GoogleMap` widget on Android. Set the
+`MethodChannelGoogleMapsFlutter.useAndroidViewSurface` to true.
+
+```dart
+if (defaultTargetPlatform == TargetPlatform.android) {
+  final MethodChannelGoogleMapsFlutter platform =
+    GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter;
+  platform.useAndroidViewSurface = true;
+}
+```
+
 ### iOS
 
 Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
