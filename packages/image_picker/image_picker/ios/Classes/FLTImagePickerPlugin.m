@@ -381,13 +381,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
     for (int i = 0; i < results.count; i++) {
       PHPickerResult *result = results[i];
-        GetPathForPHPPickerImageOperation *operation =
+      GetPathForPHPPickerImageOperation *operation =
           [[GetPathForPHPPickerImageOperation alloc] initWithResult:result
-                                                           pathlist:pathList
                                                           maxHeight:maxHeight
                                                            maxWidth:maxWidth
                                                 desiredImageQuality:desiredImageQuality
-                                                              index:i];
+                                                     savedPathBlock:^(NSString *savedPath) {
+                                                       pathList[i] = savedPath;
+                                                     }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];

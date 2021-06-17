@@ -8,33 +8,32 @@ API_AVAILABLE(ios(14))
 @interface GetPathForPHPPickerImageOperation ()
 
 @property(strong, nonatomic) PHPickerResult *result;
-@property(weak, nonatomic) NSMutableArray *pathList;
 @property(assign, nonatomic) NSNumber *maxHeight;
 @property(assign, nonatomic) NSNumber *maxWidth;
 @property(assign, nonatomic) NSNumber *desiredImageQuality;
-@property(assign, nonatomic) NSInteger index;
 
 @end
+
+typedef void (^GetSavedPath)(NSString *);
 
 @implementation GetPathForPHPPickerImageOperation {
   BOOL executing;
   BOOL finished;
+  GetSavedPath getSavedPath;
 }
 
 - (instancetype)initWithResult:(PHPickerResult *)result
-                      pathlist:(NSMutableArray *)pathList
                      maxHeight:(NSNumber *)maxHeight
                       maxWidth:(NSNumber *)maxWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
-                         index:(NSInteger)index API_AVAILABLE(ios(14)) {
+                savedPathBlock:(GetSavedPath)savedPathBlock API_AVAILABLE(ios(14)) {
   if (self = [super init]) {
     if (result) {
       self.result = result;
-      self.pathList = pathList;
       self.maxHeight = maxHeight;
       self.maxWidth = maxWidth;
       self.desiredImageQuality = desiredImageQuality;
-      self.index = index;
+      getSavedPath = savedPathBlock;
       executing = NO;
       finished = NO;
     } else {
@@ -70,9 +69,10 @@ API_AVAILABLE(ios(14))
   [self didChangeValueForKey:@"isExecuting"];
 }
 
-- (void)completeOperation {
+- (void)completeOperationWithPath:(NSString *)savedPath {
   [self setExecuting:NO];
   [self setFinished:YES];
+  getSavedPath(savedPath);
 }
 
 - (void)start {
@@ -80,8 +80,8 @@ API_AVAILABLE(ios(14))
     [self setFinished:YES];
     return;
   }
-  [self setExecuting:YES];
   if (@available(iOS 14, *)) {
+    [self setExecuting:YES];
     [self.result.itemProvider
         loadObjectOfClass:[UIImage class]
         completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
@@ -104,8 +104,7 @@ API_AVAILABLE(ios(14))
                   [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:nil
                                                                   image:localImage
                                                            imageQuality:self.desiredImageQuality];
-              self.pathList[self.index] = savedPath;
-              [self completeOperation];
+              [self completeOperationWithPath:savedPath];
             } else {
               [[PHImageManager defaultManager]
                   requestImageDataForAsset:originalAsset
@@ -120,12 +119,13 @@ API_AVAILABLE(ios(14))
                                                          maxWidth:self.maxWidth
                                                         maxHeight:self.maxHeight
                                                      imageQuality:self.desiredImageQuality];
-                               self.pathList[self.index] = savedPath;
-                               [self completeOperation];
+                               [self completeOperationWithPath:savedPath];
                              }];
             }
           }
         }];
+  } else {
+    [self setFinished:YES];
   }
 }
 

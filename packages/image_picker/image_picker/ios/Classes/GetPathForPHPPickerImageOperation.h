@@ -12,10 +12,9 @@
 @interface GetPathForPHPPickerImageOperation : NSOperation
 
 - (instancetype)initWithResult:(PHPickerResult *)result
-                      pathlist:(NSMutableArray *)pathList
                      maxHeight:(NSNumber *)maxHeight
                       maxWidth:(NSNumber *)maxWidth
            desiredImageQuality:(NSNumber *)desiredImageQuality
-                         index:(NSInteger)index API_AVAILABLE(ios(14));
+                savedPathBlock:(void (^)(NSString *))savedPathBlock API_AVAILABLE(ios(14));
 
 @end
