@@ -5,7 +5,7 @@ gcp_credentials: ENCRYPTED[ec898795b6f1b54f9cc2ab4104909f1053651f65fcab96397cfdc
 only_if: $CIRRUS_TAG == ''
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
+  PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
@@ -58,7 +58,7 @@ task:
       format_script: ./script/tool_runner.sh format --fail-on-change
       pubspec_script: ./script/tool_runner.sh pubspec-check
       license_script:
-        - dart script/tool/lib/src/main.dart license-check
+        - dart $PLUGIN_TOOL license-check
     - name: test
       env:
         matrix:
