@@ -65,7 +65,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   /// A convenience constant for [runForPackage] failure without additional
   /// context that's more self-documenting than the value.
-  static const List<String> kFailure = <String>[];
+  static const List<String> kFailure = <String>[''];
 
   /// Prints a message using a standard format indicating that the package was
   /// skipped, with an explanation of why.
