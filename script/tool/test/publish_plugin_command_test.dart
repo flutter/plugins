@@ -607,7 +607,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
@@ -672,7 +673,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -778,7 +780,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -880,8 +883,7 @@ void main() {
       // Non-federated
       createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      createFakePlugin(
-          'plugin2', packagesDir.childDirectory('plugin2'),
+      createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);

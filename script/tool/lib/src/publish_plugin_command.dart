@@ -53,7 +53,8 @@ class PublishPluginCommand extends PluginCommand {
     GitDir? gitDir,
     http.Client? httpClient,
   })  : _pubVersionFinder =
-            PubVersionFinder(httpClient: httpClient ?? http.Client()), _print = print,
+            PubVersionFinder(httpClient: httpClient ?? http.Client()),
+        _print = print,
         _stdin = stdinput ?? io.stdin,
         super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
     argParser.addOption(
@@ -293,11 +294,12 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     // Check if the package named `packageName` with `version` has already published.
-    final Version version  = pubspec.version!;
+    final Version version = pubspec.version!;
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(package: pubspec.name);
     if (pubVersionFinderResponse.versions.contains(version)) {
-      _print('The version $version of ${pubspec.name} has already been published, skip.');
+      _print(
+          'The version $version of ${pubspec.name} has already been published, skip.');
       return _CheckNeedsReleaseResult.noRelease;
     }
     return _CheckNeedsReleaseResult.release;
