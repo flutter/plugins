@@ -38,18 +38,13 @@ Directory createPackagesDirectory(
 /// that platform.
 Directory createFakePlugin(
   String name,
-  Directory packagesDirectory, {
+  Directory parentDirectory, {
   List<String> examples = const <String>['example'],
   List<List<String>> extraFiles = const <List<String>>[],
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
   String? version = '0.0.1',
-  String parentDirectoryName = '',
 }) {
-  Directory parentDirectory = packagesDirectory;
-  if (parentDirectoryName != '') {
-    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
-  }
   final Directory pluginDirectory = createFakePackage(name, parentDirectory,
       isFlutter: true,
       examples: examples,
