@@ -5,6 +5,8 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/test_command.dart';
 import 'package:test/test.dart';
 
@@ -107,7 +109,9 @@ void main() {
           <String>['test', 'empty_test.dart'],
         ],
         isFlutter: true,
-        isWebPlugin: true,
+        platformSupport: <String, PlatformSupport>{
+          kPlatformWeb: PlatformSupport.inline,
+        },
       );
 
       await runner.run(<String>['test']);

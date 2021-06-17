@@ -33,6 +33,9 @@ Directory createPackagesDirectory(
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform.
 Directory createFakePlugin(
   String name,
   Directory packagesDirectory, {
@@ -40,13 +43,8 @@ Directory createFakePlugin(
   List<String> withExamples = const <String>[],
   List<List<String>> withExtraFiles = const <List<String>>[],
   bool isFlutter = true,
-  // TODO(stuartmorgan): Change these platform switches to support type enums.
-  bool isAndroidPlugin = false,
-  bool isIosPlugin = false,
-  bool isWebPlugin = false,
-  bool isLinuxPlugin = false,
-  bool isMacOsPlugin = false,
-  bool isWindowsPlugin = false,
+  Map<String, PlatformSupport> platformSupport =
+      const <String, PlatformSupport>{},
   bool includeChangeLog = false,
   bool includeVersion = false,
   String version = '0.0.1',
@@ -62,16 +60,14 @@ Directory createFakePlugin(
   final Directory pluginDirectory = parentDirectory.childDirectory(name);
   pluginDirectory.createSync(recursive: true);
 
-  createFakePubspec(pluginDirectory,
-      name: name,
-      isFlutter: isFlutter,
-      androidSupport: isAndroidPlugin ? PlatformSupport.inline : null,
-      iosSupport: isIosPlugin ? PlatformSupport.inline : null,
-      webSupport: isWebPlugin ? PlatformSupport.inline : null,
-      linuxSupport: isLinuxPlugin ? PlatformSupport.inline : null,
-      macosSupport: isMacOsPlugin ? PlatformSupport.inline : null,
-      windowsSupport: isWindowsPlugin ? PlatformSupport.inline : null,
-      version: includeVersion ? version : null);
+  createFakePubspec(
+    pluginDirectory,
+    name: name,
+    isFlutter: isFlutter,
+    isPlugin: true,
+    platformSupport: platformSupport,
+    version: includeVersion ? version : null,
+  );
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
 ## 0.0.1
@@ -111,45 +107,38 @@ void createFakeCHANGELOG(Directory parent, String texts) {
 }
 
 /// Creates a `pubspec.yaml` file with a flutter dependency.
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform. If empty, no `plugin` entry will be created unless `isPlugin`
+/// is set to `true`.
 void createFakePubspec(
   Directory parent, {
   String name = 'fake_package',
   bool isFlutter = true,
-  PlatformSupport? androidSupport,
-  PlatformSupport? iosSupport,
-  PlatformSupport? linuxSupport,
-  PlatformSupport? macosSupport,
-  PlatformSupport? webSupport,
-  PlatformSupport? windowsSupport,
+  bool isPlugin = false,
+  Map<String, PlatformSupport> platformSupport =
+      const <String, PlatformSupport>{},
   String publishTo = 'http://no_pub_server.com',
   String? version,
 }) {
+  isPlugin |= platformSupport.isNotEmpty;
   parent.childFile('pubspec.yaml').createSync();
   String yaml = '''
 name: $name
+''';
+  if (isFlutter) {
+    if (isPlugin) {
+      yaml += '''
 flutter:
   plugin:
     platforms:
 ''';
-  if (androidSupport != null) {
-    yaml += _pluginPlatformSection('android', androidSupport, name);
-  }
-  if (iosSupport != null) {
-    yaml += _pluginPlatformSection('ios', iosSupport, name);
-  }
-  if (webSupport != null) {
-    yaml += _pluginPlatformSection('web', webSupport, name);
-  }
-  if (linuxSupport != null) {
-    yaml += _pluginPlatformSection('linux', linuxSupport, name);
-  }
-  if (macosSupport != null) {
-    yaml += _pluginPlatformSection('macos', macosSupport, name);
-  }
-  if (windowsSupport != null) {
-    yaml += _pluginPlatformSection('windows', windowsSupport, name);
-  }
-  if (isFlutter) {
+      for (final MapEntry<String, PlatformSupport> platform
+          in platformSupport.entries) {
+        yaml += _pluginPlatformSection(platform.key, platform.value, name);
+      }
+    }
+
     yaml += '''
 dependencies:
   flutter:

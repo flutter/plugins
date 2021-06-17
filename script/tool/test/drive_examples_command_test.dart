@@ -6,6 +6,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/drive_examples_command.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
@@ -40,8 +41,10 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test', 'plugin.dart'],
           ],
-          isIosPlugin: true,
-          isAndroidPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -85,8 +88,10 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
           ],
-          isAndroidPlugin: true,
-          isIosPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -130,8 +135,10 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
           ],
-          isAndroidPlugin: true,
-          isIosPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -149,8 +156,10 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'lib', 'main.dart'],
           ],
-          isAndroidPlugin: true,
-          isIosPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -172,8 +181,10 @@ void main() {
             <String>['example', 'integration_test', 'foo_test.dart'],
             <String>['example', 'integration_test', 'ignore_me.dart'],
           ],
-          isAndroidPlugin: true,
-          isIosPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -226,8 +237,7 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
-          ],
-          isMacOsPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -260,7 +270,9 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
           ],
-          isLinuxPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformLinux: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -339,7 +351,9 @@ void main() {
             <String>['example', 'test_driver', 'plugin.dart'],
             <String>['example', 'macos', 'macos.swift'],
           ],
-          isMacOsPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformMacos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -385,8 +399,7 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
-          ],
-          isWebPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -419,7 +432,9 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
           ],
-          isWebPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformWeb: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -467,8 +482,7 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
-          ],
-          isWindowsPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -501,7 +515,9 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
           ],
-          isWindowsPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformWindows: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -548,7 +564,9 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test_driver', 'plugin.dart'],
           ],
-          isMacOsPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformMacos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -600,8 +618,10 @@ void main() {
             <String>['example', 'test_driver', 'plugin_test.dart'],
             <String>['example', 'test', 'plugin.dart'],
           ],
-          isIosPlugin: true,
-          isAndroidPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');

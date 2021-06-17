@@ -6,6 +6,8 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/build_examples_command.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
@@ -38,8 +40,7 @@ void main() {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
-          ],
-          isLinuxPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -71,7 +72,9 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
-          isIosPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformIos: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -117,8 +120,7 @@ void main() {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
-          ],
-          isLinuxPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -150,7 +152,9 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
-          isLinuxPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformLinux: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -217,7 +221,9 @@ void main() {
             <String>['example', 'test'],
             <String>['example', 'macos', 'macos.swift'],
           ],
-          isMacOsPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformMacos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -283,7 +289,9 @@ void main() {
             <String>['example', 'test'],
             <String>['example', 'web', 'index.html'],
           ],
-          isWebPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformWeb: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -318,8 +326,7 @@ void main() {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
-          ],
-          isWindowsPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -351,7 +358,9 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
-          isWindowsPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformWindows: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -386,8 +395,7 @@ void main() {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
-          ],
-          isLinuxPlugin: false);
+          ]);
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -419,7 +427,9 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
-          isAndroidPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -457,7 +467,9 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
-          isAndroidPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -487,7 +499,9 @@ void main() {
           withExtraFiles: <List<String>>[
             <String>['example', 'test'],
           ],
-          isIosPlugin: true);
+          platformSupport: <String, PlatformSupport>{
+            kPlatformIos: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');

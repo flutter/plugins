@@ -32,16 +32,15 @@ void main() {
     });
 
     test('all platforms', () async {
-      final Directory plugin = createFakePlugin(
-        'plugin',
-        packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: true,
-        isLinuxPlugin: true,
-        isMacOsPlugin: true,
-        isWebPlugin: true,
-        isWindowsPlugin: true,
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+            kPlatformLinux: PlatformSupport.inline,
+            kPlatformMacos: PlatformSupport.inline,
+            kPlatformWeb: PlatformSupport.inline,
+            kPlatformWindows: PlatformSupport.inline,
+          });
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isTrue);
@@ -55,12 +54,11 @@ void main() {
       final Directory plugin = createFakePlugin(
         'plugin',
         packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: false,
-        isLinuxPlugin: true,
-        isMacOsPlugin: false,
-        isWebPlugin: true,
-        isWindowsPlugin: false,
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformLinux: PlatformSupport.inline,
+          kPlatformWeb: PlatformSupport.inline,
+        },
       );
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
@@ -72,16 +70,17 @@ void main() {
     });
 
     test('inline plugins are only detected as inline', () async {
-      // createFakePlugin makes non-federated pubspec entries.
       final Directory plugin = createFakePlugin(
         'plugin',
         packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: true,
-        isLinuxPlugin: true,
-        isMacOsPlugin: true,
-        isWebPlugin: true,
-        isWindowsPlugin: true,
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+          kPlatformLinux: PlatformSupport.inline,
+          kPlatformMacos: PlatformSupport.inline,
+          kPlatformWeb: PlatformSupport.inline,
+          kPlatformWindows: PlatformSupport.inline,
+        },
       );
 
       expect(
@@ -139,23 +138,14 @@ void main() {
       final Directory plugin = createFakePlugin(
         pluginName,
         packagesDir,
-        isAndroidPlugin: true,
-        isIosPlugin: true,
-        isLinuxPlugin: true,
-        isMacOsPlugin: true,
-        isWebPlugin: true,
-        isWindowsPlugin: true,
-      );
-
-      createFakePubspec(
-        plugin,
-        name: pluginName,
-        androidSupport: PlatformSupport.federated,
-        iosSupport: PlatformSupport.federated,
-        linuxSupport: PlatformSupport.federated,
-        macosSupport: PlatformSupport.federated,
-        webSupport: PlatformSupport.federated,
-        windowsSupport: PlatformSupport.federated,
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.federated,
+          kPlatformIos: PlatformSupport.federated,
+          kPlatformLinux: PlatformSupport.federated,
+          kPlatformMacos: PlatformSupport.federated,
+          kPlatformWeb: PlatformSupport.federated,
+          kPlatformWindows: PlatformSupport.federated,
+        },
       );
 
       expect(
