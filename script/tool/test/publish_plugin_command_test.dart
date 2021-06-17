@@ -138,7 +138,8 @@ void main() {
     });
 
     test('can publish non-flutter package', () async {
-      createFakePubspec(pluginDir, version: '0.0.1', isFlutter: false);
+      const String packageName = 'a_package';
+      createFakePackage(packageName, packagesDir);
       io.Process.runSync('git', <String>['init'],
           workingDirectory: testRoot.path);
       gitDir = await GitDir.fromExisting(testRoot.path);
@@ -149,7 +150,7 @@ void main() {
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        packageName,
         '--no-push-tags',
         '--no-tag-release'
       ]);

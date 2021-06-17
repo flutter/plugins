@@ -42,7 +42,6 @@ Directory createFakePlugin(
   bool withSingleExample = false,
   List<String> withExamples = const <String>[],
   List<List<String>> withExtraFiles = const <List<String>>[],
-  bool isFlutter = true,
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
   bool includeChangeLog = false,
@@ -57,13 +56,13 @@ Directory createFakePlugin(
   if (parentDirectoryName != '') {
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }
-  final Directory pluginDirectory = parentDirectory.childDirectory(name);
-  pluginDirectory.createSync(recursive: true);
+  final Directory pluginDirectory = createFakePackage(name, parentDirectory,
+      isFlutter: true, extraFiles: withExtraFiles);
 
   createFakePubspec(
     pluginDirectory,
     name: name,
-    isFlutter: isFlutter,
+    isFlutter: true,
     isPlugin: true,
     platformSupport: platformSupport,
     version: includeVersion ? version : null,
@@ -79,7 +78,7 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
+        name: '${name}_example', isFlutter: true, publishTo: 'none');
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
@@ -87,7 +86,7 @@ Directory createFakePlugin(
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
       createFakePubspec(currentExample,
-          name: example, isFlutter: isFlutter, publishTo: 'none');
+          name: example, isFlutter: true, publishTo: 'none');
     }
   }
 
@@ -99,6 +98,28 @@ Directory createFakePlugin(
   }
 
   return pluginDirectory;
+}
+
+/// Creates a plugin package with the given [name] in [packagesDirectory].
+Directory createFakePackage(
+  String name,
+  Directory parentDirectory, {
+  List<List<String>> extraFiles = const <List<String>>[],
+  bool isFlutter = false,
+}) {
+  final Directory packageDirectory = parentDirectory.childDirectory(name);
+  packageDirectory.createSync(recursive: true);
+
+  createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
+
+  final FileSystem fileSystem = packageDirectory.fileSystem;
+  for (final List<String> file in extraFiles) {
+    final List<String> newFilePath = <String>[packageDirectory.path, ...file];
+    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
+    newFile.createSync(recursive: true);
+  }
+
+  return packageDirectory;
 }
 
 void createFakeCHANGELOG(Directory parent, String texts) {

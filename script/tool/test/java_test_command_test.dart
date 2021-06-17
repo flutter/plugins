@@ -39,7 +39,6 @@ void main() {
         platformSupport: <String, PlatformSupport>{
           kPlatformAndroid: PlatformSupport.inline
         },
-        isFlutter: true,
         withSingleExample: true,
         withExtraFiles: <List<String>>[
           <String>['example/android', 'gradlew'],
@@ -68,7 +67,6 @@ void main() {
         platformSupport: <String, PlatformSupport>{
           kPlatformAndroid: PlatformSupport.inline
         },
-        isFlutter: true,
         withSingleExample: true,
         withExtraFiles: <List<String>>[
           <String>['example/android', 'gradlew'],
