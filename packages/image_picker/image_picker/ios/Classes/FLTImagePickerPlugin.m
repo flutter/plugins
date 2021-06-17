@@ -539,13 +539,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   if (!self.result) {
     return;
   }
-  if (pathList && (self.maxImagesAllowed == 1)) {
-    self.result(pathList.firstObject);
-  } else if (pathList.count > 0) {
-    self.result(pathList);
+  if (pathList) {
+    if ((self.maxImagesAllowed == 1)) {
+      self.result(pathList.firstObject);
+    } else {
+      self.result(pathList);
+    }
   } else {
+    // This should never happen.
     self.result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary file(s) could not be created"
+                                    message:@"Pathlist should not be nil"
                                     details:nil]);
   }
   self.result = nil;
