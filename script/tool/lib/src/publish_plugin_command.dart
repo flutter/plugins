@@ -205,6 +205,13 @@ class PublishPluginCommand extends PluginCommand {
       return true;
     }
 
+    _print('Getting existing tags...');
+    final io.ProcessResult existingTagsResult =
+        await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
+    final List<String> existingTags = (existingTagsResult.stdout as String)
+        .split('\n')
+          ..removeWhere((String element) => element.isEmpty);
+
     final List<String> packagesReleased = <String>[];
     final List<String> packagesFailed = <String>[];
 
@@ -214,7 +221,7 @@ class PublishPluginCommand extends PluginCommand {
           .childFile(pubspecPath);
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
         pubspecFile: pubspecFile,
-        gitVersionFinder: gitVersionFinder,
+        existingTags: existingTags,
       );
       switch (result) {
         case _CheckNeedsReleaseResult.release:
@@ -272,7 +279,7 @@ class PublishPluginCommand extends PluginCommand {
   // Returns a [_CheckNeedsReleaseResult] that indicates the result.
   Future<_CheckNeedsReleaseResult> _checkNeedsRelease({
     required File pubspecFile,
-    required GitVersionFinder gitVersionFinder,
+    required List<String> existingTags,
   }) async {
     if (!pubspecFile.existsSync()) {
       _print('''
@@ -298,9 +305,20 @@ Safe to ignore if the package is deleted in this commit.
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(package: pubspec.name);
     if (pubVersionFinderResponse.versions.contains(version)) {
+      final String tagsForPackageWithSameVersion = existingTags.firstWhere(
+          (String tag) => tag.split('-v').first == pubspec.name && tag.split('-v').last == version.toString(),
+          orElse: () => '');
+      print(tagsForPackageWithSameVersion);
       _print(
-          'The version $version of ${pubspec.name} has already been published, skip.');
-      return _CheckNeedsReleaseResult.noRelease;
+          'The version $version of ${pubspec.name} has already been published');
+      if (tagsForPackageWithSameVersion.isEmpty) {
+        _print(
+          'However, the git release tag for this version (${pubspec.name}-v$version) is not found. Please manually fix the tag then run the command again.');
+        return _CheckNeedsReleaseResult.failure;
+      } else {
+        _print('skip.');
+        return _CheckNeedsReleaseResult.noRelease;
+      }
     }
     return _CheckNeedsReleaseResult.release;
   }

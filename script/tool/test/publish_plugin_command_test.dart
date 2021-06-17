@@ -537,6 +537,8 @@ void main() {
       createFakePlugin('plugin0', packagesDir);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      await gitDir.runCommand(<String>['tag', 'plugin0-v0.0.1']);
+
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
@@ -887,6 +889,68 @@ void main() {
           version: '0.0.2');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      await gitDir.runCommand(<String>['tag', 'plugin1-v0.0.2']);
+      await gitDir.runCommand(<String>['tag', 'plugin2-v0.0.2']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishCompleteCode = 0;
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'The version 0.0.2 of plugin1 has already been published',
+            'skip.',
+            'The version 0.0.2 of plugin2 has already been published',
+            'skip.',
+            'Done!'
+          ]));
+
+      expect(processRunner.pushTagsArgs, isEmpty);
+    });
+
+    test('Exiting versions do not trigger release, but fail if the tags do not exist.',
+        () async {
+      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+        'name': 'plugin1',
+        'versions': <String>['0.0.2'],
+      };
+
+      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+        'name': 'plugin2',
+        'versions': <String>['0.0.2'],
+      };
+
+      final MockClient mockClient = MockClient((http.Request request) async {
+        if (request.url.pathSegments.last == 'plugin1.json') {
+          return http.Response(json.encode(httpResponsePlugin1), 200);
+        } else if (request.url.pathSegments.last == 'plugin2.json') {
+          return http.Response(json.encode(httpResponsePlugin2), 200);
+        }
+        return http.Response('', 500);
+      });
+      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
+          processRunner: processRunner,
+          print: (Object? message) => printedMessages.add(message.toString()),
+          stdinput: mockStdin,
+          httpClient: mockClient,
+          gitDir: gitDir);
+
+      commandRunner = CommandRunner<void>(
+        'publish_check_command',
+        'Test for publish-check command.',
+      );
+      commandRunner.addCommand(command);
+
+      // Non-federated
+      createFakePlugin('plugin1', packagesDir, version: '0.0.2');
+      // federated
+      createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'),
+          version: '0.0.2');
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
@@ -902,8 +966,31 @@ void main() {
             'Done!'
           ]));
 
+//       bool hasError = false;
+//       final List<String> output = await runCapturingPrint(runner, <String>[
+//         'version-check',
+//         '--base-sha=master',
+//         '--against-pub'
+//       ], errorHandler: (Error e) {
+//         expect(e, isA<ToolExit>());
+//         hasError = true;
+//       });
+//       expect(hasError, isTrue);
+
+//       expect(
+//         output,
+//         containsAllInOrder(<String>[
+//           _redColorString('''
+// versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
+// The version in pubspec.yaml is 1.0.1.
+// The first version listed in CHANGELOG.md is 1.0.2.
+// '''),
+//         ]),
+      // );
+
       expect(processRunner.pushTagsArgs, isEmpty);
     });
+
 
     test('No version change does not release any plugins', () async {
       // Non-federated
