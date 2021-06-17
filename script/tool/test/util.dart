@@ -38,7 +38,7 @@ Directory createPackagesDirectory(
 /// [platformSupport] is a map of platform string to the support details for
 /// that platform.
 ///
-/// [extraFiles] is an optional list of plugin-relative paths, using unix-style
+/// [extraFiles] is an optional list of plugin-relative paths, using Posix
 /// separators, of extra files to create in the plugin.
 Directory createFakePlugin(
   String name,
@@ -105,10 +105,11 @@ Directory createFakePackage(
   }
 
   final FileSystem fileSystem = packageDirectory.fileSystem;
+  final p.Context posixContext = p.posix;
   for (final String file in extraFiles) {
     final List<String> newFilePath = <String>[
       packageDirectory.path,
-      ...p.split(file)
+      ...posixContext.split(file)
     ];
     final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
