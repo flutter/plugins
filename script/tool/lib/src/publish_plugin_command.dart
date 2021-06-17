@@ -306,14 +306,15 @@ Safe to ignore if the package is deleted in this commit.
         await _pubVersionFinder.getPackageVersion(package: pubspec.name);
     if (pubVersionFinderResponse.versions.contains(version)) {
       final String tagsForPackageWithSameVersion = existingTags.firstWhere(
-          (String tag) => tag.split('-v').first == pubspec.name && tag.split('-v').last == version.toString(),
+          (String tag) =>
+              tag.split('-v').first == pubspec.name &&
+              tag.split('-v').last == version.toString(),
           orElse: () => '');
-      print(tagsForPackageWithSameVersion);
       _print(
           'The version $version of ${pubspec.name} has already been published');
       if (tagsForPackageWithSameVersion.isEmpty) {
         _print(
-          'However, the git release tag for this version (${pubspec.name}-v$version) is not found. Please manually fix the tag then run the command again.');
+            'However, the git release tag for this version (${pubspec.name}-v$version) is not found. Please manually fix the tag then run the command again.');
         return _CheckNeedsReleaseResult.failure;
       } else {
         _print('skip.');

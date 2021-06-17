@@ -911,7 +911,8 @@ void main() {
       expect(processRunner.pushTagsArgs, isEmpty);
     });
 
-    test('Exiting versions do not trigger release, but fail if the tags do not exist.',
+    test(
+        'Exiting versions do not trigger release, but fail if the tags do not exist.',
         () async {
       const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
         'name': 'plugin1',
@@ -954,43 +955,12 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
-      expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'The version 0.0.2 of plugin1 has already been published, skip.',
-            'The version 0.0.2 of plugin2 has already been published, skip.',
-            'Done!'
-          ]));
-
-//       bool hasError = false;
-//       final List<String> output = await runCapturingPrint(runner, <String>[
-//         'version-check',
-//         '--base-sha=master',
-//         '--against-pub'
-//       ], errorHandler: (Error e) {
-//         expect(e, isA<ToolExit>());
-//         hasError = true;
-//       });
-//       expect(hasError, isTrue);
-
-//       expect(
-//         output,
-//         containsAllInOrder(<String>[
-//           _redColorString('''
-// versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-// The version in pubspec.yaml is 1.0.1.
-// The first version listed in CHANGELOG.md is 1.0.2.
-// '''),
-//         ]),
-      // );
-
+      await expectLater(
+          () => commandRunner.run(
+              <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']),
+          throwsA(const TypeMatcher<ToolExit>()));
       expect(processRunner.pushTagsArgs, isEmpty);
     });
-
 
     test('No version change does not release any plugins', () async {
       // Non-federated
