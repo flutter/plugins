@@ -9,7 +9,9 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 /// A command to run tests via Firebase test lab.
 class FirebaseTestLabCommand extends PluginCommand {
