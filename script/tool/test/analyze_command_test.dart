@@ -6,7 +6,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/analyze_command.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';

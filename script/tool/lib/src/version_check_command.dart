@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
@@ -11,7 +9,11 @@ import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/git_version_finder.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
+import 'common/pub_version_finder.dart';
 
 /// Categories of version change types.
 enum NextVersionType {

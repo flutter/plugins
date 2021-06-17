@@ -12,7 +12,10 @@ import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
+import 'common/pub_version_finder.dart';
 
 /// A command to check that packages are publishable via 'dart publish'.
 class PublishCheckCommand extends PluginCommand {
