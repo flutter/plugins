@@ -44,7 +44,6 @@ Directory createFakePlugin(
   List<List<String>> extraFiles = const <List<String>>[],
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
-  bool includeChangeLog = false,
   bool includeVersion = false,
   String version = '0.0.1',
   String parentDirectoryName = '',
@@ -67,12 +66,6 @@ Directory createFakePlugin(
     platformSupport: platformSupport,
     version: includeVersion ? version : null,
   );
-  if (includeChangeLog) {
-    createFakeCHANGELOG(pluginDirectory, '''
-## 0.0.1
-  * Some changes.
-  ''');
-  }
 
   if (withSingleExample) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
@@ -106,11 +99,16 @@ Directory createFakePackage(
   Directory parentDirectory, {
   List<List<String>> extraFiles = const <List<String>>[],
   bool isFlutter = false,
+  String? version = '0.0.1',
 }) {
   final Directory packageDirectory = parentDirectory.childDirectory(name);
   packageDirectory.createSync(recursive: true);
 
   createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
+  createFakeCHANGELOG(packageDirectory, '''
+## $version
+  * Some changes.
+  ''');
 
   final FileSystem fileSystem = packageDirectory.fileSystem;
   for (final List<String> file in extraFiles) {
