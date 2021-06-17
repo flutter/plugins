@@ -40,7 +40,7 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(1);
       processRunner.processToReturn = mockProcess;
-      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['lib/test/should_not_run_e2e.dart'],
         <String>['example', 'test_driver', 'plugin_e2e.dart'],
         <String>['example', 'test_driver', 'plugin_e2e_test.dart'],
@@ -65,7 +65,7 @@ void main() {
     });
 
     test('runs e2e tests', () async {
-      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['test', 'plugin_test.dart'],
         <String>['test', 'plugin_e2e.dart'],
         <String>['should_not_run_e2e.dart'],
@@ -168,7 +168,7 @@ void main() {
     });
 
     test('experimental flag', () async {
-      createFakePlugin('plugin', packagesDir, withExtraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['test', 'plugin_test.dart'],
         <String>['test', 'plugin_e2e.dart'],
         <String>['should_not_run_e2e.dart'],

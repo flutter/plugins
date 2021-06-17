@@ -37,8 +37,8 @@ class XCTestCommand extends PluginCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
-    argParser.addFlag(kPlatformFlagIos, help: 'Runs the iOS tests');
-    argParser.addFlag(kPlatformFlagMacos, help: 'Runs the macOS tests');
+    argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
+    argParser.addFlag(kPlatformMacos, help: 'Runs the macOS tests');
   }
 
   @override
@@ -51,8 +51,8 @@ class XCTestCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final bool testIos = getBoolArg(kPlatformFlagIos);
-    final bool testMacos = getBoolArg(kPlatformFlagMacos);
+    final bool testIos = getBoolArg(kPlatformIos);
+    final bool testMacos = getBoolArg(kPlatformMacos);
 
     if (!(testIos || testMacos)) {
       print('At least one platform flag must be provided.');

@@ -9,6 +9,7 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
@@ -32,70 +33,35 @@ Directory createPackagesDirectory(
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform.
 Directory createFakePlugin(
   String name,
-  Directory packagesDirectory, {
-  bool withSingleExample = false,
-  List<String> withExamples = const <String>[],
-  List<List<String>> withExtraFiles = const <List<String>>[],
-  bool isFlutter = true,
-  // TODO(stuartmorgan): Change these platform switches to support type enums.
-  bool isAndroidPlugin = false,
-  bool isIosPlugin = false,
-  bool isWebPlugin = false,
-  bool isLinuxPlugin = false,
-  bool isMacOsPlugin = false,
-  bool isWindowsPlugin = false,
-  bool includeChangeLog = false,
-  bool includeVersion = false,
-  String version = '0.0.1',
-  String parentDirectoryName = '',
+  Directory parentDirectory, {
+  List<String> examples = const <String>['example'],
+  List<List<String>> extraFiles = const <List<String>>[],
+  Map<String, PlatformSupport> platformSupport =
+      const <String, PlatformSupport>{},
+  String? version = '0.0.1',
 }) {
-  assert(!(withSingleExample && withExamples.isNotEmpty),
-      'cannot pass withSingleExample and withExamples simultaneously');
+  final Directory pluginDirectory = createFakePackage(name, parentDirectory,
+      isFlutter: true,
+      examples: examples,
+      extraFiles: extraFiles,
+      version: version);
 
-  Directory parentDirectory = packagesDirectory;
-  if (parentDirectoryName != '') {
-    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
-  }
-  final Directory pluginDirectory = parentDirectory.childDirectory(name);
-  pluginDirectory.createSync(recursive: true);
-
-  createFakePubspec(pluginDirectory,
-      name: name,
-      isFlutter: isFlutter,
-      androidSupport: isAndroidPlugin ? PlatformSupport.inline : null,
-      iosSupport: isIosPlugin ? PlatformSupport.inline : null,
-      webSupport: isWebPlugin ? PlatformSupport.inline : null,
-      linuxSupport: isLinuxPlugin ? PlatformSupport.inline : null,
-      macosSupport: isMacOsPlugin ? PlatformSupport.inline : null,
-      windowsSupport: isWindowsPlugin ? PlatformSupport.inline : null,
-      version: includeVersion ? version : null);
-  if (includeChangeLog) {
-    createFakeCHANGELOG(pluginDirectory, '''
-## 0.0.1
-  * Some changes.
-  ''');
-  }
-
-  if (withSingleExample) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
-  } else if (withExamples.isNotEmpty) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    for (final String example in withExamples) {
-      final Directory currentExample = exampleDir.childDirectory(example)
-        ..createSync();
-      createFakePubspec(currentExample,
-          name: example, isFlutter: isFlutter, publishTo: 'none');
-    }
-  }
+  createFakePubspec(
+    pluginDirectory,
+    name: name,
+    isFlutter: true,
+    isPlugin: true,
+    platformSupport: platformSupport,
+    version: version,
+  );
 
   final FileSystem fileSystem = pluginDirectory.fileSystem;
-  for (final List<String> file in withExtraFiles) {
+  for (final List<String> file in extraFiles) {
     final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
     final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
@@ -104,51 +70,88 @@ Directory createFakePlugin(
   return pluginDirectory;
 }
 
+/// Creates a plugin package with the given [name] in [packagesDirectory].
+Directory createFakePackage(
+  String name,
+  Directory parentDirectory, {
+  List<String> examples = const <String>['example'],
+  List<List<String>> extraFiles = const <List<String>>[],
+  bool isFlutter = false,
+  String? version = '0.0.1',
+}) {
+  final Directory packageDirectory = parentDirectory.childDirectory(name);
+  packageDirectory.createSync(recursive: true);
+
+  createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
+  createFakeCHANGELOG(packageDirectory, '''
+## $version
+  * Some changes.
+  ''');
+
+  if (examples.length == 1) {
+    final Directory exampleDir = packageDirectory.childDirectory(examples.first)
+      ..createSync();
+    createFakePubspec(exampleDir,
+        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
+  } else if (examples.isNotEmpty) {
+    final Directory exampleDir = packageDirectory.childDirectory('example')
+      ..createSync();
+    for (final String example in examples) {
+      final Directory currentExample = exampleDir.childDirectory(example)
+        ..createSync();
+      createFakePubspec(currentExample,
+          name: example, isFlutter: isFlutter, publishTo: 'none');
+    }
+  }
+
+  final FileSystem fileSystem = packageDirectory.fileSystem;
+  for (final List<String> file in extraFiles) {
+    final List<String> newFilePath = <String>[packageDirectory.path, ...file];
+    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
+    newFile.createSync(recursive: true);
+  }
+
+  return packageDirectory;
+}
+
 void createFakeCHANGELOG(Directory parent, String texts) {
   parent.childFile('CHANGELOG.md').createSync();
   parent.childFile('CHANGELOG.md').writeAsStringSync(texts);
 }
 
 /// Creates a `pubspec.yaml` file with a flutter dependency.
+///
+/// [platformSupport] is a map of platform string to the support details for
+/// that platform. If empty, no `plugin` entry will be created unless `isPlugin`
+/// is set to `true`.
 void createFakePubspec(
   Directory parent, {
   String name = 'fake_package',
   bool isFlutter = true,
-  PlatformSupport? androidSupport,
-  PlatformSupport? iosSupport,
-  PlatformSupport? linuxSupport,
-  PlatformSupport? macosSupport,
-  PlatformSupport? webSupport,
-  PlatformSupport? windowsSupport,
+  bool isPlugin = false,
+  Map<String, PlatformSupport> platformSupport =
+      const <String, PlatformSupport>{},
   String publishTo = 'http://no_pub_server.com',
   String? version,
 }) {
+  isPlugin |= platformSupport.isNotEmpty;
   parent.childFile('pubspec.yaml').createSync();
   String yaml = '''
 name: $name
+''';
+  if (isFlutter) {
+    if (isPlugin) {
+      yaml += '''
 flutter:
   plugin:
     platforms:
 ''';
-  if (androidSupport != null) {
-    yaml += _pluginPlatformSection('android', androidSupport, name);
-  }
-  if (iosSupport != null) {
-    yaml += _pluginPlatformSection('ios', iosSupport, name);
-  }
-  if (webSupport != null) {
-    yaml += _pluginPlatformSection('web', webSupport, name);
-  }
-  if (linuxSupport != null) {
-    yaml += _pluginPlatformSection('linux', linuxSupport, name);
-  }
-  if (macosSupport != null) {
-    yaml += _pluginPlatformSection('macos', macosSupport, name);
-  }
-  if (windowsSupport != null) {
-    yaml += _pluginPlatformSection('windows', windowsSupport, name);
-  }
-  if (isFlutter) {
+      for (final MapEntry<String, PlatformSupport> platform
+          in platformSupport.entries) {
+        yaml += _pluginPlatformSection(platform.key, platform.value, name);
+      }
+    }
+
     yaml += '''
 dependencies:
   flutter:
@@ -177,34 +180,34 @@ String _pluginPlatformSection(
 ''';
   }
   switch (platform) {
-    case 'android':
+    case kPlatformAndroid:
       return '''
       android:
         package: io.flutter.plugins.fake
         pluginClass: FakePlugin
 ''';
-    case 'ios':
+    case kPlatformIos:
       return '''
       ios:
         pluginClass: FLTFakePlugin
 ''';
-    case 'linux':
+    case kPlatformLinux:
       return '''
       linux:
         pluginClass: FakePlugin
 ''';
-    case 'macos':
+    case kPlatformMacos:
       return '''
       macos:
         pluginClass: FakePlugin
 ''';
-    case 'web':
+    case kPlatformWeb:
       return '''
       web:
         pluginClass: FakePlugin
         fileName: ${packageName}_web.dart
 ''';
-    case 'windows':
+    case kPlatformWindows:
       return '''
       windows:
         pluginClass: FakePlugin
