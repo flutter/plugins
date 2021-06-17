@@ -9,6 +9,17 @@
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
+/*!
+ @class FLTPHPickerResultPopulatingOperation
+
+ @brief The FLTPHPickerResultPopulatingOperation class
+
+ @discussion    This class was implemented to handle saved image paths and populate the pathList
+ with the final result by using GetSavedPath type block.
+
+ @superclass SuperClass: NSOperation\n
+ @helps It helps FLTImagePickerPlugin class.
+ */
 @interface FLTPHPickerResultPopulatingOperation : NSOperation
 
 - (instancetype)initWithResult:(PHPickerResult *)result
