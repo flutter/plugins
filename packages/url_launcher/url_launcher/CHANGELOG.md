@@ -1,3 +1,8 @@
+## 6.0.7
+
+* Update the README to describe a workaround to the `Uri` query
+  encoding bug.
+
 ## 6.0.6
 
 * Require `url_launcher_platform_interface` 2.0.3. This fixes an issue

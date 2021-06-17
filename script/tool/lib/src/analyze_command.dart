@@ -7,7 +7,9 @@ import 'dart:async';
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 /// A command to run Dart analysis on packages.
 class AnalyzeCommand extends PluginCommand {

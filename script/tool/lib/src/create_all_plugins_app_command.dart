@@ -8,7 +8,8 @@ import 'package:file/file.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
 
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {

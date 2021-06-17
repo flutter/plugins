@@ -151,14 +151,16 @@
 
 @interface SKPaymentQueueStub ()
 
-@property(strong, nonatomic) id<SKPaymentTransactionObserver> observer;
-
 @end
 
 @implementation SKPaymentQueueStub
 
 - (void)addTransactionObserver:(id<SKPaymentTransactionObserver>)observer {
   self.observer = observer;
+}
+
+- (void)removeTransactionObserver:(id<SKPaymentTransactionObserver>)observer {
+  self.observer = nil;
 }
 
 - (void)addPayment:(SKPayment *)payment {
