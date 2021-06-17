@@ -7,7 +7,6 @@ package io.flutter.plugins.inapppurchase;
 import android.app.Activity;
 import android.app.Application;
 import android.content.Context;
-import android.util.Log;
 import androidx.annotation.VisibleForTesting;
 import com.android.billingclient.api.BillingClient;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -15,12 +14,16 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import java.lang.reflect.Field;
 
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   static final String PROXY_PACKAGE_KEY = "PROXY_PACKAGE";
+  // The proxy value has to match the <package> value in library's AndroidManifest.xml.
+  // This is important that the <package> is not changed, so we hard code the value here then having
+  // a unit test to make sure. If there is a strong reason to change the <package> value, please inform the
+  // code owner of this package.
+  static final String PROXY_VALUE = "io.flutter.plugins.inapppurchase";
 
   @VisibleForTesting
   static final class MethodNames {
@@ -53,8 +56,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
-    // Setting the package proxy to match library's build config. which matches the <package> in AndroidManifest.xml.
-    registrar.activity().getIntent().putExtra(PROXY_PACKAGE_KEY, getLibraryPackageName());
+    registrar.activity().getIntent().putExtra(PROXY_PACKAGE_KEY, PROXY_VALUE);
     ((Application) registrar.context().getApplicationContext())
         .registerActivityLifecycleCallbacks(plugin.methodCallHandler);
   }
@@ -72,8 +74,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
-    // Setting the package proxy to match library's build config. which matches the <package> in AndroidManifest.xml.
-    binding.getActivity().getIntent().putExtra(PROXY_PACKAGE_KEY, getLibraryPackageName());
+    binding.getActivity().getIntent().putExtra(PROXY_PACKAGE_KEY, PROXY_VALUE);
     methodCallHandler.setActivity(binding.getActivity());
   }
 
@@ -109,26 +110,5 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @VisibleForTesting
   void setMethodCallHandler(MethodCallHandlerImpl methodCallHandler) {
     this.methodCallHandler = methodCallHandler;
-  }
-
-  private static String getLibraryPackageName() {
-    String packageName = null;
-
-    try {
-      Field libraryPackageName = BuildConfig.class.getField("LIBRARY_PACKAGE_NAME");
-      packageName = (String) (libraryPackageName.get(null));
-    } catch (Exception e) {
-      // Ignore the exception here. We log as error only if getting `APPLICATION_ID` below also throws exception.
-    }
-    if (packageName == null) {
-      try {
-        // Lower version uses APPLICATION_ID instead.
-        Field applicationIdField = BuildConfig.class.getField("APPLICATION_ID");
-        packageName = (String) (applicationIdField.get(null));
-      } catch (Exception e) {
-        Log.e("in_app_purchase_android", "Error getting BuildConfig.LIBRARY_PACKAGE_NAME or BuildConfig.LIBRARY_PACKAGE_NAME at getLibraryPackageName: ")
-      }
-    }
-    return packageName;
   }
 }
