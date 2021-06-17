@@ -301,6 +301,16 @@ class BillingClient {
         <String, dynamic>{});
   }
 
+  /// Checks if the specified feature or capability is supported by the Play Store.
+  /// Call this to check if a [BillingClientFeature] is supported by the device.
+  Future<bool> isFeatureSupported(BillingClientFeature feature) async {
+    var result = await channel.invokeMethod<bool>(
+        'BillingClient#isFeatureSupported(String)', <String, dynamic>{
+      'feature': BillingClientFeatureConverter().toJson(feature),
+    });
+    return result ?? false;
+  }
+
   /// The method call handler for [channel].
   @visibleForTesting
   Future<void> callHandler(MethodCall call) async {
@@ -445,4 +455,32 @@ enum ProrationMode {
   /// Replacement takes effect when the old plan expires, and the new price will be charged at the same time.
   @JsonValue(4)
   deferred,
+}
+
+/// Features/capabilities supported by [BillingClient.isFeatureSupported()](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.FeatureType).
+enum BillingClientFeature {
+  // WARNING: Changes to this class need to be reflected in our generated code.
+  // Run `flutter packages pub run build_runner watch` to rebuild and watch for
+  // further changes.
+
+  // JsonValues need to match constant values defined in https://developer.android.com/reference/com/android/billingclient/api/BillingClient.FeatureType#summary
+  /// Purchase/query for in-app items on VR.
+  @JsonValue('inAppItemsOnVr')
+  inAppItemsOnVR,
+
+  /// Launch a price change confirmation flow.
+  @JsonValue('priceChangeConfirmation')
+  priceChangeConfirmation,
+
+  /// Purchase/query for subscriptions.
+  @JsonValue('subscriptions')
+  subscriptions,
+
+  /// Purchase/query for subscriptions on VR.
+  @JsonValue('subscriptionsOnVr')
+  subscriptionsOnVR,
+
+  /// Subscriptions update/replace.
+  @JsonValue('subscriptionsUpdate')
+  subscriptionsUpdate
 }

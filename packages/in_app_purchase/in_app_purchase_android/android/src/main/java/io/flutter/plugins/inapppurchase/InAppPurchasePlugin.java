@@ -38,6 +38,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
         "BillingClient#consumeAsync(String, ConsumeResponseListener)";
     static final String ACKNOWLEDGE_PURCHASE =
         "BillingClient#(AcknowledgePurchaseParams params, (AcknowledgePurchaseParams, AcknowledgePurchaseResponseListener)";
+    static final String IS_FEATURE_SUPPORTED = "BillingClient#isFeatureSupported(String)";
 
     private MethodNames() {};
   }
