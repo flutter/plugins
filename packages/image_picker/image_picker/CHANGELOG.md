@@ -1,3 +1,7 @@
+## 0.8.0+4
+
+* Cleaned up the README example
+
 ## 0.8.0+3
 
 * Readded request for camera permissions.
