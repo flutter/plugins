@@ -57,7 +57,7 @@ Future<void> main() => integrationDriver();
 You can also use different driver scripts to customize the behavior of the app
 under test. For example, `FlutterDriver` can also be parameterized with
 different [options](https://api.flutter.dev/flutter/flutter_driver/FlutterDriver/connect.html).
-See the [extended driver](https://github.com/flutter/plugins/blob/master/packages/integration_test/example/test_driver/extended_integration_test.dart) for an example.
+See the [extended driver](https://github.com/flutter/flutter/blob/master/packages/integration_test/example/test_driver/extended_integration_test.dart) for an example.
 
 ### Package Structure
 
@@ -195,33 +195,71 @@ devices you want to test on. See
 
 ## iOS Device Testing
 
-You need to change `iOS/Podfile` to avoid test target statically linking to the plugins. One way is to
-link all of the plugins dynamically:
+Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
+do not already have one via `File > New > Target...` and select `Unit Testing Bundle`.
+Change the `Product Name` to `RunnerTests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
+Select `Finish`.
+Make sure that the **iOS Deployment Target** of `RunnerTests` within the **Build Settings** section is the same as `Runner`.
 
-```
+Add the new test target to `ios/Podfile` by embedding in the existing `Runner` target.
+
+```ruby
 target 'Runner' do
-  use_frameworks!
+  # Do not change existing lines.
   ...
+
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
 end
 ```
 
-To run `integration_test/foo_test.dart` on your iOS device, rebuild your iOS
-targets with Flutter tool.
-
+To build `integration_test/foo_test.dart` from the command line, run:
 ```sh
-# Pass --simulator if building for the simulator.
-flutter build ios integration_test/foo_test.dart
+flutter build ios --config-only integration_test/foo_test.dart
 ```
 
-Open Xcode project (by default, it's `ios/Runner.xcodeproj`). Create a test target
-(navigating `File > New > Target...` and set up the values) and a test file `RunnerTests.m` and
-change the code. You can change `RunnerTests.m` to the name of your choice.
+In Xcode, add a test file called `RunnerTests.m` (or any name of your choice) to the new target and
+replace the file:
 
 ```objective-c
-#import <XCTest/XCTest.h>
-#import <integration_test/IntegrationTestIosTest.h>
+@import XCTest;
+@import integration_test;
 
 INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
 ```
 
-Now you can start RunnerTests to kick-off integration tests!
+Run `Product > Test` to run the integration tests on your selected device.
+
+To deploy it to Firebase Test Lab you can follow these steps:
+
+Execute this script at the root of your Flutter app:
+
+```sh
+output="../build/ios_integ"
+product="build/ios_integ/Build/Products"
+dev_target="14.3"
+
+# Pass --simulator if building for the simulator.
+flutter build ios integration_test/foo_test.dart --release
+
+pushd ios
+xcodebuild -workspace Runner.xcworkspace -scheme Runner -config Flutter/Release.xcconfig -derivedDataPath $output -sdk iphoneos build-for-testing
+popd
+
+pushd $product
+zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
+popd
+```
+
+You can verify locally that your tests are successful by running the following command:
+
+```sh
+xcodebuild test-without-building -xctestrun "build/ios_integ/Build/Products/Runner_iphoneos14.3-arm64.xctestrun" -destination id=<YOUR_DEVICE_ID>
+```
+
+Once everything is ok, you can upload the resulting zip to Firebase Test Lab (change the model with your values):
+
+```sh
+gcloud firebase test ios run --test "build/ios_integ/ios_tests.zip" --device model=iphone11pro,version=14.1,locale=fr_FR,orientation=portrait
+```
