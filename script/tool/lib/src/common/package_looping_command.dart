@@ -22,6 +22,11 @@ abstract class PackageLoopingCommand extends PluginCommand {
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
+  /// Called during [run] before any calls to [runForPackage]. This provides an
+  /// opportunity to fail early if the command can't be run (e.g., because the
+  /// arguments are invalid).
+  void validate() {}
+
   /// Runs the command for [package], returning a list of errors.
   ///
   /// Errors may either be an empty string if there is no context that should
@@ -108,7 +113,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
         }
       }
       printError(failureListFooter);
-      throw ToolExit(1);
+      throw ToolExit(kExitCommandFoundErrors);
     }
 
     printSuccess('\n\nNo issues found!');
