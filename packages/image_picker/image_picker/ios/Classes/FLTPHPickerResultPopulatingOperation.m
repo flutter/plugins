@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "GetPathForPHPPickerImageOperation.h"
+#import "FLTPHPickerResultPopulatingOperation.h"
 
 API_AVAILABLE(ios(14))
-@interface GetPathForPHPPickerImageOperation ()
+@interface FLTPHPickerResultPopulatingOperation ()
 
 @property(strong, nonatomic) PHPickerResult *result;
 @property(assign, nonatomic) NSNumber *maxHeight;
@@ -16,7 +16,7 @@ API_AVAILABLE(ios(14))
 
 typedef void (^GetSavedPath)(NSString *);
 
-@implementation GetPathForPHPPickerImageOperation {
+@implementation FLTPHPickerResultPopulatingOperation {
   BOOL executing;
   BOOL finished;
   GetSavedPath getSavedPath;

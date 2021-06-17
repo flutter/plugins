@@ -9,7 +9,7 @@
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
 
-@interface GetPathForPHPPickerImageOperation : NSOperation
+@interface FLTPHPickerResultPopulatingOperation : NSOperation
 
 - (instancetype)initWithResult:(PHPickerResult *)result
                      maxHeight:(NSNumber *)maxHeight
