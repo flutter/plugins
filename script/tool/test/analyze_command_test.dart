@@ -53,8 +53,7 @@ void main() {
   });
 
   test('skips flutter pub get for examples', () async {
-    final Directory plugin1Dir =
-        createFakePlugin('a', packagesDir, withSingleExample: true);
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);

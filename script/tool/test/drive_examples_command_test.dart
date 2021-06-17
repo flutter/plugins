@@ -48,8 +48,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
       ]);
@@ -94,8 +92,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
       ]);
@@ -129,18 +125,12 @@ void main() {
 
     test('driving under folder "test_driver" when test files are missing"',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'test_driver', 'plugin_test.dart'],
       ], platformSupport: <String, PlatformSupport>{
         kPlatformAndroid: PlatformSupport.inline,
         kPlatformIos: PlatformSupport.inline,
       });
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       await expectLater(
           () => runCapturingPrint(runner, <String>['drive-examples']),
@@ -149,18 +139,12 @@ void main() {
 
     test('a plugin without any integration test files is reported as an error',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'lib', 'main.dart'],
       ], platformSupport: <String, PlatformSupport>{
         kPlatformAndroid: PlatformSupport.inline,
         kPlatformIos: PlatformSupport.inline,
       });
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       await expectLater(
           () => runCapturingPrint(runner, <String>['drive-examples']),
@@ -183,8 +167,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -228,16 +210,10 @@ void main() {
     });
 
     test('driving when plugin does not support Linux is a no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'test_driver', 'plugin_test.dart'],
         <String>['example', 'test_driver', 'plugin.dart'],
       ]);
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -270,8 +246,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -308,16 +282,10 @@ void main() {
     });
 
     test('driving when plugin does not suppport macOS is a no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'test_driver', 'plugin_test.dart'],
         <String>['example', 'test_driver', 'plugin.dart'],
       ]);
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -350,8 +318,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -388,16 +354,10 @@ void main() {
     });
 
     test('driving when plugin does not suppport web is a no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'test_driver', 'plugin_test.dart'],
         <String>['example', 'test_driver', 'plugin.dart'],
       ]);
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -430,8 +390,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -470,16 +428,10 @@ void main() {
     });
 
     test('driving when plugin does not suppport Windows is a no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'test_driver', 'plugin_test.dart'],
         <String>['example', 'test_driver', 'plugin.dart'],
       ]);
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -512,8 +464,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -550,18 +500,12 @@ void main() {
     });
 
     test('driving when plugin does not support mobile is no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
         <String>['example', 'test_driver', 'plugin_test.dart'],
         <String>['example', 'test_driver', 'plugin.dart'],
       ], platformSupport: <String, PlatformSupport>{
         kPlatformMacos: PlatformSupport.inline,
       });
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -583,7 +527,8 @@ void main() {
     });
 
     test('platform interface plugins are silently skipped', () async {
-      createFakePlugin('aplugin_platform_interface', packagesDir);
+      createFakePlugin('aplugin_platform_interface', packagesDir,
+          examples: <String>[]);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -614,8 +559,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       await runCapturingPrint(runner, <String>[
         'drive-examples',

@@ -45,8 +45,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--ipa', '--no-macos']);
       final String packageName =
@@ -77,8 +75,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'build-examples',
@@ -124,8 +120,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--linux']);
       final String packageName =
@@ -156,8 +150,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--linux']);
@@ -191,8 +183,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--macos']);
       final String packageName =
@@ -225,8 +215,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--macos']);
       final String packageName =
@@ -257,8 +245,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--web']);
@@ -291,8 +277,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--web']);
@@ -327,8 +311,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--windows']);
       final String packageName =
@@ -359,8 +341,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--no-ipa', '--windows']);
@@ -395,8 +375,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--apk', '--no-ipa']);
       final String packageName =
@@ -427,8 +405,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'build-examples',
@@ -467,8 +443,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
-
       await runCapturingPrint(runner, <String>[
         'build-examples',
         '--apk',
@@ -497,8 +471,6 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-
-      createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
       await runCapturingPrint(runner, <String>[
         'build-examples',

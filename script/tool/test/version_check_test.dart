@@ -243,7 +243,8 @@ void main() {
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
-      final Directory pluginDir = createFakePlugin('plugin', packagesDir);
+      final Directory pluginDir =
+          createFakePlugin('plugin', packagesDir, examples: <String>[]);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       pluginDir.childFile('pubspec.yaml').deleteSync();
       final List<String> output = await runCapturingPrint(

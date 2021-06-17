@@ -39,7 +39,6 @@ void main() {
         platformSupport: <String, PlatformSupport>{
           kPlatformAndroid: PlatformSupport.inline
         },
-        withSingleExample: true,
         extraFiles: <List<String>>[
           <String>['example/android', 'gradlew'],
           <String>['android/src/test', 'example_test.java'],
@@ -67,7 +66,6 @@ void main() {
         platformSupport: <String, PlatformSupport>{
           kPlatformAndroid: PlatformSupport.inline
         },
-        withSingleExample: true,
         extraFiles: <List<String>>[
           <String>['example/android', 'gradlew'],
           <String>['example/android/app/src/test', 'example_test.java'],

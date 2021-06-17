@@ -39,23 +39,22 @@ Directory createPackagesDirectory(
 Directory createFakePlugin(
   String name,
   Directory packagesDirectory, {
-  bool withSingleExample = false,
-  List<String> withExamples = const <String>[],
+  List<String> examples = const <String>['example'],
   List<List<String>> extraFiles = const <List<String>>[],
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
   String? version = '0.0.1',
   String parentDirectoryName = '',
 }) {
-  assert(!(withSingleExample && withExamples.isNotEmpty),
-      'cannot pass withSingleExample and withExamples simultaneously');
-
   Directory parentDirectory = packagesDirectory;
   if (parentDirectoryName != '') {
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }
   final Directory pluginDirectory = createFakePackage(name, parentDirectory,
-      isFlutter: true, extraFiles: extraFiles, version: version);
+      isFlutter: true,
+      examples: examples,
+      extraFiles: extraFiles,
+      version: version);
 
   createFakePubspec(
     pluginDirectory,
@@ -65,22 +64,6 @@ Directory createFakePlugin(
     platformSupport: platformSupport,
     version: version,
   );
-
-  if (withSingleExample) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: true, publishTo: 'none');
-  } else if (withExamples.isNotEmpty) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    for (final String example in withExamples) {
-      final Directory currentExample = exampleDir.childDirectory(example)
-        ..createSync();
-      createFakePubspec(currentExample,
-          name: example, isFlutter: true, publishTo: 'none');
-    }
-  }
 
   final FileSystem fileSystem = pluginDirectory.fileSystem;
   for (final List<String> file in extraFiles) {
@@ -96,6 +79,7 @@ Directory createFakePlugin(
 Directory createFakePackage(
   String name,
   Directory parentDirectory, {
+  List<String> examples = const <String>['example'],
   List<List<String>> extraFiles = const <List<String>>[],
   bool isFlutter = false,
   String? version = '0.0.1',
@@ -108,6 +92,22 @@ Directory createFakePackage(
 ## $version
   * Some changes.
   ''');
+
+  if (examples.length == 1) {
+    final Directory exampleDir = packageDirectory.childDirectory(examples.first)
+      ..createSync();
+    createFakePubspec(exampleDir,
+        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
+  } else if (examples.isNotEmpty) {
+    final Directory exampleDir = packageDirectory.childDirectory('example')
+      ..createSync();
+    for (final String example in examples) {
+      final Directory currentExample = exampleDir.childDirectory(example)
+        ..createSync();
+      createFakePubspec(currentExample,
+          name: example, isFlutter: isFlutter, publishTo: 'none');
+    }
+  }
 
   final FileSystem fileSystem = packageDirectory.fileSystem;
   for (final List<String> file in extraFiles) {
