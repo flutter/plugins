@@ -61,7 +61,7 @@ class XCTestCommand extends PackageLoopingCommand {
     final bool testMacos = getBoolArg(kPlatformFlagMacos);
 
     if (!(testIos || testMacos)) {
-      print('At least one platform flag must be provided.');
+      printError('At least one platform flag must be provided.');
       throw ToolExit(kExitInvalidArguments);
     }
 
@@ -70,7 +70,7 @@ class XCTestCommand extends PackageLoopingCommand {
       if (destination.isEmpty) {
         final String? simulatorId = await _findAvailableIphoneSimulator();
         if (simulatorId == null) {
-          print(_kFoundNoSimulatorsMessage);
+          printError(_kFoundNoSimulatorsMessage);
           throw ToolExit(3);
         }
         destination = 'id=$simulatorId';
@@ -129,7 +129,7 @@ class XCTestCommand extends PackageLoopingCommand {
             extraFlags: extraXcrunFlags);
       }
       if (exitCode == 0) {
-        print('Successfully ran $platform xctest for $examplePath');
+        printSuccess('Successfully ran $platform xctest for $examplePath');
       } else {
         passing = false;
       }
@@ -177,7 +177,8 @@ class XCTestCommand extends PackageLoopingCommand {
     final io.ProcessResult findSimulatorsResult =
         await processRunner.run(_kXCRunCommand, findSimulatorsArguments);
     if (findSimulatorsResult.exitCode != 0) {
-      print('Error occurred while running "$findSimulatorCompleteCommand":\n'
+      printError(
+          'Error occurred while running "$findSimulatorCompleteCommand":\n'
           '${findSimulatorsResult.stderr}');
       throw ToolExit(4);
     }

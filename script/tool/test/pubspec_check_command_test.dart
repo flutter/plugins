@@ -105,10 +105,10 @@ ${devDependenciesSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking plugin...',
-          'Checking plugin/example...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
+          contains('Running for plugin/example...'),
+          contains('No issues found!'),
         ]),
       );
     });
@@ -131,10 +131,10 @@ ${flutterSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking plugin...',
-          'Checking plugin/example...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
+          contains('Running for plugin/example...'),
+          contains('No issues found!'),
         ]),
       );
     });
@@ -155,9 +155,9 @@ ${dependenciesSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking package...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for package...'),
+          contains('No issues found!'),
         ]),
       );
     });
