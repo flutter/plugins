@@ -37,8 +37,8 @@ class XCTestCommand extends PackageLoopingCommand {
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
-    argParser.addFlag(kPlatformFlagIos, help: 'Runs the iOS tests');
-    argParser.addFlag(kPlatformFlagMacos, help: 'Runs the macOS tests');
+    argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
+    argParser.addFlag(kPlatformMacos, help: 'Runs the macOS tests');
   }
 
   // The device destination flags for iOS tests.
@@ -57,8 +57,8 @@ class XCTestCommand extends PackageLoopingCommand {
 
   @override
   Future<void> initializeRun() async {
-    final bool testIos = getBoolArg(kPlatformFlagIos);
-    final bool testMacos = getBoolArg(kPlatformFlagMacos);
+    final bool testIos = getBoolArg(kPlatformIos);
+    final bool testMacos = getBoolArg(kPlatformMacos);
 
     if (!(testIos || testMacos)) {
       printError('At least one platform flag must be provided.');
@@ -85,8 +85,8 @@ class XCTestCommand extends PackageLoopingCommand {
   @override
   Future<List<String>> runForPackage(Directory package) async {
     final List<String> failures = <String>[];
-    final bool testIos = getBoolArg(kPlatformFlagIos);
-    final bool testMacos = getBoolArg(kPlatformFlagMacos);
+    final bool testIos = getBoolArg(kPlatformIos);
+    final bool testMacos = getBoolArg(kPlatformMacos);
     // Only provide the failing platform(s) in the summary if testing multiple
     // platforms, otherwise it's just noise.
     final bool provideErrorDetails = testIos && testMacos;
