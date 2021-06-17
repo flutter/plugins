@@ -100,11 +100,12 @@ void main() {
     });
 
     test('allows valid version', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '2.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
@@ -126,11 +127,12 @@ void main() {
     });
 
     test('denies invalid version', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '0.2.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 0.0.1',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.2.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final Future<List<String>> result = runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
@@ -150,11 +152,12 @@ void main() {
     });
 
     test('allows valid version without explicit base-sha', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '2.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final List<String> output =
           await runCapturingPrint(runner, <String>['version-check']);
@@ -168,10 +171,11 @@ void main() {
     });
 
     test('allows valid version for new package.', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '1.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final List<String> output =
           await runCapturingPrint(runner, <String>['version-check']);
@@ -186,11 +190,12 @@ void main() {
     });
 
     test('allows likely reverts.', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '0.6.1';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.6.1',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final List<String> output =
           await runCapturingPrint(runner, <String>['version-check']);
@@ -204,11 +209,12 @@ void main() {
     });
 
     test('denies lower version that could not be a simple revert', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '0.5.1';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.5.1',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final Future<List<String>> result =
           runCapturingPrint(runner, <String>['version-check']);
@@ -220,11 +226,12 @@ void main() {
     });
 
     test('denies invalid version without explicit base-sha', () async {
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '0.2.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.0.1',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 0.2.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final Future<List<String>> result =
           runCapturingPrint(runner, <String>['version-check']);
@@ -236,8 +243,7 @@ void main() {
     });
 
     test('gracefully handles missing pubspec.yaml', () async {
-      final Directory pluginDir =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
+      final Directory pluginDir = createFakePlugin('plugin', packagesDir);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       pluginDir.childFile('pubspec.yaml').deleteSync();
       final List<String> output = await runCapturingPrint(
@@ -258,14 +264,15 @@ void main() {
     });
 
     test('allows minor changes to platform interfaces', () async {
+      const String newVersion = '1.1.0';
       createFakePlugin('plugin_platform_interface', packagesDir,
-          includeVersion: true);
+          version: newVersion);
       gitDiffResponse = 'packages/plugin_platform_interface/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
         'HEAD:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 1.1.0',
+            'version: $newVersion',
       };
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
@@ -292,14 +299,15 @@ void main() {
     });
 
     test('disallows breaking changes to platform interfaces', () async {
+      const String newVersion = '2.0.0';
       createFakePlugin('plugin_platform_interface', packagesDir,
-          includeVersion: true);
+          version: newVersion);
       gitDiffResponse = 'packages/plugin_platform_interface/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
         'HEAD:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 2.0.0',
+            'version: $newVersion',
       };
       final Future<List<String>> output = runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
@@ -325,16 +333,11 @@ void main() {
 
     test('Allow empty lines in front of the first version in CHANGELOG',
         () async {
+      const String version = '1.0.1';
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
-
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
+          createFakePlugin('plugin', packagesDir, version: version);
       const String changelog = '''
-
-
-
-## 1.0.1
-
+## $version
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -352,12 +355,9 @@ void main() {
 
     test('Throws if versions in changelog and pubspec do not match', () async {
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
-
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
+          createFakePlugin('plugin', packagesDir, version: '1.0.1');
       const String changelog = '''
 ## 1.0.2
-
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -385,13 +385,12 @@ The first version listed in CHANGELOG.md is 1.0.2.
     });
 
     test('Success if CHANGELOG and pubspec versions match', () async {
+      const String version = '1.0.1';
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
+          createFakePlugin('plugin', packagesDir, version: version);
 
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
-## 1.0.1
-
+## $version
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -411,16 +410,12 @@ The first version listed in CHANGELOG.md is 1.0.2.
         'Fail if pubspec version only matches an older version listed in CHANGELOG',
         () async {
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
+          createFakePlugin('plugin', packagesDir, version: '1.0.0');
 
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.0');
       const String changelog = '''
 ## 1.0.1
-
 * Some changes.
-
 ## 1.0.0
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -451,17 +446,14 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
     test('Allow NEXT as a placeholder for gathering CHANGELOG entries',
         () async {
+      const String version = '1.0.0';
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
+          createFakePlugin('plugin', packagesDir, version: version);
 
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.0');
       const String changelog = '''
 ## NEXT
-
 * Some changes that won't be published until the next time there's a release.
-
-## 1.0.0
-
+## $version
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -479,21 +471,16 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
     test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
         () async {
+      const String version = '1.0.1';
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
+          createFakePlugin('plugin', packagesDir, version: version);
 
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
-## 1.0.1
-
+## $version
 * Some changes.
-
 ## NEXT
-
 * Some changes that should have been folded in 1.0.1.
-
 ## 1.0.0
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -523,16 +510,12 @@ into the new version's release notes.
 
     test('Fail if the version changes without replacing NEXT', () async {
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, includeVersion: true);
+          createFakePlugin('plugin', packagesDir, version: '1.0.1');
 
-      createFakePubspec(pluginDirectory, isFlutter: true, version: '1.0.1');
       const String changelog = '''
 ## NEXT
-
 * Some changes that should be listed as part of 1.0.1.
-
 ## 1.0.0
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -581,11 +564,12 @@ The first version listed in CHANGELOG.md is 1.0.0.
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '2.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final List<String> output = await runCapturingPrint(runner,
           <String>['version-check', '--base-sha=master', '--against-pub']);
@@ -617,11 +601,12 @@ The first version listed in CHANGELOG.md is 1.0.0.
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '2.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
 
       bool hasError = false;
@@ -661,11 +646,12 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '2.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       bool hasError = false;
       final List<String> result = await runCapturingPrint(runner, <String>[
@@ -704,11 +690,12 @@ ${indentation}HTTP response: xx
           'version_check_command', 'Test for $VersionCheckCommand');
       runner.addCommand(command);
 
-      createFakePlugin('plugin', packagesDir, includeVersion: true);
+      const String newVersion = '2.0.0';
+      createFakePlugin('plugin', packagesDir, version: newVersion);
       gitDiffResponse = 'packages/plugin/pubspec.yaml';
       gitShowResponses = <String, String>{
         'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-        'HEAD:packages/plugin/pubspec.yaml': 'version: 2.0.0',
+        'HEAD:packages/plugin/pubspec.yaml': 'version: $newVersion',
       };
       final List<String> result = await runCapturingPrint(runner,
           <String>['version-check', '--base-sha=master', '--against-pub']);

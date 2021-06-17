@@ -44,8 +44,7 @@ Directory createFakePlugin(
   List<List<String>> extraFiles = const <List<String>>[],
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
-  bool includeVersion = false,
-  String version = '0.0.1',
+  String? version = '0.0.1',
   String parentDirectoryName = '',
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
@@ -56,7 +55,7 @@ Directory createFakePlugin(
     parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
   }
   final Directory pluginDirectory = createFakePackage(name, parentDirectory,
-      isFlutter: true, extraFiles: extraFiles);
+      isFlutter: true, extraFiles: extraFiles, version: version);
 
   createFakePubspec(
     pluginDirectory,
@@ -64,7 +63,7 @@ Directory createFakePlugin(
     isFlutter: true,
     isPlugin: true,
     platformSupport: platformSupport,
-    version: includeVersion ? version : null,
+    version: version,
   );
 
   if (withSingleExample) {
