@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/plugin_utils.dart';
+import 'common/process_runner.dart';
 
 /// A command to run Dart unit tests for packages.
 class TestCommand extends PluginCommand {
