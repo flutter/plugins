@@ -42,10 +42,10 @@ void main() {
     });
 
     test('lists examples', () async {
-      createFakePlugin('plugin1', packagesDir, withSingleExample: true);
+      createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir,
-          withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3', packagesDir);
+          examples: <String>['example1', 'example2']);
+      createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
       final List<String> examples =
           await runCapturingPrint(runner, <String>['list', '--type=example']);
@@ -61,10 +61,10 @@ void main() {
     });
 
     test('lists packages', () async {
-      createFakePlugin('plugin1', packagesDir, withSingleExample: true);
+      createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir,
-          withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3', packagesDir);
+          examples: <String>['example1', 'example2']);
+      createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
       final List<String> packages =
           await runCapturingPrint(runner, <String>['list', '--type=package']);
@@ -83,10 +83,10 @@ void main() {
     });
 
     test('lists files', () async {
-      createFakePlugin('plugin1', packagesDir, withSingleExample: true);
+      createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir,
-          withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3', packagesDir);
+          examples: <String>['example1', 'example2']);
+      createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
       final List<String> examples =
           await runCapturingPrint(runner, <String>['list', '--type=file']);
@@ -95,11 +95,14 @@ void main() {
         examples,
         unorderedEquals(<String>[
           '/packages/plugin1/pubspec.yaml',
+          '/packages/plugin1/CHANGELOG.md',
           '/packages/plugin1/example/pubspec.yaml',
           '/packages/plugin2/pubspec.yaml',
+          '/packages/plugin2/CHANGELOG.md',
           '/packages/plugin2/example/example1/pubspec.yaml',
           '/packages/plugin2/example/example2/pubspec.yaml',
           '/packages/plugin3/pubspec.yaml',
+          '/packages/plugin3/CHANGELOG.md',
         ]),
       );
     });

@@ -113,16 +113,11 @@ void main() {
 
     group('iOS', () {
       test('skip if iOS is not supported', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: false,
-                isMacOsPlugin: true);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -135,17 +130,11 @@ void main() {
       });
 
       test('skip if iOS is implemented in a federated package', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
-        createFakePubspec(pluginDirectory,
-            iosSupport: PlatformSupport.federated);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.federated
+        });
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -158,25 +147,20 @@ void main() {
       });
 
       test('running with correct destination, exclude 1 plugin', () async {
-        final Directory pluginDirectory1 =
-            createFakePlugin('plugin1', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
+        createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
         final Directory pluginDirectory2 =
-            createFakePlugin('plugin2', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
+            createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
 
-        final Directory pluginExampleDirectory1 =
-            pluginDirectory1.childDirectory('example');
-        createFakePubspec(pluginExampleDirectory1, isFlutter: true);
         final Directory pluginExampleDirectory2 =
             pluginDirectory2.childDirectory('example');
-        createFakePubspec(pluginExampleDirectory2, isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -223,16 +207,14 @@ void main() {
       test('Not specifying --ios-destination assigns an available simulator',
           () async {
         final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
 
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
-
-        createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -276,16 +258,13 @@ void main() {
 
     group('macOS', () {
       test('skip if macOS is not supported', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true,
-                isMacOsPlugin: false);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          extraFiles: <List<String>>[
+            <String>['example', 'test'],
+          ],
+        );
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -298,17 +277,11 @@ void main() {
       });
 
       test('skip if macOS is implemented in a federated package', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isMacOsPlugin: true);
-        createFakePubspec(pluginDirectory,
-            macosSupport: PlatformSupport.federated);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.federated,
+        });
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -322,15 +295,14 @@ void main() {
 
       test('runs for macOS plugin', () async {
         final Directory pluginDirectory1 =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isMacOsPlugin: true);
+            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
+          <String>['example', 'test'],
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
 
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
-        createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
