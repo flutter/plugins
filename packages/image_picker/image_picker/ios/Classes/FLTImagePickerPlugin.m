@@ -383,12 +383,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       PHPickerResult *result = results[i];
       FLTPHPickerResultPopulatingOperation *operation =
           [[FLTPHPickerResultPopulatingOperation alloc] initWithResult:result
-                                                          maxHeight:maxHeight
-                                                           maxWidth:maxWidth
-                                                desiredImageQuality:desiredImageQuality
-                                                     savedPathBlock:^(NSString *savedPath) {
-                                                       pathList[i] = savedPath;
-                                                     }];
+                                                             maxHeight:maxHeight
+                                                              maxWidth:maxWidth
+                                                   desiredImageQuality:desiredImageQuality
+                                                        savedPathBlock:^(NSString *savedPath) {
+                                                          pathList[i] = savedPath;
+                                                        }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];
@@ -510,10 +510,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxWidth:maxWidth
                                                          maxHeight:maxHeight
                                                       imageQuality:imageQuality];
-  NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
-  [mutableArray addObject:savedPath];
-
-  [self handleSavedPathList:mutableArray];
+  [self handleSavedPathList:@[ savedPath ]];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
@@ -522,10 +519,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                         image:image
                                                                  imageQuality:imageQuality];
-  NSMutableArray *mutableArray = [[NSMutableArray alloc] init];
-  [mutableArray addObject:savedPath];
-
-  [self handleSavedPathList:mutableArray];
+  [self handleSavedPathList:@[ savedPath ]];
 }
 
 /**
@@ -541,7 +535,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  *
  * @param @pathList that should be applied to FlutterResult.
  */
-- (void)handleSavedPathList:(NSMutableArray *)pathList {
+- (void)handleSavedPathList:(NSArray *)pathList {
   if (!self.result) {
     return;
   }
