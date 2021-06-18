@@ -1,3 +1,7 @@
+## 0.10.1
+
+* Updates dependencies.
+
 ## 0.10.0
 
 * Migrate to null-safety.
