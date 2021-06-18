@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.webkit.ValueCallback;
 import androidx.core.content.ContextCompat;
 
-
 public class FileChooserLauncher extends BroadcastReceiver {
 
   private Context context;
