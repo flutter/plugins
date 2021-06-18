@@ -14,7 +14,6 @@ import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TYPE;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
@@ -31,11 +30,11 @@ public class FileChooserLauncher extends BroadcastReceiver {
   private ValueCallback<Uri[]> filePathCallback;
 
   public FileChooserLauncher(
-          Context context,
-          String title,
-          String type,
-          boolean showCameraOption,
-          ValueCallback<Uri[]> filePathCallback) {
+      Context context,
+      String title,
+      String type,
+      boolean showCameraOption,
+      ValueCallback<Uri[]> filePathCallback) {
     this.context = context;
     this.title = title;
     this.type = type;
@@ -45,7 +44,7 @@ public class FileChooserLauncher extends BroadcastReceiver {
 
   private boolean hasCameraPermission() {
     return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED;
+        == PackageManager.PERMISSION_GRANTED;
   }
 
   public void start() {
