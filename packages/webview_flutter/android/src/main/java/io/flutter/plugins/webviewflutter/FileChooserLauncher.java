@@ -16,9 +16,9 @@ import androidx.core.content.ContextCompat;
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_FILE_CHOOSER_FINISHED;
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_REQUEST_CAMERA_PERMISSION_FINISHED;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_FILE_URI;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_CAMERA_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TITLE;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TYPE;
-import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_CAMERA_OPTION;
 
 public class FileChooserLauncher extends BroadcastReceiver {
 

@@ -9,5 +9,5 @@ public class Constants {
     static final String EXTRA_SHOW_CAMERA_OPTION = "extra_show_camera_option";
     static final String EXTRA_FILE_URI = "extra_file_uri";
 
-    static final String WEBVIEW_CAMERA_IMAGE_DIRECTORY = "camera_images";
+    static final String WEBVIEW_STORAGE_DIRECTORY = "storage";
 }

@@ -2,28 +2,30 @@ package io.flutter.plugins.webviewflutter;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
+import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.provider.OpenableColumns;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_FILE_CHOOSER_FINISHED;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_FILE_URI;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_CAMERA_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TITLE;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TYPE;
-import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_CAMERA_OPTION;
-import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_CAMERA_IMAGE_DIRECTORY;
+import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_STORAGE_DIRECTORY;
 
 public class FileChooserActivity extends Activity {
 
@@ -75,14 +77,67 @@ public class FileChooserActivity extends Activity {
         return takePictureIntent;
     }
 
-    private Uri getTempImageUri() {
-        File imageDirectory = new File(getCacheDir(), WEBVIEW_CAMERA_IMAGE_DIRECTORY);
+    private File getStorageDirectory() {
+        File imageDirectory = new File(getCacheDir(), WEBVIEW_STORAGE_DIRECTORY);
         if (!imageDirectory.exists() && !imageDirectory.mkdir()) {
-            Log.e("WEBVIEW", "Unable to create image directory");
+            Log.e("WEBVIEW", "Unable to create storage directory");
         }
-        String imageFileName = "IMG_" + simpleDateFormat.format(new Date()) + ".jpg";
-        File imageFile = new File(imageDirectory, "camera.jpg");
+        return imageDirectory;
+    }
+
+    private Uri getTempImageUri() {
+        String imageFileName = "IMG-" + simpleDateFormat.format(new Date()) + ".jpg";
+        File imageFile = new File(getStorageDirectory(), imageFileName);
         return FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".generic.provider", imageFile);
+    }
+
+    private String getFileNameFromUri(Uri uri) {
+        Cursor returnCursor = getContentResolver().query(uri, null, null, null, null);
+        assert returnCursor != null;
+        int nameIndex = returnCursor.getColumnIndex(OpenableColumns.DISPLAY_NAME);
+        returnCursor.moveToFirst();
+        String name = returnCursor.getString(nameIndex);
+        returnCursor.close();
+        return name;
+    }
+
+    private Uri copyToLocalUri(Uri uri) {
+        InputStream in = null;
+        OutputStream out = null;
+        try {
+            File destination = new File(getStorageDirectory(), getFileNameFromUri(uri));
+            in = getContentResolver().openInputStream(uri);
+            out = new FileOutputStream(destination);
+
+            int cnt = 0;
+            byte[] buffer = new byte[1024];
+            int len;
+            while ((len = in.read(buffer)) != -1) {
+                out.write(buffer, 0, len);
+                cnt += len;
+            }
+
+            return FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".generic.provider", destination);
+        } catch(Exception e){
+            Log.e("WEBVIEW", "Unable to copy selected image", e);
+        } finally {
+            if (in != null) {
+                try {
+                    in.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (out != null) {
+                try {
+                    out.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return null;
     }
 
     @Override
@@ -92,7 +147,8 @@ public class FileChooserActivity extends Activity {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null && data.getDataString() != null) {
                     // result from file browser
-                    intent.putExtra(EXTRA_FILE_URI, data.getDataString());
+                    final Uri uri = copyToLocalUri(data.getData());
+                    intent.putExtra(EXTRA_FILE_URI, uri.toString());
                 } else {
                     // result from camera
                     intent.putExtra(EXTRA_FILE_URI, cameraImageUri.toString());
@@ -104,4 +160,5 @@ public class FileChooserActivity extends Activity {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
+
 }
