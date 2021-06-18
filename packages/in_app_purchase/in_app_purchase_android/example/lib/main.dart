@@ -147,6 +147,7 @@ class _MyAppState extends State<_MyApp> {
             _buildConnectionCheckTile(),
             _buildProductList(),
             _buildConsumableBox(),
+            _FeatureCard(),
           ],
         ),
       );
@@ -432,5 +433,61 @@ class _MyAppState extends State<_MyApp> {
           purchases[_kSilverSubscriptionId] as GooglePlayPurchaseDetails;
     }
     return oldSubscription;
+  }
+}
+
+class _FeatureCard extends StatelessWidget {
+  final InAppPurchaseAndroidPlatformAddition addition =
+      InAppPurchasePlatformAddition.instance
+          as InAppPurchaseAndroidPlatformAddition;
+
+  _FeatureCard({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+        child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+          ListTile(title: Text('Available features')),
+          Divider(),
+          for (BillingClientFeature feature in BillingClientFeature.values)
+            _buildFeatureWidget(feature),
+        ]));
+  }
+
+  Widget _buildFeatureWidget(BillingClientFeature feature) {
+    return FutureBuilder<bool>(
+      future: addition.isFeatureSupported(feature),
+      builder: (context, snapshot) {
+        Color color = Colors.grey;
+        bool? data = snapshot.data;
+        if (data != null) {
+          color = data ? Colors.green : Colors.red;
+        }
+        return Padding(
+          padding: const EdgeInsets.fromLTRB(16.0, 4.0, 16.0, 4.0),
+          child: Text(
+            _featureToString(feature),
+            style: TextStyle(color: color),
+          ),
+        );
+      },
+    );
+  }
+
+  String _featureToString(BillingClientFeature feature) {
+    switch (feature) {
+      case BillingClientFeature.inAppItemsOnVR:
+        return 'inAppItemsOnVR';
+      case BillingClientFeature.priceChangeConfirmation:
+        return 'priceChangeConfirmation';
+      case BillingClientFeature.subscriptions:
+        return 'subscriptions';
+      case BillingClientFeature.subscriptionsOnVR:
+        return 'subscriptionsOnVR';
+      case BillingClientFeature.subscriptionsUpdate:
+        return 'subscriptionsUpdate';
+    }
   }
 }
