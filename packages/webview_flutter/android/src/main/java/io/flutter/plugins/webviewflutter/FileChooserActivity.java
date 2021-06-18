@@ -15,10 +15,11 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_FILE_CHOOSER_FINISHED;
-import static io.flutter.plugins.webviewflutter.Constants.EXTRA_IMAGE_URI;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_FILE_URI;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TITLE;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TYPE;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_CAMERA_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_CAMERA_IMAGE_DIRECTORY;
 import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_CAMERA_IMAGE_FILE_NAME;
@@ -47,7 +48,7 @@ public class FileChooserActivity extends Activity {
 
             Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
             chooserIntent.putExtra(Intent.EXTRA_INTENT, galleryIntent != null ? galleryIntent : takePictureIntent);
-            chooserIntent.putExtra(Intent.EXTRA_TITLE, "Choose file");
+            chooserIntent.putExtra(Intent.EXTRA_TITLE, getIntent().getStringExtra(EXTRA_TITLE));
             chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
 
             startActivityForResult(chooserIntent, FILE_CHOOSER_REQUEST_CODE);
@@ -56,7 +57,7 @@ public class FileChooserActivity extends Activity {
 
     private Intent createGalleryIntent() {
         Intent filesIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        filesIntent.setType("image/*");
+        filesIntent.setType(getIntent().getStringExtra(EXTRA_TYPE));
         return (filesIntent.resolveActivity(getPackageManager()) != null) ? filesIntent : null;
     }
 
@@ -88,10 +89,10 @@ public class FileChooserActivity extends Activity {
             if (resultCode == Activity.RESULT_OK) {
                 if (data != null && data.getDataString() != null) {
                     // result from file browser
-                    intent.putExtra(EXTRA_IMAGE_URI, data.getDataString());
+                    intent.putExtra(EXTRA_FILE_URI, data.getDataString());
                 } else {
                     // result from camera
-                    intent.putExtra(EXTRA_IMAGE_URI, cameraImageUri.toString());
+                    intent.putExtra(EXTRA_FILE_URI, cameraImageUri.toString());
                 }
             }
             sendBroadcast(intent);

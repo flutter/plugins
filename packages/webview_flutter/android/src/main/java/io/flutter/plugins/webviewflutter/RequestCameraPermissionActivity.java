@@ -13,8 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 
-import static io.flutter.plugins.webviewflutter.Constants.ACTION_PERMISSIONS_DENIED;
-import static io.flutter.plugins.webviewflutter.Constants.ACTION_PERMISSIONS_GRANTED;
+import static io.flutter.plugins.webviewflutter.Constants.ACTION_REQUEST_CAMERA_PERMISSION_FINISHED;
 
 public class RequestCameraPermissionActivity extends Activity {
 
@@ -34,11 +33,7 @@ public class RequestCameraPermissionActivity extends Activity {
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                sendBroadcast(new Intent(ACTION_PERMISSIONS_GRANTED));
-            } else {
-                sendBroadcast(new Intent(ACTION_PERMISSIONS_DENIED));
-            }
+            sendBroadcast(new Intent(ACTION_REQUEST_CAMERA_PERMISSION_FINISHED));
             finish();
         } else {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);

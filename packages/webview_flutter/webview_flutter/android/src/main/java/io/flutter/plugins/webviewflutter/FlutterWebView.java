@@ -79,7 +79,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     @Override
     public boolean onShowFileChooser(WebView webView, ValueCallback<Uri[]> filePathCallback, FileChooserParams fileChooserParams) {
-      new FileChooserLauncher(webView.getContext(), filePathCallback).start();
+      final Context context = webView.getContext();
+      final String title = context.getResources().getString(R.string.webview_file_chooser_title);
+      final String type = context.getResources().getString(R.string.webview_file_chooser_type);
+      new FileChooserLauncher(context, title, type, true, filePathCallback).start();
       return true;
     }
 
