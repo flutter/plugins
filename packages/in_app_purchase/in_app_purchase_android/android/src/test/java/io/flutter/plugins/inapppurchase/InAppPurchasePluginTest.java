@@ -61,7 +61,7 @@ public class InAppPurchasePluginTest {
     when(activity.getApplicationContext()).thenReturn(mockApplication);
     InAppPurchasePlugin.registerWith(mockRegistrar);
     Mockito.verify(mockIntent).putExtra(PROXY_PACKAGE_KEY, "io.flutter.plugins.inapppurchase");
-    assertEquals("io.flutter.plugins.inapppurchase", BuildConfig.LIBRARY_PACKAGE_NAME);
+    assertEquals("io.flutter.plugins.inapppurchase", BuildConfig.APPLICATION_ID);
   }
 
   // The PROXY_PACKAGE_KEY value of this test (io.flutter.plugins.inapppurchase) should never be changed.
@@ -74,6 +74,6 @@ public class InAppPurchasePluginTest {
     // The PROXY_PACKAGE_KEY value of this test (io.flutter.plugins.inapppurchase) should never be changed.
     // In case there's a strong reason to change it, please inform the current code owner of the plugin.
     Mockito.verify(mockIntent).putExtra(PROXY_PACKAGE_KEY, "io.flutter.plugins.inapppurchase");
-    assertEquals("io.flutter.plugins.inapppurchase", BuildConfig.LIBRARY_PACKAGE_NAME);
+    assertEquals("io.flutter.plugins.inapppurchase", BuildConfig.APPLICATION_ID);
   }
 }
