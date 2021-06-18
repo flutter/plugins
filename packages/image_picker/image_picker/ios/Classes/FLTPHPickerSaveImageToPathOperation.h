@@ -10,9 +10,9 @@
 #import "FLTImagePickerPhotoAssetUtil.h"
 
 /*!
- @class FLTPHPickerResultPopulatingOperation
+ @class FLTPHPickerSaveImageToPathOperation
 
- @brief The FLTPHPickerResultPopulatingOperation class
+ @brief The FLTPHPickerSaveImageToPathOperation class
 
  @discussion    This class was implemented to handle saved image paths and populate the pathList
  with the final result by using GetSavedPath type block.
@@ -20,7 +20,7 @@
  @superclass SuperClass: NSOperation\n
  @helps It helps FLTImagePickerPlugin class.
  */
-@interface FLTPHPickerResultPopulatingOperation : NSOperation
+@interface FLTPHPickerSaveImageToPathOperation : NSOperation
 
 - (instancetype)initWithResult:(PHPickerResult *)result
                      maxHeight:(NSNumber *)maxHeight
