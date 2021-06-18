@@ -55,7 +55,9 @@ public class FileChooserLauncher extends BroadcastReceiver {
       intentFilter.addAction(ACTION_REQUEST_CAMERA_PERMISSION_FINISHED);
       context.registerReceiver(this, intentFilter);
 
-      context.startActivity(new Intent(context, RequestCameraPermissionActivity.class));
+      Intent intent = new Intent(context, RequestCameraPermissionActivity.class);
+      intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+      context.startActivity(intent);
     }
   }
 
@@ -67,6 +69,7 @@ public class FileChooserLauncher extends BroadcastReceiver {
     intent.putExtra(EXTRA_TITLE, title);
     intent.putExtra(EXTRA_TYPE, type);
     intent.putExtra(EXTRA_SHOW_CAMERA_OPTION, showCameraOption && hasCameraPermission());
+    intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
     context.startActivity(intent);
   }
 
