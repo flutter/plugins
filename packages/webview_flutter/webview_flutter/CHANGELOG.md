@@ -1,5 +1,6 @@
 ## NEXT
 
+* Add file chooser on Android
 * Updated Android lint settings.
 
 ## 2.0.12
