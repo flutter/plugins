@@ -11,22 +11,22 @@ import 'package:yaml/yaml.dart';
 typedef Print = void Function(Object? object);
 
 /// Key for windows platform.
-const String kPlatformFlagWindows = 'windows';
+const String kPlatformWindows = 'windows';
 
 /// Key for macos platform.
-const String kPlatformFlagMacos = 'macos';
+const String kPlatformMacos = 'macos';
 
 /// Key for linux platform.
-const String kPlatformFlagLinux = 'linux';
+const String kPlatformLinux = 'linux';
 
 /// Key for IPA (iOS) platform.
-const String kPlatformFlagIos = 'ios';
+const String kPlatformIos = 'ios';
 
 /// Key for APK (Android) platform.
-const String kPlatformFlagAndroid = 'android';
+const String kPlatformAndroid = 'android';
 
 /// Key for Web platform.
-const String kPlatformFlagWeb = 'web';
+const String kPlatformWeb = 'web';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';
