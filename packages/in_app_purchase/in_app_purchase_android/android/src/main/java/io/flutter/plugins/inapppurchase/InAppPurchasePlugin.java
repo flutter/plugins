@@ -18,6 +18,13 @@ import io.flutter.plugin.common.MethodChannel;
 /** Wraps a {@link BillingClient} instance and responds to Dart calls for it. */
 public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
+  static final String PROXY_PACKAGE_KEY = "PROXY_PACKAGE";
+  // The proxy value has to match the <package> value in library's AndroidManifest.xml.
+  // This is important that the <package> is not changed, so we hard code the value here then having
+  // a unit test to make sure. If there is a strong reason to change the <package> value, please inform the
+  // code owner of this package.
+  static final String PROXY_VALUE = "io.flutter.plugins.inapppurchase";
+
   @VisibleForTesting
   static final class MethodNames {
     static final String IS_READY = "BillingClient#isReady()";
@@ -50,7 +57,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
   @SuppressWarnings("deprecation")
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
-    plugin.setupMethodChannel(registrar.activity(), registrar.messenger(), registrar.context());
+    registrar.activity().getIntent().putExtra(PROXY_PACKAGE_KEY, PROXY_VALUE);
     ((Application) registrar.context().getApplicationContext())
         .registerActivityLifecycleCallbacks(plugin.methodCallHandler);
   }
@@ -68,6 +75,7 @@ public class InAppPurchasePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(ActivityPluginBinding binding) {
+    binding.getActivity().getIntent().putExtra(PROXY_PACKAGE_KEY, PROXY_VALUE);
     methodCallHandler.setActivity(binding.getActivity());
   }
 

@@ -1,6 +1,7 @@
 ## 0.1.3
 
-Added support for isFeatureSupported in the BillingClientWrapper and in InAppPurchaseAndroidPlatformAddition.
+* Add payment proxy.
+* Added support for isFeatureSupported in the BillingClientWrapper and in InAppPurchaseAndroidPlatformAddition.
 
 ## 0.1.2
 
