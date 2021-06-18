@@ -1,3 +1,7 @@
+## 0.1.3
+
+Added support for isFeatureSupported in the BillingClientWrapper and in InAppPurchaseAndroidPlatformAddition.
+
 ## 0.1.2
 
 * Added support for the obfuscatedAccountId and obfuscatedProfileId in the PurchaseWrapper.
