@@ -6,12 +6,12 @@ package io.flutter.plugins.webviewflutter;
 
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_FILE_CHOOSER_FINISHED;
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_REQUEST_CAMERA_PERMISSION_FINISHED;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_ACCEPT_TYPES;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_ALLOW_MULTIPLE_FILES;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_FILE_URIS;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_IMAGE_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_VIDEO_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TITLE;
-import static io.flutter.plugins.webviewflutter.Constants.EXTRA_ACCEPT_TYPES;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -23,7 +23,6 @@ import android.net.Uri;
 import android.webkit.ValueCallback;
 import androidx.core.content.ContextCompat;
 
-import java.util.Arrays;
 
 public class FileChooserLauncher extends BroadcastReceiver {
 
@@ -36,10 +35,10 @@ public class FileChooserLauncher extends BroadcastReceiver {
   private String[] acceptTypes;
 
   public FileChooserLauncher(
-          Context context,
-          boolean allowMultipleFiles,
-          ValueCallback<Uri[]> filePathCallback,
-          String[] acceptTypes) {
+      Context context,
+      boolean allowMultipleFiles,
+      ValueCallback<Uri[]> filePathCallback,
+      String[] acceptTypes) {
     this.context = context;
     this.allowMultipleFiles = allowMultipleFiles;
     this.filePathCallback = filePathCallback;
@@ -49,13 +48,11 @@ public class FileChooserLauncher extends BroadcastReceiver {
       // acceptTypes empty -> accept anything
       imageAcceptable = true;
       videoAcceptable = true;
-    }
-    else {
+    } else {
       for (String acceptType : acceptTypes) {
         if (acceptType.startsWith("image/")) {
           imageAcceptable = true;
-        }
-        else if (acceptType.startsWith("video/")) {
+        } else if (acceptType.startsWith("video/")) {
           videoAcceptable = true;
         }
       }
@@ -63,15 +60,12 @@ public class FileChooserLauncher extends BroadcastReceiver {
 
     if (imageAcceptable && !videoAcceptable) {
       title = context.getResources().getString(R.string.webview_image_chooser_title);
-    }
-    else if (videoAcceptable && !imageAcceptable) {
+    } else if (videoAcceptable && !imageAcceptable) {
       title = context.getResources().getString(R.string.webview_video_chooser_title);
-    }
-    else {
+    } else {
       title = context.getResources().getString(R.string.webview_file_chooser_title);
     }
   }
-
 
   private boolean canCameraProduceAcceptableType() {
     return imageAcceptable || videoAcceptable;
@@ -79,7 +73,7 @@ public class FileChooserLauncher extends BroadcastReceiver {
 
   private boolean hasCameraPermission() {
     return ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            == PackageManager.PERMISSION_GRANTED;
+        == PackageManager.PERMISSION_GRANTED;
   }
 
   public void start() {

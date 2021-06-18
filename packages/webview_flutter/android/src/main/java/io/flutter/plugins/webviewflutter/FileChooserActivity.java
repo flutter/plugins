@@ -5,12 +5,12 @@
 package io.flutter.plugins.webviewflutter;
 
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_FILE_CHOOSER_FINISHED;
+import static io.flutter.plugins.webviewflutter.Constants.EXTRA_ACCEPT_TYPES;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_ALLOW_MULTIPLE_FILES;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_FILE_URIS;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_IMAGE_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_VIDEO_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TITLE;
-import static io.flutter.plugins.webviewflutter.Constants.EXTRA_ACCEPT_TYPES;
 import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_STORAGE_DIRECTORY;
 
 import android.app.Activity;
@@ -43,13 +43,17 @@ public class FileChooserActivity extends Activity {
   @Override
   protected void onCreate(@Nullable Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    showFileChooser(getIntent().getBooleanExtra(EXTRA_SHOW_IMAGE_OPTION, false), getIntent().getBooleanExtra(EXTRA_SHOW_VIDEO_OPTION, false));
+    showFileChooser(
+        getIntent().getBooleanExtra(EXTRA_SHOW_IMAGE_OPTION, false),
+        getIntent().getBooleanExtra(EXTRA_SHOW_VIDEO_OPTION, false));
   }
 
   private void showFileChooser(boolean showImageIntent, boolean showVideoIntent) {
     Intent getContentIntent = createGetContentIntent();
-    Intent captureImageIntent = showImageIntent ? createCaptureIntent(MediaStore.ACTION_IMAGE_CAPTURE, "jpg") : null;
-    Intent captureVideoIntent = showVideoIntent ? createCaptureIntent(MediaStore.ACTION_VIDEO_CAPTURE, "mp4") : null;
+    Intent captureImageIntent =
+        showImageIntent ? createCaptureIntent(MediaStore.ACTION_IMAGE_CAPTURE, "jpg") : null;
+    Intent captureVideoIntent =
+        showVideoIntent ? createCaptureIntent(MediaStore.ACTION_VIDEO_CAPTURE, "mp4") : null;
 
     if (getContentIntent == null && captureImageIntent == null && captureVideoIntent == null) {
       // cannot open anything: cancel file chooser
@@ -132,7 +136,7 @@ public class FileChooserActivity extends Activity {
     String fileName = "CAPTURE-" + simpleDateFormat.format(new Date()) + "." + format;
     File file = new File(getStorageDirectory(), fileName);
     return FileProvider.getUriForFile(
-            this, getApplicationContext().getPackageName() + ".generic.provider", file);
+        this, getApplicationContext().getPackageName() + ".generic.provider", file);
   }
 
   private String getFileNameFromUri(Uri uri) {
@@ -148,13 +152,15 @@ public class FileChooserActivity extends Activity {
   private Uri copyToLocalUri(Uri uri) {
     File destination = new File(getStorageDirectory(), getFileNameFromUri(uri));
 
-    try (InputStream in = getContentResolver().openInputStream(uri); OutputStream out = new FileOutputStream(destination)) {
+    try (InputStream in = getContentResolver().openInputStream(uri);
+        OutputStream out = new FileOutputStream(destination)) {
       byte[] buffer = new byte[1024];
       int len;
       while ((len = in.read(buffer)) != -1) {
         out.write(buffer, 0, len);
       }
-      return FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".generic.provider", destination);
+      return FileProvider.getUriForFile(
+          this, getApplicationContext().getPackageName() + ".generic.provider", destination);
     } catch (IOException e) {
       Log.e("WEBVIEW", "Unable to copy selected image", e);
       e.printStackTrace();
@@ -172,7 +178,8 @@ public class FileChooserActivity extends Activity {
             // single result from file browser OR video from camera
             Uri localUri = copyToLocalUri(data.getData());
             if (localUri != null) {
-              fileChooserFinishedIntent.putExtra(EXTRA_FILE_URIS, new String[]{localUri.toString()});
+              fileChooserFinishedIntent.putExtra(
+                  EXTRA_FILE_URIS, new String[] {localUri.toString()});
             }
           } else if (data.getClipData() != null) {
             // multiple results from file browser
@@ -194,10 +201,12 @@ public class FileChooserActivity extends Activity {
               // just opening an input stream (and closing immediately) to test if the Uri points to a valid file
               // if it's not a real file, the below catch-clause gets executed and we continue with the next Uri in the loop.
               getContentResolver().openInputStream(captureOutputUri).close();
-              fileChooserFinishedIntent.putExtra(EXTRA_FILE_URIS, new String[]{captureOutputUri.toString()});
+              fileChooserFinishedIntent.putExtra(
+                  EXTRA_FILE_URIS, new String[] {captureOutputUri.toString()});
               // leave the loop, as only one of the potentialCaptureOutputUris is valid and we just found it
               break;
-            } catch (IOException ignored) {}
+            } catch (IOException ignored) {
+            }
           }
         }
       }
