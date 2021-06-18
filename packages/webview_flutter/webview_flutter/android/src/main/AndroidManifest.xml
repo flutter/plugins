@@ -3,10 +3,12 @@
     <application>
         <activity
             android:name="io.flutter.plugins.webviewflutter.RequestCameraPermissionActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:noHistory="true" />
         <activity
             android:name="io.flutter.plugins.webviewflutter.FileChooserActivity"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen"
+            android:noHistory="true" />
 
         <provider
             android:name="io.flutter.plugins.webviewflutter.GenericFileProvider"
