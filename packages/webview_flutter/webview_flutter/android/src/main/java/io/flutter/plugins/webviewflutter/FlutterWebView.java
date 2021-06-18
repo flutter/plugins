@@ -7,10 +7,12 @@ package io.flutter.plugins.webviewflutter;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Message;
 import android.view.View;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
@@ -61,6 +63,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
                   FlutterWebView.this.webView, url)) {
                 webView.loadUrl(url);
               }
+              return true;
+            }
+
+            @Override
+            public boolean onShowFileChooser(
+                    WebView webView, ValueCallback<Uri[]> filePathCallback,
+                    FileChooserParams fileChooserParams) {
+              new FileChooserLauncher(webView.getContext(), filePathCallback).start();
               return true;
             }
           };
