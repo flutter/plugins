@@ -548,7 +548,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   } else {
     // This should never happen.
     self.result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Pathlist should not be nil"
+                                    message:@"pathList should not be nil"
                                     details:nil]);
   }
   self.result = nil;
