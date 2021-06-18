@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Added support for the obfuscatedAccountId and obfuscatedProfileId in the PurchaseWrapper.
+
 ## 0.1.1
 
 * Added support to request a list of active subscriptions and non-consumed one-time purchases on Android, through the `InAppPurchaseAndroidPlatformAddition.queryPastPurchases` method.

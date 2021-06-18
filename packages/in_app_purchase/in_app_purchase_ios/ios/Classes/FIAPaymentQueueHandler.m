@@ -44,6 +44,10 @@
   [_queue addTransactionObserver:self];
 }
 
+- (void)stopObservingPaymentQueue {
+  [_queue removeTransactionObserver:self];
+}
+
 - (BOOL)addPayment:(SKPayment *)payment {
   for (SKPaymentTransaction *transaction in self.queue.transactions) {
     if ([transaction.payment.productIdentifier isEqualToString:payment.productIdentifier]) {
