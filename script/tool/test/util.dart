@@ -13,6 +13,7 @@ import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:quiver/collection.dart';
 
 /// Creates a packages directory in the given location.
@@ -36,11 +37,14 @@ Directory createPackagesDirectory(
 ///
 /// [platformSupport] is a map of platform string to the support details for
 /// that platform.
+///
+/// [extraFiles] is an optional list of plugin-relative paths, using Posix
+/// separators, of extra files to create in the plugin.
 Directory createFakePlugin(
   String name,
   Directory parentDirectory, {
   List<String> examples = const <String>['example'],
-  List<List<String>> extraFiles = const <List<String>>[],
+  List<String> extraFiles = const <String>[],
   Map<String, PlatformSupport> platformSupport =
       const <String, PlatformSupport>{},
   String? version = '0.0.1',
@@ -60,22 +64,18 @@ Directory createFakePlugin(
     version: version,
   );
 
-  final FileSystem fileSystem = pluginDirectory.fileSystem;
-  for (final List<String> file in extraFiles) {
-    final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
-    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
-    newFile.createSync(recursive: true);
-  }
-
   return pluginDirectory;
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
+///
+/// [extraFiles] is an optional list of package-relative paths, using unix-style
+/// separators, of extra files to create in the package.
 Directory createFakePackage(
   String name,
   Directory parentDirectory, {
   List<String> examples = const <String>['example'],
-  List<List<String>> extraFiles = const <List<String>>[],
+  List<String> extraFiles = const <String>[],
   bool isFlutter = false,
   String? version = '0.0.1',
 }) {
@@ -105,8 +105,12 @@ Directory createFakePackage(
   }
 
   final FileSystem fileSystem = packageDirectory.fileSystem;
-  for (final List<String> file in extraFiles) {
-    final List<String> newFilePath = <String>[packageDirectory.path, ...file];
+  final p.Context posixContext = p.posix;
+  for (final String file in extraFiles) {
+    final List<String> newFilePath = <String>[
+      packageDirectory.path,
+      ...posixContext.split(file)
+    ];
     final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
   }

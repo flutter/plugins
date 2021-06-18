@@ -45,9 +45,8 @@ void main() {
     });
 
     test('only runs on macOS', () async {
-      createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
-        <String>['plugin1.podspec'],
-      ]);
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
 
       mockPlatform.isMacOS = false;
       await runner.run(<String>['podspecs']);
@@ -59,11 +58,14 @@ void main() {
     });
 
     test('runs pod lib lint on a podspec', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
-        <String>['ios', 'plugin1.podspec'],
-        <String>['bogus.dart'], // Ignore non-podspecs.
-      ]);
+      final Directory plugin1Dir = createFakePlugin(
+        'plugin1',
+        packagesDir,
+        extraFiles: <String>[
+          'ios/plugin1.podspec',
+          'bogus.dart', // Ignore non-podspecs.
+        ],
+      );
 
       processRunner.resultStdout = 'Foo';
       processRunner.resultStderr = 'Bar';
@@ -106,12 +108,10 @@ void main() {
     });
 
     test('skips podspecs with known issues', () async {
-      createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
-        <String>['plugin1.podspec']
-      ]);
-      createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
-        <String>['plugin2.podspec']
-      ]);
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+      createFakePlugin('plugin2', packagesDir,
+          extraFiles: <String>['plugin2.podspec']);
 
       await runner
           .run(<String>['podspecs', '--skip=plugin1', '--skip=plugin2']);
@@ -125,10 +125,8 @@ void main() {
     });
 
     test('allow warnings for podspecs with known warnings', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
-        <String>['plugin1.podspec'],
-      ]);
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
 
       await runner.run(<String>['podspecs', '--ignore-warnings=plugin1']);
 
