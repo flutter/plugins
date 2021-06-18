@@ -83,7 +83,6 @@ public class FileChooserLauncher extends BroadcastReceiver {
             showFileChooser();
         } else if (intent.getAction().equals(ACTION_FILE_CHOOSER_FINISHED)) {
             String uriString = intent.getStringExtra(EXTRA_FILE_URI);
-            System.out.println("!! finished: " + uriString);
             Uri[] result = uriString != null ? new Uri[]{Uri.parse(uriString)} : null;
             filePathCallback.onReceiveValue(result);
             activity.unregisterReceiver(this);

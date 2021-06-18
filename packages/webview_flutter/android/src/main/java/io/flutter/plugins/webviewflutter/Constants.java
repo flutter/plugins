@@ -10,5 +10,4 @@ public class Constants {
     static final String EXTRA_FILE_URI = "extra_file_uri";
 
     static final String WEBVIEW_CAMERA_IMAGE_DIRECTORY = "camera_images";
-    static final String WEBVIEW_CAMERA_IMAGE_FILE_NAME = "image.jpg";
 }

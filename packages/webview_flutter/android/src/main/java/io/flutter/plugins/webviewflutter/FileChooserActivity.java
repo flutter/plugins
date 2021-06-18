@@ -15,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import static io.flutter.plugins.webviewflutter.Constants.ACTION_FILE_CHOOSER_FINISHED;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_FILE_URI;
@@ -22,11 +24,11 @@ import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TITLE;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_TYPE;
 import static io.flutter.plugins.webviewflutter.Constants.EXTRA_SHOW_CAMERA_OPTION;
 import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_CAMERA_IMAGE_DIRECTORY;
-import static io.flutter.plugins.webviewflutter.Constants.WEBVIEW_CAMERA_IMAGE_FILE_NAME;
 
 public class FileChooserActivity extends Activity {
 
     private static final int FILE_CHOOSER_REQUEST_CODE = 12322;
+    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
     private Uri cameraImageUri;
 
@@ -78,7 +80,8 @@ public class FileChooserActivity extends Activity {
         if (!imageDirectory.exists() && !imageDirectory.mkdir()) {
             Log.e("WEBVIEW", "Unable to create image directory");
         }
-        File imageFile = new File(imageDirectory, WEBVIEW_CAMERA_IMAGE_FILE_NAME);
+        String imageFileName = "IMG_" + simpleDateFormat.format(new Date()) + ".jpg";
+        File imageFile = new File(imageDirectory, "camera.jpg");
         return FileProvider.getUriForFile(this, getApplicationContext().getPackageName() + ".generic.provider", imageFile);
     }
 
