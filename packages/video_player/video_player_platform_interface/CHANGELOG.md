@@ -1,3 +1,7 @@
+## 4.1.1
+
+* Add `rtsp` to `VideoFormat`
+
 ## 4.1.0
 
 * Add `httpHeaders` to `DataSource`
