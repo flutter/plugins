@@ -34,6 +34,7 @@ import java.util.Date;
 
 public class FileChooserActivity extends Activity {
 
+  private static final String TAG = "FileChooserActivity";
   private static final int FILE_CHOOSER_REQUEST_CODE = 12322;
   private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd_HHmmss");
 
@@ -127,7 +128,7 @@ public class FileChooserActivity extends Activity {
   private File getStorageDirectory() {
     File imageDirectory = new File(getCacheDir(), WEBVIEW_STORAGE_DIRECTORY);
     if (!imageDirectory.exists() && !imageDirectory.mkdir()) {
-      Log.e("WEBVIEW", "Unable to create storage directory");
+      Log.e(TAG, "Unable to create storage directory");
     }
     return imageDirectory;
   }
@@ -162,7 +163,7 @@ public class FileChooserActivity extends Activity {
       return FileProvider.getUriForFile(
           this, getApplicationContext().getPackageName() + ".generic.provider", destination);
     } catch (IOException e) {
-      Log.e("WEBVIEW", "Unable to copy selected image", e);
+      Log.e(TAG, "Unable to copy selected image", e);
       e.printStackTrace();
       return null;
     }
