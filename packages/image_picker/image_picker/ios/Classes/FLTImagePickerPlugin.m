@@ -383,12 +383,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       PHPickerResult *result = results[i];
       FLTPHPickerSaveImageToPathOperation *operation =
           [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
-                                                             maxHeight:maxHeight
-                                                              maxWidth:maxWidth
-                                                   desiredImageQuality:desiredImageQuality
-                                                        savedPathBlock:^(NSString *savedPath) {
-                                                          pathList[i] = savedPath;
-                                                        }];
+                                                            maxHeight:maxHeight
+                                                             maxWidth:maxWidth
+                                                  desiredImageQuality:desiredImageQuality
+                                                       savedPathBlock:^(NSString *savedPath) {
+                                                         pathList[i] = savedPath;
+                                                       }];
       [operationQueue addOperation:operation];
     }
     [operationQueue waitUntilAllOperationsAreFinished];
@@ -542,11 +542,11 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   id item = nil;  // Local variable to check if the pathList contains nil
   if (pathList) {
     if (![pathList containsObject:item]) {
-    if ((self.maxImagesAllowed == 1)) {
-      self.result(pathList.firstObject);
-    } else {
-      self.result(pathList);
-    }
+      if ((self.maxImagesAllowed == 1)) {
+        self.result(pathList.firstObject);
+      } else {
+        self.result(pathList);
+      }
     } else {
       self.result([FlutterError errorWithCode:@"create_error"
                                       message:@"pathList's items should not be nil"
