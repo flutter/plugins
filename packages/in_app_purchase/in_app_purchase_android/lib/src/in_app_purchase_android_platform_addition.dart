@@ -135,4 +135,8 @@ class InAppPurchaseAndroidPlatformAddition
     return QueryPurchaseDetailsResponse(
         pastPurchases: pastPurchases, error: error);
   }
+
+  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow({required String sku}){
+    return _billingClient.launchPriceChangeConfirmationFlow(sku: sku);
+  }
 }
