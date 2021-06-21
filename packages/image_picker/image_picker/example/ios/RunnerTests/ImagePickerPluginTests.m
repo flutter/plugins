@@ -151,9 +151,11 @@
   XCTAssertEqualObjects(pickImageResult.code, @"create_error");
 }
 
-- (void)testPluginMultiImagePathHasZeroItem {
+- (void)testPluginMultiImagePathHasNullItem {
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
   NSMutableArray *pathList = [NSMutableArray new];
+
+  [pathList addObject:[NSNull null]];
 
   dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
   __block FlutterError *pickImageResult = nil;
