@@ -67,7 +67,6 @@
                     result:^(id _Nullable r){
                     }];
 
-  // Expect cameraDevice is equal to UIImagePickerControllerCameraDeviceRear
   XCTAssertEqual([plugin getImagePickerController].cameraDevice,
                  UIImagePickerControllerCameraDeviceRear);
 }
@@ -95,7 +94,6 @@
                     result:^(id _Nullable r){
                     }];
 
-  // Expect cameraDevice is equal to UIImagePickerControllerCameraDeviceFront
   XCTAssertEqual([plugin getImagePickerController].cameraDevice,
                  UIImagePickerControllerCameraDeviceFront);
 }
@@ -123,7 +121,6 @@
                     result:^(id _Nullable r){
                     }];
 
-  // Expect cameraDevice is equal to UIImagePickerControllerCameraDeviceRear
   XCTAssertEqual([plugin getImagePickerController].cameraDevice,
                  UIImagePickerControllerCameraDeviceRear);
 }
@@ -151,7 +148,6 @@
                     result:^(id _Nullable r){
                     }];
 
-  // Expect cameraDevice is equal to UIImagePickerControllerCameraDeviceFront
   XCTAssertEqual([plugin getImagePickerController].cameraDevice,
                  UIImagePickerControllerCameraDeviceFront);
 }
