@@ -38,7 +38,11 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// Whether or not the output (if any) of [runForPackage] is long, or short.
   ///
   /// This changes the logging that happens at the start of each package's
-  /// run.
+  /// run; long output gets a banner-style message to make it easier to find,
+  /// while short output gets a single-line entry.
+  ///
+  /// When this is false, runForPackage output should be indented if possible,
+  /// to make the output structure easier to follow.
   bool get hasLongOutput => true;
 
   /// The text to output at the start when reporting one or more failures.
@@ -79,7 +83,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// it uses heuristics to try to be precise without being overly verbose. If
   /// an exact format (e.g., published name, or basename) is required, that
   /// should be used instead.
-  String packageDescription(Directory package) {
+  String getPackageDescription(Directory package) {
     String packageName = p.relative(package.path, from: packagesDir.path);
     final List<String> components = p.split(packageName);
     // For the common federated plugin pattern of `foo/foo_subpackage`, drop
@@ -117,11 +121,12 @@ abstract class PackageLoopingCommand extends PluginCommand {
           if (errorDetails.isNotEmpty) {
             errorDetails = ':\n$errorIndentation$errorDetails';
           }
-          printError('$indentation${packageDescription(package)}$errorDetails');
+          printError(
+              '$indentation${getPackageDescription(package)}$errorDetails');
         }
       }
       printError(failureListFooter);
-      throw ToolExit(kExitCommandFoundErrors);
+      throw ToolExit(exitCommandFoundErrors);
     }
 
     printSuccess('\n\nNo issues found!');
@@ -134,7 +139,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// a command running for a package and producing no output, and a command
   /// not having been run for a package.
   void _printPackageHeading(Directory package) {
-    String heading = 'Running for ${packageDescription(package)}';
+    String heading = 'Running for ${getPackageDescription(package)}';
     if (hasLongOutput) {
       heading = '''
 

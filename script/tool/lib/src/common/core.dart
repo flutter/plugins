@@ -81,7 +81,7 @@ class ToolExit extends Error {
 }
 
 /// A exit code for [ToolExit] for a successful run that found errors.
-const kExitCommandFoundErrors = 1;
+const int exitCommandFoundErrors = 1;
 
 /// A exit code for [ToolExit] for a failure to run due to invalid arguments.
-const kExitInvalidArguments = 2;
+const int exitInvalidArguments = 2;

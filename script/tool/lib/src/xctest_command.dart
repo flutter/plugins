@@ -19,6 +19,9 @@ const String _kXCRunCommand = 'xcrun';
 const String _kFoundNoSimulatorsMessage =
     'Cannot find any available simulators, tests failed';
 
+const int _exitFindingSimulatorsFailed = 3;
+const int _exitNoSimulators = 4;
+
 /// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
 /// The tests target have to be added to the Xcode project of the example app,
 /// usually at "example/{ios,macos}/Runner.xcworkspace".
@@ -57,21 +60,21 @@ class XCTestCommand extends PackageLoopingCommand {
 
   @override
   Future<void> initializeRun() async {
-    final bool testIos = getBoolArg(kPlatformIos);
-    final bool testMacos = getBoolArg(kPlatformMacos);
+    final bool shouldTestIos = getBoolArg(kPlatformIos);
+    final bool shouldTestMacos = getBoolArg(kPlatformMacos);
 
-    if (!(testIos || testMacos)) {
+    if (!(shouldTestIos || shouldTestMacos)) {
       printError('At least one platform flag must be provided.');
-      throw ToolExit(kExitInvalidArguments);
+      throw ToolExit(exitInvalidArguments);
     }
 
-    if (testIos) {
+    if (shouldTestIos) {
       String destination = getStringArg(_kiOSDestination);
       if (destination.isEmpty) {
         final String? simulatorId = await _findAvailableIphoneSimulator();
         if (simulatorId == null) {
           printError(_kFoundNoSimulatorsMessage);
-          throw ToolExit(3);
+          throw ToolExit(_exitNoSimulators);
         }
         destination = 'id=$simulatorId';
       }
@@ -180,7 +183,7 @@ class XCTestCommand extends PackageLoopingCommand {
       printError(
           'Error occurred while running "$findSimulatorCompleteCommand":\n'
           '${findSimulatorsResult.stderr}');
-      throw ToolExit(4);
+      throw ToolExit(_exitFindingSimulatorsFailed);
     }
     final Map<String, dynamic> simulatorListJson =
         jsonDecode(findSimulatorsResult.stdout as String)
