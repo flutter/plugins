@@ -5,9 +5,7 @@
 // ignore_for_file: deprecated_member_use, deprecated_member_use_from_same_package
 
 import 'dart:async';
-
 import 'package:flutter/foundation.dart';
-
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
 export 'package:image_picker_platform_interface/image_picker_platform_interface.dart'
@@ -17,7 +15,7 @@ export 'package:image_picker_platform_interface/image_picker_platform_interface.
         ImageSource,
         CameraDevice,
         LostData,
-        PickedFile,
+        XFile,
         RetrieveType;
 
 /// Provides an easy way to pick an image/video from the image library,
@@ -27,9 +25,9 @@ class ImagePicker {
   @visibleForTesting
   static ImagePickerPlatform get platform => ImagePickerPlatform.instance;
 
-  /// Returns a [PickedFile] object wrapping the image that was picked.
+  /// Returns a [XFile] object wrapping the image that was picked.
   ///
-  /// The returned [PickedFile] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
+  /// The returned [XFile] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -54,7 +52,7 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile?> getImage({
+  Future<XFile?> getImage({
     required ImageSource source,
     double? maxWidth,
     double? maxHeight,
@@ -70,9 +68,9 @@ class ImagePicker {
     );
   }
 
-  /// Returns a [PickedFile] object wrapping the video that was picked.
+  /// Returns a [XFile] object wrapping the video that was picked.
   ///
-  /// The returned [PickedFile] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
+  /// The returned [XFile] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -86,7 +84,7 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
-  Future<PickedFile?> getVideo({
+  Future<XFile?> getVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
@@ -98,7 +96,7 @@ class ImagePicker {
     );
   }
 
-  /// Retrieve the lost [PickedFile] when [selectImage] or [selectVideo] failed because the  MainActivity is destroyed. (Android only)
+  /// Retrieve the lost [XFile] when [selectImage] or [selectVideo] failed because the  MainActivity is destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
   /// Call this method to retrieve the lost data and process the data according to your APP's business logic.

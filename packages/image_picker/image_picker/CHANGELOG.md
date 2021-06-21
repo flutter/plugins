@@ -1,3 +1,8 @@
+## 0.9.0
+
+* Breaking change:
+    * Changed all usages of PickedFile to XFile
+
 ## 0.8.0+4
 
 * Cleaned up the README example

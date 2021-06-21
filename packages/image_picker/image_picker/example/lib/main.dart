@@ -36,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PickedFile? _imageFile;
+  XFile? _imageFile;
   dynamic _pickImageError;
   bool isVideo = false;
   VideoPlayerController? _controller;
@@ -48,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
 
-  Future<void> _playVideo(PickedFile? file) async {
+  Future<void> _playVideo(XFile? file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
       late VideoPlayerController controller;
@@ -78,7 +78,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller!.setVolume(0.0);
     }
     if (isVideo) {
-      final PickedFile? file = await _picker.getVideo(
+      final XFile? file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else {
