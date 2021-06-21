@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -12,7 +9,9 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
@@ -122,7 +121,7 @@ class LintPodspecsCommand extends PluginCommand {
   }
 
   Future<ProcessResult> _runPodLint(String podspecPath,
-      {bool libraryLint}) async {
+      {required bool libraryLint}) async {
     final bool allowWarnings = (getStringListArg('ignore-warnings'))
         .contains(p.basenameWithoutExtension(podspecPath));
     final List<String> arguments = <String>[

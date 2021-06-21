@@ -1,3 +1,7 @@
+## 0.3.0+2
+
+* Document `liteModeEnabled` is not available on the web. [#83737](https://github.com/flutter/flutter/issues/83737).
+
 ## 0.3.0+1
 
 * Change sizing code of `GoogleMap` widget's `HtmlElementView` so it works well when slotted.

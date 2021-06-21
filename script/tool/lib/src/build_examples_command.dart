@@ -9,7 +9,16 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/plugin_utils.dart';
+import 'common/process_runner.dart';
+
+/// Key for IPA.
+const String kIpa = 'ipa';
+
+/// Key for APK.
+const String kApk = 'apk';
 
 /// A command to build the example applications for packages.
 class BuildExamplesCommand extends PluginCommand {
@@ -18,10 +27,10 @@ class BuildExamplesCommand extends PluginCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
-    argParser.addFlag(kLinux, defaultsTo: false);
-    argParser.addFlag(kMacos, defaultsTo: false);
-    argParser.addFlag(kWeb, defaultsTo: false);
-    argParser.addFlag(kWindows, defaultsTo: false);
+    argParser.addFlag(kPlatformLinux, defaultsTo: false);
+    argParser.addFlag(kPlatformMacos, defaultsTo: false);
+    argParser.addFlag(kPlatformWeb, defaultsTo: false);
+    argParser.addFlag(kPlatformWindows, defaultsTo: false);
     argParser.addFlag(kIpa, defaultsTo: io.Platform.isMacOS);
     argParser.addFlag(kApk);
     argParser.addOption(
@@ -44,10 +53,10 @@ class BuildExamplesCommand extends PluginCommand {
     final List<String> platformSwitches = <String>[
       kApk,
       kIpa,
-      kLinux,
-      kMacos,
-      kWeb,
-      kWindows,
+      kPlatformLinux,
+      kPlatformMacos,
+      kPlatformWeb,
+      kPlatformWindows,
     ];
     if (!platformSwitches.any((String platform) => getBoolArg(platform))) {
       print(
@@ -66,14 +75,14 @@ class BuildExamplesCommand extends PluginCommand {
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
 
-        if (getBoolArg(kLinux)) {
+        if (getBoolArg(kPlatformLinux)) {
           print('\nBUILDING Linux for $packageName');
           if (isLinuxPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kLinux,
+                  kPlatformLinux,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -86,14 +95,14 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kMacos)) {
+        if (getBoolArg(kPlatformMacos)) {
           print('\nBUILDING macOS for $packageName');
           if (isMacOsPlugin(plugin)) {
             final int exitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kMacos,
+                  kPlatformMacos,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -106,14 +115,14 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kWeb)) {
+        if (getBoolArg(kPlatformWeb)) {
           print('\nBUILDING web for $packageName');
           if (isWebPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kWeb,
+                  kPlatformWeb,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],
@@ -126,14 +135,14 @@ class BuildExamplesCommand extends PluginCommand {
           }
         }
 
-        if (getBoolArg(kWindows)) {
+        if (getBoolArg(kPlatformWindows)) {
           print('\nBUILDING Windows for $packageName');
           if (isWindowsPlugin(plugin)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
                   'build',
-                  kWindows,
+                  kPlatformWindows,
                   if (enableExperiment.isNotEmpty)
                     '--enable-experiment=$enableExperiment',
                 ],

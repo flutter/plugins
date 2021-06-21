@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
@@ -12,7 +10,7 @@ import 'package:file/local.dart';
 
 import 'analyze_command.dart';
 import 'build_examples_command.dart';
-import 'common.dart';
+import 'common/core.dart';
 import 'create_all_plugins_app_command.dart';
 import 'drive_examples_command.dart';
 import 'firebase_test_lab_command.dart';

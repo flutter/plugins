@@ -8,7 +8,7 @@
 PRODUCT_NAME = example
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.example
+PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.example
 
 // The copyright displayed in application information
-PRODUCT_COPYRIGHT = Copyright © 2021 io.flutter.plugins. All rights reserved.
+PRODUCT_COPYRIGHT = Copyright © 2021 The Flutter Authors. All rights reserved.

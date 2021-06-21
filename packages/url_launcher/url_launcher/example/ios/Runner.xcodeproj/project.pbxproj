@@ -591,7 +591,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.urlLauncher;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.urlLauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -612,7 +612,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.urlLauncher;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.urlLauncher;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -626,7 +626,7 @@
 				INFOPLIST_FILE = RunnerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
@@ -641,7 +641,7 @@
 				INFOPLIST_FILE = RunnerTests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerTests;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
 			};
@@ -654,7 +654,7 @@
 				INFOPLIST_FILE = RunnerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = Runner;
 			};
@@ -667,7 +667,7 @@
 				INFOPLIST_FILE = RunnerUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.RunnerUITests;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.RunnerUITests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_TARGET_NAME = Runner;
 			};
