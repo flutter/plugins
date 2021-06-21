@@ -136,6 +136,12 @@ class InAppPurchaseAndroidPlatformAddition
         pastPurchases: pastPurchases, error: error);
   }
 
+  /// Checks if the specified feature or capability is supported by the Play Store.
+  /// Call this to check if a [BillingClientFeature] is supported by the device.
+  Future<bool> isFeatureSupported(BillingClientFeature feature) async {
+    return _billingClient.isFeatureSupported(feature);
+  }
+
   Future<BillingResultWrapper> launchPriceChangeConfirmationFlow({required String sku}){
     return _billingClient.launchPriceChangeConfirmationFlow(sku: sku);
   }

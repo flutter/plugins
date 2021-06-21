@@ -29,12 +29,12 @@ enum PlatformSupport {
 /// implementation in order to return true.
 bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
     {PlatformSupport? requiredMode}) {
-  assert(platform == kPlatformFlagIos ||
-      platform == kPlatformFlagAndroid ||
-      platform == kPlatformFlagWeb ||
-      platform == kPlatformFlagMacos ||
-      platform == kPlatformFlagWindows ||
-      platform == kPlatformFlagLinux);
+  assert(platform == kPlatformIos ||
+      platform == kPlatformAndroid ||
+      platform == kPlatformWeb ||
+      platform == kPlatformMacos ||
+      platform == kPlatformWindows ||
+      platform == kPlatformLinux);
   if (entity is! Directory) {
     return false;
   }
@@ -59,7 +59,7 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
         return false;
       }
       if (!pluginSection.containsKey('platforms')) {
-        return platform == kPlatformFlagIos || platform == kPlatformFlagAndroid;
+        return platform == kPlatformIos || platform == kPlatformAndroid;
       }
       return false;
     }
@@ -81,30 +81,30 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
 
 /// Returns whether the given directory contains a Flutter Android plugin.
 bool isAndroidPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagAndroid, entity);
+  return pluginSupportsPlatform(kPlatformAndroid, entity);
 }
 
 /// Returns whether the given directory contains a Flutter iOS plugin.
 bool isIosPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagIos, entity);
+  return pluginSupportsPlatform(kPlatformIos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter web plugin.
 bool isWebPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagWeb, entity);
+  return pluginSupportsPlatform(kPlatformWeb, entity);
 }
 
 /// Returns whether the given directory contains a Flutter Windows plugin.
 bool isWindowsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagWindows, entity);
+  return pluginSupportsPlatform(kPlatformWindows, entity);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.
 bool isMacOsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagMacos, entity);
+  return pluginSupportsPlatform(kPlatformMacos, entity);
 }
 
 /// Returns whether the given directory contains a Flutter linux plugin.
 bool isLinuxPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformFlagLinux, entity);
+  return pluginSupportsPlatform(kPlatformLinux, entity);
 }

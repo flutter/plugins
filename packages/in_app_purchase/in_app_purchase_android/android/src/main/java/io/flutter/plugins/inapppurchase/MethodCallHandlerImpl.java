@@ -147,6 +147,9 @@ class MethodCallHandlerImpl
       case InAppPurchasePlugin.MethodNames.ACKNOWLEDGE_PURCHASE:
         acknowledgePurchase((String) call.argument("purchaseToken"), result);
         break;
+      case InAppPurchasePlugin.MethodNames.IS_FEATURE_SUPPORTED:
+        isFeatureSupported((String) call.argument("feature"), result);
+		break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW:
         launchPriceChangeConfirmationFlow(
                 (String) call.argument("sku"),
@@ -419,5 +422,14 @@ class MethodCallHandlerImpl
 
     result.error("UNAVAILABLE", "BillingClient is unset. Try reconnecting.", null);
     return true;
+  }
+
+  private void isFeatureSupported(String feature, MethodChannel.Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+    assert billingClient != null;
+    BillingResult billingResult = billingClient.isFeatureSupported(feature);
+    result.success(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK);
   }
 }
