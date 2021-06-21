@@ -49,7 +49,8 @@ void main() {
     // use a fully resolved version to avoid potential path comparison issues.
     testRoot = fileSystem.directory(testRoot.resolveSymbolicLinksSync());
     packagesDir = createPackagesDirectory(parentDir: testRoot);
-    pluginDir = createFakePlugin(testPluginName, packagesDir);
+    pluginDir =
+        createFakePlugin(testPluginName, packagesDir, examples: <String>[]);
     assert(pluginDir != null && pluginDir.existsSync());
     io.Process.runSync('git', <String>['init'],
         workingDirectory: testRoot.path);
@@ -429,8 +430,10 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
-          parentDirectoryName: 'plugin2');
+      final Directory pluginDir2 = createFakePlugin(
+        'plugin2',
+        packagesDir.childDirectory('plugin2'),
+      );
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -474,8 +477,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
-          parentDirectoryName: 'plugin2');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -505,8 +508,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
-          parentDirectoryName: 'plugin2');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
@@ -541,8 +544,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
-          parentDirectoryName: 'plugin2');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -619,8 +622,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
-          parentDirectoryName: 'plugin2');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -692,18 +695,12 @@ void main() {
         'versions revert do not trigger releases. Also prints out warning message.',
         () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin(
-        'plugin1',
-        packagesDir,
-        version: '0.0.2',
-      );
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
       final Directory pluginDir2 = createFakePlugin(
-        'plugin2',
-        packagesDir,
-        version: '0.0.2',
-        parentDirectoryName: 'plugin2',
-      );
+          'plugin2', packagesDir.childDirectory('plugin2'),
+          version: '0.0.2');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -771,8 +768,8 @@ void main() {
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2', packagesDir,
-          parentDirectoryName: 'plugin2');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
       io.Process.runSync('git', <String>['init'],
           workingDirectory: testRoot.path);

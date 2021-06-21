@@ -13,6 +13,7 @@ import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:quiver/collection.dart';
 
 /// Creates a packages directory in the given location.
@@ -51,70 +52,80 @@ class PlatformDetails {
 ///
 /// [platformSupport] is a map of platform string to the support details for
 /// that platform.
+///
+/// [extraFiles] is an optional list of plugin-relative paths, using Posix
+/// separators, of extra files to create in the plugin.
 Directory createFakePlugin(
   String name,
-  Directory packagesDirectory, {
+  Directory parentDirectory, {
   List<String> examples = const <String>['example'],
-  List<List<String>> extraFiles = const <List<String>>[],
+  List<String> extraFiles = const <String>[],
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
   String? version = '0.0.1',
-  String parentDirectoryName = '',
 }) {
-  Directory parentDirectory = packagesDirectory;
-  if (parentDirectoryName != '') {
-    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
-  }
-  final Directory pluginDirectory =
-      createFakePackage(name, parentDirectory, extraFiles: extraFiles);
-
-  createFakePubspec(pluginDirectory,
-      name: name,
+  final Directory pluginDirectory = createFakePackage(name, parentDirectory,
       isFlutter: true,
-      platformSupport: platformSupport,
+      examples: examples,
+      extraFiles: extraFiles,
       version: version);
-  createFakeCHANGELOG(pluginDirectory, '''
-## $version
-  * Some changes.
-  ''');
 
-  if (examples.length == 1) {
-    final Directory exampleDir = pluginDirectory.childDirectory(examples.first)
-      ..createSync();
-    createFakePubspec(exampleDir,
-        name: '${name}_example', isFlutter: true, publishTo: 'none');
-  } else if (examples.isNotEmpty) {
-    final Directory exampleDir = pluginDirectory.childDirectory('example')
-      ..createSync();
-    for (final String example in examples) {
-      final Directory currentExample = exampleDir.childDirectory(example)
-        ..createSync();
-      createFakePubspec(currentExample,
-          name: example, isFlutter: true, publishTo: 'none');
-    }
-  }
+  createFakePubspec(
+    pluginDirectory,
+    name: name,
+    isFlutter: true,
+    isPlugin: true,
+    platformSupport: platformSupport,
+    version: version,
+  );
 
   return pluginDirectory;
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
 ///
-/// [platformSupport] is a map of platform string to the support details for
-/// that platform.
+/// [extraFiles] is an optional list of package-relative paths, using unix-style
+/// separators, of extra files to create in the package.
 Directory createFakePackage(
   String name,
   Directory parentDirectory, {
-  List<List<String>> extraFiles = const <List<String>>[],
+  List<String> examples = const <String>['example'],
+  List<String> extraFiles = const <String>[],
   bool isFlutter = false,
+  String? version = '0.0.1',
 }) {
   final Directory packageDirectory = parentDirectory.childDirectory(name);
   packageDirectory.createSync(recursive: true);
 
   createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
+  createFakeCHANGELOG(packageDirectory, '''
+## $version
+  * Some changes.
+  ''');
+
+  if (examples.length == 1) {
+    final Directory exampleDir = packageDirectory.childDirectory(examples.first)
+      ..createSync();
+    createFakePubspec(exampleDir,
+        name: '${name}_example', isFlutter: isFlutter, publishTo: 'none');
+  } else if (examples.isNotEmpty) {
+    final Directory exampleDir = packageDirectory.childDirectory('example')
+      ..createSync();
+    for (final String example in examples) {
+      final Directory currentExample = exampleDir.childDirectory(example)
+        ..createSync();
+      createFakePubspec(currentExample,
+          name: example, isFlutter: isFlutter, publishTo: 'none');
+    }
+  }
 
   final FileSystem fileSystem = packageDirectory.fileSystem;
-  for (final List<String> file in extraFiles) {
-    final List<String> newFilePath = <String>[packageDirectory.path, ...file];
+  final p.Context posixContext = p.posix;
+  for (final String file in extraFiles) {
+    final List<String> newFilePath = <String>[
+      packageDirectory.path,
+      ...posixContext.split(file)
+    ];
     final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
   }
@@ -130,28 +141,35 @@ void createFakeCHANGELOG(Directory parent, String texts) {
 /// Creates a `pubspec.yaml` file with a flutter dependency.
 ///
 /// [platformSupport] is a map of platform string to the support details for
-/// that platform.
+/// that platform. If empty, no `plugin` entry will be created unless `isPlugin`
+/// is set to `true`.
 void createFakePubspec(
   Directory parent, {
   String name = 'fake_package',
   bool isFlutter = true,
+  bool isPlugin = false,
   Map<String, PlatformDetails> platformSupport =
       const <String, PlatformDetails>{},
   String publishTo = 'http://no_pub_server.com',
   String? version,
 }) {
+  isPlugin |= platformSupport.isNotEmpty;
   parent.childFile('pubspec.yaml').createSync();
   String yaml = '''
 name: $name
+''';
+  if (isFlutter) {
+    if (isPlugin) {
+      yaml += '''
 flutter:
   plugin:
     platforms:
 ''';
-  for (final MapEntry<String, PlatformDetails> platform
-      in platformSupport.entries) {
-    yaml += _pluginPlatformSection(platform.key, platform.value, name);
-  }
-  if (isFlutter) {
+      for (final MapEntry<String, PlatformDetails> platform
+          in platformSupport.entries) {
+        yaml += _pluginPlatformSection(platform.key, platform.value, name);
+      }
+    }
     yaml += '''
 dependencies:
   flutter:

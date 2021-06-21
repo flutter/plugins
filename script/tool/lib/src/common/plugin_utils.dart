@@ -92,7 +92,7 @@ bool pluginSupportsPlatform(
         // Platforms with variants have a default variant when unspecified for
         // backward compatibility. Must match the flutter tool logic.
         const Map<String, String> defaultVariants = <String, String>{
-          kPlatformWindows: kPlatformVariantWin32,
+          kPlatformWindows: platformVariantWin32,
         };
         if (variant != defaultVariants[platform]) {
           return false;

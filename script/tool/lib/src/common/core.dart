@@ -40,12 +40,12 @@ const String kPlatformWindows = 'windows';
 const String kPlatformWinUwp = 'winuwp';
 
 /// Key for Win32 variant of the Windows platform.
-const String kPlatformVariantWin32 = 'win32';
+const String platformVariantWin32 = 'win32';
 
 /// Key for UWP variant of the Windows platform.
 ///
 /// See the note on [kPlatformWinUwp].
-const String kPlatformVariantWinUwp = 'winuwp';
+const String platformVariantWinUwp = 'winuwp';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';

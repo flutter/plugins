@@ -36,13 +36,13 @@ void main() {
       final Directory plugin = createFakePlugin(
         'plugin1',
         packagesDir,
-        extraFiles: <List<String>>[
-          <String>['example/android', 'gradlew'],
-          <String>['android/src/test', 'example_test.java'],
-        ],
         platformSupport: <String, PlatformDetails>{
           kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
         },
+        extraFiles: <String>[
+          'example/android/gradlew',
+          'android/src/test/example_test.java',
+        ],
       );
 
       await runner.run(<String>['java-test']);
@@ -63,13 +63,13 @@ void main() {
       final Directory plugin = createFakePlugin(
         'plugin1',
         packagesDir,
-        extraFiles: <List<String>>[
-          <String>['example/android', 'gradlew'],
-          <String>['example/android/app/src/test', 'example_test.java'],
-        ],
         platformSupport: <String, PlatformDetails>{
           kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
         },
+        extraFiles: <String>[
+          'example/android/gradlew',
+          'example/android/app/src/test/example_test.java',
+        ],
       );
 
       await runner.run(<String>['java-test']);

@@ -24,6 +24,6 @@ enum PurchaseStatus {
   /// You should validate the purchase and if valid deliver the content. Once the
   /// content has been delivered or if the receipt is invalid you should finish
   /// the purchase by calling the `completePurchase` method. More information on
-  /// verifying purchases can be found [here](https://pub.dev/packages/in_app_purchase#loading-previous-purchases).
+  /// verifying purchases can be found [here](https://pub.dev/packages/in_app_purchase#restoring-previous-purchases).
   restored,
 }

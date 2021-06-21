@@ -199,11 +199,11 @@ void main() {
 
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWin32),
+              variant: platformVariantWin32),
           isTrue);
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWinUwp),
+              variant: platformVariantWinUwp),
           isFalse);
     });
 
@@ -212,17 +212,17 @@ void main() {
           platformSupport: <String, PlatformDetails>{
             kPlatformWindows: const PlatformDetails(
               PlatformSupport.federated,
-              variants: <String>[kPlatformVariantWin32, kPlatformVariantWinUwp],
+              variants: <String>[platformVariantWin32, platformVariantWinUwp],
             ),
           });
 
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWin32),
+              variant: platformVariantWin32),
           isTrue);
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWinUwp),
+              variant: platformVariantWinUwp),
           isTrue);
     });
 
@@ -231,17 +231,17 @@ void main() {
           platformSupport: <String, PlatformDetails>{
             kPlatformWindows: const PlatformDetails(
               PlatformSupport.federated,
-              variants: <String>[kPlatformVariantWin32],
+              variants: <String>[platformVariantWin32],
             ),
           });
 
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWin32),
+              variant: platformVariantWin32),
           isTrue);
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWinUwp),
+              variant: platformVariantWinUwp),
           isFalse);
     });
 
@@ -251,17 +251,17 @@ void main() {
         packagesDir,
         platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
-              variants: <String>[kPlatformVariantWinUwp]),
+              variants: <String>[platformVariantWinUwp]),
         },
       );
 
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWin32),
+              variant: platformVariantWin32),
           isFalse);
       expect(
           pluginSupportsPlatform(kPlatformWindows, plugin,
-              variant: kPlatformVariantWinUwp),
+              variant: platformVariantWinUwp),
           isTrue);
     });
   });

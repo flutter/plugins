@@ -40,20 +40,13 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(1);
       processRunner.processToReturn = mockProcess;
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['lib/test/should_not_run_e2e.dart'],
-        <String>['example', 'test_driver', 'plugin_e2e.dart'],
-        <String>['example', 'test_driver', 'plugin_e2e_test.dart'],
-        <String>['example', 'android', 'gradlew'],
-        <String>['example', 'should_not_run_e2e.dart'],
-        <String>[
-          'example',
-          'android',
-          'app',
-          'src',
-          'androidTest',
-          'MainActivityTest.java'
-        ],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'lib/test/should_not_run_e2e.dart',
+        'example/test_driver/plugin_e2e.dart',
+        'example/test_driver/plugin_e2e_test.dart',
+        'example/android/gradlew',
+        'example/should_not_run_e2e.dart',
+        'example/android/app/src/androidTest/MainActivityTest.java',
       ]);
       await expectLater(
           () => runCapturingPrint(runner, <String>['firebase-test-lab']),
@@ -65,26 +58,19 @@ void main() {
     });
 
     test('runs e2e tests', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['test', 'plugin_test.dart'],
-        <String>['test', 'plugin_e2e.dart'],
-        <String>['should_not_run_e2e.dart'],
-        <String>['lib/test/should_not_run_e2e.dart'],
-        <String>['example', 'test', 'plugin_e2e.dart'],
-        <String>['example', 'test_driver', 'plugin_e2e.dart'],
-        <String>['example', 'test_driver', 'plugin_e2e_test.dart'],
-        <String>['example', 'integration_test', 'foo_test.dart'],
-        <String>['example', 'integration_test', 'should_not_run.dart'],
-        <String>['example', 'android', 'gradlew'],
-        <String>['example', 'should_not_run_e2e.dart'],
-        <String>[
-          'example',
-          'android',
-          'app',
-          'src',
-          'androidTest',
-          'MainActivityTest.java'
-        ],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'test/plugin_test.dart',
+        'test/plugin_e2e.dart',
+        'should_not_run_e2e.dart',
+        'lib/test/should_not_run_e2e.dart',
+        'example/test/plugin_e2e.dart',
+        'example/test_driver/plugin_e2e.dart',
+        'example/test_driver/plugin_e2e_test.dart',
+        'example/integration_test/foo_test.dart',
+        'example/integration_test/should_not_run.dart',
+        'example/android/gradlew',
+        'example/should_not_run_e2e.dart',
+        'example/android/app/src/androidTest/MainActivityTest.java',
       ]);
 
       await runCapturingPrint(runner, <String>[
@@ -168,26 +154,19 @@ void main() {
     });
 
     test('experimental flag', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['test', 'plugin_test.dart'],
-        <String>['test', 'plugin_e2e.dart'],
-        <String>['should_not_run_e2e.dart'],
-        <String>['lib/test/should_not_run_e2e.dart'],
-        <String>['example', 'test', 'plugin_e2e.dart'],
-        <String>['example', 'test_driver', 'plugin_e2e.dart'],
-        <String>['example', 'test_driver', 'plugin_e2e_test.dart'],
-        <String>['example', 'integration_test', 'foo_test.dart'],
-        <String>['example', 'integration_test', 'should_not_run.dart'],
-        <String>['example', 'android', 'gradlew'],
-        <String>['example', 'should_not_run_e2e.dart'],
-        <String>[
-          'example',
-          'android',
-          'app',
-          'src',
-          'androidTest',
-          'MainActivityTest.java'
-        ],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'test/plugin_test.dart',
+        'test/plugin_e2e.dart',
+        'should_not_run_e2e.dart',
+        'lib/test/should_not_run_e2e.dart',
+        'example/test/plugin_e2e.dart',
+        'example/test_driver/plugin_e2e.dart',
+        'example/test_driver/plugin_e2e_test.dart',
+        'example/integration_test/foo_test.dart',
+        'example/integration_test/should_not_run.dart',
+        'example/android/gradlew',
+        'example/should_not_run_e2e.dart',
+        'example/android/app/src/androidTest/MainActivityTest.java',
       ]);
 
       await runCapturingPrint(runner, <String>[

@@ -167,7 +167,7 @@ Tried searching for the following:
             ]);
           }
           if (isWindows &&
-              isWindowsPlugin(plugin, variant: kPlatformVariantWin32)) {
+              isWindowsPlugin(plugin, variant: platformVariantWin32)) {
             driveArgs.addAll(<String>[
               '-d',
               'windows',
@@ -244,7 +244,7 @@ Tried searching for the following:
       return isWebPlugin(plugin);
     }
     if (isWindows) {
-      return isWindowsPlugin(plugin, variant: kPlatformVariantWin32);
+      return isWindowsPlugin(plugin, variant: platformVariantWin32);
     }
     // When we are here, no flags are specified. Only return true if the plugin
     // supports Android for legacy command support.

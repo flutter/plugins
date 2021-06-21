@@ -139,7 +139,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kPlatformWindows)) {
           print('\nBUILDING Windows (Win32) for $packageName');
-          if (isWindowsPlugin(plugin, variant: kPlatformVariantWin32)) {
+          if (isWindowsPlugin(plugin, variant: platformVariantWin32)) {
             final int buildExitCode = await processRunner.runAndStream(
                 flutterCommand,
                 <String>[
@@ -159,7 +159,7 @@ class BuildExamplesCommand extends PluginCommand {
 
         if (getBoolArg(kPlatformWinUwp)) {
           print('\nBUILDING UWP for $packageName');
-          if (isWindowsPlugin(plugin, variant: kPlatformVariantWinUwp)) {
+          if (isWindowsPlugin(plugin, variant: platformVariantWinUwp)) {
             // The UWP template is not yet stable, so the UWP directory
             // needs to be created on the fly with 'flutter create .'
             final Directory uwpFolder = example.childDirectory('uwp');

@@ -338,11 +338,7 @@ void main() {
       final Directory pluginDirectory =
           createFakePlugin('plugin', packagesDir, version: version);
       const String changelog = '''
-
-
-
 ## $version
-
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -363,7 +359,6 @@ void main() {
           createFakePlugin('plugin', packagesDir, version: '1.0.1');
       const String changelog = '''
 ## 1.0.2
-
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -397,7 +392,6 @@ The first version listed in CHANGELOG.md is 1.0.2.
 
       const String changelog = '''
 ## $version
-
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -421,11 +415,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
 
       const String changelog = '''
 ## 1.0.1
-
 * Some changes.
-
 ## 1.0.0
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -462,11 +453,8 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
       const String changelog = '''
 ## NEXT
-
 * Some changes that won't be published until the next time there's a release.
-
 ## $version
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -490,15 +478,10 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
       const String changelog = '''
 ## $version
-
 * Some changes.
-
 ## NEXT
-
 * Some changes that should have been folded in 1.0.1.
-
 ## 1.0.0
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
@@ -532,11 +515,8 @@ into the new version's release notes.
 
       const String changelog = '''
 ## NEXT
-
 * Some changes that should be listed as part of 1.0.1.
-
 ## 1.0.0
-
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
