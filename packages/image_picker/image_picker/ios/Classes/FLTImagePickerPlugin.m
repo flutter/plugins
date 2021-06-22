@@ -142,6 +142,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       self.result = result;
       _arguments = call.arguments;
       [self pickImageWithPHPicker:0];
+    } else {
+      [self pickImageWithUIImagePicker];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
