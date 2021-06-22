@@ -129,7 +129,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
 
     switch (preset) {
-      // All of these cases deliberately fall through to get the best available profile.
+        // All of these cases deliberately fall through to get the best available profile.
       case max:
         if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_HIGH)) {
           return CamcorderProfile.get(cameraId, CamcorderProfile.QUALITY_HIGH);
