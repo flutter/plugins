@@ -32,6 +32,7 @@ public class ImagePickerPluginTest {
   private static final int SOURCE_CAMERA = 0;
   private static final int SOURCE_GALLERY = 1;
   private static final String PICK_IMAGE = "pickImage";
+  private static final String PICK_MULTI_IMAGE = "pickMultiImage";
   private static final String PICK_VIDEO = "pickVideo";
 
   @Rule public ExpectedException exception = ExpectedException.none();
@@ -89,6 +90,14 @@ public class ImagePickerPluginTest {
     MethodCall call = buildMethodCall(PICK_IMAGE, SOURCE_GALLERY);
     plugin.onMethodCall(call, mockResult);
     verify(mockImagePickerDelegate).chooseImageFromGallery(eq(call), any());
+    verifyZeroInteractions(mockResult);
+  }
+
+  @Test
+  public void onMethodCall_InvokesChooseMultiImageFromGallery() {
+    MethodCall call = buildMethodCall(PICK_MULTI_IMAGE);
+    plugin.onMethodCall(call, mockResult);
+    verify(mockImagePickerDelegate).chooseMultiImageFromGallery(eq(call), any());
     verifyZeroInteractions(mockResult);
   }
 
@@ -172,5 +181,9 @@ public class ImagePickerPluginTest {
     arguments.put("source", source);
 
     return new MethodCall(method, arguments);
+  }
+
+  private MethodCall buildMethodCall(String method) {
+    return new MethodCall(method, null);
   }
 }
