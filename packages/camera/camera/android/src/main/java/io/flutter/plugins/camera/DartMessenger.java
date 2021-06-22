@@ -16,7 +16,7 @@ import io.flutter.plugins.camera.types.FocusMode;
 import java.util.HashMap;
 import java.util.Map;
 
-class DartMessenger {
+public class DartMessenger {
   @NonNull private final Handler handler;
   @Nullable private MethodChannel cameraChannel;
   @Nullable private MethodChannel deviceChannel;
@@ -48,7 +48,7 @@ class DartMessenger {
     this.handler = handler;
   }
 
-  void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
+  public void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
     assert (orientation != null);
     this.send(
         DeviceEventType.ORIENTATION_CHANGED,

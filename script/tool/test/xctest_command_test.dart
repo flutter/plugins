@@ -113,8 +113,8 @@ void main() {
 
     group('iOS', () {
       test('skip if iOS is not supported', () async {
-        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformMacos: PlatformSupport.inline,
         });
@@ -125,13 +125,15 @@ void main() {
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
-            output, contains('iOS is not implemented by this plugin package.'));
+            output,
+            contains(
+                contains('iOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('skip if iOS is implemented in a federated package', () async {
-        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.federated
         });
@@ -142,19 +144,21 @@ void main() {
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
-            output, contains('iOS is not implemented by this plugin package.'));
+            output,
+            contains(
+                contains('iOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('running with correct destination, exclude 1 plugin', () async {
-        createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
         final Directory pluginDirectory2 =
-            createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+            createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
@@ -176,10 +180,12 @@ void main() {
           'plugin1'
         ]);
 
-        expect(output, isNot(contains('Start running for plugin1...')));
-        expect(output, contains('Start running for plugin2...'));
-        expect(output,
-            contains('Successfully ran iOS xctest for plugin2/example'));
+        expect(output, isNot(contains(contains('Running for plugin1'))));
+        expect(output, contains(contains('Running for plugin2')));
+        expect(
+            output,
+            contains(
+                contains('Successfully ran iOS xctest for plugin2/example')));
 
         expect(
             processRunner.recordedCalls,
@@ -207,8 +213,8 @@ void main() {
       test('Not specifying --ios-destination assigns an available simulator',
           () async {
         final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
@@ -261,8 +267,8 @@ void main() {
         createFakePlugin(
           'plugin',
           packagesDir,
-          extraFiles: <List<String>>[
-            <String>['example', 'test'],
+          extraFiles: <String>[
+            'example/test',
           ],
         );
 
@@ -271,14 +277,16 @@ void main() {
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output,
-            contains('macOS is not implemented by this plugin package.'));
+        expect(
+            output,
+            contains(
+                contains('macOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('skip if macOS is implemented in a federated package', () async {
-        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformMacos: PlatformSupport.federated,
         });
@@ -288,15 +296,17 @@ void main() {
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output,
-            contains('macOS is not implemented by this plugin package.'));
+        expect(
+            output,
+            contains(
+                contains('macOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('runs for macOS plugin', () async {
         final Directory pluginDirectory1 =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformMacos: PlatformSupport.inline,
         });
@@ -314,8 +324,10 @@ void main() {
           '--macos',
         ]);
 
-        expect(output,
-            contains('Successfully ran macOS xctest for plugin/example'));
+        expect(
+            output,
+            contains(
+                contains('Successfully ran macOS xctest for plugin/example')));
 
         expect(
             processRunner.recordedCalls,
