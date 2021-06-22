@@ -34,7 +34,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     ImagePickerPlatform.instance = ImagePickerPlugin();
   }
 
-  /// Returns a [PickedFile] with the image that was picked.
+  /// Returns a [XFile] with the image that was picked.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -47,7 +47,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ///
   /// If no images were picked, the return value is null.
   @override
-  Future<PickedFile> pickImage({
+  Future<XFile> pickImage({
     required ImageSource source,
     double? maxWidth,
     double? maxHeight,
@@ -58,7 +58,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return pickFile(accept: _kAcceptImageMimeType, capture: capture);
   }
 
-  /// Returns a [PickedFile] containing the video that was picked.
+  /// Returns a [XFile] containing the video that was picked.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -71,7 +71,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ///
   /// If no images were picked, the return value is null.
   @override
-  Future<PickedFile> pickVideo({
+  Future<XFile> pickVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
@@ -81,12 +81,12 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
-  /// returns the PickedFile that the user selected locally.
+  /// returns the XFile that the user selected locally.
   ///
   /// `capture` is only supported in mobile browsers.
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
-  Future<PickedFile> pickFile({
+  Future<XFile> pickFile({
     String? accept,
     String? capture,
   }) {
@@ -130,13 +130,13 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   /// Monitors an <input type="file"> and returns the selected file.
-  Future<PickedFile> _getSelectedFile(html.FileUploadInputElement input) {
-    final Completer<PickedFile> _completer = Completer<PickedFile>();
+  Future<XFile> _getSelectedFile(html.FileUploadInputElement input) {
+    final Completer<XFile> _completer = Completer<XFile>();
     // Observe the input until we can return something
     input.onChange.first.then((event) {
       final objectUrl = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && objectUrl != null) {
-        _completer.complete(PickedFile(objectUrl));
+        _completer.complete(XFile(objectUrl));
       }
     });
     input.onError.first.then((event) {
