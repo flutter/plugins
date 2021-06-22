@@ -36,6 +36,7 @@ API_AVAILABLE(ios(11.2), macos(10.13.2))
 
 @interface SKPaymentQueueStub : SKPaymentQueue
 @property(assign, nonatomic) SKPaymentTransactionState testState;
+@property(strong, nonatomic, nullable) id<SKPaymentTransactionObserver> observer;
 @end
 
 @interface SKPaymentTransactionStub : SKPaymentTransaction

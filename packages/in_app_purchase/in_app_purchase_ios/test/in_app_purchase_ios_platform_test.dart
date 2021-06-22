@@ -302,4 +302,19 @@ void main() {
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
     });
   });
+
+  group('purchase stream', () {
+    test('Should only have active queue when purchaseStream has listeners', () {
+      Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
+      expect(fakeIOSPlatform.queueIsActive, false);
+      StreamSubscription subscription1 = stream.listen((event) {});
+      expect(fakeIOSPlatform.queueIsActive, true);
+      StreamSubscription subscription2 = stream.listen((event) {});
+      expect(fakeIOSPlatform.queueIsActive, true);
+      subscription1.cancel();
+      expect(fakeIOSPlatform.queueIsActive, true);
+      subscription2.cancel();
+      expect(fakeIOSPlatform.queueIsActive, false);
+    });
+  });
 }
