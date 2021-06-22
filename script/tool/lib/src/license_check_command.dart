@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
 
 const Set<String> _codeFileExtensions = <String>{
   '.c',
@@ -98,11 +97,10 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 class LicenseCheckCommand extends PluginCommand {
   /// Creates a new license check command for [packagesDir].
   LicenseCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     Print print = print,
   })  : _print = print,
-        super(packagesDir, fileSystem);
+        super(packagesDir);
 
   final Print _print;
 

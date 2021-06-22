@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -11,23 +9,24 @@ import 'dart:io' as io;
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
-import 'package:meta/meta.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
+import 'common/pub_version_finder.dart';
 
 /// A command to check that packages are publishable via 'dart publish'.
 class PublishCheckCommand extends PluginCommand {
   /// Creates an instance of the publish command.
   PublishCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-    this.httpClient,
+    http.Client? httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addFlag(
       _allowPrereleaseFlag,
       help: 'Allows the pre-release SDK warning to pass.\n'
@@ -65,9 +64,6 @@ class PublishCheckCommand extends PluginCommand {
   @override
   final String description =
       'Checks to make sure that a plugin *could* be published.';
-
-  /// The custom http client used to query versions on pub.
-  final http.Client httpClient;
 
   final PubVersionFinder _pubVersionFinder;
 
@@ -136,7 +132,7 @@ class PublishCheckCommand extends PluginCommand {
     }
   }
 
-  Pubspec _tryParsePubspec(Directory package) {
+  Pubspec? _tryParsePubspec(Directory package) {
     final File pubspecFile = package.childFile('pubspec.yaml');
 
     try {
@@ -206,7 +202,7 @@ class PublishCheckCommand extends PluginCommand {
     final String packageName = package.basename;
     print('Checking that $packageName can be published.');
 
-    final Pubspec pubspec = _tryParsePubspec(package);
+    final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       print('no pubspec');
       return _PublishCheckResult._error;
@@ -215,7 +211,7 @@ class PublishCheckCommand extends PluginCommand {
       return _PublishCheckResult._published;
     }
 
-    final Version version = pubspec.version;
+    final Version? version = pubspec.version;
     final _PublishCheckResult alreadyPublishedResult =
         await _checkIfAlreadyPublished(
             packageName: packageName, version: version);
@@ -239,29 +235,24 @@ class PublishCheckCommand extends PluginCommand {
 
   // Check if `packageName` already has `version` published on pub.
   Future<_PublishCheckResult> _checkIfAlreadyPublished(
-      {String packageName, Version version}) async {
+      {required String packageName, required Version? version}) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(package: packageName);
-    _PublishCheckResult result;
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
-        result = pubVersionFinderResponse.versions.contains(version)
+        return pubVersionFinderResponse.versions.contains(version)
             ? _PublishCheckResult._published
             : _PublishCheckResult._notPublished;
-        break;
       case PubVersionFinderResult.fail:
         print('''
 Error fetching version on pub for $packageName.
 HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
 HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');
-        result = _PublishCheckResult._error;
-        break;
+        return _PublishCheckResult._error;
       case PubVersionFinderResult.noPackageFound:
-        result = _PublishCheckResult._notPublished;
-        break;
+        return _PublishCheckResult._notPublished;
     }
-    return result;
   }
 
   void _setStatus(String status) {
@@ -273,7 +264,7 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     return const JsonEncoder.withIndent('  ').convert(_machineOutput);
   }
 
-  void _printImportantStatusMessage(String message, {@required bool isError}) {
+  void _printImportantStatusMessage(String message, {required bool isError}) {
     final String statusMessage = '${isError ? 'ERROR' : 'SUCCESS'}: $message';
     if (getBoolArg(_machineFlag)) {
       print(statusMessage);

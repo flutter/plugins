@@ -5,7 +5,7 @@
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/pubspec_check_command.dart';
 import 'package:test/test.dart';
 
@@ -21,11 +21,10 @@ void main() {
     setUp(() {
       fileSystem = MemoryFileSystem();
       packagesDir = fileSystem.currentDirectory.childDirectory('packages');
-      initializeFakePackages(parentDir: packagesDir.parent);
+      createPackagesDirectory(parentDir: packagesDir.parent);
       processRunner = RecordingProcessRunner();
-      final PubspecCheckCommand command = PubspecCheckCommand(
-          packagesDir, fileSystem,
-          processRunner: processRunner);
+      final PubspecCheckCommand command =
+          PubspecCheckCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'pubspec_check_command', 'Test for pubspec_check_command');
@@ -89,8 +88,7 @@ dev_dependencies:
     }
 
     test('passes for a plugin following conventions', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -115,8 +113,7 @@ ${devDependenciesSection()}
     });
 
     test('passes for a Flutter package following conventions', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin')}
@@ -164,8 +161,7 @@ ${dependenciesSection()}
     });
 
     test('fails when homepage is included', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeHomepage: true)}
@@ -185,8 +181,7 @@ ${devDependenciesSection()}
     });
 
     test('fails when repository is missing', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeRepository: false)}
@@ -206,8 +201,7 @@ ${devDependenciesSection()}
     });
 
     test('fails when homepage is given instead of repository', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeHomepage: true, includeRepository: false)}
@@ -227,8 +221,7 @@ ${devDependenciesSection()}
     });
 
     test('fails when issue tracker is missing', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true, includeIssueTracker: false)}
@@ -248,8 +241,7 @@ ${devDependenciesSection()}
     });
 
     test('fails when environment section is out of order', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -269,8 +261,7 @@ ${environmentSection()}
     });
 
     test('fails when flutter section is out of order', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -290,8 +281,7 @@ ${devDependenciesSection()}
     });
 
     test('fails when dependencies section is out of order', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}
@@ -311,8 +301,7 @@ ${dependenciesSection()}
     });
 
     test('fails when devDependencies section is out of order', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin',
-          withSingleExample: true, packagesDirectory: packagesDir);
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
 ${headerSection('plugin', isPlugin: true)}

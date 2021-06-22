@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
@@ -11,10 +9,10 @@ import 'dart:io' as io;
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/local.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:git/git.dart';
-import 'package:matcher/matcher.dart';
 import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
@@ -23,14 +21,15 @@ import 'util.dart';
 
 void main() {
   const String testPluginName = 'foo';
-  final List<String> printedMessages = <String>[];
+  late List<String> printedMessages;
 
-  Directory parentDir;
-  Directory pluginDir;
-  GitDir gitDir;
-  TestProcessRunner processRunner;
-  CommandRunner<void> commandRunner;
-  MockStdin mockStdin;
+  late Directory testRoot;
+  late Directory packagesDir;
+  late Directory pluginDir;
+  late GitDir gitDir;
+  late TestProcessRunner processRunner;
+  late CommandRunner<void> commandRunner;
+  late MockStdin mockStdin;
   // This test uses a local file system instead of an in memory one throughout
   // so that git actually works. In setup we initialize a mono repo of plugins
   // with one package and commit everything to Git.
@@ -44,31 +43,33 @@ void main() {
   }
 
   setUp(() async {
-    parentDir = fileSystem.systemTempDirectory
+    testRoot = fileSystem.systemTempDirectory
         .createTempSync('publish_plugin_command_test-');
-    initializeFakePackages(parentDir: parentDir);
-    pluginDir = createFakePlugin(testPluginName,
-        withSingleExample: false, packagesDirectory: parentDir);
+    // The temp directory can have symbolic links, which won't match git output;
+    // use a fully resolved version to avoid potential path comparison issues.
+    testRoot = fileSystem.directory(testRoot.resolveSymbolicLinksSync());
+    packagesDir = createPackagesDirectory(parentDir: testRoot);
+    pluginDir =
+        createFakePlugin(testPluginName, packagesDir, examples: <String>[]);
     assert(pluginDir != null && pluginDir.existsSync());
-    createFakePubspec(pluginDir, includeVersion: true);
     io.Process.runSync('git', <String>['init'],
-        workingDirectory: parentDir.path);
-    gitDir = await GitDir.fromExisting(parentDir.path);
+        workingDirectory: testRoot.path);
+    gitDir = await GitDir.fromExisting(testRoot.path);
     await gitDir.runCommand(<String>['add', '-A']);
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
+    printedMessages = <String>[];
     commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(parentDir, fileSystem,
+      ..addCommand(PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object message) => printedMessages.add(message.toString()),
+          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
-          gitDir: await GitDir.fromExisting(parentDir.path)));
+          gitDir: gitDir));
   });
 
   tearDown(() {
-    parentDir.deleteSync(recursive: true);
-    printedMessages.clear();
+    testRoot.deleteSync(recursive: true);
   });
 
   group('Initial validation', () {
@@ -107,7 +108,7 @@ void main() {
       expect(
           printedMessages,
           containsAllInOrder(<String>[
-            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
+            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? packages/foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
             'Failed, see above for details.',
           ]));
     });
@@ -136,10 +137,11 @@ void main() {
     });
 
     test('can publish non-flutter package', () async {
-      createFakePubspec(pluginDir, includeVersion: true, isFlutter: false);
+      const String packageName = 'a_package';
+      createFakePackage(packageName, packagesDir);
       io.Process.runSync('git', <String>['init'],
-          workingDirectory: parentDir.path);
-      gitDir = await GitDir.fromExisting(parentDir.path);
+          workingDirectory: testRoot.path);
+      gitDir = await GitDir.fromExisting(testRoot.path);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
       // Immediately return 0 when running `pub publish`.
@@ -147,7 +149,7 @@ void main() {
       await commandRunner.run(<String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        packageName,
         '--no-push-tags',
         '--no-tag-release'
       ]);
@@ -282,9 +284,9 @@ void main() {
         '--no-push-tags',
       ]);
 
-      final String tag =
-          (await gitDir.runCommand(<String>['show-ref', 'fake_package-v0.0.1']))
-              .stdout as String;
+      final String? tag = (await gitDir
+              .runCommand(<String>['show-ref', '$testPluginName-v0.0.1']))
+          .stdout as String?;
       expect(tag, isNotEmpty);
     });
 
@@ -300,10 +302,10 @@ void main() {
           throwsA(const TypeMatcher<ToolExit>()));
 
       expect(printedMessages, contains('Publish foo failed.'));
-      final String tag = (await gitDir.runCommand(
-              <String>['show-ref', 'fake_package-v0.0.1'],
+      final String? tag = (await gitDir.runCommand(
+              <String>['show-ref', '$testPluginName-v0.0.1'],
               throwOnError: false))
-          .stdout as String;
+          .stdout as String?;
       expect(tag, isEmpty);
     });
   });
@@ -340,7 +342,7 @@ void main() {
 
       expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
       expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'fake_package-v0.0.1');
+      expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
       expect(printedMessages.last, 'Done!');
     });
 
@@ -358,7 +360,7 @@ void main() {
 
       expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
       expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'fake_package-v0.0.1');
+      expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
       expect(printedMessages.last, 'Done!');
     });
 
@@ -376,7 +378,7 @@ void main() {
           containsAllInOrder(<String>[
             '===============  DRY RUN ===============',
             'Running `pub publish ` in ${pluginDir.path}...\n',
-            'Tagging release fake_package-v0.0.1...',
+            'Tagging release $testPluginName-v0.0.1...',
             'Pushing tag to upstream...',
             'Done!'
           ]));
@@ -397,7 +399,7 @@ void main() {
 
       expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
       expect(processRunner.pushTagsArgs[1], 'origin');
-      expect(processRunner.pushTagsArgs[2], 'fake_package-v0.0.1');
+      expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
       expect(printedMessages.last, 'Done!');
     });
 
@@ -418,31 +420,20 @@ void main() {
   group('Auto release (all-changed flag)', () {
     setUp(() async {
       io.Process.runSync('git', <String>['init'],
-          workingDirectory: parentDir.path);
-      gitDir = await GitDir.fromExisting(parentDir.path);
+          workingDirectory: testRoot.path);
+      gitDir = await GitDir.fromExisting(testRoot.path);
       await gitDir.runCommand(
           <String>['remote', 'add', 'upstream', 'http://localhost:8000']);
     });
 
     test('can release newly created plugins', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      final Directory pluginDir2 = createFakePlugin(
+        'plugin2',
+        packagesDir.childDirectory('plugin2'),
+      );
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -473,13 +464,7 @@ void main() {
     test('can release newly created plugins, while there are existing plugins',
         () async {
       // Prepare an exiting plugin and tag it
-      final Directory pluginDir0 = createFakePlugin('plugin0',
-          withSingleExample: true, packagesDirectory: parentDir);
-      createFakePubspec(pluginDir0,
-          name: 'plugin0',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      createFakePlugin('plugin0', packagesDir);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -490,23 +475,10 @@ void main() {
       processRunner.pushTagsArgs.clear();
 
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -534,23 +506,10 @@ void main() {
 
     test('can release newly created plugins, dry run', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
@@ -583,23 +542,10 @@ void main() {
 
     test('version change triggers releases.', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -674,23 +620,10 @@ void main() {
         'delete package will not trigger publish but exit the command successfully.',
         () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
       // Immediately return 0 when running `pub publish`.
@@ -762,22 +695,11 @@ void main() {
         'versions revert do not trigger releases. Also prints out warning message.',
         () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.2');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
+      final Directory pluginDir2 = createFakePlugin(
+          'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
@@ -844,27 +766,14 @@ void main() {
 
     test('No version change does not release any plugins', () async {
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1',
-          withSingleExample: true, packagesDirectory: parentDir);
+      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
-      final Directory pluginDir2 = createFakePlugin('plugin2',
-          withSingleExample: true,
-          parentDirectoryName: 'plugin2',
-          packagesDirectory: parentDir);
-      createFakePubspec(pluginDir1,
-          name: 'plugin1',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
-      createFakePubspec(pluginDir2,
-          name: 'plugin2',
-          includeVersion: true,
-          isFlutter: false,
-          version: '0.0.1');
+      final Directory pluginDir2 =
+          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
       io.Process.runSync('git', <String>['init'],
-          workingDirectory: parentDir.path);
-      gitDir = await GitDir.fromExisting(parentDir.path);
+          workingDirectory: testRoot.path);
+      gitDir = await GitDir.fromExisting(testRoot.path);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
 
@@ -894,20 +803,20 @@ void main() {
 class TestProcessRunner extends ProcessRunner {
   final List<io.ProcessResult> results = <io.ProcessResult>[];
   // Most recent returned publish process.
-  MockProcess mockPublishProcess;
+  late MockProcess mockPublishProcess;
   final List<String> mockPublishArgs = <String>[];
   final MockProcessResult mockPushTagsResult = MockProcessResult();
   final List<String> pushTagsArgs = <String>[];
 
-  String mockPublishStdout;
-  String mockPublishStderr;
-  int mockPublishCompleteCode;
+  String? mockPublishStdout;
+  String? mockPublishStderr;
+  int? mockPublishCompleteCode;
 
   @override
   Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
     bool exitOnError = false,
     bool logOnError = false,
     Encoding stdoutEncoding = io.systemEncoding,
@@ -930,7 +839,7 @@ class TestProcessRunner extends ProcessRunner {
 
   @override
   Future<io.Process> start(String executable, List<String> args,
-      {Directory workingDirectory}) async {
+      {Directory? workingDirectory}) async {
     /// Never actually publish anything. Start is always and only used for this
     /// since it returns something we can route stdin through.
     assert(executable == 'flutter' &&
@@ -940,10 +849,10 @@ class TestProcessRunner extends ProcessRunner {
     mockPublishArgs.addAll(args);
     mockPublishProcess = MockProcess();
     if (mockPublishStdout != null) {
-      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout));
+      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout!));
     }
     if (mockPublishStderr != null) {
-      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr));
+      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr!));
     }
     if (mockPublishCompleteCode != null) {
       mockPublishProcess.exitCodeCompleter.complete(mockPublishCompleteCode);
@@ -955,8 +864,8 @@ class TestProcessRunner extends ProcessRunner {
 
 class MockStdin extends Mock implements io.Stdin {
   List<List<int>> mockUserInputs = <List<int>>[];
-  StreamController<List<int>> _controller;
-  String readLineOutput;
+  late StreamController<List<int>> _controller;
+  String? readLineOutput;
 
   @override
   Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
@@ -971,14 +880,14 @@ class MockStdin extends Mock implements io.Stdin {
   }
 
   @override
-  StreamSubscription<List<int>> listen(void onData(List<int> event),
-      {Function onError, void onDone(), bool cancelOnError}) {
+  StreamSubscription<List<int>> listen(void onData(List<int> event)?,
+      {Function? onError, void onDone()?, bool? cancelOnError}) {
     return _controller.stream.listen(onData,
         onError: onError, onDone: onDone, cancelOnError: cancelOnError);
   }
 
   @override
-  String readLineSync(
+  String? readLineSync(
           {Encoding encoding = io.systemEncoding,
           bool retainNewlines = false}) =>
       readLineOutput;

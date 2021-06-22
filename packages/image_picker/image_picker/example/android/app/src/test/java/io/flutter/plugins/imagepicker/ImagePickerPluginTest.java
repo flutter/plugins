@@ -4,9 +4,12 @@
 
 package io.flutter.plugins.imagepicker;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyZeroInteractions;
 import static org.mockito.Mockito.when;
@@ -15,6 +18,7 @@ import android.app.Activity;
 import android.app.Application;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
@@ -147,6 +151,20 @@ public class ImagePickerPluginTest {
     new ImagePickerPlugin(mockImagePickerDelegate, mockActivity);
     assertTrue(
         "No exception thrown when ImagePickerPlugin() ran with context instanceof Activity", true);
+  }
+
+  @Test
+  public void constructDelegate_ShouldUseInternalCacheDirectory() {
+    File mockDirectory = new File("/mockpath");
+    when(mockActivity.getCacheDir()).thenReturn(mockDirectory);
+
+    ImagePickerDelegate delegate = plugin.constructDelegate(mockActivity);
+
+    verify(mockActivity, times(1)).getCacheDir();
+    assertThat(
+        "Delegate uses cache directory for storing camera captures",
+        delegate.externalFilesDirectory,
+        equalTo(mockDirectory));
   }
 
   private MethodCall buildMethodCall(String method, final int source) {

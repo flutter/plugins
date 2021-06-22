@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -11,7 +10,9 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:quiver/iterables.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 final Uri _googleFormatterUrl = Uri.https('github.com',
     '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');
@@ -20,10 +21,9 @@ final Uri _googleFormatterUrl = Uri.https('github.com',
 class FormatCommand extends PluginCommand {
   /// Creates an instance of the format command.
   FormatCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
         defaultsTo: 'clang-format',
@@ -144,7 +144,8 @@ class FormatCommand extends PluginCommand {
     final String javaFormatterPath = p.join(
         p.dirname(p.fromUri(io.Platform.script)),
         'google-java-format-1.3-all-deps.jar');
-    final File javaFormatterFile = fileSystem.file(javaFormatterPath);
+    final File javaFormatterFile =
+        packagesDir.fileSystem.file(javaFormatterPath);
 
     if (!javaFormatterFile.existsSync()) {
       print('Downloading Google Java Format...');

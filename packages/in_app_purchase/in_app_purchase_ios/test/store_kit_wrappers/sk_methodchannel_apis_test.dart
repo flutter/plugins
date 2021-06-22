@@ -22,6 +22,7 @@ void main() {
 
   tearDown(() {
     fakeIOSPlatform.testReturnNull = false;
+    fakeIOSPlatform.queueIsActive = null;
   });
 
   group('sk_request_maker', () {
@@ -132,6 +133,18 @@ void main() {
       await queue.restoreTransactions(applicationUserName: 'aUserID');
       expect(fakeIOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
     });
+
+    test('startObservingTransactionQueue should call methodChannel', () async {
+      expect(fakeIOSPlatform.queueIsActive, isNot(true));
+      await SKPaymentQueueWrapper().startObservingTransactionQueue();
+      expect(fakeIOSPlatform.queueIsActive, true);
+    });
+
+    test('stopObservingTransactionQueue should call methodChannel', () async {
+      expect(fakeIOSPlatform.queueIsActive, isNot(false));
+      await SKPaymentQueueWrapper().stopObservingTransactionQueue();
+      expect(fakeIOSPlatform.queueIsActive, false);
+    });
   });
 
   group('Code Redemption Sheet', () {
@@ -165,6 +178,9 @@ class FakeIOSPlatform {
   // present Code Redemption
   bool presentCodeRedemption = false;
 
+  // Listen to purchase updates
+  bool? queueIsActive;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       // request makers
@@ -174,7 +190,7 @@ class FakeIOSPlatform {
         assert(productIDS is List<String>, 'invalid argument type');
         startProductRequestParam = call.arguments;
         if (getProductRequestFailTest) {
-          return Future<Map<String, dynamic>>.value(null);
+          return Future<dynamic>.value(null);
         }
         return Future<Map<String, dynamic>>.value(
             buildProductResponseMap(dummyProductResponseWrapper));
@@ -208,8 +224,14 @@ class FakeIOSPlatform {
       case '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]':
         presentCodeRedemption = true;
         return Future<void>.sync(() {});
+      case '-[SKPaymentQueue startObservingTransactionQueue]':
+        queueIsActive = true;
+        return Future<void>.sync(() {});
+      case '-[SKPaymentQueue stopObservingTransactionQueue]':
+        queueIsActive = false;
+        return Future<void>.sync(() {});
     }
-    return Future<void>.sync(() {});
+    return Future.error('method not mocked');
   }
 }
 

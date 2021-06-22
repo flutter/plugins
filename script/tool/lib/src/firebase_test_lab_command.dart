@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
 import 'dart:async';
 import 'dart:io' as io;
 
@@ -11,32 +9,43 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 /// A command to run tests via Firebase test lab.
 class FirebaseTestLabCommand extends PluginCommand {
   /// Creates an instance of the test runner command.
   FirebaseTestLabCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Print print = print,
   })  : _print = print,
-        super(packagesDir, fileSystem, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner) {
     argParser.addOption(
       'project',
       defaultsTo: 'flutter-infra',
       help: 'The Firebase project name.',
     );
+    final String? homeDir = io.Platform.environment['HOME'];
     argParser.addOption('service-key',
         defaultsTo:
-            p.join(io.Platform.environment['HOME'], 'gcloud-service-key.json'));
+            homeDir == null ? null : p.join(homeDir, 'gcloud-service-key.json'),
+        help: 'The path to the service key for gcloud authentication.\n'
+            r'If not provided, \$HOME/gcloud-service-key.json will be '
+            r'assumed if $HOME is set.');
     argParser.addOption('test-run-id',
         defaultsTo: const Uuid().v4(),
         help:
             'Optional string to append to the results path, to avoid conflicts. '
             'Randomly chosen on each invocation if none is provided. '
             'The default shown here is just an example.');
+    argParser.addOption('build-id',
+        defaultsTo:
+            io.Platform.environment['CIRRUS_BUILD_ID'] ?? 'unknown_build',
+        help:
+            'Optional string to append to the results path, to avoid conflicts. '
+            r'Defaults to $CIRRUS_BUILD_ID if that is set.');
     argParser.addMultiOption('device',
         splitCommas: false,
         defaultsTo: <String>[
@@ -67,48 +76,56 @@ class FirebaseTestLabCommand extends PluginCommand {
 
   final Print _print;
 
-  Completer<void> _firebaseProjectConfigured;
+  Completer<void>? _firebaseProjectConfigured;
 
   Future<void> _configureFirebaseProject() async {
     if (_firebaseProjectConfigured != null) {
-      return _firebaseProjectConfigured.future;
-    } else {
-      _firebaseProjectConfigured = Completer<void>();
+      return _firebaseProjectConfigured!.future;
     }
-    await processRunner.run(
-      'gcloud',
-      <String>[
-        'auth',
-        'activate-service-account',
-        '--key-file=${getStringArg('service-key')}',
-      ],
-      exitOnError: true,
-      logOnError: true,
-    );
-    final int exitCode = await processRunner.runAndStream('gcloud', <String>[
-      'config',
-      'set',
-      'project',
-      getStringArg('project'),
-    ]);
-    if (exitCode == 0) {
-      _print('\nFirebase project configured.');
-      return;
+    _firebaseProjectConfigured = Completer<void>();
+
+    final String serviceKey = getStringArg('service-key');
+    if (serviceKey.isEmpty) {
+      _print('No --service-key provided; skipping gcloud authorization');
     } else {
-      _print(
-          '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
+      await processRunner.run(
+        'gcloud',
+        <String>[
+          'auth',
+          'activate-service-account',
+          '--key-file=$serviceKey',
+        ],
+        exitOnError: true,
+        logOnError: true,
+      );
+      final int exitCode = await processRunner.runAndStream('gcloud', <String>[
+        'config',
+        'set',
+        'project',
+        getStringArg('project'),
+      ]);
+      if (exitCode == 0) {
+        _print('\nFirebase project configured.');
+        return;
+      } else {
+        _print(
+            '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
+      }
     }
-    _firebaseProjectConfigured.complete(null);
+    _firebaseProjectConfigured!.complete(null);
   }
 
   @override
   Future<void> run() async {
     final Stream<Directory> packagesWithTests = getPackages().where(
         (Directory d) =>
-            isFlutterPackage(d, fileSystem) &&
-            fileSystem
-                .directory(p.join(
-                    d.path, 'example', 'android', 'app', 'src', 'androidTest'))
+            isFlutterPackage(d) &&
+            d
+                .childDirectory('example')
+                .childDirectory('android')
+                .childDirectory('app')
+                .childDirectory('src')
+                .childDirectory('androidTest')
                 .existsSync());
 
     final List<String> failingPackages = <String>[];
@@ -118,23 +135,20 @@ class FirebaseTestLabCommand extends PluginCommand {
     await for (final Directory package in packagesWithTests) {
       // See https://github.com/flutter/flutter/issues/38983
 
-      final Directory exampleDirectory =
-          fileSystem.directory(p.join(package.path, 'example'));
+      final Directory exampleDirectory = package.childDirectory('example');
       final String packageName =
           p.relative(package.path, from: packagesDir.path);
       _print('\nRUNNING FIREBASE TEST LAB TESTS for $packageName');
 
       final Directory androidDirectory =
-          fileSystem.directory(p.join(exampleDirectory.path, 'android'));
+          exampleDirectory.childDirectory('android');
 
       final String enableExperiment = getStringArg(kEnableExperiment);
       final String encodedEnableExperiment =
           Uri.encodeComponent('--enable-experiment=$enableExperiment');
 
       // Ensures that gradle wrapper exists
-      if (!fileSystem
-          .file(p.join(androidDirectory.path, _gradleWrapper))
-          .existsSync()) {
+      if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
         final int exitCode = await processRunner.runAndStream(
             'flutter',
             <String>[
@@ -181,8 +195,7 @@ class FirebaseTestLabCommand extends PluginCommand {
 
       final List<Directory> testDirs =
           package.listSync().where(isTestDir).cast<Directory>().toList();
-      final Directory example =
-          fileSystem.directory(p.join(package.path, 'example'));
+      final Directory example = package.childDirectory('example');
       testDirs.addAll(
           example.listSync().where(isTestDir).cast<Directory>().toList());
       for (final Directory testDir in testDirs) {
@@ -214,7 +227,7 @@ class FirebaseTestLabCommand extends PluginCommand {
             failingPackages.add(packageName);
             continue;
           }
-          final String buildId = io.Platform.environment['CIRRUS_BUILD_ID'];
+          final String buildId = getStringArg('build-id');
           final String testRunId = getStringArg('test-run-id');
           final String resultsDir =
               'plugins_android_test/$packageName/$buildId/$testRunId/${resultsCounter++}/';

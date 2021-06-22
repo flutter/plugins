@@ -1,3 +1,27 @@
+## 0.8.0+4
+
+* Cleaned up the README example
+
+## 0.8.0+3
+
+* Readded request for camera permissions.
+
+## 0.8.0+2
+
+* Fix a rotation problem where when camera is chosen as a source and additional parameters are added.
+
+## 0.8.0+1
+
+* Removed redundant request for camera permissions.
+
+## 0.8.0
+
+* BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,
+to comply with new Google Play storage requirements. This means developers are responsible for moving 
+the image or video to a different location in case more permanent storage is required. Other applications 
+will no longer be able to access images or videos captured unless they are moved to a publicly accessible location.
+* Updated Mockito to fix Android tests.
+
 ## 0.7.5+4
 * Migrate maven repo from jcenter to mavenCentral.
 
