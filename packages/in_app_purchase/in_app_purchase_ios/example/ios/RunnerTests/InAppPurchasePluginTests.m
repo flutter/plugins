@@ -301,4 +301,46 @@
   XCTAssertEqualObjects(resultArray, @[ transactionMap ]);
 }
 
+- (void)testStartAndStopObservingPaymentQueue {
+  FlutterMethodCall* startCall = [FlutterMethodCall
+      methodCallWithMethodName:@"-[SKPaymentQueue startObservingTransactionQueue]"
+                     arguments:nil];
+  FlutterMethodCall* stopCall =
+      [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue stopObservingTransactionQueue]"
+                                        arguments:nil];
+
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+
+  self.plugin.paymentQueueHandler =
+      [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+                                transactionsUpdated:nil
+                                 transactionRemoved:nil
+                           restoreTransactionFailed:nil
+               restoreCompletedTransactionsFinished:nil
+                              shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment,
+                                                          SKProduct* _Nonnull product) {
+                                return YES;
+                              }
+                                   updatedDownloads:nil];
+
+  // Check that there is no observer to start with.
+  XCTAssertNil(queue.observer);
+
+  // Start observing
+  [self.plugin handleMethodCall:startCall
+                         result:^(id r){
+                         }];
+
+  // Observer should be set
+  XCTAssertNotNil(queue.observer);
+
+  // Stop observing
+  [self.plugin handleMethodCall:stopCall
+                         result:^(id r){
+                         }];
+
+  // No observer should be set
+  XCTAssertNil(queue.observer);
+}
+
 @end

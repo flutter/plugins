@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 
-import 'common.dart';
+import 'common/plugin_command.dart';
 
 /// A command to list different types of repository content.
 class ListCommand extends PluginCommand {
