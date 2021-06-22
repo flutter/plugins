@@ -9,7 +9,9 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 /// Lint the CocoaPod podspecs and run unit tests.
 ///

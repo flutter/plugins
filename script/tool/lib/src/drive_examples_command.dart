@@ -2,11 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
-import 'common.dart';
+
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/plugin_utils.dart';
+import 'common/process_runner.dart';
 
 /// A command to run the example applications for packages via Flutter driver.
 class DriveExamplesCommand extends PluginCommand {
@@ -15,17 +18,17 @@ class DriveExamplesCommand extends PluginCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
-    argParser.addFlag(kPlatformFlagAndroid,
+    argParser.addFlag(kPlatformAndroid,
         help: 'Runs the Android implementation of the examples');
-    argParser.addFlag(kPlatformFlagIos,
+    argParser.addFlag(kPlatformIos,
         help: 'Runs the iOS implementation of the examples');
-    argParser.addFlag(kPlatformFlagLinux,
+    argParser.addFlag(kPlatformLinux,
         help: 'Runs the Linux implementation of the examples');
-    argParser.addFlag(kPlatformFlagMacos,
+    argParser.addFlag(kPlatformMacos,
         help: 'Runs the macOS implementation of the examples');
-    argParser.addFlag(kPlatformFlagWeb,
+    argParser.addFlag(kPlatformWeb,
         help: 'Runs the web implementation of the examples');
-    argParser.addFlag(kPlatformFlagWindows,
+    argParser.addFlag(kPlatformWindows,
         help: 'Runs the Windows implementation of the examples');
     argParser.addOption(
       kEnableExperiment,
@@ -52,10 +55,10 @@ class DriveExamplesCommand extends PluginCommand {
   Future<void> run() async {
     final List<String> failingTests = <String>[];
     final List<String> pluginsWithoutTests = <String>[];
-    final bool isLinux = getBoolArg(kPlatformFlagLinux);
-    final bool isMacos = getBoolArg(kPlatformFlagMacos);
-    final bool isWeb = getBoolArg(kPlatformFlagWeb);
-    final bool isWindows = getBoolArg(kPlatformFlagWindows);
+    final bool isLinux = getBoolArg(kPlatformLinux);
+    final bool isMacos = getBoolArg(kPlatformMacos);
+    final bool isWeb = getBoolArg(kPlatformWeb);
+    final bool isWindows = getBoolArg(kPlatformWindows);
     await for (final Directory plugin in getPlugins()) {
       final String pluginName = plugin.basename;
       if (pluginName.endsWith('_platform_interface') &&
@@ -219,12 +222,12 @@ Tried searching for the following:
 
   Future<bool> _pluginSupportedOnCurrentPlatform(
       FileSystemEntity plugin) async {
-    final bool isAndroid = getBoolArg(kPlatformFlagAndroid);
-    final bool isIOS = getBoolArg(kPlatformFlagIos);
-    final bool isLinux = getBoolArg(kPlatformFlagLinux);
-    final bool isMacos = getBoolArg(kPlatformFlagMacos);
-    final bool isWeb = getBoolArg(kPlatformFlagWeb);
-    final bool isWindows = getBoolArg(kPlatformFlagWindows);
+    final bool isAndroid = getBoolArg(kPlatformAndroid);
+    final bool isIOS = getBoolArg(kPlatformIos);
+    final bool isLinux = getBoolArg(kPlatformLinux);
+    final bool isMacos = getBoolArg(kPlatformMacos);
+    final bool isWeb = getBoolArg(kPlatformWeb);
+    final bool isWindows = getBoolArg(kPlatformWindows);
     if (isAndroid) {
       return isAndroidPlugin(plugin);
     }

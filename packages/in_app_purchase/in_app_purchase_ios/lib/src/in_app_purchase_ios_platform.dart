@@ -51,7 +51,15 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
     InAppPurchasePlatform.instance = InAppPurchaseIosPlatform();
 
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
-    _observer = _TransactionObserver(StreamController.broadcast());
+
+    // Create a purchaseUpdatedController and notify the native side when to
+    // start of stop sending updates.
+    StreamController<List<PurchaseDetails>> updateController =
+        StreamController.broadcast(
+      onListen: () => _skPaymentQueueWrapper.startObservingTransactionQueue(),
+      onCancel: () => _skPaymentQueueWrapper.stopObservingTransactionQueue(),
+    );
+    _observer = _TransactionObserver(updateController);
     _skPaymentQueueWrapper.setTransactionObserver(observer);
   }
 

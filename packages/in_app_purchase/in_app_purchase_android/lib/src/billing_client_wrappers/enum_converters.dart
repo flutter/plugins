@@ -72,15 +72,6 @@ class ProrationModeConverter implements JsonConverter<ProrationMode, int?> {
   int toJson(ProrationMode object) => _$ProrationModeEnumMap[object]!;
 }
 
-// Define a class so we generate serializer helper methods for the enums
-@JsonSerializable()
-class _SerializedEnums {
-  late BillingResponse response;
-  late SkuType type;
-  late PurchaseStateWrapper purchaseState;
-  late ProrationMode prorationMode;
-}
-
 /// Serializer for [PurchaseStateWrapper].
 ///
 /// Use these in `@JsonSerializable()` classes by annotating them with
@@ -117,4 +108,35 @@ class PurchaseStateConverter
         return PurchaseStatus.error;
     }
   }
+}
+
+/// Serializer for [BillingClientFeature].
+///
+/// Use these in `@JsonSerializable()` classes by annotating them with
+/// `@BillingClientFeatureConverter()`.
+class BillingClientFeatureConverter
+    implements JsonConverter<BillingClientFeature, String> {
+  /// Default const constructor.
+  const BillingClientFeatureConverter();
+
+  @override
+  BillingClientFeature fromJson(String json) {
+    return _$enumDecode<BillingClientFeature, dynamic>(
+        _$BillingClientFeatureEnumMap.cast<BillingClientFeature, dynamic>(),
+        json);
+  }
+
+  @override
+  String toJson(BillingClientFeature object) =>
+      _$BillingClientFeatureEnumMap[object]!;
+}
+
+// Define a class so we generate serializer helper methods for the enums
+@JsonSerializable()
+class _SerializedEnums {
+  late BillingResponse response;
+  late SkuType type;
+  late PurchaseStateWrapper purchaseState;
+  late ProrationMode prorationMode;
+  late BillingClientFeature billingClientFeature;
 }
