@@ -544,4 +544,34 @@ void main() {
               debugMessage: kInvalidBillingResultErrorMessage)));
     });
   });
+
+  group('isFeatureSupported', () {
+    const String isFeatureSupportedMethodName =
+        'BillingClient#isFeatureSupported(String)';
+    test('isFeatureSupported returns false', () async {
+      late Map<Object?, Object?> arguments;
+      stubPlatform.addResponse(
+        name: isFeatureSupportedMethodName,
+        value: false,
+        additionalStepBeforeReturn: (value) => arguments = value,
+      );
+      final bool isSupported = await billingClient
+          .isFeatureSupported(BillingClientFeature.subscriptions);
+      expect(isSupported, isFalse);
+      expect(arguments['feature'], equals('subscriptions'));
+    });
+
+    test('isFeatureSupported returns true', () async {
+      late Map<Object?, Object?> arguments;
+      stubPlatform.addResponse(
+        name: isFeatureSupportedMethodName,
+        value: true,
+        additionalStepBeforeReturn: (value) => arguments = value,
+      );
+      final bool isSupported = await billingClient
+          .isFeatureSupported(BillingClientFeature.subscriptions);
+      expect(isSupported, isTrue);
+      expect(arguments['feature'], equals('subscriptions'));
+    });
+  });
 }
