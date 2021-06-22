@@ -45,6 +45,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// to make the output structure easier to follow.
   bool get hasLongOutput => true;
 
+  /// Whether to loop over all packages (e.g., including example/), rather than
+  /// only top-level packages.
+  bool get includeSubpackages => false;
+
   /// The text to output at the start when reporting one or more failures.
   /// This will be followed by a list of packages that reported errors, with
   /// the per-package details if any.
@@ -65,11 +69,11 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   /// A convenience constant for [runForPackage] success that's more
   /// self-documenting than the value.
-  static const List<String> kSuccess = <String>[];
+  static const List<String> success = <String>[];
 
   /// A convenience constant for [runForPackage] failure without additional
   /// context that's more self-documenting than the value.
-  static const List<String> kFailure = <String>[''];
+  static const List<String> failure = <String>[''];
 
   /// Prints a message using a standard format indicating that the package was
   /// skipped, with an explanation of why.
@@ -101,7 +105,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
   Future<void> run() async {
     await initializeRun();
 
-    final List<Directory> packages = await getPackages().toList();
+    final List<Directory> packages = includeSubpackages
+        ? await getPackages().toList()
+        : await getPlugins().toList();
 
     final Map<Directory, List<String>> results = <Directory, List<String>>{};
     for (final Directory package in packages) {
