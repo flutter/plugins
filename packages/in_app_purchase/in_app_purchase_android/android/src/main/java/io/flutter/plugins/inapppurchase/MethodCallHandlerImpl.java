@@ -24,7 +24,6 @@ import com.android.billingclient.api.BillingFlowParams.ProrationMode;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
-import com.android.billingclient.api.PriceChangeConfirmationListener;
 import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
@@ -149,11 +148,9 @@ class MethodCallHandlerImpl
         break;
       case InAppPurchasePlugin.MethodNames.IS_FEATURE_SUPPORTED:
         isFeatureSupported((String) call.argument("feature"), result);
-		break;
+        break;
       case InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW:
-        launchPriceChangeConfirmationFlow(
-                (String) call.argument("sku"),
-                result);
+        launchPriceChangeConfirmationFlow((String) call.argument("sku"), result);
         break;
       default:
         result.notImplemented();
@@ -384,13 +381,13 @@ class MethodCallHandlerImpl
   private void launchPriceChangeConfirmationFlow(String sku, MethodChannel.Result result) {
     if (activity == null) {
       result.error(
-              "ACTIVITY_UNAVAILABLE",
-              "launchPriceChangeConfirmationFlow is not available. " +
-                      "This method must be run with the app in foreground.",
-              null);
+          "ACTIVITY_UNAVAILABLE",
+          "launchPriceChangeConfirmationFlow is not available. "
+              + "This method must be run with the app in foreground.",
+          null);
       return;
     }
-    if(billingClientError(result)){
+    if (billingClientError(result)) {
       return;
     }
     assert billingClient != null;
@@ -398,21 +395,22 @@ class MethodCallHandlerImpl
     SkuDetails skuDetails = cachedSkus.get(sku);
     if (skuDetails == null) {
       result.error(
-              "NOT_FOUND",
-              String.format(
-                      "Details for sku %s are not available. It might because skus were not fetched prior to the call. Please fetch the skus first. An example of how to fetch the skus could be found here: %s",
-                      sku, LOAD_SKU_DOC_URL),
-              null);
+          "NOT_FOUND",
+          String.format(
+              "Details for sku %s are not available. It might because skus were not fetched prior to the call. Please fetch the skus first. An example of how to fetch the skus could be found here: %s",
+              sku, LOAD_SKU_DOC_URL),
+          null);
       return;
     }
 
-    PriceChangeFlowParams params = new PriceChangeFlowParams
-            .Builder()
-            .setSkuDetails(skuDetails)
-            .build();
-    billingClient.launchPriceChangeConfirmationFlow(activity, params, billingResult -> {
-      result.success(Translator.fromBillingResult(billingResult));
-    });
+    PriceChangeFlowParams params =
+        new PriceChangeFlowParams.Builder().setSkuDetails(skuDetails).build();
+    billingClient.launchPriceChangeConfirmationFlow(
+        activity,
+        params,
+        billingResult -> {
+          result.success(Translator.fromBillingResult(billingResult));
+        });
   }
 
   private boolean billingClientError(MethodChannel.Result result) {

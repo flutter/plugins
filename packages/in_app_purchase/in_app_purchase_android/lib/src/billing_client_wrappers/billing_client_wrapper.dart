@@ -318,16 +318,17 @@ class BillingClient {
   ///
   /// The skuDetails needs to have already been fetched in a [querySkuDetails]
   /// call.
-  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow({required String sku}) async {
+  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow(
+      {required String sku}) async {
     assert(sku != null);
     final Map<String, dynamic> arguments = <String, dynamic>{
       'sku': sku,
     };
-    return BillingResultWrapper.fromJson(
-        (await channel.invokeMapMethod<String, dynamic>(
+    return BillingResultWrapper.fromJson((await channel.invokeMapMethod<String,
+                dynamic>(
             'BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)',
             arguments)) ??
-            <String, dynamic>{});
+        <String, dynamic>{});
   }
 
   /// The method call handler for [channel].
