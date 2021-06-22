@@ -227,6 +227,7 @@ class WebView extends StatefulWidget {
     this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
+    this.textZoomEnabled = true,
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
@@ -392,6 +393,13 @@ class WebView extends StatefulWidget {
   ///
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
+
+  /// A Boolean value indicating whether webview should change the text zoom with the system font changes
+  ///
+  /// This only works on Android.
+  ///
+  /// By default `textZoomEnabled` is true.
+  final bool textZoomEnabled;
 
   /// The value used for the HTTP User-Agent: request header.
   ///

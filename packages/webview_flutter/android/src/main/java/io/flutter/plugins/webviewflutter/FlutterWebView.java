@@ -391,6 +391,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "gestureNavigationEnabled":
           break;
+        case "textZoomEnabled":
+          final boolean textZoomEnabled = (boolean) settings.get(key);
+          if (!textZoomEnabled){
+            webView.getSettings().setTextZoom(100);
+          }
+          break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
           break;

@@ -873,6 +873,7 @@ void main() {
               debuggingEnabled: false,
               userAgent: WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
+              textZoomEnabled: true,
             ),
           )));
     });
