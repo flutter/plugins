@@ -1,7 +1,7 @@
 ## 0.8.1
 
 * Add a new method `getMultiImage` to allow picking multiple images on iOS 14 or higher and Android 4.3 or higher.
-* Known issue: On Android, `getLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634)
+* Known issue: On Android, `getLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
 ## 0.8.0+4
 
