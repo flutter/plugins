@@ -17,6 +17,15 @@ public enum FlashMode {
     this.strValue = strValue;
   }
 
+  /**
+   * Tries to convert the supplied string into a {@see FlashMode} enum value.
+   *
+   * <p>When the supplied string doesn't match a valid {@see FlashMode} enum value, null is
+   * returned.
+   *
+   * @param modeStr String value to convert into an {@see FlashMode} enum value.
+   * @return Matching {@see FlashMode} enum value, or null if no match is found.
+   */
   public static FlashMode getValueForString(String modeStr) {
     for (FlashMode value : values()) {
       if (value.strValue.equals(modeStr)) return value;
