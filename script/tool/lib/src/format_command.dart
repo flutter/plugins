@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -11,7 +10,9 @@ import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
 import 'package:quiver/iterables.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
+import 'common/process_runner.dart';
 
 final Uri _googleFormatterUrl = Uri.https('github.com',
     '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');

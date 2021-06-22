@@ -11,6 +11,7 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../channel.dart';
+import '../in_app_purchase_ios_platform.dart';
 import 'sk_payment_transaction_wrappers.dart';
 import 'sk_product_wrapper.dart';
 
@@ -63,6 +64,24 @@ class SKPaymentQueueWrapper {
     _observer = observer;
     channel.setMethodCallHandler(_handleObserverCallbacks);
   }
+
+  /// Instructs the iOS implementation to register a transaction observer and
+  /// start listening to it.
+  ///
+  /// Call this method when the first listener is subscribed to the
+  /// [InAppPurchaseIosPlatform.purchaseStream].
+  Future startObservingTransactionQueue() async =>
+      await channel.invokeListMethod<void>(
+          '-[SKPaymentQueue startObservingTransactionQueue]');
+
+  /// Instructs the iOS implementation to remove the transaction observer and
+  /// stop listening to it.
+  ///
+  /// Call this when there are no longer any listeners subscribed to the
+  /// [InAppPurchaseIosPlatform.purchaseStream].
+  Future stopObservingTransactionQueue() async =>
+      await channel.invokeListMethod<void>(
+          '-[SKPaymentQueue stopObservingTransactionQueue]');
 
   /// Posts a payment to the queue.
   ///
