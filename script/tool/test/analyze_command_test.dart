@@ -120,28 +120,24 @@ void main() {
 
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
-      createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
-        <String>['analysis_options.yaml']
-      ]);
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
 
       await expectLater(() => runner.run(<String>['analyze']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
     test('fails .analysis_options', () async {
-      createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
-        <String>['.analysis_options']
-      ]);
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['.analysis_options']);
 
       await expectLater(() => runner.run(<String>['analyze']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
     test('takes an allow list', () async {
-      final Directory pluginDir =
-          createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
-        <String>['analysis_options.yaml']
-      ]);
+      final Directory pluginDir = createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
 
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
@@ -160,9 +156,8 @@ void main() {
 
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
-      createFakePlugin('foo', packagesDir, extraFiles: <List<String>>[
-        <String>['analysis_options.yaml']
-      ]);
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
 
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);

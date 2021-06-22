@@ -113,8 +113,8 @@ void main() {
 
     group('iOS', () {
       test('skip if iOS is not supported', () async {
-        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformMacos: PlatformSupport.inline,
         });
@@ -132,8 +132,8 @@ void main() {
       });
 
       test('skip if iOS is implemented in a federated package', () async {
-        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.federated
         });
@@ -151,14 +151,14 @@ void main() {
       });
 
       test('running with correct destination, exclude 1 plugin', () async {
-        createFakePlugin('plugin1', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
         final Directory pluginDirectory2 =
-            createFakePlugin('plugin2', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+            createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
@@ -213,8 +213,8 @@ void main() {
       test('Not specifying --ios-destination assigns an available simulator',
           () async {
         final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
@@ -267,8 +267,8 @@ void main() {
         createFakePlugin(
           'plugin',
           packagesDir,
-          extraFiles: <List<String>>[
-            <String>['example', 'test'],
+          extraFiles: <String>[
+            'example/test',
           ],
         );
 
@@ -285,8 +285,8 @@ void main() {
       });
 
       test('skip if macOS is implemented in a federated package', () async {
-        createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformMacos: PlatformSupport.federated,
         });
@@ -305,8 +305,8 @@ void main() {
 
       test('runs for macOS plugin', () async {
         final Directory pluginDirectory1 =
-            createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-          <String>['example', 'test'],
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformMacos: PlatformSupport.inline,
         });

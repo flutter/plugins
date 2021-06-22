@@ -26,7 +26,7 @@ cd ./script/tool && dart pub get && cd ../../
 Run:
 
 ```sh
-dart run ./script/tool/lib/src/main.dart <args>
+dart run ./script/tool/bin/flutter_plugin_tools.dart <args>
 ```
 
 ### Published Version
@@ -58,21 +58,21 @@ Note that the `plugins` argument, despite the name, applies to any package.
 
 ```sh
 cd <repository root>
-dart run ./script/tool/lib/src/main.dart format --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart format --plugins plugin_name
 ```
 
 ### Run the Dart Static Analyzer
 
 ```sh
 cd <repository root>
-dart run ./script/tool/lib/src/main.dart analyze --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --plugins plugin_name
 ```
 
 ### Run Dart Unit Tests
 
 ```sh
 cd <repository root>
-dart run ./script/tool/lib/src/main.dart test --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart test --plugins plugin_name
 ```
 
 ### Run XCTests
@@ -80,9 +80,9 @@ dart run ./script/tool/lib/src/main.dart test --plugins plugin_name
 ```sh
 cd <repository root>
 # For iOS:
-dart run ./script/tool/lib/src/main.dart xctest --ios --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --ios --plugins plugin_name
 # For macOS:
-dart run ./script/tool/lib/src/main.dart xctest --macos --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --macos --plugins plugin_name
 ```
 
 ### Publish a Release
@@ -90,11 +90,12 @@ dart run ./script/tool/lib/src/main.dart xctest --macos --plugins plugin_name
 ``sh
 cd <path_to_plugins>
 git checkout <commit_hash_to_publish>
-dart run ./script/tool/lib/src/main.dart publish-plugin --package <package>
+dart run ./script/tool/bin/flutter_plugin_tools.dart publish-plugin --package <package>
 ``
 
 By default the tool tries to push tags to the `upstream` remote, but some
-additional settings can be configured. Run `dart run ./script/tool/lib/src/main.dart publish-plugin --help` for more usage information.
+additional settings can be configured. Run `dart run ./script/tool/bin/flutter_plugin_tools.dart
+publish-plugin --help` for more usage information.
 
 The tool wraps `pub publish` for pushing the package to pub, and then will
 automatically use git to try to create and push tags. It has some additional

@@ -36,14 +36,18 @@ void main() {
     });
 
     test('driving under folder "test"', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline,
-        kPlatformIos: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -80,14 +84,18 @@ void main() {
     });
 
     test('driving under folder "test_driver"', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline,
-        kPlatformIos: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -125,12 +133,17 @@ void main() {
 
     test('driving under folder "test_driver" when test files are missing"',
         () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline,
-        kPlatformIos: PlatformSupport.inline,
-      });
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
 
       await expectLater(
           () => runCapturingPrint(runner, <String>['drive-examples']),
@@ -139,12 +152,17 @@ void main() {
 
     test('a plugin without any integration test files is reported as an error',
         () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'lib', 'main.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline,
-        kPlatformIos: PlatformSupport.inline,
-      });
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/lib/main.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
 
       await expectLater(
           () => runCapturingPrint(runner, <String>['drive-examples']),
@@ -154,16 +172,20 @@ void main() {
     test(
         'driving under folder "test_driver" when targets are under "integration_test"',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'integration_test.dart'],
-        <String>['example', 'integration_test', 'bar_test.dart'],
-        <String>['example', 'integration_test', 'foo_test.dart'],
-        <String>['example', 'integration_test', 'ignore_me.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline,
-        kPlatformIos: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/bar_test.dart',
+          'example/integration_test/foo_test.dart',
+          'example/integration_test/ignore_me.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -210,9 +232,9 @@ void main() {
     });
 
     test('driving when plugin does not support Linux is a no-op', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test_driver/plugin_test.dart',
+        'example/test_driver/plugin.dart',
       ]);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -236,13 +258,17 @@ void main() {
     });
 
     test('driving on a Linux plugin', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformLinux: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformLinux: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -282,9 +308,9 @@ void main() {
     });
 
     test('driving when plugin does not suppport macOS is a no-op', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test_driver/plugin_test.dart',
+        'example/test_driver/plugin.dart',
       ]);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -307,14 +333,18 @@ void main() {
       expect(processRunner.recordedCalls, <ProcessCall>[]);
     });
     test('driving on a macOS plugin', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-        <String>['example', 'macos', 'macos.swift'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformMacos: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+          'example/macos/macos.swift',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -354,9 +384,9 @@ void main() {
     });
 
     test('driving when plugin does not suppport web is a no-op', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test_driver/plugin_test.dart',
+        'example/test_driver/plugin.dart',
       ]);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -380,13 +410,17 @@ void main() {
     });
 
     test('driving a web plugin', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformWeb: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformWeb: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -428,9 +462,9 @@ void main() {
     });
 
     test('driving when plugin does not suppport Windows is a no-op', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test_driver/plugin_test.dart',
+        'example/test_driver/plugin.dart',
       ]);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -454,13 +488,17 @@ void main() {
     });
 
     test('driving on a Windows plugin', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformWindows: PlatformSupport.inline
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformWindows: PlatformSupport.inline
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -500,12 +538,17 @@ void main() {
     });
 
     test('driving when plugin does not support mobile is no-op', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test_driver', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformMacos: PlatformSupport.inline,
-      });
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        },
+      );
 
       final List<String> output = await runCapturingPrint(runner, <String>[
         'drive-examples',
@@ -548,14 +591,18 @@ void main() {
     });
 
     test('enable-experiment flag', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <List<String>>[
-        <String>['example', 'test_driver', 'plugin_test.dart'],
-        <String>['example', 'test', 'plugin.dart'],
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline,
-        kPlatformIos: PlatformSupport.inline,
-      });
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline,
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
