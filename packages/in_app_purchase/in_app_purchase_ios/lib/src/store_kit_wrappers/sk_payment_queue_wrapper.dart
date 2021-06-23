@@ -193,6 +193,19 @@ class SKPaymentQueueWrapper {
         '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]');
   }
 
+  /// Shows the price consent sheet if the user has not yet responded to a
+  /// subscription price change.
+  ///
+  /// Use this function when you have registered a [SKPaymentQueueDelegateWrapper]
+  /// (using the [setDelegate] method) and returned `false` when the
+  /// `SKPaymentQueueDelegateWrapper.shouldShowPriceConsent()` method was called.
+  ///
+  /// See documentation of StoreKit's [`-[SKPaymentQueue showPriceConsentIfNeeded]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3521327-showpriceconsentifneeded?language=objc).
+  Future<void> showPriceConsentIfNeeded() async {
+    await channel
+        .invokeMethod<void>('-[SKPaymentQueue showPriceConsentIfNeeded]');
+  }
+
   // Triage a method channel call from the platform and triggers the correct observer method.
   Future<void> _handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null,
