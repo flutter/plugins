@@ -343,4 +343,29 @@
   XCTAssertNil(queue.observer);
 }
 
+- (void)testShowPriceConsentIfNeeded {
+  FlutterMethodCall* call = [FlutterMethodCall
+      methodCallWithMethodName:@"-[SKPaymentQueue showPriceConsentIfNeeded]"
+                     arguments:nil];
+
+
+  FIAPaymentQueueHandler* mockQueueHandler = OCMClassMock(FIAPaymentQueueHandler.class);
+
+  self.plugin.paymentQueueHandler = mockQueueHandler;
+  
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+  if (@available(iOS 13.4, *)) {
+    OCMVerify(times(1), [mockQueueHandler showPriceConsentIfNeeded]);
+  } else {
+
+    OCMVerify(never(), [mockQueueHandler showPriceConsentIfNeeded]);
+  }
+#pragma clang diagnostic pop
+}
+
 @end
