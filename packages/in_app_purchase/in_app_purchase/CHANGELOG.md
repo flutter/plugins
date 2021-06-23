@@ -1,4 +1,4 @@
-## 1.0.5+1
+## 1.0.6
 
 * Added import flutter foundation dependency in README.md to be able to use `defaultTargetPlatform`.
 
