@@ -50,11 +50,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING IPA for $packageName',
-          'iOS is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING IPA for $packageName'),
+          contains('iOS is not supported by this plugin'),
         ]),
       );
 
@@ -89,10 +87,8 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING IPA for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
@@ -129,11 +125,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING Linux for $packageName',
-          'Linux is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING Linux for $packageName'),
+          contains('Linux is not supported by this plugin'),
         ]),
       );
 
@@ -164,10 +158,8 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING Linux for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
@@ -196,11 +188,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING macOS for $packageName',
-          'macOS is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING macOS for $packageName'),
+          contains('macOS is not supported by this plugin'),
         ]),
       );
 
@@ -232,10 +222,8 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING macOS for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
@@ -263,11 +251,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING web for $packageName',
-          'Web is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING web for $packageName'),
+          contains('Web is not supported by this plugin'),
         ]),
       );
 
@@ -299,10 +285,8 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING web for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
@@ -332,11 +316,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING Windows for $packageName',
-          'Windows is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING Windows for $packageName'),
+          contains('Windows is not supported by this plugin'),
         ]),
       );
 
@@ -367,10 +349,8 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING Windows for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
@@ -400,11 +380,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING APK for $packageName',
-          'Android is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('\nBUILDING APK for $packageName'),
+          contains('Android is not supported by this plugin'),
         ]),
       );
 
@@ -439,10 +417,8 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING APK for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
