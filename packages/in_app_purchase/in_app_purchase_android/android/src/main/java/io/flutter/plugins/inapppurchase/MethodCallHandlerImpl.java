@@ -334,7 +334,7 @@ class MethodCallHandlerImpl
           @Override
           public void onBillingSetupFinished(BillingResult billingResult) {
             if (alreadyFinished) {
-              Log.d(TAG, "Tried to call onBilllingSetupFinished multiple times.");
+              Log.d(TAG, "Tried to call onBillingSetupFinished multiple times.");
               return;
             }
             alreadyFinished = true;
