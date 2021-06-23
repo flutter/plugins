@@ -1,8 +1,3 @@
-# 3.0.0
-
-* Breaking change:
-    * Changed all usages of PickedFile to XFile
-
 # 2.0.0
 
 * Migrate to null safety.
