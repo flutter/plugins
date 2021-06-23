@@ -1,3 +1,7 @@
+## 0.1.4+1
+
+* Fixed typos.
+
 ## 0.1.4
 
 * Added support for launchPriceChangeConfirmationFlow in the BillingClientWrapper and in InAppPurchaseAndroidPlatformAddition.
