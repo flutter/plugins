@@ -51,7 +51,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING IPA for $packageName'),
+          contains('BUILDING $packageName for iOS'),
           contains('iOS is not supported by this plugin'),
         ]),
       );
@@ -84,7 +84,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING IPA for $packageName',
+          '\nBUILDING $packageName for iOS',
         ]),
       );
 
@@ -122,7 +122,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING Linux for $packageName'),
+          contains('BUILDING $packageName for Linux'),
           contains('Linux is not supported by this plugin'),
         ]),
       );
@@ -155,7 +155,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING Linux for $packageName',
+          '\nBUILDING $packageName for Linux',
         ]),
       );
 
@@ -185,7 +185,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING macOS for $packageName'),
+          contains('BUILDING $packageName for macOS'),
           contains('macOS is not supported by this plugin'),
         ]),
       );
@@ -219,7 +219,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING macOS for $packageName',
+          '\nBUILDING $packageName for macOS',
         ]),
       );
 
@@ -248,7 +248,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING web for $packageName'),
+          contains('BUILDING $packageName for web'),
           contains('Web is not supported by this plugin'),
         ]),
       );
@@ -282,7 +282,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING web for $packageName',
+          '\nBUILDING $packageName for web',
         ]),
       );
 
@@ -313,7 +313,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING Windows for $packageName'),
+          contains('BUILDING $packageName for Windows'),
           contains('Windows is not supported by this plugin'),
         ]),
       );
@@ -346,7 +346,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING Windows for $packageName',
+          '\nBUILDING $packageName for Windows',
         ]),
       );
 

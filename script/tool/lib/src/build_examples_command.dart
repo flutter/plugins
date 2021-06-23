@@ -67,11 +67,6 @@ class BuildExamplesCommand extends PackageLoopingCommand {
 
   @override
   Future<List<String>> runForPackage(Directory package) async {
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
-
-    final String enableExperiment = getStringArg(kEnableExperiment);
-
     final List<String> errors = <String>[];
 
     for (final Directory example in getExamplesForPlugin(package)) {
@@ -79,19 +74,10 @@ class BuildExamplesCommand extends PackageLoopingCommand {
           p.relative(example.path, from: packagesDir.path);
 
       if (getBoolArg(kPlatformLinux)) {
-        print('\nBUILDING Linux for $packageName');
+        print('\nBUILDING $packageName for Linux');
         if (isLinuxPlugin(package)) {
-          final int buildExitCode = await processRunner.runAndStream(
-              flutterCommand,
-              <String>[
-                'build',
-                kPlatformLinux,
-                if (enableExperiment.isNotEmpty)
-                  '--enable-experiment=$enableExperiment',
-              ],
-              workingDir: example);
-          if (buildExitCode != 0) {
-            errors.add('$packageName (linux)');
+          if (!await _buildExample(example, kPlatformLinux)) {
+            errors.add('$packageName (Linux)');
           }
         } else {
           printSkip('Linux is not supported by this plugin');
@@ -99,19 +85,10 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       }
 
       if (getBoolArg(kPlatformMacos)) {
-        print('\nBUILDING macOS for $packageName');
+        print('\nBUILDING $packageName for macOS');
         if (isMacOsPlugin(package)) {
-          final int exitCode = await processRunner.runAndStream(
-              flutterCommand,
-              <String>[
-                'build',
-                kPlatformMacos,
-                if (enableExperiment.isNotEmpty)
-                  '--enable-experiment=$enableExperiment',
-              ],
-              workingDir: example);
-          if (exitCode != 0) {
-            errors.add('$packageName (macos)');
+          if (!await _buildExample(example, kPlatformMacos)) {
+            errors.add('$packageName (macOS)');
           }
         } else {
           printSkip('macOS is not supported by this plugin');
@@ -119,18 +96,9 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       }
 
       if (getBoolArg(kPlatformWeb)) {
-        print('\nBUILDING web for $packageName');
+        print('\nBUILDING $packageName for web');
         if (isWebPlugin(package)) {
-          final int buildExitCode = await processRunner.runAndStream(
-              flutterCommand,
-              <String>[
-                'build',
-                kPlatformWeb,
-                if (enableExperiment.isNotEmpty)
-                  '--enable-experiment=$enableExperiment',
-              ],
-              workingDir: example);
-          if (buildExitCode != 0) {
+          if (!await _buildExample(example, kPlatformWeb)) {
             errors.add('$packageName (web)');
           }
         } else {
@@ -139,19 +107,10 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       }
 
       if (getBoolArg(kPlatformWindows)) {
-        print('\nBUILDING Windows for $packageName');
+        print('\nBUILDING $packageName for Windows');
         if (isWindowsPlugin(package)) {
-          final int buildExitCode = await processRunner.runAndStream(
-              flutterCommand,
-              <String>[
-                'build',
-                kPlatformWindows,
-                if (enableExperiment.isNotEmpty)
-                  '--enable-experiment=$enableExperiment',
-              ],
-              workingDir: example);
-          if (buildExitCode != 0) {
-            errors.add('$packageName (windows)');
+          if (!await _buildExample(example, kPlatformWindows)) {
+            errors.add('$packageName (Windows)');
           }
         } else {
           printSkip('Windows is not supported by this plugin');
@@ -159,20 +118,14 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       }
 
       if (getBoolArg(kPlatformIos)) {
-        print('\nBUILDING IPA for $packageName');
+        print('\nBUILDING $packageName for iOS');
         if (isIosPlugin(package)) {
-          final int exitCode = await processRunner.runAndStream(
-              flutterCommand,
-              <String>[
-                'build',
-                'ios',
-                '--no-codesign',
-                if (enableExperiment.isNotEmpty)
-                  '--enable-experiment=$enableExperiment',
-              ],
-              workingDir: example);
-          if (exitCode != 0) {
-            errors.add('$packageName (ipa)');
+          if (!await _buildExample(
+            example,
+            kPlatformIos,
+            extraBuildFlags: <String>['--no-codesign'],
+          )) {
+            errors.add('$packageName (iOS)');
           }
         } else {
           printSkip('iOS is not supported by this plugin');
@@ -182,16 +135,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       if (getBoolArg(_platformFlagApk)) {
         print('\nBUILDING APK for $packageName');
         if (isAndroidPlugin(package)) {
-          final int exitCode = await processRunner.runAndStream(
-              flutterCommand,
-              <String>[
-                'build',
-                'apk',
-                if (enableExperiment.isNotEmpty)
-                  '--enable-experiment=$enableExperiment',
-              ],
-              workingDir: example);
-          if (exitCode != 0) {
+          if (!await _buildExample(example, _platformFlagApk)) {
             errors.add('$packageName (apk)');
           }
         } else {
@@ -201,5 +145,28 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     }
 
     return errors;
+  }
+
+  Future<bool> _buildExample(
+    Directory example,
+    String flutterBuildType, {
+    List<String> extraBuildFlags = const <String>[],
+  }) async {
+    final String flutterCommand =
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+    final String enableExperiment = getStringArg(kEnableExperiment);
+
+    final int exitCode = await processRunner.runAndStream(
+      flutterCommand,
+      <String>[
+        'build',
+        flutterBuildType,
+        ...extraBuildFlags,
+        if (enableExperiment.isNotEmpty)
+          '--enable-experiment=$enableExperiment',
+      ],
+      workingDir: example,
+    );
+    return exitCode == 0;
   }
 }
