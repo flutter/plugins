@@ -18,11 +18,11 @@ abstract class SKPaymentQueueDelegateWrapper {
   /// transaction will fail with the error [SKErrorStoreProductNotAvailable](https://developer.apple.com/documentation/storekit/skerrorcode/skerrorstoreproductnotavailable?language=objc).
   ///
   /// See the documentation in StoreKit's [`[-SKPaymentQueueDelegate shouldContinueTransaction]`](https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate/3242935-paymentqueue?language=objc).
-  Future<bool> shouldContinueTransaction(
+  bool shouldContinueTransaction(
     SKPaymentTransactionWrapper transaction,
     SKStorefrontWrapper storefront,
   ) =>
-      Future.value(true);
+      true;
 
   /// Called by the system to check whether to immediately show the price
   /// consent form.
@@ -31,5 +31,5 @@ abstract class SKPaymentQueueDelegateWrapper {
   /// the price consent sheet when the subscription price has been changed in
   /// App Store Connect and the subscriber has not yet taken action. See the
   /// documentation in StoreKit's [`[-SKPaymentQueueDelegate shouldShowPriceConsent:]`](https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate/3521328-paymentqueueshouldshowpriceconse?language=objc).
-  Future<bool> shouldShowPriceConsent() => Future.value(true);
+  bool shouldShowPriceConsent() => true;
 }

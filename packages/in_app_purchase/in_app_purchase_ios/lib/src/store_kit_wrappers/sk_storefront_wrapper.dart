@@ -54,4 +54,8 @@ class SKStorefrontWrapper {
 
   @override
   String toString() => _$SKStorefrontWrapperToJson(this).toString();
+
+  /// Converts the instance to a key value map which can be used to serialize
+  /// to JSON format.
+  Map<String, dynamic> toMap() => _$SKStorefrontWrapperToJson(this);
 }
