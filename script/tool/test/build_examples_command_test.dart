@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
-  group('test build_example_command', () {
+  group('build-example', () {
     late FileSystem fileSystem;
     late Directory packagesDir;
     late CommandRunner<void> runner;
@@ -33,6 +33,13 @@ void main() {
       runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');
       runner.addCommand(command);
+    });
+
+    test('fails if no plaform flags are passed', () async {
+      expect(
+        () => runCapturingPrint(runner, <String>['build-examples']),
+        throwsA(isA<ToolExit>()),
+      );
     });
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
