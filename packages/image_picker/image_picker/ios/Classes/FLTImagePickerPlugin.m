@@ -14,12 +14,15 @@
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"
 #import "FLTImagePickerPhotoAssetUtil.h"
+#import "FLTPHPickerSaveImageToPathOperation.h"
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
                                     UIImagePickerControllerDelegate,
                                     PHPickerViewControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult result;
+
+@property(assign, nonatomic) int maxImagesAllowed;
 
 @property(copy, nonatomic) NSDictionary *arguments;
 
@@ -67,16 +70,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return topController;
 }
 
-- (void)pickImageWithPHPicker:(bool)single API_AVAILABLE(ios(14)) {
+- (void)pickImageWithPHPicker:(int)maxImagesAllowed API_AVAILABLE(ios(14)) {
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
-  if (!single) {
-    config.selectionLimit = 0;  // Setting to zero allow us to pick unlimited photos
-  }
+  config.selectionLimit = maxImagesAllowed;  // Setting to zero allow us to pick unlimited photos
   config.filter = [PHPickerFilter imagesFilter];
 
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
+
+  self.maxImagesAllowed = maxImagesAllowed;
 
   [self checkPhotoAuthorizationForAccessLevel];
 }
@@ -88,6 +91,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   _imagePickerController.mediaTypes = @[ (NSString *)kUTTypeImage ];
 
   int imageSource = [[_arguments objectForKey:@"source"] intValue];
+
+  self.maxImagesAllowed = 1;
 
   switch (imageSource) {
     case SOURCE_CAMERA: {
@@ -124,7 +129,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     if (imageSource == SOURCE_GALLERY) {  // Capture is not possible with PHPicker
       if (@available(iOS 14, *)) {
         // PHPicker is used
-        [self pickImageWithPHPicker:true];
+        [self pickImageWithPHPicker:1];
       } else {
         // UIImagePicker is used
         [self pickImageWithUIImagePicker];
@@ -136,7 +141,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     if (@available(iOS 14, *)) {
       self.result = result;
       _arguments = call.arguments;
-      [self pickImageWithPHPicker:false];
+      [self pickImageWithPHPicker:0];
+    } else {
+      [self pickImageWithUIImagePicker];
     }
   } else if ([@"pickVideo" isEqualToString:call.method]) {
     _imagePickerController = [[UIImagePickerController alloc] init];
@@ -358,54 +365,55 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 - (void)picker:(PHPickerViewController *)picker
     didFinishPicking:(NSArray<PHPickerResult *> *)results API_AVAILABLE(ios(14)) {
   [picker dismissViewControllerAnimated:YES completion:nil];
+  dispatch_queue_t backgroundQueue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+  dispatch_async(backgroundQueue, ^{
+    if (results.count == 0) {
+      self.result(nil);
+      self.result = nil;
+      self->_arguments = nil;
+      return;
+    }
+    NSNumber *maxWidth = [self->_arguments objectForKey:@"maxWidth"];
+    NSNumber *maxHeight = [self->_arguments objectForKey:@"maxHeight"];
+    NSNumber *imageQuality = [self->_arguments objectForKey:@"imageQuality"];
+    NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
+    NSOperationQueue *operationQueue = [NSOperationQueue new];
+    NSMutableArray *pathList = [self createNSMutableArrayWithSize:results.count];
 
-  NSNumber *maxWidth = [_arguments objectForKey:@"maxWidth"];
-  NSNumber *maxHeight = [_arguments objectForKey:@"maxHeight"];
-  NSNumber *imageQuality = [_arguments objectForKey:@"imageQuality"];
-  NSNumber *desiredImageQuality = [self getDesiredImageQuality:imageQuality];
-
-  for (PHPickerResult *result in results) {
-    [result.itemProvider
-        loadObjectOfClass:[UIImage class]
-        completionHandler:^(__kindof id<NSItemProviderReading> _Nullable image,
-                            NSError *_Nullable error) {
-          if ([image isKindOfClass:[UIImage class]]) {
-            __block UIImage *localImage = image;
-            dispatch_async(dispatch_get_main_queue(), ^{
-              PHAsset *originalAsset =
-                  [FLTImagePickerPhotoAssetUtil getAssetFromPHPickerResult:result];
-
-              if (maxWidth != (id)[NSNull null] || maxHeight != (id)[NSNull null]) {
-                localImage = [FLTImagePickerImageUtil scaledImage:localImage
-                                                         maxWidth:maxWidth
-                                                        maxHeight:maxHeight
-                                              isMetadataAvailable:originalAsset != nil];
-              }
-
-              if (!originalAsset) {
-                // Image picked without an original asset (e.g. User took a photo directly)
-                [self saveImageWithPickerInfo:nil
-                                        image:localImage
-                                 imageQuality:desiredImageQuality];
-              } else {
-                [[PHImageManager defaultManager]
-                    requestImageDataForAsset:originalAsset
-                                     options:nil
-                               resultHandler:^(
-                                   NSData *_Nullable imageData, NSString *_Nullable dataUTI,
-                                   UIImageOrientation orientation, NSDictionary *_Nullable info) {
-                                 // maxWidth and maxHeight are used only for GIF images.
-                                 [self saveImageWithOriginalImageData:imageData
-                                                                image:localImage
-                                                             maxWidth:maxWidth
+    for (int i = 0; i < results.count; i++) {
+      PHPickerResult *result = results[i];
+      FLTPHPickerSaveImageToPathOperation *operation =
+          [[FLTPHPickerSaveImageToPathOperation alloc] initWithResult:result
                                                             maxHeight:maxHeight
-                                                         imageQuality:desiredImageQuality];
-                               }];
-              }
-            });
-          }
-        }];
-  }
+                                                             maxWidth:maxWidth
+                                                  desiredImageQuality:desiredImageQuality
+                                                       savedPathBlock:^(NSString *savedPath) {
+                                                         pathList[i] = savedPath;
+                                                       }];
+      [operationQueue addOperation:operation];
+    }
+    [operationQueue waitUntilAllOperationsAreFinished];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self handleSavedPathList:pathList];
+    });
+  });
+}
+
+/**
+ * Creates an NSMutableArray of a certain size filled with NSNull objects.
+ *
+ * The difference with initWithCapacity is that initWithCapacity still gives an empty array making
+ * it impossible to add objects on an index larger than the size.
+ *
+ * @param @size The length of the required array
+ * @return @NSMutableArray An array of a specified size
+ */
+- (NSMutableArray *)createNSMutableArrayWithSize:(NSUInteger)size {
+  NSMutableArray *mutableArray = [[NSMutableArray alloc] initWithCapacity:size];
+  for (int i = 0; i < size; [mutableArray addObject:[NSNull null]], i++)
+    ;
+  return mutableArray;
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker
@@ -504,7 +512,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
                                                           maxWidth:maxWidth
                                                          maxHeight:maxHeight
                                                       imageQuality:imageQuality];
-  [self handleSavedPath:savedPath];
+  [self handleSavedPathList:@[ savedPath ]];
 }
 
 - (void)saveImageWithPickerInfo:(NSDictionary *)info
@@ -513,18 +521,43 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   NSString *savedPath = [FLTImagePickerPhotoAssetUtil saveImageWithPickerInfo:info
                                                                         image:image
                                                                  imageQuality:imageQuality];
-  [self handleSavedPath:savedPath];
+  [self handleSavedPathList:@[ savedPath ]];
 }
 
-- (void)handleSavedPath:(NSString *)path {
+/**
+ * Applies NSMutableArray on the FLutterResult.
+ *
+ * NSString must be returned by FlutterResult if the single image
+ * mode is active. It is checked by @c maxImagesAllowed and
+ * returns the first object of the @c pathlist.
+ *
+ * NSMutableArray must be returned by FlutterResult if the multi-image
+ * mode is active. After the @c pathlist count is checked then it returns
+ * the @c pathlist.
+ *
+ * @param @pathList that should be applied to FlutterResult.
+ */
+- (void)handleSavedPathList:(NSArray *)pathList {
   if (!self.result) {
     return;
   }
-  if (path) {
-    self.result(path);
+
+  if (pathList) {
+    if (![pathList containsObject:[NSNull null]]) {
+      if ((self.maxImagesAllowed == 1)) {
+        self.result(pathList.firstObject);
+      } else {
+        self.result(pathList);
+      }
+    } else {
+      self.result([FlutterError errorWithCode:@"create_error"
+                                      message:@"pathList's items should not be null"
+                                      details:nil]);
+    }
   } else {
+    // This should never happen.
     self.result([FlutterError errorWithCode:@"create_error"
-                                    message:@"Temporary file could not be created"
+                                    message:@"pathList should not be nil"
                                     details:nil]);
   }
   self.result = nil;
