@@ -14,11 +14,8 @@ import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
-/// Key for IPA.
-const String kIpa = 'ipa';
-
 /// Key for APK.
-const String kApk = 'apk';
+const String _platformFlagApk = 'apk';
 
 const int _exitNoPlatformFlags = 2;
 
@@ -29,12 +26,12 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
   }) : super(packagesDir, processRunner: processRunner) {
-    argParser.addFlag(kPlatformLinux, defaultsTo: false);
-    argParser.addFlag(kPlatformMacos, defaultsTo: false);
-    argParser.addFlag(kPlatformWeb, defaultsTo: false);
-    argParser.addFlag(kPlatformWindows, defaultsTo: false);
-    argParser.addFlag(kIpa, defaultsTo: io.Platform.isMacOS);
-    argParser.addFlag(kApk);
+    argParser.addFlag(kPlatformLinux);
+    argParser.addFlag(kPlatformMacos);
+    argParser.addFlag(kPlatformWeb);
+    argParser.addFlag(kPlatformWindows);
+    argParser.addFlag(kPlatformIos);
+    argParser.addFlag(_platformFlagApk);
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
@@ -53,8 +50,8 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   @override
   Future<void> initializeRun() async {
     final List<String> platformSwitches = <String>[
-      kApk,
-      kIpa,
+      _platformFlagApk,
+      kPlatformIos,
       kPlatformLinux,
       kPlatformMacos,
       kPlatformWeb,
@@ -161,7 +158,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
         }
       }
 
-      if (getBoolArg(kIpa)) {
+      if (getBoolArg(kPlatformIos)) {
         print('\nBUILDING IPA for $packageName');
         if (isIosPlugin(package)) {
           final int exitCode = await processRunner.runAndStream(
@@ -182,7 +179,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
         }
       }
 
-      if (getBoolArg(kApk)) {
+      if (getBoolArg(_platformFlagApk)) {
         print('\nBUILDING APK for $packageName');
         if (isAndroidPlugin(package)) {
           final int exitCode = await processRunner.runAndStream(

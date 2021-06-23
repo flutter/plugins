@@ -43,8 +43,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--ipa', '--no-macos']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--ios']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -76,12 +76,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'build-examples',
-        '--ipa',
-        '--no-macos',
-        '--enable-experiment=exp1'
-      ]);
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['build-examples', '--ios', '--enable-experiment=exp1']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -119,7 +115,7 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--linux']);
+          runner, <String>['build-examples', '--linux']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -152,7 +148,7 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--linux']);
+          runner, <String>['build-examples', '--linux']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -182,7 +178,7 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--macos']);
+          runner, <String>['build-examples', '--macos']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -216,7 +212,7 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--macos']);
+          runner, <String>['build-examples', '--macos']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -244,8 +240,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--web']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--web']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -278,8 +274,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--web']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--web']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -310,7 +306,7 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--windows']);
+          runner, <String>['build-examples', '--windows']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -343,7 +339,7 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--windows']);
+          runner, <String>['build-examples', '--windows']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -373,8 +369,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--apk', '--no-ipa']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--apk']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
@@ -409,8 +405,6 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'build-examples',
         '--apk',
-        '--no-ipa',
-        '--no-macos',
       ]);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
@@ -445,13 +439,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      await runCapturingPrint(runner, <String>[
-        'build-examples',
-        '--apk',
-        '--no-ipa',
-        '--no-macos',
-        '--enable-experiment=exp1'
-      ]);
+      await runCapturingPrint(runner,
+          <String>['build-examples', '--apk', '--enable-experiment=exp1']);
 
       expect(
           processRunner.recordedCalls,
@@ -478,12 +467,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      await runCapturingPrint(runner, <String>[
-        'build-examples',
-        '--ipa',
-        '--no-macos',
-        '--enable-experiment=exp1'
-      ]);
+      await runCapturingPrint(runner,
+          <String>['build-examples', '--ios', '--enable-experiment=exp1']);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[

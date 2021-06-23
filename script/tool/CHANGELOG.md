@@ -5,6 +5,8 @@
   compatibility.
 - `xctest` now supports running macOS tests in addition to iOS
   - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
+- **Breaking change**: `build-examples` for iOS now uses `--ios` rather than
+  `--ipa`.
 - The tooling now runs in strong null-safe mode.
 - Modified the output format of `pubspec-check` and `xctest`
 
