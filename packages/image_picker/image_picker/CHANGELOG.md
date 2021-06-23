@@ -1,7 +1,14 @@
-## 0.8.0+5
+## 0.8.1+1
 
 * Fixes an issue where `preferredCameraDevice` option is not working for `getVideo` method.
 * Refactor unit tests that were device-only before.
+
+## 0.8.1
+
+* Add a new method `getMultiImage` to allow picking multiple images on iOS 14 or higher
+and Android 4.3 or higher. Returns only 1 image for lower versions of iOS and Android.
+* Known issue: On Android, `getLostData` will only get the last picked image when picking multiple images,
+see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
 ## 0.8.0+4
 
@@ -54,7 +61,7 @@ is not included selected photos and image is scaled.
 
 ## 0.7.3
 
-* Endorse image_picker_for_web
+* Endorse image_picker_for_web.
 
 ## 0.7.2+1
 
@@ -62,7 +69,7 @@ is not included selected photos and image is scaled.
 
 ## 0.7.2
 
-* Run CocoaPods iOS tests in RunnerUITests target
+* Run CocoaPods iOS tests in RunnerUITests target.
 
 ## 0.7.1
 
