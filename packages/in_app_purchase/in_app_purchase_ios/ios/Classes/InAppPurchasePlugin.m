@@ -108,17 +108,15 @@
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
     [self refreshReceipt:call result:result];
   } else if ([@"-[SKPaymentQueue startObservingTransactionQueue]" isEqualToString:call.method]) {
-    [_paymentQueueHandler startObservingPaymentQueue];
+    [self startObservingPaymentQueue:result];
   } else if ([@"-[SKPaymentQueue stopObservingTransactionQueue]" isEqualToString:call.method]) {
-    [_paymentQueueHandler stopObservingPaymentQueue];
+    [self stopObservingPaymentQueue:result];
   } else if ([@"-[SKPaymentQueue registerDelegate]" isEqualToString:call.method]) {
-    [self registerPaymentQueueDelegate];
+    [self registerPaymentQueueDelegate:result];
   } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
-    [self removePaymentQueueDelegate];
+    [self removePaymentQueueDelegate:result];
   } else if ([@"-[SKPaymentQueue showPriceConsentIfNeeded]" isEqualToString:call.method]) {
-    if (@available(iOS 13.4, *)) {
-      [_paymentQueueHandler showPriceConsentIfNeeded];
-    }
+    [self showPriceConsentIfNeeded:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -317,7 +315,17 @@
   }];
 }
 
-- (void)registerPaymentQueueDelegate {
+- (void)startObservingPaymentQueue:(FlutterResult)result {
+  [_paymentQueueHandler startObservingPaymentQueue];
+  result(nil);
+}
+
+- (void)stopObservingPaymentQueue:(FlutterResult)result {
+  [_paymentQueueHandler stopObservingPaymentQueue];
+  result(nil);
+}
+
+- (void)registerPaymentQueueDelegate:(FlutterResult)result {
   if (@available(iOS 13.0, *)) {
     _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
         methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
@@ -327,14 +335,23 @@
         initWithMethodChannel:_paymentQueueDelegateCallbackChannel];
     _paymentQueueHandler.delegate = _paymentQueueDelegate;
   }
+  result(nil);
 }
 
-- (void)removePaymentQueueDelegate {
+- (void)removePaymentQueueDelegate:(FlutterResult)result {
   if (@available(iOS 13.0, *)) {
     _paymentQueueHandler.delegate = nil;
   }
   _paymentQueueDelegate = nil;
   _paymentQueueDelegateCallbackChannel = nil;
+  result(nil);
+}
+
+- (void)showPriceConsentIfNeeded:(FlutterResult)result {
+  if (@available(iOS 13.4, *)) {
+    [_paymentQueueHandler showPriceConsentIfNeeded];
+  }
+  result(nil);
 }
 
 #pragma mark - transaction observer:
