@@ -1,0 +1,48 @@
+name: release
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    name: release
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Install Flutter"
+      # Github Actions don't support templates so it is hard to share this snippet with another action
+      # If we eventually need to use this in more workflow, we could create a shell script that contains this
+      # snippet.
+      run: |
+        cd $HOME
+        git clone https://github.com/flutter/flutter.git --depth 1 -b stable _flutter
+        echo "$HOME/_flutter/bin" >> $GITHUB_PATH
+        cd $GITHUB_WORKSPACE
+    # Checks out a copy of the repo.
+    - name: Check out code
+      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      with:
+        fetch-depth: 0 # Fetch all history so the tool can get all the tags to determine version.
+    - name: Set up tools
+      run: dart pub get
+      working-directory: ${{ github.workspace }}/script/tool
+
+    # # This workflow should be the last to run. So wait for all the other tests to succeed.
+    - name: Wait on all tests
+      uses: lewagon/wait-on-check-action@1b1630e169116b58a4b933d5ad7effc46d3d312d
+      with:
+        ref: ${{ github.sha }}
+        running-workflow-name: 'release'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        wait-interval: 10 # seconds
+        allowed-conclusions: success
+
+    - name: run release
+      run: |
+        git config --global user.name ${{ secrets.USER_NAME }}
+        git config --global user.email ${{ secrets.USER_EMAIL }}
+        dart ./script/tool/lib/src/main.dart publish-plugin --all-changed --base-sha=HEAD~ --skip-confirmation --remote=origin
+      env: {PUB_CREDENTIALS: "${{ secrets.PUB_CREDENTIALS }}"}
+
+    env:
+      DEFAULT_BRANCH: master

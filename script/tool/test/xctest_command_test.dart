@@ -113,16 +113,11 @@ void main() {
 
     group('iOS', () {
       test('skip if iOS is not supported', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: false,
-                isMacOsPlugin: true);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -130,22 +125,18 @@ void main() {
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
-            output, contains('iOS is not implemented by this plugin package.'));
+            output,
+            contains(
+                contains('iOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('skip if iOS is implemented in a federated package', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
-        createFakePubspec(pluginDirectory,
-            iosSupport: PlatformSupport.federated);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.federated
+        });
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -153,30 +144,27 @@ void main() {
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
-            output, contains('iOS is not implemented by this plugin package.'));
+            output,
+            contains(
+                contains('iOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('running with correct destination, exclude 1 plugin', () async {
-        final Directory pluginDirectory1 =
-            createFakePlugin('plugin1', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
+        createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
         final Directory pluginDirectory2 =
-            createFakePlugin('plugin2', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
+            createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
 
-        final Directory pluginExampleDirectory1 =
-            pluginDirectory1.childDirectory('example');
-        createFakePubspec(pluginExampleDirectory1, isFlutter: true);
         final Directory pluginExampleDirectory2 =
             pluginDirectory2.childDirectory('example');
-        createFakePubspec(pluginExampleDirectory2, isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -192,10 +180,12 @@ void main() {
           'plugin1'
         ]);
 
-        expect(output, isNot(contains('Start running for plugin1...')));
-        expect(output, contains('Start running for plugin2...'));
-        expect(output,
-            contains('Successfully ran iOS xctest for plugin2/example'));
+        expect(output, isNot(contains(contains('Running for plugin1'))));
+        expect(output, contains(contains('Running for plugin2')));
+        expect(
+            output,
+            contains(
+                contains('Successfully ran iOS xctest for plugin2/example')));
 
         expect(
             processRunner.recordedCalls,
@@ -223,16 +213,14 @@ void main() {
       test('Not specifying --ios-destination assigns an available simulator',
           () async {
         final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true);
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
 
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
-
-        createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -276,61 +264,55 @@ void main() {
 
     group('macOS', () {
       test('skip if macOS is not supported', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isIosPlugin: true,
-                isMacOsPlugin: false);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          extraFiles: <String>[
+            'example/test',
+          ],
+        );
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output,
-            contains('macOS is not implemented by this plugin package.'));
+        expect(
+            output,
+            contains(
+                contains('macOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('skip if macOS is implemented in a federated package', () async {
-        final Directory pluginDirectory =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isMacOsPlugin: true);
-        createFakePubspec(pluginDirectory,
-            macosSupport: PlatformSupport.federated);
-
-        createFakePubspec(pluginDirectory.childDirectory('example'),
-            isFlutter: true);
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.federated,
+        });
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output,
-            contains('macOS is not implemented by this plugin package.'));
+        expect(
+            output,
+            contains(
+                contains('macOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
       test('runs for macOS plugin', () async {
         final Directory pluginDirectory1 =
-            createFakePlugin('plugin', packagesDir,
-                withExtraFiles: <List<String>>[
-                  <String>['example', 'test'],
-                ],
-                isMacOsPlugin: true);
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
 
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
-        createFakePubspec(pluginExampleDirectory, isFlutter: true);
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -342,8 +324,10 @@ void main() {
           '--macos',
         ]);
 
-        expect(output,
-            contains('Successfully ran macOS xctest for plugin/example'));
+        expect(
+            output,
+            contains(
+                contains('Successfully ran macOS xctest for plugin/example')));
 
         expect(
             processRunner.recordedCalls,
