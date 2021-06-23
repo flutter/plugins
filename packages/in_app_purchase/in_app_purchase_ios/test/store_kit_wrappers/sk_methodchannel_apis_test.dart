@@ -145,6 +145,20 @@ void main() {
       await SKPaymentQueueWrapper().stopObservingTransactionQueue();
       expect(fakeIOSPlatform.queueIsActive, false);
     });
+
+    test('setDelegate should call methodChannel', () async {
+      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, false);
+      await SKPaymentQueueWrapper().setDelegate(TestPaymentQueueDelegate());
+      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, true);
+      await SKPaymentQueueWrapper().setDelegate(null);
+      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, false);
+    });
+
+    test('showPriceConsentIfNeeded should call methodChannel', () async {
+      expect(fakeIOSPlatform.showPriceConsentIfNeeded, false);
+      await SKPaymentQueueWrapper().showPriceConsentIfNeeded();
+      expect(fakeIOSPlatform.showPriceConsentIfNeeded, true);
+    });
   });
 
   group('Code Redemption Sheet', () {
@@ -177,6 +191,12 @@ class FakeIOSPlatform {
 
   // present Code Redemption
   bool presentCodeRedemption = false;
+
+  // show price consent sheet
+  bool showPriceConsentIfNeeded = false;
+
+  // indicate if the payment queue delegate is registered
+  bool isPaymentQueueDelegateRegistered = false;
 
   // Listen to purchase updates
   bool? queueIsActive;
@@ -230,10 +250,21 @@ class FakeIOSPlatform {
       case '-[SKPaymentQueue stopObservingTransactionQueue]':
         queueIsActive = false;
         return Future<void>.sync(() {});
+      case '-[SKPaymentQueue registerDelegate]':
+        isPaymentQueueDelegateRegistered = true;
+        return Future<void>.sync(() {});
+      case '-[SKPaymentQueue removeDelegate]':
+        isPaymentQueueDelegateRegistered = false;
+        return Future<void>.sync(() {});
+      case '-[SKPaymentQueue showPriceConsentIfNeeded]':
+        showPriceConsentIfNeeded = true;
+        return Future<void>.sync(() {});
     }
     return Future.error('method not mocked');
   }
 }
+
+class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {}
 
 class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
   void updatedTransactions(

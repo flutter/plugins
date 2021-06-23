@@ -16,6 +16,16 @@ class SKStorefrontWrapper {
     required this.identifier,
   });
 
+  /// Constructs an instance of the [SKStorefrontWrapper] from a key value map
+  /// of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class. The `map` parameter must not be
+  /// null.
+  factory SKStorefrontWrapper.fromJson(Map<String, dynamic> map) {
+    return _$SKStorefrontWrapperFromJson(map);
+  }
+
   /// The three-letter code representing the country or region associated with
   /// the App Store storefront.
   final String countryCode;

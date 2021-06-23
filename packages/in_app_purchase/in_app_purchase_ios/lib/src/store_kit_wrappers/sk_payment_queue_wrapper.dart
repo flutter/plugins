@@ -6,7 +6,9 @@ import 'dart:async';
 import 'dart:ui' show hashValues;
 
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
@@ -100,7 +102,7 @@ class SKPaymentQueueWrapper {
     } else {
       await channel.invokeMethod<void>('-[SKPaymentQueue registerDelegate]');
       paymentQueueDelegateChannel
-          .setMethodCallHandler(_handlePaymentQueueDelegateCallbacks);
+          .setMethodCallHandler(handlePaymentQueueDelegateCallbacks);
     }
 
     _paymentQueueDelegate = delegate;
@@ -207,7 +209,7 @@ class SKPaymentQueueWrapper {
   }
 
   // Triage a method channel call from the platform and triggers the correct observer method.
-  Future<void> _handleObserverCallbacks(MethodCall call) async {
+  Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null,
         '[in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. Make sure the observer is added right at the App Launch.');
     final SKTransactionObserverWrapper observer = _observer!;
@@ -272,15 +274,26 @@ class SKPaymentQueueWrapper {
     }).toList();
   }
 
-  // Triage a method channel call from the platform and triggers the correct observer method.
-  Future<void> _handlePaymentQueueDelegateCallbacks(MethodCall call) async {
+  /// Triage a method channel call from the platform and triggers the correct
+  /// payment queue delegate method.
+  ///
+  /// This method is public for testing purposes only and should not be used
+  /// outside this class.
+  @visibleForTesting
+  Future<dynamic> handlePaymentQueueDelegateCallbacks(MethodCall call) async {
     assert(_paymentQueueDelegate != null,
         '[in_app_purchase]: (Fatal)The payment queue delegate has not been set but we received a payment queue notification. Please ensure the payment queue has been set using `setDelegate`.');
 
     final SKPaymentQueueDelegateWrapper delegate = _paymentQueueDelegate!;
     switch (call.method) {
       case 'shouldContinueTransaction':
+        final SKPaymentTransactionWrapper transaction =
+            SKPaymentTransactionWrapper.fromJson(call.arguments['transaction']);
+        final SKStorefrontWrapper storefront =
+            SKStorefrontWrapper.fromJson(call.arguments['storefront']);
+        return delegate.shouldContinueTransaction(transaction, storefront);
       case 'shouldShowPriceConsent':
+        return delegate.shouldShowPriceConsent();
       default:
         break;
     }
