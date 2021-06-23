@@ -10,6 +10,7 @@
 
 @import in_app_purchase_ios;
 
+API_AVAILABLE(ios(13.0))
 @interface FIAPPaymentQueueDelegateTests : XCTestCase
 
 @property(strong, nonatomic) FlutterMethodChannel *channel;
