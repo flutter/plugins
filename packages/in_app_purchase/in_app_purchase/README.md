@@ -73,6 +73,7 @@ The following initialization code is required for Google Play:
 // Import `in_app_purchase_android.dart` to be able to access the 
 // `InAppPurchaseAndroidPlatformAddition` class.
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
   // Inform the plugin that this app supports pending purchases on Android.
