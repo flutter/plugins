@@ -818,6 +818,50 @@ public class MethodCallHandlerTest {
     assertEquals(fromBillingResult(billingResult), resultCaptor.getValue());
   }
 
+  @Test
+  public void launchPriceChangeConfirmationFlow_withoutActivity_returnsActivityUnavailableError() {
+    // Set up the sku details
+    establishConnectedBillingClient(null, null);
+    String skuId = "foo";
+    queryForSkus(singletonList(skuId));
+
+    methodChannelHandler.setActivity(null);
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+    verify(result, times(1)).error(eq("ACTIVITY_UNAVAILABLE"), any(), any());
+  }
+
+  @Test
+  public void launchPriceChangeConfirmationFlow_withoutSkuQuery_returnsNotFoundError() {
+    // Set up the sku details
+    establishConnectedBillingClient(null, null);
+    String skuId = "foo";
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+    verify(result, times(1)).error(eq("NOT_FOUND"), contains("sku"), any());
+  }
+
+  @Test
+  public void launchPriceChangeConfirmationFlow_withoutBillingClient_returnsUnavailableError() {
+    // Set up the sku details
+    String skuId = "foo";
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+    verify(result, times(1)).error(eq("UNAVAILABLE"), contains("BillingClient"), any());
+  }
+
   private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
     Map<String, Object> arguments = new HashMap<>();
     arguments.put("handle", 1);
