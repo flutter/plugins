@@ -35,6 +35,21 @@ void main() {
       runner.addCommand(command);
     });
 
+    test('Fails if no platforms are provided', () async {
+      expect(
+        () => runCapturingPrint(runner, <String>['drive-examples']),
+        throwsA(isA<ToolExit>()),
+      );
+    });
+
+    test('Fails if multiple platforms are provided', () async {
+      expect(
+        () => runCapturingPrint(
+            runner, <String>['drive-examples', '--ios', '--macos']),
+        throwsA(isA<ToolExit>()),
+      );
+    });
+
     test('driving under folder "test"', () async {
       final Directory pluginDirectory = createFakePlugin(
         'plugin',
@@ -52,9 +67,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'drive-examples',
-      ]);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
 
       expect(
         output,
@@ -100,9 +114,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'drive-examples',
-      ]);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
 
       expect(
         output,
@@ -190,9 +203,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'drive-examples',
-      ]);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
 
       expect(
         output,
@@ -537,7 +549,7 @@ void main() {
           ]));
     });
 
-    test('driving when plugin does not support mobile is no-op', () async {
+    test('driving when plugin does not support Android is no-op', () async {
       createFakePlugin(
         'plugin',
         packagesDir,
@@ -550,9 +562,39 @@ void main() {
         },
       );
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'drive-examples',
-      ]);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android']);
+
+      expect(
+        output,
+        orderedEquals(<String>[
+          '\n==========\nChecking plugin...',
+          'Not supported for the target platform; skipping.',
+          '\n\n',
+          'All driver tests successful!',
+        ]),
+      );
+
+      // Output should be empty since running drive-examples --macos with no macos
+      // implementation is a no-op.
+      expect(processRunner.recordedCalls, <ProcessCall>[]);
+    });
+
+    test('driving when plugin does not support iOS is no-op', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/plugin_test.dart',
+          'example/test_driver/plugin.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        },
+      );
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
 
       expect(
         output,
@@ -573,9 +615,8 @@ void main() {
       createFakePlugin('aplugin_platform_interface', packagesDir,
           examples: <String>[]);
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'drive-examples',
-      ]);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android']);
 
       expect(
         output,
@@ -609,6 +650,7 @@ void main() {
 
       await runCapturingPrint(runner, <String>[
         'drive-examples',
+        '--ios',
         '--enable-experiment=exp1',
       ]);
 

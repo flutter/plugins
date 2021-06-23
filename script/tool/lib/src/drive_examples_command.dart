@@ -11,6 +11,8 @@ import 'common/plugin_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
+const int _exitBadPlatformFlags = 2;
+
 /// A command to run the example applications for packages via Flutter driver.
 class DriveExamplesCommand extends PluginCommand {
   /// Creates an instance of the drive command.
@@ -53,6 +55,29 @@ class DriveExamplesCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    final List<String> platformSwitches = <String>[
+      kPlatformAndroid,
+      kPlatformIos,
+      kPlatformLinux,
+      kPlatformMacos,
+      kPlatformWeb,
+      kPlatformWindows,
+    ];
+    final int platformCount = platformSwitches
+        .where((String platform) => getBoolArg(platform))
+        .length;
+    // The way this command is written relies (for legacy reasons) on using the
+    // default device (which it assumes has already been set up) for iOS or
+    // Android. Therefore if an explicit target device is passed, it won't
+    // actually drive the mobile version. If that is fixed, the restriction that
+    // only one platform can be selected can be removed.
+    if (platformCount != 1) {
+      print(
+          'Exactly one of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
+          'must be specified.');
+      throw ToolExit(_exitBadPlatformFlags);
+    }
+
     final List<String> failingTests = <String>[];
     final List<String> pluginsWithoutTests = <String>[];
     final bool isLinux = getBoolArg(kPlatformLinux);
@@ -69,7 +94,7 @@ class DriveExamplesCommand extends PluginCommand {
         continue;
       }
       print('\n==========\nChecking $pluginName...');
-      if (!(await _pluginSupportedOnCurrentPlatform(plugin))) {
+      if (!(await _pluginSupportedOnTargetPlatform(plugin))) {
         print('Not supported for the target platform; skipping.');
         continue;
       }
@@ -220,36 +245,26 @@ Tried searching for the following:
     print('All driver tests successful!');
   }
 
-  Future<bool> _pluginSupportedOnCurrentPlatform(
-      FileSystemEntity plugin) async {
-    final bool isAndroid = getBoolArg(kPlatformAndroid);
-    final bool isIOS = getBoolArg(kPlatformIos);
-    final bool isLinux = getBoolArg(kPlatformLinux);
-    final bool isMacos = getBoolArg(kPlatformMacos);
-    final bool isWeb = getBoolArg(kPlatformWeb);
-    final bool isWindows = getBoolArg(kPlatformWindows);
-    if (isAndroid) {
+  Future<bool> _pluginSupportedOnTargetPlatform(FileSystemEntity plugin) async {
+    if (getBoolArg(kPlatformAndroid)) {
       return isAndroidPlugin(plugin);
     }
-    if (isIOS) {
+    if (getBoolArg(kPlatformIos)) {
       return isIosPlugin(plugin);
     }
-    if (isLinux) {
+    if (getBoolArg(kPlatformLinux)) {
       return isLinuxPlugin(plugin);
     }
-    if (isMacos) {
+    if (getBoolArg(kPlatformMacos)) {
       return isMacOsPlugin(plugin);
     }
-    if (isWeb) {
+    if (getBoolArg(kPlatformWeb)) {
       return isWebPlugin(plugin);
     }
-    if (isWindows) {
+    if (getBoolArg(kPlatformWindows)) {
       return isWindowsPlugin(plugin);
     }
-    // When we are here, no flags are specified. Only return true if the plugin
-    // supports Android for legacy command support.
-    // TODO(cyanglaz): Make Android flag also required like other platforms
-    // (breaking change). https://github.com/flutter/flutter/issues/58285
-    return isAndroidPlugin(plugin);
+    assert(false);
+    return false;
   }
 }
