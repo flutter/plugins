@@ -29,10 +29,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSDictionary *)getMapFromNSError:(NSError *)error;
 
-+ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront API_AVAILABLE(ios(13), macos(10.15), watchos(6.2));
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
+    API_AVAILABLE(ios(13), macos(10.15), watchos(6.2));
 
 + (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
-                 andSKPaymentTransaction:(SKPaymentTransaction *)transaction API_AVAILABLE(ios(13), macos(10.15), watchos(6.2));
+                 andSKPaymentTransaction:(SKPaymentTransaction *)transaction
+    API_AVAILABLE(ios(13), macos(10.15), watchos(6.2));
 
 @end
 ;

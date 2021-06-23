@@ -33,7 +33,7 @@
     @"subscriptionPeriod" : self.periodMap,
     @"paymentMode" : @1
   };
-  
+
   self.productMap = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"price" : @"1",
     @"priceLocale" : [FIAObjectTranslator getMapFromNSLocale:NSLocale.systemLocale],
@@ -45,13 +45,13 @@
     self.productMap[@"subscriptionPeriod"] = self.periodMap;
     self.productMap[@"introductoryPrice"] = self.discountMap;
   }
-  
+
   if (@available(iOS 12.0, *)) {
     self.productMap[@"subscriptionGroupIdentifier"] = @"com.group";
   }
-  
+
   self.productResponseMap =
-  @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
+      @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
   self.paymentMap = @{
     @"productIdentifier" : @"123",
     @"requestData" : @"abcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefgh",
@@ -83,14 +83,14 @@
     @"code" : @(123),
     @"domain" : @"test_domain",
     @"userInfo" : @{
-        @"key" : @"value",
+      @"key" : @"value",
     }
   };
   self.storefrontMap = @{
     @"countryCode" : @"USA",
     @"identifier" : @"unique_identifier",
   };
-  
+
   self.storefrontAndPaymentTransactionMap = @{
     @"storefront" : self.storefrontMap,
     @"transaction" : self.transactionMap,
@@ -100,7 +100,7 @@
 - (void)testSKProductSubscriptionPeriodStubToMap {
   if (@available(iOS 11.2, *)) {
     SKProductSubscriptionPeriodStub *period =
-    [[SKProductSubscriptionPeriodStub alloc] initWithMap:self.periodMap];
+        [[SKProductSubscriptionPeriodStub alloc] initWithMap:self.periodMap];
     NSDictionary *map = [FIAObjectTranslator getMapFromSKProductSubscriptionPeriod:period];
     XCTAssertEqualObjects(map, self.periodMap);
   }
@@ -122,7 +122,7 @@
 
 - (void)testProductResponseToMap {
   SKProductsResponseStub *response =
-  [[SKProductsResponseStub alloc] initWithMap:self.productResponseMap];
+      [[SKProductsResponseStub alloc] initWithMap:self.productResponseMap];
   NSDictionary *map = [FIAObjectTranslator getMapFromSKProductsResponse:response];
   XCTAssertEqualObjects(map, self.productResponseMap);
 }
@@ -136,7 +136,7 @@
 - (void)testPaymentTransactionToMap {
   // payment is not KVC, cannot test payment field.
   SKPaymentTransactionStub *paymentTransaction =
-  [[SKPaymentTransactionStub alloc] initWithMap:self.transactionMap];
+      [[SKPaymentTransactionStub alloc] initWithMap:self.transactionMap];
   NSDictionary *map = [FIAObjectTranslator getMapFromSKPaymentTransaction:paymentTransaction];
   XCTAssertEqualObjects(map, self.transactionMap);
 }
@@ -162,14 +162,16 @@
     XCTAssertEqualObjects(map, self.storefrontMap);
   }
 }
-  
+
 - (void)testSKStorefrontAndSKPaymentTransactionToMap {
-    if (@available(iOS 13.0, *)) {
-      SKStorefront *storefront = [[SKStorefrontStub alloc] initWithMap:self.storefrontMap];
-      SKPaymentTransaction *transaction = [[SKPaymentTransactionStub alloc] initWithMap:self.transactionMap];
-      NSDictionary *map = [FIAObjectTranslator getMapFromSKStorefront:storefront andSKPaymentTransaction:transaction];
-      XCTAssertEqualObjects(map, self.storefrontAndPaymentTransactionMap);
-    }
+  if (@available(iOS 13.0, *)) {
+    SKStorefront *storefront = [[SKStorefrontStub alloc] initWithMap:self.storefrontMap];
+    SKPaymentTransaction *transaction =
+        [[SKPaymentTransactionStub alloc] initWithMap:self.transactionMap];
+    NSDictionary *map = [FIAObjectTranslator getMapFromSKStorefront:storefront
+                                            andSKPaymentTransaction:transaction];
+    XCTAssertEqualObjects(map, self.storefrontAndPaymentTransactionMap);
+  }
 }
 
 @end

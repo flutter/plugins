@@ -5,10 +5,10 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
+#import "FIAPPaymentQueueDelegate.h"
 #import "FIAPReceiptManager.h"
 #import "FIAPRequestHandler.h"
 #import "FIAPaymentQueueHandler.h"
-#import "FIAPPaymentQueueDelegate.h"
 
 @interface InAppPurchasePlugin ()
 
@@ -31,7 +31,8 @@
 @property(strong, nonatomic, readonly) NSObject<FlutterPluginRegistrar> *registrar;
 
 @property(strong, nonatomic, readonly) FIAPReceiptManager *receiptManager;
-@property(strong, nonatomic, readonly) FIAPPaymentQueueDelegate *paymentQueueDelegate API_AVAILABLE(ios(13));
+@property(strong, nonatomic, readonly)
+    FIAPPaymentQueueDelegate *paymentQueueDelegate API_AVAILABLE(ios(13));
 
 @end
 
@@ -39,8 +40,8 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
+                                  binaryMessenger:[registrar messenger]];
   InAppPurchasePlugin *instance = [[InAppPurchasePlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -58,31 +59,31 @@
   _registrar = registrar;
   _registry = [registrar textures];
   _messenger = [registrar messenger];
-  
+
   __weak typeof(self) weakSelf = self;
   _paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueue defaultQueue]
-                                                   transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-    [weakSelf handleTransactionsUpdated:transactions];
-  }
-                                                    transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
-    [weakSelf handleTransactionsRemoved:transactions];
-  }
-                                              restoreTransactionFailed:^(NSError *_Nonnull error) {
-    [weakSelf handleTransactionRestoreFailed:error];
-  }
-                                  restoreCompletedTransactionsFinished:^{
-    [weakSelf restoreCompletedTransactionsFinished];
-  }
-                                                 shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
-    return [weakSelf shouldAddStorePayment:payment product:product];
-  }
-                                                      updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
-    [weakSelf updatedDownloads:downloads];
-  }];
-  
+      transactionsUpdated:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        [weakSelf handleTransactionsUpdated:transactions];
+      }
+      transactionRemoved:^(NSArray<SKPaymentTransaction *> *_Nonnull transactions) {
+        [weakSelf handleTransactionsRemoved:transactions];
+      }
+      restoreTransactionFailed:^(NSError *_Nonnull error) {
+        [weakSelf handleTransactionRestoreFailed:error];
+      }
+      restoreCompletedTransactionsFinished:^{
+        [weakSelf restoreCompletedTransactionsFinished];
+      }
+      shouldAddStorePayment:^BOOL(SKPayment *payment, SKProduct *product) {
+        return [weakSelf shouldAddStorePayment:payment product:product];
+      }
+      updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
+        [weakSelf updatedDownloads:downloads];
+      }];
+
   _transactionObserverCallbackChannel =
-  [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
-                              binaryMessenger:[registrar messenger]];
+      [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
+                                  binaryMessenger:[registrar messenger]];
   return self;
 }
 
@@ -100,7 +101,7 @@
   } else if ([@"-[InAppPurchasePlugin restoreTransactions:result:]" isEqualToString:call.method]) {
     [self restoreTransactions:call result:result];
   } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
-              isEqualToString:call.method]) {
+                 isEqualToString:call.method]) {
     [self presentCodeRedemptionSheet:call result:result];
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
@@ -129,7 +130,7 @@
 
 - (void)getPendingTransactions:(FlutterResult)result {
   NSArray<SKPaymentTransaction *> *transactions =
-  [self.paymentQueueHandler getUnfinishedTransactions];
+      [self.paymentQueueHandler getUnfinishedTransactions];
   NSMutableArray *transactionMaps = [[NSMutableArray alloc] init];
   for (SKPaymentTransaction *transaction in transactions) {
     [transactionMaps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
@@ -146,7 +147,7 @@
   }
   NSArray *productIdentifiers = (NSArray *)call.arguments;
   SKProductsRequest *request =
-  [self getProductRequestWithIdentifiers:[NSSet setWithArray:productIdentifiers]];
+      [self getProductRequestWithIdentifiers:[NSSet setWithArray:productIdentifiers]];
   FIAPRequestHandler *handler = [[FIAPRequestHandler alloc] initWithRequest:request];
   [self.requestHandlers addObject:handler];
   __weak typeof(self) weakSelf = self;
@@ -161,7 +162,7 @@
     if (!response) {
       result([FlutterError errorWithCode:@"storekit_platform_no_response"
                                  message:@"Failed to get SKProductResponse in startRequest "
-              @"call. Error occured on iOS platform"
+                                         @"call. Error occured on iOS platform"
                                  details:call.arguments]);
       return;
     }
@@ -187,12 +188,12 @@
   SKProduct *product = [self getProduct:productID];
   if (!product) {
     result([FlutterError
-            errorWithCode:@"storekit_invalid_payment_object"
-            message:
-            @"You have requested a payment for an invalid product. Either the "
-            @"`productIdentifier` of the payment is not valid or the product has not been "
-            @"fetched before adding the payment to the payment queue."
-            details:call.arguments]);
+        errorWithCode:@"storekit_invalid_payment_object"
+              message:
+                  @"You have requested a payment for an invalid product. Either the "
+                  @"`productIdentifier` of the payment is not valid or the product has not been "
+                  @"fetched before adding the payment to the payment queue."
+              details:call.arguments]);
     return;
   }
   SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:product];
@@ -202,18 +203,18 @@
   if (@available(iOS 8.3, *)) {
     NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
     payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
-    ? NO
-    : [simulatesAskToBuyInSandbox boolValue];
+                                             ? NO
+                                             : [simulatesAskToBuyInSandbox boolValue];
   }
-  
+
   if (![self.paymentQueueHandler addPayment:payment]) {
     result([FlutterError
-            errorWithCode:@"storekit_duplicate_product_object"
-            message:@"There is a pending transaction for the same product identifier. Please "
-            @"either wait for it to be finished or finish it manually using "
-            @"`completePurchase` to avoid edge cases."
-            
-            details:call.arguments]);
+        errorWithCode:@"storekit_duplicate_product_object"
+              message:@"There is a pending transaction for the same product identifier. Please "
+                      @"either wait for it to be finished or finish it manually using "
+                      @"`completePurchase` to avoid edge cases."
+
+              details:call.arguments]);
     return;
   }
   result(nil);
@@ -229,10 +230,10 @@
   NSDictionary *paymentMap = (NSDictionary *)call.arguments;
   NSString *transactionIdentifier = [paymentMap objectForKey:@"transactionIdentifier"];
   NSString *productIdentifier = [paymentMap objectForKey:@"productIdentifier"];
-  
+
   NSArray<SKPaymentTransaction *> *pendingTransactions =
-  [self.paymentQueueHandler getUnfinishedTransactions];
-  
+      [self.paymentQueueHandler getUnfinishedTransactions];
+
   for (SKPaymentTransaction *transaction in pendingTransactions) {
     // If the user cancels the purchase dialog we won't have a transactionIdentifier.
     // So if it is null AND a transaction in the pendingTransactions list has
@@ -251,16 +252,16 @@
       }
     }
   }
-  
+
   result(nil);
 }
 
 - (void)restoreTransactions:(FlutterMethodCall *)call result:(FlutterResult)result {
   if (call.arguments && ![call.arguments isKindOfClass:[NSString class]]) {
     result([FlutterError
-            errorWithCode:@"storekit_invalid_argument"
-            message:@"Argument is not nil and the type of finishTransaction is not a string."
-            details:call.arguments]);
+        errorWithCode:@"storekit_invalid_argument"
+              message:@"Argument is not nil and the type of finishTransaction is not a string."
+              details:call.arguments]);
     return;
   }
   [self.paymentQueueHandler restoreTransactions:call.arguments];
@@ -318,10 +319,12 @@
 
 - (void)registerPaymentQueueDelegate {
   if (@available(iOS 13.0, *)) {
-    _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
-                                                                       binaryMessenger:_messenger];
-    
-    _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel: _paymentQueueDelegateCallbackChannel];
+    _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
+        methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
+              binaryMessenger:_messenger];
+
+    _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc]
+        initWithMethodChannel:_paymentQueueDelegateCallbackChannel];
     _paymentQueueHandler.delegate = _paymentQueueDelegate;
   }
 }
@@ -353,13 +356,15 @@
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
-  [self.transactionObserverCallbackChannel invokeMethod:@"restoreCompletedTransactionsFailed"
-                           arguments:[FIAObjectTranslator getMapFromNSError:error]];
+  [self.transactionObserverCallbackChannel
+      invokeMethod:@"restoreCompletedTransactionsFailed"
+         arguments:[FIAObjectTranslator getMapFromNSError:error]];
 }
 
 - (void)restoreCompletedTransactionsFinished {
-  [self.transactionObserverCallbackChannel invokeMethod:@"paymentQueueRestoreCompletedTransactionsFinished"
-                           arguments:nil];
+  [self.transactionObserverCallbackChannel
+      invokeMethod:@"paymentQueueRestoreCompletedTransactionsFinished"
+         arguments:nil];
 }
 
 - (void)updatedDownloads:(NSArray<SKDownload *> *)downloads {
@@ -371,11 +376,12 @@
   // have a interception method that deciding if the payment should be processed (implemented by the
   // programmer).
   [self.productsCache setObject:product forKey:product.productIdentifier];
-  [self.transactionObserverCallbackChannel invokeMethod:@"shouldAddStorePayment"
-                           arguments:@{
-                             @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
-                             @"product" : [FIAObjectTranslator getMapFromSKProduct:product]
-                           }];
+  [self.transactionObserverCallbackChannel
+      invokeMethod:@"shouldAddStorePayment"
+         arguments:@{
+           @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
+           @"product" : [FIAObjectTranslator getMapFromSKProduct:product]
+         }];
   return NO;
 }
 

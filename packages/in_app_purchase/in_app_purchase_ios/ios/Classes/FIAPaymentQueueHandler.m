@@ -37,7 +37,7 @@
     _paymentQueueRestoreCompletedTransactionsFinished = restoreCompletedTransactionsFinished;
     _shouldAddStorePayment = shouldAddStorePayment;
     _updatedDownloads = updatedDownloads;
-    
+
     if (@available(iOS 13.0, macOS 10.15, *)) {
       queue.delegate = self.delegate;
     }

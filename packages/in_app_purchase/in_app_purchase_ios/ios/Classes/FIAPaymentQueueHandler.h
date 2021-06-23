@@ -18,7 +18,8 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
-@property (NS_NONATOMIC_IOSONLY, weak, nullable) id<SKPaymentQueueDelegate> delegate API_AVAILABLE(ios(13.0), macos(10.15), watchos(6.2));
+@property(NS_NONATOMIC_IOSONLY, weak, nullable) id<SKPaymentQueueDelegate> delegate API_AVAILABLE(
+    ios(13.0), macos(10.15), watchos(6.2));
 
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated

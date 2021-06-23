@@ -12,6 +12,7 @@ import 'package:meta/meta.dart';
 
 import '../channel.dart';
 import '../in_app_purchase_ios_platform.dart';
+import 'sk_payment_queue_delegate_wrapper.dart';
 import 'sk_payment_transaction_wrappers.dart';
 import 'sk_product_wrapper.dart';
 
@@ -40,6 +41,7 @@ class SKPaymentQueueWrapper {
 
   static final SKPaymentQueueWrapper _singleton = SKPaymentQueueWrapper._();
 
+  SKPaymentQueueDelegateWrapper? _paymentQueueDelegate;
   SKTransactionObserverWrapper? _observer;
 
   /// Calls [`-[SKPaymentQueue transactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506026-transactions?language=objc)
@@ -70,18 +72,39 @@ class SKPaymentQueueWrapper {
   ///
   /// Call this method when the first listener is subscribed to the
   /// [InAppPurchaseIosPlatform.purchaseStream].
-  Future startObservingTransactionQueue() async =>
-      await channel.invokeListMethod<void>(
-          '-[SKPaymentQueue startObservingTransactionQueue]');
+  Future startObservingTransactionQueue() => channel
+      .invokeMethod<void>('-[SKPaymentQueue startObservingTransactionQueue]');
 
   /// Instructs the iOS implementation to remove the transaction observer and
   /// stop listening to it.
   ///
   /// Call this when there are no longer any listeners subscribed to the
   /// [InAppPurchaseIosPlatform.purchaseStream].
-  Future stopObservingTransactionQueue() async =>
-      await channel.invokeListMethod<void>(
-          '-[SKPaymentQueue stopObservingTransactionQueue]');
+  Future stopObservingTransactionQueue() => channel
+      .invokeMethod<void>('-[SKPaymentQueue stopObservingTransactionQueue]');
+
+  /// Sets an implementation of the [SKPaymentQueueDelegateWrapper].
+  ///
+  /// The [SKPaymentQueueDelegateWrapper] can be used to inform iOS how to
+  /// finish transactions when the storefront changes or if the price consent
+  /// sheet should be displayed when the price of a subscription has changed. If
+  /// no delegate is registered iOS will fallback to it's default configuration.
+  /// See the documentation on StoreKite's [`-[SKPaymentQueue delegate:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc).
+  ///
+  /// When set to `null` the payment queue delegate will be removed and the
+  /// default behaviour will apply (see [documentation](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc)).
+  Future setDelegate(SKPaymentQueueDelegateWrapper? delegate) async {
+    if (delegate == null) {
+      await channel.invokeMethod<void>('-[SKPaymentQueue removeDelegate]');
+      paymentQueueDelegateChannel.setMethodCallHandler(null);
+    } else {
+      await channel.invokeMethod<void>('-[SKPaymentQueue registerDelegate]');
+      paymentQueueDelegateChannel
+          .setMethodCallHandler(_handlePaymentQueueDelegateCallbacks);
+    }
+
+    _paymentQueueDelegate = delegate;
+  }
 
   /// Posts a payment to the queue.
   ///
@@ -234,6 +257,24 @@ class SKPaymentQueueWrapper {
       return SKPaymentTransactionWrapper.fromJson(
           Map.castFrom<dynamic, dynamic, String, dynamic>(map));
     }).toList();
+  }
+
+  // Triage a method channel call from the platform and triggers the correct observer method.
+  Future<void> _handlePaymentQueueDelegateCallbacks(MethodCall call) async {
+    assert(_paymentQueueDelegate != null,
+        '[in_app_purchase]: (Fatal)The payment queue delegate has not been set but we received a payment queue notification. Please ensure the payment queue has been set using `setDelegate`.');
+
+    final SKPaymentQueueDelegateWrapper delegate = _paymentQueueDelegate!;
+    switch (call.method) {
+      case 'shouldContinueTransaction':
+      case 'shouldShowPriceConsent':
+      default:
+        break;
+    }
+    throw PlatformException(
+        code: 'no_such_callback',
+        message:
+            'Did not recognize the payment queue delegate callback ${call.method}.');
   }
 }
 

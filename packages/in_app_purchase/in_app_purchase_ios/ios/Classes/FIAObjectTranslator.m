@@ -173,26 +173,26 @@
   if (!storefront) {
     return nil;
   }
-  
+
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"countryCode" : storefront.countryCode,
     @"identifier" : storefront.identifier
   }];
-  
+
   return map;
 }
 
 + (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
                  andSKPaymentTransaction:(SKPaymentTransaction *)transaction {
-  if(!storefront || !transaction) {
+  if (!storefront || !transaction) {
     return nil;
   }
-  
+
   NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
     @"storefront" : [FIAObjectTranslator getMapFromSKStorefront:storefront],
     @"transaction" : [FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]
   }];
-  
+
   return map;
 }
 

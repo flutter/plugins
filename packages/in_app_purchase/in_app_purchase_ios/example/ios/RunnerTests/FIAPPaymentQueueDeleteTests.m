@@ -4,17 +4,17 @@
 
 #import <OCMock/OCMock.h>
 #import <XCTest/XCTest.h>
-#import "FIAPaymentQueueHandler.h"
 #import "FIAObjectTranslator.h"
+#import "FIAPaymentQueueHandler.h"
 #import "Stubs.h"
 
 @import in_app_purchase_ios;
 
 @interface FIAPPaymentQueueDelegateTests : XCTestCase
 
-@property (strong, nonatomic) FlutterMethodChannel *channel;
-@property (strong, nonatomic) SKPaymentTransaction *transaction;
-@property (strong, nonatomic) SKStorefront *storefront;
+@property(strong, nonatomic) FlutterMethodChannel *channel;
+@property(strong, nonatomic) SKPaymentTransaction *transaction;
+@property(strong, nonatomic) SKStorefront *storefront;
 
 @end
 
@@ -22,8 +22,8 @@
 
 - (void)setUp {
   self.channel = OCMClassMock(FlutterMethodChannel.class);
-  
-  NSDictionary* transactionMap = @{
+
+  NSDictionary *transactionMap = @{
     @"transactionIdentifier" : [NSNull null],
     @"transactionState" : @(SKPaymentTransactionStatePurchasing),
     @"payment" : [NSNull null],
@@ -34,8 +34,8 @@
     @"originalTransaction" : [NSNull null],
   };
   self.transaction = [[SKPaymentTransactionStub alloc] initWithMap:transactionMap];
-  
-  NSDictionary* storefrontMap = @{
+
+  NSDictionary *storefrontMap = @{
     @"countryCode" : @"USA",
     @"identifier" : @"unique_identifier",
   };
@@ -47,65 +47,71 @@
 }
 
 - (void)testShouldContinueTransaction {
-  if(@available(iOS 13.0, *)) {
-    FIAPPaymentQueueDelegate *delegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
-    
-    OCMStub(
-            [self.channel invokeMethod:@"shouldContinueTransaction"
-                             arguments:[FIAObjectTranslator getMapFromSKStorefront:self.storefront
-                                andSKPaymentTransaction:self.transaction]
-                                result:([OCMArg invokeBlockWithArgs:[NSNumber numberWithBool:NO], nil])]);
-    
-    BOOL shouldContinue = [delegate paymentQueue:OCMClassMock(SKPaymentQueue.class) shouldContinueTransaction:self.transaction
-                     inStorefront:self.storefront];
-    
+  if (@available(iOS 13.0, *)) {
+    FIAPPaymentQueueDelegate *delegate =
+        [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
+
+    OCMStub([self.channel
+        invokeMethod:@"shouldContinueTransaction"
+           arguments:[FIAObjectTranslator getMapFromSKStorefront:self.storefront
+                                         andSKPaymentTransaction:self.transaction]
+              result:([OCMArg invokeBlockWithArgs:[NSNumber numberWithBool:NO], nil])]);
+
+    BOOL shouldContinue = [delegate paymentQueue:OCMClassMock(SKPaymentQueue.class)
+                       shouldContinueTransaction:self.transaction
+                                    inStorefront:self.storefront];
+
     XCTAssertFalse(shouldContinue);
   }
 }
 
 - (void)testShouldContinueTransaction_should_default_to_yes {
-  if(@available(iOS 13.0, *)) {
-    FIAPPaymentQueueDelegate *delegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
-    
-    OCMStub(
-            [self.channel invokeMethod:@"shouldContinueTransaction"
+  if (@available(iOS 13.0, *)) {
+    FIAPPaymentQueueDelegate *delegate =
+        [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
+
+    OCMStub([self.channel invokeMethod:@"shouldContinueTransaction"
                              arguments:[FIAObjectTranslator getMapFromSKStorefront:self.storefront
-                                andSKPaymentTransaction:self.transaction]
+                                                           andSKPaymentTransaction:self.transaction]
                                 result:[OCMArg any]]);
-    
-    BOOL shouldContinue = [delegate paymentQueue:OCMClassMock(SKPaymentQueue.class) shouldContinueTransaction:self.transaction
-                     inStorefront:self.storefront];
-    
+
+    BOOL shouldContinue = [delegate paymentQueue:OCMClassMock(SKPaymentQueue.class)
+                       shouldContinueTransaction:self.transaction
+                                    inStorefront:self.storefront];
+
     XCTAssertTrue(shouldContinue);
   }
 }
 
 - (void)testShouldShowPriceConsentIfNeeded {
-  if(@available(iOS 13.4, *)) {
-    FIAPPaymentQueueDelegate *delegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
-    
-    OCMStub(
-            [self.channel invokeMethod:@"shouldShowPriceConsent"
-                             arguments:nil
-                                result:([OCMArg invokeBlockWithArgs:[NSNumber numberWithBool:NO], nil])]);
-    
-    BOOL shouldShow = [delegate paymentQueueShouldShowPriceConsent:OCMClassMock(SKPaymentQueue.class)];
-    
+  if (@available(iOS 13.4, *)) {
+    FIAPPaymentQueueDelegate *delegate =
+        [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
+
+    OCMStub([self.channel
+        invokeMethod:@"shouldShowPriceConsent"
+           arguments:nil
+              result:([OCMArg invokeBlockWithArgs:[NSNumber numberWithBool:NO], nil])]);
+
+    BOOL shouldShow =
+        [delegate paymentQueueShouldShowPriceConsent:OCMClassMock(SKPaymentQueue.class)];
+
     XCTAssertFalse(shouldShow);
   }
 }
 
 - (void)testShouldShowPriceConsentIfNeeded_should_default_to_yes {
-  if(@available(iOS 13.4, *)) {
-    FIAPPaymentQueueDelegate *delegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
-    
-    OCMStub(
-            [self.channel invokeMethod:@"shouldShowPriceConsent"
+  if (@available(iOS 13.4, *)) {
+    FIAPPaymentQueueDelegate *delegate =
+        [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel:self.channel];
+
+    OCMStub([self.channel invokeMethod:@"shouldShowPriceConsent"
                              arguments:nil
                                 result:[OCMArg any]]);
-    
-    BOOL shouldShow = [delegate paymentQueueShouldShowPriceConsent:OCMClassMock(SKPaymentQueue.class)];
-    
+
+    BOOL shouldShow =
+        [delegate paymentQueueShouldShowPriceConsent:OCMClassMock(SKPaymentQueue.class)];
+
     XCTAssertTrue(shouldShow);
   }
 }
