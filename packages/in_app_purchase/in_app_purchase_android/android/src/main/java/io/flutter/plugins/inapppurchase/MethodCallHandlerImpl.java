@@ -391,8 +391,8 @@ class MethodCallHandlerImpl
       return;
     }
     // Note that assert doesn't work on Android (see https://stackoverflow.com/a/6176529/5167831 and https://stackoverflow.com/a/8164195/5167831)
-    // and that this assert is only added to silence the analyser. The actual null check 
-    // is handled by the `billingClientError()` call. 
+    // and that this assert is only added to silence the analyser. The actual null check
+    // is handled by the `billingClientError()` call.
     assert billingClient != null;
 
     SkuDetails skuDetails = cachedSkus.get(sku);
