@@ -2,6 +2,10 @@
 
 * Add iOS UI integration test target.
 
+## 2.0.9
+
+* Fix system text zoom auto change html default font size on Android
+
 ## 2.0.8
 
 * Migrate maven repository from jcenter to mavenCentral.
