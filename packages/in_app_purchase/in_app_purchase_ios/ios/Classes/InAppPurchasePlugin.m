@@ -80,14 +80,6 @@
     [weakSelf updatedDownloads:downloads];
   }];
   
-  if (@available(iOS 13.0, *)) {
-    _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
-                                                                       binaryMessenger:_messenger];
-    
-    _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel: _paymentQueueDelegateCallbackChannel];
-    _paymentQueueHandler.delegate = _paymentQueueDelegate;
-  }
-  
   _transactionObserverCallbackChannel =
   [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
                               binaryMessenger:[registrar messenger]];
@@ -118,6 +110,10 @@
     [_paymentQueueHandler startObservingPaymentQueue];
   } else if ([@"-[SKPaymentQueue stopObservingTransactionQueue]" isEqualToString:call.method]) {
     [_paymentQueueHandler stopObservingPaymentQueue];
+  } else if ([@"-[SKPaymentQueue registerDelegate]" isEqualToString:call.method]) {
+    [self registerPaymentQueueDelegate];
+  } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
+    [self removePaymentQueueDelegate];
   } else if ([@"-[SKPaymentQueue showPriceConsentIfNeeded]" isEqualToString:call.method]) {
     if (@available(iOS 13.4, *)) {
       [_paymentQueueHandler showPriceConsentIfNeeded];
@@ -318,6 +314,24 @@
     result(nil);
     [weakSelf.requestHandlers removeObject:handler];
   }];
+}
+
+- (void)registerPaymentQueueDelegate {
+  if (@available(iOS 13.0, *)) {
+    _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
+                                                                       binaryMessenger:_messenger];
+    
+    _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc] initWithMethodChannel: _paymentQueueDelegateCallbackChannel];
+    _paymentQueueHandler.delegate = _paymentQueueDelegate;
+  }
+}
+
+- (void)removePaymentQueueDelegate {
+  if (@available(iOS 13.0, *)) {
+    _paymentQueueHandler.delegate = nil;
+  }
+  _paymentQueueDelegate = nil;
+  _paymentQueueDelegateCallbackChannel = nil;
 }
 
 #pragma mark - transaction observer:

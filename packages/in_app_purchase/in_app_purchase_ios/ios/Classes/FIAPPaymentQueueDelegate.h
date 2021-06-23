@@ -8,7 +8,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-API_AVAILABLE(ios(13), macos(10.15))
+API_AVAILABLE(ios(13))
 @interface FIAPPaymentQueueDelegate : NSObject <SKPaymentQueueDelegate>
 - (id) initWithMethodChannel:(FlutterMethodChannel *) methodChannel;
 @end
