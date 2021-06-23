@@ -22,7 +22,7 @@
 
 @interface FLTImagePickerPlugin (Test)
 @property(copy, nonatomic) FlutterResult result;
-- (void)handleSavedPath:(NSString *)path;
+- (void)handleSavedPathList:(NSMutableArray *)pathList;
 - (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker;
 @end
 
@@ -122,21 +122,6 @@
   XCTAssertEqual([plugin getImagePickerController].videoMaximumDuration, 95);
 }
 
-- (void)testPluginPickImageSelectMultipleTimes {
-  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"pickImage"
-                                        arguments:@{@"source" : @(0), @"cameraDevice" : @(0)}];
-  [plugin handleMethodCall:call
-                    result:^(id _Nullable r){
-                    }];
-  plugin.result = ^(id result) {
-
-  };
-  [plugin handleSavedPath:@"test"];
-  [plugin handleSavedPath:@"test"];
-}
-
 - (void)testViewController {
   UIWindow *window = [UIWindow new];
   MockViewController *vc1 = [MockViewController new];
@@ -147,6 +132,64 @@
 
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
   XCTAssertEqual([plugin viewControllerWithWindow:window], vc2);
+}
+
+- (void)testPluginMultiImagePathIsNil {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+
+  dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
+  __block FlutterError *pickImageResult = nil;
+
+  plugin.result = ^(id _Nullable r) {
+    pickImageResult = r;
+    dispatch_semaphore_signal(resultSemaphore);
+  };
+  [plugin handleSavedPathList:nil];
+
+  dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+  XCTAssertEqualObjects(pickImageResult.code, @"create_error");
+}
+
+- (void)testPluginMultiImagePathHasNullItem {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  NSMutableArray *pathList = [NSMutableArray new];
+
+  [pathList addObject:[NSNull null]];
+
+  dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
+  __block FlutterError *pickImageResult = nil;
+
+  plugin.result = ^(id _Nullable r) {
+    pickImageResult = r;
+    dispatch_semaphore_signal(resultSemaphore);
+  };
+  [plugin handleSavedPathList:pathList];
+
+  dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+  XCTAssertEqualObjects(pickImageResult.code, @"create_error");
+}
+
+- (void)testPluginMultiImagePathHasItem {
+  FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
+  NSString *savedPath = @"test";
+  NSMutableArray *pathList = [NSMutableArray new];
+
+  [pathList addObject:savedPath];
+
+  dispatch_semaphore_t resultSemaphore = dispatch_semaphore_create(0);
+  __block id pickImageResult = nil;
+
+  plugin.result = ^(id _Nullable r) {
+    pickImageResult = r;
+    dispatch_semaphore_signal(resultSemaphore);
+  };
+  [plugin handleSavedPathList:pathList];
+
+  dispatch_semaphore_wait(resultSemaphore, DISPATCH_TIME_FOREVER);
+
+  XCTAssertEqual(pickImageResult, pathList);
 }
 
 @end
