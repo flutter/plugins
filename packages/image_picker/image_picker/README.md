@@ -11,6 +11,9 @@ First, add `image_picker` as a [dependency in your pubspec.yaml file](https://fl
 
 ### iOS
 
+Starting with version **0.8.1** the iOS implementation uses PHPicker to pick (multiple) images on iOS 14 or higher.
+As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS 14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue.[63426347 - Apple known issue](https://www.google.com/search?q=63426347+apple&sxsrf=ALeKk01YnTMid5S0PYvhL8GbgXJ40ZS[…]t=gws-wiz&ved=0ahUKEwjKh8XH_5HwAhWL_rsIHUmHDN8Q4dUDCA8&uact=5) 
+
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
 * `NSPhotoLibraryUsageDescription` - describe why your app needs permission for the photo library. This is called _Privacy - Photo Library Usage Description_ in the visual editor.
@@ -18,6 +21,8 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 * `NSMicrophoneUsageDescription` - describe why your app needs access to the microphone, if you intend to record videos. This is called _Privacy - Microphone Usage Description_ in the visual editor.
 
 ### Android
+
+Starting with version **0.8.1** the Android implementation support to pick (multiple) images on Android 4.3 or higher.
 
 No configuration required - the plugin should work out of the box.
 
@@ -29,62 +34,11 @@ If you require your picked image to be stored permanently, it is your responsibi
 ### Example
 
 ``` dart
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  File _image;
-  final picker = ImagePicker();
-
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Image Picker Example'),
-      ),
-      body: Center(
-        child: _image == null
-            ? Text('No image selected.')
-            : Image.file(_image),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getImage,
-        tooltip: 'Pick Image',
-        child: Icon(Icons.add_a_photo),
-      ),
-    );
-  }
-}
+    ...
+    final PickedFile? pickedFile = await picker.getImage(source: ImageSource.camera);
+    ...
 ```
 
 ### Handling MainActivity destruction on Android
@@ -113,6 +67,8 @@ Future<void> retrieveLostData() async {
 ```
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
+
+On Android, `getLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
 ## Deprecation warnings in `pickImage`, `pickVideo` and `LostDataResponse`
 

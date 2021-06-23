@@ -1,11 +1,11 @@
-gcp_credentials: ENCRYPTED[ec898795b6f1b54f9cc2ab4104909f1053651f65fcab96397cfdc33dae6df5fd0fa972e29ba19f4f95125de844ab1641]
+gcp_credentials: ENCRYPTED[!0e63b52bd7e4fda1cd7b7bf2b4fe515a27fadbeaced01f5ad8b699b81d3611ed64c5d3271bcd8426dd914ef41cba48a0!]
 
 # Don't run on release tags since it creates O(n^2) tasks where n is the
 # number of plugins
 only_if: $CIRRUS_TAG == ''
 env:
   CHANNEL: "master" # Default to master when not explicitly set by a task.
-  PLUGIN_TOOLS: "dart run ./script/tool/lib/src/main.dart"
+  PLUGIN_TOOL: "./script/tool/bin/flutter_plugin_tools.dart"
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
@@ -39,7 +39,7 @@ task:
   << : *FLUTTER_UPGRADE_TEMPLATE
   gke_container:
     dockerfile: .ci/Dockerfile
-    builder_image_name: docker-builder # gce vm image
+    builder_image_name: docker-builder-linux # gce vm image
     builder_image_project: flutter-cirrus
     cluster_name: test-cluster
     zone: us-central1-a
@@ -58,7 +58,7 @@ task:
       format_script: ./script/tool_runner.sh format --fail-on-change
       pubspec_script: ./script/tool_runner.sh pubspec-check
       license_script:
-        - dart script/tool/lib/src/main.dart license-check
+        - dart $PLUGIN_TOOL license-check
     - name: test
       env:
         matrix:
@@ -112,18 +112,14 @@ task:
       drive_script:
         - xvfb-run ./script/tool_runner.sh drive-examples --linux
 
-# Heavy-workload Android tasks.
+# Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
 # for non-credit runs.
-#
-# This has been temporarily split out from the other heavy tasks to use a
-# different Docker image due to space constraints; see
-# https://github.com/flutter/flutter/issues/84706
 task:
   << : *FLUTTER_UPGRADE_TEMPLATE
   gke_container:
-    dockerfile: .ci/java8.Dockerfile
-    builder_image_name: docker-builder # gce vm image
+    dockerfile: .ci/Dockerfile
+    builder_image_name: docker-builder-linux # gce vm image
     builder_image_project: flutter-cirrus
     cluster_name: test-cluster
     zone: us-central1-a
@@ -165,22 +161,6 @@ task:
         - fi
         - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
         - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
-
-# Heavy-workload web tasks.
-# These use machines with more CPUs and memory, so will reduce parallelization
-# for non-credit runs.
-task:
-  << : *FLUTTER_UPGRADE_TEMPLATE
-  gke_container:
-    dockerfile: .ci/Dockerfile
-    builder_image_name: docker-builder # gce vm image
-    builder_image_project: flutter-cirrus
-    cluster_name: test-cluster
-    zone: us-central1-a
-    namespace: default
-    cpu: 4
-    memory: 12G
-  matrix:
     ### Web tasks ###
     - name: build-web+drive-examples
       env:

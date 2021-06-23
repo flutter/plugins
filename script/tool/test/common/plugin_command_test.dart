@@ -95,8 +95,7 @@ void main() {
     });
 
     test('exclude federated plugins when plugins flag is specified', () async {
-      createFakePlugin('plugin1', packagesDir,
-          parentDirectoryName: 'federated');
+      createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(<String>[
         'sample',
@@ -108,8 +107,7 @@ void main() {
 
     test('exclude entire federated plugins when plugins flag is specified',
         () async {
-      createFakePlugin('plugin1', packagesDir,
-          parentDirectoryName: 'federated');
+      createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       await runner.run(<String>[
         'sample',
@@ -303,8 +301,8 @@ packages/plugin1/plugin1/plugin1.dart
 packages/plugin1/plugin1_platform_interface/plugin1_platform_interface.dart
 packages/plugin1/plugin1_web/plugin1_web.dart
 ''';
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir,
-            parentDirectoryName: 'plugin1');
+        final Directory plugin1 =
+            createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
         await runner.run(<String>[
@@ -323,8 +321,8 @@ packages/plugin1/plugin1.dart
 packages/plugin2/ios/plugin2.m
 packages/plugin3/plugin3.dart
 ''';
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir,
-            parentDirectoryName: 'plugin1');
+        final Directory plugin1 =
+            createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
         await runner.run(<String>[
@@ -343,8 +341,8 @@ packages/plugin1/plugin1.dart
 packages/plugin2/ios/plugin2.m
 packages/plugin3/plugin3.dart
 ''';
-        final Directory plugin1 = createFakePlugin('plugin1', packagesDir,
-            parentDirectoryName: 'plugin1');
+        final Directory plugin1 =
+            createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
         await runner.run(<String>[
