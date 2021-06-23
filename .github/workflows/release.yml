@@ -34,7 +34,7 @@ jobs:
         ref: ${{ github.sha }}
         running-workflow-name: 'release'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
-        wait-interval: 10 # seconds
+        wait-interval: 180 # seconds
         allowed-conclusions: success
 
     - name: run release
