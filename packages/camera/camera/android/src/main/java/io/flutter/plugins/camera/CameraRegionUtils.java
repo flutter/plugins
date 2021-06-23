@@ -45,7 +45,7 @@ public final class CameraRegionUtils {
         rect = cameraProperties.getSensorInfoActiveArraySize();
       }
 
-      return new Size(rect.width(), rect.height());
+      return SizeFactory.create(rect.width(), rect.height());
     } else {
       // No distortion correction support.
       return cameraProperties.getSensorInfoPixelArraySize();
@@ -138,6 +138,24 @@ public final class CameraRegionUtils {
     public static MeteringRectangle create(
         int x, int y, int width, int height, int meteringWeight) {
       return new MeteringRectangle(x, y, width, height, meteringWeight);
+    }
+  }
+
+  /** Factory class that assists in creating a {@link Size} instance. */
+  static class SizeFactory {
+    /**
+     * Creates a new instance of the {@link Size} class.
+     *
+     * <p>This method is visible for testing purposes only and should never be used outside this *
+     * class.
+     *
+     * @param width width >= 0.
+     * @param height height >= 0.
+     * @return new instance of the {@link Size} class.
+     */
+    @VisibleForTesting
+    public static Size create(int width, int height) {
+      return new Size(width, height);
     }
   }
 }

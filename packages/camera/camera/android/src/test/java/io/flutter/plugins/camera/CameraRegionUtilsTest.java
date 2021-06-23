@@ -4,7 +4,6 @@
 package io.flutter.plugins.camera;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -14,6 +13,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.graphics.Rect;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.os.Build;
@@ -109,6 +109,9 @@ public class CameraRegionUtilsTest {
     try {
       CameraProperties mockCameraProperties = mock(CameraProperties.class);
       CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
+      Rect mockSensorInfoPreCorrectionActiveArraySize = mock(Rect.class);
+      when(mockSensorInfoPreCorrectionActiveArraySize.width()).thenReturn(100);
+      when(mockSensorInfoPreCorrectionActiveArraySize.height()).thenReturn(100);
 
       when(mockCameraProperties.getDistortionCorrectionAvailableModes())
           .thenReturn(
@@ -116,15 +119,30 @@ public class CameraRegionUtilsTest {
                 CaptureRequest.DISTORTION_CORRECTION_MODE_OFF,
                 CaptureRequest.DISTORTION_CORRECTION_MODE_FAST
               });
-
       when(mockBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE)).thenReturn(null);
-      when(mockCameraProperties.getSensorInfoPreCorrectionActiveArraySize()).thenReturn(null);
+      when(mockCameraProperties.getSensorInfoPreCorrectionActiveArraySize())
+          .thenReturn(mockSensorInfoPreCorrectionActiveArraySize);
 
-      Size result = CameraRegionUtils.getCameraBoundaries(mockCameraProperties, mockBuilder);
+      try (MockedStatic<CameraRegionUtils.SizeFactory> mockedSizeFactory =
+          mockStatic(CameraRegionUtils.SizeFactory.class)) {
+        mockedSizeFactory
+            .when(() -> CameraRegionUtils.SizeFactory.create(anyInt(), anyInt()))
+            .thenAnswer(
+                (Answer<Size>)
+                    invocation -> {
+                      Size mockSize = mock(Size.class);
+                      when(mockSize.getWidth()).thenReturn(invocation.getArgument(0));
+                      when(mockSize.getHeight()).thenReturn(invocation.getArgument(1));
+                      return mockSize;
+                    });
 
-      assertNull(result);
-      verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
-      verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
+        Size result = CameraRegionUtils.getCameraBoundaries(mockCameraProperties, mockBuilder);
+
+        assertEquals(100, result.getWidth());
+        assertEquals(100, result.getHeight());
+        verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
+        verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
+      }
     } finally {
       updateSdkVersion(0);
     }
@@ -138,6 +156,9 @@ public class CameraRegionUtilsTest {
     try {
       CameraProperties mockCameraProperties = mock(CameraProperties.class);
       CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
+      Rect mockSensorInfoPreCorrectionActiveArraySize = mock(Rect.class);
+      when(mockSensorInfoPreCorrectionActiveArraySize.width()).thenReturn(100);
+      when(mockSensorInfoPreCorrectionActiveArraySize.height()).thenReturn(100);
 
       when(mockCameraProperties.getDistortionCorrectionAvailableModes())
           .thenReturn(
@@ -148,13 +169,29 @@ public class CameraRegionUtilsTest {
 
       when(mockBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE))
           .thenReturn(CaptureRequest.DISTORTION_CORRECTION_MODE_OFF);
-      when(mockCameraProperties.getSensorInfoPreCorrectionActiveArraySize()).thenReturn(null);
+      when(mockCameraProperties.getSensorInfoPreCorrectionActiveArraySize())
+          .thenReturn(mockSensorInfoPreCorrectionActiveArraySize);
 
-      Size result = CameraRegionUtils.getCameraBoundaries(mockCameraProperties, mockBuilder);
+      try (MockedStatic<CameraRegionUtils.SizeFactory> mockedSizeFactory =
+          mockStatic(CameraRegionUtils.SizeFactory.class)) {
+        mockedSizeFactory
+            .when(() -> CameraRegionUtils.SizeFactory.create(anyInt(), anyInt()))
+            .thenAnswer(
+                (Answer<Size>)
+                    invocation -> {
+                      Size mockSize = mock(Size.class);
+                      when(mockSize.getWidth()).thenReturn(invocation.getArgument(0));
+                      when(mockSize.getHeight()).thenReturn(invocation.getArgument(1));
+                      return mockSize;
+                    });
 
-      assertNull(result);
-      verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
-      verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
+        Size result = CameraRegionUtils.getCameraBoundaries(mockCameraProperties, mockBuilder);
+
+        assertEquals(100, result.getWidth());
+        assertEquals(100, result.getHeight());
+        verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
+        verify(mockCameraProperties, never()).getSensorInfoActiveArraySize();
+      }
     } finally {
       updateSdkVersion(0);
     }
@@ -168,6 +205,9 @@ public class CameraRegionUtilsTest {
     try {
       CameraProperties mockCameraProperties = mock(CameraProperties.class);
       CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
+      Rect mockSensorInfoActiveArraySize = mock(Rect.class);
+      when(mockSensorInfoActiveArraySize.width()).thenReturn(100);
+      when(mockSensorInfoActiveArraySize.height()).thenReturn(100);
 
       when(mockCameraProperties.getDistortionCorrectionAvailableModes())
           .thenReturn(
@@ -178,13 +218,29 @@ public class CameraRegionUtilsTest {
 
       when(mockBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE))
           .thenReturn(CaptureRequest.DISTORTION_CORRECTION_MODE_FAST);
-      when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(null);
+      when(mockCameraProperties.getSensorInfoActiveArraySize())
+          .thenReturn(mockSensorInfoActiveArraySize);
 
-      Size result = CameraRegionUtils.getCameraBoundaries(mockCameraProperties, mockBuilder);
+      try (MockedStatic<CameraRegionUtils.SizeFactory> mockedSizeFactory =
+          mockStatic(CameraRegionUtils.SizeFactory.class)) {
+        mockedSizeFactory
+            .when(() -> CameraRegionUtils.SizeFactory.create(anyInt(), anyInt()))
+            .thenAnswer(
+                (Answer<Size>)
+                    invocation -> {
+                      Size mockSize = mock(Size.class);
+                      when(mockSize.getWidth()).thenReturn(invocation.getArgument(0));
+                      when(mockSize.getHeight()).thenReturn(invocation.getArgument(1));
+                      return mockSize;
+                    });
 
-      assertNull(result);
-      verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
-      verify(mockCameraProperties, never()).getSensorInfoPreCorrectionActiveArraySize();
+        Size result = CameraRegionUtils.getCameraBoundaries(mockCameraProperties, mockBuilder);
+
+        assertEquals(100, result.getWidth());
+        assertEquals(100, result.getHeight());
+        verify(mockCameraProperties, never()).getSensorInfoPixelArraySize();
+        verify(mockCameraProperties, never()).getSensorInfoPreCorrectionActiveArraySize();
+      }
     } finally {
       updateSdkVersion(0);
     }
