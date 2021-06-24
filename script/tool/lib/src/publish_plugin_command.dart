@@ -8,6 +8,7 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
@@ -18,6 +19,7 @@ import 'common/core.dart';
 import 'common/git_version_finder.dart';
 import 'common/plugin_command.dart';
 import 'common/process_runner.dart';
+import 'common/pub_version_finder.dart';
 
 @immutable
 class _RemoteInfo {
@@ -49,7 +51,10 @@ class PublishPluginCommand extends PluginCommand {
     Print print = print,
     io.Stdin? stdinput,
     GitDir? gitDir,
-  })  : _print = print,
+    http.Client? httpClient,
+  })  : _pubVersionFinder =
+            PubVersionFinder(httpClient: httpClient ?? http.Client()),
+        _print = print,
         _stdin = stdinput ?? io.stdin,
         super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
     argParser.addOption(
@@ -131,6 +136,7 @@ class PublishPluginCommand extends PluginCommand {
   final Print _print;
   final io.Stdin _stdin;
   StreamSubscription<String>? _stdinSubscription;
+  final PubVersionFinder _pubVersionFinder;
 
   @override
   Future<void> run() async {
@@ -182,6 +188,8 @@ class PublishPluginCommand extends PluginCommand {
         remoteForTagPush: remote,
       );
     }
+
+    _pubVersionFinder.httpClient.close();
     await _finish(successful);
   }
 
@@ -196,6 +204,7 @@ class PublishPluginCommand extends PluginCommand {
       _print('No version updates in this commit.');
       return true;
     }
+
     _print('Getting existing tags...');
     final io.ProcessResult existingTagsResult =
         await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
@@ -212,7 +221,6 @@ class PublishPluginCommand extends PluginCommand {
           .childFile(pubspecPath);
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
         pubspecFile: pubspecFile,
-        gitVersionFinder: gitVersionFinder,
         existingTags: existingTags,
       );
       switch (result) {
@@ -271,7 +279,6 @@ class PublishPluginCommand extends PluginCommand {
   // Returns a [_CheckNeedsReleaseResult] that indicates the result.
   Future<_CheckNeedsReleaseResult> _checkNeedsRelease({
     required File pubspecFile,
-    required GitVersionFinder gitVersionFinder,
     required List<String> existingTags,
   }) async {
     if (!pubspecFile.existsSync()) {
@@ -293,19 +300,24 @@ Safe to ignore if the package is deleted in this commit.
       return _CheckNeedsReleaseResult.failure;
     }
 
-    // Get latest tagged version and compare with the current version.
-    // TODO(cyanglaz): Check latest version of the package on pub instead of git
-    // https://github.com/flutter/flutter/issues/81047
-
-    final String latestTag = existingTags.firstWhere(
-        (String tag) => tag.split('-v').first == pubspec.name,
-        orElse: () => '');
-    if (latestTag.isNotEmpty) {
-      final String latestTaggedVersion = latestTag.split('-v').last;
-      final Version latestVersion = Version.parse(latestTaggedVersion);
-      if (pubspec.version! < latestVersion) {
+    // Check if the package named `packageName` with `version` has already published.
+    final Version version = pubspec.version!;
+    final PubVersionFinderResponse pubVersionFinderResponse =
+        await _pubVersionFinder.getPackageVersion(package: pubspec.name);
+    if (pubVersionFinderResponse.versions.contains(version)) {
+      final String tagsForPackageWithSameVersion = existingTags.firstWhere(
+          (String tag) =>
+              tag.split('-v').first == pubspec.name &&
+              tag.split('-v').last == version.toString(),
+          orElse: () => '');
+      _print(
+          'The version $version of ${pubspec.name} has already been published');
+      if (tagsForPackageWithSameVersion.isEmpty) {
         _print(
-            'The new version (${pubspec.version}) is lower than the current version ($latestVersion) for ${pubspec.name}.\nThis git commit is a revert, no release is tagged.');
+            'However, the git release tag for this version (${pubspec.name}-v$version) is not found. Please manually fix the tag then run the command again.');
+        return _CheckNeedsReleaseResult.failure;
+      } else {
+        _print('skip.');
         return _CheckNeedsReleaseResult.noRelease;
       }
     }
