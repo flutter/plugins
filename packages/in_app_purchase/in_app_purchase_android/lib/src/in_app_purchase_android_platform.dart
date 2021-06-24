@@ -260,8 +260,12 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
     }
     final List<Future<PurchaseDetails>> purchases =
         resultWrapper.purchasesList.map((PurchaseWrapper purchase) {
-      return _maybeAutoConsumePurchase(
-          GooglePlayPurchaseDetails.fromPurchase(purchase)..error = error);
+      final GooglePlayPurchaseDetails googlePlayPurchaseDetails =
+          GooglePlayPurchaseDetails.fromPurchase(purchase)..error = error;
+      if (resultWrapper.responseCode == BillingResponse.userCanceled) {
+        googlePlayPurchaseDetails.status = PurchaseStatus.canceled;
+      }
+      return _maybeAutoConsumePurchase(googlePlayPurchaseDetails);
     }).toList();
     if (purchases.isNotEmpty) {
       return Future.wait(purchases);
@@ -270,7 +274,9 @@ class InAppPurchaseAndroidPlatform extends InAppPurchasePlatform {
         PurchaseDetails(
             purchaseID: '',
             productID: '',
-            status: PurchaseStatus.error,
+            status: resultWrapper.responseCode == BillingResponse.userCanceled
+                ? PurchaseStatus.canceled
+                : PurchaseStatus.error,
             transactionDate: null,
             verificationData: PurchaseVerificationData(
                 localVerificationData: '',
