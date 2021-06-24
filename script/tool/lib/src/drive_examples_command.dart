@@ -170,13 +170,7 @@ class DriveExamplesCommand extends PluginCommand {
             RegExp(r'_test.dart$'),
             '.dart',
           );
-          String deviceTestPath = p.join('test', deviceTestName);
-          if (!example.fileSystem
-              .file(p.join(example.path, deviceTestPath))
-              .existsSync()) {
-            // If the app isn't in test/ folder, look in test_driver/ instead.
-            deviceTestPath = p.join('test_driver', deviceTestName);
-          }
+          final String deviceTestPath = p.join('test_driver', deviceTestName);
 
           final List<String> targetPaths = <String>[];
           if (example.fileSystem

@@ -90,58 +90,6 @@ void main() {
       );
     });
 
-    test('driving under folder "test"', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test_driver/plugin_test.dart',
-          'example/test/plugin.dart',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
-        },
-      );
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
-      setMockFlutterDevicesOutput();
-      final List<String> output =
-          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
-
-      expect(
-        output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
-        ]),
-      );
-
-      final String deviceTestPath = p.join('test', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
-      expect(
-          processRunner.recordedCalls,
-          orderedEquals(<ProcessCall>[
-            ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
-                <String>[
-                  'drive',
-                  '-d',
-                  _fakeIosDevice,
-                  '--driver',
-                  driverTestPath,
-                  '--target',
-                  deviceTestPath
-                ],
-                pluginExampleDirectory.path),
-          ]));
-    });
-
     test('driving under folder "test_driver"', () async {
       final Directory pluginDirectory = createFakePlugin(
         'plugin',
@@ -754,7 +702,7 @@ void main() {
         packagesDir,
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
-          'example/test/plugin.dart',
+          'example/test_driver/plugin.dart',
         ],
         platformSupport: <String, PlatformSupport>{
           kPlatformAndroid: PlatformSupport.inline,
@@ -772,7 +720,7 @@ void main() {
         '--enable-experiment=exp1',
       ]);
 
-      final String deviceTestPath = p.join('test', 'plugin.dart');
+      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
       final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
