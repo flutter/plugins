@@ -74,6 +74,12 @@ void main() {
       expect(fakeIOSPlatform.refreshReceiptParam,
           <String, dynamic>{"isExpired": true});
     });
+
+    test('should get null receipt if any exceptions are raised', () async {
+      fakeIOSPlatform.getReceiptFailTest = true;
+      expect(() async => SKReceiptManager.retrieveReceiptData(),
+          throwsA(TypeMatcher<PlatformException>()));
+    });
   });
 
   group('sk_receipt_manager', () {
@@ -166,6 +172,9 @@ class FakeIOSPlatform {
   bool getProductRequestFailTest = false;
   bool testReturnNull = false;
 
+  // get receipt request
+  bool getReceiptFailTest = false;
+
   // refresh receipt request
   int refreshReceipt = 0;
   late Map<String, dynamic> refreshReceiptParam;
@@ -201,6 +210,9 @@ class FakeIOSPlatform {
         return Future<void>.sync(() {});
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
+        if (getReceiptFailTest) {
+          throw ("some arbitrary error");
+        }
         return Future<String>.value('receipt data');
       // payment queue
       case '-[SKPaymentQueue canMakePayments:]':

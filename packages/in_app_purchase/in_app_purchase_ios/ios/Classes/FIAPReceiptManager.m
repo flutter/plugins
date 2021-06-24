@@ -9,18 +9,22 @@
 
 - (NSString *)retrieveReceiptWithError:(FlutterError **)error {
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-  NSData *receipt = [self getReceiptData:receiptURL];
+  NSError *err;
+  NSData *receipt = [self getReceiptData:receiptURL error:&err];
+  if (err) {
+    *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)err.code]
+                                 message:err.domain
+                                 details:err.userInfo];
+    return nil;
+  }
   if (!receipt) {
-    *error = [FlutterError errorWithCode:@"storekit_no_receipt"
-                                 message:@"Cannot find receipt for the current main bundle."
-                                 details:nil];
     return nil;
   }
   return [receipt base64EncodedStringWithOptions:kNilOptions];
 }
 
-- (NSData *)getReceiptData:(NSURL *)url {
-  return [NSData dataWithContentsOfURL:url];
+- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error {
+  return [NSData dataWithContentsOfURL:url options:NSDataReadingMappedIfSafe error:error];
 }
 
 @end

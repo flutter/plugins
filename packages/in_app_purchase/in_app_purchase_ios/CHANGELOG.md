@@ -1,3 +1,7 @@
+## 0.1.0+3
+
+* iOS: Fix treating missing App Store receipt as an exception.
+
 ## 0.1.0+2
 
 * Changed the iOS payment queue handler in such a way that it only adds a listener to the SKPaymentQueue when there 
