@@ -7,7 +7,6 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
@@ -64,8 +63,6 @@ class BuildExamplesCommand extends PluginCommand {
           'were specified, so not building anything.');
       return;
     }
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     final String enableExperiment = getStringArg(kEnableExperiment);
 

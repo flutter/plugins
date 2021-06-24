@@ -7,7 +7,6 @@ import 'dart:io';
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
@@ -147,87 +146,46 @@ class DriveExamplesCommand extends PluginCommand {
 
       int examplesFound = 0;
       bool testsRan = false;
-      final String flutterCommand =
-          const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
       for (final Directory example in getExamplesForPlugin(plugin)) {
         ++examplesFound;
         final String packageName =
             p.relative(example.path, from: packagesDir.path);
-        final Directory driverTests = example.childDirectory('test_driver');
-        if (!driverTests.existsSync()) {
+
+        final List<File> drivers = await _getDrivers(example);
+        if (drivers.isEmpty) {
           print('No driver tests found for $packageName');
           continue;
         }
-        // Look for driver tests ending in _test.dart in test_driver/
-        await for (final FileSystemEntity test in driverTests.list()) {
-          final String driverTestName =
-              p.relative(test.path, from: driverTests.path);
-          if (!driverTestName.endsWith('_test.dart')) {
+
+        for (final File driver in drivers) {
+          final List<File> testTargets = <File>[];
+
+          // Try to find a matching app to drive without the _test.dart
+          // TODO(stuartmorgan): Migrate all remaining uses of this legacy
+          // approach (currently only video_player) and remove support for it:
+          // https://github.com/flutter/flutter/issues/85224.
+          final File? legacyTestFile = _getLegacyTestFileForTestDriver(driver);
+          if (legacyTestFile != null) {
+            testTargets.add(legacyTestFile);
+          } else {
+            (await _getIntegrationTests(example)).forEach(testTargets.add);
+          }
+
+          if (testTargets.isEmpty) {
+            final String driverRelativePath =
+                p.relative(driver.path, from: plugin.path);
+            print(
+                'Found $driverRelativePath, but no integration_test/*_test.dart files.');
+            failingTests.add(p.relative(driver.path, from: example.path));
             continue;
           }
-          // Try to find a matching app to drive without the _test.dart
-          final String deviceTestName = driverTestName.replaceAll(
-            RegExp(r'_test.dart$'),
-            '.dart',
-          );
-          final String deviceTestPath = p.join('test_driver', deviceTestName);
 
-          final List<String> targetPaths = <String>[];
-          if (example.fileSystem
-              .file(p.join(example.path, deviceTestPath))
-              .existsSync()) {
-            targetPaths.add(deviceTestPath);
-          } else {
-            final Directory integrationTests =
-                example.childDirectory('integration_test');
-
-            if (await integrationTests.exists()) {
-              await for (final FileSystemEntity integrationTest
-                  in integrationTests.list()) {
-                if (!integrationTest.basename.endsWith('_test.dart')) {
-                  continue;
-                }
-                targetPaths
-                    .add(p.relative(integrationTest.path, from: example.path));
-              }
-            }
-
-            if (targetPaths.isEmpty) {
-              print('''
-Unable to infer a target application for $driverTestName to drive.
-Tried searching for the following:
-1. test/$deviceTestName
-2. test_driver/$deviceTestName
-3. test_driver/*_test.dart
-''');
-              failingTests.add(p.relative(test.path, from: example.path));
-              continue;
-            }
-          }
-
-          final List<String> driveArgs = <String>['drive', ...deviceFlags];
-
-          final String enableExperiment = getStringArg(kEnableExperiment);
-          if (enableExperiment.isNotEmpty) {
-            driveArgs.add('--enable-experiment=$enableExperiment');
-          }
-
-          for (final String targetPath in targetPaths) {
-            testsRan = true;
-            final int exitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  ...driveArgs,
-                  '--driver',
-                  p.join('test_driver', driverTestName),
-                  '--target',
-                  targetPath,
-                ],
-                workingDir: example,
-                exitOnError: true);
-            if (exitCode != 0) {
-              failingTests.add(p.join(packageName, deviceTestPath));
-            }
+          testsRan = true;
+          final List<File> failingTargets = await _driveTests(
+              example, driver, testTargets,
+              deviceFlags: deviceFlags);
+          for (final File failingTarget in failingTargets) {
+            failingTests.add(p.relative(failingTarget.path, from: plugin.path));
           }
         }
       }
@@ -261,8 +219,6 @@ Tried searching for the following:
 
   Future<List<String>> _getDevicesForPlatform(String platform) async {
     final List<String> deviceIds = <String>[];
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     final ProcessResult result = await processRunner.run(
         flutterCommand, <String>['devices', '--machine'],
@@ -285,5 +241,76 @@ Tried searching for the following:
       }
     }
     return deviceIds;
+  }
+
+  Future<List<File>> _getDrivers(Directory example) async {
+    final List<File> drivers = <File>[];
+
+    final Directory driverDir = example.childDirectory('test_driver');
+    await for (final FileSystemEntity driver in driverDir.list()) {
+      if (driver is File && driver.basename.endsWith('_test.dart')) {
+        drivers.add(driver);
+      }
+    }
+    return drivers;
+  }
+
+  File? _getLegacyTestFileForTestDriver(File testDriver) {
+    final String testName = testDriver.basename.replaceAll(
+      RegExp(r'_test.dart$'),
+      '.dart',
+    );
+    final File testFile = testDriver.parent.childFile(testName);
+
+    return testFile.existsSync() ? testFile : null;
+  }
+
+  Future<List<File>> _getIntegrationTests(Directory example) async {
+    final List<File> tests = <File>[];
+    final Directory integrationTestDir =
+        example.childDirectory('integration_test');
+
+    if (integrationTestDir.existsSync()) {
+      await for (final FileSystemEntity file in integrationTestDir.list()) {
+        if (file is File && file.basename.endsWith('_test.dart')) {
+          tests.add(file);
+        }
+      }
+    }
+    return tests;
+  }
+
+  /// Runs each file from [targets] using `flutter drive`, returning a list of
+  /// any failing test targets.
+  Future<List<File>> _driveTests(
+    Directory example,
+    File driver,
+    List<File> targets, {
+    required List<String> deviceFlags,
+  }) async {
+    final List<File> failures = <File>[];
+
+    final String enableExperiment = getStringArg(kEnableExperiment);
+
+    for (final File target in targets) {
+      final int exitCode = await processRunner.runAndStream(
+          flutterCommand,
+          <String>[
+            'drive',
+            ...deviceFlags,
+            if (enableExperiment.isNotEmpty)
+              '--enable-experiment=$enableExperiment',
+            '--driver',
+            p.relative(driver.path, from: example.path),
+            '--target',
+            p.relative(target.path, from: example.path),
+          ],
+          workingDir: example,
+          exitOnError: true);
+      if (exitCode != 0) {
+        failures.add(target);
+      }
+    }
+    return failures;
   }
 }
