@@ -51,7 +51,7 @@ public class ExposurePointFeature extends CameraFeature<Point> {
 
   @Override
   public void setValue(Point value) {
-    this.exposurePoint = value == null || value.x == null || value.y == null ? null : value;
+    this.exposurePoint = (value == null || value.x == null || value.y == null) ? null : value;
     this.buildExposureRectangle();
   }
 

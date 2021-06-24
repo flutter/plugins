@@ -46,6 +46,71 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   }
 
   /**
+   * Gets the {@link android.media.CamcorderProfile} containing the information to configure the
+   * resolution using the {@link android.hardware.camera2} API.
+   *
+   * @return Resolution information to configure the {@link android.hardware.camera2} API.
+   */
+  public CamcorderProfile getRecordingProfile() {
+    return this.recordingProfile;
+  }
+
+  /**
+   * Gets the optimal preview size based on the configured resolution.
+   *
+   * @return The optimal preview size.
+   */
+  public Size getPreviewSize() {
+    return this.previewSize;
+  }
+
+  /**
+   * Gets the optimal capture size based on the configured resolution.
+   *
+   * @return The optimal capture size.
+   */
+  public Size getCaptureSize() {
+    return this.captureSize;
+  }
+
+  @Override
+  public String getDebugName() {
+    return "ResolutionFeature";
+  }
+
+  @Override
+  public ResolutionPreset getValue() {
+    return currentSetting;
+  }
+
+  @Override
+  public void setValue(ResolutionPreset value) {
+    this.currentSetting = value;
+    configureResolution(currentSetting, cameraId);
+  }
+
+  @Override
+  public boolean checkIsSupported() {
+    return cameraId >= 0;
+  }
+
+  @Override
+  public void updateBuilder(CaptureRequest.Builder requestBuilder) {
+    // No-op: when setting a resolution there is no need to update the request builder.
+  }
+
+  @VisibleForTesting
+  static Size computeBestPreviewSize(int cameraId, ResolutionPreset preset) {
+    if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
+      preset = ResolutionPreset.high;
+    }
+
+    CamcorderProfile profile =
+        getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
+    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
+  }
+
+  /**
    * Gets the best possible {@link android.media.CamcorderProfile} for the supplied {@link
    * ResolutionPreset}.
    *
@@ -99,17 +164,6 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
   }
 
-  @VisibleForTesting
-  static Size computeBestPreviewSize(int cameraId, ResolutionPreset preset) {
-    if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
-      preset = ResolutionPreset.high;
-    }
-
-    CamcorderProfile profile =
-        getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
-    return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
-  }
-
   private void configureResolution(ResolutionPreset resolutionPreset, int cameraId) {
     if (!checkIsSupported()) {
       return;
@@ -118,60 +172,5 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
         getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
     captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
     previewSize = computeBestPreviewSize(cameraId, resolutionPreset);
-  }
-
-  @Override
-  public String getDebugName() {
-    return "ResolutionFeature";
-  }
-
-  @Override
-  public ResolutionPreset getValue() {
-    return currentSetting;
-  }
-
-  @Override
-  public void setValue(ResolutionPreset value) {
-    this.currentSetting = value;
-    configureResolution(currentSetting, cameraId);
-  }
-
-  // Always supported
-  @Override
-  public boolean checkIsSupported() {
-    return cameraId >= 0;
-  }
-
-  @Override
-  public void updateBuilder(CaptureRequest.Builder requestBuilder) {
-    // No-op: when setting a resolution there is no need to update the request builder.
-  }
-
-  /**
-   * Gets the {@link android.media.CamcorderProfile} containing the information to configure the
-   * resolution using the {@link android.hardware.camera2} API.
-   *
-   * @return Resolution information to configure the {@link android.hardware.camera2} API.
-   */
-  public CamcorderProfile getRecordingProfile() {
-    return this.recordingProfile;
-  }
-
-  /**
-   * Gets the optimal preview size based on the configured resolution.
-   *
-   * @return The optimal preview size.
-   */
-  public Size getPreviewSize() {
-    return this.previewSize;
-  }
-
-  /**
-   * Gets the optimal capture size based on the configured resolution.
-   *
-   * @return The optimal capture size.
-   */
-  public Size getCaptureSize() {
-    return this.captureSize;
   }
 }

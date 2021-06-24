@@ -10,6 +10,7 @@ import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.E
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.IS_FEATURE_SUPPORTED;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.IS_READY;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.LAUNCH_BILLING_FLOW;
+import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_DISCONNECT;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.ON_PURCHASES_UPDATED;
 import static io.flutter.plugins.inapppurchase.InAppPurchasePlugin.MethodNames.QUERY_PURCHASES;
@@ -52,6 +53,8 @@ import com.android.billingclient.api.BillingFlowParams;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.PriceChangeConfirmationListener;
+import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
 import com.android.billingclient.api.PurchaseHistoryRecord;
@@ -722,7 +725,7 @@ public class MethodCallHandlerTest {
   }
 
   @Test
-  public void endConnection_if_activity_dettached() {
+  public void endConnection_if_activity_detached() {
     InAppPurchasePlugin plugin = new InAppPurchasePlugin();
     plugin.setMethodCallHandler(methodChannelHandler);
     mockStartConnection();
@@ -766,6 +769,97 @@ public class MethodCallHandlerTest {
     when(mockBillingClient.isFeatureSupported(feature)).thenReturn(billingResult);
     methodChannelHandler.onMethodCall(call, result);
     verify(result).success(false);
+  }
+
+  @Test
+  public void launchPriceChangeConfirmationFlow() {
+    // Set up the sku details
+    establishConnectedBillingClient(null, null);
+    String skuId = "foo";
+    queryForSkus(singletonList(skuId));
+
+    BillingResult billingResult =
+        BillingResult.newBuilder()
+            .setResponseCode(BillingClient.BillingResponseCode.OK)
+            .setDebugMessage("dummy debug message")
+            .build();
+
+    // Set up the mock billing client
+    ArgumentCaptor<PriceChangeConfirmationListener> priceChangeConfirmationListenerArgumentCaptor =
+        ArgumentCaptor.forClass(PriceChangeConfirmationListener.class);
+    ArgumentCaptor<PriceChangeFlowParams> priceChangeFlowParamsArgumentCaptor =
+        ArgumentCaptor.forClass(PriceChangeFlowParams.class);
+    doNothing()
+        .when(mockBillingClient)
+        .launchPriceChangeConfirmationFlow(
+            any(),
+            priceChangeFlowParamsArgumentCaptor.capture(),
+            priceChangeConfirmationListenerArgumentCaptor.capture());
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+
+    // Verify the price change params.
+    PriceChangeFlowParams priceChangeFlowParams = priceChangeFlowParamsArgumentCaptor.getValue();
+    assertEquals(skuId, priceChangeFlowParams.getSkuDetails().getSku());
+
+    // Set the response in the callback
+    PriceChangeConfirmationListener priceChangeConfirmationListener =
+        priceChangeConfirmationListenerArgumentCaptor.getValue();
+    priceChangeConfirmationListener.onPriceChangeConfirmationResult(billingResult);
+
+    // Verify we pass the response to result
+    verify(result, never()).error(any(), any(), any());
+    ArgumentCaptor<HashMap> resultCaptor = ArgumentCaptor.forClass(HashMap.class);
+    verify(result, times(1)).success(resultCaptor.capture());
+    assertEquals(fromBillingResult(billingResult), resultCaptor.getValue());
+  }
+
+  @Test
+  public void launchPriceChangeConfirmationFlow_withoutActivity_returnsActivityUnavailableError() {
+    // Set up the sku details
+    establishConnectedBillingClient(null, null);
+    String skuId = "foo";
+    queryForSkus(singletonList(skuId));
+
+    methodChannelHandler.setActivity(null);
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+    verify(result, times(1)).error(eq("ACTIVITY_UNAVAILABLE"), any(), any());
+  }
+
+  @Test
+  public void launchPriceChangeConfirmationFlow_withoutSkuQuery_returnsNotFoundError() {
+    // Set up the sku details
+    establishConnectedBillingClient(null, null);
+    String skuId = "foo";
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+    verify(result, times(1)).error(eq("NOT_FOUND"), contains("sku"), any());
+  }
+
+  @Test
+  public void launchPriceChangeConfirmationFlow_withoutBillingClient_returnsUnavailableError() {
+    // Set up the sku details
+    String skuId = "foo";
+
+    // Call the methodChannelHandler
+    HashMap<String, Object> arguments = new HashMap<>();
+    arguments.put("sku", skuId);
+    methodChannelHandler.onMethodCall(
+        new MethodCall(LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW, arguments), result);
+    verify(result, times(1)).error(eq("UNAVAILABLE"), contains("BillingClient"), any());
   }
 
   private ArgumentCaptor<BillingClientStateListener> mockStartConnection() {
