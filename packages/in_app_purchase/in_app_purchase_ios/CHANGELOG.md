@@ -1,3 +1,8 @@
+## 0.2.0
+
+* BREAKING CHANGE : Refactor to handle new `PurchaseStatus` named `canceled`. This means developers
+  can distinguish between an error and user cancellation.
+
 ## 0.1.0+2
 
 * Changed the iOS payment queue handler in such a way that it only adds a listener to the SKPaymentQueue when there 
