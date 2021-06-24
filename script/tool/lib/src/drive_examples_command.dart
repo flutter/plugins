@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
@@ -11,7 +14,8 @@ import 'common/plugin_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
-const int _exitBadPlatformFlags = 2;
+const int _exitNoPlatformFlags = 2;
+const int _exitNoAvailableDevice = 3;
 
 /// A command to run the example applications for packages via Flutter driver.
 class DriveExamplesCommand extends PluginCommand {
@@ -66,24 +70,55 @@ class DriveExamplesCommand extends PluginCommand {
     final int platformCount = platformSwitches
         .where((String platform) => getBoolArg(platform))
         .length;
-    // The way this command is written relies (for legacy reasons) on using the
-    // default device (which it assumes has already been set up) for iOS or
-    // Android. Therefore if an explicit target device is passed, it won't
-    // actually drive the mobile version. If that is fixed, the restriction that
-    // only one platform can be selected can be removed.
+    // The flutter tool currently doesn't accept multiple device arguments:
+    // https://github.com/flutter/flutter/issues/35733
+    // If that is implemented, this check can be relaxed.
     if (platformCount != 1) {
-      print(
+      printError(
           'Exactly one of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
           'must be specified.');
-      throw ToolExit(_exitBadPlatformFlags);
+      throw ToolExit(_exitNoPlatformFlags);
     }
+
+    String? androidDevice;
+    if (getBoolArg(kPlatformAndroid)) {
+      final List<String> devices = await _getDevicesForPlatform('android');
+      if (devices.isEmpty) {
+        printError('No Android devices available');
+        throw ToolExit(_exitNoAvailableDevice);
+      }
+      androidDevice = devices.first;
+    }
+
+    String? iosDevice;
+    if (getBoolArg(kPlatformIos)) {
+      final List<String> devices = await _getDevicesForPlatform('ios');
+      if (devices.isEmpty) {
+        printError('No iOS devices available');
+        throw ToolExit(_exitNoAvailableDevice);
+      }
+      iosDevice = devices.first;
+    }
+
+    final Map<String, List<String>> targetDeviceFlags = <String, List<String>>{
+      if (getBoolArg(kPlatformAndroid))
+        kPlatformAndroid: <String>['-d', androidDevice!],
+      if (getBoolArg(kPlatformIos)) kPlatformIos: <String>['-d', iosDevice!],
+      if (getBoolArg(kPlatformLinux)) kPlatformLinux: <String>['-d', 'linux'],
+      if (getBoolArg(kPlatformMacos)) kPlatformMacos: <String>['-d', 'macos'],
+      if (getBoolArg(kPlatformWeb))
+        kPlatformWeb: <String>[
+          '-d',
+          'web-server',
+          '--web-port=7357',
+          '--browser-name=chrome'
+        ],
+      if (getBoolArg(kPlatformWindows))
+        kPlatformWindows: <String>['-d', 'windows'],
+    };
 
     final List<String> failingTests = <String>[];
     final List<String> pluginsWithoutTests = <String>[];
-    final bool isLinux = getBoolArg(kPlatformLinux);
-    final bool isMacos = getBoolArg(kPlatformMacos);
-    final bool isWeb = getBoolArg(kPlatformWeb);
-    final bool isWindows = getBoolArg(kPlatformWindows);
     await for (final Directory plugin in getPlugins()) {
       final String pluginName = plugin.basename;
       if (pluginName.endsWith('_platform_interface') &&
@@ -94,10 +129,22 @@ class DriveExamplesCommand extends PluginCommand {
         continue;
       }
       print('\n==========\nChecking $pluginName...');
-      if (!(await _pluginSupportedOnTargetPlatform(plugin))) {
-        print('Not supported for the target platform; skipping.');
+
+      final List<String> deviceFlags = <String>[];
+      for (final MapEntry<String, List<String>> entry
+          in targetDeviceFlags.entries) {
+        if (pluginSupportsPlatform(entry.key, plugin)) {
+          deviceFlags.addAll(entry.value);
+        } else {
+          // TODO(stuartmorgan): Consider making this an error, not a skip.
+          print('$pluginName does not support ${entry.key}.');
+        }
+      }
+      // If there is no supported target platform, skip the plugin.
+      if (deviceFlags.isEmpty) {
         continue;
       }
+
       int examplesFound = 0;
       bool testsRan = false;
       final String flutterCommand =
@@ -164,38 +211,11 @@ Tried searching for the following:
             }
           }
 
-          final List<String> driveArgs = <String>['drive'];
+          final List<String> driveArgs = <String>['drive', ...deviceFlags];
 
           final String enableExperiment = getStringArg(kEnableExperiment);
           if (enableExperiment.isNotEmpty) {
             driveArgs.add('--enable-experiment=$enableExperiment');
-          }
-
-          if (isLinux && isLinuxPlugin(plugin)) {
-            driveArgs.addAll(<String>[
-              '-d',
-              'linux',
-            ]);
-          }
-          if (isMacos && isMacOsPlugin(plugin)) {
-            driveArgs.addAll(<String>[
-              '-d',
-              'macos',
-            ]);
-          }
-          if (isWeb && isWebPlugin(plugin)) {
-            driveArgs.addAll(<String>[
-              '-d',
-              'web-server',
-              '--web-port=7357',
-              '--browser-name=chrome',
-            ]);
-          }
-          if (isWindows && isWindowsPlugin(plugin)) {
-            driveArgs.addAll(<String>[
-              '-d',
-              'windows',
-            ]);
           }
 
           for (final String targetPath in targetPaths) {
@@ -245,26 +265,31 @@ Tried searching for the following:
     print('All driver tests successful!');
   }
 
-  Future<bool> _pluginSupportedOnTargetPlatform(FileSystemEntity plugin) async {
-    if (getBoolArg(kPlatformAndroid)) {
-      return isAndroidPlugin(plugin);
+  Future<List<String>> _getDevicesForPlatform(String platform) async {
+    final List<String> deviceIds = <String>[];
+    final String flutterCommand =
+        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+
+    final ProcessResult result = await processRunner.run(
+        flutterCommand, <String>['devices', '--machine'],
+        stdoutEncoding: utf8, exitOnError: true);
+    if (result.exitCode != 0) {
+      return deviceIds;
     }
-    if (getBoolArg(kPlatformIos)) {
-      return isIosPlugin(plugin);
+
+    final List<Map<String, dynamic>> devices =
+        (jsonDecode(result.stdout as String) as List<dynamic>)
+            .cast<Map<String, dynamic>>();
+    for (final Map<String, dynamic> deviceInfo in devices) {
+      final String targetPlatform =
+          (deviceInfo['targetPlatform'] as String?) ?? '';
+      if (targetPlatform.startsWith(platform)) {
+        final String? deviceId = deviceInfo['id'] as String?;
+        if (deviceId != null) {
+          deviceIds.add(deviceId);
+        }
+      }
     }
-    if (getBoolArg(kPlatformLinux)) {
-      return isLinuxPlugin(plugin);
-    }
-    if (getBoolArg(kPlatformMacos)) {
-      return isMacOsPlugin(plugin);
-    }
-    if (getBoolArg(kPlatformWeb)) {
-      return isWebPlugin(plugin);
-    }
-    if (getBoolArg(kPlatformWindows)) {
-      return isWindowsPlugin(plugin);
-    }
-    assert(false);
-    return false;
+    return deviceIds;
   }
 }
