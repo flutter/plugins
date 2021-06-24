@@ -273,6 +273,60 @@ void main() {
       expect(completerError.message, 'ios_domain');
       expect(completerError.details, {'message': 'an error message'});
     });
+    test(
+        'should get canceled purchase status when error code is SKErrorPaymentCancelled',
+        () async {
+      fakeIOSPlatform.testTransactionCancel = 2;
+      List<PurchaseDetails> details = [];
+      Completer completer = Completer();
+
+      Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
+      late StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        purchaseDetailsList.forEach((purchaseDetails) {
+          if (purchaseDetails.status == PurchaseStatus.canceled) {
+            completer.complete(purchaseDetails.status);
+            subscription.cancel();
+          }
+        });
+      });
+      final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
+          productDetails:
+              AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          applicationUserName: 'appName');
+      await iapIosPlatform.buyNonConsumable(purchaseParam: purchaseParam);
+
+      PurchaseStatus purchaseStatus = await completer.future;
+      expect(purchaseStatus, PurchaseStatus.canceled);
+    });
+    test(
+        'should get canceled purchase status when error code is SKErrorOverlayCancelled',
+        () async {
+      fakeIOSPlatform.testTransactionCancel = 15;
+      List<PurchaseDetails> details = [];
+      Completer completer = Completer();
+
+      Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
+      late StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        details.addAll(purchaseDetailsList);
+        purchaseDetailsList.forEach((purchaseDetails) {
+          if (purchaseDetails.status == PurchaseStatus.canceled) {
+            completer.complete(purchaseDetails.status);
+            subscription.cancel();
+          }
+        });
+      });
+      final AppStorePurchaseParam purchaseParam = AppStorePurchaseParam(
+          productDetails:
+              AppStoreProductDetails.fromSKProduct(dummyProductWrapper),
+          applicationUserName: 'appName');
+      await iapIosPlatform.buyNonConsumable(purchaseParam: purchaseParam);
+
+      PurchaseStatus purchaseStatus = await completer.future;
+      expect(purchaseStatus, PurchaseStatus.canceled);
+    });
   });
 
   group('complete purchase', () {
