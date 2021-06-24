@@ -30,14 +30,13 @@ public final class CameraRegionUtils {
    */
   public static Size getCameraBoundaries(
       @NonNull CameraProperties cameraProperties, @NonNull CaptureRequest.Builder requestBuilder) {
-    // No distortion correction support
     if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.P
         && supportsDistortionCorrection(cameraProperties)) {
-      // Get the current distortion correction mode
+      // Get the current distortion correction mode.
       Integer distortionCorrectionMode =
           requestBuilder.get(CaptureRequest.DISTORTION_CORRECTION_MODE);
 
-      // Return the correct boundaries depending on the mode
+      // Return the correct boundaries depending on the mode.
       android.graphics.Rect rect;
       if (distortionCorrectionMode == null
           || distortionCorrectionMode == CaptureRequest.DISTORTION_CORRECTION_MODE_OFF) {
@@ -46,27 +45,26 @@ public final class CameraRegionUtils {
         rect = cameraProperties.getSensorInfoActiveArraySize();
       }
 
-      // Return camera boundaries
-      return rect == null ? null : new Size(rect.width(), rect.height());
+      return SizeFactory.create(rect.width(), rect.height());
     } else {
-      // Return camera boundaries
+      // No distortion correction support.
       return cameraProperties.getSensorInfoPixelArraySize();
     }
   }
 
   /**
-   * Converts a point into a {@link MeteringRectangle} with the supplied coordinates as the centre
+   * Converts a point into a {@link MeteringRectangle} with the supplied coordinates as the center
    * point.
    *
    * <p>Since the Camera API (due to cross-platform constraints) only accepts a point when
    * configuring a specific focus or exposure area and Android requires a rectangle to configure
    * these settings there is a need to convert the point into a rectangle. This method will create
    * the required rectangle with an arbitrarily size that is a 10th of the current viewport and the
-   * coordinates as the centre point.
+   * coordinates as the center point.
    *
    * @param boundaries - The camera boundaries to calculate the metering rectangle for.
-   * @param x x - 1 >= coordinate >= 0
-   * @param y y - 1 >= coordinate >= 0
+   * @param x x - 1 >= coordinate >= 0.
+   * @param y y - 1 >= coordinate >= 0.
    * @return The dimensions of the metering rectangle based on the supplied coordinates and
    *     boundaries.
    */
@@ -76,25 +74,32 @@ public final class CameraRegionUtils {
     assert (x >= 0 && x <= 1);
     assert (y >= 0 && y <= 1);
 
-    // Interpolate the target coordinate
+    // Interpolate the target coordinate.
     int targetX = (int) Math.round(x * ((double) (boundaries.getWidth() - 1)));
     int targetY = (int) Math.round(y * ((double) (boundaries.getHeight() - 1)));
-    // Since the Camera API only allows Determine the dimensions of the metering rectangle (10th of
-    // the viewport)
+    // Determine the dimensions of the metering rectangle (10th of the viewport).
     int targetWidth = (int) Math.round(((double) boundaries.getWidth()) / 10d);
     int targetHeight = (int) Math.round(((double) boundaries.getHeight()) / 10d);
-    // Adjust target coordinate to represent top-left corner of metering rectangle
+    // Adjust target coordinate to represent top-left corner of metering rectangle.
     targetX -= targetWidth / 2;
     targetY -= targetHeight / 2;
-    // Adjust target coordinate as to not fall out of bounds
-    if (targetX < 0) targetX = 0;
-    if (targetY < 0) targetY = 0;
+    // Adjust target coordinate as to not fall out of bounds.
+    if (targetX < 0) {
+      targetX = 0;
+    }
+    if (targetY < 0) {
+      targetY = 0;
+    }
     int maxTargetX = boundaries.getWidth() - 1 - targetWidth;
     int maxTargetY = boundaries.getHeight() - 1 - targetHeight;
-    if (targetX > maxTargetX) targetX = maxTargetX;
-    if (targetY > maxTargetY) targetY = maxTargetY;
+    if (targetX > maxTargetX) {
+      targetX = maxTargetX;
+    }
+    if (targetY > maxTargetY) {
+      targetY = maxTargetY;
+    }
 
-    // Build the metering rectangle
+    // Build the metering rectangle.
     return MeteringRectangleFactory.create(targetX, targetY, targetWidth, targetHeight, 1);
   }
 
@@ -120,19 +125,37 @@ public final class CameraRegionUtils {
      * <p>This method is visible for testing purposes only and should never be used outside this *
      * class.
      *
-     * @param x coordinate >= 0
-     * @param y coordinate >= 0
-     * @param width width >= 0
-     * @param height height >= 0
+     * @param x coordinate >= 0.
+     * @param y coordinate >= 0.
+     * @param width width >= 0.
+     * @param height height >= 0.
      * @param meteringWeight weight between {@value MeteringRectangle#METERING_WEIGHT_MIN} and
      *     {@value MeteringRectangle#METERING_WEIGHT_MAX} inclusively
      * @return new instance of the {@link MeteringRectangle} class.
-     * @throws IllegalArgumentException if any of the parameters were negative
+     * @throws IllegalArgumentException if any of the parameters were negative.
      */
     @VisibleForTesting
     public static MeteringRectangle create(
         int x, int y, int width, int height, int meteringWeight) {
       return new MeteringRectangle(x, y, width, height, meteringWeight);
+    }
+  }
+
+  /** Factory class that assists in creating a {@link Size} instance. */
+  static class SizeFactory {
+    /**
+     * Creates a new instance of the {@link Size} class.
+     *
+     * <p>This method is visible for testing purposes only and should never be used outside this *
+     * class.
+     *
+     * @param width width >= 0.
+     * @param height height >= 0.
+     * @return new instance of the {@link Size} class.
+     */
+    @VisibleForTesting
+    public static Size create(int width, int height) {
+      return new Size(width, height);
     }
   }
 }
