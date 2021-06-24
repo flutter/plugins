@@ -6,6 +6,7 @@ on:
 
 jobs:
   release:
+    if: github.repository_owner == 'flutter'
     name: release
     runs-on: ubuntu-latest
     steps:
