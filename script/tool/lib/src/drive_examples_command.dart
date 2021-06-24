@@ -9,7 +9,7 @@ import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
@@ -17,7 +17,7 @@ const int _exitNoPlatformFlags = 2;
 const int _exitNoAvailableDevice = 3;
 
 /// A command to run the example applications for packages via Flutter driver.
-class DriveExamplesCommand extends PluginCommand {
+class DriveExamplesCommand extends PackageLoopingCommand {
   /// Creates an instance of the drive command.
   DriveExamplesCommand(
     Directory packagesDir, {
@@ -48,16 +48,16 @@ class DriveExamplesCommand extends PluginCommand {
 
   @override
   final String description = 'Runs driver tests for plugin example apps.\n\n'
-      'For each *_test.dart in test_driver/ it drives an application with a '
-      'corresponding name in the test/ or test_driver/ directories.\n\n'
-      'For example, test_driver/app_test.dart would match test/app.dart.\n\n'
-      'This command requires "flutter" to be in your path.\n\n'
-      'If a file with a corresponding name cannot be found, this driver file'
-      'will be used to drive the tests that match '
-      'integration_test/*_test.dart.';
+      'For each *_test.dart in test_driver/ it drives an application with the '
+      'either the corresponding test in test_driver (for example, '
+      'test_driver/app_test.dart would match test_driver/app.dart), or the '
+      '*_test.dart files in integration_test/.\n\n'
+      'This command requires "flutter" to be in your path.';
+
+  Map<String, List<String>> _targetDeviceFlags = const <String, List<String>>{};
 
   @override
-  Future<void> run() async {
+  Future<void> initializeRun() async {
     final List<String> platformSwitches = <String>[
       kPlatformAndroid,
       kPlatformIos,
@@ -99,7 +99,7 @@ class DriveExamplesCommand extends PluginCommand {
       iosDevice = devices.first;
     }
 
-    final Map<String, List<String>> targetDeviceFlags = <String, List<String>>{
+    _targetDeviceFlags = <String, List<String>>{
       if (getBoolArg(kPlatformAndroid))
         kPlatformAndroid: <String>['-d', androidDevice!],
       if (getBoolArg(kPlatformIos)) kPlatformIos: <String>['-d', iosDevice!],
@@ -115,106 +115,87 @@ class DriveExamplesCommand extends PluginCommand {
       if (getBoolArg(kPlatformWindows))
         kPlatformWindows: <String>['-d', 'windows'],
     };
+  }
 
-    final List<String> failingTests = <String>[];
-    final List<String> pluginsWithoutTests = <String>[];
-    await for (final Directory plugin in getPlugins()) {
-      final String pluginName = plugin.basename;
-      if (pluginName.endsWith('_platform_interface') &&
-          !plugin.childDirectory('example').existsSync()) {
-        // Platform interface packages generally aren't intended to have
-        // examples, and don't need integration tests, so silently skip them
-        // unless for some reason there is an example directory.
+  @override
+  Future<List<String>> runForPackage(Directory package) async {
+    if (package.basename.endsWith('_platform_interface') &&
+        !package.childDirectory('example').existsSync()) {
+      // Platform interface packages generally aren't intended to have
+      // examples, and don't need integration tests, so skip rather than fail.
+      printSkip(
+          'Platform interfaces are not expected to have integratino tests.');
+      return PackageLoopingCommand.success;
+    }
+
+    final List<String> deviceFlags = <String>[];
+    for (final MapEntry<String, List<String>> entry
+        in _targetDeviceFlags.entries) {
+      if (pluginSupportsPlatform(entry.key, package)) {
+        deviceFlags.addAll(entry.value);
+      } else {
+        print('Skipping unsupported platform ${entry.key}...');
+      }
+    }
+    // If there is no supported target platform, skip the plugin.
+    if (deviceFlags.isEmpty) {
+      printSkip(
+          '${getPackageDescription(package)} does not support any requested platform.');
+      return PackageLoopingCommand.success;
+    }
+
+    int examplesFound = 0;
+    bool testsRan = false;
+    final List<String> errors = <String>[];
+    for (final Directory example in getExamplesForPlugin(package)) {
+      ++examplesFound;
+      final String exampleName =
+          p.relative(example.path, from: packagesDir.path);
+
+      final List<File> drivers = await _getDrivers(example);
+      if (drivers.isEmpty) {
+        print('No driver tests found for $exampleName');
         continue;
       }
-      print('\n==========\nChecking $pluginName...');
 
-      final List<String> deviceFlags = <String>[];
-      for (final MapEntry<String, List<String>> entry
-          in targetDeviceFlags.entries) {
-        if (pluginSupportsPlatform(entry.key, plugin)) {
-          deviceFlags.addAll(entry.value);
+      for (final File driver in drivers) {
+        final List<File> testTargets = <File>[];
+
+        // Try to find a matching app to drive without the _test.dart
+        // TODO(stuartmorgan): Migrate all remaining uses of this legacy
+        // approach (currently only video_player) and remove support for it:
+        // https://github.com/flutter/flutter/issues/85224.
+        final File? legacyTestFile = _getLegacyTestFileForTestDriver(driver);
+        if (legacyTestFile != null) {
+          testTargets.add(legacyTestFile);
         } else {
-          // TODO(stuartmorgan): Consider making this an error, not a skip.
-          print('$pluginName does not support ${entry.key}.');
+          (await _getIntegrationTests(example)).forEach(testTargets.add);
         }
-      }
-      // If there is no supported target platform, skip the plugin.
-      if (deviceFlags.isEmpty) {
-        continue;
-      }
 
-      int examplesFound = 0;
-      bool testsRan = false;
-      for (final Directory example in getExamplesForPlugin(plugin)) {
-        ++examplesFound;
-        final String packageName =
-            p.relative(example.path, from: packagesDir.path);
-
-        final List<File> drivers = await _getDrivers(example);
-        if (drivers.isEmpty) {
-          print('No driver tests found for $packageName');
+        if (testTargets.isEmpty) {
+          final String driverRelativePath =
+              p.relative(driver.path, from: package.path);
+          printError(
+              'Found $driverRelativePath, but no integration_test/*_test.dart files.');
+          errors.add(
+              'No test files for ${p.relative(driver.path, from: package.path)}');
           continue;
         }
 
-        for (final File driver in drivers) {
-          final List<File> testTargets = <File>[];
-
-          // Try to find a matching app to drive without the _test.dart
-          // TODO(stuartmorgan): Migrate all remaining uses of this legacy
-          // approach (currently only video_player) and remove support for it:
-          // https://github.com/flutter/flutter/issues/85224.
-          final File? legacyTestFile = _getLegacyTestFileForTestDriver(driver);
-          if (legacyTestFile != null) {
-            testTargets.add(legacyTestFile);
-          } else {
-            (await _getIntegrationTests(example)).forEach(testTargets.add);
-          }
-
-          if (testTargets.isEmpty) {
-            final String driverRelativePath =
-                p.relative(driver.path, from: plugin.path);
-            print(
-                'Found $driverRelativePath, but no integration_test/*_test.dart files.');
-            failingTests.add(p.relative(driver.path, from: example.path));
-            continue;
-          }
-
-          testsRan = true;
-          final List<File> failingTargets = await _driveTests(
-              example, driver, testTargets,
-              deviceFlags: deviceFlags);
-          for (final File failingTarget in failingTargets) {
-            failingTests.add(p.relative(failingTarget.path, from: plugin.path));
-          }
+        testsRan = true;
+        final List<File> failingTargets = await _driveTests(
+            example, driver, testTargets,
+            deviceFlags: deviceFlags);
+        for (final File failingTarget in failingTargets) {
+          errors.add(p.relative(failingTarget.path, from: package.path));
         }
       }
-      if (!testsRan) {
-        pluginsWithoutTests.add(pluginName);
-        print(
-            'No driver tests run for $pluginName ($examplesFound examples found)');
-      }
     }
-    print('\n\n');
-
-    if (failingTests.isNotEmpty) {
-      print('The following driver tests are failing (see above for details):');
-      for (final String test in failingTests) {
-        print(' * $test');
-      }
-      throw ToolExit(1);
+    if (!testsRan) {
+      printError('No driver tests were run ($examplesFound examples found).');
+      errors.add('No tests ran (use --exclude if this is intentional).');
     }
-
-    if (pluginsWithoutTests.isNotEmpty) {
-      print('The following plugins did not run any integration tests:');
-      for (final String plugin in pluginsWithoutTests) {
-        print(' * $plugin');
-      }
-      print('If this is intentional, they must be explicitly excluded.');
-      throw ToolExit(1);
-    }
-
-    print('All driver tests successful!');
+    return errors;
   }
 
   Future<List<String>> _getDevicesForPlatform(String platform) async {

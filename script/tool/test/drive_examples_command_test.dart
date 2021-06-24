@@ -113,10 +113,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -207,10 +206,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -261,11 +259,10 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          'plugin does not support linux.',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Skipping unsupported platform linux...'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -297,10 +294,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -337,11 +333,10 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          'plugin does not support macos.',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Skipping unsupported platform macos...'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -374,10 +369,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -414,11 +408,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          'plugin does not support web.',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -450,10 +442,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -492,11 +483,10 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          'plugin does not support windows.',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Skipping unsupported platform windows...'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -528,10 +518,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -579,10 +568,9 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -627,11 +615,10 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          'plugin does not support android.',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Skipping unsupported platform android...'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -661,11 +648,10 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n==========\nChecking plugin...',
-          'plugin does not support ios.',
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Skipping unsupported platform ios...'),
+          contains('No issues found!'),
         ]),
       );
 
@@ -686,9 +672,11 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\n\n',
-          'All driver tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for aplugin_platform_interface'),
+          contains(
+              'SKIPPING: Platform interfaces are not expected to have integratino tests.'),
+          contains('No issues found!'),
         ]),
       );
 
