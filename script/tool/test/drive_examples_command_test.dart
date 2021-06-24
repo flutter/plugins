@@ -730,5 +730,173 @@ void main() {
                 pluginExampleDirectory.path),
           ]));
     });
+
+    test('fails when no example is present', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        examples: <String>[],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformWeb: PlatformSupport.inline,
+        },
+      );
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--web'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No driver tests were run (0 example(s) found).'),
+          contains('The following packages had errors:'),
+          contains('  plugin:\n'
+              '    No tests ran (use --exclude if this is intentional)'),
+        ]),
+      );
+    });
+
+    test('fails when no driver is present', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/integration_test/bar_test.dart',
+          'example/integration_test/foo_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformWeb: PlatformSupport.inline,
+        },
+      );
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--web'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No driver tests found for plugin/example'),
+          contains('No driver tests were run (1 example(s) found).'),
+          contains('The following packages had errors:'),
+          contains('  plugin:\n'
+              '    No tests ran (use --exclude if this is intentional)'),
+        ]),
+      );
+    });
+
+    test('fails when no integration tests are present', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformWeb: PlatformSupport.inline,
+        },
+      );
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--web'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Found example/test_driver/integration_test.dart, but no '
+              'integration_test/*_test.dart files.'),
+          contains('No driver tests were run (1 example(s) found).'),
+          contains('The following packages had errors:'),
+          contains('  plugin:\n'
+              '    No test files for example/test_driver/integration_test.dart\n'
+              '    No tests ran (use --exclude if this is intentional)'),
+        ]),
+      );
+    });
+
+    test('reports test failures', () async {
+      final Directory pluginDirectory = createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/bar_test.dart',
+          'example/integration_test/foo_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        },
+      );
+
+      // Simulate failure from `flutter drive`.
+      final MockProcess mockDriveProcess = MockProcess();
+      mockDriveProcess.exitCodeCompleter.complete(1);
+      processRunner.processToReturn = mockDriveProcess;
+
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--macos'],
+              errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('The following packages had errors:'),
+          contains('  plugin:\n'
+              '    example/integration_test/bar_test.dart\n'
+              '    example/integration_test/foo_test.dart'),
+        ]),
+      );
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+      final String driverTestPath =
+          p.join('test_driver', 'integration_test.dart');
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                flutterCommand,
+                <String>[
+                  'drive',
+                  '-d',
+                  'macos',
+                  '--driver',
+                  driverTestPath,
+                  '--target',
+                  p.join('integration_test', 'bar_test.dart'),
+                ],
+                pluginExampleDirectory.path),
+            ProcessCall(
+                flutterCommand,
+                <String>[
+                  'drive',
+                  '-d',
+                  'macos',
+                  '--driver',
+                  driverTestPath,
+                  '--target',
+                  p.join('integration_test', 'foo_test.dart'),
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
   });
 }

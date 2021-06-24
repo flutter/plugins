@@ -192,7 +192,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       }
     }
     if (!testsRan) {
-      printError('No driver tests were run ($examplesFound examples found).');
+      printError('No driver tests were run ($examplesFound example(s) found).');
       errors.add('No tests ran (use --exclude if this is intentional).');
     }
     return errors;
@@ -228,9 +228,11 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     final List<File> drivers = <File>[];
 
     final Directory driverDir = example.childDirectory('test_driver');
-    await for (final FileSystemEntity driver in driverDir.list()) {
-      if (driver is File && driver.basename.endsWith('_test.dart')) {
-        drivers.add(driver);
+    if (driverDir.existsSync()) {
+      await for (final FileSystemEntity driver in driverDir.list()) {
+        if (driver is File && driver.basename.endsWith('_test.dart')) {
+          drivers.add(driver);
+        }
       }
     }
     return drivers;
