@@ -128,7 +128,7 @@ void main() {
         expect(
           actual.status,
           SKTransactionStatusConverter()
-              .toPurchaseStatus(expected.transactionState),
+              .toPurchaseStatus(expected.transactionState, expected.error),
         );
         expect(actual.verificationData.localVerificationData,
             fakeIOSPlatform.receiptData);
