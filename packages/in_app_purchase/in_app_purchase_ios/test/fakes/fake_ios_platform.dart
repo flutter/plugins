@@ -106,6 +106,20 @@ class FakeIOSPlatform {
         originalTransaction: null);
   }
 
+  SKPaymentTransactionWrapper createCanceledTransaction(
+      String productId, int errorCode) {
+    return SKPaymentTransactionWrapper(
+        transactionIdentifier: '',
+        payment: SKPaymentWrapper(productIdentifier: productId),
+        transactionState: SKPaymentTransactionStateWrapper.failed,
+        transactionTimeStamp: 123123.121,
+        error: SKError(
+            code: errorCode,
+            domain: 'ios_domain',
+            userInfo: {'message': 'an error message'}),
+        originalTransaction: null);
+  }
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case '-[SKPaymentQueue canMakePayments:]':
@@ -167,6 +181,11 @@ class FakeIOSPlatform {
               createFailedTransaction(id);
           InAppPurchaseIosPlatform.observer
               .updatedTransactions(transactions: [transaction_failed]);
+        } else if (testTransactionCancel > 0) {
+          SKPaymentTransactionWrapper transaction_canceled =
+              createCanceledTransaction(id, testTransactionCancel);
+          InAppPurchaseIosPlatform.observer
+              .updatedTransactions(transactions: [transaction_canceled]);
         } else {
           SKPaymentTransactionWrapper transaction_finished =
               createPurchasedTransaction(
