@@ -54,6 +54,7 @@ API_AVAILABLE(ios(11.2), macos(10.13.2))
 @end
 
 @interface FIAPReceiptManagerStub : FIAPReceiptManager
+@property(assign, nonatomic) BOOL returnError;
 @end
 
 @interface SKReceiptRefreshRequestStub : SKReceiptRefreshRequest
