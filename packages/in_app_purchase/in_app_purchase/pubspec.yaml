@@ -20,7 +20,7 @@ dependencies:
   flutter:
     sdk: flutter
   in_app_purchase_platform_interface: ^1.0.0
-  in_app_purchase_android: ^0.1.0
+  in_app_purchase_android: ^0.1.4
   in_app_purchase_ios: ^0.1.0
 
 dev_dependencies:

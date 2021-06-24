@@ -438,6 +438,26 @@ class _MyAppState extends State<_MyApp> {
     });
   }
 
+  Future<void> confirmPriceChange() async {
+    if (Platform.isAndroid) {
+      final InAppPurchaseAndroidPlatformAddition androidAddition =
+          _inAppPurchase
+              .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+      var priceChangeConfirmationResult =
+          await androidAddition.launchPriceChangeConfirmationFlow(
+        sku: 'purchaseId',
+      );
+      if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
+        // TODO acknowledge price change
+      } else {
+        // TODO show error
+      }
+    }
+    if(Platform.isIOS){
+      //TODO setup flow
+    }
+  }
+
   GooglePlayPurchaseDetails? _getOldSubscription(
       ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
     // This is just to demonstrate a subscription upgrade or downgrade.
