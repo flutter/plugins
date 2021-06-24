@@ -74,8 +74,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
   }
 
   /// Ensures that the dependent packages have been fetched for all packages
-  /// that will be analyzed.
-  Future<void> _fetchAllDependencies() async {
+  /// (including their sub-packages) that will be analyzed.
+  Future<void> _runPackagesGetOnTargetPackages() async {
     final List<Directory> packageDirectories = await getPackages().toList();
     final Set<String> packagePaths =
         packageDirectories.map((Directory dir) => dir.path).toSet();
@@ -98,7 +98,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
     _validateAnalysisOptions();
 
     print('Fetching dependencies...');
-    await _fetchAllDependencies();
+    await _runPackagesGetOnTargetPackages();
 
     // Use the Dart SDK override if one was passed in.
     final String? dartSdk = argResults![_analysisSdk] as String?;
