@@ -1,6 +1,7 @@
-## NEXT
+## 2.0.9
 
 * Add iOS UI integration test target.
+* Only allow calls to `onWebResourceError` from the main frame.
 
 ## 2.0.8
 
