@@ -289,7 +289,10 @@ public class ImagePickerDelegate
     try {
       activity.startActivityForResult(intent, REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA);
     } catch (ActivityNotFoundException e) {
-4      finishWithError("no_available_camera", "No cameras available for taking pictures.");
+      // If we can't delete the file again here, there's not really anything we can do about it.
+      //noinspection ResultOfMethodCallIgnored
+      videoFile.delete();
+      finishWithError("no_available_camera", "No cameras available for taking pictures.");
     }
   }
 
@@ -366,6 +369,9 @@ public class ImagePickerDelegate
     try {
       activity.startActivityForResult(intent, REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA);
     } catch (ActivityNotFoundException e) {
+      // If we can't delete the file again here, there's not really anything we can do about it.
+      //noinspection ResultOfMethodCallIgnored
+      imageFile.delete();
       finishWithError("no_available_camera", "No cameras available for taking pictures.");
     }
   }
