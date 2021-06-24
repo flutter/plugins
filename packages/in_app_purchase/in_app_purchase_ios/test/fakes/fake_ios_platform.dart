@@ -18,7 +18,7 @@ class FakeIOSPlatform {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 
-  // pre-configured store informations
+  // pre-configured store information
   String? receiptData;
   late Set<String> validProductIDs;
   late Map<String, SKProductWrapper> validProducts;
