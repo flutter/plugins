@@ -23,6 +23,7 @@ void main() {
   tearDown(() {
     fakeIOSPlatform.testReturnNull = false;
     fakeIOSPlatform.queueIsActive = null;
+    fakeIOSPlatform.getReceiptFailTest = false;
   });
 
   group('sk_request_maker', () {
