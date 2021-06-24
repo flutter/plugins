@@ -26,6 +26,7 @@ class FakeIOSPlatform {
   late List<SKPaymentTransactionWrapper> finishedTransactions;
   late bool testRestoredTransactionsNull;
   late bool testTransactionFail;
+  late int testTransactionCancel;
   PlatformException? queryProductException;
   PlatformException? restoreException;
   SKError? testRestoredError;
@@ -64,6 +65,7 @@ class FakeIOSPlatform {
     finishedTransactions = [];
     testRestoredTransactionsNull = false;
     testTransactionFail = false;
+    testTransactionCancel = -1;
     queryProductException = null;
     restoreException = null;
     testRestoredError = null;
