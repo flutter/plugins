@@ -233,6 +233,17 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     }
   }
+
+  Widget _handlePreview() {
+    if (isVideo) {
+      return _previewVideo();
+    } else if (isMultiImage) {
+      return _previewMultiImages();
+    } else {
+      return _previewImage();
+    }
+  }
+
   Future<void> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
@@ -272,7 +283,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         textAlign: TextAlign.center,
                       );
                     case ConnectionState.done:
-                      return isVideo ? _previewVideo() : _previewImage();
+                      return _handlePreview();
                     default:
                       if (snapshot.hasError) {
                         return Text(
@@ -288,7 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   }
                 },
               )
-            : (isVideo ? _previewVideo() : _previewImage()),
+            : _handlePreview(),
       ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
