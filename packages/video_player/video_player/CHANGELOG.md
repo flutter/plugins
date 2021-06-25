@@ -1,54 +1,55 @@
-## 2.0.0-nullsafety.12
+## 2.1.7
 
 * Fixed playback speed resetting on iOS (on seeking and on initialization).
 
-## 2.0.0-nullsafety.11
+## 2.1.6
 
-* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
+* Remove obsolete pre-1.0 warning from README.
+* Add iOS unit and UI integration test targets.
 
-## 2.0.0-nullsafety.10
+## 2.1.5
 
-* Updated to video_player_platform_interface 4.0.
+* Update example code in README to fix broken url.
 
-## 2.0.0-nullsafety.9
+## 2.1.4
 
-* Fixed an issue where a crash can occur after a closing a video player view on iOS.
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
 
-## 2.0.0-nullsafety.8
+## 2.1.3
 
-* Migrated from deprecated `defaultBinaryMessenger`.
+* Fix pointer value to boolean conversion analyzer warnings.
 
-## 2.0.0-nullsafety.7
+## 2.1.2
 
-* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate maven repository from jcenter to mavenCentral.
 
-## 2.0.0-nullsafety.6
+## 2.1.1
 
-* Fix `VideoPlayerValue toString()` test.
+* Update example code in README to reflect API changes.
 
-## 2.0.0-nullsafety.5
+## 2.1.0
 
+* Add `httpHeaders` option to `VideoPlayerController.network`
+
+## 2.0.2
+
+* Fix `VideoPlayerValue` size and aspect ratio documentation
+
+## 2.0.1
+
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
+
+## 2.0.0
+
+* Migrate to null safety.
+* Fix an issue where `isBuffering` was not updating on Android.
 * Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
-
-## 2.0.0-nullsafety.4
-
-* Fixed an issue where `isBuffering` was not updating on Android.
-
-## 2.0.0-nullsafety.3
-
-* Dart null safety requires `2.12`.
-
-## 2.0.0-nullsafety.2
-
-* Bump SDK version.
-
-## 2.0.0-nullsafety.1
-
-* Merge master.
-
-## 2.0.0-nullsafety
-
-* Migration to null safety.
+* Fix `VideoPlayerValue toString()` test.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate from deprecated `defaultBinaryMessenger`.
+* Fix an issue where a crash can occur after a closing a video player view on iOS.
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
 
 ## 1.0.2
 

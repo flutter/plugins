@@ -5,7 +5,7 @@ A web implementation of [`image_picker`][1].
 ## Limitations on the web platform
 
 Since Web Browsers don't offer direct access to their users' file system,
-this plugin provides a `PickedFile` abstraction to make access access uniform
+this plugin provides a `PickedFile` abstraction to make access uniform
 across platforms.
 
 The web version of the plugin puts network-accessible URIs as the `path`

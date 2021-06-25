@@ -1,16 +1,16 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 
-import 'common.dart';
+import 'common/plugin_command.dart';
 
+/// A command to list different types of repository content.
 class ListCommand extends PluginCommand {
-  ListCommand(Directory packagesDir, FileSystem fileSystem)
-      : super(packagesDir, fileSystem) {
+  /// Creates an instance of the list command, whose behavior depends on the
+  /// 'type' argument it provides.
+  ListCommand(Directory packagesDir) : super(packagesDir) {
     argParser.addOption(
       _type,
       defaultsTo: _plugin,
@@ -32,26 +32,25 @@ class ListCommand extends PluginCommand {
   final String description = 'Lists packages or files';
 
   @override
-  Future<Null> run() async {
-    checkSharding();
-    switch (argResults[_type]) {
+  Future<void> run() async {
+    switch (getStringArg(_type)) {
       case _plugin:
-        await for (Directory package in getPlugins()) {
+        await for (final Directory package in getPlugins()) {
           print(package.path);
         }
         break;
       case _example:
-        await for (Directory package in getExamples()) {
+        await for (final Directory package in getExamples()) {
           print(package.path);
         }
         break;
       case _package:
-        await for (Directory package in getPackages()) {
+        await for (final Directory package in getPackages()) {
           print(package.path);
         }
         break;
       case _file:
-        await for (File file in getFiles()) {
+        await for (final File file in getFiles()) {
           print(file.path);
         }
         break;

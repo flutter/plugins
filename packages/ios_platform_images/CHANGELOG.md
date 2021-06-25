@@ -1,4 +1,8 @@
-## 0.2.0-nullsafety
+## NEXT
+
+* Add iOS unit test target.
+
+## 0.2.0
 
 * Migrate to null safety.
 

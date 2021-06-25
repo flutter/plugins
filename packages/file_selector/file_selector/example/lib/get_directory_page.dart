@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
@@ -5,9 +9,13 @@ import 'package:flutter/material.dart';
 class GetDirectoryPage extends StatelessWidget {
   void _getDirectoryPath(BuildContext context) async {
     final String confirmButtonText = 'Choose';
-    final String directoryPath = await getDirectoryPath(
+    final String? directoryPath = await getDirectoryPath(
       confirmButtonText: confirmButtonText,
     );
+    if (directoryPath == null) {
+      // Operation was canceled by the user.
+      return;
+    }
     await showDialog(
       context: context,
       builder: (context) => TextDisplay(directoryPath),

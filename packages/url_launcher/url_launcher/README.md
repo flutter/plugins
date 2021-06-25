@@ -8,6 +8,22 @@ iOS, Android, web, Windows, macOS, and Linux.
 ## Usage
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
 
+## Installation
+
+### iOS
+Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
+
+Example:
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+```
+
+See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
+
 ### Example
 
 ``` dart
@@ -51,26 +67,40 @@ Common schemes supported by both iOS and Android:
 
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
+**Note**: URL schemes are only supported if there are apps installed on the device that can
+support them. For example, iOS simulators don't have a default email or phone
+apps installed, so can't open `tel:` or `mailto:` links.
+
 ### Encoding URLs
 
-URLs must be properly encoded, especially when including spaces or other special characters. This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
+URLs must be properly encoded, especially when including spaces or other special
+characters. This can be done using the
+[`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html).
+For example:
 ```dart
-import 'dart:core';
-import 'package:url_launcher/url_launcher.dart';
+String? encodeQueryParameters(Map<String, String> params) {
+  return params.entries
+      .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+}
 
-final Uri _emailLaunchUri = Uri(
+final Uri emailLaunchUri = Uri(
   scheme: 'mailto',
   path: 'smith@example.com',
-  queryParameters: {
+  query: encodeQueryParameters(<String, String>{
     'subject': 'Example Subject & Symbols are allowed!'
-  }
+  }),
 );
 
-// ...
-
-// mailto:smith@example.com?subject=Example+Subject+%26+Symbols+are+allowed%21
-launch(_emailLaunchUri.toString());
+launch(emailLaunchUri.toString());
 ```
+
+**Warning**: For any scheme other than `http` or `https`, you should use the
+`query` parameter and the `encodeQueryParameters` function shown above rather
+than `Uri`'s `queryParameters` constructor argument, due to
+[a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
+encodes query parameters. Using `queryParameters` will result in spaces being
+converted to `+` in many cases.
 
 ## Handling missing URL receivers
 

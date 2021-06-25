@@ -1,22 +1,14 @@
-## 2.0.0-nullsafety.4
+## 2.0.1
 
-* Calling `setMixWithOthers()` now is silently ignored instead of throwing an exception.
+* Fix videos not playing in Safari/Chrome on iOS by setting autoplay to false
+* Change sizing code of `Video` widget's `HtmlElementView` so it works well when slotted.
+* Move tests to `example` directory, so they run as integration_tests with `flutter drive`.
 
-## 2.0.0-nullsafety.3
-
-* Updated to video_player_platform_interface 4.0.
-
-## 2.0.0-nullsafety.2
-
-* Fixed an issue where `isBuffering` was not updating on Web.
-
-## 2.0.0-nullsafety.1
-
-* Bump Dart SDK to support null safety.
-
-## 2.0.0-nullsafety
+## 2.0.0
 
 * Migrate to null safety.
+* Calling `setMixWithOthers()` now is silently ignored instead of throwing an exception.
+* Fixed an issue where `isBuffering` was not updating on Web.
 
 ## 0.1.4+2
 

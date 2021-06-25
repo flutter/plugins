@@ -79,6 +79,7 @@ List<CameraDescription> cameras;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   cameras = await availableCameras();
   runApp(CameraApp());
 }
@@ -94,7 +95,7 @@ class _CameraAppState extends State<CameraApp> {
   @override
   void initState() {
     super.initState();
-    controller = CameraController(cameras[0], ResolutionPreset.medium);
+    controller = CameraController(cameras[0], ResolutionPreset.max);
     controller.initialize().then((_) {
       if (!mounted) {
         return;
@@ -114,12 +115,12 @@ class _CameraAppState extends State<CameraApp> {
     if (!controller.value.isInitialized) {
       return Container();
     }
-    return AspectRatio(
-        aspectRatio:
-        controller.value.aspectRatio,
-        child: CameraPreview(controller));
+    return MaterialApp(
+      home: CameraPreview(controller),
+    );
   }
 }
+
 ```
 
 For a more elaborate usage example see [here](https://github.com/flutter/plugins/tree/master/packages/camera/camera/example).

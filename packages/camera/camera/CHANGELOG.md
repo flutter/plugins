@@ -1,14 +1,25 @@
-## 0.8.0-nullsafety.2
+## 0.8.1+3
 
+* Do not change camera orientation when iOS device is flat.
+
+## 0.8.1+2
+
+* Fix iOS crash when selecting an unsupported FocusMode.
+
+## 0.8.1+1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 0.8.1
+
+* Solved a rotation issue on iOS which caused the default preview to be displayed as landscape right instead of portrait.
+
+## 0.8.0
+
+* Stable null safety release.
 * Solved delay when using the zoom feature on iOS.
-
-## 0.8.0-nullsafety.1
-
 * Added a timeout to the pre-capture sequence on Android to prevent crashes when the camera cannot get a focus.
-
-## 0.8.0-nullsafety
-
-* Migrated to null safety.
+* Updates the example code listed in the [README.md](README.md), so it runs without errors when you simply copy/ paste it into a Flutter App.
 
 ## 0.7.0+4
 
@@ -16,7 +27,7 @@
 
 ## 0.7.0+3
 
-* Clockwise rotation of focus point in android 
+* Clockwise rotation of focus point in android
 
 ## 0.7.0+2
 
@@ -118,7 +129,7 @@ As part of implementing federated architecture and making the interface compatib
 
 Method changes in `CameraController`:
 - The `takePicture` method no longer accepts the `path` parameter, but instead returns the captured image as an instance of the `XFile` class;
-- The `startVideoRecording` method no longer accepts the `filePath`. Instead the recorded video is now returned as a `XFile` instance when the `stopVideoRecording` method completes; 
+- The `startVideoRecording` method no longer accepts the `filePath`. Instead the recorded video is now returned as a `XFile` instance when the `stopVideoRecording` method completes;
 - The `stopVideoRecording` method now returns the captured video when it completes;
 - Added the `buildPreview` method which is now used to implement the CameraPreview widget.
 

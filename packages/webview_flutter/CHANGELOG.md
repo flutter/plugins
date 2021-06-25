@@ -1,30 +1,52 @@
-## 2.0.0-nullsafety.6
+## 2.0.9
 
-* Added support for progress tracking.
+* Add iOS UI integration test target.
+* Suppress deprecation warning for iOS APIs deprecated in iOS 9.
 
-## 2.0.0-nullsafety.5
+## 2.0.8
 
-* Add section to the wiki explaining how to use Material components.
+* Migrate maven repository from jcenter to mavenCentral.
 
-## 2.0.0-nullsafety.4
+## 2.0.7
 
-* Update integration test to workaround an iOS 14 issue with `evaluateJavascript`.
+* Republished 2.0.6 with Flutter 2.2 to avoid https://github.com/dart-lang/pub/issues/3001
 
-## 2.0.0-nullsafety.3
+## 2.0.6
 
-* Fix `onWebResourceError` on iOS.
+* WebView requires at least Android 19 if you are using
+hybrid composition ([flutter/issues/59894](https://github.com/flutter/flutter/issues/59894)).
 
-## 2.0.0-nullsafety.2
+## 2.0.5
 
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Example app observes `uiMode`, so the WebView isn't reattached when the UI mode changes. (e.g. switching to Dark mode).
 
-## 2.0.0-nullsafety.1
+## 2.0.4
 
-* Added `allowsInlineMediaPlayback` property.
+* Fix a bug where `allowsInlineMediaPlayback` is not respected on iOS.
 
-## 2.0.0-nullsafety
+## 2.0.3
+
+* Fixes bug where scroll bars on the Android non-hybrid WebView are rendered on
+the wrong side of the screen.
+
+## 2.0.2
+
+* Fixes bug where text fields are hidden behind the keyboard
+when hybrid composition is used [flutter/issues/75667](https://github.com/flutter/flutter/issues/75667).
+
+## 2.0.1
+
+* Run CocoaPods iOS tests in RunnerUITests target
+
+## 2.0.0
 
 * Migration to null-safety.
+* Added support for progress tracking.
+* Add section to the wiki explaining how to use Material components.
+* Update integration test to workaround an iOS 14 issue with `evaluateJavascript`.
+* Fix `onWebResourceError` on iOS.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Added `allowsInlineMediaPlayback` property.
 
 ## 1.0.8
 

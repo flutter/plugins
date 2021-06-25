@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromActivity() {
-    tearDownChannel();
+    share.setActivity(null);
   }
 
   @Override
@@ -63,10 +63,5 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
     share = new Share(context, activity);
     handler = new MethodCallHandler(share);
     methodChannel.setMethodCallHandler(handler);
-  }
-
-  private void tearDownChannel() {
-    share.setActivity(null);
-    methodChannel.setMethodCallHandler(null);
   }
 }
