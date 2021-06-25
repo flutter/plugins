@@ -241,6 +241,7 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
+                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'image0',
@@ -253,9 +254,23 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                _onImageButtonPressed(ImageSource.camera, context: context);
+                isMultiImage = true;
+                _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'image1',
+              tooltip: 'Pick Multiple Image from gallery',
+              child: const Icon(Icons.photo_library),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(top: 16.0),
+            child: FloatingActionButton(
+              onPressed: () {
+                isVideo = false;
+                isMultiImage = false;
+                _onImageButtonPressed(ImageSource.camera, context: context);
+              },
+              heroTag: 'image2',
               tooltip: 'Take a Photo',
               child: const Icon(Icons.camera_alt),
             ),
@@ -266,6 +281,7 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
+                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.gallery);
               },
               heroTag: 'video0',
@@ -279,6 +295,7 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
+                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.camera);
               },
               heroTag: 'video1',
