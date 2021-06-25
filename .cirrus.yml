@@ -30,7 +30,6 @@ macos_template: &MACOS_TEMPLATE
   use_compute_credits: $CIRRUS_USER_COLLABORATOR == 'true'
   osx_instance:
     image: big-sur-xcode-12.5
-  cocoapod_install_script: sudo gem install cocoapods
 
 # Light-workload Linux tasks.
 # These use default machines, with fewer CPUs, to reduce pressure on the
