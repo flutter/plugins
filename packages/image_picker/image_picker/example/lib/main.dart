@@ -194,6 +194,45 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  Widget _previewMultiImages() {
+    final Text? retrieveError = _getRetrieveErrorWidget();
+    if (retrieveError != null) {
+      return retrieveError;
+    }
+    if (_imageFileList != null) {
+      if (kIsWeb) {
+        // Why network?
+        // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+        return ListView.builder(
+          key: UniqueKey(),
+          itemBuilder: (context, index) {
+            return Image.network(_imageFileList![index].path);
+          },
+          itemCount: _imageFileList!.length,
+        );
+      } else {
+        return Semantics(
+            child: ListView.builder(
+              key: UniqueKey(),
+              itemBuilder: (context, index) {
+                return Image.file(File(_imageFileList![index].path));
+              },
+              itemCount: _imageFileList!.length,
+            ),
+            label: 'image_picker_example_picked_images');
+      }
+    } else if (_pickImageError != null) {
+      return Text(
+        'Pick image error: $_pickImageError',
+        textAlign: TextAlign.center,
+      );
+    } else {
+      return const Text(
+        'You have not yet picked an image.',
+        textAlign: TextAlign.center,
+      );
+    }
+  }
   Future<void> retrieveLostData() async {
     final LostData response = await _picker.getLostData();
     if (response.isEmpty) {
