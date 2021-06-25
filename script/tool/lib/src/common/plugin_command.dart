@@ -250,10 +250,16 @@ abstract class PluginCommand extends Command<void> {
   /// Returns the files contained, recursively, within the plugins
   /// involved in this command execution.
   Stream<File> getFiles() {
-    return getPlugins().asyncExpand<File>((Directory folder) => folder
+    return getPlugins()
+        .asyncExpand<File>((Directory folder) => getFilesForPackage(folder));
+  }
+
+  /// Returns the files contained, recursively, within [package].
+  Stream<File> getFilesForPackage(Directory package) {
+    return package
         .list(recursive: true, followLinks: false)
         .where((FileSystemEntity entity) => entity is File)
-        .cast<File>());
+        .cast<File>();
   }
 
   /// Returns whether the specified entity is a directory containing a
