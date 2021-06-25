@@ -1,8 +1,8 @@
 package io.flutter.plugins.webviewflutter;
 
-import org.junit.Test;
-
 import static org.junit.Assert.assertEquals;
+
+import org.junit.Test;
 
 public class WebViewTest {
   @Test
