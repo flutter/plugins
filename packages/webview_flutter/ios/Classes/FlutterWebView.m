@@ -391,15 +391,25 @@
     case 0:  // require_user_action_for_all_media_types
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
+      } else if (@available(iOS 9.0, *)) {
+        configuration.requiresUserActionForMediaPlayback = true;
       } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.mediaPlaybackRequiresUserAction = true;
+#pragma clang diagnostic pop
       }
       break;
     case 1:  // always_allow
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+      } else if (@available(iOS 9.0, *)) {
+        configuration.requiresUserActionForMediaPlayback = false;
       } else {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.mediaPlaybackRequiresUserAction = false;
+#pragma clang diagnostic pop
       }
       break;
     default:

@@ -56,6 +56,11 @@ class ImagePicker {
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// See also [getMultiImage] to allow users to select multiple images at once.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
+  /// the camera or photos gallery, no camera is available, plugin is already in use,
+  /// temporary file could not be created (iOS only), plugin activity could not
+  /// be allocated (Android only) or due to an unknown error.
   Future<PickedFile?> getImage({
     required ImageSource source,
     double? maxWidth,
@@ -90,6 +95,11 @@ class ImagePicker {
   /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
   /// a warning message will be logged.
   ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
+  /// the camera or photos gallery, no camera is available, plugin is already in use,
+  /// temporary file could not be created (iOS only), plugin activity could not
+  /// be allocated (Android only) or due to an unknown error.
+  ///
   /// See also [getImage] to allow users to only pick a single image.
   Future<List<PickedFile>?> getMultiImage({
     double? maxWidth,
@@ -119,6 +129,12 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
+  /// the camera or photos gallery, no camera is available, plugin is already in use,
+  /// temporary file could not be created and video could not be cached (iOS only),
+  /// plugin activity could not be allocated (Android only) or due to an unknown error.
+  ///
   Future<PickedFile?> getVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
