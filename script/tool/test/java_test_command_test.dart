@@ -45,7 +45,7 @@ void main() {
         ],
       );
 
-      await runner.run(<String>['java-test']);
+      await runCapturingPrint(runner, <String>['java-test']);
 
       expect(
         processRunner.recordedCalls,
@@ -72,7 +72,7 @@ void main() {
         ],
       );
 
-      await runner.run(<String>['java-test']);
+      await runCapturingPrint(runner, <String>['java-test']);
 
       expect(
         processRunner.recordedCalls,
