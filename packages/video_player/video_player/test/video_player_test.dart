@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -14,6 +15,8 @@ import 'package:video_player_platform_interface/video_player_platform_interface.
 class FakeController extends ValueNotifier<VideoPlayerValue>
     implements VideoPlayerController {
   FakeController() : super(VideoPlayerValue(duration: Duration.zero));
+
+  FakeController.value(VideoPlayerValue value) : super(value);
 
   @override
   Future<void> dispose() async {
@@ -147,6 +150,15 @@ void main() {
           (Widget widget) => widget is Texture && widget.textureId == 102,
         ),
         findsOneWidget);
+  });
+
+  testWidgets('rotation value is used', (WidgetTester tester) async {
+    final FakeController controller = FakeController.value(
+        VideoPlayerValue(duration: Duration.zero, rotation: math.pi));
+    await tester.pumpWidget(VideoPlayer(controller));
+    Transform actualRotation =
+        find.byType(Transform).evaluate().single as Transform;
+    expect(actualRotation.transform, equals(Matrix4.rotationZ(math.pi)));
   });
 
   group('ClosedCaption widget', () {
