@@ -108,6 +108,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
             duration: Duration(milliseconds: map['duration']),
             size: Size(map['width']?.toDouble() ?? 0.0,
                 map['height']?.toDouble() ?? 0.0),
+            rotation: map['rotation']?.toDouble() ?? 0.0,
           );
         case 'completed':
           return VideoEvent(
