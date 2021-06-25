@@ -243,7 +243,7 @@ class _MyHomePageState extends State<MyHomePage> {
               },
               heroTag: 'image0',
               tooltip: 'Pick Image from gallery',
-              child: const Icon(Icons.photo_library),
+              child: const Icon(Icons.photo),
             ),
           ),
           Padding(
