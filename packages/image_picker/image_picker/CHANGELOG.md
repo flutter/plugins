@@ -1,3 +1,8 @@
+
+## 0.8.1+1
+
+* Expose errors thrown in `pickImage` and `pickVideo` docs.
+
 ## 0.8.1
 
 * Add a new method `getMultiImage` to allow picking multiple images on iOS 14 or higher

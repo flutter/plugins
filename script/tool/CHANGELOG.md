@@ -6,6 +6,7 @@
 - `xctest` now supports running macOS tests in addition to iOS
   - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
 - The tooling now runs in strong null-safe mode.
+- `publish plugins` check against pub.dev to determine if a release should happen.
 - Modified the output format of `pubspec-check` and `xctest`
 
 ## 0.2.0
