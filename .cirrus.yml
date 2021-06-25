@@ -251,3 +251,32 @@ task:
         - ./script/tool_runner.sh xctest --macos --exclude $PLUGINS_TO_EXCLUDE_MACOS_XCTESTS
       drive_script:
         - ./script/tool_runner.sh drive-examples --macos
+
+task:
+  # Don't use FLUTTER_UPGRADE_TEMPLATE, Flutter tooling not needed.
+  << : *MACOS_TEMPLATE
+  << : *TOOL_SETUP_TEMPLATE
+  matrix:
+    - name: lint_darwin_plugins
+      script:
+        # TODO(jmagman): Lint macOS podspecs but skip any that fail library validation.
+        - find . -name "*.podspec" | xargs grep -l "osx" | xargs rm
+        - ./script/tool_runner.sh podspecs
+
+# Windows tasks
+task:
+  << : *FLUTTER_UPGRADE_TEMPLATE
+  gke_container:
+    dockerfile: .ci/DockerfileWindows
+    platform: windows
+    builder_image_name: docker-builder-win # gce vm image
+    builder_image_project: flutter-cirrus
+    cluster_name: test-cluster
+    nodes_name: n2-standard-2
+    zone: us-central1-a
+    namespace: default
+  matrix:
+    ### Platform-agnostic tasks ###
+    - name: hello-world
+      script:
+        - ECHO Hello World
