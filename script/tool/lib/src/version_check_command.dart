@@ -32,39 +32,40 @@ enum NextVersionType {
 }
 
 /// Returns the set of allowed next versions, with their change type, for
-/// [masterVersion].
+/// [version].
 ///
-/// [headVerison] is used to check whether this is a pre-1.0 version bump, as
+/// [newVersion] is used to check whether this is a pre-1.0 version bump, as
 /// those have different semver rules.
 @visibleForTesting
 Map<Version, NextVersionType> getAllowedNextVersions(
-    {required Version masterVersion, required Version headVersion}) {
+  Version version, {
+  required Version newVersion,
+}) {
   final Map<Version, NextVersionType> allowedNextVersions =
       <Version, NextVersionType>{
-    masterVersion.nextMajor: NextVersionType.BREAKING_MAJOR,
-    masterVersion.nextMinor: NextVersionType.MINOR,
-    masterVersion.nextPatch: NextVersionType.PATCH,
+    version.nextMajor: NextVersionType.BREAKING_MAJOR,
+    version.nextMinor: NextVersionType.MINOR,
+    version.nextPatch: NextVersionType.PATCH,
   };
 
-  if (masterVersion.major < 1 && headVersion.major < 1) {
+  if (version.major < 1 && newVersion.major < 1) {
     int nextBuildNumber = -1;
-    if (masterVersion.build.isEmpty) {
+    if (version.build.isEmpty) {
       nextBuildNumber = 1;
     } else {
-      final int currentBuildNumber = masterVersion.build.first as int;
+      final int currentBuildNumber = version.build.first as int;
       nextBuildNumber = currentBuildNumber + 1;
     }
     final Version preReleaseVersion = Version(
-      masterVersion.major,
-      masterVersion.minor,
-      masterVersion.patch,
+      version.major,
+      version.minor,
+      version.patch,
       build: nextBuildNumber.toString(),
     );
     allowedNextVersions.clear();
-    allowedNextVersions[masterVersion.nextMajor] = NextVersionType.RELEASE;
-    allowedNextVersions[masterVersion.nextMinor] =
-        NextVersionType.BREAKING_MAJOR;
-    allowedNextVersions[masterVersion.nextPatch] = NextVersionType.MINOR;
+    allowedNextVersions[version.nextMajor] = NextVersionType.RELEASE;
+    allowedNextVersions[version.nextMinor] = NextVersionType.BREAKING_MAJOR;
+    allowedNextVersions[version.nextPatch] = NextVersionType.MINOR;
     allowedNextVersions[preReleaseVersion] = NextVersionType.PATCH;
   }
   return allowedNextVersions;
@@ -107,53 +108,48 @@ class VersionCheckCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    final GitDir gitDir = await getGitDir();
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-
-    final List<String> changedPubspecs =
-        await gitVersionFinder.getChangedPubSpecs();
 
     final List<String> badVersionChangePubspecs = <String>[];
 
-    for (final String pubspecPath in changedPubspecs) {
+    await for (final Directory package in getPackages()) {
+      final File pubspecFile = package.childFile('pubspec.yaml');
+      final String pubspecPath =
+          p.relative(pubspecFile.absolute.path, from: gitDir.path);
       print('Checking versions for $pubspecPath...');
-      final File pubspecFile = packagesDir.fileSystem.file(pubspecPath);
-      if (!pubspecFile.existsSync()) {
-        print('${indentation}Deleted; skipping.');
-        continue;
-      }
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
       if (pubspec.publishTo == 'none') {
         print('${indentation}Found "publish_to: none"; skipping.');
         continue;
       }
 
-      final Version? headVersion =
-          await gitVersionFinder.getPackageVersion(pubspecPath, gitRef: 'HEAD');
-      if (headVersion == null) {
+      final Version? currentVersion = pubspec.version;
+      if (currentVersion == null) {
         printError('${indentation}No version found. A package that '
             'intentionally has no version should be marked '
             '"publish_to: none".');
         badVersionChangePubspecs.add(pubspecPath);
         continue;
       }
-      Version? sourceVersion;
+      Version? previousVersion;
       if (getBoolArg(_againstPubFlag)) {
-        sourceVersion =
+        previousVersion =
             await _getPreviousVersionFromPub(pubspec.name, pubspecFile);
-        if (sourceVersion == null) {
+        if (previousVersion == null) {
           badVersionChangePubspecs.add(pubspecPath);
           continue;
         }
-        if (sourceVersion != Version.none) {
+        if (previousVersion != Version.none) {
           print(
-              '$indentation${pubspec.name}: Current largest version on pub: $sourceVersion');
+              '$indentation${pubspec.name}: Current largest version on pub: $previousVersion');
         }
       } else {
-        sourceVersion = await _getPreviousVersionFromGit(pubspecFile,
+        previousVersion = await _getPreviousVersionFromGit(pubspecFile,
                 gitVersionFinder: gitVersionFinder) ??
             Version.none;
       }
-      if (sourceVersion == Version.none) {
+      if (previousVersion == Version.none) {
         print('${indentation}Unable to find previous version '
             '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
         printWarning(
@@ -161,20 +157,19 @@ class VersionCheckCommand extends PluginCommand {
         continue;
       }
 
-      if (sourceVersion == headVersion) {
+      if (previousVersion == currentVersion) {
         print('${indentation}No version change.');
         continue;
       }
 
       // Check for reverts when doing local validation.
-      if (!getBoolArg(_againstPubFlag) && headVersion < sourceVersion) {
+      if (!getBoolArg(_againstPubFlag) && currentVersion < previousVersion) {
         final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
-            getAllowedNextVersions(
-                masterVersion: headVersion, headVersion: sourceVersion);
+            getAllowedNextVersions(currentVersion, newVersion: previousVersion);
         // Since this skips validation, try to ensure that it really is likely
         // to be a revert rather than a typo by checking that the transition
         // from the lower version to the new version would have been valid.
-        if (possibleVersionsFromNewVersion.containsKey(sourceVersion)) {
+        if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
           print('${indentation}New version is lower than previous version. '
               'This is assumed to be a revert.');
           continue;
@@ -182,24 +177,24 @@ class VersionCheckCommand extends PluginCommand {
       }
 
       final Map<Version, NextVersionType> allowedNextVersions =
-          getAllowedNextVersions(
-              masterVersion: sourceVersion, headVersion: headVersion);
+          getAllowedNextVersions(previousVersion, newVersion: currentVersion);
 
-      if (!allowedNextVersions.containsKey(headVersion)) {
+      if (!allowedNextVersions.containsKey(currentVersion)) {
         final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
         printError('${indentation}Incorrectly updated version.\n'
-            '${indentation}HEAD: $headVersion, $source: $sourceVersion.\n'
+            '${indentation}HEAD: $currentVersion, $source: $previousVersion.\n'
             '${indentation}Allowed versions: $allowedNextVersions');
         badVersionChangePubspecs.add(pubspecPath);
         continue;
       } else {
-        print('$indentation$headVersion -> $sourceVersion');
+        print('$indentation$currentVersion -> $previousVersion');
       }
 
       final bool isPlatformInterface =
           pubspec.name.endsWith('_platform_interface');
       if (isPlatformInterface &&
-          allowedNextVersions[headVersion] == NextVersionType.BREAKING_MAJOR) {
+          allowedNextVersions[currentVersion] ==
+              NextVersionType.BREAKING_MAJOR) {
         printError('$pubspecPath breaking change detected.\n'
             'Breaking changes to platform interfaces are strongly discouraged.\n');
         badVersionChangePubspecs.add(pubspecPath);
