@@ -37,8 +37,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   PickedFile? _imageFile;
+  List<PickedFile>? _imageFileList;
   dynamic _pickImageError;
   bool isVideo = false;
+  bool isMultiImage = false;
   VideoPlayerController? _controller;
   VideoPlayerController? _toBeDisposed;
   String? _retrieveDataError;
