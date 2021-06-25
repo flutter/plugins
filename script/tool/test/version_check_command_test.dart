@@ -69,6 +69,7 @@ void main() {
       gitDiffResponse = '';
       gitShowResponses = <String, String>{};
       gitDir = MockGitDir();
+      when(gitDir.path).thenReturn(packagesDir.parent.path);
       when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
           .thenAnswer((Invocation invocation) {
         gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
@@ -183,7 +184,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '${indentation}Unable to find pubspec in master. Safe to ignore if the project is new.',
+          '${indentation}Unable to find previous version at git base.',
           'No version check errors found!',
         ]),
       );
@@ -704,7 +705,7 @@ ${indentation}HTTP response: xx
       expect(
         result,
         containsAllInOrder(<String>[
-          '${indentation}Unable to find package on pub server. Safe to ignore if the project is new.',
+          '${indentation}Unable to find previous version on pub server.',
           'No version check errors found!',
         ]),
       );

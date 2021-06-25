@@ -99,6 +99,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
     return packageName;
   }
 
+  /// The suggested indentation for printed output.
+  String get indentation => hasLongOutput ? '' : '  ';
+
   // ----------------------------------------
 
   @override

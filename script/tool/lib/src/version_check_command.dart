@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -102,6 +103,8 @@ class VersionCheckCommand extends PluginCommand {
 
   final PubVersionFinder _pubVersionFinder;
 
+  String get indentation => '  ';
+
   @override
   Future<void> run() async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
@@ -111,7 +114,6 @@ class VersionCheckCommand extends PluginCommand {
 
     final List<String> badVersionChangePubspecs = <String>[];
 
-    const String indentation = '  ';
     for (final String pubspecPath in changedPubspecs) {
       print('Checking versions for $pubspecPath...');
       final File pubspecFile = packagesDir.fileSystem.file(pubspecPath);
@@ -136,40 +138,26 @@ class VersionCheckCommand extends PluginCommand {
       }
       Version? sourceVersion;
       if (getBoolArg(_againstPubFlag)) {
-        final String packageName = pubspecFile.parent.basename;
-        final PubVersionFinderResponse pubVersionFinderResponse =
-            await _pubVersionFinder.getPackageVersion(package: packageName);
-        switch (pubVersionFinderResponse.result) {
-          case PubVersionFinderResult.success:
-            sourceVersion = pubVersionFinderResponse.versions.first;
-            print(
-                '$indentation$packageName: Current largest version on pub: $sourceVersion');
-            break;
-          case PubVersionFinderResult.fail:
-            printError('''
-${indentation}Error fetching version on pub for $packageName.
-${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
-${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
-''');
-            badVersionChangePubspecs.add(pubspecPath);
-            continue;
-          case PubVersionFinderResult.noPackageFound:
-            sourceVersion = null;
-            break;
+        sourceVersion =
+            await _getPreviousVersionFromPub(pubspec.name, pubspecFile);
+        if (sourceVersion == null) {
+          badVersionChangePubspecs.add(pubspecPath);
+          continue;
+        }
+        if (sourceVersion != Version.none) {
+          print(
+              '$indentation${pubspec.name}: Current largest version on pub: $sourceVersion');
         }
       } else {
-        sourceVersion = await gitVersionFinder.getPackageVersion(pubspecPath);
+        sourceVersion = await _getPreviousVersionFromGit(pubspecFile,
+                gitVersionFinder: gitVersionFinder) ??
+            Version.none;
       }
-      if (sourceVersion == null) {
-        String safeToIgnoreMessage;
-        if (getBoolArg(_againstPubFlag)) {
-          safeToIgnoreMessage =
-              '${indentation}Unable to find package on pub server.';
-        } else {
-          safeToIgnoreMessage =
-              '${indentation}Unable to find pubspec in master.';
-        }
-        print('$safeToIgnoreMessage Safe to ignore if the project is new.');
+      if (sourceVersion == Version.none) {
+        print('${indentation}Unable to find previous version '
+            '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
+        printWarning(
+            '${indentation}If this plugin is not new, something has gone wrong.');
         continue;
       }
 
@@ -251,16 +239,51 @@ $indentation${mismatchedVersionPlugins.join('\n$indentation')}
     print('No version check errors found!');
   }
 
+  /// Returns the previous published version of [package].
+  ///
+  /// [packageName] must be the actual name of the package as published (i.e.,
+  /// the name from pubspec.yaml, not the on disk name if different.)
+  Future<Version?> _getPreviousVersionFromPub(String packageName,
+      File pubspec // XXX change to package; get pubspec file internally.
+      ) async {
+    final PubVersionFinderResponse pubVersionFinderResponse =
+        await _pubVersionFinder.getPackageVersion(package: packageName);
+    switch (pubVersionFinderResponse.result) {
+      case PubVersionFinderResult.success:
+        return pubVersionFinderResponse.versions.first;
+      case PubVersionFinderResult.fail:
+        printError('''
+${indentation}Error fetching version on pub for $packageName.
+${indentation}HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
+${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
+''');
+        return null;
+      case PubVersionFinderResult.noPackageFound:
+        return Version.none;
+    }
+  }
+
+  /// Returns the version of [package] from git at the base comparison hash.
+  Future<Version?> _getPreviousVersionFromGit(
+    File pubspec // XXX change to package; get pubspec file internally.
+    , {
+    required GitVersionFinder gitVersionFinder,
+  }) async {
+    final GitDir gitDir = await getGitDir();
+    return await gitVersionFinder.getPackageVersion(
+        p.relative(pubspec.absolute.path, from: gitDir.path));
+  }
+
   /// Returns whether or not the pubspec version and CHANGELOG version for
   /// [plugin] match.
-  Future<bool> _checkVersionsMatch(Directory plugin) async {
+  Future<bool> _checkVersionsMatch(Directory package) async {
     // get version from pubspec
-    final String packageName = plugin.basename;
+    final String packageName = package.basename;
     print('-----------------------------------------');
     print(
         'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for $packageName.');
 
-    final Pubspec? pubspec = _tryParsePubspec(plugin);
+    final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       printError('Cannot parse version from pubspec.yaml');
       return false;
@@ -268,7 +291,7 @@ $indentation${mismatchedVersionPlugins.join('\n$indentation')}
     final Version? fromPubspec = pubspec.version;
 
     // get first version from CHANGELOG
-    final File changelog = plugin.childFile('CHANGELOG.md');
+    final File changelog = package.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     String? firstLineWithText;
     final Iterator<String> iterator = lines.iterator;
@@ -301,7 +324,7 @@ $indentation${mismatchedVersionPlugins.join('\n$indentation')}
         versionString == null ? null : Version.parse(versionString);
     if (fromChangeLog == null) {
       printError(
-          'Cannot find version on the first line of ${plugin.path}/CHANGELOG.md');
+          'Cannot find version on the first line of ${package.path}/CHANGELOG.md');
       return false;
     }
 
