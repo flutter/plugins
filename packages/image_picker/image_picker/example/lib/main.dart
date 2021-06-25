@@ -83,6 +83,24 @@ class _MyHomePageState extends State<MyHomePage> {
       final PickedFile? file = await _picker.getVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
+    } else if (isMultiImage) {
+      await _displayPickImageDialog(context!,
+          (double? maxWidth, double? maxHeight, int? quality) async {
+        try {
+          final pickedFileList = await _picker.getMultiImage(
+            maxWidth: maxWidth,
+            maxHeight: maxHeight,
+            imageQuality: quality,
+          );
+          setState(() {
+            _imageFileList = pickedFileList;
+          });
+        } catch (e) {
+          setState(() {
+            _pickImageError = e;
+          });
+        }
+      });
     } else {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
