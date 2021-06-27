@@ -111,6 +111,7 @@ class VersionCheckCommand extends PluginCommand {
     final GitDir gitDir = await getGitDir();
 
     final List<String> badVersionChangePubspecs = <String>[];
+    final List<String> mismatchedVersionPlugins = <String>[];
 
     await for (final Directory package in getPackages()) {
       final File pubspecFile = package.childFile('pubspec.yaml');
@@ -134,19 +135,13 @@ class VersionCheckCommand extends PluginCommand {
 
       if (!await _checkVersionChange(package, pubspec: pubspec)) {
         badVersionChangePubspecs.add(pubspecPath);
-        continue;
+      }
+
+      if (!(await _checkVersionsMatch(package))) {
+        mismatchedVersionPlugins.add(package.basename);
       }
     }
     _pubVersionFinder.httpClient.close();
-
-    // TODO(stuartmorgan): Unify the way iteration works for these checks; the
-    // two checks shouldn't be operating independently on different lists.
-    final List<String> mismatchedVersionPlugins = <String>[];
-    await for (final Directory plugin in getPlugins()) {
-      if (!(await _checkVersionsMatch(plugin))) {
-        mismatchedVersionPlugins.add(plugin.basename);
-      }
-    }
 
     bool passed = true;
     if (badVersionChangePubspecs.isNotEmpty) {
