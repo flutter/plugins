@@ -42,14 +42,6 @@ void testAllowedVersion(
 
 class MockProcessResult extends Mock implements io.ProcessResult {}
 
-const String _redColorMessagePrefix = '\x1B[31m';
-const String _redColorMessagePostfix = '\x1B[0m';
-
-// Some error message was printed in a "Colorized" red message. So `\x1B[31m` and `\x1B[0m` needs to be included.
-String _redColorString(String string) {
-  return '$_redColorMessagePrefix$string$_redColorMessagePostfix';
-}
-
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
@@ -105,8 +97,9 @@ void main() {
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('1.0.0 -> 2.0.0'),
         ]),
       );
       expect(gitDirCommands.length, equals(1));
@@ -147,8 +140,9 @@ void main() {
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('1.0.0 -> 2.0.0'),
         ]),
       );
     });
@@ -160,9 +154,9 @@ void main() {
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          '${indentation}Unable to find previous version at git base.',
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Unable to find previous version at git base.'),
         ]),
       );
     });
@@ -177,8 +171,9 @@ void main() {
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          '${indentation}New version is lower than previous version. This is assumed to be a revert.',
+        containsAllInOrder(<Matcher>[
+          contains('New version is lower than previous version. '
+              'This is assumed to be a revert.'),
         ]),
       );
     });
@@ -222,8 +217,9 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       expect(
         output,
-        containsAllInOrder(<String>[
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('1.0.0 -> 1.1.0'),
         ]),
       );
       expect(gitDirCommands.length, equals(1));
@@ -276,10 +272,8 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for plugin.',
-          'plugin passed version check',
-          'No version check errors found!'
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
         ]),
       );
     });
@@ -305,12 +299,8 @@ void main() {
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          _redColorString('''
-versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-The version in pubspec.yaml is 1.0.1.
-The first version listed in CHANGELOG.md is 1.0.2.
-'''),
+        containsAllInOrder(<Matcher>[
+          contains('Versions in CHANGELOG.md and pubspec.yaml do not match.'),
         ]),
       );
     });
@@ -329,10 +319,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
           runner, <String>['version-check', '--base-sha=master']);
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking the first version listed in CHANGELOG.md matches the version in pubspec.yaml for plugin.',
-          'plugin passed version check',
-          'No version check errors found!'
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
         ]),
       );
     });
@@ -363,14 +351,8 @@ The first version listed in CHANGELOG.md is 1.0.2.
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          _redColorString(
-            '''
-versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-The version in pubspec.yaml is 1.0.0.
-The first version listed in CHANGELOG.md is 1.0.1.
-''',
-          )
+        containsAllInOrder(<Matcher>[
+          contains('Versions in CHANGELOG.md and pubspec.yaml do not match.'),
         ]),
       );
     });
@@ -392,10 +374,9 @@ The first version listed in CHANGELOG.md is 1.0.1.
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        containsAllInOrder(<String>[
-          'Found NEXT; validating next version in the CHANGELOG.',
-          'plugin passed version check',
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Found NEXT; validating next version in the CHANGELOG.'),
         ]),
       );
     });
@@ -428,13 +409,9 @@ The first version listed in CHANGELOG.md is 1.0.1.
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          _redColorString(
-            '''
-When bumping the version for release, the NEXT section should be incorporated
-into the new version's release notes.
-''',
-          )
+        containsAllInOrder(<Matcher>[
+          contains('When bumping the version for release, the NEXT section '
+              'should be incorporated into the new version\'s release notes.')
         ]),
       );
     });
@@ -463,15 +440,9 @@ into the new version's release notes.
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Found NEXT; validating next version in the CHANGELOG.',
-          _redColorString(
-            '''
-versions for plugin in CHANGELOG.md and pubspec.yaml do not match.
-The version in pubspec.yaml is 1.0.1.
-The first version listed in CHANGELOG.md is 1.0.0.
-''',
-          )
+        containsAllInOrder(<Matcher>[
+          contains('Found NEXT; validating next version in the CHANGELOG.'),
+          contains('Versions in CHANGELOG.md and pubspec.yaml do not match.'),
         ]),
       );
     });
@@ -504,9 +475,8 @@ The first version listed in CHANGELOG.md is 1.0.0.
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          '${indentation}plugin: Current largest version on pub: 1.0.0',
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('plugin: Current largest version on pub: 1.0.0'),
         ]),
       );
     });
@@ -547,13 +517,11 @@ The first version listed in CHANGELOG.md is 1.0.0.
 
       expect(
         result,
-        containsAllInOrder(<String>[
-          _redColorString(
-            '''
+        containsAllInOrder(<Matcher>[
+          contains('''
 ${indentation}Incorrectly updated version.
 ${indentation}HEAD: 2.0.0, pub: 0.0.2.
-${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: NextVersionType.MINOR, 0.0.3: NextVersionType.PATCH}''',
-          )
+${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: NextVersionType.MINOR, 0.0.3: NextVersionType.PATCH}''')
         ]),
       );
     });
@@ -588,14 +556,12 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
 
       expect(
         result,
-        containsAllInOrder(<String>[
-          _redColorString(
-            '''
+        containsAllInOrder(<Matcher>[
+          contains('''
 ${indentation}Error fetching version on pub for plugin.
 ${indentation}HTTP Status 400
 ${indentation}HTTP response: xx
-''',
-          )
+''')
         ]),
       );
     });
@@ -621,9 +587,8 @@ ${indentation}HTTP response: xx
 
       expect(
         result,
-        containsAllInOrder(<String>[
-          '${indentation}Unable to find previous version on pub server.',
-          'No version check errors found!',
+        containsAllInOrder(<Matcher>[
+          contains('Unable to find previous version on pub server.'),
         ]),
       );
     });
