@@ -109,7 +109,6 @@ class VersionCheckCommand extends PluginCommand {
   @override
   Future<void> run() async {
     final GitDir gitDir = await getGitDir();
-    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
 
     final List<String> badVersionChangePubspecs = <String>[];
 
@@ -124,79 +123,16 @@ class VersionCheckCommand extends PluginCommand {
         continue;
       }
 
-      final Version? currentVersion = pubspec.version;
-      if (currentVersion == null) {
+      final Version? currentPubspecVersion = pubspec.version;
+      if (currentPubspecVersion == null) {
         printError('${indentation}No version found. A package that '
             'intentionally has no version should be marked '
             '"publish_to: none".');
         badVersionChangePubspecs.add(pubspecPath);
         continue;
       }
-      Version? previousVersion;
-      if (getBoolArg(_againstPubFlag)) {
-        previousVersion =
-            await _getPreviousVersionFromPub(pubspec.name, pubspecFile);
-        if (previousVersion == null) {
-          badVersionChangePubspecs.add(pubspecPath);
-          continue;
-        }
-        if (previousVersion != Version.none) {
-          print(
-              '$indentation${pubspec.name}: Current largest version on pub: $previousVersion');
-        }
-      } else {
-        previousVersion = await _getPreviousVersionFromGit(pubspecFile,
-                gitVersionFinder: gitVersionFinder) ??
-            Version.none;
-      }
-      if (previousVersion == Version.none) {
-        print('${indentation}Unable to find previous version '
-            '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
-        printWarning(
-            '${indentation}If this plugin is not new, something has gone wrong.');
-        continue;
-      }
 
-      if (previousVersion == currentVersion) {
-        print('${indentation}No version change.');
-        continue;
-      }
-
-      // Check for reverts when doing local validation.
-      if (!getBoolArg(_againstPubFlag) && currentVersion < previousVersion) {
-        final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
-            getAllowedNextVersions(currentVersion, newVersion: previousVersion);
-        // Since this skips validation, try to ensure that it really is likely
-        // to be a revert rather than a typo by checking that the transition
-        // from the lower version to the new version would have been valid.
-        if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
-          print('${indentation}New version is lower than previous version. '
-              'This is assumed to be a revert.');
-          continue;
-        }
-      }
-
-      final Map<Version, NextVersionType> allowedNextVersions =
-          getAllowedNextVersions(previousVersion, newVersion: currentVersion);
-
-      if (!allowedNextVersions.containsKey(currentVersion)) {
-        final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
-        printError('${indentation}Incorrectly updated version.\n'
-            '${indentation}HEAD: $currentVersion, $source: $previousVersion.\n'
-            '${indentation}Allowed versions: $allowedNextVersions');
-        badVersionChangePubspecs.add(pubspecPath);
-        continue;
-      } else {
-        print('$indentation$currentVersion -> $previousVersion');
-      }
-
-      final bool isPlatformInterface =
-          pubspec.name.endsWith('_platform_interface');
-      if (isPlatformInterface &&
-          allowedNextVersions[currentVersion] ==
-              NextVersionType.BREAKING_MAJOR) {
-        printError('$pubspecPath breaking change detected.\n'
-            'Breaking changes to platform interfaces are strongly discouraged.\n');
+      if (!await _checkVersionChange(package, pubspec: pubspec)) {
         badVersionChangePubspecs.add(pubspecPath);
         continue;
       }
@@ -238,9 +174,7 @@ $indentation${mismatchedVersionPlugins.join('\n$indentation')}
   ///
   /// [packageName] must be the actual name of the package as published (i.e.,
   /// the name from pubspec.yaml, not the on disk name if different.)
-  Future<Version?> _getPreviousVersionFromPub(String packageName,
-      File pubspec // XXX change to package; get pubspec file internally.
-      ) async {
+  Future<Version?> _getPreviousVersionFromPub(String packageName) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(package: packageName);
     switch (pubVersionFinderResponse.result) {
@@ -260,13 +194,89 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
   /// Returns the version of [package] from git at the base comparison hash.
   Future<Version?> _getPreviousVersionFromGit(
-    File pubspec // XXX change to package; get pubspec file internally.
-    , {
+    Directory package, {
     required GitVersionFinder gitVersionFinder,
   }) async {
+    final File pubspecFile = package.childFile('pubspec.yaml');
     final GitDir gitDir = await getGitDir();
     return await gitVersionFinder.getPackageVersion(
-        p.relative(pubspec.absolute.path, from: gitDir.path));
+        p.relative(pubspecFile.absolute.path, from: gitDir.path));
+  }
+
+  /// Returns true if the version of [package] is either unchanged relative to
+  /// the comparison base (git or pub, depending on flags), or is a valid
+  /// version transition.
+  Future<bool> _checkVersionChange(
+    Directory package, {
+    required Pubspec pubspec,
+  }) async {
+    // This method isn't called unless `version` is non-null.
+    final Version currentVersion = pubspec.version!;
+    Version? previousVersion;
+    if (getBoolArg(_againstPubFlag)) {
+      previousVersion = await _getPreviousVersionFromPub(pubspec.name);
+      if (previousVersion == null) {
+        return false;
+      }
+      if (previousVersion != Version.none) {
+        print(
+            '$indentation${pubspec.name}: Current largest version on pub: $previousVersion');
+      }
+    } else {
+      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+      previousVersion = await _getPreviousVersionFromGit(package,
+              gitVersionFinder: gitVersionFinder) ??
+          Version.none;
+    }
+    if (previousVersion == Version.none) {
+      print('${indentation}Unable to find previous version '
+          '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
+      printWarning(
+          '${indentation}If this plugin is not new, something has gone wrong.');
+      return true;
+    }
+
+    if (previousVersion == currentVersion) {
+      print('${indentation}No version change.');
+      return true;
+    }
+
+    // Check for reverts when doing local validation.
+    if (!getBoolArg(_againstPubFlag) && currentVersion < previousVersion) {
+      final Map<Version, NextVersionType> possibleVersionsFromNewVersion =
+          getAllowedNextVersions(currentVersion, newVersion: previousVersion);
+      // Since this skips validation, try to ensure that it really is likely
+      // to be a revert rather than a typo by checking that the transition
+      // from the lower version to the new version would have been valid.
+      if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
+        print('${indentation}New version is lower than previous version. '
+            'This is assumed to be a revert.');
+        return true;
+      }
+    }
+
+    final Map<Version, NextVersionType> allowedNextVersions =
+        getAllowedNextVersions(previousVersion, newVersion: currentVersion);
+
+    if (!allowedNextVersions.containsKey(currentVersion)) {
+      final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
+      printError('${indentation}Incorrectly updated version.\n'
+          '${indentation}HEAD: $currentVersion, $source: $previousVersion.\n'
+          '${indentation}Allowed versions: $allowedNextVersions');
+      return false;
+    } else {
+      print('$indentation$currentVersion -> $previousVersion');
+    }
+
+    final bool isPlatformInterface =
+        pubspec.name.endsWith('_platform_interface');
+    if (isPlatformInterface &&
+        allowedNextVersions[currentVersion] == NextVersionType.BREAKING_MAJOR) {
+      printError('Breaking change detected.\n'
+          'Breaking changes to platform interfaces are strongly discouraged.\n');
+      return false;
+    }
+    return true;
   }
 
   /// Returns whether or not the pubspec version and CHANGELOG version for
