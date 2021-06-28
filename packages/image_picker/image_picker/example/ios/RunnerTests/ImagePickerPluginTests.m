@@ -43,12 +43,12 @@
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
               [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceRear is supported
   OCMStub(ClassMethod(
               [_mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
   OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
@@ -70,12 +70,12 @@
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
               [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceFront is supported
   OCMStub(ClassMethod([_mockUIImagePicker
               isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
   OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
@@ -97,12 +97,12 @@
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
               [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceRear is supported
   OCMStub(ClassMethod(
               [_mockUIImagePicker isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
   OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
@@ -124,12 +124,12 @@
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
               [_mockUIImagePicker isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // UIImagePickerControllerCameraDeviceFront is supported
   OCMStub(ClassMethod([_mockUIImagePicker
               isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceFront]))
-      .andReturn(true);
+      .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
   OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
