@@ -50,14 +50,12 @@ task:
         - cd script/tool
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
-      script:
-        - ./script/tool_runner.sh version-check
-        - ./script/tool_runner.sh publish-check
+      version_check_script: ./script/tool_runner.sh version-check
+      publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
       format_script: ./script/tool_runner.sh format --fail-on-change
       pubspec_script: ./script/tool_runner.sh pubspec-check
-      license_script:
-        - dart $PLUGIN_TOOL license-check
+      license_script: dart $PLUGIN_TOOL license-check
     - name: test
       env:
         matrix:
@@ -139,27 +137,32 @@ task:
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
-      script:
+      build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
-        # See: https://github.com/flutter/flutter/issues/24935
-        # This is a temporary workaround until we figure how to properly configure
-        # a UTF8 locale on Cirrus (or until the Gradle bug is fixed).
-        # TODO(amirh): Set the locale to UTF8.
-        - echo "$CIRRUS_CHANGE_MESSAGE" > /tmp/cirrus_change_message.txt
-        - echo "$CIRRUS_COMMIT_MESSAGE" > /tmp/cirrus_commit_message.txt
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/tool_runner.sh build-examples --apk
+      java_test_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/tool_runner.sh java-test  # must come after apk build
+      firebase_test_lab_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
         -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
-        - export CIRRUS_CHANGE_MESSAGE=`cat /tmp/cirrus_change_message.txt`
-        - export CIRRUS_COMMIT_MESSAGE=`cat /tmp/cirrus_commit_message.txt`
     ### Web tasks ###
     - name: build-web+drive-examples
       env:
