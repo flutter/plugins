@@ -4,13 +4,23 @@
 
 package io.flutter.plugins.googlesignin;
 
-import static org.junit.Assert.assertEquals;
+import android.content.Context;
+
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
+import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugin.common.MethodCall;
+
 public class GoogleSignInTest {
-  @Test
-  public void aTest() {
-    assertEquals(2, 2);
+  @Test(expected = IllegalStateException.class)
+  public void signInThrowsWithoutActivity() {
+    final GoogleSignInPlugin plugin = new GoogleSignInPlugin();
+    plugin.initInstance(mock(BinaryMessenger.class),
+        mock(Context.class),
+        mock(GoogleSignInWrapper.class));
+
+    plugin.onMethodCall(new MethodCall("signIn", null), null);
   }
 }
