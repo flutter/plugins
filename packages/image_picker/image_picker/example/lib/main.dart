@@ -180,12 +180,14 @@ class _MyHomePageState extends State<MyHomePage> {
           child: ListView.builder(
             key: UniqueKey(),
             itemBuilder: (context, index) {
-              if (kIsWeb) {
-                // Why network?
-                // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-                return Image.network(_imageFileList![index].path);
-              }
-              return Image.file(File(_imageFileList![index].path));
+              // Why network for web?
+              // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+              return Semantics(
+                label: 'image_picker_example_picked_image',
+                child: kIsWeb
+                    ? Image.network(_imageFileList![index].path)
+                    : Image.file(File(_imageFileList![index].path)),
+              );
             },
             itemCount: _imageFileList!.length,
           ),
