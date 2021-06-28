@@ -216,7 +216,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
-            '$_startSuccessColor\n\nNo issues found!$_endColor',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
           ]));
     });
 
@@ -243,6 +244,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
+            '\n',
             '${_startErrorColor}The following packages had errors:$_endColor',
             '$_startErrorColor  package_b$_endColor',
             '$_startErrorColor  package_d$_endColor',
@@ -274,6 +276,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
+            '\n',
             '${_startErrorColor}This is a custom header$_endColor',
             '$_startErrorColor  package_b$_endColor',
             '$_startErrorColor  package_d$_endColor',
@@ -308,6 +311,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
+            '\n',
             '${_startErrorColor}The following packages had errors:$_endColor',
             '$_startErrorColor  package_b:\n    just one detail$_endColor',
             '$_startErrorColor  package_d:\n    first detail\n    second detail$_endColor',

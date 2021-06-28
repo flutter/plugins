@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
@@ -39,6 +41,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// opportunity to do any cleanup of run-level state.
   Future<void> completeRun() async {}
 
+  /// If [captureOutput], this is called just before exiting with all captured
+  /// [output].
+  Future<void> handleCapturedOutput(List<String> output) async {}
+
   /// Whether or not the output (if any) of [runForPackage] is long, or short.
   ///
   /// This changes the logging that happens at the start of each package's
@@ -68,6 +74,14 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// This only needs to be overridden if the summary should provide extra
   /// context.
   String get failureListFooter => 'See above for full details.';
+
+  /// If true, all printing (including the summary) will be redirected to a
+  /// buffer, and provided in a call to [handleCapturedOutput] at the end of
+  /// the run.
+  ///
+  /// Capturing output will disable any colorizing of output from this base
+  /// class.
+  bool get captureOutput => false;
 
   // ----------------------------------------
 
@@ -110,6 +124,26 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    bool succeeded;
+    if (captureOutput) {
+      final List<String> output = <String>[];
+      final ZoneSpecification logSwitchSpecification = ZoneSpecification(
+          print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
+        output.add(message);
+      });
+      succeeded = await runZoned<Future<bool>>(_runInternal,
+          zoneSpecification: logSwitchSpecification);
+      handleCapturedOutput(output);
+    } else {
+      succeeded = await _runInternal();
+    }
+
+    if (!succeeded) {
+      throw ToolExit(exitCommandFoundErrors);
+    }
+  }
+
+  Future<bool> _runInternal() async {
     await initializeRun();
 
     final List<Directory> packages = includeSubpackages
@@ -124,10 +158,11 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
     completeRun();
 
+    print('\n');
     // If there were any errors reported, summarize them and exit.
     if (results.values.any((List<String> failures) => failures.isNotEmpty)) {
       const String indentation = '  ';
-      printError(failureListHeader);
+      _printError(failureListHeader);
       for (final Directory package in packages) {
         final List<String> errors = results[package]!;
         if (errors.isNotEmpty) {
@@ -136,15 +171,24 @@ abstract class PackageLoopingCommand extends PluginCommand {
           if (errorDetails.isNotEmpty) {
             errorDetails = ':\n$errorIndentation$errorDetails';
           }
-          printError(
+          _printError(
               '$indentation${getPackageDescription(package)}$errorDetails');
         }
       }
-      printError(failureListFooter);
-      throw ToolExit(exitCommandFoundErrors);
+      _printError(failureListFooter);
+      return false;
     }
 
-    printSuccess('\n\nNo issues found!');
+    _printSuccess('No issues found!');
+    return true;
+  }
+
+  void _printSuccess(String message) {
+    captureOutput ? print(message) : printSuccess(message);
+  }
+
+  void _printError(String message) {
+    captureOutput ? print(message) : printError(message);
   }
 
   /// Prints the status message indicating that the command is being run for
@@ -165,6 +209,6 @@ abstract class PackageLoopingCommand extends PluginCommand {
     } else {
       heading = '$heading...';
     }
-    print(Colorize(heading)..cyan());
+    captureOutput ? print(heading) : print(Colorize(heading)..cyan());
   }
 }
