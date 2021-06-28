@@ -30,7 +30,8 @@ class SKTransactionStatusConverter
   }
 
   /// Converts an [SKPaymentTransactionStateWrapper] to a [PurchaseStatus].
-  PurchaseStatus toPurchaseStatus(SKPaymentTransactionStateWrapper object) {
+  PurchaseStatus toPurchaseStatus(
+      SKPaymentTransactionStateWrapper object, SKError? error) {
     switch (object) {
       case SKPaymentTransactionStateWrapper.purchasing:
       case SKPaymentTransactionStateWrapper.deferred:
@@ -40,6 +41,10 @@ class SKTransactionStatusConverter
       case SKPaymentTransactionStateWrapper.restored:
         return PurchaseStatus.restored;
       case SKPaymentTransactionStateWrapper.failed:
+        if (error != null && (error.code == 2 || error.code == 15)) {
+          return PurchaseStatus.canceled;
+        }
+        return PurchaseStatus.error;
       case SKPaymentTransactionStateWrapper.unspecified:
         return PurchaseStatus.error;
     }

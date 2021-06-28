@@ -56,7 +56,7 @@ class AppStorePurchaseDetails extends PurchaseDetails {
       purchaseID: transaction.transactionIdentifier,
       skPaymentTransaction: transaction,
       status: SKTransactionStatusConverter()
-          .toPurchaseStatus(transaction.transactionState),
+          .toPurchaseStatus(transaction.transactionState, transaction.error),
       transactionDate: transaction.transactionTimeStamp != null
           ? (transaction.transactionTimeStamp! * 1000).toInt().toString()
           : null,
@@ -66,7 +66,8 @@ class AppStorePurchaseDetails extends PurchaseDetails {
           source: kIAPSource),
     );
 
-    if (purchaseDetails.status == PurchaseStatus.error) {
+    if (purchaseDetails.status == PurchaseStatus.error ||
+        purchaseDetails.status == PurchaseStatus.canceled) {
       purchaseDetails.error = IAPError(
         source: kIAPSource,
         code: kPurchaseErrorCode,
