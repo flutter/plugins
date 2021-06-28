@@ -39,11 +39,6 @@
   _mockAVCaptureDevice = OCMClassMock([AVCaptureDevice class]);
 }
 
-- (void)tearDown {
-  // Put teardown code here. This method is called after the invocation of each test method in the
-  // class.
-}
-
 - (void)testPluginPickImageDeviceBack {
   // UIImagePickerControllerSourceTypeCamera is supported
   OCMStub(ClassMethod(
