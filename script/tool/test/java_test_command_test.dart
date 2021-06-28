@@ -88,7 +88,7 @@ void main() {
     });
 
     test('fails when the app needs to be built', () async {
-      final Directory plugin = createFakePlugin(
+      createFakePlugin(
         'plugin1',
         packagesDir,
         platformSupport: <String, PlatformSupport>{
@@ -118,7 +118,7 @@ void main() {
     });
 
     test('fails when a test fails', () async {
-      final Directory plugin = createFakePlugin(
+      createFakePlugin(
         'plugin1',
         packagesDir,
         platformSupport: <String, PlatformSupport>{
