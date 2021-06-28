@@ -18,7 +18,7 @@
   NSError *receiptError;
   NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
   if (receiptError) {
-    if (flutterError != nil) {
+    if (flutterError) {
       *flutterError = [FlutterError
           errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
                 message:receiptError.domain
@@ -27,7 +27,7 @@
     return nil;
   }
   if (!receipt) {
-    if (flutterError != nil) {
+    if (flutterError) {
       *flutterError = [FlutterError errorWithCode:@"0"
                                           message:@"dataWithContentsOfURL returned nil without an "
                                                   @"error in retrieveReceiptWithError"
