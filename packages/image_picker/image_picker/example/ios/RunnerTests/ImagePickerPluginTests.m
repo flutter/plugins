@@ -148,6 +148,7 @@
 }
 
 #pragma mark - Test camera devices, no op on simulators
+
 - (void)testPluginPickImageDeviceCancelClickMultipleTimes {
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
     return;
@@ -167,6 +168,7 @@
 }
 
 #pragma mark - Test video duration
+
 - (void)testPickingVideoWithDuration {
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
   FlutterMethodCall *call = [FlutterMethodCall
