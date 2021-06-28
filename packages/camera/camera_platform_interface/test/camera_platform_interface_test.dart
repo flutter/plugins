@@ -98,7 +98,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.onDeviceOrientationChanged(),
+        () => cameraPlatform.onDeviceUIOrientationChanged(),
         throwsUnimplementedError,
       );
     });

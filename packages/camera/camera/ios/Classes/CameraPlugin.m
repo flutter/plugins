@@ -1306,7 +1306,7 @@ NSString *const errorMethod = @"error";
 
 - (void)sendDeviceOrientation:(UIDeviceOrientation)orientation {
   [_deviceEventMethodChannel
-      invokeMethod:@"orientation_changed"
+      invokeMethod:@"ui_orientation_changed"
          arguments:@{@"orientation" : getStringForUIDeviceOrientation(orientation)}];
 }
 

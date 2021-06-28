@@ -128,7 +128,7 @@ void main() {
       controller.value = controller.value.copyWith(
         isInitialized: true,
         isRecordingVideo: true,
-        deviceOrientation: DeviceOrientation.portraitUp,
+        deviceUIOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation:
             Optional.fromNullable(DeviceOrientation.landscapeRight),
         recordingOrientation:
@@ -161,7 +161,7 @@ void main() {
       final FakeController controller = FakeController();
       controller.value = controller.value.copyWith(
         isInitialized: true,
-        deviceOrientation: DeviceOrientation.portraitUp,
+        deviceUIOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation:
             Optional.fromNullable(DeviceOrientation.landscapeRight),
         recordingOrientation:
@@ -194,7 +194,7 @@ void main() {
       final FakeController controller = FakeController();
       controller.value = controller.value.copyWith(
         isInitialized: true,
-        deviceOrientation: DeviceOrientation.portraitUp,
+        deviceUIOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: null,
         recordingOrientation:
             Optional.fromNullable(DeviceOrientation.landscapeLeft),

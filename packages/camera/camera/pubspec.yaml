@@ -20,7 +20,9 @@ flutter:
         pluginClass: CameraPlugin
 
 dependencies:
-  camera_platform_interface: ^2.0.0
+#  camera_platform_interface: ^2.0.0
+  camera_platform_interface:
+    path: ../camera_platform_interface
   flutter:
     sdk: flutter
   pedantic: ^1.10.0

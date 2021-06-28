@@ -25,7 +25,7 @@ void main() {
         exposureMode: ExposureMode.auto,
         exposurePointSupported: true,
         focusMode: FocusMode.auto,
-        deviceOrientation: DeviceOrientation.portraitUp,
+        deviceUIOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
         recordingOrientation: DeviceOrientation.portraitUp,
         focusPointSupported: true,
@@ -42,7 +42,7 @@ void main() {
       expect(cameraValue.flashMode, FlashMode.auto);
       expect(cameraValue.exposureMode, ExposureMode.auto);
       expect(cameraValue.exposurePointSupported, true);
-      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.deviceUIOrientation, DeviceOrientation.portraitUp);
       expect(
           cameraValue.lockedCaptureOrientation, DeviceOrientation.portraitUp);
       expect(cameraValue.recordingOrientation, DeviceOrientation.portraitUp);
@@ -63,7 +63,7 @@ void main() {
       expect(cameraValue.exposureMode, ExposureMode.auto);
       expect(cameraValue.exposurePointSupported, false);
       expect(cameraValue.focusMode, FocusMode.auto);
-      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.deviceUIOrientation, DeviceOrientation.portraitUp);
       expect(cameraValue.lockedCaptureOrientation, null);
       expect(cameraValue.recordingOrientation, null);
     });
@@ -84,7 +84,7 @@ void main() {
       expect(cameraValue.focusMode, FocusMode.auto);
       expect(cameraValue.exposureMode, ExposureMode.auto);
       expect(cameraValue.exposurePointSupported, false);
-      expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
+      expect(cameraValue.deviceUIOrientation, DeviceOrientation.portraitUp);
       expect(cameraValue.lockedCaptureOrientation, null);
       expect(cameraValue.recordingOrientation, null);
     });
@@ -129,13 +129,13 @@ void main() {
         focusMode: FocusMode.auto,
         exposurePointSupported: true,
         focusPointSupported: true,
-        deviceOrientation: DeviceOrientation.portraitUp,
+        deviceUIOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
         recordingOrientation: DeviceOrientation.portraitUp,
       );
 
       expect(cameraValue.toString(),
-          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: ExposureMode.auto, focusMode: FocusMode.auto, exposurePointSupported: true, focusPointSupported: true, deviceOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp, recordingOrientation: DeviceOrientation.portraitUp)');
+          'CameraValue(isRecordingVideo: false, isInitialized: false, errorDescription: null, previewSize: Size(10.0, 10.0), isStreamingImages: false, flashMode: FlashMode.auto, exposureMode: ExposureMode.auto, focusMode: FocusMode.auto, exposurePointSupported: true, focusPointSupported: true, deviceUIOrientation: DeviceOrientation.portraitUp, lockedCaptureOrientation: DeviceOrientation.portraitUp, recordingOrientation: DeviceOrientation.portraitUp)');
     });
   });
 }
