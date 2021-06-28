@@ -1021,7 +1021,7 @@ void main() {
       );
       commandRunner.addCommand(command);
 
-      final Directory pluginDir1 =
+      final Directory flutterPluginTools =
           createFakePlugin('flutter_plugin_tools', packagesDir);
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
@@ -1037,6 +1037,11 @@ void main() {
             'Local repo is ready!',
             'Done!'
           ]));
+      expect(
+          printedMessages.contains(
+            'Running `pub publish ` in ${flutterPluginTools.path}...\n',
+          ),
+          isFalse);
       expect(processRunner.pushTagsArgs, isEmpty);
       processRunner.pushTagsArgs.clear();
       printedMessages.clear();
