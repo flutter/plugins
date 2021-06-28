@@ -249,26 +249,18 @@ InAppPurchase.instance
 
 ### Confirming subscription price changes
 
-When you change the price of a subscription the user will need to confirm the price change. If the user does not 
-confirm the price change the subscription will not be auto-renewed. On both iOS and Android the user will 
-automatically get a popup to confirm the price change, but you as a developer can show the popup on a moment that 
-suits you better. This works different on the Apple App Store and on the Google Play Store.
+When the price of a subscription is changed the consumer will need to confirm that price change. If the consumer does not 
+confirm the price change the subscription will not be auto-renewed. By default on both iOS and Android the consumer will 
+automatically get a popup to confirm the price change, but App developers can override this mechanism and show the popup on a later moment so it doesn't interrupt the critical flow of the App. This works different on the Apple App Store and on the Google Play Store.
 
 #### Google Play Store (Android)
-When you raise the subscription price you will have 7 days to ask the user to approve the new price. The official 
+When the subscription price is raised, the consumer should approve the price change within 7 days. The official 
 documentation can be found [here](https://support.google.com/googleplay/android-developer/answer/140504?hl=en#zippy=%2Cprice-changes).
-When you lower the price the user will automatically receive the lower price and does not have to approve the price 
-change.
+When the price is lowered the consumer will automatically receive the lower price and does not have to approve the price change.
 
-After 7 days the user will be notified through email and notifications on Google Play to agree with the new price, 
-so you have 7 days to explain the user in your app that the price is going to change and ask them to accept the 
-change. You will have to keep track of whether or not the price change is already accepted in your app or in the 
-backend. The [Google Play API](https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions) 
-can be used to check whether or not the price change is accepted by the user by reading the priceChange property on 
-a subscription object.
+After 7 days the consumer will be notified through email and notifications on Google Play to agree with the new price. App developers have 7 days to explain the consumer that the price is going to change and ask them to accept this change. App developers have to keep track of whether or not the price change is already accepted within the app or in the backend. The [Google Play API](https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions) can be used to check whether or not the price change is accepted by the consumer by reading the `priceChange` property on a subscription object.
 
-The InAppPurchaseAndroidPlatformAddition can be used to show the price change confirmation flow. The additions 
-contain the function `launchPriceChangeConfirmationFlow` which needs the sku code of the subscription. 
+The `InAppPurchaseAndroidPlatformAddition` can be used to show the price change confirmation flow. The additions contain the function `launchPriceChangeConfirmationFlow` which needs the SKU code of the subscription. 
 
 ```dart
 //import for InAppPurchaseAndroidPlatformAddition
