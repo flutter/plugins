@@ -5,19 +5,34 @@
 #import "FIAPReceiptManager.h"
 #import <Flutter/Flutter.h>
 
+@interface FIAPReceiptManager ()
+
+- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error;
+
+@end
+
 @implementation FIAPReceiptManager
 
-- (NSString *)retrieveReceiptWithError:(FlutterError **)error {
+- (NSString *)retrieveReceiptWithError:(FlutterError **)flutterError {
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-  NSError *err;
-  NSData *receipt = [self getReceiptData:receiptURL error:&err];
-  if (err) {
-    *error = [FlutterError errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)err.code]
-                                 message:err.domain
-                                 details:err.userInfo];
+  NSError *receiptError;
+  NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
+  if (receiptError) {
+    if (flutterError != nil) {
+      *flutterError = [FlutterError
+          errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
+                message:receiptError.domain
+                details:receiptError.userInfo];
+    }
     return nil;
   }
   if (!receipt) {
+    if (flutterError != nil) {
+      *flutterError = [FlutterError errorWithCode:@"0"
+                                          message:@"dataWithContentsOfURL returned nil without an "
+                                                  @"error in retrieveReceiptWithError"
+                                          details:nil];
+    }
     return nil;
   }
   return [receipt base64EncodedStringWithOptions:kNilOptions];

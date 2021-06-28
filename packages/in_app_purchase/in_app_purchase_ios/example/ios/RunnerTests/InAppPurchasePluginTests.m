@@ -232,7 +232,6 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  NSLog(@"%@", result);
   XCTAssertNotNil(result);
   XCTAssert([result isKindOfClass:[NSString class]]);
 }
@@ -250,7 +249,6 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  NSLog(@"%@", result);
   XCTAssertNotNil(result);
   XCTAssert([result isKindOfClass:[FlutterError class]]);
 }
