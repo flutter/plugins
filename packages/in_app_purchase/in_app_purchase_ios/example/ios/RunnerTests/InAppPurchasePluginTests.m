@@ -343,4 +343,81 @@
   XCTAssertNil(queue.observer);
 }
 
+- (void)testRegisterPaymentQueueDelegate {
+  if (@available(iOS 13, *)) {
+    FlutterMethodCall* call =
+        [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue registerDelegate]"
+                                          arguments:nil];
+
+    self.plugin.paymentQueueHandler =
+        [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueueStub new]
+                                  transactionsUpdated:nil
+                                   transactionRemoved:nil
+                             restoreTransactionFailed:nil
+                 restoreCompletedTransactionsFinished:nil
+                                shouldAddStorePayment:nil
+                                     updatedDownloads:nil];
+
+    // Verify the delegate is nil before we register one.
+    XCTAssertNil(self.plugin.paymentQueueHandler.delegate);
+
+    [self.plugin handleMethodCall:call
+                           result:^(id r){
+                           }];
+
+    // Verify the delegate is not nil after we registered one.
+    XCTAssertNotNil(self.plugin.paymentQueueHandler.delegate);
+  }
+}
+
+- (void)testRemovePaymentQueueDelegate {
+  if (@available(iOS 13, *)) {
+    FlutterMethodCall* call =
+        [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue removeDelegate]"
+                                          arguments:nil];
+
+    self.plugin.paymentQueueHandler =
+        [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueueStub new]
+                                  transactionsUpdated:nil
+                                   transactionRemoved:nil
+                             restoreTransactionFailed:nil
+                 restoreCompletedTransactionsFinished:nil
+                                shouldAddStorePayment:nil
+                                     updatedDownloads:nil];
+    self.plugin.paymentQueueHandler.delegate = OCMProtocolMock(@protocol(SKPaymentQueueDelegate));
+
+    // Verify the delegate is not nil before removing it.
+    XCTAssertNotNil(self.plugin.paymentQueueHandler.delegate);
+
+    [self.plugin handleMethodCall:call
+                           result:^(id r){
+                           }];
+
+    // Verify the delegate is nill after removing it.
+    XCTAssertNil(self.plugin.paymentQueueHandler.delegate);
+  }
+}
+
+- (void)testShowPriceConsentIfNeeded {
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue showPriceConsentIfNeeded]"
+                                        arguments:nil];
+
+  FIAPaymentQueueHandler* mockQueueHandler = OCMClassMock(FIAPaymentQueueHandler.class);
+  self.plugin.paymentQueueHandler = mockQueueHandler;
+
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+  if (@available(iOS 13.4, *)) {
+    OCMVerify(times(1), [mockQueueHandler showPriceConsentIfNeeded]);
+  } else {
+    OCMVerify(never(), [mockQueueHandler showPriceConsentIfNeeded]);
+  }
+#pragma clang diagnostic pop
+}
+
 @end

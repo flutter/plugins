@@ -290,3 +290,17 @@
 }
 
 @end
+
+@implementation SKStorefrontStub
+
+- (instancetype)initWithMap:(NSDictionary *)map {
+  self = [super init];
+  if (self) {
+    // Set stub values
+    [self setValue:map[@"countryCode"] forKey:@"countryCode"];
+    [self setValue:map[@"identifier"] forKey:@"identifier"];
+  }
+  return self;
+}
+
+@end
