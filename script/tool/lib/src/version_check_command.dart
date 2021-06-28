@@ -115,7 +115,6 @@ class VersionCheckCommand extends PackageLoopingCommand {
     final List<String> errors = <String>[];
 
     final Pubspec? pubspec = _tryParsePubspec(package);
-    Pubspec.parse(package.childFile('pubspec.yaml').readAsStringSync());
     if (pubspec == null) {
       errors.add('Invalid pubspec.yaml.');
       return errors; // No remaining checks make sense.
@@ -135,11 +134,11 @@ class VersionCheckCommand extends PackageLoopingCommand {
       return errors; // No remaining checks make sense.
     }
 
-    if (!await _checkVersionChange(package, pubspec: pubspec)) {
+    if (!await _hasValidVersionChange(package, pubspec: pubspec)) {
       errors.add('Disallowed version change.');
     }
 
-    if (!(await _checkVersionsMatch(package, pubspec: pubspec))) {
+    if (!(await _hasConsistentVersion(package, pubspec: pubspec))) {
       errors.add('pubspec.yaml and CHANGELOG.md have different versions');
     }
 
@@ -155,7 +154,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
   ///
   /// [packageName] must be the actual name of the package as published (i.e.,
   /// the name from pubspec.yaml, not the on disk name if different.)
-  Future<Version?> _getPreviousVersionFromPub(String packageName) async {
+  Future<Version?> _fetchPreviousVersionFromPub(String packageName) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(package: packageName);
     switch (pubVersionFinderResponse.result) {
@@ -179,15 +178,14 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     required GitVersionFinder gitVersionFinder,
   }) async {
     final File pubspecFile = package.childFile('pubspec.yaml');
-    final GitDir gitDir = await getGitDir();
     return await gitVersionFinder.getPackageVersion(
-        p.relative(pubspecFile.absolute.path, from: gitDir.path));
+        p.relative(pubspecFile.absolute.path, from: (await gitDir).path));
   }
 
   /// Returns true if the version of [package] is either unchanged relative to
   /// the comparison base (git or pub, depending on flags), or is a valid
   /// version transition.
-  Future<bool> _checkVersionChange(
+  Future<bool> _hasValidVersionChange(
     Directory package, {
     required Pubspec pubspec,
   }) async {
@@ -195,7 +193,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final Version currentVersion = pubspec.version!;
     Version? previousVersion;
     if (getBoolArg(_againstPubFlag)) {
-      previousVersion = await _getPreviousVersionFromPub(pubspec.name);
+      previousVersion = await _fetchPreviousVersionFromPub(pubspec.name);
       if (previousVersion == null) {
         return false;
       }
@@ -264,7 +262,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
   /// Returns whether or not the pubspec version and CHANGELOG version for
   /// [plugin] match.
-  Future<bool> _checkVersionsMatch(
+  Future<bool> _hasConsistentVersion(
     Directory package, {
     required Pubspec pubspec,
   }) async {

@@ -149,7 +149,7 @@ class PublishPluginCommand extends PluginCommand {
     }
 
     _print('Checking local repo...');
-    final GitDir gitDir = await getGitDir();
+    final GitDir repository = await gitDir;
 
     final bool shouldPushTag = getBoolArg(_pushTagsOption);
     _RemoteInfo? remote;
@@ -171,7 +171,7 @@ class PublishPluginCommand extends PluginCommand {
     bool successful;
     if (publishAllChanged) {
       successful = await _publishAllChangedPackages(
-        baseGitDir: gitDir,
+        baseGitDir: repository,
         remoteForTagPush: remote,
       );
     } else {

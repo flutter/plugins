@@ -76,8 +76,8 @@ abstract class PluginCommand extends Command<void> {
   /// This can be overridden for testing.
   final ProcessRunner processRunner;
 
-  /// The git directory to use. If unset, [getGitDir] uses the packages
-  /// directory's enclosing repository.
+  /// The git directory to use. If unset, [gitDir] populates it from the
+  /// packages directory's enclosing repository.
   ///
   /// This can be mocked for testing.
   GitDir? _gitDir;
@@ -102,7 +102,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   /// Returns the [GitDir] containing [packagesDir].
-  Future<GitDir> getGitDir() async {
+  Future<GitDir> get gitDir async {
     GitDir? gitDir = _gitDir;
     if (gitDir != null) {
       return gitDir;
@@ -309,7 +309,7 @@ abstract class PluginCommand extends Command<void> {
     final String baseSha = getStringArg(_kBaseSha);
 
     final GitVersionFinder gitVersionFinder =
-        GitVersionFinder(await getGitDir(), baseSha);
+        GitVersionFinder(await gitDir, baseSha);
     return gitVersionFinder;
   }
 
