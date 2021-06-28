@@ -1,3 +1,7 @@
+## 0.3.0+1
+
+- `publish-plugins` ignores `flutter_plugin_tools`, see: https://github.com/flutter/flutter/issues/85430
+
 ## 0.3.0
 
 - Add a --build-id flag to `firebase-test-lab` instead of hard-coding the use of

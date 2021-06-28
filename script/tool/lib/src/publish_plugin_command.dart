@@ -290,6 +290,14 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
+
+    if (pubspec.name == 'flutter_plugin_tools') {
+      // Ignore flutter_plugin_tools package when running publishing through flutter_plugin_tools.
+      // TODO(cyanglaz): Make the tool also auto publish flutter_plugin_tools package.
+      // https://github.com/flutter/flutter/issues/85430
+      return _CheckNeedsReleaseResult.noRelease;
+    }
+
     if (pubspec.publishTo == 'none') {
       return _CheckNeedsReleaseResult.noRelease;
     }
