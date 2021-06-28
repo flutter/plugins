@@ -51,7 +51,8 @@
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+      .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
@@ -78,7 +79,8 @@
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+      .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
@@ -105,7 +107,8 @@
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+      .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
@@ -132,7 +135,8 @@
       .andReturn(YES);
 
   // AVAuthorizationStatusAuthorized is supported
-  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo]).andReturn(3);
+  OCMStub([_mockAVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo])
+      .andReturn(AVAuthorizationStatusAuthorized);
 
   // Run test
   FLTImagePickerPlugin *plugin = [FLTImagePickerPlugin new];
