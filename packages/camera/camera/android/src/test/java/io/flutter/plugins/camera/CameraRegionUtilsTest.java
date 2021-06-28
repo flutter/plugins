@@ -247,27 +247,27 @@ public class CameraRegionUtilsTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void getMeteringRectangleForPoint_should_throw_for_x_upper_bound() {
+  public void convertPointToMeteringRectangle_should_throw_for_x_upper_bound() {
     CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 1.5, 0);
   }
 
   @Test(expected = AssertionError.class)
-  public void getMeteringRectangleForPoint_should_throw_for_x_lower_bound() {
+  public void convertPointToMeteringRectangle_should_throw_for_x_lower_bound() {
     CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, -0.5, 0);
   }
 
   @Test(expected = AssertionError.class)
-  public void getMeteringRectangleForPoint_should_throw_for_y_upper_bound() {
+  public void convertPointToMeteringRectangle_should_throw_for_y_upper_bound() {
     CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0, 1.5);
   }
 
   @Test(expected = AssertionError.class)
-  public void getMeteringRectangleForPoint_should_throw_for_y_lower_bound() {
+  public void convertPointToMeteringRectangle_should_throw_for_y_lower_bound() {
     CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0, -0.5);
   }
 
   @Test
-  public void getMeteringRectangleForPoint_should_return_valid_MeteringRectangle() {
+  public void convertPointToMeteringRectangle_should_return_valid_MeteringRectangle() {
     try (MockedStatic<CameraRegionUtils.MeteringRectangleFactory> mockedMeteringRectangleFactory =
         mockStatic(CameraRegionUtils.MeteringRectangleFactory.class)) {
 
@@ -338,13 +338,19 @@ public class CameraRegionUtilsTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void getMeteringRectangleForPoint_should_throw_for_0_width_boundary() {
-    new io.flutter.plugins.camera.CameraRegions(new Size(0, 50));
+  public void convertPointToMeteringRectangle_should_throw_for_0_width_boundary() {
+    Size mockCameraBoundaries = mock(Size.class);
+    when(mockCameraBoundaries.getWidth()).thenReturn(0);
+    when(mockCameraBoundaries.getHeight()).thenReturn(50);
+    CameraRegionUtils.convertPointToMeteringRectangle(mockCameraBoundaries, 0, -0.5);
   }
 
   @Test(expected = AssertionError.class)
-  public void getMeteringRectangleForPoint_should_throw_for_0_height_boundary() {
-    new io.flutter.plugins.camera.CameraRegions(new Size(100, 0));
+  public void convertPointToMeteringRectangle_should_throw_for_0_height_boundary() {
+    Size mockCameraBoundaries = mock(Size.class);
+    when(mockCameraBoundaries.getWidth()).thenReturn(50);
+    when(mockCameraBoundaries.getHeight()).thenReturn(0);
+    CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0, -0.5);
   }
 
   private static void updateSdkVersion(int version) {
