@@ -36,11 +36,17 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  PickedFile? _imageFile;
+  //PickedFile? _imageFile;
   List<PickedFile>? _imageFileList;
+
+  set _imageFile(PickedFile? value) {
+    _imageFileList = value == null ? null : [value];
+  }
+
   dynamic _pickImageError;
   bool isVideo = false;
-  bool isMultiImage = false;
+
+  //bool isMultiImage = false;
   VideoPlayerController? _controller;
   VideoPlayerController? _toBeDisposed;
   String? _retrieveDataError;
@@ -75,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onImageButtonPressed(ImageSource source,
-      {BuildContext? context}) async {
+      {BuildContext? context, bool isMultiImage = false}) async {
     if (_controller != null) {
       await _controller!.setVolume(0.0);
     }
@@ -166,61 +172,26 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  Widget _previewImage() {
-    final Text? retrieveError = _getRetrieveErrorWidget();
-    if (retrieveError != null) {
-      return retrieveError;
-    }
-    if (_imageFile != null) {
-      if (kIsWeb) {
-        // Why network?
-        // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-        return Image.network(_imageFile!.path);
-      } else {
-        return Semantics(
-            child: Image.file(File(_imageFile!.path)),
-            label: 'image_picker_example_picked_image');
-      }
-    } else if (_pickImageError != null) {
-      return Text(
-        'Pick image error: $_pickImageError',
-        textAlign: TextAlign.center,
-      );
-    } else {
-      return const Text(
-        'You have not yet picked an image.',
-        textAlign: TextAlign.center,
-      );
-    }
-  }
-
-  Widget _previewMultiImages() {
+  Widget _previewImages() {
     final Text? retrieveError = _getRetrieveErrorWidget();
     if (retrieveError != null) {
       return retrieveError;
     }
     if (_imageFileList != null) {
-      if (kIsWeb) {
-        // Why network?
-        // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
-        return ListView.builder(
-          key: UniqueKey(),
-          itemBuilder: (context, index) {
-            return Image.network(_imageFileList![index].path);
-          },
-          itemCount: _imageFileList!.length,
-        );
-      } else {
-        return Semantics(
-            child: ListView.builder(
-              key: UniqueKey(),
-              itemBuilder: (context, index) {
-                return Image.file(File(_imageFileList![index].path));
-              },
-              itemCount: _imageFileList!.length,
-            ),
-            label: 'image_picker_example_picked_images');
-      }
+      return Semantics(
+          child: ListView.builder(
+            key: UniqueKey(),
+            itemBuilder: (context, index) {
+              if (kIsWeb) {
+                // Why network?
+                // See https://pub.dev/packages/image_picker#getting-ready-for-the-web-platform
+                return Image.network(_imageFileList![index].path);
+              }
+              return Image.file(File(_imageFileList![index].path));
+            },
+            itemCount: _imageFileList!.length,
+          ),
+          label: 'image_picker_example_picked_images');
     } else if (_pickImageError != null) {
       return Text(
         'Pick image error: $_pickImageError',
@@ -237,10 +208,8 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _handlePreview() {
     if (isVideo) {
       return _previewVideo();
-    } else if (isMultiImage) {
-      return _previewMultiImages();
     } else {
-      return _previewImage();
+      return _previewImages();
     }
   }
 
@@ -309,7 +278,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.gallery, context: context);
               },
               heroTag: 'image0',
@@ -322,8 +290,11 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                isMultiImage = true;
-                _onImageButtonPressed(ImageSource.gallery, context: context);
+                _onImageButtonPressed(
+                  ImageSource.gallery,
+                  context: context,
+                  isMultiImage: true,
+                );
               },
               heroTag: 'image1',
               tooltip: 'Pick Multiple Image from gallery',
@@ -335,7 +306,6 @@ class _MyHomePageState extends State<MyHomePage> {
             child: FloatingActionButton(
               onPressed: () {
                 isVideo = false;
-                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.camera, context: context);
               },
               heroTag: 'image2',
@@ -349,7 +319,6 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
-                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.gallery);
               },
               heroTag: 'video0',
@@ -363,7 +332,6 @@ class _MyHomePageState extends State<MyHomePage> {
               backgroundColor: Colors.red,
               onPressed: () {
                 isVideo = true;
-                isMultiImage = false;
                 _onImageButtonPressed(ImageSource.camera);
               },
               heroTag: 'video1',
