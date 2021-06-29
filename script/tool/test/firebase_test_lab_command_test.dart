@@ -89,11 +89,13 @@ void main() {
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nRUNNING FIREBASE TEST LAB TESTS for plugin',
-          '\nFirebase project configured.',
-          '\n\n',
-          'All Firebase Test Lab tests successful!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('Firebase project configured.'),
+          contains('Testing test/plugin_e2e.dart...'),
+          contains('Testing example/test/plugin_e2e.dart...'),
+          contains('Testing example/test_driver/plugin_e2e.dart...'),
+          contains('Testing example/integration_test/foo_test.dart...'),
         ]),
       );
 

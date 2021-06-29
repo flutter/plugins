@@ -10,11 +10,11 @@ import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 
 /// A command to run tests via Firebase test lab.
-class FirebaseTestLabCommand extends PluginCommand {
+class FirebaseTestLabCommand extends PackageLoopingCommand {
   /// Creates an instance of the test runner command.
   FirebaseTestLabCommand(
     Directory packagesDir, {
@@ -112,172 +112,158 @@ class FirebaseTestLabCommand extends PluginCommand {
   }
 
   @override
-  Future<void> run() async {
-    final Stream<Directory> packagesWithTests = getPackages().where(
-        (Directory d) =>
-            isFlutterPackage(d) &&
-            d
-                .childDirectory('example')
-                .childDirectory('android')
-                .childDirectory('app')
-                .childDirectory('src')
-                .childDirectory('androidTest')
-                .existsSync());
+  Future<List<String>> runForPackage(Directory package) async {
+    if (!package
+        .childDirectory('example')
+        .childDirectory('android')
+        .childDirectory('app')
+        .childDirectory('src')
+        .childDirectory('androidTest')
+        .existsSync()) {
+      printSkip('No example with androidTest directory');
+      return PackageLoopingCommand.success;
+    }
 
-    final List<String> failingPackages = <String>[];
-    final List<String> missingFlutterBuild = <String>[];
-    int resultsCounter =
-        0; // We use a unique GCS bucket for each Firebase Test Lab run
-    await for (final Directory package in packagesWithTests) {
-      // See https://github.com/flutter/flutter/issues/38983
+    final List<String> errors = <String>[];
 
-      final Directory exampleDirectory = package.childDirectory('example');
-      final String packageName =
-          p.relative(package.path, from: packagesDir.path);
-      print('\nRUNNING FIREBASE TEST LAB TESTS for $packageName');
+    final Directory exampleDirectory = package.childDirectory('example');
+    final Directory androidDirectory =
+        exampleDirectory.childDirectory('android');
 
-      final Directory androidDirectory =
-          exampleDirectory.childDirectory('android');
+    // Ensures that gradle wrapper exists
+    if (!await _ensureGradleWrapperExists(androidDirectory)) {
+      errors.add('Unable to build example apk');
+      return errors;
+    }
 
-      final String enableExperiment = getStringArg(kEnableExperiment);
-      final String encodedEnableExperiment =
-          Uri.encodeComponent('--enable-experiment=$enableExperiment');
+    await _configureFirebaseProject();
 
-      // Ensures that gradle wrapper exists
-      if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
-        final int exitCode = await processRunner.runAndStream(
-            'flutter',
-            <String>[
-              'build',
-              'apk',
-              if (enableExperiment.isNotEmpty)
-                '--enable-experiment=$enableExperiment',
-            ],
-            workingDir: androidDirectory);
+    if (!await _runGradle(androidDirectory, 'app:assembleAndroidTest')) {
+      errors.add('Unable to assemble androidTest');
+      return errors;
+    }
 
-        if (exitCode != 0) {
-          failingPackages.add(packageName);
-          continue;
-        }
+    int resultsCounter = 0; // Use a unique GCS bucket for each run.
+    for (final File test in _findIntegrationTestFiles(package)) {
+      final String testName = p.relative(test.path, from: package.path);
+      print('Testing $testName...');
+      if (!await _runGradle(androidDirectory, 'app:assembleDebug',
+          testFile: test)) {
+        printError('Could not build $testName');
+        errors.add('$testName failed to build');
         continue;
       }
+      final String buildId = getStringArg('build-id');
+      final String testRunId = getStringArg('test-run-id');
+      final String resultsDir =
+          'plugins_android_test/${getPackageDescription(package)}/$buildId/$testRunId/${resultsCounter++}/';
+      final List<String> args = <String>[
+        'firebase',
+        'test',
+        'android',
+        'run',
+        '--type',
+        'instrumentation',
+        '--app',
+        'build/app/outputs/apk/debug/app-debug.apk',
+        '--test',
+        'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
+        '--timeout',
+        '5m',
+        '--results-bucket=${getStringArg('results-bucket')}',
+        '--results-dir=$resultsDir',
+      ];
+      for (final String device in getStringListArg('device')) {
+        args.addAll(<String>['--device', device]);
+      }
+      final int exitCode = await processRunner.runAndStream('gcloud', args,
+          workingDir: exampleDirectory);
 
-      await _configureFirebaseProject();
+      if (exitCode != 0) {
+        printError('Test failure for $testName');
+        errors.add('$testName failed tests');
+      }
+    }
+    return errors;
+  }
 
-      int exitCode = await processRunner.runAndStream(
-          p.join(androidDirectory.path, _gradleWrapper),
+  Future<bool> _ensureGradleWrapperExists(Directory androidDirectory) async {
+    if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
+      final String experiment = getStringArg(kEnableExperiment);
+      final int exitCode = await processRunner.runAndStream(
+          'flutter',
           <String>[
-            'app:assembleAndroidTest',
-            '-Pverbose=true',
-            if (enableExperiment.isNotEmpty)
-              '-Pextra-front-end-options=$encodedEnableExperiment',
-            if (enableExperiment.isNotEmpty)
-              '-Pextra-gen-snapshot-options=$encodedEnableExperiment',
+            'build',
+            'apk',
+            if (experiment.isNotEmpty) '--enable-experiment=$experiment',
           ],
           workingDir: androidDirectory);
 
       if (exitCode != 0) {
-        failingPackages.add(packageName);
-        continue;
-      }
-
-      // Look for tests recursively in folders that start with 'test' and that
-      // live in the root or example folders.
-      bool isTestDir(FileSystemEntity dir) {
-        return dir is Directory &&
-            (p.basename(dir.path).startsWith('test') ||
-                p.basename(dir.path) == 'integration_test');
-      }
-
-      final List<Directory> testDirs =
-          package.listSync().where(isTestDir).cast<Directory>().toList();
-      final Directory example = package.childDirectory('example');
-      testDirs.addAll(
-          example.listSync().where(isTestDir).cast<Directory>().toList());
-      for (final Directory testDir in testDirs) {
-        bool isE2ETest(FileSystemEntity file) {
-          return file.path.endsWith('_e2e.dart') ||
-              (file.parent.basename == 'integration_test' &&
-                  file.path.endsWith('_test.dart'));
-        }
-
-        final List<FileSystemEntity> testFiles = testDir
-            .listSync(recursive: true, followLinks: true)
-            .where(isE2ETest)
-            .toList();
-        for (final FileSystemEntity test in testFiles) {
-          exitCode = await processRunner.runAndStream(
-              p.join(androidDirectory.path, _gradleWrapper),
-              <String>[
-                'app:assembleDebug',
-                '-Pverbose=true',
-                '-Ptarget=${test.path}',
-                if (enableExperiment.isNotEmpty)
-                  '-Pextra-front-end-options=$encodedEnableExperiment',
-                if (enableExperiment.isNotEmpty)
-                  '-Pextra-gen-snapshot-options=$encodedEnableExperiment',
-              ],
-              workingDir: androidDirectory);
-
-          if (exitCode != 0) {
-            failingPackages.add(packageName);
-            continue;
-          }
-          final String buildId = getStringArg('build-id');
-          final String testRunId = getStringArg('test-run-id');
-          final String resultsDir =
-              'plugins_android_test/$packageName/$buildId/$testRunId/${resultsCounter++}/';
-          final List<String> args = <String>[
-            'firebase',
-            'test',
-            'android',
-            'run',
-            '--type',
-            'instrumentation',
-            '--app',
-            'build/app/outputs/apk/debug/app-debug.apk',
-            '--test',
-            'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
-            '--timeout',
-            '5m',
-            '--results-bucket=${getStringArg('results-bucket')}',
-            '--results-dir=$resultsDir',
-          ];
-          for (final String device in getStringListArg('device')) {
-            args.addAll(<String>['--device', device]);
-          }
-          exitCode = await processRunner.runAndStream('gcloud', args,
-              workingDir: exampleDirectory);
-
-          if (exitCode != 0) {
-            failingPackages.add(packageName);
-            continue;
-          }
-        }
+        return false;
       }
     }
+    return true;
+  }
 
-    print('\n\n');
-    if (failingPackages.isNotEmpty) {
-      print(
-          'The instrumentation tests for the following packages are failing (see above for'
-          'details):');
-      for (final String package in failingPackages) {
-        print(' * $package');
-      }
+  Future<bool> _runGradle(
+    Directory directory,
+    String target, {
+    File? testFile,
+  }) async {
+    final String experiment = getStringArg(kEnableExperiment);
+    final String? extraOptions = experiment.isNotEmpty
+        ? Uri.encodeComponent('--enable-experiment=$experiment')
+        : null;
+
+    final int exitCode = await processRunner.runAndStream(
+        p.join(directory.path, _gradleWrapper),
+        <String>[
+          target,
+          '-Pverbose=true',
+          if (testFile != null) '-Ptarget=${testFile.path}',
+          if (extraOptions != null) '-Pextra-front-end-options=$extraOptions',
+          if (extraOptions != null)
+            '-Pextra-gen-snapshot-options=$extraOptions',
+        ],
+        workingDir: directory);
+
+    if (exitCode != 0) {
+      return false;
     }
-    if (missingFlutterBuild.isNotEmpty) {
-      print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
-          'the following packages before executing tests again:');
-      for (final String package in missingFlutterBuild) {
-        print(' * $package');
-      }
+    return true;
+  }
+
+  List<File> _findIntegrationTestFiles(Directory package) {
+    // Look for tests recursively in folders that start with 'test' and that
+    // live in the root or example folders.
+    // XXX simplify this and below; _e2e.dart isn't needed.
+    bool isTestDir(FileSystemEntity dir) {
+      return dir is Directory &&
+          (p.basename(dir.path).startsWith('test') ||
+              p.basename(dir.path) == 'integration_test');
     }
 
-    if (failingPackages.isNotEmpty || missingFlutterBuild.isNotEmpty) {
-      throw ToolExit(1);
+    final List<Directory> testDirs =
+        package.listSync().where(isTestDir).cast<Directory>().toList();
+    final Directory example = package.childDirectory('example');
+    testDirs
+        .addAll(example.listSync().where(isTestDir).cast<Directory>().toList());
+
+    bool isE2ETest(FileSystemEntity file) {
+      return file.path.endsWith('_e2e.dart') ||
+          (file.parent.basename == 'integration_test' &&
+              file.path.endsWith('_test.dart'));
     }
 
-    print('All Firebase Test Lab tests successful!');
+    final List<File> testFiles = <File>[];
+    for (final Directory testDir in testDirs) {
+      testFiles.addAll(testDir
+          .listSync(recursive: true, followLinks: true)
+          .where(isE2ETest)
+          .toList()
+          .cast<File>());
+    }
+    return testFiles;
   }
 }
