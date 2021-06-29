@@ -286,7 +286,67 @@ if (Platform.isAndroid) {
 
 #### Apple App Store (iOS)
 
-//TODO
+When the price of a subscription is raised iOS will also show a popup in the app. 
+The StoreKit Payment Queue will notify the app that it wants to show a price change confirmation popup.
+By default the queue will get the response that it can continue and show the popup. 
+However, it is possible to prevent this popup via the InAppPurchaseIosPlatformAddition and show the 
+popup at a different time, for example after clicking a button.
+
+To know when the App Store wants to show a popup and prevent this from happening a queue delegate can be registered.
+The `InAppPurchaseIosPlatformAddition` contains a `setDelegate(SKPaymentQueueDelegateWrapper? delegate)` function that
+can be used to set a delegate or remove one by setting it to `null`.
+```dart
+//import for InAppPurchaseIosPlatformAddition
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+
+Future<void> initStoreInfo() async {
+  if (Platform.isIOS) {
+    var iosPlatformAddition = _inAppPurchase
+            .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+    await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate()); 
+  }
+}
+
+@override
+Future<void> disposeStore() {
+  if (Platform.isIOS) {
+    var iosPlatformAddition = _inAppPurchase
+            .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+    await iosPlatformAddition.setDelegate(null);
+  }
+}
+```
+The delegate that is set should implement `SKPaymentQueueDelegateWrapper` and handle `shouldContinueTransaction` and 
+`shouldShowPriceConsent`. When setting `shouldShowPriceConsent` to false the default popup will not be shown and the app
+needs to show this later.
+
+```dart
+// import for SKPaymentQueueDelegateWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+
+class ExamplePaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
+  @override
+  bool shouldContinueTransaction(
+      SKPaymentTransactionWrapper transaction, SKStorefrontWrapper storefront) {
+    return true;
+  }
+
+  @override
+  bool shouldShowPriceConsent() {
+    return false;
+  }
+}
+```
+
+The dialog can be shown by calling `showPriceConsentIfNeeded` on the `InAppPurchaseIosPlatformAddition`. This future
+will complete immediately when the dialog is shown. A confirmed transaction will be delivered on the `purchaseStream`.
+```dart
+if (Platform.isIOS) {
+  var iapIosPlatformAddition = _inAppPurchase
+      .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+  await iapIosPlatformAddition.showPriceConsentIfNeeded();
+}
+```
 
 ### Accessing platform specific product or purchase properties
 
