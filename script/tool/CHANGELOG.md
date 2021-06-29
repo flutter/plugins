@@ -1,3 +1,19 @@
+## 0.3.0
+
+- Add a --build-id flag to `firebase-test-lab` instead of hard-coding the use of
+  `CIRRUS_BUILD_ID`. `CIRRUS_BUILD_ID` is the default value for that flag, for backward
+  compatibility.
+- `xctest` now supports running macOS tests in addition to iOS
+  - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
+- The tooling now runs in strong null-safe mode.
+- `publish plugins` check against pub.dev to determine if a release should happen.
+- Modified the output format of many commands
+- Removed `podspec`'s `--skip` in favor of `--ignore` using the new structure.
+
+## 0.2.0
+
+- Remove `xctest`'s `--skip`, which is redundant with `--ignore`.
+
 ## 0.1.4
 
 - Add a `pubspec-check` command

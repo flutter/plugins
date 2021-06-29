@@ -4,6 +4,7 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/list_command.dart';
 import 'package:test/test.dart';
 
@@ -11,19 +12,22 @@ import 'util.dart';
 
 void main() {
   group('$ListCommand', () {
+    late FileSystem fileSystem;
+    late Directory packagesDir;
     late CommandRunner<void> runner;
 
     setUp(() {
-      initializeFakePackages();
-      final ListCommand command = ListCommand(mockPackagesDir, mockFileSystem);
+      fileSystem = MemoryFileSystem();
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
+      final ListCommand command = ListCommand(packagesDir);
 
       runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
       runner.addCommand(command);
     });
 
     test('lists plugins', () async {
-      createFakePlugin('plugin1');
-      createFakePlugin('plugin2');
+      createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
 
       final List<String> plugins =
           await runCapturingPrint(runner, <String>['list', '--type=plugin']);
@@ -35,15 +39,13 @@ void main() {
           '/packages/plugin2',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists examples', () async {
-      createFakePlugin('plugin1', withSingleExample: true);
-      createFakePlugin('plugin2',
-          withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3');
+      createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir,
+          examples: <String>['example1', 'example2']);
+      createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
       final List<String> examples =
           await runCapturingPrint(runner, <String>['list', '--type=example']);
@@ -56,15 +58,13 @@ void main() {
           '/packages/plugin2/example/example2',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists packages', () async {
-      createFakePlugin('plugin1', withSingleExample: true);
-      createFakePlugin('plugin2',
-          withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3');
+      createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir,
+          examples: <String>['example1', 'example2']);
+      createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
       final List<String> packages =
           await runCapturingPrint(runner, <String>['list', '--type=package']);
@@ -80,15 +80,13 @@ void main() {
           '/packages/plugin3',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists files', () async {
-      createFakePlugin('plugin1', withSingleExample: true);
-      createFakePlugin('plugin2',
-          withExamples: <String>['example1', 'example2']);
-      createFakePlugin('plugin3');
+      createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir,
+          examples: <String>['example1', 'example2']);
+      createFakePlugin('plugin3', packagesDir, examples: <String>[]);
 
       final List<String> examples =
           await runCapturingPrint(runner, <String>['list', '--type=file']);
@@ -97,24 +95,25 @@ void main() {
         examples,
         unorderedEquals(<String>[
           '/packages/plugin1/pubspec.yaml',
+          '/packages/plugin1/CHANGELOG.md',
           '/packages/plugin1/example/pubspec.yaml',
           '/packages/plugin2/pubspec.yaml',
+          '/packages/plugin2/CHANGELOG.md',
           '/packages/plugin2/example/example1/pubspec.yaml',
           '/packages/plugin2/example/example2/pubspec.yaml',
           '/packages/plugin3/pubspec.yaml',
+          '/packages/plugin3/CHANGELOG.md',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('lists plugins using federated plugin layout', () async {
-      createFakePlugin('plugin1');
+      createFakePlugin('plugin1', packagesDir);
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
-      final Directory federatedPlugin =
-          mockPackagesDir.childDirectory('my_plugin')..createSync();
+      final Directory federatedPlugin = packagesDir.childDirectory('my_plugin')
+        ..createSync();
       final Directory clientLibrary =
           federatedPlugin.childDirectory('my_plugin')..createSync();
       createFakePubspec(clientLibrary);
@@ -138,17 +137,15 @@ void main() {
           '/packages/my_plugin/my_plugin_macos',
         ]),
       );
-
-      cleanupPackages();
     });
 
     test('can filter plugins with the --plugins argument', () async {
-      createFakePlugin('plugin1');
+      createFakePlugin('plugin1', packagesDir);
 
       // Create a federated plugin by creating a directory under the packages
       // directory with several packages underneath.
-      final Directory federatedPlugin =
-          mockPackagesDir.childDirectory('my_plugin')..createSync();
+      final Directory federatedPlugin = packagesDir.childDirectory('my_plugin')
+        ..createSync();
       final Directory clientLibrary =
           federatedPlugin.childDirectory('my_plugin')..createSync();
       createFakePubspec(clientLibrary);

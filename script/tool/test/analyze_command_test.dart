@@ -4,40 +4,39 @@
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/analyze_command.dart';
-import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
 import 'util.dart';
 
 void main() {
+  late FileSystem fileSystem;
+  late Directory packagesDir;
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
 
   setUp(() {
-    initializeFakePackages();
+    fileSystem = MemoryFileSystem();
+    packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = RecordingProcessRunner();
-    final AnalyzeCommand analyzeCommand = AnalyzeCommand(
-        mockPackagesDir, mockFileSystem,
-        processRunner: processRunner);
+    final AnalyzeCommand analyzeCommand =
+        AnalyzeCommand(packagesDir, processRunner: processRunner);
 
     runner = CommandRunner<void>('analyze_command', 'Test for analyze_command');
     runner.addCommand(analyzeCommand);
   });
 
-  tearDown(() {
-    mockPackagesDir.deleteSync(recursive: true);
-  });
-
   test('analyzes all packages', () async {
-    final Directory plugin1Dir = createFakePlugin('a');
-    final Directory plugin2Dir = createFakePlugin('b');
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
+    final Directory plugin2Dir = createFakePlugin('b', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze']);
+    await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
@@ -54,12 +53,12 @@ void main() {
   });
 
   test('skips flutter pub get for examples', () async {
-    final Directory plugin1Dir = createFakePlugin('a', withSingleExample: true);
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze']);
+    await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
@@ -72,13 +71,13 @@ void main() {
   });
 
   test('don\'t elide a non-contained example package', () async {
-    final Directory plugin1Dir = createFakePlugin('a');
-    final Directory plugin2Dir = createFakePlugin('example');
+    final Directory plugin1Dir = createFakePlugin('a', packagesDir);
+    final Directory plugin2Dir = createFakePlugin('example', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze']);
+    await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
@@ -95,12 +94,13 @@ void main() {
   });
 
   test('uses a separate analysis sdk', () async {
-    final Directory pluginDir = createFakePlugin('a');
+    final Directory pluginDir = createFakePlugin('a', packagesDir);
 
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
+    await runCapturingPrint(
+        runner, <String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
 
     expect(
       processRunner.recordedCalls,
@@ -121,33 +121,30 @@ void main() {
 
   group('verifies analysis settings', () {
     test('fails analysis_options.yaml', () async {
-      createFakePlugin('foo', withExtraFiles: <List<String>>[
-        <String>['analysis_options.yaml']
-      ]);
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
 
-      await expectLater(() => runner.run(<String>['analyze']),
+      await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
     test('fails .analysis_options', () async {
-      createFakePlugin('foo', withExtraFiles: <List<String>>[
-        <String>['.analysis_options']
-      ]);
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['.analysis_options']);
 
-      await expectLater(() => runner.run(<String>['analyze']),
+      await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
     test('takes an allow list', () async {
-      final Directory pluginDir =
-          createFakePlugin('foo', withExtraFiles: <List<String>>[
-        <String>['analysis_options.yaml']
-      ]);
+      final Directory pluginDir = createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
 
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
-      await runner.run(<String>['analyze', '--custom-analysis', 'foo']);
+      await runCapturingPrint(
+          runner, <String>['analyze', '--custom-analysis', 'foo']);
 
       expect(
           processRunner.recordedCalls,
@@ -161,16 +158,16 @@ void main() {
 
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
-      createFakePlugin('foo', withExtraFiles: <List<String>>[
-        <String>['analysis_options.yaml']
-      ]);
+      createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
 
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
 
       await expectLater(
-          () => runner.run(<String>['analyze', '--custom-analysis', '']),
+          () => runCapturingPrint(
+              runner, <String>['analyze', '--custom-analysis', '']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
   });

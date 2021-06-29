@@ -58,10 +58,11 @@ This section has examples of code for the following tasks:
 * [Listening to purchase updates](#listening-to-purchase-updates)
 * [Connecting to the underlying store](#connecting-to-the-underlying-store)
 * [Loading products for sale](#loading-products-for-sale)
-* [Loading previous purchases](#loading-previous-purchases)
+* [Restoring previous purchases](#restoring-previous-purchases)
 * [Making a purchase](#making-a-purchase)
 * [Completing a purchase](#completing-a-purchase)
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
+* [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
 * [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
 
 ### Initializing the plugin
@@ -72,6 +73,7 @@ The following initialization code is required for Google Play:
 // Import `in_app_purchase_android.dart` to be able to access the 
 // `InAppPurchaseAndroidPlatformAddition` class.
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
   // Inform the plugin that this app supports pending purchases on Android.
@@ -136,7 +138,6 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
           _deliverProduct(purchaseDetails);
         } else {
           _handleInvalidPurchase(purchaseDetails);
-          return;
         }
       }
       if (purchaseDetails.pendingCompletePurchase) {
@@ -245,6 +246,73 @@ PurchaseParam purchaseParam = GooglePlayPurchaseParam(
 InAppPurchase.instance
     .buyNonConsumable(purchaseParam: purchaseParam);
 ```
+
+### Accessing platform specific product or purchase properties
+
+The function `_inAppPurchase.queryProductDetails(productIds);` provides a `ProductDetailsResponse` with a 
+list of purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class 
+containing properties only available on all endorsed platforms. However, in some cases it is necessary to access platform specific properties. The `ProductDetails` instance is of subtype `GooglePlayProductDetails`
+when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails (on Android) or the skProduct (on iOS) provides all the information that is available in the original platform objects.
+
+This is an example on how to get the `introductoryPricePeriod` on Android:
+```dart
+//import for GooglePlayProductDetails
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for SkuDetailsWrapper
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+
+if (productDetails is GooglePlayProductDetails) {
+  SkuDetailsWrapper skuDetails = (productDetails as GooglePlayProductDetails).skuDetails;
+  print(skuDetails.introductoryPricePeriod);
+}
+```
+
+And this is the way to get the subscriptionGroupIdentifier of a subscription on iOS:
+```dart
+//import for AppStoreProductDetails
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for SKProductWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+
+if (productDetails is AppStoreProductDetails) {
+  SKProductWrapper skProduct = (productDetails as AppStoreProductDetails).skProduct;
+  print(skProduct.subscriptionGroupIdentifier);
+}
+```
+
+The `purchaseStream` provides objects of type `PurchaseDetails`. PurchaseDetails' provides all 
+information that is available on all endorsed platforms, such as purchaseID and transactionDate. In addition, it is 
+possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
+when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp. 
+skPaymentTransaction provides all the information that is available in the original platform objects.
+
+This is an example on how to get the `originalJson` on Android:
+```dart
+//import for GooglePlayPurchaseDetails
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for PurchaseWrapper
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+
+if (purchaseDetails is GooglePlayPurchaseDetails) {
+  PurchaseWrapper billingClientPurchase = (purchaseDetails as GooglePlayPurchaseDetails).billingClientPurchase;
+  print(billingClientPurchase.originalJson);
+}
+```
+
+How to get the `transactionState` of a purchase in iOS:
+```dart
+//import for AppStorePurchaseDetails
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for SKProductWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+
+if (purchaseDetails is AppStorePurchaseDetails) {
+  SKPaymentTransactionWrapper skProduct = (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
+  print(skProduct.transactionState);
+}
+```
+
+Please note that it is required to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
 
 ### Presenting a code redemption sheet (iOS 14)
 

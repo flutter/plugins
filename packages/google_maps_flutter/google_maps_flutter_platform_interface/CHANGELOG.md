@@ -1,3 +1,8 @@
+## 2.1.0
+
+* Add support for Hybrid Composition when building the Google Maps widget on Android. Set
+  `MethodChannelGoogleMapsFlutter.useAndroidViewSurface` to `true` to build with Hybrid Composition.
+
 ## 2.0.4
 
 * Preserve the `TileProvider` when copying `TileOverlay`, fixing a
