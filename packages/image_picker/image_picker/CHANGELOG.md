@@ -1,3 +1,6 @@
+## 0.8.1+2
+
+* Update the example app to support the multi-image feature.
 
 ## 0.8.1+1
 
