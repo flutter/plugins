@@ -232,7 +232,7 @@ class SKPaymentQueueWrapper {
         }
       case 'restoreCompletedTransactionsFailed':
         {
-          SKError error = SKError.fromJson(call.arguments);
+          SKError error = SKError.fromJson(new Map<String, dynamic>.from(call.arguments));
           return Future<void>(() {
             observer.restoreCompletedTransactionsFailed(error: error);
           });
