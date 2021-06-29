@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 package io.flutter.plugins.videoplayer;
-
-
 import org.junit.Test;
 
 public class VideoPlayerTest {
