@@ -187,8 +187,13 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return errors;
   }
 
+  /// Checks that 'gradlew' exists in [androidDirectory], and if not runs a
+  /// Flutter build to generate it.
+  ///
+  /// Returns true if either gradlew was already present, or the build succeeds.
   Future<bool> _ensureGradleWrapperExists(Directory androidDirectory) async {
     if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
+      print('Running flutter build apk...');
       final String experiment = getStringArg(kEnableExperiment);
       final int exitCode = await processRunner.runAndStream(
           'flutter',
@@ -206,6 +211,13 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return true;
   }
 
+  /// Builds [target] using 'gradlew' in the given [directory]. Assumes
+  /// 'gradlew' already exists.
+  ///
+  /// [testFile] optionally does the Flutter build with the given test file as
+  /// the build target.
+  ///
+  /// Returns true if the command succeeds.
   Future<bool> _runGradle(
     Directory directory,
     String target, {
@@ -234,6 +246,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return true;
   }
 
+  /// Finds and returns all integration test files for [package].
   List<File> _findIntegrationTestFiles(Directory package) {
     final Directory integrationTestDir =
         package.childDirectory('example').childDirectory('integration_test');
