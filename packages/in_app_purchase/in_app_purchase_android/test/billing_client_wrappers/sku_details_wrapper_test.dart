@@ -17,6 +17,7 @@ final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   price: 'price',
   priceAmountMicros: 1000,
   priceCurrencyCode: 'priceCurrencyCode',
+  priceCurrencySymbol: r'$',
   sku: 'sku',
   subscriptionPeriod: 'subscriptionPeriod',
   title: 'title',
