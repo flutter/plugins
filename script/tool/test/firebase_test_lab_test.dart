@@ -18,18 +18,15 @@ void main() {
   group('$FirebaseTestLabCommand', () {
     FileSystem fileSystem;
     late Directory packagesDir;
-    late List<String> printedMessages;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
-      printedMessages = <String>[];
       processRunner = RecordingProcessRunner();
-      final FirebaseTestLabCommand command = FirebaseTestLabCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()));
+      final FirebaseTestLabCommand command =
+          FirebaseTestLabCommand(packagesDir, processRunner: processRunner);
 
       runner = CommandRunner<void>(
           'firebase_test_lab_command', 'Test for $FirebaseTestLabCommand');
@@ -48,11 +45,16 @@ void main() {
         'example/should_not_run_e2e.dart',
         'example/android/app/src/androidTest/MainActivityTest.java',
       ]);
-      await expectLater(
-          () => runCapturingPrint(runner, <String>['firebase-test-lab']),
-          throwsA(const TypeMatcher<ToolExit>()));
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['firebase-test-lab'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-          printedMessages,
+          output,
           contains(
               '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.'));
     });
@@ -73,7 +75,7 @@ void main() {
         'example/android/app/src/androidTest/MainActivityTest.java',
       ]);
 
-      await runCapturingPrint(runner, <String>[
+      final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
         'model=flame,version=29',
@@ -86,7 +88,7 @@ void main() {
       ]);
 
       expect(
-        printedMessages,
+        output,
         orderedEquals(<String>[
           '\nRUNNING FIREBASE TEST LAB TESTS for plugin',
           '\nFirebase project configured.',

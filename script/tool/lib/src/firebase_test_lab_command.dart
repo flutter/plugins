@@ -19,9 +19,7 @@ class FirebaseTestLabCommand extends PluginCommand {
   FirebaseTestLabCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-    Print print = print,
-  })  : _print = print,
-        super(packagesDir, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner) {
     argParser.addOption(
       'project',
       defaultsTo: 'flutter-infra',
@@ -74,8 +72,6 @@ class FirebaseTestLabCommand extends PluginCommand {
 
   static const String _gradleWrapper = 'gradlew';
 
-  final Print _print;
-
   Completer<void>? _firebaseProjectConfigured;
 
   Future<void> _configureFirebaseProject() async {
@@ -86,7 +82,7 @@ class FirebaseTestLabCommand extends PluginCommand {
 
     final String serviceKey = getStringArg('service-key');
     if (serviceKey.isEmpty) {
-      _print('No --service-key provided; skipping gcloud authorization');
+      print('No --service-key provided; skipping gcloud authorization');
     } else {
       await processRunner.run(
         'gcloud',
@@ -105,10 +101,10 @@ class FirebaseTestLabCommand extends PluginCommand {
         getStringArg('project'),
       ]);
       if (exitCode == 0) {
-        _print('\nFirebase project configured.');
+        print('\nFirebase project configured.');
         return;
       } else {
-        _print(
+        print(
             '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
@@ -138,7 +134,7 @@ class FirebaseTestLabCommand extends PluginCommand {
       final Directory exampleDirectory = package.childDirectory('example');
       final String packageName =
           p.relative(package.path, from: packagesDir.path);
-      _print('\nRUNNING FIREBASE TEST LAB TESTS for $packageName');
+      print('\nRUNNING FIREBASE TEST LAB TESTS for $packageName');
 
       final Directory androidDirectory =
           exampleDirectory.childDirectory('android');
@@ -261,20 +257,20 @@ class FirebaseTestLabCommand extends PluginCommand {
       }
     }
 
-    _print('\n\n');
+    print('\n\n');
     if (failingPackages.isNotEmpty) {
-      _print(
+      print(
           'The instrumentation tests for the following packages are failing (see above for'
           'details):');
       for (final String package in failingPackages) {
-        _print(' * $package');
+        print(' * $package');
       }
     }
     if (missingFlutterBuild.isNotEmpty) {
-      _print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
+      print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
           'the following packages before executing tests again:');
       for (final String package in missingFlutterBuild) {
-        _print(' * $package');
+        print(' * $package');
       }
     }
 
@@ -282,6 +278,6 @@ class FirebaseTestLabCommand extends PluginCommand {
       throw ToolExit(1);
     }
 
-    _print('All Firebase Test Lab tests successful!');
+    print('All Firebase Test Lab tests successful!');
   }
 }
