@@ -36,7 +36,7 @@ void main() {
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze']);
+    await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
@@ -58,7 +58,7 @@ void main() {
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze']);
+    await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
@@ -77,7 +77,7 @@ void main() {
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze']);
+    await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
         processRunner.recordedCalls,
@@ -99,7 +99,8 @@ void main() {
     final MockProcess mockProcess = MockProcess();
     mockProcess.exitCodeCompleter.complete(0);
     processRunner.processToReturn = mockProcess;
-    await runner.run(<String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
+    await runCapturingPrint(
+        runner, <String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
 
     expect(
       processRunner.recordedCalls,
@@ -123,7 +124,7 @@ void main() {
       createFakePlugin('foo', packagesDir,
           extraFiles: <String>['analysis_options.yaml']);
 
-      await expectLater(() => runner.run(<String>['analyze']),
+      await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
@@ -131,7 +132,7 @@ void main() {
       createFakePlugin('foo', packagesDir,
           extraFiles: <String>['.analysis_options']);
 
-      await expectLater(() => runner.run(<String>['analyze']),
+      await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
 
@@ -142,7 +143,8 @@ void main() {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(0);
       processRunner.processToReturn = mockProcess;
-      await runner.run(<String>['analyze', '--custom-analysis', 'foo']);
+      await runCapturingPrint(
+          runner, <String>['analyze', '--custom-analysis', 'foo']);
 
       expect(
           processRunner.recordedCalls,
@@ -164,7 +166,8 @@ void main() {
       processRunner.processToReturn = mockProcess;
 
       await expectLater(
-          () => runner.run(<String>['analyze', '--custom-analysis', '']),
+          () => runCapturingPrint(
+              runner, <String>['analyze', '--custom-analysis', '']),
           throwsA(const TypeMatcher<ToolExit>()));
     });
   });

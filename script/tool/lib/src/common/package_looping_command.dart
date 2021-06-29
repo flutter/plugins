@@ -35,6 +35,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// in the final summary. An empty list indicates success.
   Future<List<String>> runForPackage(Directory package);
 
+  /// Called during [run] after all calls to [runForPackage]. This provides an
+  /// opportunity to do any cleanup of run-level state.
+  Future<void> completeRun() async {}
+
   /// Whether or not the output (if any) of [runForPackage] is long, or short.
   ///
   /// This changes the logging that happens at the start of each package's
@@ -99,6 +103,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
     return packageName;
   }
 
+  /// The suggested indentation for printed output.
+  String get indentation => hasLongOutput ? '' : '  ';
+
   // ----------------------------------------
 
   @override
@@ -114,6 +121,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
       _printPackageHeading(package);
       results[package] = await runForPackage(package);
     }
+
+    completeRun();
 
     // If there were any errors reported, summarize them and exit.
     if (results.values.any((List<String> failures) => failures.isNotEmpty)) {

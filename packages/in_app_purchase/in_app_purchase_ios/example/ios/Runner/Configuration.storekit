@@ -1,4 +1,8 @@
 {
+  "identifier" : "6073E9A3",
+  "nonRenewingSubscriptions" : [
+
+  ],
   "products" : [
     {
       "displayPrice" : "0.99",
@@ -46,7 +50,7 @@
           "adHocOffers" : [
 
           ],
-          "displayPrice" : "3.99",
+          "displayPrice" : "4.99",
           "familyShareable" : false,
           "groupNumber" : 1,
           "internalID" : "922EB597",
@@ -59,7 +63,7 @@
             }
           ],
           "productID" : "subscription_silver",
-          "recurringSubscriptionPeriod" : "P1M",
+          "recurringSubscriptionPeriod" : "P1W",
           "referenceName" : "subscription_silver",
           "subscriptionGroupID" : "D0FEE8D8",
           "type" : "RecurringSubscription"
@@ -91,6 +95,6 @@
   ],
   "version" : {
     "major" : 1,
-    "minor" : 0
+    "minor" : 1
   }
 }
