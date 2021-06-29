@@ -235,35 +235,18 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   }
 
   List<File> _findIntegrationTestFiles(Directory package) {
-    // Look for tests recursively in folders that start with 'test' and that
-    // live in the root or example folders.
-    // XXX simplify this and below; _e2e.dart isn't needed.
-    bool isTestDir(FileSystemEntity dir) {
-      return dir is Directory &&
-          (p.basename(dir.path).startsWith('test') ||
-              p.basename(dir.path) == 'integration_test');
+    final Directory integrationTestDir =
+        package.childDirectory('example').childDirectory('integration_test');
+
+    if (!integrationTestDir.existsSync()) {
+      return <File>[];
     }
 
-    final List<Directory> testDirs =
-        package.listSync().where(isTestDir).cast<Directory>().toList();
-    final Directory example = package.childDirectory('example');
-    testDirs
-        .addAll(example.listSync().where(isTestDir).cast<Directory>().toList());
-
-    bool isE2ETest(FileSystemEntity file) {
-      return file.path.endsWith('_e2e.dart') ||
-          (file.parent.basename == 'integration_test' &&
-              file.path.endsWith('_test.dart'));
-    }
-
-    final List<File> testFiles = <File>[];
-    for (final Directory testDir in testDirs) {
-      testFiles.addAll(testDir
-          .listSync(recursive: true, followLinks: true)
-          .where(isE2ETest)
-          .toList()
-          .cast<File>());
-    }
-    return testFiles;
+    return integrationTestDir
+        .listSync(recursive: true, followLinks: true)
+        .where((FileSystemEntity file) =>
+            file is File && file.basename.endsWith('_test.dart'))
+        .toList()
+        .cast<File>();
   }
 }
