@@ -6,7 +6,8 @@
 #import <Flutter/Flutter.h>
 
 @interface FIAPReceiptManager ()
-
+// Gets the receipt file data from the location of the url. Can be nil if
+// there is an error. This interface is defined so it can be stubbed for testing.
 - (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error;
 
 @end
@@ -17,21 +18,12 @@
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
   NSError *receiptError;
   NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
-  if (receiptError) {
+  if (!receipt || receiptError) {
     if (flutterError) {
       *flutterError = [FlutterError
           errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
                 message:receiptError.domain
                 details:receiptError.userInfo];
-    }
-    return nil;
-  }
-  if (!receipt) {
-    if (flutterError) {
-      *flutterError = [FlutterError errorWithCode:@"0"
-                                          message:@"dataWithContentsOfURL returned nil without an "
-                                                  @"error in retrieveReceiptWithError"
-                                          details:nil];
     }
     return nil;
   }
