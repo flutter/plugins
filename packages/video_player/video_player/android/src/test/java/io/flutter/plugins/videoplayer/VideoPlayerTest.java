@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 package io.flutter.plugins.videoplayer;
+
 import org.junit.Test;
 
 public class VideoPlayerTest {
+  // This is only a placeholder test and doesn't actually initialize the plugin.
   @Test
-  public void initPlugin() {
+  public void initPluginDoesNotThrow() {
     final VideoPlayerPlugin plugin = new VideoPlayerPlugin();
   }
 }
