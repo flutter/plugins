@@ -1,0 +1,22 @@
+# This workflow applies labels to pull requests based on the
+# paths that are modified in the pull request.
+#
+# Edit `.github/labeler.yml` and `.github/post_merge_labeler.yml`
+# to configure labels.
+#
+# For more information, see: https://github.com/actions/labeler
+
+name: Pull Request Labeler
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, closed]
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@9794b1493b6f1fa7b006c5f8635a19c76c98be95
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          sync-labels: true

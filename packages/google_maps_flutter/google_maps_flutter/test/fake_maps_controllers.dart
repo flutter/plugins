@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,79 +9,87 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class FakePlatformGoogleMap {
-  FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params) {
-    cameraPosition = CameraPosition.fromMap(params['initialCameraPosition']);
-    channel = MethodChannel(
-        'plugins.flutter.io/google_maps_$id', const StandardMethodCodec());
+  FakePlatformGoogleMap(int id, Map<dynamic, dynamic> params)
+      : cameraPosition =
+            CameraPosition.fromMap(params['initialCameraPosition']),
+        channel = MethodChannel(
+            'plugins.flutter.io/google_maps_$id', const StandardMethodCodec()) {
     channel.setMockMethodCallHandler(onMethodCall);
     updateOptions(params['options']);
     updateMarkers(params);
     updatePolygons(params);
     updatePolylines(params);
     updateCircles(params);
+    updateTileOverlays(Map.castFrom<dynamic, dynamic, String, dynamic>(params));
   }
 
   MethodChannel channel;
 
-  CameraPosition cameraPosition;
+  CameraPosition? cameraPosition;
 
-  bool compassEnabled;
+  bool? compassEnabled;
 
-  bool mapToolbarEnabled;
+  bool? mapToolbarEnabled;
 
-  CameraTargetBounds cameraTargetBounds;
+  CameraTargetBounds? cameraTargetBounds;
 
-  MapType mapType;
+  MapType? mapType;
 
-  MinMaxZoomPreference minMaxZoomPreference;
+  MinMaxZoomPreference? minMaxZoomPreference;
 
-  bool rotateGesturesEnabled;
+  bool? rotateGesturesEnabled;
 
-  bool scrollGesturesEnabled;
+  bool? scrollGesturesEnabled;
 
-  bool tiltGesturesEnabled;
+  bool? tiltGesturesEnabled;
 
-  bool zoomGesturesEnabled;
+  bool? zoomGesturesEnabled;
 
-  bool zoomControlsEnabled;
+  bool? zoomControlsEnabled;
 
-  bool liteModeEnabled;
+  bool? liteModeEnabled;
 
-  bool trackCameraPosition;
+  bool? trackCameraPosition;
 
-  bool myLocationEnabled;
+  bool? myLocationEnabled;
 
-  bool trafficEnabled;
+  bool? trafficEnabled;
 
-  bool buildingsEnabled;
+  bool? buildingsEnabled;
 
-  bool myLocationButtonEnabled;
+  bool? myLocationButtonEnabled;
 
-  List<dynamic> padding;
+  List<dynamic>? padding;
 
-  Set<MarkerId> markerIdsToRemove;
+  Set<MarkerId> markerIdsToRemove = <MarkerId>{};
 
-  Set<Marker> markersToAdd;
+  Set<Marker> markersToAdd = <Marker>{};
 
-  Set<Marker> markersToChange;
+  Set<Marker> markersToChange = <Marker>{};
 
-  Set<PolygonId> polygonIdsToRemove;
+  Set<PolygonId> polygonIdsToRemove = <PolygonId>{};
 
-  Set<Polygon> polygonsToAdd;
+  Set<Polygon> polygonsToAdd = <Polygon>{};
 
-  Set<Polygon> polygonsToChange;
+  Set<Polygon> polygonsToChange = <Polygon>{};
 
-  Set<PolylineId> polylineIdsToRemove;
+  Set<PolylineId> polylineIdsToRemove = <PolylineId>{};
 
-  Set<Polyline> polylinesToAdd;
+  Set<Polyline> polylinesToAdd = <Polyline>{};
 
-  Set<Polyline> polylinesToChange;
+  Set<Polyline> polylinesToChange = <Polyline>{};
 
-  Set<CircleId> circleIdsToRemove;
+  Set<CircleId> circleIdsToRemove = <CircleId>{};
 
-  Set<Circle> circlesToAdd;
+  Set<Circle> circlesToAdd = <Circle>{};
 
-  Set<Circle> circlesToChange;
+  Set<Circle> circlesToChange = <Circle>{};
+
+  Set<TileOverlayId> tileOverlayIdsToRemove = <TileOverlayId>{};
+
+  Set<TileOverlay> tileOverlaysToAdd = <TileOverlay>{};
+
+  Set<TileOverlay> tileOverlaysToChange = <TileOverlay>{};
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -97,6 +105,10 @@ class FakePlatformGoogleMap {
       case 'polylines#update':
         updatePolylines(call.arguments);
         return Future<void>.sync(() {});
+      case 'tileOverlays#update':
+        updateTileOverlays(
+            Map.castFrom<dynamic, dynamic, String, dynamic>(call.arguments));
+        return Future<void>.sync(() {});
       case 'circles#update':
         updateCircles(call.arguments);
         return Future<void>.sync(() {});
@@ -105,7 +117,7 @@ class FakePlatformGoogleMap {
     }
   }
 
-  void updateMarkers(Map<dynamic, dynamic> markerUpdates) {
+  void updateMarkers(Map<dynamic, dynamic>? markerUpdates) {
     if (markerUpdates == null) {
       return;
     }
@@ -115,29 +127,21 @@ class FakePlatformGoogleMap {
     markersToChange = _deserializeMarkers(markerUpdates['markersToChange']);
   }
 
-  Set<MarkerId> _deserializeMarkerIds(List<dynamic> markerIds) {
+  Set<MarkerId> _deserializeMarkerIds(List<dynamic>? markerIds) {
     if (markerIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<MarkerId>();
+      return <MarkerId>{};
     }
     return markerIds.map((dynamic markerId) => MarkerId(markerId)).toSet();
   }
 
   Set<Marker> _deserializeMarkers(dynamic markers) {
     if (markers == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Marker>();
+      return <Marker>{};
     }
     final List<dynamic> markersData = markers;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Marker> result = Set<Marker>();
-    for (Map<dynamic, dynamic> markerData in markersData) {
+    final Set<Marker> result = <Marker>{};
+    for (Map<dynamic, dynamic> markerData
+        in markersData.cast<Map<dynamic, dynamic>>()) {
       final String markerId = markerData['markerId'];
       final double alpha = markerData['alpha'];
       final bool draggable = markerData['draggable'];
@@ -165,7 +169,7 @@ class FakePlatformGoogleMap {
     return result;
   }
 
-  void updatePolygons(Map<dynamic, dynamic> polygonUpdates) {
+  void updatePolygons(Map<dynamic, dynamic>? polygonUpdates) {
     if (polygonUpdates == null) {
       return;
     }
@@ -175,39 +179,33 @@ class FakePlatformGoogleMap {
     polygonsToChange = _deserializePolygons(polygonUpdates['polygonsToChange']);
   }
 
-  Set<PolygonId> _deserializePolygonIds(List<dynamic> polygonIds) {
+  Set<PolygonId> _deserializePolygonIds(List<dynamic>? polygonIds) {
     if (polygonIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<PolygonId>();
+      return <PolygonId>{};
     }
     return polygonIds.map((dynamic polygonId) => PolygonId(polygonId)).toSet();
   }
 
   Set<Polygon> _deserializePolygons(dynamic polygons) {
     if (polygons == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Polygon>();
+      return <Polygon>{};
     }
     final List<dynamic> polygonsData = polygons;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Polygon> result = Set<Polygon>();
-    for (Map<dynamic, dynamic> polygonData in polygonsData) {
+    final Set<Polygon> result = <Polygon>{};
+    for (Map<dynamic, dynamic> polygonData
+        in polygonsData.cast<Map<dynamic, dynamic>>()) {
       final String polygonId = polygonData['polygonId'];
       final bool visible = polygonData['visible'];
       final bool geodesic = polygonData['geodesic'];
       final List<LatLng> points = _deserializePoints(polygonData['points']);
+      final List<List<LatLng>> holes = _deserializeHoles(polygonData['holes']);
 
       result.add(Polygon(
         polygonId: PolygonId(polygonId),
         visible: visible,
         geodesic: geodesic,
         points: points,
+        holes: holes,
       ));
     }
 
@@ -220,7 +218,15 @@ class FakePlatformGoogleMap {
     }).toList();
   }
 
-  void updatePolylines(Map<dynamic, dynamic> polylineUpdates) {
+  List<List<LatLng>> _deserializeHoles(List<dynamic> holes) {
+    return holes.map<List<LatLng>>((dynamic hole) {
+      return hole.map<LatLng>((dynamic list) {
+        return LatLng(list[0], list[1]);
+      }).toList();
+    }).toList();
+  }
+
+  void updatePolylines(Map<dynamic, dynamic>? polylineUpdates) {
     if (polylineUpdates == null) {
       return;
     }
@@ -231,12 +237,9 @@ class FakePlatformGoogleMap {
         _deserializePolylines(polylineUpdates['polylinesToChange']);
   }
 
-  Set<PolylineId> _deserializePolylineIds(List<dynamic> polylineIds) {
+  Set<PolylineId> _deserializePolylineIds(List<dynamic>? polylineIds) {
     if (polylineIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<PolylineId>();
+      return <PolylineId>{};
     }
     return polylineIds
         .map((dynamic polylineId) => PolylineId(polylineId))
@@ -245,17 +248,12 @@ class FakePlatformGoogleMap {
 
   Set<Polyline> _deserializePolylines(dynamic polylines) {
     if (polylines == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Polyline>();
+      return <Polyline>{};
     }
     final List<dynamic> polylinesData = polylines;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Polyline> result = Set<Polyline>();
-    for (Map<dynamic, dynamic> polylineData in polylinesData) {
+    final Set<Polyline> result = <Polyline>{};
+    for (Map<dynamic, dynamic> polylineData
+        in polylinesData.cast<Map<dynamic, dynamic>>()) {
       final String polylineId = polylineData['polylineId'];
       final bool visible = polylineData['visible'];
       final bool geodesic = polylineData['geodesic'];
@@ -272,7 +270,7 @@ class FakePlatformGoogleMap {
     return result;
   }
 
-  void updateCircles(Map<dynamic, dynamic> circleUpdates) {
+  void updateCircles(Map<dynamic, dynamic>? circleUpdates) {
     if (circleUpdates == null) {
       return;
     }
@@ -282,29 +280,46 @@ class FakePlatformGoogleMap {
     circlesToChange = _deserializeCircles(circleUpdates['circlesToChange']);
   }
 
-  Set<CircleId> _deserializeCircleIds(List<dynamic> circleIds) {
+  void updateTileOverlays(Map<String, dynamic> updateTileOverlayUpdates) {
+    if (updateTileOverlayUpdates == null) {
+      return;
+    }
+    final List<Map<dynamic, dynamic>>? tileOverlaysToAddList =
+        updateTileOverlayUpdates['tileOverlaysToAdd'] != null
+            ? List.castFrom<dynamic, Map<dynamic, dynamic>>(
+                updateTileOverlayUpdates['tileOverlaysToAdd'])
+            : null;
+    final List<String>? tileOverlayIdsToRemoveList =
+        updateTileOverlayUpdates['tileOverlayIdsToRemove'] != null
+            ? List.castFrom<dynamic, String>(
+                updateTileOverlayUpdates['tileOverlayIdsToRemove'])
+            : null;
+    final List<Map<dynamic, dynamic>>? tileOverlaysToChangeList =
+        updateTileOverlayUpdates['tileOverlaysToChange'] != null
+            ? List.castFrom<dynamic, Map<dynamic, dynamic>>(
+                updateTileOverlayUpdates['tileOverlaysToChange'])
+            : null;
+    tileOverlaysToAdd = _deserializeTileOverlays(tileOverlaysToAddList);
+    tileOverlayIdsToRemove =
+        _deserializeTileOverlayIds(tileOverlayIdsToRemoveList);
+    tileOverlaysToChange = _deserializeTileOverlays(tileOverlaysToChangeList);
+  }
+
+  Set<CircleId> _deserializeCircleIds(List<dynamic>? circleIds) {
     if (circleIds == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<CircleId>();
+      return <CircleId>{};
     }
     return circleIds.map((dynamic circleId) => CircleId(circleId)).toSet();
   }
 
   Set<Circle> _deserializeCircles(dynamic circles) {
     if (circles == null) {
-      // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-      // https://github.com/flutter/flutter/issues/28312
-      // ignore: prefer_collection_literals
-      return Set<Circle>();
+      return <Circle>{};
     }
     final List<dynamic> circlesData = circles;
-    // TODO(iskakaushik): Remove this when collection literals makes it to stable.
-    // https://github.com/flutter/flutter/issues/28312
-    // ignore: prefer_collection_literals
-    final Set<Circle> result = Set<Circle>();
-    for (Map<dynamic, dynamic> circleData in circlesData) {
+    final Set<Circle> result = <Circle>{};
+    for (Map<dynamic, dynamic> circleData
+        in circlesData.cast<Map<dynamic, dynamic>>()) {
       final String circleId = circleData['circleId'];
       final bool visible = circleData['visible'];
       final double radius = circleData['radius'];
@@ -313,6 +328,40 @@ class FakePlatformGoogleMap {
         circleId: CircleId(circleId),
         visible: visible,
         radius: radius,
+      ));
+    }
+
+    return result;
+  }
+
+  Set<TileOverlayId> _deserializeTileOverlayIds(List<String>? tileOverlayIds) {
+    if (tileOverlayIds == null || tileOverlayIds.isEmpty) {
+      return <TileOverlayId>{};
+    }
+    return tileOverlayIds
+        .map((String tileOverlayId) => TileOverlayId(tileOverlayId))
+        .toSet();
+  }
+
+  Set<TileOverlay> _deserializeTileOverlays(
+      List<Map<dynamic, dynamic>>? tileOverlays) {
+    if (tileOverlays == null || tileOverlays.isEmpty) {
+      return <TileOverlay>{};
+    }
+    final Set<TileOverlay> result = <TileOverlay>{};
+    for (Map<dynamic, dynamic> tileOverlayData in tileOverlays) {
+      final String tileOverlayId = tileOverlayData['tileOverlayId'];
+      final bool fadeIn = tileOverlayData['fadeIn'];
+      final double transparency = tileOverlayData['transparency'];
+      final int zIndex = tileOverlayData['zIndex'];
+      final bool visible = tileOverlayData['visible'];
+
+      result.add(TileOverlay(
+        tileOverlayId: TileOverlayId(tileOverlayId),
+        fadeIn: fadeIn,
+        transparency: transparency,
+        zIndex: zIndex,
+        visible: visible,
       ));
     }
 
@@ -380,13 +429,13 @@ class FakePlatformGoogleMap {
 }
 
 class FakePlatformViewsController {
-  FakePlatformGoogleMap lastCreatedView;
+  FakePlatformGoogleMap? lastCreatedView;
 
   Future<dynamic> fakePlatformViewsMethodHandler(MethodCall call) {
     switch (call.method) {
       case 'create':
         final Map<dynamic, dynamic> args = call.arguments;
-        final Map<dynamic, dynamic> params = _decodeParams(args['params']);
+        final Map<dynamic, dynamic> params = _decodeParams(args['params'])!;
         lastCreatedView = FakePlatformGoogleMap(
           args['id'],
           params,
@@ -402,7 +451,7 @@ class FakePlatformViewsController {
   }
 }
 
-Map<dynamic, dynamic> _decodeParams(Uint8List paramsMessage) {
+Map<dynamic, dynamic>? _decodeParams(Uint8List paramsMessage) {
   final ByteBuffer buffer = paramsMessage.buffer;
   final ByteData messageBytes = buffer.asByteData(
     paramsMessage.offsetInBytes,

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,6 +13,7 @@
 - (void)setStrokeColor:(UIColor*)color;
 - (void)setStrokeWidth:(CGFloat)width;
 - (void)setPoints:(NSArray<CLLocation*>*)points;
+- (void)setHoles:(NSArray<NSArray<CLLocation*>*>*)holes;
 - (void)setZIndex:(int)zIndex;
 @end
 

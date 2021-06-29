@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -50,17 +50,17 @@ abstract class ConnectivityPlatform extends PlatformInterface {
   }
 
   /// Obtains the wifi name (SSID) of the connected network
-  Future<String> getWifiName() {
+  Future<String?> getWifiName() {
     throw UnimplementedError('getWifiName() has not been implemented.');
   }
 
   /// Obtains the wifi BSSID of the connected network.
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     throw UnimplementedError('getWifiBSSID() has not been implemented.');
   }
 
   /// Obtains the IP address of the connected wifi network
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     throw UnimplementedError('getWifiIP() has not been implemented.');
   }
 

@@ -1,3 +1,136 @@
+## 0.8.1+2
+
+* Update the example app to support the multi-image feature.
+
+## 0.8.1+1
+
+* Expose errors thrown in `pickImage` and `pickVideo` docs.
+
+## 0.8.1
+
+* Add a new method `getMultiImage` to allow picking multiple images on iOS 14 or higher
+and Android 4.3 or higher. Returns only 1 image for lower versions of iOS and Android.
+* Known issue: On Android, `getLostData` will only get the last picked image when picking multiple images,
+see: [#84634](https://github.com/flutter/flutter/issues/84634).
+
+## 0.8.0+4
+
+* Cleaned up the README example
+
+## 0.8.0+3
+
+* Readded request for camera permissions.
+
+## 0.8.0+2
+
+* Fix a rotation problem where when camera is chosen as a source and additional parameters are added.
+
+## 0.8.0+1
+
+* Removed redundant request for camera permissions.
+
+## 0.8.0
+
+* BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,
+to comply with new Google Play storage requirements. This means developers are responsible for moving 
+the image or video to a different location in case more permanent storage is required. Other applications 
+will no longer be able to access images or videos captured unless they are moved to a publicly accessible location.
+* Updated Mockito to fix Android tests.
+
+## 0.7.5+4
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 0.7.5+3
+* Localize `UIAlertController` strings.
+
+## 0.7.5+2
+* Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
+
+## 0.7.5+1
+
+* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked
+is not included selected photos and image is scaled.
+
+## 0.7.5
+
+* Fixes an issue where image rotation is wrong when Select Photos chose and image is scaled.
+* Migrate to PHPicker for iOS 14 and higher versions to pick image from the photo library.
+* Implement the limited permission to pick photo from the photo library when Select Photo is chosen.
+
+## 0.7.4
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
+## 0.7.3
+
+* Endorse image_picker_for_web.
+
+## 0.7.2+1
+
+* Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
+
+## 0.7.2
+
+* Run CocoaPods iOS tests in RunnerUITests target.
+
+## 0.7.1
+
+* Update platform_plugin_interface version requirement.
+
+## 0.7.0
+
+* Migrate to nullsafety
+* Breaking Changes:
+    * Removed the deprecated methods: `ImagePicker.pickImage`, `ImagePicker.pickVideo`,
+`ImagePicker.retrieveLostData`
+
+## 0.6.7+22
+
+* iOS: update XCUITests to separate each test session.
+
+## 0.6.7+21
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.6.7+20
+
+* Updated README.md to show the new Android API requirements.
+
+## 0.6.7+19
+
+* Do not copy static field to another static field.
+
+## 0.6.7+18
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.6.7+17
+
+* iOS: fix `User-facing text should use localized string macro` warning.
+
+## 0.6.7+16
+
+* Update Flutter SDK constraint.
+
+## 0.6.7+15
+
+* Fix element type in XCUITests to look for staticText type when searching for texts.
+  * See https://github.com/flutter/flutter/issues/71927
+* Minor update in XCUITests to search for different elements on iOS 14 and above.
+
+## 0.6.7+14
+
+* Set up XCUITests.
+
+## 0.6.7+13
+
+* Update documentation of `getImage()` about HEIC images.
+
+## 0.6.7+12
+
+* Update android compileSdkVersion to 29.
+
 ## 0.6.7+11
 
 * Keep handling deprecated Android v1 classes for backward compatibility.

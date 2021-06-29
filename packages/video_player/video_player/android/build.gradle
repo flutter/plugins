@@ -5,18 +5,24 @@ def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.3.0'
+        classpath 'com.android.tools.build:gradle:3.5.0'
     }
 }
 
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        // Gradle versions older than 2.13.3 aren't published to the servers
+        // above, so add this URL as a workaround until upgrading past that
+        // version.
+        maven {
+            url 'https://google.bintray.com/exoplayer/'
+        }
     }
 }
 
@@ -27,7 +33,7 @@ project.getTasks().withType(JavaCompile){
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     defaultConfig {
         minSdkVersion 16
@@ -44,9 +50,9 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.exoplayer:exoplayer-core:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.9.6'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.9.6'
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.1'
     }
 }

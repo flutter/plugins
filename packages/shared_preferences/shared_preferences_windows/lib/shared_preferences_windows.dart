@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -16,7 +16,14 @@ import 'package:path_provider_windows/path_provider_windows.dart';
 /// This class implements the `package:shared_preferences` functionality for Windows.
 class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   /// The default instance of [SharedPreferencesWindows] to use.
+  /// TODO(egarciad): Remove when the Dart plugin registrant lands on Flutter stable.
+  /// https://github.com/flutter/flutter/issues/81421
   static SharedPreferencesWindows instance = SharedPreferencesWindows();
+
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    SharedPreferencesStorePlatform.instance = instance;
+  }
 
   /// File system used to store to disk. Exposed for testing only.
   @visibleForTesting
@@ -27,42 +34,51 @@ class SharedPreferencesWindows extends SharedPreferencesStorePlatform {
   PathProviderWindows pathProvider = PathProviderWindows();
 
   /// Local copy of preferences
-  Map<String, Object> _cachedPreferences;
+  Map<String, Object>? _cachedPreferences;
 
   /// Cached file for storing preferences.
-  File _localDataFilePath;
+  File? _localDataFilePath;
 
   /// Gets the file where the preferences are stored.
-  Future<File> _getLocalDataFile() async {
-    if (_localDataFilePath == null) {
-      final directory = await pathProvider.getApplicationSupportPath();
-      _localDataFilePath =
-          fs.file(path.join(directory, 'shared_preferences.json'));
+  Future<File?> _getLocalDataFile() async {
+    if (_localDataFilePath != null) {
+      return _localDataFilePath!;
     }
-    return _localDataFilePath;
+    final directory = await pathProvider.getApplicationSupportPath();
+    if (directory == null) {
+      return null;
+    }
+    return _localDataFilePath =
+        fs.file(path.join(directory, 'shared_preferences.json'));
   }
 
   /// Gets the preferences from the stored file. Once read, the preferences are
   /// maintained in memory.
   Future<Map<String, Object>> _readPreferences() async {
-    if (_cachedPreferences == null) {
-      _cachedPreferences = {};
-      File localDataFile = await _getLocalDataFile();
-      if (localDataFile.existsSync()) {
-        String stringMap = localDataFile.readAsStringSync();
-        if (stringMap.isNotEmpty) {
-          _cachedPreferences = json.decode(stringMap) as Map<String, Object>;
-        }
+    if (_cachedPreferences != null) {
+      return _cachedPreferences!;
+    }
+    Map<String, Object> preferences = {};
+    final File? localDataFile = await _getLocalDataFile();
+    if (localDataFile != null && localDataFile.existsSync()) {
+      String stringMap = localDataFile.readAsStringSync();
+      if (stringMap.isNotEmpty) {
+        preferences = json.decode(stringMap).cast<String, Object>();
       }
     }
-    return _cachedPreferences;
+    _cachedPreferences = preferences;
+    return preferences;
   }
 
   /// Writes the cached preferences to disk. Returns [true] if the operation
   /// succeeded.
   Future<bool> _writePreferences(Map<String, Object> preferences) async {
     try {
-      File localDataFile = await _getLocalDataFile();
+      final File? localDataFile = await _getLocalDataFile();
+      if (localDataFile == null) {
+        print("Unable to determine where to write preferences.");
+        return false;
+      }
       if (!localDataFile.existsSync()) {
         localDataFile.createSync(recursive: true);
       }

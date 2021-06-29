@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,6 +30,7 @@ class FlutterWebViewClient {
   private static final String TAG = "FlutterWebViewClient";
   private final MethodChannel methodChannel;
   private boolean hasNavigationDelegate;
+  boolean hasProgressTracking;
 
   FlutterWebViewClient(MethodChannel methodChannel) {
     this.methodChannel = methodChannel;
@@ -123,6 +124,14 @@ class FlutterWebViewClient {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
     methodChannel.invokeMethod("onPageFinished", args);
+  }
+
+  void onLoadingProgress(int progress) {
+    if (hasProgressTracking) {
+      Map<String, Object> args = new HashMap<>();
+      args.put("progress", progress);
+      methodChannel.invokeMethod("onProgress", args);
+    }
   }
 
   private void onWebResourceError(

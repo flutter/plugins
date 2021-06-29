@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,29 +22,29 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   EventChannel eventChannel =
       EventChannel('plugins.flutter.io/connectivity_status');
 
-  Stream<ConnectivityResult> _onConnectivityChanged;
+  Stream<ConnectivityResult>? _onConnectivityChanged;
 
   /// Fires whenever the connectivity state changes.
   Stream<ConnectivityResult> get onConnectivityChanged {
     if (_onConnectivityChanged == null) {
-      _onConnectivityChanged = eventChannel
-          .receiveBroadcastStream()
-          .map((dynamic result) => result.toString())
-          .map(parseConnectivityResult);
+      _onConnectivityChanged =
+          eventChannel.receiveBroadcastStream().map((dynamic result) {
+        return result != null ? result.toString() : '';
+      }).map(parseConnectivityResult);
     }
-    return _onConnectivityChanged;
+    return _onConnectivityChanged!;
   }
 
   @override
-  Future<ConnectivityResult> checkConnectivity() {
-    return methodChannel
-        .invokeMethod<String>('check')
-        .then(parseConnectivityResult);
+  Future<ConnectivityResult> checkConnectivity() async {
+    final String checkResult =
+        await methodChannel.invokeMethod<String>('check') ?? '';
+    return parseConnectivityResult(checkResult);
   }
 
   @override
-  Future<String> getWifiName() async {
-    String wifiName = await methodChannel.invokeMethod<String>('wifiName');
+  Future<String?> getWifiName() async {
+    String? wifiName = await methodChannel.invokeMethod<String>('wifiName');
     // as Android might return <unknown ssid>, uniforming result
     // our iOS implementation will return null
     if (wifiName == '<unknown ssid>') {
@@ -54,29 +54,31 @@ class MethodChannelConnectivity extends ConnectivityPlatform {
   }
 
   @override
-  Future<String> getWifiBSSID() {
+  Future<String?> getWifiBSSID() {
     return methodChannel.invokeMethod<String>('wifiBSSID');
   }
 
   @override
-  Future<String> getWifiIP() {
+  Future<String?> getWifiIP() {
     return methodChannel.invokeMethod<String>('wifiIPAddress');
   }
 
   @override
   Future<LocationAuthorizationStatus> requestLocationServiceAuthorization({
     bool requestAlwaysLocationUsage = false,
-  }) {
-    return methodChannel.invokeMethod<String>(
-        'requestLocationServiceAuthorization', <bool>[
-      requestAlwaysLocationUsage
-    ]).then(parseLocationAuthorizationStatus);
+  }) async {
+    final String requestLocationServiceResult = await methodChannel
+            .invokeMethod<String>('requestLocationServiceAuthorization',
+                <bool>[requestAlwaysLocationUsage]) ??
+        '';
+    return parseLocationAuthorizationStatus(requestLocationServiceResult);
   }
 
   @override
-  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() {
-    return methodChannel
-        .invokeMethod<String>('getLocationServiceAuthorization')
-        .then(parseLocationAuthorizationStatus);
+  Future<LocationAuthorizationStatus> getLocationServiceAuthorization() async {
+    final String getLocationServiceResult = await methodChannel
+            .invokeMethod<String>('getLocationServiceAuthorization') ??
+        '';
+    return parseLocationAuthorizationStatus(getLocationServiceResult);
   }
 }

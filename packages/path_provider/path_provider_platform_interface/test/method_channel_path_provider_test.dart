@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ void main() {
   const String kDownloadsPath = 'downloadsPath';
 
   group('$MethodChannelPathProvider', () {
-    MethodChannelPathProvider methodChannelPathProvider;
+    late MethodChannelPathProvider methodChannelPathProvider;
     final List<MethodCall> log = <MethodCall>[];
 
     setUp(() async {
@@ -59,7 +59,7 @@ void main() {
     });
 
     test('getTemporaryPath', () async {
-      final String path = await methodChannelPathProvider.getTemporaryPath();
+      final String? path = await methodChannelPathProvider.getTemporaryPath();
       expect(
         log,
         <Matcher>[isMethodCall('getTemporaryDirectory', arguments: null)],
@@ -68,7 +68,7 @@ void main() {
     });
 
     test('getApplicationSupportPath', () async {
-      final String path =
+      final String? path =
           await methodChannelPathProvider.getApplicationSupportPath();
       expect(
         log,
@@ -92,7 +92,7 @@ void main() {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
 
-      final String path = await methodChannelPathProvider.getLibraryPath();
+      final String? path = await methodChannelPathProvider.getLibraryPath();
       expect(
         log,
         <Matcher>[isMethodCall('getLibraryDirectory', arguments: null)],
@@ -104,7 +104,7 @@ void main() {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'macos'));
 
-      final String path = await methodChannelPathProvider.getLibraryPath();
+      final String? path = await methodChannelPathProvider.getLibraryPath();
       expect(
         log,
         <Matcher>[isMethodCall('getLibraryDirectory', arguments: null)],
@@ -113,7 +113,7 @@ void main() {
     });
 
     test('getApplicationDocumentsPath', () async {
-      final String path =
+      final String? path =
           await methodChannelPathProvider.getApplicationDocumentsPath();
       expect(
         log,
@@ -125,13 +125,13 @@ void main() {
     });
 
     test('getExternalCachePaths android succeeds', () async {
-      final List<String> result =
+      final List<String>? result =
           await methodChannelPathProvider.getExternalCachePaths();
       expect(
         log,
         <Matcher>[isMethodCall('getExternalCacheDirectories', arguments: null)],
       );
-      expect(result.length, 1);
+      expect(result!.length, 1);
       expect(result.first, kExternalCachePaths);
     });
 
@@ -147,10 +147,12 @@ void main() {
       }
     });
 
-    for (StorageDirectory type
-        in StorageDirectory.values + <StorageDirectory>[null]) {
+    for (final StorageDirectory? type in <StorageDirectory?>[
+      null,
+      ...StorageDirectory.values
+    ]) {
       test('getExternalStoragePaths (type: $type) android succeeds', () async {
-        final List<String> result =
+        final List<String>? result =
             await methodChannelPathProvider.getExternalStoragePaths(type: type);
         expect(
           log,
@@ -162,7 +164,7 @@ void main() {
           ],
         );
 
-        expect(result.length, 1);
+        expect(result!.length, 1);
         expect(result.first, kExternalStoragePaths);
       });
 
@@ -182,7 +184,7 @@ void main() {
     test('getDownloadsPath macos succeeds', () async {
       methodChannelPathProvider
           .setMockPathProviderPlatform(FakePlatform(operatingSystem: 'macos'));
-      final String result = await methodChannelPathProvider.getDownloadsPath();
+      final String? result = await methodChannelPathProvider.getDownloadsPath();
       expect(
         log,
         <Matcher>[isMethodCall('getDownloadsDirectory', arguments: null)],

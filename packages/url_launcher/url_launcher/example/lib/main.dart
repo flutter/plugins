@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:url_launcher/link.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 void main() {
@@ -27,7 +28,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -35,7 +36,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<void> _launched;
+  Future<void>? _launched;
   String _phone = '';
 
   Future<void> _launchInBrowser(String url) async {
@@ -141,7 +142,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     decoration: const InputDecoration(
                         hintText: 'Input the phone number to launch')),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _makePhoneCall('tel:$_phone');
                 }),
@@ -151,33 +152,33 @@ class _MyHomePageState extends State<MyHomePage> {
                 padding: EdgeInsets.all(16.0),
                 child: Text(toLaunch),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInBrowser(toLaunch);
                 }),
                 child: const Text('Launch in browser'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewOrVC(toLaunch);
                 }),
                 child: const Text('Launch in app'),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewWithJavaScript(toLaunch);
                 }),
                 child: const Text('Launch in app(JavaScript ON)'),
               ),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewWithDomStorage(toLaunch);
                 }),
                 child: const Text('Launch in app(DOM storage ON)'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchUniversalLinkIos(toLaunch);
                 }),
@@ -185,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     'Launch a universal link in a native app, fallback to Safari.(Youtube)'),
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
-              RaisedButton(
+              ElevatedButton(
                 onPressed: () => setState(() {
                   _launched = _launchInWebViewOrVC(toLaunch);
                   Timer(const Duration(seconds: 5), () {
@@ -194,6 +195,19 @@ class _MyHomePageState extends State<MyHomePage> {
                   });
                 }),
                 child: const Text('Launch in app + close after 5 seconds'),
+              ),
+              const Padding(padding: EdgeInsets.all(16.0)),
+              Link(
+                uri: Uri.parse(
+                    'https://pub.dev/documentation/url_launcher/latest/link/link-library.html'),
+                target: LinkTarget.blank,
+                builder: (ctx, openLink) {
+                  return TextButton.icon(
+                    onPressed: openLink,
+                    label: Text('Link Widget documentation'),
+                    icon: Icon(Icons.read_more),
+                  );
+                },
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),
