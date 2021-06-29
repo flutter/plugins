@@ -1,6 +1,6 @@
-## 6.0.7
+## 6.0.8
 
-* Adding API level 30 required package visibility configuration to the example's AndroidManifest.xml
+* Adding API level 30 required package visibility configuration to the example's AndroidManifest.xml and README
 
 ## 6.0.6
 
