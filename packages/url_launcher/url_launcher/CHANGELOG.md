@@ -1,6 +1,15 @@
+## NEXT
+
+* Fix test button check for iOS 15.
+
 ## 6.0.8
 
 * Adding API level 30 required package visibility configuration to the example's AndroidManifest.xml and README
+
+## 6.0.7
+
+* Update the README to describe a workaround to the `Uri` query
+  encoding bug.
 
 ## 6.0.6
 
