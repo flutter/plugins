@@ -48,7 +48,7 @@ This means that app will only be available for users that run Android SDK 20 or 
 
 #### Hybrid Composition
 
-To use Hybrid Composition to render the `GoogleMap` widget on Android. Set the
+To use [Hybrid Composition](https://flutter.dev/docs/development/platform-integration/platform-views) to render the `GoogleMap` widget on Android. Set
 `MethodChannelGoogleMapsFlutter.useAndroidViewSurface` to true.
 
 ```dart

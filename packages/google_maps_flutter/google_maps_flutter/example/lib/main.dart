@@ -68,7 +68,6 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
-  WidgetsFlutterBinding.ensureInitialized();
   if (defaultTargetPlatform == TargetPlatform.android) {
     final MethodChannelGoogleMapsFlutter platform =
         GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter;
