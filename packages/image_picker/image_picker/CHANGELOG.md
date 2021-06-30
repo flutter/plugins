@@ -1,7 +1,7 @@
-## 0.9.0
+## 0.8.2
 
-* Breaking change:
-    * Changed all usages of PickedFile to XFile
+* Added pickImage, pickVideo, pickMultiImage and retrieveLostData methods
+that return XFile instances rather than PickedFile instances.
 
 ## 0.8.1+2
 
