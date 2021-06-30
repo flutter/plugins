@@ -1,11 +1,11 @@
-## 3.0.0
+## 2.2.0
 
-* Breaking changes:
-    * pickImage now returns XFile instead of PickedFile
-    * pickVideo now returns XFile instead of PickedFile
-    * changed LostData file parameter type to XFile
-    * removed PickedFile class and its tests
-    
+* pickImage has been deprecated in favor of getImage
+* pickVideo has been deprecated in favor of getVideo
+* pickMultiImage has been deprecated in favor of getMultiImage
+* getImage, getVideo and getMultiImage functions have been added to return XFile instances instead of PickedFile instances.
+* PickedFile and related classes have been marked deprecated.
+
 ## 2.1.0
 
 * Add `pickMultiImage` method.
