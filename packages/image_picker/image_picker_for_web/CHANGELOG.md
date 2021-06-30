@@ -1,7 +1,6 @@
-# 3.0.0
+# 2.1.0
 
-* Breaking change:
-    * Changed all usages of PickedFile to XFile
+* Added getImage, getVideo and getFile methods that return XFile instances rather than PickedFile instances.
 
 # 2.0.0
 
