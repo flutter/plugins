@@ -48,6 +48,7 @@ void main() {
     bool hasLongOutput = true,
     bool includeSubpackages = false,
     bool failsDuringInit = false,
+    bool captureOutput = false,
     String? customFailureListHeader,
     String? customFailureListFooter,
   }) {
@@ -70,6 +71,7 @@ void main() {
       failsDuringInit: failsDuringInit,
       customFailureListHeader: customFailureListHeader,
       customFailureListFooter: customFailureListFooter,
+      captureOutput: captureOutput,
       gitDir: gitDir,
     );
   }
@@ -318,6 +320,28 @@ void main() {
             '${_startErrorColor}See above for full details.$_endColor',
           ]));
     });
+
+    test('is captured, not printed, when requested', () async {
+      createFakePlugin('package_a', packagesDir);
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: true, captureOutput: true);
+      final List<String> output = await runCommand(command);
+
+      expect(output, isEmpty);
+
+      // None of the output should be colorized when captured.
+      const String separator =
+          '============================================================';
+      expect(
+          command.capturedOutput,
+          containsAllInOrder(<String>[
+            '\n$separator\n|| Running for package_a\n$separator\n',
+            '\n$separator\n|| Running for package_b\n$separator\n',
+            'No issues found!',
+          ]));
+    });
   });
 
   group('utility', () {
@@ -384,11 +408,13 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     this.customFailureListHeader,
     this.customFailureListFooter,
     this.failsDuringInit = false,
+    this.captureOutput = false,
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   final List<String> checkedPackages = <String>[];
+  final List<String> capturedOutput = <String>[];
 
   final String? customFailureListHeader;
   final String? customFailureListFooter;
@@ -408,6 +434,9 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   @override
   String get failureListFooter =>
       customFailureListFooter ?? super.failureListFooter;
+
+  @override
+  bool captureOutput;
 
   @override
   final String name = 'loop-test';
@@ -431,6 +460,11 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
       return errors.isNotEmpty ? errors : PackageLoopingCommand.failure;
     }
     return PackageLoopingCommand.success;
+  }
+
+  @override
+  Future<void> handleCapturedOutput(List<String> output) async {
+    capturedOutput.addAll(output);
   }
 }
 

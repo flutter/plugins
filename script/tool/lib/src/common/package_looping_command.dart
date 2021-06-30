@@ -133,7 +133,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
       });
       succeeded = await runZoned<Future<bool>>(_runInternal,
           zoneSpecification: logSwitchSpecification);
-      handleCapturedOutput(output);
+      await handleCapturedOutput(output);
     } else {
       succeeded = await _runInternal();
     }
