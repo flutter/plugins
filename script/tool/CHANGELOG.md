@@ -1,3 +1,9 @@
+## NEXT
+
+- Modified the output format of many commands
+- **Breaking change**: `firebase-test-lab` no longer supports `*_e2e.dart`
+  files, only `integration_test/*_test.dart`.
+
 ## 0.3.0
 
 - Add a --build-id flag to `firebase-test-lab` instead of hard-coding the use of
