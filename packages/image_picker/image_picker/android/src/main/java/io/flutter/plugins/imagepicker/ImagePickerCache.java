@@ -128,11 +128,14 @@ class ImagePickerCache {
   Map<String, Object> getCacheMap() {
 
     Map<String, Object> resultMap = new HashMap<>();
+    ArrayList<String> pathList = new ArrayList<>();
     boolean hasData = false;
 
     if (prefs.contains(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY)) {
-      final String imagePathValue = prefs.getString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, "");
-      resultMap.put(MAP_KEY_PATH, imagePathValue);
+      final Set<String> imagePathList =
+          prefs.getStringSet(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, null);
+      pathList.addAll(imagePathList);
+      resultMap.put(MAP_KEY_PATH_LIST, pathList);
       hasData = true;
     }
 
@@ -166,7 +169,6 @@ class ImagePickerCache {
         resultMap.put(MAP_KEY_IMAGE_QUALITY, 100);
       }
     }
-
     return resultMap;
   }
 }
