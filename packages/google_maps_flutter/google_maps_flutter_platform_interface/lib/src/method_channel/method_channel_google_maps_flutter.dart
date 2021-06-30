@@ -456,11 +456,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   /// Defaults to false.
   bool useAndroidViewSurface = false;
 
-  /// Returns a widget displaying the map view.
-  ///
-  /// This method includes a parameter for platforms that require a text
-  /// direction. For example, this should be used when using hybrid composition
-  /// on Android.
+  @override
   Widget buildViewWithTextDirection(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
