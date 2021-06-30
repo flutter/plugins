@@ -22,6 +22,18 @@ abstract class PackageLoopingCommand extends PluginCommand {
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
+  /// Packages that had a [logSkip] call.
+  Set<Directory> _skippedPackages = <Directory>{};
+
+  /// Packages that had at least one [logWarning] call.
+  Set<Directory> _packagesWithWarnings = <Directory>{};
+
+  /// Number of warnings that happened outside of a [runForPackage] call.
+  int _otherWarningCount = 0;
+
+  /// The package currently being run by [runForPackage].
+  Directory? _currentPackage;
+
   /// Called during [run] before any calls to [runForPackage]. This provides an
   /// opportunity to fail early if the command can't be run (e.g., because the
   /// arguments are invalid), and to set up any run-level state.
@@ -79,10 +91,28 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// context that's more self-documenting than the value.
   static const List<String> failure = <String>[''];
 
-  /// Prints a message using a standard format indicating that the package was
-  /// skipped, with an explanation of why.
-  void printSkip(String reason) {
+  /// Logs that a package was skipped, and prints [reason] using a standard
+  /// format to indicate why.
+  ///
+  /// May only be called during a call to [runForPackage].
+  void logSkip(String reason) {
     print(Colorize('SKIPPING: $reason')..darkGray());
+    _skippedPackages.add(_currentPackage!);
+  }
+
+  /// Logs that a warning occurred, and prints `warningMessage` in yellow.
+  ///
+  /// Warnings are not surfaced in CI summaries, so this is only useful for
+  /// highlighting something when someone is already looking though the log
+  /// messages. DO NOT RELY on someone noticing a warning; instead, use it for
+  /// things that might be useful to someone debugging an unexpected result.
+  void logWarning(String warningMessage) {
+    print(Colorize(warningMessage)..yellow());
+    if (_currentPackage != null) {
+      _packagesWithWarnings.add(_currentPackage!);
+    } else {
+      ++_otherWarningCount;
+    }
   }
 
   /// Returns the identifying name to use for [package].
@@ -110,6 +140,11 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    _skippedPackages.clear();
+    _packagesWithWarnings.clear();
+    _otherWarningCount = 0;
+    _currentPackage = null;
+
     await initializeRun();
 
     final List<Directory> packages = includeSubpackages
@@ -118,33 +153,26 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
     final Map<Directory, List<String>> results = <Directory, List<String>>{};
     for (final Directory package in packages) {
+      _currentPackage = package;
       _printPackageHeading(package);
       results[package] = await runForPackage(package);
     }
+    _currentPackage = null;
 
     completeRun();
 
     // If there were any errors reported, summarize them and exit.
     if (results.values.any((List<String> failures) => failures.isNotEmpty)) {
-      const String indentation = '  ';
-      printError(failureListHeader);
-      for (final Directory package in packages) {
-        final List<String> errors = results[package]!;
-        if (errors.isNotEmpty) {
-          final String errorIndentation = indentation * 2;
-          String errorDetails = errors.join('\n$errorIndentation');
-          if (errorDetails.isNotEmpty) {
-            errorDetails = ':\n$errorIndentation$errorDetails';
-          }
-          printError(
-              '$indentation${getPackageDescription(package)}$errorDetails');
-        }
-      }
-      printError(failureListFooter);
+      _printFailureSummary(packages, results);
       throw ToolExit(exitCommandFoundErrors);
     }
 
-    printSuccess('\n\nNo issues found!');
+    // Otherwise, print a summary of what ran for ease of auditing that all the
+    // expected tests ran.
+    _printRunSummary(packages);
+
+    print('\n');
+    printSuccess('No issues found!');
   }
 
   /// Prints the status message indicating that the command is being run for
@@ -166,5 +194,53 @@ abstract class PackageLoopingCommand extends PluginCommand {
       heading = '$heading...';
     }
     print(Colorize(heading)..cyan());
+  }
+
+  /// Prints a summary of packges run, packages skipped, and warnings.
+  void _printRunSummary(List<Directory> packages) {
+    final int skipCount = _skippedPackages.length;
+    // Split the warnings into those from packages that ran, and those that
+    // were skipped.
+    final Set<Directory> _skippedPackagesWithWarnings =
+        _packagesWithWarnings.intersection(_skippedPackages);
+    final int skippedWarningCount = _skippedPackagesWithWarnings.length;
+    final int runWarningCount =
+        _packagesWithWarnings.length - skippedWarningCount;
+
+    final String runWarningSummary =
+        runWarningCount > 0 ? ' ($runWarningCount with warnings)' : '';
+    final String skippedWarningSummary =
+        runWarningCount > 0 ? ' ($skippedWarningCount with warnings)' : '';
+    print('------------------------------------------------------------');
+    print(
+        'Ran for ${packages.length - skipCount} package(s)$runWarningSummary');
+    if (skipCount > 0) {
+      print('Skipped $skipCount package(s)$skippedWarningSummary');
+    }
+    if (_otherWarningCount > 0) {
+      print('$_otherWarningCount warnings not associated with a package');
+    }
+  }
+
+  /// Prints a summary of all of the failures from [results].
+  void _printFailureSummary(
+    List<Directory> packages,
+    Map<Directory, List<String>> results,
+  ) {
+    const String indentation = '  ';
+    printError(failureListHeader);
+    for (final Directory package in packages) {
+      final List<String> errors = results[package]!;
+      if (errors.isNotEmpty) {
+        final String errorIndentation = indentation * 2;
+        String errorDetails = errors.join('\n$errorIndentation');
+        if (errorDetails.isNotEmpty) {
+          errorDetails = ':\n$errorIndentation$errorDetails';
+        }
+        printError(
+            '$indentation${getPackageDescription(package)}$errorDetails');
+      }
+    }
+    printError(failureListFooter);
   }
 }

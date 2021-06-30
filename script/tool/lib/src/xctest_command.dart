@@ -114,7 +114,7 @@ class XCTestCommand extends PackageLoopingCommand {
   }) async {
     if (!pluginSupportsPlatform(platform.toLowerCase(), plugin,
         requiredMode: PlatformSupport.inline)) {
-      printSkip('$platform is not implemented by this plugin package.\n');
+      logSkip('$platform is not implemented by this plugin package.\n');
       return true;
     }
     bool passing = true;

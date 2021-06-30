@@ -121,7 +121,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
     }
 
     if (pubspec.publishTo == 'none') {
-      printSkip('${indentation}Found "publish_to: none".');
+      logSkip('${indentation}Found "publish_to: none".');
       return PackageLoopingCommand.success;
     }
 
@@ -210,7 +210,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (previousVersion == Version.none) {
       print('${indentation}Unable to find previous version '
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
-      printWarning(
+      logWarning(
           '${indentation}If this plugin is not new, something has gone wrong.');
       return true;
     }

@@ -19,14 +19,19 @@ import '../util.dart';
 import 'plugin_command_test.mocks.dart';
 
 // Constants for colorized output start and end.
+const String _startErrorColor = '\x1B[31m';
 const String _startHeadingColor = '\x1B[36m';
 const String _startSkipColor = '\x1B[90m';
 const String _startSuccessColor = '\x1B[32m';
-const String _startErrorColor = '\x1B[31m';
+const String _startWarningColor = '\x1B[33m';
 const String _endColor = '\x1B[0m';
 
 // The filename within a package containing errors to return from runForPackage.
 const String _errorFile = 'errors';
+// The filename within a package indicating that it should be skipped.
+const String _skipFile = 'skip';
+// The filename within a package containing warnings to log during runForPackage.
+const String _warningFile = 'warnings';
 
 void main() {
   late FileSystem fileSystem;
@@ -48,6 +53,8 @@ void main() {
     bool hasLongOutput = true,
     bool includeSubpackages = false,
     bool failsDuringInit = false,
+    bool warnsDuringInit = false,
+    bool warnsDuringCleanup = false,
     String? customFailureListHeader,
     String? customFailureListFooter,
   }) {
@@ -68,6 +75,8 @@ void main() {
       hasLongOutput: hasLongOutput,
       includeSubpackages: includeSubpackages,
       failsDuringInit: failsDuringInit,
+      warnsDuringInit: warnsDuringInit,
+      warnsDuringCleanup: warnsDuringCleanup,
       customFailureListHeader: customFailureListHeader,
       customFailureListFooter: customFailureListFooter,
       gitDir: gitDir,
@@ -216,7 +225,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
-            '$_startSuccessColor\n\nNo issues found!$_endColor',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
           ]));
     });
 
@@ -314,24 +324,107 @@ void main() {
             '${_startErrorColor}See above for full details.$_endColor',
           ]));
     });
+
+    test('logs skips', () async {
+      createFakePackage('package_a', packagesDir);
+      final Directory skipPackage = createFakePackage('package_b', packagesDir);
+      skipPackage.childFile(_skipFile).writeAsStringSync('For a reason');
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output = await runCommand(command);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startHeadingColor}Running for package_a...$_endColor',
+            '${_startHeadingColor}Running for package_b...$_endColor',
+            '${_startSkipColor}SKIPPING: For a reason$_endColor',
+          ]));
+    });
+
+    test('logs warnings', () async {
+      final Directory warnPackage = createFakePackage('package_a', packagesDir);
+      warnPackage
+          .childFile(_warningFile)
+          .writeAsStringSync('Warning 1\nWarning 2');
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output = await runCommand(command);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startHeadingColor}Running for package_a...$_endColor',
+            '${_startWarningColor}Warning 1$_endColor',
+            '${_startWarningColor}Warning 2$_endColor',
+            '${_startHeadingColor}Running for package_b...$_endColor',
+          ]));
+    });
+
+    test('prints run summary on success', () async {
+      final Directory warnPackage1 =
+          createFakePackage('package_a', packagesDir);
+      warnPackage1
+          .childFile(_warningFile)
+          .writeAsStringSync('Warning 1\nWarning 2');
+      createFakePackage('package_b', packagesDir);
+      final Directory skipPackage = createFakePackage('package_c', packagesDir);
+      skipPackage.childFile(_skipFile).writeAsStringSync('For a reason');
+      final Directory skipAndWarnPackage =
+          createFakePackage('package_d', packagesDir);
+      skipAndWarnPackage.childFile(_warningFile).writeAsStringSync('Warning');
+      skipAndWarnPackage.childFile(_skipFile).writeAsStringSync('See warning');
+      final Directory warnPackage2 =
+          createFakePackage('package_e', packagesDir);
+      warnPackage2
+          .childFile(_warningFile)
+          .writeAsStringSync('Warning 1\nWarning 2');
+      createFakePackage('package_f', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output = await runCommand(command);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '------------------------------------------------------------',
+            'Ran for 4 package(s) (2 with warnings)',
+            'Skipped 2 package(s) (1 with warnings)',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+    });
+
+    test('handles warnings outside of runForPackage', () async {
+      createFakePackage('package_a', packagesDir);
+
+      final TestPackageLoopingCommand command = createTestCommand(
+        hasLongOutput: false,
+        warnsDuringCleanup: true,
+        warnsDuringInit: true,
+      );
+      final List<String> output = await runCommand(command);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startWarningColor}Warning during initializeRun$_endColor',
+            '${_startHeadingColor}Running for package_a...$_endColor',
+            '${_startWarningColor}Warning during completeRun$_endColor',
+            '------------------------------------------------------------',
+            'Ran for 1 package(s)',
+            '2 warnings not associated with a package',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+    });
   });
 
   group('utility', () {
-    test('printSkip has expected output', () async {
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir);
-
-      final List<String> printBuffer = <String>[];
-      Zone.current.fork(specification: ZoneSpecification(
-        print: (_, __, ___, String message) {
-          printBuffer.add(message);
-        },
-      )).run<void>(() => command.printSkip('For a reason'));
-
-      expect(printBuffer.first,
-          '${_startSkipColor}SKIPPING: For a reason$_endColor');
-    });
-
     test('getPackageDescription prints packageDir-relative paths by default',
         () async {
       final TestPackageLoopingCommand command =
@@ -380,6 +473,8 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     this.customFailureListHeader,
     this.customFailureListFooter,
     this.failsDuringInit = false,
+    this.warnsDuringInit = false,
+    this.warnsDuringCleanup = false,
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
@@ -390,6 +485,8 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   final String? customFailureListFooter;
 
   final bool failsDuringInit;
+  final bool warnsDuringInit;
+  final bool warnsDuringCleanup;
 
   @override
   bool hasLongOutput;
@@ -413,6 +510,9 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
 
   @override
   Future<void> initializeRun() async {
+    if (warnsDuringInit) {
+      logWarning('Warning during initializeRun');
+    }
     if (failsDuringInit) {
       throw ToolExit(2);
     }
@@ -421,12 +521,29 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   @override
   Future<List<String>> runForPackage(Directory package) async {
     checkedPackages.add(package.path);
+    final File warningFile = package.childFile(_warningFile);
+    if (warningFile.existsSync()) {
+      final List<String> warnings = warningFile.readAsLinesSync();
+      warnings.forEach(logWarning);
+    }
+    final File skipFile = package.childFile(_skipFile);
+    if (skipFile.existsSync()) {
+      final String reason = skipFile.readAsStringSync();
+      logSkip(reason);
+    }
     final File errorFile = package.childFile(_errorFile);
     if (errorFile.existsSync()) {
       final List<String> errors = errorFile.readAsLinesSync();
       return errors.isNotEmpty ? errors : PackageLoopingCommand.failure;
     }
     return PackageLoopingCommand.success;
+  }
+
+  @override
+  Future<void> completeRun() async {
+    if (warnsDuringInit) {
+      logWarning('Warning during completeRun');
+    }
   }
 }
 
