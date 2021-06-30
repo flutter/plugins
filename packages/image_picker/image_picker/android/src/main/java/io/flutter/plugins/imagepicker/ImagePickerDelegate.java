@@ -630,7 +630,7 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (isMultiImage) {
+    if (isMultiImage || imagePath == null) {
       pendingResult.success(imagePath);
     } else {
       pendingResult.success(imagePath.get(0));
