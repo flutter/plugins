@@ -128,7 +128,8 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickVideo() has not been implemented.');
   }
 
-  /// Retrieve the lost [PickedFile] file when [pickImage] or [pickVideo] failed because the MainActivity is destroyed. (Android only)
+  /// Retrieve the lost [PickedFile] file when [pickImage] or [pickVideo] failed and the lost [PickedFile] file list
+  /// when [pickMultiImage] failed because the MainActivity is destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
   /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
@@ -143,22 +144,5 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
   Future<LostData> retrieveLostData() {
     throw UnimplementedError('retrieveLostData() has not been implemented.');
-  }
-
-  /// Retrieve the lost [PickedFile] files when [pickMultiImage] failed because the MainActivity is destroyed. (Android only)
-  ///
-  /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
-  /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
-  ///
-  /// Returns [LostData] objects if successfully retrieved the lost data. [LostData] objects can represent either a
-  /// successful list of images/videos or failures.
-  ///
-  /// Calling this on a non-Android platform will throw [UnimplementedError] exception.
-  ///
-  /// See also:
-  /// * [LostData], for what's included in the response.
-  /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
-  Future<List<LostData>> retrieveMultiLostData() {
-    throw UnimplementedError('retrieveMultiLostData() has not been implemented.');
   }
 }
