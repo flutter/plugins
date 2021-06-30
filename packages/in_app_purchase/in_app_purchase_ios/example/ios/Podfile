@@ -29,12 +29,12 @@ flutter_ios_podfile_setup
 
 target 'Runner' do
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-
+  
   target 'RunnerTests' do
     inherit! :search_paths
 
     # Matches in_app_purchase test_spec dependency.
-    pod 'OCMock','3.5'
+    pod 'OCMock', '~> 3.6'
   end
 end
 

@@ -311,6 +311,26 @@ class BillingClient {
     return result ?? false;
   }
 
+  /// Initiates a flow to confirm the change of price for an item subscribed by the user.
+  ///
+  /// When the price of a user subscribed item has changed, launch this flow to take users to
+  /// a screen with price change information. User can confirm the new price or cancel the flow.
+  ///
+  /// The skuDetails needs to have already been fetched in a [querySkuDetails]
+  /// call.
+  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow(
+      {required String sku}) async {
+    assert(sku != null);
+    final Map<String, dynamic> arguments = <String, dynamic>{
+      'sku': sku,
+    };
+    return BillingResultWrapper.fromJson((await channel.invokeMapMethod<String,
+                dynamic>(
+            'BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)',
+            arguments)) ??
+        <String, dynamic>{});
+  }
+
   /// The method call handler for [channel].
   @visibleForTesting
   Future<void> callHandler(MethodCall call) async {

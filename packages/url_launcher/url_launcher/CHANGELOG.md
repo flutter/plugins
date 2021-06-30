@@ -1,3 +1,7 @@
+## NEXT
+
+* Fix test button check for iOS 15.
+
 ## 6.0.7
 
 * Update the README to describe a workaround to the `Uri` query
