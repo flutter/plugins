@@ -229,17 +229,21 @@ public class ImagePickerDelegate
 
   void retrieveLostImage(MethodChannel.Result result) {
     Map<String, Object> resultMap = cache.getCacheMap();
-    String path = (String) resultMap.get(cache.MAP_KEY_PATH);
-    if (path != null) {
-      Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
-      Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
-      int imageQuality =
-          resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
-              ? 100
-              : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
+    ArrayList<String> pathList = (ArrayList<String>) resultMap.get(cache.MAP_KEY_PATH_LIST);
+    ArrayList<String> newPathList = new ArrayList<>();
+    if (pathList != null) {
+      for (String path : pathList) {
+        Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
+        Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
+        int imageQuality =
+            resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
+                ? 100
+                : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
 
-      String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
-      resultMap.put(cache.MAP_KEY_PATH, newPath);
+        newPathList.add(imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
+      }
+      resultMap.put(cache.MAP_KEY_PATH_LIST, newPathList);
+      resultMap.put(cache.MAP_KEY_PATH, newPathList.get(0));
     }
     if (resultMap.isEmpty()) {
       result.success(null);
