@@ -143,7 +143,9 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       return errors;
     }
 
-    int resultsCounter = 0; // Use a unique GCS bucket for each run.
+    // Used within the loop to ensure a unique GCS output location for each
+    // test file's run.
+    int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
       final String testName = p.relative(test.path, from: package.path);
       print('Testing $testName...');
@@ -247,19 +249,18 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   }
 
   /// Finds and returns all integration test files for [package].
-  List<File> _findIntegrationTestFiles(Directory package) {
+  Iterable<File> _findIntegrationTestFiles(Directory package) sync* {
     final Directory integrationTestDir =
         package.childDirectory('example').childDirectory('integration_test');
 
     if (!integrationTestDir.existsSync()) {
-      return <File>[];
+      return;
     }
 
-    return integrationTestDir
+    yield* integrationTestDir
         .listSync(recursive: true, followLinks: true)
         .where((FileSystemEntity file) =>
             file is File && file.basename.endsWith('_test.dart'))
-        .toList()
         .cast<File>();
   }
 }
