@@ -16,6 +16,7 @@ import java.util.Map;
 class ImagePickerCache {
 
   static final String MAP_KEY_PATH = "path";
+  static final String MAP_KEY_PATH_LIST = "pathList";
   static final String MAP_KEY_MAX_WIDTH = "maxWidth";
   static final String MAP_KEY_MAX_HEIGHT = "maxHeight";
   static final String MAP_KEY_IMAGE_QUALITY = "imageQuality";
