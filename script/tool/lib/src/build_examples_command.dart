@@ -6,7 +6,6 @@ import 'dart:async';
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -151,8 +150,6 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     String flutterBuildType, {
     List<String> extraBuildFlags = const <String>[],
   }) async {
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
     final String enableExperiment = getStringArg(kEnableExperiment);
 
     final int exitCode = await processRunner.runAndStream(
