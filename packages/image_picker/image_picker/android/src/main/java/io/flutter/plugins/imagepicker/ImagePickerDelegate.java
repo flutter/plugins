@@ -401,6 +401,7 @@ public class ImagePickerDelegate
     File image;
 
     try {
+      externalFilesDirectory.mkdirs();
       image = File.createTempFile(filename, suffix, externalFilesDirectory);
     } catch (IOException e) {
       throw new RuntimeException(e);
