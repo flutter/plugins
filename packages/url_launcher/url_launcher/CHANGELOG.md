@@ -1,5 +1,6 @@
-## NEXT
+## 6.0.8
 
+* Adding API level 30 required package visibility configuration to the example's AndroidManifest.xml and README
 * Fix test button check for iOS 15.
 
 ## 6.0.7
