@@ -10,8 +10,11 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.MethodCall;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class ImagePickerCache {
 
@@ -101,11 +104,13 @@ class ImagePickerCache {
   }
 
   void saveResult(
-      @Nullable String path, @Nullable String errorCode, @Nullable String errorMessage) {
+      @Nullable ArrayList<String> path, @Nullable String errorCode, @Nullable String errorMessage) {
 
+    Set<String> imageSet = new HashSet<>();
+    imageSet.addAll(path);
     SharedPreferences.Editor editor = prefs.edit();
     if (path != null) {
-      editor.putString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, path);
+      editor.putStringSet(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, imageSet);
     }
     if (errorCode != null) {
       editor.putString(SHARED_PREFERENCE_ERROR_CODE_KEY, errorCode);
