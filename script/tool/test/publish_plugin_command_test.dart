@@ -995,6 +995,57 @@ void main() {
           ]));
       expect(processRunner.pushTagsArgs, isEmpty);
     });
+
+    test('Do not release flutter_plugin_tools', () async {
+      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+        'name': 'flutter_plugin_tools',
+        'versions': <String>[],
+      };
+
+      final MockClient mockClient = MockClient((http.Request request) async {
+        if (request.url.pathSegments.last == 'flutter_plugin_tools.json') {
+          return http.Response(json.encode(httpResponsePlugin1), 200);
+        }
+        return http.Response('', 500);
+      });
+      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
+          processRunner: processRunner,
+          print: (Object? message) => printedMessages.add(message.toString()),
+          stdinput: mockStdin,
+          httpClient: mockClient,
+          gitDir: gitDir);
+
+      commandRunner = CommandRunner<void>(
+        'publish_check_command',
+        'Test for publish-check command.',
+      );
+      commandRunner.addCommand(command);
+
+      final Directory flutterPluginTools =
+          createFakePlugin('flutter_plugin_tools', packagesDir);
+      await gitDir.runCommand(<String>['add', '-A']);
+      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      // Immediately return 0 when running `pub publish`.
+      processRunner.mockPublishCompleteCode = 0;
+      mockStdin.readLineOutput = 'y';
+      await commandRunner
+          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      expect(
+          printedMessages,
+          containsAllInOrder(<String>[
+            'Checking local repo...',
+            'Local repo is ready!',
+            'Done!'
+          ]));
+      expect(
+          printedMessages.contains(
+            'Running `pub publish ` in ${flutterPluginTools.path}...\n',
+          ),
+          isFalse);
+      expect(processRunner.pushTagsArgs, isEmpty);
+      processRunner.pushTagsArgs.clear();
+      printedMessages.clear();
+    });
   });
 }
 

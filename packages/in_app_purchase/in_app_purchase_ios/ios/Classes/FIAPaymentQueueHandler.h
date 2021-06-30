@@ -18,6 +18,9 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 
 @interface FIAPaymentQueueHandler : NSObject <SKPaymentTransactionObserver>
 
+@property(NS_NONATOMIC_IOSONLY, weak, nullable) id<SKPaymentQueueDelegate> delegate API_AVAILABLE(
+    ios(13.0), macos(10.15), watchos(6.2));
+
 - (instancetype)initWithQueue:(nonnull SKPaymentQueue *)queue
                      transactionsUpdated:(nullable TransactionsUpdated)transactionsUpdated
                       transactionRemoved:(nullable TransactionsRemoved)transactionsRemoved
@@ -42,6 +45,15 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // @param payment Payment object to be added to the payment queue.
 // @return whether "addPayment" was successful.
 - (BOOL)addPayment:(SKPayment *)payment;
+
+// Displays the price consent sheet.
+//
+// The price consent sheet is only displayed when the following
+// it true:
+// - You have increased the price of the subscription in App Store Connect.
+// - The subscriber has not yet responded to a price consent query.
+// Otherwise the method has no effect.
+- (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4));
 
 @end
 
