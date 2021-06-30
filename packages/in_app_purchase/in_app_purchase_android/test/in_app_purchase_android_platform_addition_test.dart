@@ -171,4 +171,44 @@ void main() {
       expect(arguments['feature'], equals('subscriptions'));
     });
   });
+
+  group('launchPriceChangeConfirmationFlow', () {
+    const String launchPriceChangeConfirmationFlowMethodName =
+        'BillingClient#launchPriceChangeConfirmationFlow (Activity, PriceChangeFlowParams, PriceChangeConfirmationListener)';
+    const dummySku = 'sku';
+
+    final expectedBillingResultPriceChangeConfirmation = BillingResultWrapper(
+      responseCode: BillingResponse.ok,
+      debugMessage: 'dummy message',
+    );
+
+    test('serializes and deserializes data', () async {
+      stubPlatform.addResponse(
+        name: launchPriceChangeConfirmationFlowMethodName,
+        value:
+            buildBillingResultMap(expectedBillingResultPriceChangeConfirmation),
+      );
+
+      expect(
+        await iapAndroidPlatformAddition.launchPriceChangeConfirmationFlow(
+          sku: dummySku,
+        ),
+        equals(expectedBillingResultPriceChangeConfirmation),
+      );
+    });
+
+    test('passes sku to launchPriceChangeConfirmationFlow', () async {
+      stubPlatform.addResponse(
+        name: launchPriceChangeConfirmationFlowMethodName,
+        value:
+            buildBillingResultMap(expectedBillingResultPriceChangeConfirmation),
+      );
+      await iapAndroidPlatformAddition.launchPriceChangeConfirmationFlow(
+        sku: dummySku,
+      );
+      final MethodCall call = stubPlatform
+          .previousCallMatching(launchPriceChangeConfirmationFlowMethodName);
+      expect(call.arguments, equals(<dynamic, dynamic>{'sku': dummySku}));
+    });
+  });
 }

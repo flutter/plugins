@@ -17,6 +17,8 @@
 @property(strong, nonatomic) NSDictionary *transactionMap;
 @property(strong, nonatomic) NSDictionary *errorMap;
 @property(strong, nonatomic) NSDictionary *localeMap;
+@property(strong, nonatomic) NSDictionary *storefrontMap;
+@property(strong, nonatomic) NSDictionary *storefrontAndPaymentTransactionMap;
 
 @end
 
@@ -84,6 +86,15 @@
       @"key" : @"value",
     }
   };
+  self.storefrontMap = @{
+    @"countryCode" : @"USA",
+    @"identifier" : @"unique_identifier",
+  };
+
+  self.storefrontAndPaymentTransactionMap = @{
+    @"storefront" : self.storefrontMap,
+    @"transaction" : self.transactionMap,
+  };
 }
 
 - (void)testSKProductSubscriptionPeriodStubToMap {
@@ -141,6 +152,25 @@
     NSLocale *system = NSLocale.systemLocale;
     NSDictionary *map = [FIAObjectTranslator getMapFromNSLocale:system];
     XCTAssertEqualObjects(map[@"currencySymbol"], system.currencySymbol);
+  }
+}
+
+- (void)testSKStorefrontToMap {
+  if (@available(iOS 13.0, *)) {
+    SKStorefront *storefront = [[SKStorefrontStub alloc] initWithMap:self.storefrontMap];
+    NSDictionary *map = [FIAObjectTranslator getMapFromSKStorefront:storefront];
+    XCTAssertEqualObjects(map, self.storefrontMap);
+  }
+}
+
+- (void)testSKStorefrontAndSKPaymentTransactionToMap {
+  if (@available(iOS 13.0, *)) {
+    SKStorefront *storefront = [[SKStorefrontStub alloc] initWithMap:self.storefrontMap];
+    SKPaymentTransaction *transaction =
+        [[SKPaymentTransactionStub alloc] initWithMap:self.transactionMap];
+    NSDictionary *map = [FIAObjectTranslator getMapFromSKStorefront:storefront
+                                            andSKPaymentTransaction:transaction];
+    XCTAssertEqualObjects(map, self.storefrontAndPaymentTransactionMap);
   }
 }
 

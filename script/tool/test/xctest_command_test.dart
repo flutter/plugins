@@ -125,7 +125,9 @@ void main() {
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
-            output, contains('iOS is not implemented by this plugin package.'));
+            output,
+            contains(
+                contains('iOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -142,7 +144,9 @@ void main() {
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
-            output, contains('iOS is not implemented by this plugin package.'));
+            output,
+            contains(
+                contains('iOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -176,10 +180,12 @@ void main() {
           'plugin1'
         ]);
 
-        expect(output, isNot(contains('Start running for plugin1...')));
-        expect(output, contains('Start running for plugin2...'));
-        expect(output,
-            contains('Successfully ran iOS xctest for plugin2/example'));
+        expect(output, isNot(contains(contains('Running for plugin1'))));
+        expect(output, contains(contains('Running for plugin2')));
+        expect(
+            output,
+            contains(
+                contains('Successfully ran iOS xctest for plugin2/example')));
 
         expect(
             processRunner.recordedCalls,
@@ -271,8 +277,10 @@ void main() {
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output,
-            contains('macOS is not implemented by this plugin package.'));
+        expect(
+            output,
+            contains(
+                contains('macOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -288,8 +296,10 @@ void main() {
         processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
-        expect(output,
-            contains('macOS is not implemented by this plugin package.'));
+        expect(
+            output,
+            contains(
+                contains('macOS is not implemented by this plugin package.')));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -314,8 +324,10 @@ void main() {
           '--macos',
         ]);
 
-        expect(output,
-            contains('Successfully ran macOS xctest for plugin/example'));
+        expect(
+            output,
+            contains(
+                contains('Successfully ran macOS xctest for plugin/example')));
 
         expect(
             processRunner.recordedCalls,

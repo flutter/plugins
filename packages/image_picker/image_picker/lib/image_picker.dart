@@ -54,6 +54,13 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  ///
+  /// See also [getMultiImage] to allow users to select multiple images at once.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
+  /// the camera or photos gallery, no camera is available, plugin is already in use,
+  /// temporary file could not be created (iOS only), plugin activity could not
+  /// be allocated (Android only) or due to an unknown error.
   Future<PickedFile?> getImage({
     required ImageSource source,
     double? maxWidth,
@@ -67,6 +74,42 @@ class ImagePicker {
       maxHeight: maxHeight,
       imageQuality: imageQuality,
       preferredCameraDevice: preferredCameraDevice,
+    );
+  }
+
+  /// Returns a [List<PickedFile>] object wrapping the images that were picked.
+  ///
+  /// The returned [List<PickedFile>] is intended to be used within a single APP session. Do not save the file path and use it across sessions.
+  ///
+  /// Where iOS supports HEIC images, Android 8 and below doesn't. Android 9 and above only support HEIC images if used
+  /// in addition to a size modification, of which the usage is explained below.
+  ///
+  /// This method is not supported in iOS versions lower than 14.
+  ///
+  /// If specified, the images will be at most `maxWidth` wide and
+  /// `maxHeight` tall. Otherwise the images will be returned at it's
+  /// original width and height.
+  /// The `imageQuality` argument modifies the quality of the images, ranging from 0-100
+  /// where 100 is the original/max quality. If `imageQuality` is null, the images with
+  /// the original quality will be returned. Compression is only supported for certain
+  /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
+  /// a warning message will be logged.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
+  /// the camera or photos gallery, no camera is available, plugin is already in use,
+  /// temporary file could not be created (iOS only), plugin activity could not
+  /// be allocated (Android only) or due to an unknown error.
+  ///
+  /// See also [getImage] to allow users to only pick a single image.
+  Future<List<PickedFile>?> getMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) {
+    return platform.pickMultiImage(
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
     );
   }
 
@@ -86,6 +129,12 @@ class ImagePicker {
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
   /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
+  ///
+  /// The method could throw [PlatformException] if the app does not have permission to access
+  /// the camera or photos gallery, no camera is available, plugin is already in use,
+  /// temporary file could not be created and video could not be cached (iOS only),
+  /// plugin activity could not be allocated (Android only) or due to an unknown error.
+  ///
   Future<PickedFile?> getVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,

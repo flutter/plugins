@@ -31,8 +31,8 @@ const bool _kAutoConsume = true;
 
 const String _kConsumableId = 'consumable';
 const String _kUpgradeId = 'upgrade';
-const String _kSilverSubscriptionId = 'subscription_silver';
-const String _kGoldSubscriptionId = 'subscription_gold';
+const String _kSilverSubscriptionId = 'subscription_silver1';
+const String _kGoldSubscriptionId = 'subscription_gold1';
 const List<String> _kProductIds = <String>[
   _kConsumableId,
   _kUpgradeId,
@@ -251,7 +251,21 @@ class _MyAppState extends State<_MyApp> {
               productDetails.description,
             ),
             trailing: previousPurchase != null
-                ? Icon(Icons.check)
+                ? IconButton(
+                    onPressed: () {
+                      final InAppPurchaseAndroidPlatformAddition addition =
+                          InAppPurchasePlatformAddition.instance
+                              as InAppPurchaseAndroidPlatformAddition;
+                      var skuDetails =
+                          (productDetails as GooglePlayProductDetails)
+                              .skuDetails;
+                      addition
+                          .launchPriceChangeConfirmationFlow(
+                              sku: skuDetails.sku)
+                          .then((value) => print(
+                              "confirmationResponse: ${value.responseCode}"));
+                    },
+                    icon: Icon(Icons.upgrade))
                 : TextButton(
                     child: Text(productDetails.price),
                     style: TextButton.styleFrom(

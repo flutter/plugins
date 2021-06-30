@@ -1,3 +1,11 @@
+## 3.0.0
+
+* Breaking changes:
+    * pickImage now returns XFile instead of PickedFile
+    * pickVideo now returns XFile instead of PickedFile
+    * changed LostData file parameter type to XFile
+    * removed PickedFile class and its tests
+    
 ## 2.1.0
 
 * Add `pickMultiImage` method.

@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'package:cross_file/cross_file.dart';
+import 'package:image_picker_platform_interface/src/types/lost_data.dart';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -40,7 +42,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
 
   // Next version of the API.
 
-  /// Returns a [PickedFile] with the image that was picked.
+  /// Returns a [XFile] with the image that was picked.
   ///
   /// The `source` argument controls where the image comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -68,7 +70,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
-  Future<PickedFile?> pickImage({
+  Future<XFile?> pickImage({
     required ImageSource source,
     double? maxWidth,
     double? maxHeight,
@@ -78,7 +80,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickImage() has not been implemented.');
   }
 
-  /// Returns a [List<PickedFile>] with the images that were picked.
+  /// Returns a [List<XFile>] with the images that were picked.
   ///
   /// The images come from the [ImageSource.gallery].
   ///
@@ -96,7 +98,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// a warning message will be logged.
   ///
   /// If no images were picked, the return value is null.
-  Future<List<PickedFile>?> pickMultiImage({
+  Future<List<XFile>?> pickMultiImage({
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
@@ -104,7 +106,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickMultiImage() has not been implemented.');
   }
 
-  /// Returns a [PickedFile] containing the video that was picked.
+  /// Returns a [XFile] containing the video that was picked.
   ///
   /// The [source] argument controls where the video comes from. This can
   /// be either [ImageSource.camera] or [ImageSource.gallery].
@@ -120,7 +122,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
-  Future<PickedFile?> pickVideo({
+  Future<XFile?> pickVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
@@ -128,7 +130,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickVideo() has not been implemented.');
   }
 
-  /// Retrieve the lost [PickedFile] file when [pickImage] or [pickVideo] failed because the MainActivity is destroyed. (Android only)
+  /// Retrieve the lost [XFile] file when [pickImage] or [pickVideo] failed because the MainActivity is destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
   /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
