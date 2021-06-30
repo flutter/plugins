@@ -23,6 +23,7 @@ import android.net.Uri;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -47,6 +48,7 @@ public class ImagePickerDelegateTest {
   @Mock ImagePickerCache cache;
 
   ImagePickerDelegate.FileUriResolver mockFileUriResolver;
+  MockedStatic<File> mockStaticFile;
 
   private static class MockFileUriResolver implements ImagePickerDelegate.FileUriResolver {
     @Override
@@ -63,6 +65,11 @@ public class ImagePickerDelegateTest {
   @Before
   public void setUp() {
     MockitoAnnotations.initMocks(this);
+
+    mockStaticFile = Mockito.mockStatic(File.class);
+    mockStaticFile
+        .when(() -> File.createTempFile(any(), any(), any()))
+        .thenReturn(new File("/tmpfile"));
 
     when(mockActivity.getPackageName()).thenReturn("com.example.test");
     when(mockActivity.getPackageManager()).thenReturn(mock(PackageManager.class));
@@ -85,6 +92,11 @@ public class ImagePickerDelegateTest {
 
     Uri mockUri = mock(Uri.class);
     when(mockIntent.getData()).thenReturn(mockUri);
+  }
+
+  @After
+  public void tearDown() {
+    mockStaticFile.close();
   }
 
   @Test
@@ -155,18 +167,11 @@ public class ImagePickerDelegateTest {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
 
-    try (MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class)) {
-      mockStaticFile
-          .when(() -> File.createTempFile(any(), any(), any()))
-          .thenReturn(new File("/tmpfile"));
-
-      delegate.takeImageWithCamera(mockMethodCall, mockResult);
-
-      verify(mockActivity)
-          .startActivityForResult(
-              any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
-    }
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
   }
 
   @Test
@@ -176,18 +181,11 @@ public class ImagePickerDelegateTest {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
 
-    try (MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class)) {
-      mockStaticFile
-          .when(() -> File.createTempFile(any(), any(), any()))
-          .thenReturn(new File("/tmpfile"));
-
-      delegate.takeImageWithCamera(mockMethodCall, mockResult);
-
-      verify(mockActivity)
-          .startActivityForResult(
-              any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
-    }
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
   }
 
   @Test
@@ -209,18 +207,12 @@ public class ImagePickerDelegateTest {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
-    try (MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class)) {
-      mockStaticFile
-          .when(() -> File.createTempFile(any(), any(), any()))
-          .thenReturn(new File("/tmpfile"));
+    ImagePickerDelegate delegate = createDelegate();
+    delegate.takeImageWithCamera(mockMethodCall, mockResult);
 
-      ImagePickerDelegate delegate = createDelegate();
-      delegate.takeImageWithCamera(mockMethodCall, mockResult);
-
-      mockStaticFile.verify(
-          () -> File.createTempFile(any(), eq(".jpg"), eq(new File("/image_picker_cache"))),
-          times(1));
-    }
+    mockStaticFile.verify(
+        () -> File.createTempFile(any(), eq(".jpg"), eq(new File("/image_picker_cache"))),
+        times(1));
   }
 
   @Test
@@ -240,44 +232,32 @@ public class ImagePickerDelegateTest {
   public void
       onRequestTakeVideoPermissionsResult_WhenCameraPermissionGranted_LaunchesTakeVideoWithCameraIntent() {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_CAMERA_VIDEO_PERMISSION,
+        new String[] {Manifest.permission.CAMERA},
+        new int[] {PackageManager.PERMISSION_GRANTED});
 
-    try (MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class)) {
-      mockStaticFile
-          .when(() -> File.createTempFile(any(), any(), any()))
-          .thenReturn(new File("/tmpfile"));
-
-      delegate.onRequestPermissionsResult(
-          ImagePickerDelegate.REQUEST_CAMERA_VIDEO_PERMISSION,
-          new String[] {Manifest.permission.CAMERA},
-          new int[] {PackageManager.PERMISSION_GRANTED});
-
-      verify(mockActivity)
-          .startActivityForResult(
-              any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA));
-    }
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA));
   }
 
   @Test
   public void
       onRequestTakeImagePermissionsResult_WhenCameraPermissionGranted_LaunchesTakeWithCameraIntent() {
     when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
+
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
+    delegate.onRequestPermissionsResult(
+        ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION,
+        new String[] {Manifest.permission.CAMERA},
+        new int[] {PackageManager.PERMISSION_GRANTED});
 
-    try (MockedStatic<File> mockStaticFile = Mockito.mockStatic(File.class)) {
-      mockStaticFile
-          .when(() -> File.createTempFile(any(), any(), any()))
-          .thenReturn(new File("/tmpfile"));
-
-      delegate.onRequestPermissionsResult(
-          ImagePickerDelegate.REQUEST_CAMERA_IMAGE_PERMISSION,
-          new String[] {Manifest.permission.CAMERA},
-          new int[] {PackageManager.PERMISSION_GRANTED});
-
-      verify(mockActivity)
-          .startActivityForResult(
-              any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
-    }
+    verify(mockActivity)
+        .startActivityForResult(
+            any(Intent.class), eq(ImagePickerDelegate.REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA));
   }
 
   @Test
