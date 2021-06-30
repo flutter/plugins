@@ -11,6 +11,7 @@
 
 @interface InAppPurchasePluginTest : XCTestCase
 
+@property(strong, nonatomic) FIAPReceiptManagerStub* receiptManagerStub;
 @property(strong, nonatomic) InAppPurchasePlugin* plugin;
 
 @end
@@ -18,8 +19,8 @@
 @implementation InAppPurchasePluginTest
 
 - (void)setUp {
-  self.plugin =
-      [[InAppPurchasePluginStub alloc] initWithReceiptManager:[FIAPReceiptManagerStub new]];
+  self.receiptManagerStub = [FIAPReceiptManagerStub new];
+  self.plugin = [[InAppPurchasePluginStub alloc] initWithReceiptManager:self.receiptManagerStub];
 }
 
 - (void)tearDown {
@@ -219,7 +220,7 @@
   XCTAssertTrue(callbackInvoked);
 }
 
-- (void)testRetrieveReceiptData {
+- (void)testRetrieveReceiptDataSuccess {
   XCTestExpectation* expectation = [self expectationWithDescription:@"receipt data retrieved"];
   FlutterMethodCall* call = [FlutterMethodCall
       methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
@@ -231,8 +232,25 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  NSLog(@"%@", result);
   XCTAssertNotNil(result);
+  XCTAssert([result isKindOfClass:[NSString class]]);
+}
+
+- (void)testRetrieveReceiptDataError {
+  XCTestExpectation* expectation = [self expectationWithDescription:@"receipt data retrieved"];
+  FlutterMethodCall* call = [FlutterMethodCall
+      methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
+                     arguments:nil];
+  __block NSDictionary* result;
+  self.receiptManagerStub.returnError = YES;
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           result = r;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertNotNil(result);
+  XCTAssert([result isKindOfClass:[FlutterError class]]);
 }
 
 - (void)testRefreshReceiptRequest {
