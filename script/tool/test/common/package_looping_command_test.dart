@@ -22,6 +22,7 @@ import 'plugin_command_test.mocks.dart';
 const String _startErrorColor = '\x1B[31m';
 const String _startHeadingColor = '\x1B[36m';
 const String _startSkipColor = '\x1B[90m';
+const String _startSkipWithWarningColor = '\x1B[93m';
 const String _startSuccessColor = '\x1B[32m';
 const String _startWarningColor = '\x1B[33m';
 const String _endColor = '\x1B[0m';
@@ -397,6 +398,53 @@ void main() {
             '\n',
             '${_startSuccessColor}No issues found!$_endColor',
           ]));
+      // The long-form summary should not be printed for short-form commands.
+      expect(output, isNot(contains('Run summary:')));
+      expect(output, isNot(contains(contains('package a - ran'))));
+    });
+
+    test('prints long-form run summary for long-output commands', () async {
+      final Directory warnPackage1 =
+          createFakePackage('package_a', packagesDir);
+      warnPackage1
+          .childFile(_warningFile)
+          .writeAsStringSync('Warning 1\nWarning 2');
+      createFakePackage('package_b', packagesDir);
+      final Directory skipPackage = createFakePackage('package_c', packagesDir);
+      skipPackage.childFile(_skipFile).writeAsStringSync('For a reason');
+      final Directory skipAndWarnPackage =
+          createFakePackage('package_d', packagesDir);
+      skipAndWarnPackage.childFile(_warningFile).writeAsStringSync('Warning');
+      skipAndWarnPackage.childFile(_skipFile).writeAsStringSync('See warning');
+      final Directory warnPackage2 =
+          createFakePackage('package_e', packagesDir);
+      warnPackage2
+          .childFile(_warningFile)
+          .writeAsStringSync('Warning 1\nWarning 2');
+      createFakePackage('package_f', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: true);
+      final List<String> output = await runCommand(command);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '------------------------------------------------------------',
+            'Run overview:',
+            '  package_a - ${_startWarningColor}ran (with warning)$_endColor',
+            '  package_b - ${_startSuccessColor}ran$_endColor',
+            '  package_c - ${_startSkipColor}skipped$_endColor',
+            '  package_d - ${_startSkipWithWarningColor}skipped (with warning)$_endColor',
+            '  package_e - ${_startWarningColor}ran (with warning)$_endColor',
+            '  package_f - ${_startSuccessColor}ran$_endColor',
+            '',
+            'Ran for 4 package(s) (2 with warnings)',
+            'Skipped 2 package(s) (1 with warnings)',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+      output.forEach(print); // XXX
     });
 
     test('handles warnings outside of runForPackage', () async {

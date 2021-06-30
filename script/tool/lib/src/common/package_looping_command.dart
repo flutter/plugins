@@ -212,6 +212,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
     final String skippedWarningSummary =
         runWarningCount > 0 ? ' ($skippedWarningCount with warnings)' : '';
     print('------------------------------------------------------------');
+    if (hasLongOutput) {
+      _printPerPackageRunOverview(packages);
+    }
     print(
         'Ran for ${packages.length - skipCount} package(s)$runWarningSummary');
     if (skipCount > 0) {
@@ -220,6 +223,31 @@ abstract class PackageLoopingCommand extends PluginCommand {
     if (_otherWarningCount > 0) {
       print('$_otherWarningCount warnings not associated with a package');
     }
+  }
+
+  /// Prints a one-line-per-package overview of the run results for each
+  /// package.
+  void _printPerPackageRunOverview(List<Directory> packages) {
+    print('Run overview:');
+    for (final Directory package in packages) {
+      final bool hadWarning = _packagesWithWarnings.contains(package);
+      Colorize summary;
+      if (_skippedPackages.contains(package)) {
+        if (hadWarning) {
+          summary = Colorize('skipped (with warning)')..lightYellow();
+        } else {
+          summary = Colorize('skipped')..darkGray();
+        }
+      } else {
+        if (hadWarning) {
+          summary = Colorize('ran (with warning)')..yellow();
+        } else {
+          summary = Colorize('ran')..green();
+        }
+      }
+      print('  ${getPackageDescription(package)} - $summary');
+    }
+    print('');
   }
 
   /// Prints a summary of all of the failures from [results].
