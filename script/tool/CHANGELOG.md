@@ -1,5 +1,8 @@
 ## NEXT
 
+- Modified the output format of many commands
+- **Breaking change**: `firebase-test-lab` no longer supports `*_e2e.dart`
+  files, only `integration_test/*_test.dart`.
 - Add a summary to the end of successful command runs for commands using the
   new output format.
 
@@ -10,6 +13,8 @@
   compatibility.
 - `xctest` now supports running macOS tests in addition to iOS
   - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
+- **Breaking change**: `build-examples` for iOS now uses `--ios` rather than
+  `--ipa`.
 - The tooling now runs in strong null-safe mode.
 - `publish plugins` check against pub.dev to determine if a release should happen.
 - Modified the output format of many commands

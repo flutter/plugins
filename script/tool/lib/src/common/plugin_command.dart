@@ -8,6 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'core.dart';
 import 'git_version_finder.dart';
@@ -84,6 +85,10 @@ abstract class PluginCommand extends Command<void> {
 
   int? _shardIndex;
   int? _shardCount;
+
+  /// The command to use when running `flutter`.
+  String get flutterCommand =>
+      const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
   /// The shard of the overall command execution that this instance should run.
   int get shardIndex {

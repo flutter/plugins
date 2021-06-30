@@ -220,7 +220,7 @@ task:
         - xcrun simctl list
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
       build_script:
-        - ./script/tool_runner.sh build-examples --ipa
+        - ./script/tool_runner.sh build-examples --ios
       xctest_script:
         - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
@@ -248,7 +248,7 @@ task:
         PATH: $PATH:/usr/local/bin
       build_script:
         - flutter config --enable-macos-desktop
-        - ./script/tool_runner.sh build-examples --macos --no-ipa
+        - ./script/tool_runner.sh build-examples --macos
       xctest_script:
         - ./script/tool_runner.sh xctest --macos --exclude $PLUGINS_TO_EXCLUDE_MACOS_XCTESTS
       drive_script:

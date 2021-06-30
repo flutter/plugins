@@ -23,10 +23,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   /// Packages that had a [logSkip] call.
-  Set<Directory> _skippedPackages = <Directory>{};
+  final Set<Directory> _skippedPackages = <Directory>{};
 
   /// Packages that had at least one [logWarning] call.
-  Set<Directory> _packagesWithWarnings = <Directory>{};
+  final Set<Directory> _packagesWithWarnings = <Directory>{};
 
   /// Number of warnings that happened outside of a [runForPackage] call.
   int _otherWarningCount = 0;
