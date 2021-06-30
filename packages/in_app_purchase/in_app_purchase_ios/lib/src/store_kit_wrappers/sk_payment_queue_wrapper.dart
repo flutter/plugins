@@ -230,13 +230,13 @@ class SKPaymentQueueWrapper {
             observer.removedTransactions(transactions: transactions);
           });
         }
-        case 'restoreCompletedTransactionsFailed':
-          {
-            SKError error =
-                SKError.fromJson(new Map<String, dynamic>.from(call.arguments));
-            return Future<void>(() {
-              observer.restoreCompletedTransactionsFailed(error: error);
-            });
+      case 'restoreCompletedTransactionsFailed':
+        {
+          SKError error =
+              SKError.fromJson(Map<String, dynamic>.from(call.arguments));
+          return Future<void>(() {
+            observer.restoreCompletedTransactionsFailed(error: error);
+          });
         }
       case 'paymentQueueRestoreCompletedTransactionsFinished':
         {
