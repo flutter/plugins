@@ -1,6 +1,7 @@
-## NEXT
+## 5.0.5
 
 * Add iOS unit and UI integration test targets.
+* Adds support for serverAuthCode and server side authentication.
 
 ## 5.0.4
 
