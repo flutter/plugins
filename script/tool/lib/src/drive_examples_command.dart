@@ -48,7 +48,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
   @override
   final String description = 'Runs driver tests for plugin example apps.\n\n'
-      'For each *_test.dart in test_driver/ it drives an application with the '
+      'For each *_test.dart in test_driver/ it drives an application with '
       'either the corresponding test in test_driver (for example, '
       'test_driver/app_test.dart would match test_driver/app.dart), or the '
       '*_test.dart files in integration_test/.\n\n'
@@ -263,8 +263,15 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     return tests;
   }
 
-  /// Runs each file from [targets] using `flutter drive`, returning a list of
-  /// any failing test targets.
+  /// For each file in [targets], uses
+  /// `flutter drive --driver [driver] --target <target>`
+  /// to drive [example], returning a list of any failing test targets.
+  ///
+  /// [deviceFlags] should contain the flags to run the test on a specific
+  /// target device (plus any supporting device-specific flags). E.g.:
+  ///   - `['-d', 'macos']` for driving for macOS.
+  ///   - `['-d', 'web-server', '--web-port=<port>', '--browser-name=<browser>]`
+  ///     for web
   Future<List<File>> _driveTests(
     Directory example,
     File driver,

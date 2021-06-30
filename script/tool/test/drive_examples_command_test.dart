@@ -59,34 +59,71 @@ void main() {
 
     test('fails if no platforms are provided', () async {
       setMockFlutterDevicesOutput();
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runCapturingPrint(runner, <String>['drive-examples']),
-        throwsA(isA<ToolExit>()),
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Exactly one of'),
+        ]),
+      );
+    });
+
+    test('fails if multiple platforms are provided', () async {
+      setMockFlutterDevicesOutput();
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--ios', '--macos'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Exactly one of'),
+        ]),
       );
     });
 
     test('fails for iOS if no iOS devices are present', () async {
       setMockFlutterDevicesOutput(hasIosDevice: false);
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runCapturingPrint(runner, <String>['drive-examples']),
-        throwsA(isA<ToolExit>()),
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No iOS devices'),
+        ]),
       );
     });
 
-    test('fails if no platforms are provided', () async {
-      setMockFlutterDevicesOutput(hasAndroidDevice: false);
-      expect(
-        () => runCapturingPrint(runner, <String>['drive-examples']),
-        throwsA(isA<ToolExit>()),
-      );
-    });
+    test('fails if Android if no Android devices are present', () async {
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
 
-    test('fails if multiple platforms are provided', () async {
-      setMockFlutterDevicesOutput(hasAndroidDevice: false);
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runCapturingPrint(
-            runner, <String>['drive-examples', '--ios', '--macos']),
-        throwsA(isA<ToolExit>()),
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No Android devices'),
+        ]),
       );
     });
 
@@ -143,6 +180,7 @@ void main() {
 
     test('driving under folder "test_driver" when test files are missing"',
         () async {
+      setMockFlutterDevicesOutput();
       createFakePlugin(
         'plugin',
         packagesDir,
@@ -155,13 +193,27 @@ void main() {
         },
       );
 
-      await expectLater(
-          () => runCapturingPrint(runner, <String>['drive-examples']),
-          throwsA(const TypeMatcher<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No driver tests were run (1 example(s) found).'),
+          contains('No test files for example/test_driver/plugin_test.dart'),
+        ]),
+      );
     });
 
     test('a plugin without any integration test files is reported as an error',
         () async {
+      setMockFlutterDevicesOutput();
       createFakePlugin(
         'plugin',
         packagesDir,
@@ -174,9 +226,22 @@ void main() {
         },
       );
 
-      await expectLater(
-          () => runCapturingPrint(runner, <String>['drive-examples']),
-          throwsA(const TypeMatcher<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--android'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No driver tests were run (1 example(s) found).'),
+          contains('No tests ran'),
+        ]),
+      );
     });
 
     test(
