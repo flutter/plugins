@@ -236,7 +236,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   @override
   Future<LostDataResponse> getLostData() async {
     final Map<String, dynamic>? result =
-    await _channel.invokeMapMethod<String, dynamic>('retrieve');
+        await _channel.invokeMapMethod<String, dynamic>('retrieve');
 
     if (result == null) {
       return LostDataResponse.empty();
