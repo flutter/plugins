@@ -24,7 +24,7 @@ void main() {
     plugin = ImagePickerPlugin();
   });
 
-  test('Can select a file', () async {
+  test('Can select a file (Deprecated)', () async {
     final mockInput = html.FileUploadInputElement();
 
     final overrides = ImagePickerPluginTestOverrides()
@@ -35,6 +35,27 @@ void main() {
 
     // Init the pick file dialog...
     final file = plugin.pickFile();
+
+    // Mock the browser behavior of selecting a file...
+    mockInput.dispatchEvent(html.Event('change'));
+
+    // Now the file should be available
+    expect(file, completes);
+    // And readable
+    expect((await file).readAsBytes(), completion(isNotEmpty));
+  });
+
+  test('Can select a file', () async {
+    final mockInput = html.FileUploadInputElement();
+
+    final overrides = ImagePickerPluginTestOverrides()
+      ..createInputElement = ((_, __) => mockInput)
+      ..getFileFromInput = ((_) => textFile);
+
+    final plugin = ImagePickerPlugin(overrides: overrides);
+
+    // Init the pick file dialog...
+    final file = plugin.getFile();
 
     // Mock the browser behavior of selecting a file...
     mockInput.dispatchEvent(html.Event('change'));
