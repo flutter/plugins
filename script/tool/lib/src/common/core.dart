@@ -53,13 +53,35 @@ bool isFlutterPackage(FileSystemEntity entity) {
   }
 }
 
+/// Prints `successMessage` in green.
+void printSuccess(String successMessage) {
+  print(Colorize(successMessage)..green());
+}
+
+/// Prints `warningMessage` in yellow.
+///
+/// Warnings are not surfaced in CI summaries, so this is only useful for
+/// highlighting something when someone is already looking though the log
+/// messages. DO NOT RELY on someone noticing a warning; instead, use it for
+/// things that might be useful to someone debugging an unexpected result.
+void printWarning(String warningMessage) {
+  print(Colorize(warningMessage)..yellow());
+}
+
 /// Prints `errorMessage` in red.
 void printError(String errorMessage) {
-  final Colorize redError = Colorize(errorMessage)..red();
-  print(redError);
+  print(Colorize(errorMessage)..red());
 }
 
 /// Error thrown when a command needs to exit with a non-zero exit code.
+///
+/// While there is no specific definition of the meaning of different non-zero
+/// exit codes for this tool, commands should follow the general convention:
+///   1: The command ran correctly, but found errors.
+///   2: The command failed to run because the arguments were invalid.
+///  >2: The command failed to run correctly for some other reason. Ideally,
+///      each such failure should have a unique exit code within the context of
+///      that command.
 class ToolExit extends Error {
   /// Creates a tool exit with the given [exitCode].
   ToolExit(this.exitCode);
@@ -67,3 +89,9 @@ class ToolExit extends Error {
   /// The code that the process should exit with.
   final int exitCode;
 }
+
+/// A exit code for [ToolExit] for a successful run that found errors.
+const int exitCommandFoundErrors = 1;
+
+/// A exit code for [ToolExit] for a failure to run due to invalid arguments.
+const int exitInvalidArguments = 2;
