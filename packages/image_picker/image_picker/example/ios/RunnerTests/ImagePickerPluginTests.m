@@ -167,6 +167,7 @@
   plugin.result = ^(id result) {
 
   };
+  // To ensure the flow does not crash by multiple cancel call
   [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
   [plugin imagePickerControllerDidCancel:[plugin getImagePickerController]];
 }
