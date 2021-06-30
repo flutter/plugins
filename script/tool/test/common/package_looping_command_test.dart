@@ -444,7 +444,6 @@ void main() {
             '\n',
             '${_startSuccessColor}No issues found!$_endColor',
           ]));
-      output.forEach(print); // XXX
     });
 
     test('handles warnings outside of runForPackage', () async {
