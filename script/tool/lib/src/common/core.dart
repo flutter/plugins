@@ -58,6 +58,16 @@ void printSuccess(String successMessage) {
   print(Colorize(successMessage)..green());
 }
 
+/// Prints `warningMessage` in yellow.
+///
+/// Warnings are not surfaced in CI summaries, so this is only useful for
+/// highlighting something when someone is already looking though the log
+/// messages. DO NOT RELY on someone noticing a warning; instead, use it for
+/// things that might be useful to someone debugging an unexpected result.
+void printWarning(String warningMessage) {
+  print(Colorize(warningMessage)..yellow());
+}
+
 /// Prints `errorMessage` in red.
 void printError(String errorMessage) {
   print(Colorize(errorMessage)..red());

@@ -70,7 +70,6 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     File pubspecFile, {
     required String packageName,
   }) async {
-    const String indentation = '  ';
     final String contents = pubspecFile.readAsStringSync();
     final Pubspec? pubspec = _tryParsePubspec(contents);
     if (pubspec == null) {

@@ -149,15 +149,7 @@ class PublishPluginCommand extends PluginCommand {
     }
 
     _print('Checking local repo...');
-    // Ensure there are no symlinks in the path, as it can break
-    // GitDir's allowSubdirectory:true.
-    final String packagesPath = packagesDir.resolveSymbolicLinksSync();
-    if (!await GitDir.isGitDir(packagesPath)) {
-      _print('$packagesPath is not a valid Git repository.');
-      throw ToolExit(1);
-    }
-    final GitDir baseGitDir = gitDir ??
-        await GitDir.fromExisting(packagesPath, allowSubdirectory: true);
+    final GitDir repository = await gitDir;
 
     final bool shouldPushTag = getBoolArg(_pushTagsOption);
     _RemoteInfo? remote;
@@ -179,7 +171,7 @@ class PublishPluginCommand extends PluginCommand {
     bool successful;
     if (publishAllChanged) {
       successful = await _publishAllChangedPackages(
-        baseGitDir: baseGitDir,
+        baseGitDir: repository,
         remoteForTagPush: remote,
       );
     } else {
