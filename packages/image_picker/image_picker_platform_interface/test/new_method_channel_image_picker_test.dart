@@ -614,35 +614,34 @@ void main() {
 
       test('does not accept a invalid imageQuality argument', () {
         expect(
-              () => picker.getImage(imageQuality: -1, source: ImageSource.gallery),
+          () => picker.getImage(imageQuality: -1, source: ImageSource.gallery),
           throwsArgumentError,
         );
 
         expect(
-              () =>
-              picker.getImage(imageQuality: 101, source: ImageSource.gallery),
+          () => picker.getImage(imageQuality: 101, source: ImageSource.gallery),
           throwsArgumentError,
         );
 
         expect(
-              () => picker.getImage(imageQuality: -1, source: ImageSource.camera),
+          () => picker.getImage(imageQuality: -1, source: ImageSource.camera),
           throwsArgumentError,
         );
 
         expect(
-              () => picker.getImage(imageQuality: 101, source: ImageSource.camera),
+          () => picker.getImage(imageQuality: 101, source: ImageSource.camera),
           throwsArgumentError,
         );
       });
 
       test('does not accept a negative width or height argument', () {
         expect(
-              () => picker.getImage(source: ImageSource.camera, maxWidth: -1.0),
+          () => picker.getImage(source: ImageSource.camera, maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-              () => picker.getImage(source: ImageSource.camera, maxHeight: -1.0),
+          () => picker.getImage(source: ImageSource.camera, maxHeight: -1.0),
           throwsArgumentError,
         );
       });
@@ -781,12 +780,12 @@ void main() {
       test('does not accept a negative width or height argument', () {
         returnValue = ['0', '1'];
         expect(
-              () => picker.getMultiImage(maxWidth: -1.0),
+          () => picker.getMultiImage(maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-              () => picker.getMultiImage(maxHeight: -1.0),
+          () => picker.getMultiImage(maxHeight: -1.0),
           throwsArgumentError,
         );
       });
@@ -794,12 +793,12 @@ void main() {
       test('does not accept a invalid imageQuality argument', () {
         returnValue = ['0', '1'];
         expect(
-              () => picker.getMultiImage(imageQuality: -1),
+          () => picker.getMultiImage(imageQuality: -1),
           throwsArgumentError,
         );
 
         expect(
-              () => picker.getMultiImage(imageQuality: 101),
+          () => picker.getMultiImage(imageQuality: 101),
           throwsArgumentError,
         );
       });

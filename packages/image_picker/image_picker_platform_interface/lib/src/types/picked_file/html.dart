@@ -12,6 +12,7 @@ import './base.dart';
 /// A PickedFile that works on web.
 ///
 /// It wraps the bytes of a selected file.
+@Deprecated("Switch to using XFile instead")
 class PickedFile extends PickedFileBase {
   final String path;
   final Uint8List? _initBytes;
