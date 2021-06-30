@@ -488,7 +488,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled choosing a picture.
-    finishWithSuccess(null);
+    finishWithSuccess(null, false);
   }
 
   private void handleChooseMultiImageResult(int resultCode, Intent intent) {
@@ -506,7 +506,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled choosing a picture.
-    finishWithSuccess(null);
+    finishWithSuccess(null, false);
   }
 
   private void handleChooseVideoResult(int resultCode, Intent data) {
@@ -517,7 +517,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled choosing a picture.
-    finishWithSuccess(null);
+    finishWithSuccess(null, false);
   }
 
   private void handleCaptureImageResult(int resultCode) {
@@ -536,7 +536,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled taking a picture.
-    finishWithSuccess(null);
+    finishWithSuccess(null, false);
   }
 
   private void handleCaptureVideoResult(int resultCode) {
@@ -555,7 +555,7 @@ public class ImagePickerDelegate
     }
 
     // User cancelled taking a picture.
-    finishWithSuccess(null);
+    finishWithSuccess(null, false);
   }
 
   private void handleMultiImageResult(
@@ -572,21 +572,23 @@ public class ImagePickerDelegate
         }
         paths.set(i, finalImagePath);
       }
-      finishWithListSuccess(paths);
+      finishWithSuccess(paths, true);
     }
   }
 
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
+    ArrayList<String> imageList = new ArrayList<String>();
     if (methodCall != null) {
       String finalImagePath = getResizedImagePath(path);
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
-      finishWithSuccess(finalImagePath);
+      imageList.add(finalImagePath);
     } else {
-      finishWithSuccess(path);
+      imageList.add(path);
     }
+    finishWithSuccess(imageList, false);
   }
 
   private String getResizedImagePath(String path) {
@@ -598,7 +600,9 @@ public class ImagePickerDelegate
   }
 
   private void handleVideoResult(String path) {
-    finishWithSuccess(path);
+    ArrayList<String> imageList = new ArrayList<String>();
+    imageList.add(path);
+    finishWithSuccess(imageList, false);
   }
 
   private boolean setPendingMethodCallAndResult(
@@ -616,23 +620,17 @@ public class ImagePickerDelegate
     return true;
   }
 
-  private void finishWithSuccess(String imagePath) {
+  private void finishWithSuccess(ArrayList<String> imagePath, boolean isMultiImage) {
     if (pendingResult == null) {
       cache.saveResult(imagePath, null, null);
       return;
     }
-    pendingResult.success(imagePath);
-    clearMethodCallAndResult();
-  }
 
-  private void finishWithListSuccess(ArrayList<String> imagePaths) {
-    if (pendingResult == null) {
-      for (String imagePath : imagePaths) {
-        cache.saveResult(imagePath, null, null);
-      }
-      return;
+    if (isMultiImage) {
+      pendingResult.success(imagePath);
+    } else {
+      pendingResult.success(imagePath.get(0));
     }
-    pendingResult.success(imagePaths);
     clearMethodCallAndResult();
   }
 
