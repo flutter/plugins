@@ -76,7 +76,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * UIImagePickerControllerCameraDeviceFront. If the cameraDevice value that is fetched
  * from arguments is 0 then returns UIImagePickerControllerCameraDeviceRear.
  *
- * @param @arguments that should be used to get cameraDevice value.
+ * @param arguments that should be used to get cameraDevice value.
  */
 - (UIImagePickerControllerCameraDevice)getCameraDeviceFromArguments:(NSDictionary *)arguments {
   NSInteger cameraDevice = [[arguments objectForKey:@"cameraDevice"] intValue];
@@ -417,8 +417,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * The difference with initWithCapacity is that initWithCapacity still gives an empty array making
  * it impossible to add objects on an index larger than the size.
  *
- * @param @size The length of the required array
- * @return @NSMutableArray An array of a specified size
+ * @param size The length of the required array
+ * @return NSMutableArray An array of a specified size
  */
 - (NSMutableArray *)createNSMutableArrayWithSize:(NSUInteger)size {
   NSMutableArray *mutableArray = [[NSMutableArray alloc] initWithCapacity:size];
@@ -539,14 +539,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * Applies NSMutableArray on the FLutterResult.
  *
  * NSString must be returned by FlutterResult if the single image
- * mode is active. It is checked by @c maxImagesAllowed and
- * returns the first object of the @c pathlist.
+ * mode is active. It is checked by maxImagesAllowed and
+ * returns the first object of the pathlist.
  *
  * NSMutableArray must be returned by FlutterResult if the multi-image
- * mode is active. After the @c pathlist count is checked then it returns
- * the @c pathlist.
+ * mode is active. After the pathlist count is checked then it returns
+ * the pathlist.
  *
- * @param @pathList that should be applied to FlutterResult.
+ * @param pathList that should be applied to FlutterResult.
  */
 - (void)handleSavedPathList:(NSArray *)pathList {
   if (!self.result) {
