@@ -1,3 +1,8 @@
+## NEXT
+
+- Add a summary to the end of successful command runs for commands using the
+  new output format.
+
 ## 0.3.0
 
 - Add a --build-id flag to `firebase-test-lab` instead of hard-coding the use of
