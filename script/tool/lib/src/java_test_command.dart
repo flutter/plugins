@@ -44,6 +44,10 @@ class JavaTestCommand extends PackageLoopingCommand {
                     .childDirectory('test')
                     .existsSync()));
 
+    if (examplesWithTests.isEmpty) {
+      return PackageResult.skip('No Java unit tests.');
+    }
+
     final List<String> errors = <String>[];
     for (final Directory example in examplesWithTests) {
       final String exampleName = p.relative(example.path, from: package.path);
