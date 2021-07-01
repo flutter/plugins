@@ -355,7 +355,6 @@ Safe to ignore if the package is deleted in this commit.
         'git',
         <String>['tag', tag],
         workingDir: packageDir,
-        exitOnError: false,
         logOnError: true,
       );
       if (result.exitCode != 0) {
@@ -402,7 +401,6 @@ Safe to ignore if the package is deleted in this commit.
       <String>['status', '--porcelain', '--ignored', packageDir.absolute.path],
       workingDir: packageDir,
       logOnError: true,
-      exitOnError: false,
     );
     if (statusResult.exitCode != 0) {
       return false;
@@ -498,7 +496,6 @@ Safe to ignore if the package is deleted in this commit.
         'git',
         <String>['push', remote.name, tag],
         workingDir: packagesDir,
-        exitOnError: false,
         logOnError: true,
       );
       if (result.exitCode != 0) {
