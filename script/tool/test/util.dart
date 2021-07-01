@@ -269,8 +269,12 @@ class RecordingProcessRunner extends ProcessRunner {
     bool exitOnError = false,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    return Future<int>.value(
-        processToReturn == null ? 0 : await processToReturn!.exitCode);
+    final int exitCode =
+        processToReturn == null ? 0 : await processToReturn!.exitCode;
+    if (exitOnError && (exitCode != 0)) {
+      throw io.ProcessException(executable, args);
+    }
+    return Future<int>.value(exitCode);
   }
 
   /// Returns [io.ProcessResult] created from [processToReturn], [resultStdout], and [resultStderr].
@@ -291,6 +295,10 @@ class RecordingProcessRunner extends ProcessRunner {
         ? io.ProcessResult(1, 1, '', '')
         : io.ProcessResult(process.pid, await process.exitCode,
             resultStdout ?? process.stdout, resultStderr ?? process.stderr);
+
+    if (exitOnError && (result.exitCode != 0)) {
+      throw io.ProcessException(executable, args);
+    }
 
     return Future<io.ProcessResult>.value(result);
   }
