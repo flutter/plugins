@@ -421,9 +421,11 @@ Safe to ignore if the package is deleted in this commit.
       'git',
       <String>['remote', 'get-url', remote],
       workingDir: packagesDir,
-      exitOnError: true,
       logOnError: true,
     );
+    if (getRemoteUrlResult.exitCode != 0) {
+      return null;
+    }
     return getRemoteUrlResult.stdout as String?;
   }
 
