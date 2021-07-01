@@ -65,7 +65,13 @@ class LintPodspecsCommand extends PackageLoopingCommand {
   @override
   Future<PackageResult> runForPackage(Directory package) async {
     final List<String> errors = <String>[];
-    for (final File podspec in await _podspecsToLint(package)) {
+
+    final List<File> podspecs = await _podspecsToLint(package);
+    if (podspecs.isEmpty) {
+      return PackageResult.skip('No podspecs.');
+    }
+
+    for (final File podspec in podspecs) {
       if (!await _lintPodspec(podspec)) {
         errors.add(p.basename(podspec.path));
       }

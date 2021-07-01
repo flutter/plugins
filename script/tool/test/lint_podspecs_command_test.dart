@@ -187,5 +187,18 @@ void main() {
             ],
           ));
     });
+
+    test('skips when there are no podspecs', () async {
+      createFakePlugin('plugin1', packagesDir);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspecs']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[contains('SKIPPING: No podspecs.')],
+          ));
+    });
   });
 }
