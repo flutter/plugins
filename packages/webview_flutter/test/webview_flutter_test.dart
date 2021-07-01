@@ -1204,16 +1204,15 @@ class MyWebViewPlatformController extends WebViewPlatformController {
 
   @override
   Future<void> loadDataWithBaseURL(
-      {String baseUrl='', @required String data,
-        String mimeType,
-        String encoding,
-        String historyUrl,
-        Map<String, String> headers
-      }) {
+      {String baseUrl='', required String data,
+        String? mimeType,
+        String? encoding,
+        String? historyUrl,
+        Map<String, String>? headers
+      }) async {
     equals(1, 1);
     lastUrlLoaded = baseUrl;
     // lastRequestHeaders = headers;
-    return null;
   }
 }
 

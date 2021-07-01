@@ -87,11 +87,11 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
 
   @override
   Future<void> loadDataWithBaseURL(
-      {String baseUrl='', @required String data,
-        String mimeType,
-        String encoding,
-        String historyUrl,
-        Map<String, String> headers,
+      {String baseUrl='', required String data,
+        String? mimeType,
+        String? encoding,
+        String? historyUrl,
+        Map<String, String>? headers,
       }) {
     assert(data != null);
     return _channel.invokeMethod<void>('loadDataWithBaseURL', <String, dynamic>{

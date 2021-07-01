@@ -170,7 +170,7 @@ class SampleMenu extends StatelessWidget {
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
               case MenuOptions.loadDataWithBaseUrl:
-                _onLoadDataWithBaseUrl(controller.data, context);
+                _onLoadDataWithBaseUrl(controller.data!, context);
                 break;
             }
           },

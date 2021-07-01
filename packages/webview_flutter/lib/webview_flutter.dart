@@ -657,11 +657,11 @@ class WebViewController {
   /// Throws an ArgumentError if `url` is not a valid URL string.
   Future<void> loadDataWithBaseURL({
     String baseUrl = '',
-    @required String data,
-    String mimeType,
-    String encoding,
-    String historyUrl,
-    Map<String, String> headers,
+    required String data,
+    String? mimeType,
+    String? encoding,
+    String? historyUrl,
+    Map<String, String>? headers,
   }) async {
     assert(data != null);
     if (baseUrl != null && baseUrl.isNotEmpty) _validateUrlString(baseUrl);
