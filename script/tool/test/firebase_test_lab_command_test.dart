@@ -36,7 +36,7 @@ void main() {
     test('retries gcloud set', () async {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockProcess;
+      processRunner.processToReturnForExecutable['gcloud'] = mockProcess;
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'lib/test/should_not_run_e2e.dart',
         'example/test_driver/plugin_e2e.dart',

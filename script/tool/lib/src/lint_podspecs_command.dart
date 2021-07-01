@@ -14,6 +14,7 @@ import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 
 const int _exitUnsupportedPlatform = 2;
+const int _exitPodNotInstalled = 3;
 
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
@@ -53,13 +54,16 @@ class LintPodspecsCommand extends PackageLoopingCommand {
       throw ToolExit(_exitUnsupportedPlatform);
     }
 
-    await processRunner.run(
+    final ProcessResult result = await processRunner.run(
       'which',
       <String>['pod'],
       workingDir: packagesDir,
-      exitOnError: true,
       logOnError: true,
     );
+    if (result.exitCode != 0) {
+      printError('Unable to find "pod". Make sure it is in your path.');
+      throw ToolExit(_exitPodNotInstalled);
+    }
   }
 
   @override

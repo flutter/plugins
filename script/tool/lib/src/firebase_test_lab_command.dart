@@ -91,7 +91,6 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
           'activate-service-account',
           '--key-file=$serviceKey',
         ],
-        exitOnError: true,
         logOnError: true,
       );
       final int exitCode = await processRunner.runAndStream('gcloud', <String>[

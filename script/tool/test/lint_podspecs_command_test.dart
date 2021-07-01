@@ -160,6 +160,32 @@ void main() {
       expect(output, contains('Linting plugin1.podspec'));
     });
 
+    test('fails if pod is missing', () async {
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+
+      // Simulate failure from `which pod`.
+      final MockProcess mockWhichProcess = MockProcess();
+      mockWhichProcess.exitCodeCompleter.complete(1);
+      processRunner.processToReturnForExecutable['which'] = mockWhichProcess;
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Unable to find "pod". Make sure it is in your path.'),
+            ],
+          ));
+    });
+
     test('fails if linting fails', () async {
       createFakePlugin('plugin1', packagesDir,
           extraFiles: <String>['plugin1.podspec']);
@@ -167,7 +193,7 @@ void main() {
       // Simulate failure from `pod`.
       final MockProcess mockDriveProcess = MockProcess();
       mockDriveProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockDriveProcess;
+      processRunner.processToReturnForExecutable['pod'] = mockDriveProcess;
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
