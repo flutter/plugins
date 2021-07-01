@@ -203,7 +203,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
     final ProcessResult result = await processRunner.run(
         flutterCommand, <String>['devices', '--machine'],
-        stdoutEncoding: utf8, exitOnError: true);
+        stdoutEncoding: utf8);
     if (result.exitCode != 0) {
       return deviceIds;
     }
@@ -295,8 +295,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             '--target',
             p.relative(target.path, from: example.path),
           ],
-          workingDir: example,
-          exitOnError: true);
+          workingDir: example);
       if (exitCode != 0) {
         failures.add(target);
       }

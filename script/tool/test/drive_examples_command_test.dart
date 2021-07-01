@@ -110,6 +110,29 @@ void main() {
       );
     });
 
+    test('fails for iOS if getting devices fails', () async {
+      setMockFlutterDevicesOutput(hasIosDevice: false);
+
+      // Simulate failure from `flutter devices`.
+      final MockProcess mockProcess = MockProcess();
+      mockProcess.exitCodeCompleter.complete(1);
+      processRunner.processToReturn = mockProcess;
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No iOS devices'),
+        ]),
+      );
+    });
+
     test('fails if Android if no Android devices are present', () async {
       Error? commandError;
       final List<String> output = await runCapturingPrint(
