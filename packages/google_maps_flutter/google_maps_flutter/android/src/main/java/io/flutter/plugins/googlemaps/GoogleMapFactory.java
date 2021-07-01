@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,6 +10,7 @@ import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.StandardMessageCodec;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
+import java.util.List;
 import java.util.Map;
 
 public class GoogleMapFactory extends PlatformViewFactory {
@@ -45,6 +46,9 @@ public class GoogleMapFactory extends PlatformViewFactory {
     }
     if (params.containsKey("circlesToAdd")) {
       builder.setInitialCircles(params.get("circlesToAdd"));
+    }
+    if (params.containsKey("tileOverlaysToAdd")) {
+      builder.setInitialTileOverlays((List<Map<String, ?>>) params.get("tileOverlaysToAdd"));
     }
     return builder.build(id, context, binaryMessenger, lifecycleProvider);
   }

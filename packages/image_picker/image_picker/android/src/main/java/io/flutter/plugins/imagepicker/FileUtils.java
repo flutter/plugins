@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,8 +23,10 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.content.ContentResolver;
 import android.content.Context;
 import android.net.Uri;
+import android.webkit.MimeTypeMap;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -39,7 +41,7 @@ class FileUtils {
     OutputStream outputStream = null;
     boolean success = false;
     try {
-      String extension = getImageExtension(uri);
+      String extension = getImageExtension(context, uri);
       inputStream = context.getContentResolver().openInputStream(uri);
       file = File.createTempFile("image_picker", extension, context.getCacheDir());
       file.deleteOnExit();
@@ -67,13 +69,18 @@ class FileUtils {
   }
 
   /** @return extension of image with dot, or default .jpg if it none. */
-  private static String getImageExtension(Uri uriImage) {
+  private static String getImageExtension(Context context, Uri uriImage) {
     String extension = null;
 
     try {
       String imagePath = uriImage.getPath();
-      if (imagePath != null && imagePath.lastIndexOf(".") != -1) {
-        extension = imagePath.substring(imagePath.lastIndexOf(".") + 1);
+      if (uriImage.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+        final MimeTypeMap mime = MimeTypeMap.getSingleton();
+        extension = mime.getExtensionFromMimeType(context.getContentResolver().getType(uriImage));
+      } else {
+        extension =
+            MimeTypeMap.getFileExtensionFromUrl(
+                Uri.fromFile(new File(uriImage.getPath())).toString());
       }
     } catch (Exception e) {
       extension = null;

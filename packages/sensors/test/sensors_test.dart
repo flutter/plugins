@@ -1,13 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:sensors/sensors.dart';
-import 'package:test/test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,16 +51,16 @@ void main() {
 void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
   const StandardMethodCodec standardMethod = StandardMethodCodec();
 
-  void _emitEvent(ByteData event) {
-    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
+  void _emitEvent(ByteData? event) {
+    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
       channelName,
       event,
-      (ByteData reply) {},
+      (ByteData? reply) {},
     );
   }
 
-  ServicesBinding.instance.defaultBinaryMessenger
-      .setMockMessageHandler(channelName, (ByteData message) async {
+  ServicesBinding.instance!.defaultBinaryMessenger
+      .setMockMessageHandler(channelName, (ByteData? message) async {
     final MethodCall methodCall = standardMethod.decodeMethodCall(message);
     if (methodCall.method == 'listen') {
       _emitEvent(standardMethod.encodeSuccessEnvelope(sensorData));

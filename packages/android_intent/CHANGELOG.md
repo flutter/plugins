@@ -1,3 +1,21 @@
+## 2.0.2
+
+* Update README to point to Plus Plugins version.
+
+##  2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
+
+* Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.3.7+8
+
+* Update Flutter SDK constraint.
+
 ## 0.3.7+7
 
 * Update Dart SDK constraint in example.

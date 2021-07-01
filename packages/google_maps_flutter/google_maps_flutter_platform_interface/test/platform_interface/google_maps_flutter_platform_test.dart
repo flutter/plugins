@@ -1,9 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:mockito/mockito.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
@@ -34,29 +33,6 @@ void main() {
 
     test('Can be extended', () {
       GoogleMapsFlutterPlatform.instance = ExtendsGoogleMapsFlutterPlatform();
-    });
-  });
-
-  group('$MethodChannelGoogleMapsFlutter', () {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/google_maps_flutter');
-    final List<MethodCall> log = <MethodCall>[];
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
-      log.add(methodCall);
-    });
-
-//    final MethodChannelGoogleMapsFlutter map = MethodChannelGoogleMapsFlutter(0);
-
-    tearDown(() {
-      log.clear();
-    });
-
-    test('foo', () async {
-//      await map.foo();
-      expect(
-        log,
-        <Matcher>[],
-      );
     });
   });
 }

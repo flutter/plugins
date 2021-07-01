@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,6 +56,16 @@
   }
 
   return points;
+}
+
++ (NSArray<NSArray<CLLocation*>*>*)toHoles:(NSArray*)data {
+  NSMutableArray<NSArray<CLLocation*>*>* holes = [[[NSMutableArray alloc] init] init];
+  for (unsigned i = 0; i < [data count]; i++) {
+    NSArray<CLLocation*>* points = [FLTGoogleMapJsonConversions toPoints:data[i]];
+    [holes addObject:points];
+  }
+
+  return holes;
 }
 
 @end

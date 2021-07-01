@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -96,6 +96,7 @@ public final class FlutterMatchers {
       description.appendText("is a FlutterView");
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public boolean matchesSafely(View flutterView) {
       return flutterView instanceof FlutterView

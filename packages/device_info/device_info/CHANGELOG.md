@@ -1,3 +1,20 @@
+## 2.0.2
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
+
+* Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.1
+
+* Update Flutter SDK constraint.
+
 ## 1.0.0
 
 * Announce 1.0.0.

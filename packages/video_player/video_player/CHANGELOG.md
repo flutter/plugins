@@ -1,3 +1,56 @@
+## 2.1.6
+
+* Remove obsolete pre-1.0 warning from README.
+* Add iOS unit and UI integration test targets.
+
+## 2.1.5
+
+* Update example code in README to fix broken url.
+
+## 2.1.4
+
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
+
+## 2.1.3
+
+* Fix pointer value to boolean conversion analyzer warnings.
+
+## 2.1.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
+
+## 2.0.2
+
+* Fix `VideoPlayerValue` size and aspect ratio documentation
+
+## 2.0.1
+
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
+
+## 2.0.0
+
+* Migrate to null safety.
+* Fix an issue where `isBuffering` was not updating on Android.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Fix `VideoPlayerValue toString()` test.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate from deprecated `defaultBinaryMessenger`.
+* Fix an issue where a crash can occur after a closing a video player view on iOS.
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
+
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
 ## 1.0.1
 
 * Android: Dispose video players when app is closed.

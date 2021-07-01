@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,7 +12,7 @@ void main() {
 
   group('$MethodChannelWifiInfoFlutter', () {
     final List<MethodCall> log = <MethodCall>[];
-    MethodChannelWifiInfoFlutter methodChannelWifiInfoFlutter;
+    late MethodChannelWifiInfoFlutter methodChannelWifiInfoFlutter;
 
     setUp(() async {
       methodChannelWifiInfoFlutter = MethodChannelWifiInfoFlutter();
@@ -39,7 +39,7 @@ void main() {
     });
 
     test('getWifiName', () async {
-      final String result = await methodChannelWifiInfoFlutter.getWifiName();
+      final String? result = await methodChannelWifiInfoFlutter.getWifiName();
       expect(result, '1337wifi');
       expect(
         log,
@@ -53,7 +53,7 @@ void main() {
     });
 
     test('getWifiBSSID', () async {
-      final String result = await methodChannelWifiInfoFlutter.getWifiBSSID();
+      final String? result = await methodChannelWifiInfoFlutter.getWifiBSSID();
       expect(result, 'c0:ff:33:c0:d3:55');
       expect(
         log,
@@ -67,7 +67,7 @@ void main() {
     });
 
     test('getWifiIP', () async {
-      final String result = await methodChannelWifiInfoFlutter.getWifiIP();
+      final String? result = await methodChannelWifiInfoFlutter.getWifiIP();
       expect(result, '127.0.0.1');
       expect(
         log,
