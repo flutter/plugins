@@ -15,7 +15,7 @@ import 'package:test/test.dart';
 import 'util.dart';
 
 void main() {
-  group('test build_example_command', () {
+  group('build-example', () {
     late FileSystem fileSystem;
     late Directory packagesDir;
     late CommandRunner<void> runner;
@@ -35,6 +35,13 @@ void main() {
       runner.addCommand(command);
     });
 
+    test('fails if no plaform flags are passed', () async {
+      expect(
+        () => runCapturingPrint(runner, <String>['build-examples']),
+        throwsA(isA<ToolExit>()),
+      );
+    });
+
     test('building for iOS when plugin is not set up for iOS results in no-op',
         () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
@@ -43,18 +50,16 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--ipa', '--no-macos']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--ios']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING IPA for $packageName',
-          'iOS is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING $packageName for iOS'),
+          contains('iOS is not supported by this plugin'),
         ]),
       );
 
@@ -78,21 +83,15 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'build-examples',
-        '--ipa',
-        '--no-macos',
-        '--enable-experiment=exp1'
-      ]);
+      final List<String> output = await runCapturingPrint(runner,
+          <String>['build-examples', '--ios', '--enable-experiment=exp1']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING IPA for $packageName',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<String>[
+          '\nBUILDING $packageName for iOS',
         ]),
       );
 
@@ -123,17 +122,15 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--linux']);
+          runner, <String>['build-examples', '--linux']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING Linux for $packageName',
-          'Linux is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING $packageName for Linux'),
+          contains('Linux is not supported by this plugin'),
         ]),
       );
 
@@ -158,16 +155,14 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--linux']);
+          runner, <String>['build-examples', '--linux']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING Linux for $packageName',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<String>[
+          '\nBUILDING $packageName for Linux',
         ]),
       );
 
@@ -190,17 +185,15 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--macos']);
+          runner, <String>['build-examples', '--macos']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING macOS for $packageName',
-          'macOS is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING $packageName for macOS'),
+          contains('macOS is not supported by this plugin'),
         ]),
       );
 
@@ -226,16 +219,14 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--macos']);
+          runner, <String>['build-examples', '--macos']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING macOS for $packageName',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<String>[
+          '\nBUILDING $packageName for macOS',
         ]),
       );
 
@@ -256,18 +247,16 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--web']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--web']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING web for $packageName',
-          'Web is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING $packageName for web'),
+          contains('Web is not supported by this plugin'),
         ]),
       );
 
@@ -292,17 +281,15 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--web']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--web']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING web for $packageName',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<String>[
+          '\nBUILDING $packageName for web',
         ]),
       );
 
@@ -326,17 +313,15 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--windows']);
+          runner, <String>['build-examples', '--windows']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING Windows for $packageName',
-          'Windows is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING $packageName for Windows'),
+          contains('Windows is not supported by this plugin'),
         ]),
       );
 
@@ -361,16 +346,14 @@ void main() {
           pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--no-ipa', '--windows']);
+          runner, <String>['build-examples', '--windows']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING Windows for $packageName',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<String>[
+          '\nBUILDING $packageName for Windows',
         ]),
       );
 
@@ -393,18 +376,16 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['build-examples', '--apk', '--no-ipa']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['build-examples', '--apk']);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
-          '\nBUILDING APK for $packageName',
-          'Android is not supported by this plugin',
-          '\n\n',
-          'All builds successful!',
+        containsAllInOrder(<Matcher>[
+          contains('\nBUILDING APK for $packageName'),
+          contains('Android is not supported by this plugin'),
         ]),
       );
 
@@ -431,18 +412,14 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'build-examples',
         '--apk',
-        '--no-ipa',
-        '--no-macos',
       ]);
       final String packageName =
           p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
-        orderedEquals(<String>[
+        containsAllInOrder(<String>[
           '\nBUILDING APK for $packageName',
-          '\n\n',
-          'All builds successful!',
         ]),
       );
 
@@ -469,13 +446,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      await runCapturingPrint(runner, <String>[
-        'build-examples',
-        '--apk',
-        '--no-ipa',
-        '--no-macos',
-        '--enable-experiment=exp1'
-      ]);
+      await runCapturingPrint(runner,
+          <String>['build-examples', '--apk', '--enable-experiment=exp1']);
 
       expect(
           processRunner.recordedCalls,
@@ -502,12 +474,8 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
 
-      await runCapturingPrint(runner, <String>[
-        'build-examples',
-        '--ipa',
-        '--no-macos',
-        '--enable-experiment=exp1'
-      ]);
+      await runCapturingPrint(runner,
+          <String>['build-examples', '--ios', '--enable-experiment=exp1']);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
