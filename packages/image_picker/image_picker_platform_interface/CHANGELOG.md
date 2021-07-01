@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Update `LostData` object and `retrieveLostData` method to fetch `List<PickedFile>` when multiple images are lost and need to be retrieved.
+
 ## 2.1.0
 
 * Add `pickMultiImage` method.
