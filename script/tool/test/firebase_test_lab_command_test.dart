@@ -38,11 +38,8 @@ void main() {
       mockProcess.exitCodeCompleter.complete(1);
       processRunner.processToReturn = mockProcess;
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'lib/test/should_not_run_e2e.dart',
-        'example/test_driver/plugin_e2e.dart',
-        'example/test_driver/plugin_e2e_test.dart',
+        'example/integration_test/foo_test.dart',
         'example/android/gradlew',
-        'example/should_not_run_e2e.dart',
         'example/android/app/src/androidTest/MainActivityTest.java',
       ]);
 
@@ -55,8 +52,10 @@ void main() {
       expect(commandError, isA<ToolExit>());
       expect(
           output,
-          contains(
-              '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.'),
+          ]));
     });
 
     test('runs integration tests', () async {

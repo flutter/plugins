@@ -740,7 +740,7 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains('Running for aplugin_platform_interface'),
           contains(
-              'SKIPPING: Platform interfaces are not expected to have integratino tests.'),
+              'SKIPPING: Platform interfaces are not expected to have integration tests.'),
           contains('No issues found!'),
         ]),
       );
