@@ -478,6 +478,25 @@ void main() {
         expect(response.fileList!.first.path, '/example/path');
       });
 
+      test('retrieveLostData is failed for multiRetrieve method call',
+          () async {
+        picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          switch (methodCall.method) {
+            case 'multiRetrieve':
+              throw MissingPluginException();
+            case 'retrieve':
+              return <String, dynamic>{
+                'type': 'image',
+                'path': '/example/path',
+                'pathList': null,
+              };
+          }
+        });
+
+        final LostData response = await picker.retrieveLostData();
+        expect(response.fileList, null);
+      });
+
       test('retrieveLostData get error response', () async {
         picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
           return <String, String>{
