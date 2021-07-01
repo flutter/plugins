@@ -623,21 +623,21 @@ public class ImagePickerDelegate
 
   private void finishWithSuccess(String imagePath) {
     if (pendingResult == null) {
-      cache.saveResult(imagePath, null, null);
+      ArrayList<String> pathList = new ArrayList<>();
+      pathList.add(imagePath);
+      cache.saveResult(pathList, null, null);
       return;
     }
     pendingResult.success(imagePath);
     clearMethodCallAndResult();
   }
 
-  private void finishWithListSuccess(ArrayList<String> imagePaths) {
+  private void finishWithListSuccess(ArrayList<String> imagePath) {
     if (pendingResult == null) {
-      for (String imagePath : imagePaths) {
-        cache.saveResult(imagePath, null, null);
-      }
+      cache.saveResult(imagePath, null, null);
       return;
     }
-    pendingResult.success(imagePaths);
+    pendingResult.success(imagePath);
     clearMethodCallAndResult();
   }
 
