@@ -1,3 +1,7 @@
+## 0.1.1+1
+
+* iOS: Fix treating missing App Store receipt as an exception.
+
 ## 0.1.1
 
 * Added support to register a `SKPaymentQueueDelegateWrapper` and handle changes to active subscriptions accordingly (see also Store Kit's [SKPaymentQueueDelegate](https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate?language=objc)).
