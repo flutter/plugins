@@ -124,7 +124,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       // Platform interface packages generally aren't intended to have
       // examples, and don't need integration tests, so skip rather than fail.
       return PackageResult.skip(
-          'Platform interfaces are not expected to have integratino tests.');
+          'Platform interfaces are not expected to have integration tests.');
     }
 
     final List<String> deviceFlags = <String>[];
