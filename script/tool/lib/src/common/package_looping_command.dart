@@ -11,6 +11,48 @@ import 'core.dart';
 import 'plugin_command.dart';
 import 'process_runner.dart';
 
+/// Possible outcomes of a command run for a package.
+enum RunState {
+  /// The command succeeded for the package.
+  succeeded,
+
+  /// The command was skipped for the package.
+  skipped,
+
+  /// The command failed for the package.
+  failed,
+}
+
+/// The result of a [runForPackage] call.
+class PackageResult {
+  /// A successful result.
+  PackageResult.success() : this._(RunState.succeeded);
+
+  /// A run that was skipped as explained in [reason].
+  PackageResult.skip(String reason)
+      : this._(RunState.skipped, <String>[reason]);
+
+  /// A run that failed.
+  ///
+  /// If [errors] are provided, they will be listed in the summary, otherwise
+  /// the summary will simply show that the package failed.
+  PackageResult.fail([List<String> errors = const <String>[]])
+      : this._(RunState.failed, errors);
+
+  const PackageResult._(this.state, [this.details = const <String>[]]);
+
+  /// The state the package run completed with.
+  final RunState state;
+
+  /// Information about the result:
+  /// - For `succeeded`, this is empty.
+  /// - For `skipped`, it contains a single entry describing why the run was
+  ///   skipped.
+  /// - For `failed`, it contains zero or more specific error details to be
+  ///   shown in the summary.
+  final List<String> details;
+}
+
 /// An abstract base class for a command that iterates over a set of packages
 /// controlled by a standard set of flags, running some actions on each package,
 /// and collecting and reporting the success/failure of those actions.
@@ -21,9 +63,6 @@ abstract class PackageLoopingCommand extends PluginCommand {
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
-
-  /// Packages that had a [logSkip] call.
-  final Set<Directory> _skippedPackages = <Directory>{};
 
   /// Packages that had at least one [logWarning] call.
   final Set<Directory> _packagesWithWarnings = <Directory>{};
@@ -45,7 +84,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// be included in the final error summary (e.g., a command that only has a
   /// single failure mode), or strings that should be listed for that package
   /// in the final summary. An empty list indicates success.
-  Future<List<String>> runForPackage(Directory package);
+  Future<PackageResult> runForPackage(Directory package);
 
   /// Called during [run] after all calls to [runForPackage]. This provides an
   /// opportunity to do any cleanup of run-level state.
@@ -82,23 +121,6 @@ abstract class PackageLoopingCommand extends PluginCommand {
   String get failureListFooter => 'See above for full details.';
 
   // ----------------------------------------
-
-  /// A convenience constant for [runForPackage] success that's more
-  /// self-documenting than the value.
-  static const List<String> success = <String>[];
-
-  /// A convenience constant for [runForPackage] failure without additional
-  /// context that's more self-documenting than the value.
-  static const List<String> failure = <String>[''];
-
-  /// Logs that a package was skipped, and prints [reason] using a standard
-  /// format to indicate why.
-  ///
-  /// May only be called during a call to [runForPackage].
-  void logSkip(String reason) {
-    print(Colorize('SKIPPING: $reason')..darkGray());
-    _skippedPackages.add(_currentPackage!);
-  }
 
   /// Logs that a warning occurred, and prints `warningMessage` in yellow.
   ///
@@ -140,7 +162,6 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    _skippedPackages.clear();
     _packagesWithWarnings.clear();
     _otherWarningCount = 0;
     _currentPackage = null;
@@ -151,25 +172,31 @@ abstract class PackageLoopingCommand extends PluginCommand {
         ? await getPackages().toList()
         : await getPlugins().toList();
 
-    final Map<Directory, List<String>> results = <Directory, List<String>>{};
+    final Map<Directory, PackageResult> results = <Directory, PackageResult>{};
     for (final Directory package in packages) {
       _currentPackage = package;
       _printPackageHeading(package);
-      results[package] = await runForPackage(package);
+      final PackageResult result = await runForPackage(package);
+      if (result.state == RunState.skipped) {
+        print(Colorize('${indentation}SKIPPING: ${result.details.first}')
+          ..darkGray());
+      }
+      results[package] = result;
     }
     _currentPackage = null;
 
     completeRun();
 
     // If there were any errors reported, summarize them and exit.
-    if (results.values.any((List<String> failures) => failures.isNotEmpty)) {
+    if (results.values
+        .any((PackageResult result) => result.state == RunState.failed)) {
       _printFailureSummary(packages, results);
       throw ToolExit(exitCommandFoundErrors);
     }
 
     // Otherwise, print a summary of what ran for ease of auditing that all the
     // expected tests ran.
-    _printRunSummary(packages);
+    _printRunSummary(packages, results);
 
     print('\n');
     printSuccess('No issues found!');
@@ -197,12 +224,18 @@ abstract class PackageLoopingCommand extends PluginCommand {
   }
 
   /// Prints a summary of packges run, packages skipped, and warnings.
-  void _printRunSummary(List<Directory> packages) {
-    final int skipCount = _skippedPackages.length;
+  void _printRunSummary(
+      List<Directory> packages, Map<Directory, PackageResult> results) {
+    final Set<Directory> skippedPackages = results.entries
+        .where((MapEntry<Directory, PackageResult> entry) =>
+            entry.value.state == RunState.skipped)
+        .map((MapEntry<Directory, PackageResult> entry) => entry.key)
+        .toSet();
+    final int skipCount = skippedPackages.length;
     // Split the warnings into those from packages that ran, and those that
     // were skipped.
     final Set<Directory> _skippedPackagesWithWarnings =
-        _packagesWithWarnings.intersection(_skippedPackages);
+        _packagesWithWarnings.intersection(skippedPackages);
     final int skippedWarningCount = _skippedPackagesWithWarnings.length;
     final int runWarningCount =
         _packagesWithWarnings.length - skippedWarningCount;
@@ -213,7 +246,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
         runWarningCount > 0 ? ' ($skippedWarningCount with warnings)' : '';
     print('------------------------------------------------------------');
     if (hasLongOutput) {
-      _printPerPackageRunOverview(packages);
+      _printPerPackageRunOverview(packages, skipped: skippedPackages);
     }
     print(
         'Ran for ${packages.length - skipCount} package(s)$runWarningSummary');
@@ -227,12 +260,13 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   /// Prints a one-line-per-package overview of the run results for each
   /// package.
-  void _printPerPackageRunOverview(List<Directory> packages) {
+  void _printPerPackageRunOverview(List<Directory> packages,
+      {required Set<Directory> skipped}) {
     print('Run overview:');
     for (final Directory package in packages) {
       final bool hadWarning = _packagesWithWarnings.contains(package);
       Colorize summary;
-      if (_skippedPackages.contains(package)) {
+      if (skipped.contains(package)) {
         if (hadWarning) {
           summary = Colorize('skipped (with warning)')..lightYellow();
         } else {
@@ -252,18 +286,17 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   /// Prints a summary of all of the failures from [results].
   void _printFailureSummary(
-    List<Directory> packages,
-    Map<Directory, List<String>> results,
-  ) {
+      List<Directory> packages, Map<Directory, PackageResult> results) {
     const String indentation = '  ';
     printError(failureListHeader);
     for (final Directory package in packages) {
-      final List<String> errors = results[package]!;
-      if (errors.isNotEmpty) {
+      final PackageResult result = results[package]!;
+      if (result.state == RunState.failed) {
         final String errorIndentation = indentation * 2;
-        String errorDetails = errors.join('\n$errorIndentation');
-        if (errorDetails.isNotEmpty) {
-          errorDetails = ':\n$errorIndentation$errorDetails';
+        String errorDetails = '';
+        if (result.details.isNotEmpty) {
+          errorDetails =
+              ':\n$errorIndentation${result.details.join('\n$errorIndentation')}';
         }
         printError(
             '$indentation${getPackageDescription(package)}$errorDetails');

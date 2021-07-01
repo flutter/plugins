@@ -340,7 +340,7 @@ void main() {
           containsAllInOrder(<String>[
             '${_startHeadingColor}Running for package_a...$_endColor',
             '${_startHeadingColor}Running for package_b...$_endColor',
-            '${_startSkipColor}SKIPPING: For a reason$_endColor',
+            '$_startSkipColor  SKIPPING: For a reason$_endColor',
           ]));
     });
 
@@ -566,7 +566,7 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     checkedPackages.add(package.path);
     final File warningFile = package.childFile(_warningFile);
     if (warningFile.existsSync()) {
@@ -575,15 +575,13 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     }
     final File skipFile = package.childFile(_skipFile);
     if (skipFile.existsSync()) {
-      final String reason = skipFile.readAsStringSync();
-      logSkip(reason);
+      return PackageResult.skip(skipFile.readAsStringSync());
     }
     final File errorFile = package.childFile(_errorFile);
     if (errorFile.existsSync()) {
-      final List<String> errors = errorFile.readAsLinesSync();
-      return errors.isNotEmpty ? errors : PackageLoopingCommand.failure;
+      return PackageResult.fail(errorFile.readAsLinesSync());
     }
-    return PackageLoopingCommand.success;
+    return PackageResult.success();
   }
 
   @override

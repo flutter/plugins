@@ -95,7 +95,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final List<String> errors = <String>[];
 
     final Iterable<_PlatformDetails> requestedPlatforms = _platforms.entries
@@ -115,8 +115,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       final String unsupported = requestedPlatforms.length == 1
           ? '${requestedPlatforms.first.label} is not supported'
           : 'None of [${requestedPlatforms.map((_PlatformDetails p) => p.label).join(',')}] are supported';
-      logSkip('$unsupported by this plugin');
-      return PackageLoopingCommand.success;
+      return PackageResult.skip('$unsupported by this plugin');
     }
     print('Building for: '
         '${buildPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
@@ -143,7 +142,9 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       }
     }
 
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   Future<bool> _buildExample(

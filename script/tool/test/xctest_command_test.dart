@@ -177,7 +177,7 @@ void main() {
             output,
             containsAllInOrder(<Matcher>[
               contains('Running for plugin'),
-              contains('Successfully ran iOS xctest for plugin2/example')
+              contains('Successfully ran iOS xctest for plugin/example')
             ]));
 
         expect(

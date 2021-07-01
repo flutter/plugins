@@ -86,8 +86,7 @@ class XCTestCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    final List<String> failures = <String>[];
+  Future<PackageResult> runForPackage(Directory package) async {
     final bool testIos = getBoolArg(kPlatformIos) &&
         pluginSupportsPlatform(kPlatformIos, package,
             requiredMode: PlatformSupport.inline);
@@ -106,25 +105,30 @@ class XCTestCommand extends PackageLoopingCommand {
       } else {
         description = 'macOS is not';
       }
-      logSkip('$description implemented by this plugin package.');
-      return PackageLoopingCommand.success;
+      return PackageResult.skip(
+          '$description implemented by this plugin package.');
     }
 
     if (multiplePlatformsRequested && (!testIos || !testMacos)) {
       print('Only running for ${testIos ? 'iOS' : 'macOS'}\n');
     }
 
-    // Only provide the failing platform in the failure messsage if testing
-    // multiple platforms, otherwise it's just noise.
+    final List<String> failures = <String>[];
     if (testIos &&
         !await _testPlugin(package, 'iOS',
             extraXcrunFlags: _iosDestinationFlags)) {
-      failures.add(multiplePlatformsRequested ? 'iOS' : '');
+      failures.add('iOS');
     }
     if (testMacos && !await _testPlugin(package, 'macOS')) {
-      failures.add(multiplePlatformsRequested ? 'macOS' : '');
+      failures.add('macOS');
     }
-    return failures;
+
+    // Only provide the failing platform in the failure details if testing
+    // multiple platforms, otherwise it's just noise.
+    return failures.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(
+            multiplePlatformsRequested ? failures : <String>[]);
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
