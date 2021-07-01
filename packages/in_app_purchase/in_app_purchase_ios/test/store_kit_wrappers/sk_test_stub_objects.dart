@@ -33,8 +33,11 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale =
-    SKPriceLocaleWrapper(currencySymbol: '\$', currencyCode: 'USD');
+final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(
+  currencySymbol: '\$',
+  currencyCode: 'USD',
+  countryCode: 'US',
+);
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
     SKProductSubscriptionPeriodWrapper(
@@ -70,7 +73,8 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   return {
     'currencySymbol': local.currencySymbol,
-    'currencyCode': local.currencyCode
+    'currencyCode': local.currencyCode,
+    'countryCode': local.countryCode,
   };
 }
 

@@ -111,6 +111,7 @@
           forKey:@"currencySymbol"];
   [map setObject:[locale objectForKey:NSLocaleCurrencyCode] ?: [NSNull null]
           forKey:@"currencyCode"];
+  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
   return map;
 }
 
