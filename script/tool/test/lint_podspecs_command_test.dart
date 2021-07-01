@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -167,7 +169,9 @@ void main() {
       // Simulate failure from `which pod`.
       final MockProcess mockWhichProcess = MockProcess();
       mockWhichProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturnForExecutable['which'] = mockWhichProcess;
+      processRunner.mockProcessesForExecutable['which'] = <io.Process>[
+        mockWhichProcess
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -193,7 +197,9 @@ void main() {
       // Simulate failure from `pod`.
       final MockProcess mockDriveProcess = MockProcess();
       mockDriveProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturnForExecutable['pod'] = mockDriveProcess;
+      processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
+        mockDriveProcess
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(

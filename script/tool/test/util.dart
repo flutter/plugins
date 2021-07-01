@@ -254,10 +254,10 @@ Future<List<String>> runCapturingPrint(
 class RecordingProcessRunner extends ProcessRunner {
   final List<ProcessCall> recordedCalls = <ProcessCall>[];
 
-  /// Maps an executable to the process that should be returned when that
-  /// executable is passed to, [run], [runAndStream], or [start].
-  final Map<String, io.Process> processToReturnForExecutable =
-      <String, io.Process>{};
+  /// Maps an executable to a list of processes that should be used for each
+  /// successive call to it via [run], [runAndStream], or [start].
+  final Map<String, List<io.Process>> mockProcessesForExecutable =
+      <String, List<io.Process>>{};
 
   /// Populate for [io.ProcessResult] to use a String [stdout] instead of a [List] of [int].
   String? resultStdout;
@@ -265,7 +265,7 @@ class RecordingProcessRunner extends ProcessRunner {
   /// Populate for [io.ProcessResult] to use a String [stderr] instead of a [List] of [int].
   String? resultStderr;
 
-  // Deprecated--do not add new uses. Use processToReturnForExecutable instead.
+  // Deprecated--do not add new uses. Use mockProcessesForExecutable instead.
   io.Process? processToReturn;
 
   @override
@@ -285,7 +285,7 @@ class RecordingProcessRunner extends ProcessRunner {
     return Future<int>.value(exitCode);
   }
 
-  /// Returns [io.ProcessResult] created from [processToReturnForExecutable],
+  /// Returns [io.ProcessResult] created from [mockProcessesForExecutable],
   /// [resultStdout], and [resultStderr].
   @override
   Future<io.ProcessResult> run(
@@ -301,7 +301,7 @@ class RecordingProcessRunner extends ProcessRunner {
 
     final io.Process? process = _getProcessToReturn(executable);
     final io.ProcessResult result = process == null
-        ? io.ProcessResult(1, 1, '', '')
+        ? io.ProcessResult(0, 0, '', '')
         : io.ProcessResult(process.pid, await process.exitCode,
             resultStdout ?? process.stdout, resultStderr ?? process.stderr);
 
@@ -320,7 +320,13 @@ class RecordingProcessRunner extends ProcessRunner {
   }
 
   io.Process? _getProcessToReturn(String executable) {
-    return processToReturnForExecutable[executable] ?? processToReturn;
+    io.Process? process;
+    final List<io.Process>? processes = mockProcessesForExecutable[executable];
+    if (processes != null && processes.isNotEmpty) {
+      process = mockProcessesForExecutable[executable]!.removeAt(0);
+    }
+    // Fall back to `processToReturn` for backwards compatibility.
+    return process ?? processToReturn;
   }
 }
 
