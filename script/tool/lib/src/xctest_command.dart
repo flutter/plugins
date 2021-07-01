@@ -88,35 +88,52 @@ class XCTestCommand extends PackageLoopingCommand {
   @override
   Future<List<String>> runForPackage(Directory package) async {
     final List<String> failures = <String>[];
-    final bool testIos = getBoolArg(kPlatformIos);
-    final bool testMacos = getBoolArg(kPlatformMacos);
-    // Only provide the failing platform(s) in the summary if testing multiple
-    // platforms, otherwise it's just noise.
-    final bool provideErrorDetails = testIos && testMacos;
+    final bool testIos = getBoolArg(kPlatformIos) &&
+        pluginSupportsPlatform(kPlatformIos, package,
+            requiredMode: PlatformSupport.inline);
+    final bool testMacos = getBoolArg(kPlatformMacos) &&
+        pluginSupportsPlatform(kPlatformMacos, package,
+            requiredMode: PlatformSupport.inline);
 
+    final bool multiplePlatformsRequested =
+        getBoolArg(kPlatformIos) && getBoolArg(kPlatformMacos);
+    if (!(testIos || testMacos)) {
+      String description;
+      if (multiplePlatformsRequested) {
+        description = 'Neither iOS nor macOS is';
+      } else if (getBoolArg(kPlatformIos)) {
+        description = 'iOS is not';
+      } else {
+        description = 'macOS is not';
+      }
+      logSkip('$description implemented by this plugin package.');
+      return PackageLoopingCommand.success;
+    }
+
+    if (multiplePlatformsRequested && (!testIos || !testMacos)) {
+      print('Only running for ${testIos ? 'iOS' : 'macOS'}\n');
+    }
+
+    // Only provide the failing platform in the failure messsage if testing
+    // multiple platforms, otherwise it's just noise.
     if (testIos &&
         !await _testPlugin(package, 'iOS',
             extraXcrunFlags: _iosDestinationFlags)) {
-      failures.add(provideErrorDetails ? 'iOS' : '');
+      failures.add(multiplePlatformsRequested ? 'iOS' : '');
     }
     if (testMacos && !await _testPlugin(package, 'macOS')) {
-      failures.add(provideErrorDetails ? 'macOS' : '');
+      failures.add(multiplePlatformsRequested ? 'macOS' : '');
     }
     return failures;
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
-  /// success if the tests passed (or did not exist).
+  /// success if the tests passed.
   Future<bool> _testPlugin(
     Directory plugin,
     String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
-    if (!pluginSupportsPlatform(platform.toLowerCase(), plugin,
-        requiredMode: PlatformSupport.inline)) {
-      logSkip('$platform is not implemented by this plugin package.\n');
-      return true;
-    }
     bool passing = true;
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
