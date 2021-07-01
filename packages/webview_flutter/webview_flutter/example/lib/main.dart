@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -18,7 +19,6 @@ const String kNavigationExamplePage = '''
 <body>
 <p>
 The navigation delegate is set to block navigation to the youtube website.
-The webview is transparent so you can see the green background of the scaffold.
 </p>
 <ul>
 <ul><a href="https://www.youtube.com/">https://www.youtube.com/</a></ul>
@@ -26,6 +26,25 @@ The webview is transparent so you can see the green background of the scaffold.
 </ul>
 </body>
 </html>
+''';
+
+const String kTransparentBackgroundPage = '''
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Transparent background test</title>
+  </head>
+  <style type="text/css">
+    body { background: transparent; margin: 0; padding: 0; }
+    #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+    #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
+  </style>
+  <body>
+    <div id="container">
+      <div id="shape"></div>
+    </div>
+  </body>
+  </html>
 ''';
 
 class WebViewExample extends StatefulWidget {
@@ -133,6 +152,7 @@ enum MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  transparentBackground,
 }
 
 class SampleMenu extends StatelessWidget {
@@ -171,6 +191,9 @@ class SampleMenu extends StatelessWidget {
               case MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case MenuOptions.transparentBackground:
+                _onTransparentBackground(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
@@ -202,6 +225,10 @@ class SampleMenu extends StatelessWidget {
             const PopupMenuItem<MenuOptions>(
               value: MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<MenuOptions>(
+              value: MenuOptions.transparentBackground,
+              child: Text('Transparent background example'),
             ),
           ],
         );
@@ -273,6 +300,13 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+    await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _onTransparentBackground(
+      WebViewController controller, BuildContext context) async {
+    final String contentBase64 =
+        base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
