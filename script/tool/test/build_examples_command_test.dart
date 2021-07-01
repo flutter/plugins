@@ -44,21 +44,16 @@ void main() {
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
         () async {
-      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+      createFakePlugin('plugin', packagesDir,
           extraFiles: <String>['example/test']);
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--ios']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING $packageName for iOS'),
+          contains('Running for plugin'),
           contains('iOS is not supported by this plugin'),
         ]),
       );
@@ -113,23 +108,17 @@ void main() {
     test(
         'building for Linux when plugin is not set up for Linux results in no-op',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/test',
       ]);
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--linux']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING $packageName for Linux'),
+          contains('Running for plugin'),
           contains('Linux is not supported by this plugin'),
         ]),
       );
@@ -176,23 +165,17 @@ void main() {
 
     test('building for macos with no implementation results in no-op',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/test',
       ]);
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--macos']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING $packageName for macOS'),
+          contains('Running for plugin'),
           contains('macOS is not supported by this plugin'),
         ]),
       );
@@ -239,24 +222,18 @@ void main() {
     });
 
     test('building for web with no implementation results in no-op', () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/test',
       ]);
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--web']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING $packageName for web'),
-          contains('Web is not supported by this plugin'),
+          contains('Running for plugin'),
+          contains('web is not supported by this plugin'),
         ]),
       );
 
@@ -304,29 +281,23 @@ void main() {
     test(
         'building for Windows when plugin is not set up for Windows results in no-op',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/test',
       ]);
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--windows']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('BUILDING $packageName for Windows'),
+          contains('Running for plugin'),
           contains('Windows is not supported by this plugin'),
         ]),
       );
 
-      // Output should be empty since running build-examples --macos with no macos
-      // implementation is a no-op.
+      // Output should be empty since running build-examples --windows with no
+      // Windows implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
@@ -368,23 +339,17 @@ void main() {
     test(
         'building for Android when plugin is not set up for Android results in no-op',
         () async {
-      final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/test',
       ]);
 
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
-
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--apk']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('\nBUILDING APK for $packageName'),
+          contains('Running for plugin'),
           contains('Android is not supported by this plugin'),
         ]),
       );
@@ -419,7 +384,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING APK for $packageName',
+          '\nBUILDING $packageName for Android (apk)',
         ]),
       );
 

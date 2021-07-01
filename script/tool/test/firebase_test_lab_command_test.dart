@@ -79,8 +79,10 @@ void main() {
 
       expect(
           output,
-          contains(
-              '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.'),
+          ]));
     });
 
     test('runs integration tests', () async {

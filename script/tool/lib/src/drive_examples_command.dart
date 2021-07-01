@@ -118,14 +118,13 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     if (package.basename.endsWith('_platform_interface') &&
         !package.childDirectory('example').existsSync()) {
       // Platform interface packages generally aren't intended to have
       // examples, and don't need integration tests, so skip rather than fail.
-      printSkip(
-          'Platform interfaces are not expected to have integratino tests.');
-      return PackageLoopingCommand.success;
+      return PackageResult.skip(
+          'Platform interfaces are not expected to have integration tests.');
     }
 
     final List<String> deviceFlags = <String>[];
@@ -139,9 +138,8 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     }
     // If there is no supported target platform, skip the plugin.
     if (deviceFlags.isEmpty) {
-      printSkip(
+      return PackageResult.skip(
           '${getPackageDescription(package)} does not support any requested platform.');
-      return PackageLoopingCommand.success;
     }
 
     int examplesFound = 0;
@@ -195,7 +193,9 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       printError('No driver tests were run ($examplesFound example(s) found).');
       errors.add('No tests ran (use --exclude if this is intentional).');
     }
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   Future<List<String>> _getDevicesForPlatform(String platform) async {

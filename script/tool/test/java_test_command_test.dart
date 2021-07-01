@@ -151,5 +151,21 @@ void main() {
         ]),
       );
     });
+
+    test('Skips when running no tests', () async {
+      createFakePlugin(
+        'plugin1',
+        packagesDir,
+      );
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['java-test']);
+
+      expect(
+        output,
+        containsAllInOrder(
+            <Matcher>[contains('SKIPPING: No Java unit tests.')]),
+      );
+    });
   });
 }
