@@ -1,3 +1,8 @@
+## 0.8.2
+
+* Update cache system to save list of images and retrieve them when it is needed. On Android, 
+`getLostData` will return `LostData` object that has new `List<PickedFile>` property to get multiple lost images.
+
 ## 0.8.1+3
 
 * Fix image picker causing a crash when the cache directory is deleted.
