@@ -152,7 +152,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     bool isRetrieve = false;
     try {
       result = await _channel.invokeMapMethod<String, dynamic>('multiRetrieve');
-    } on UnimplementedError catch (e) {
+    } on UnimplementedError {
       result = await _channel.invokeMapMethod<String, dynamic>('retrieve');
       isRetrieve = true;
     }
