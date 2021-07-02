@@ -66,7 +66,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
       }
 
       printError(
-          'Found an extra analysis_options.yaml in ${file.absolute.path}.');
+          'Found an extra analysis_options.yaml at ${file.absolute.path}.');
       printError(
           'If this was deliberate, pass the package to the analyze command '
           'with the --$_customAnalysisFlag flag and try again.');
@@ -105,7 +105,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
     print('Fetching dependencies...');
     if (!await _runPackagesGetOnTargetPackages()) {
-      printError('Unabled to get dependencies.');
+      printError('Unable to get dependencies.');
       throw ToolExit(_exitPackagesGetFailed);
     }
 

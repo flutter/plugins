@@ -135,13 +135,13 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
     // Ensures that gradle wrapper exists
     if (!await _ensureGradleWrapperExists(androidDirectory)) {
-      PackageResult.fail(<String>['Unable to build example apk']);
+      return PackageResult.fail(<String>['Unable to build example apk']);
     }
 
     await _configureFirebaseProject();
 
     if (!await _runGradle(androidDirectory, 'app:assembleAndroidTest')) {
-      PackageResult.fail(<String>['Unable to assemble androidTest']);
+      return PackageResult.fail(<String>['Unable to assemble androidTest']);
     }
 
     final List<String> errors = <String>[];
@@ -236,7 +236,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         : null;
 
     final int exitCode = await processRunner.runAndStream(
-        p.join(directory.path, _gradleWrapper),
+        directory.childFile(_gradleWrapper).path,
         <String>[
           target,
           '-Pverbose=true',
