@@ -65,7 +65,7 @@ void main() {
     test('all plugins from file system', () async {
       final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>['sample']);
+      await runCapturingPrint(runner, <String>['sample']);
       expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
 
@@ -74,7 +74,7 @@ void main() {
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       final Directory plugin3 =
           createFakePlugin('plugin3', thirdPartyPackagesDir);
-      await runner.run(<String>['sample']);
+      await runCapturingPrint(runner, <String>['sample']);
       expect(plugins,
           unorderedEquals(<String>[plugin1.path, plugin2.path, plugin3.path]));
     });
@@ -82,7 +82,7 @@ void main() {
     test('exclude plugins when plugins flag is specified', () async {
       createFakePlugin('plugin1', packagesDir);
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(
+      await runCapturingPrint(runner,
           <String>['sample', '--plugins=plugin1,plugin2', '--exclude=plugin1']);
       expect(plugins, unorderedEquals(<String>[plugin2.path]));
     });
@@ -90,14 +90,15 @@ void main() {
     test('exclude plugins when plugins flag isn\'t specified', () async {
       createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>['sample', '--exclude=plugin1,plugin2']);
+      await runCapturingPrint(
+          runner, <String>['sample', '--exclude=plugin1,plugin2']);
       expect(plugins, unorderedEquals(<String>[]));
     });
 
     test('exclude federated plugins when plugins flag is specified', () async {
       createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>[
+      await runCapturingPrint(runner, <String>[
         'sample',
         '--plugins=federated/plugin1,plugin2',
         '--exclude=federated/plugin1'
@@ -109,7 +110,7 @@ void main() {
         () async {
       createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>[
+      await runCapturingPrint(runner, <String>[
         'sample',
         '--plugins=federated/plugin1,plugin2',
         '--exclude=federated'
@@ -121,7 +122,7 @@ void main() {
       test('all plugins should be tested if there are no changes.', () async {
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -136,7 +137,7 @@ void main() {
         gitDiffResponse = 'AUTHORS';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -152,7 +153,7 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -168,7 +169,7 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -185,7 +186,7 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -202,7 +203,7 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -219,7 +220,7 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -236,7 +237,7 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -249,7 +250,7 @@ packages/plugin1/CHANGELOG
         gitDiffResponse = 'packages/plugin1/plugin1.dart';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -266,7 +267,7 @@ packages/plugin1/ios/plugin1.m
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -284,7 +285,7 @@ packages/plugin2/ios/plugin2.m
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -305,7 +306,7 @@ packages/plugin1/plugin1_web/plugin1_web.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
@@ -325,7 +326,7 @@ packages/plugin3/plugin3.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--plugins=plugin1,plugin2',
           '--base-sha=master',
@@ -345,7 +346,7 @@ packages/plugin3/plugin3.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--exclude=plugin2,plugin3',
           '--base-sha=master',
