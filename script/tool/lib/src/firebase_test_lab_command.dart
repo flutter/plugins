@@ -13,6 +13,8 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 
+const int _exitGcloudAuthFailed = 2;
+
 /// A command to run tests via Firebase test lab.
 class FirebaseTestLabCommand extends PackageLoopingCommand {
   /// Creates an instance of the test runner command.
@@ -84,16 +86,19 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     if (serviceKey.isEmpty) {
       print('No --service-key provided; skipping gcloud authorization');
     } else {
-      await processRunner.run(
+      final io.ProcessResult result = await processRunner.run(
         'gcloud',
         <String>[
           'auth',
           'activate-service-account',
           '--key-file=$serviceKey',
         ],
-        exitOnError: true,
         logOnError: true,
       );
+      if (result.exitCode != 0) {
+        printError('Unable to activate gcloud account.');
+        throw ToolExit(_exitGcloudAuthFailed);
+      }
       final int exitCode = await processRunner.runAndStream('gcloud', <String>[
         'config',
         'set',
