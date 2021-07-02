@@ -1,3 +1,7 @@
+## 0.1.2
+
+* Added countryCode to the SKPriceLocaleWrapper.
+
 ## 0.1.1+1
 
 * iOS: Fix treating missing App Store receipt as an exception.

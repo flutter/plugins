@@ -37,6 +37,43 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     );
   }
 
+  // Maps the switch this command uses to identify a platform to information
+  // about it.
+  static final Map<String, _PlatformDetails> _platforms =
+      <String, _PlatformDetails>{
+    _platformFlagApk: const _PlatformDetails(
+      'Android',
+      pluginPlatform: kPlatformAndroid,
+      flutterBuildType: 'apk',
+    ),
+    kPlatformIos: const _PlatformDetails(
+      'iOS',
+      pluginPlatform: kPlatformIos,
+      flutterBuildType: 'ios',
+      extraBuildFlags: <String>['--no-codesign'],
+    ),
+    kPlatformLinux: const _PlatformDetails(
+      'Linux',
+      pluginPlatform: kPlatformLinux,
+      flutterBuildType: 'linux',
+    ),
+    kPlatformMacos: const _PlatformDetails(
+      'macOS',
+      pluginPlatform: kPlatformMacos,
+      flutterBuildType: 'macos',
+    ),
+    kPlatformWeb: const _PlatformDetails(
+      'web',
+      pluginPlatform: kPlatformWeb,
+      flutterBuildType: 'web',
+    ),
+    kPlatformWindows: const _PlatformDetails(
+      'Windows',
+      pluginPlatform: kPlatformWindows,
+      flutterBuildType: 'windows',
+    ),
+  };
+
   @override
   final String name = 'build-examples';
 
@@ -47,102 +84,67 @@ class BuildExamplesCommand extends PackageLoopingCommand {
 
   @override
   Future<void> initializeRun() async {
-    final List<String> platformSwitches = <String>[
-      _platformFlagApk,
-      kPlatformIos,
-      kPlatformLinux,
-      kPlatformMacos,
-      kPlatformWeb,
-      kPlatformWindows,
-    ];
-    if (!platformSwitches.any((String platform) => getBoolArg(platform))) {
+    final List<String> platformFlags = _platforms.keys.toList();
+    platformFlags.sort();
+    if (!platformFlags.any((String platform) => getBoolArg(platform))) {
       printError(
-          'None of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
+          'None of ${platformFlags.map((String platform) => '--$platform').join(', ')} '
           'were specified. At least one platform must be provided.');
       throw ToolExit(_exitNoPlatformFlags);
     }
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final List<String> errors = <String>[];
+
+    final Iterable<_PlatformDetails> requestedPlatforms = _platforms.entries
+        .where(
+            (MapEntry<String, _PlatformDetails> entry) => getBoolArg(entry.key))
+        .map((MapEntry<String, _PlatformDetails> entry) => entry.value);
+    final Set<_PlatformDetails> buildPlatforms = <_PlatformDetails>{};
+    final Set<_PlatformDetails> unsupportedPlatforms = <_PlatformDetails>{};
+    for (final _PlatformDetails platform in requestedPlatforms) {
+      if (pluginSupportsPlatform(platform.pluginPlatform, package)) {
+        buildPlatforms.add(platform);
+      } else {
+        unsupportedPlatforms.add(platform);
+      }
+    }
+    if (buildPlatforms.isEmpty) {
+      final String unsupported = requestedPlatforms.length == 1
+          ? '${requestedPlatforms.first.label} is not supported'
+          : 'None of [${requestedPlatforms.map((_PlatformDetails p) => p.label).join(',')}] are supported';
+      return PackageResult.skip('$unsupported by this plugin');
+    }
+    print('Building for: '
+        '${buildPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
+    if (unsupportedPlatforms.isNotEmpty) {
+      print('Skipping unsupported platform(s): '
+          '${unsupportedPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
+    }
+    print('');
 
     for (final Directory example in getExamplesForPlugin(package)) {
       final String packageName =
           p.relative(example.path, from: packagesDir.path);
 
-      if (getBoolArg(kPlatformLinux)) {
-        print('\nBUILDING $packageName for Linux');
-        if (isLinuxPlugin(package)) {
-          if (!await _buildExample(example, kPlatformLinux)) {
-            errors.add('$packageName (Linux)');
-          }
-        } else {
-          printSkip('Linux is not supported by this plugin');
+      for (final _PlatformDetails platform in buildPlatforms) {
+        String buildPlatform = platform.label;
+        if (platform.label.toLowerCase() != platform.flutterBuildType) {
+          buildPlatform += ' (${platform.flutterBuildType})';
         }
-      }
-
-      if (getBoolArg(kPlatformMacos)) {
-        print('\nBUILDING $packageName for macOS');
-        if (isMacOsPlugin(package)) {
-          if (!await _buildExample(example, kPlatformMacos)) {
-            errors.add('$packageName (macOS)');
-          }
-        } else {
-          printSkip('macOS is not supported by this plugin');
-        }
-      }
-
-      if (getBoolArg(kPlatformWeb)) {
-        print('\nBUILDING $packageName for web');
-        if (isWebPlugin(package)) {
-          if (!await _buildExample(example, kPlatformWeb)) {
-            errors.add('$packageName (web)');
-          }
-        } else {
-          printSkip('Web is not supported by this plugin');
-        }
-      }
-
-      if (getBoolArg(kPlatformWindows)) {
-        print('\nBUILDING $packageName for Windows');
-        if (isWindowsPlugin(package)) {
-          if (!await _buildExample(example, kPlatformWindows)) {
-            errors.add('$packageName (Windows)');
-          }
-        } else {
-          printSkip('Windows is not supported by this plugin');
-        }
-      }
-
-      if (getBoolArg(kPlatformIos)) {
-        print('\nBUILDING $packageName for iOS');
-        if (isIosPlugin(package)) {
-          if (!await _buildExample(
-            example,
-            kPlatformIos,
-            extraBuildFlags: <String>['--no-codesign'],
-          )) {
-            errors.add('$packageName (iOS)');
-          }
-        } else {
-          printSkip('iOS is not supported by this plugin');
-        }
-      }
-
-      if (getBoolArg(_platformFlagApk)) {
-        print('\nBUILDING APK for $packageName');
-        if (isAndroidPlugin(package)) {
-          if (!await _buildExample(example, _platformFlagApk)) {
-            errors.add('$packageName (apk)');
-          }
-        } else {
-          printSkip('Android is not supported by this plugin');
+        print('\nBUILDING $packageName for $buildPlatform');
+        if (!await _buildExample(example, platform.flutterBuildType,
+            extraBuildFlags: platform.extraBuildFlags)) {
+          errors.add('$packageName (${platform.label})');
         }
       }
     }
 
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   Future<bool> _buildExample(
@@ -165,4 +167,26 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     );
     return exitCode == 0;
   }
+}
+
+/// A collection of information related to a specific platform.
+class _PlatformDetails {
+  const _PlatformDetails(
+    this.label, {
+    required this.pluginPlatform,
+    required this.flutterBuildType,
+    this.extraBuildFlags = const <String>[],
+  });
+
+  /// The name to use in output.
+  final String label;
+
+  /// The key in a pubspec's platform: entry.
+  final String pluginPlatform;
+
+  /// The `flutter build` build type.
+  final String flutterBuildType;
+
+  /// Any extra flags to pass to `flutter build`.
+  final List<String> extraBuildFlags;
 }

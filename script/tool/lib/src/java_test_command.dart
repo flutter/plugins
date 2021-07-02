@@ -28,7 +28,7 @@ class JavaTestCommand extends PackageLoopingCommand {
       'command.';
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final Iterable<Directory> examplesWithTests = getExamplesForPlugin(package)
         .where((Directory d) =>
             isFlutterPackage(d) &&
@@ -43,6 +43,10 @@ class JavaTestCommand extends PackageLoopingCommand {
                     .childDirectory('src')
                     .childDirectory('test')
                     .existsSync()));
+
+    if (examplesWithTests.isEmpty) {
+      return PackageResult.skip('No Java unit tests.');
+    }
 
     final List<String> errors = <String>[];
     for (final Directory example in examplesWithTests) {
@@ -66,6 +70,8 @@ class JavaTestCommand extends PackageLoopingCommand {
         errors.add('$exampleName tests failed.');
       }
     }
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 }

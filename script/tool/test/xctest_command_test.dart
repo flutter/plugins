@@ -150,21 +150,16 @@ void main() {
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
-      test('running with correct destination, exclude 1 plugin', () async {
-        createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
-          'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
-        });
-        final Directory pluginDirectory2 =
-            createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+      test('running with correct destination', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
 
-        final Directory pluginExampleDirectory2 =
-            pluginDirectory2.childDirectory('example');
+        final Directory pluginExampleDirectory =
+            pluginDirectory.childDirectory('example');
 
         final MockProcess mockProcess = MockProcess();
         mockProcess.exitCodeCompleter.complete(0);
@@ -176,16 +171,14 @@ void main() {
           '--ios',
           _kDestination,
           'foo_destination',
-          '--exclude',
-          'plugin1'
         ]);
 
-        expect(output, isNot(contains(contains('Running for plugin1'))));
-        expect(output, contains(contains('Running for plugin2')));
         expect(
             output,
-            contains(
-                contains('Successfully ran iOS xctest for plugin2/example')));
+            containsAllInOrder(<Matcher>[
+              contains('Running for plugin'),
+              contains('Successfully ran iOS xctest for plugin/example')
+            ]));
 
         expect(
             processRunner.recordedCalls,
@@ -206,7 +199,7 @@ void main() {
                     'foo_destination',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                   ],
-                  pluginExampleDirectory2.path),
+                  pluginExampleDirectory.path),
             ]));
       });
 
@@ -348,6 +341,212 @@ void main() {
                   ],
                   pluginExampleDirectory.path),
             ]));
+      });
+    });
+
+    group('combined', () {
+      test('runs both iOS and macOS when supported', () async {
+        final Directory pluginDirectory1 =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline,
+          kPlatformMacos: PlatformSupport.inline,
+        });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory1.childDirectory('example');
+
+        final MockProcess mockProcess = MockProcess();
+        mockProcess.exitCodeCompleter.complete(0);
+        processRunner.processToReturn = mockProcess;
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAll(<Matcher>[
+              contains('Successfully ran iOS xctest for plugin/example'),
+              contains('Successfully ran macOS xctest for plugin/example'),
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'ios/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    '-destination',
+                    'foo_destination',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'macos/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
+      test('runs only macOS for a macOS plugin', () async {
+        final Directory pluginDirectory1 =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory1.childDirectory('example');
+
+        final MockProcess mockProcess = MockProcess();
+        mockProcess.exitCodeCompleter.complete(0);
+        processRunner.processToReturn = mockProcess;
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only running for macOS'),
+              contains('Successfully ran macOS xctest for plugin/example'),
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'macos/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
+      test('runs only iOS for a iOS plugin', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory.childDirectory('example');
+
+        final MockProcess mockProcess = MockProcess();
+        mockProcess.exitCodeCompleter.complete(0);
+        processRunner.processToReturn = mockProcess;
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only running for iOS'),
+              contains('Successfully ran iOS xctest for plugin/example')
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'ios/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    '-destination',
+                    'foo_destination',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
+      test('skips when neither are supported', () async {
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ]);
+
+        final MockProcess mockProcess = MockProcess();
+        mockProcess.exitCodeCompleter.complete(0);
+        processRunner.processToReturn = mockProcess;
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains(
+                  'SKIPPING: Neither iOS nor macOS is implemented by this plugin package.'),
+            ]));
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
     });
   });

@@ -48,6 +48,10 @@ void main() {
         'USD',
       );
       expect(
+        productResponseWrapper.products.first.priceLocale.countryCode,
+        'US',
+      );
+      expect(
         productResponseWrapper.invalidProductIdentifiers,
         isNotEmpty,
       );
