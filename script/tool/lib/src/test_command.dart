@@ -44,47 +44,13 @@ class TestCommand extends PluginCommand {
 
       print('RUNNING $packageName tests...');
 
-      final String enableExperiment = getStringArg(kEnableExperiment);
-
-      // `flutter test` automatically gets packages.  `pub run test` does not.  :(
-      int exitCode = 0;
+      bool passed;
       if (isFlutterPackage(packageDir)) {
-        final List<String> args = <String>[
-          'test',
-          '--color',
-          if (enableExperiment.isNotEmpty)
-            '--enable-experiment=$enableExperiment',
-        ];
-
-        if (isWebPlugin(packageDir)) {
-          args.add('--platform=chrome');
-        }
-        exitCode = await processRunner.runAndStream(
-          'flutter',
-          args,
-          workingDir: packageDir,
-        );
+        passed = await _runFlutterTests(packageDir);
       } else {
-        exitCode = await processRunner.runAndStream(
-          'dart',
-          <String>['pub', 'get'],
-          workingDir: packageDir,
-        );
-        if (exitCode == 0) {
-          exitCode = await processRunner.runAndStream(
-            'dart',
-            <String>[
-              'pub',
-              'run',
-              if (enableExperiment.isNotEmpty)
-                '--enable-experiment=$enableExperiment',
-              'test',
-            ],
-            workingDir: packageDir,
-          );
-        }
+        passed = await _runDartTests(packageDir);
       }
-      if (exitCode != 0) {
+      if (!passed) {
         failingPackages.add(packageName);
       }
     }
@@ -99,5 +65,52 @@ class TestCommand extends PluginCommand {
     }
 
     print('All tests are passing!');
+  }
+
+  /// Runs the Dart tests for a Flutter package, returning true on success.
+  Future<bool> _runFlutterTests(Directory package) async {
+    final String experiment = getStringArg(kEnableExperiment);
+
+    final int exitCode = await processRunner.runAndStream(
+      flutterCommand,
+      <String>[
+        'test',
+        '--color',
+        if (experiment.isNotEmpty) '--enable-experiment=$experiment',
+        if (isWebPlugin(package)) '--platform=chrome',
+      ],
+      workingDir: package,
+    );
+    return exitCode == 0;
+  }
+
+  /// Runs the Dart tests for a non-Flutter package, returning true on success.
+  Future<bool> _runDartTests(Directory package) async {
+    // Unlike `flutter test`, `pub run test` does not automatically get
+    // packages
+    int exitCode = await processRunner.runAndStream(
+      'dart',
+      <String>['pub', 'get'],
+      workingDir: package,
+    );
+    if (exitCode != 0) {
+      printError('Unable to fetch dependencies.');
+      return false;
+    }
+
+    final String experiment = getStringArg(kEnableExperiment);
+
+    exitCode = await processRunner.runAndStream(
+      'dart',
+      <String>[
+        'pub',
+        'run',
+        if (experiment.isNotEmpty) '--enable-experiment=$experiment',
+        'test',
+      ],
+      workingDir: package,
+    );
+
+    return exitCode == 0;
   }
 }
