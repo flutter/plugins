@@ -36,7 +36,7 @@ void main() {
       final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
 
-      await runner.run(<String>['test']);
+      await runCapturingPrint(runner, <String>['test']);
 
       expect(
         processRunner.recordedCalls,
@@ -54,7 +54,7 @@ void main() {
       final Directory plugin2Dir = createFakePlugin('plugin2', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
 
-      await runner.run(<String>['test']);
+      await runCapturingPrint(runner, <String>['test']);
 
       expect(
         processRunner.recordedCalls,
@@ -71,7 +71,8 @@ void main() {
       final Directory packageDir = createFakePackage('b', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
 
-      await runner.run(<String>['test', '--enable-experiment=exp1']);
+      await runCapturingPrint(
+          runner, <String>['test', '--enable-experiment=exp1']);
 
       expect(
         processRunner.recordedCalls,
@@ -99,7 +100,7 @@ void main() {
         },
       );
 
-      await runner.run(<String>['test']);
+      await runCapturingPrint(runner, <String>['test']);
 
       expect(
         processRunner.recordedCalls,
@@ -118,7 +119,8 @@ void main() {
       final Directory packageDir = createFakePackage('b', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
 
-      await runner.run(<String>['test', '--enable-experiment=exp1']);
+      await runCapturingPrint(
+          runner, <String>['test', '--enable-experiment=exp1']);
 
       expect(
         processRunner.recordedCalls,

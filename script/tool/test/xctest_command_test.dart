@@ -106,7 +106,7 @@ void main() {
 
     test('Fails if no platforms are provided', () async {
       expect(
-        () => runner.run(<String>['xctest']),
+        () => runCapturingPrint(runner, <String>['xctest']),
         throwsA(isA<ToolExit>()),
       );
     });
@@ -227,7 +227,7 @@ void main() {
         // will get this result and they should still be able to parse them correctly.
         processRunner.resultStdout =
             jsonEncode(schemeCommandResult..addAll(_kDeviceListMap));
-        await runner.run(<String>['xctest', '--ios']);
+        await runCapturingPrint(runner, <String>['xctest', '--ios']);
 
         expect(
             processRunner.recordedCalls,
