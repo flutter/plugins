@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
 /// A command to run Dart unit tests for packages.
-class TestCommand extends PluginCommand {
+class TestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   TestCommand(
     Directory packagesDir, {
@@ -20,7 +19,8 @@ class TestCommand extends PluginCommand {
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
-      help: 'Runs the tests in Dart VM with the given experiments enabled.',
+      help:
+          'Runs Dart unit tests in Dart VM with the given experiments enabled.',
     );
   }
 
@@ -32,39 +32,18 @@ class TestCommand extends PluginCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  Future<void> run() async {
-    final List<String> failingPackages = <String>[];
-    await for (final Directory packageDir in getPackages()) {
-      final String packageName =
-          p.relative(packageDir.path, from: packagesDir.path);
-      if (!packageDir.childDirectory('test').existsSync()) {
-        print('SKIPPING $packageName - no test subdirectory');
-        continue;
-      }
-
-      print('RUNNING $packageName tests...');
-
-      bool passed;
-      if (isFlutterPackage(packageDir)) {
-        passed = await _runFlutterTests(packageDir);
-      } else {
-        passed = await _runDartTests(packageDir);
-      }
-      if (!passed) {
-        failingPackages.add(packageName);
-      }
+  Future<PackageResult> runForPackage(Directory package) async {
+    if (!package.childDirectory('test').existsSync()) {
+      return PackageResult.skip('No test/ directory.');
     }
 
-    print('\n\n');
-    if (failingPackages.isNotEmpty) {
-      print('Tests for the following packages are failing (see above):');
-      for (final String package in failingPackages) {
-        print(' * $package');
-      }
-      throw ToolExit(1);
+    bool passed;
+    if (isFlutterPackage(package)) {
+      passed = await _runFlutterTests(package);
+    } else {
+      passed = await _runDartTests(package);
     }
-
-    print('All tests are passing!');
+    return passed ? PackageResult.success() : PackageResult.fail();
   }
 
   /// Runs the Dart tests for a Flutter package, returning true on success.
