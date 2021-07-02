@@ -73,14 +73,17 @@ class PublishCheckCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    final _PublishCheckResult result = await _passesPublishCheck(package);
+  Future<PackageResult> runForPackage(Directory package) async {
+    final _PublishCheckResult? result = await _passesPublishCheck(package);
+    if (result == null) {
+      return PackageResult.skip('Package is marked as unpublishable.');
+    }
     if (result.index > _overallResult.index) {
       _overallResult = result;
     }
     return result == _PublishCheckResult.error
-        ? PackageLoopingCommand.failure
-        : PackageLoopingCommand.success;
+        ? PackageResult.fail()
+        : PackageResult.success();
   }
 
   @override
@@ -176,15 +179,16 @@ class PublishCheckCommand extends PackageLoopingCommand {
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
   }
 
-  Future<_PublishCheckResult> _passesPublishCheck(Directory package) async {
+  /// Returns the result of the publish check, or null if the package is marked
+  /// as unpublishable.
+  Future<_PublishCheckResult?> _passesPublishCheck(Directory package) async {
     final String packageName = package.basename;
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       print('no pubspec');
       return _PublishCheckResult.error;
     } else if (pubspec.publishTo == 'none') {
-      print('Package $packageName is marked as unpublishable. Skipping.');
-      return _PublishCheckResult.nothingToPublish;
+      return null;
     }
 
     final Version? version = pubspec.version;

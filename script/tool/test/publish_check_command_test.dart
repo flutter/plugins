@@ -51,7 +51,7 @@ void main() {
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
       );
-      await runner.run(<String>['publish-check']);
+      await runCapturingPrint(runner, <String>['publish-check']);
 
       expect(
           processRunner.recordedCalls,
@@ -78,7 +78,7 @@ void main() {
       processRunner.processesToReturn.add(process);
 
       expect(
-        () => runner.run(<String>['publish-check']),
+        () => runCapturingPrint(runner, <String>['publish-check']),
         throwsA(isA<ToolExit>()),
       );
     });
@@ -90,7 +90,7 @@ void main() {
       final MockProcess process = MockProcess();
       processRunner.processesToReturn.add(process);
 
-      expect(() => runner.run(<String>['publish-check']),
+      expect(() => runCapturingPrint(runner, <String>['publish-check']),
           throwsA(isA<ToolExit>()));
     });
 
@@ -109,7 +109,9 @@ void main() {
 
       processRunner.processesToReturn.add(process);
 
-      expect(runner.run(<String>['publish-check', '--allow-pre-release']),
+      expect(
+          runCapturingPrint(
+              runner, <String>['publish-check', '--allow-pre-release']),
           completes);
     });
 
@@ -128,7 +130,8 @@ void main() {
 
       processRunner.processesToReturn.add(process);
 
-      expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+      expect(runCapturingPrint(runner, <String>['publish-check']),
+          throwsA(isA<ToolExit>()));
     });
 
     test('Success message on stderr is not printed as an error', () async {
@@ -206,6 +209,13 @@ void main() {
     "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "Package no_publish_b version: 0.2.0 has already be published on pub.",
     "\n",
+    "------------------------------------------------------------",
+    "Run overview:",
+    "  no_publish_a - ran",
+    "  no_publish_b - ran",
+    "",
+    "Ran for 2 package(s)",
+    "\n",
     "No issues found!"
   ]
 }''');
@@ -266,6 +276,13 @@ void main() {
     "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "Running pub publish --dry-run:",
     "Package no_publish_b is able to be published.",
+    "\n",
+    "------------------------------------------------------------",
+    "Run overview:",
+    "  no_publish_a - ran",
+    "  no_publish_b - ran",
+    "",
+    "Ran for 2 package(s)",
     "\n",
     "No issues found!"
   ]

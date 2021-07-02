@@ -100,19 +100,20 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         'project',
         getStringArg('project'),
       ]);
+      print('');
       if (exitCode == 0) {
-        print('\nFirebase project configured.');
+        print('Firebase project configured.');
         return;
       } else {
-        print(
-            '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
+        logWarning(
+            'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
     _firebaseProjectConfigured!.complete(null);
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     if (!package
         .childDirectory('example')
         .childDirectory('android')
@@ -120,11 +121,8 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         .childDirectory('src')
         .childDirectory('androidTest')
         .existsSync()) {
-      printSkip('No example with androidTest directory');
-      return PackageLoopingCommand.success;
+      return PackageResult.skip('No example with androidTest directory');
     }
-
-    final List<String> errors = <String>[];
 
     final Directory exampleDirectory = package.childDirectory('example');
     final Directory androidDirectory =
@@ -132,16 +130,16 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
     // Ensures that gradle wrapper exists
     if (!await _ensureGradleWrapperExists(androidDirectory)) {
-      errors.add('Unable to build example apk');
-      return errors;
+      PackageResult.fail(<String>['Unable to build example apk']);
     }
 
     await _configureFirebaseProject();
 
     if (!await _runGradle(androidDirectory, 'app:assembleAndroidTest')) {
-      errors.add('Unable to assemble androidTest');
-      return errors;
+      PackageResult.fail(<String>['Unable to assemble androidTest']);
     }
+
+    final List<String> errors = <String>[];
 
     // Used within the loop to ensure a unique GCS output location for each
     // test file's run.
@@ -186,7 +184,9 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         errors.add('$testName failed tests');
       }
     }
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   /// Checks that 'gradlew' exists in [androidDirectory], and if not runs a
