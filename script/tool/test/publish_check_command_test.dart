@@ -51,7 +51,7 @@ void main() {
       processRunner.processesToReturn.add(
         MockProcess()..exitCodeCompleter.complete(0),
       );
-      await runner.run(<String>['publish-check']);
+      await runCapturingPrint(runner, <String>['publish-check']);
 
       expect(
           processRunner.recordedCalls,
@@ -78,7 +78,7 @@ void main() {
       processRunner.processesToReturn.add(process);
 
       expect(
-        () => runner.run(<String>['publish-check']),
+        () => runCapturingPrint(runner, <String>['publish-check']),
         throwsA(isA<ToolExit>()),
       );
     });
@@ -90,7 +90,7 @@ void main() {
       final MockProcess process = MockProcess();
       processRunner.processesToReturn.add(process);
 
-      expect(() => runner.run(<String>['publish-check']),
+      expect(() => runCapturingPrint(runner, <String>['publish-check']),
           throwsA(isA<ToolExit>()));
     });
 
@@ -109,7 +109,9 @@ void main() {
 
       processRunner.processesToReturn.add(process);
 
-      expect(runner.run(<String>['publish-check', '--allow-pre-release']),
+      expect(
+          runCapturingPrint(
+              runner, <String>['publish-check', '--allow-pre-release']),
           completes);
     });
 
@@ -128,7 +130,8 @@ void main() {
 
       processRunner.processesToReturn.add(process);
 
-      expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+      expect(runCapturingPrint(runner, <String>['publish-check']),
+          throwsA(isA<ToolExit>()));
     });
 
     test('Success message on stderr is not printed as an error', () async {
@@ -197,16 +200,23 @@ void main() {
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
-      // ignore: use_raw_strings
-      expect(output.first, '''
+      expect(output.first, r'''
 {
   "status": "no-publish",
   "humanMessage": [
-    "Checking that no_publish_a can be published.",
+    "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
     "Package no_publish_a version: 0.1.0 has already be published on pub.",
-    "Checking that no_publish_b can be published.",
+    "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "Package no_publish_b version: 0.2.0 has already be published on pub.",
-    "SUCCESS: All packages passed publish check!"
+    "\n",
+    "------------------------------------------------------------",
+    "Run overview:",
+    "  no_publish_a - ran",
+    "  no_publish_b - ran",
+    "",
+    "Ran for 2 package(s)",
+    "\n",
+    "No issues found!"
   ]
 }''');
     });
@@ -257,16 +267,24 @@ void main() {
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
-      // ignore: use_raw_strings
-      expect(output.first, '''
+      expect(output.first, r'''
 {
   "status": "needs-publish",
   "humanMessage": [
-    "Checking that no_publish_a can be published.",
+    "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
     "Package no_publish_a version: 0.1.0 has already be published on pub.",
-    "Checking that no_publish_b can be published.",
+    "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
+    "Running pub publish --dry-run:",
     "Package no_publish_b is able to be published.",
-    "SUCCESS: All packages passed publish check!"
+    "\n",
+    "------------------------------------------------------------",
+    "Run overview:",
+    "  no_publish_a - ran",
+    "  no_publish_b - ran",
+    "",
+    "Ran for 2 package(s)",
+    "\n",
+    "No issues found!"
   ]
 }''');
     });
@@ -328,19 +346,22 @@ void main() {
       });
       expect(hasError, isTrue);
 
-      // ignore: use_raw_strings
-      expect(output.first, '''
+      expect(output.first, r'''
 {
   "status": "error",
   "humanMessage": [
-    "Checking that no_publish_a can be published.",
-    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException: line 1, column 1: Not a map\\n  ╷\\n1 │ bad-yaml\\n  │ ^^^^^^^^\\n  ╵}",
+    "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
+    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException: line 1, column 1: Not a map\n  ╷\n1 │ bad-yaml\n  │ ^^^^^^^^\n  ╵}",
     "no pubspec",
-    "Checking that no_publish_b can be published.",
+    "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "url https://pub.dev/packages/no_publish_b.json",
     "no_publish_b.json",
+    "Running pub publish --dry-run:",
     "Package no_publish_b is able to be published.",
-    "ERROR: The following 1 package(s) failed the publishing check:\\nMemoryDirectory: '/packages/no_publish_a'"
+    "\n",
+    "The following packages had errors:",
+    "  no_publish_a",
+    "See above for full details."
   ]
 }''');
     });
