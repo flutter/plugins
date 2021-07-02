@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
@@ -62,8 +63,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   // Keep a collection of mapId to a map of TileOverlays.
   final Map<int, Map<TileOverlayId, TileOverlay>> _tileOverlays = {};
 
-  @override
-  Future<void> init(int mapId) {
+  /// Returns the channel for [mapId], creating it if it doesn't already exist.
+  @visibleForTesting
+  MethodChannel ensureChannelInitialized(int mapId) {
     MethodChannel? channel = _channels[mapId];
     if (channel == null) {
       channel = MethodChannel('plugins.flutter.io/google_maps_$mapId');
@@ -71,6 +73,12 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           (MethodCall call) => _handleMethodCall(call, mapId));
       _channels[mapId] = channel;
     }
+    return channel;
+  }
+
+  @override
+  Future<void> init(int mapId) {
+    MethodChannel channel = ensureChannelInitialized(mapId);
     return channel.invokeMethod<void>('map#waitForMap');
   }
 
@@ -414,18 +422,17 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
     required int mapId,
-  }) {
+  }) async {
     assert(markerId != null);
-    return channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
-        <String, String>{'markerId': markerId.value}) as Future<bool>;
+    return (await channel(mapId).invokeMethod<bool>('markers#isInfoWindowShown',
+        <String, String>{'markerId': markerId.value}))!;
   }
 
   @override
   Future<double> getZoomLevel({
     required int mapId,
-  }) {
-    return channel(mapId).invokeMethod<double>('map#getZoomLevel')
-        as Future<double>;
+  }) async {
+    return (await channel(mapId).invokeMethod<double>('map#getZoomLevel'))!;
   }
 
   @override
@@ -433,6 +440,98 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     required int mapId,
   }) {
     return channel(mapId).invokeMethod<Uint8List>('map#takeSnapshot');
+  }
+
+  /// Set [GoogleMapsFlutterPlatform] to use [AndroidViewSurface] to build the Google Maps widget.
+  ///
+  /// This implementation uses hybrid composition to render the Google Maps
+  /// Widget on Android. This comes at the cost of some performance on Android
+  /// versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
+  /// information.
+  ///
+  /// If set to true, the google map widget should be built with
+  /// [buildViewWithTextDirection] instead of [buildView].
+  ///
+  /// Defaults to false.
+  bool useAndroidViewSurface = false;
+
+  /// Returns a widget displaying the map view.
+  ///
+  /// This method includes a parameter for platforms that require a text
+  /// direction. For example, this should be used when using hybrid composition
+  /// on Android.
+  Widget buildViewWithTextDirection(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    required TextDirection textDirection,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    if (defaultTargetPlatform == TargetPlatform.android &&
+        useAndroidViewSurface) {
+      final Map<String, dynamic> creationParams = <String, dynamic>{
+        'initialCameraPosition': initialCameraPosition.toMap(),
+        'options': mapOptions,
+        'markersToAdd': serializeMarkerSet(markers),
+        'polygonsToAdd': serializePolygonSet(polygons),
+        'polylinesToAdd': serializePolylineSet(polylines),
+        'circlesToAdd': serializeCircleSet(circles),
+        'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+      };
+      return PlatformViewLink(
+        viewType: 'plugins.flutter.io/google_maps',
+        surfaceFactory: (
+          BuildContext context,
+          PlatformViewController controller,
+        ) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: gestureRecognizers ??
+                const <Factory<OneSequenceGestureRecognizer>>{},
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+          );
+        },
+        onCreatePlatformView: (PlatformViewCreationParams params) {
+          final SurfaceAndroidViewController controller =
+              PlatformViewsService.initSurfaceAndroidView(
+            id: params.id,
+            viewType: 'plugins.flutter.io/google_maps',
+            layoutDirection: textDirection,
+            creationParams: creationParams,
+            creationParamsCodec: const StandardMessageCodec(),
+            onFocus: () => params.onFocusChanged(true),
+          );
+          controller.addOnPlatformViewCreatedListener(
+            params.onPlatformViewCreated,
+          );
+          controller.addOnPlatformViewCreatedListener(
+            onPlatformViewCreated,
+          );
+
+          controller.create();
+          return controller;
+        },
+      );
+    }
+    return buildView(
+      creationId,
+      onPlatformViewCreated,
+      initialCameraPosition: initialCameraPosition,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      tileOverlays: tileOverlays,
+      gestureRecognizers: gestureRecognizers,
+      mapOptions: mapOptions,
+    );
   }
 
   @override

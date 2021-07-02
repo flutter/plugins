@@ -5,7 +5,7 @@ def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -16,7 +16,13 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
+        // Gradle versions older than 2.13.3 aren't published to the servers
+        // above, so add this URL as a workaround until upgrading past that
+        // version.
+        maven {
+            url 'https://google.bintray.com/exoplayer/'
+        }
     }
 }
 
@@ -48,5 +54,7 @@ android {
         implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.1'
         implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.1'
         implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.1'
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.mockito:mockito-inline:3.9.0'
     }
 }

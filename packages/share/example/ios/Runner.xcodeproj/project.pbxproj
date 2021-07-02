@@ -214,7 +214,7 @@
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 1100;
-				ORGANIZATIONNAME = "The Chromium Authors";
+				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
 					683426AA2538D314009B194C = {
 						CreatedOnToolsVersion = 11.7;
@@ -531,7 +531,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.shareExample;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.shareExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -552,7 +552,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.shareExample;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.shareExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

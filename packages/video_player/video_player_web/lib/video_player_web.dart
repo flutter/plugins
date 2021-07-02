@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -181,10 +181,15 @@ class _VideoPlayer {
       ..src = uri
       ..autoplay = false
       ..controls = false
-      ..style.border = 'none';
+      ..style.border = 'none'
+      ..style.height = '100%'
+      ..style.width = '100%';
 
     // Allows Safari iOS to play the video inline
     videoElement.setAttribute('playsinline', 'true');
+
+    // Set autoplay to false since most browsers won't autoplay a video unless it is muted
+    videoElement.setAttribute('autoplay', 'false');
 
     // TODO(hterkelsen): Use initialization parameters once they are available
     ui.platformViewRegistry.registerViewFactory(

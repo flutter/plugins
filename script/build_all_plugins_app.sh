@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright 2017 The Chromium Authors. All rights reserved.
+# Copyright 2013 The Flutter Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -17,8 +17,6 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
-
-check_changed_packages > /dev/null
 
 # This list should be kept as short as possible, and things should remain here
 # only as long as necessary, since in general the goal is for all of the latest
@@ -39,6 +37,12 @@ echo "Excluding the following plugins: $ALL_EXCLUDED"
 
 (cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
 
+# Master now creates null-safe app code by default; migrate stable so both
+# branches are building in the same mode.
+if [[ "${CHANNEL}" == "stable" ]]; then
+  (cd $REPO_DIR/all_plugins && dart migrate --apply-changes)
+fi
+
 function error() {
   echo "$@" 1>&2
 }
@@ -57,18 +61,10 @@ for version in "${BUILD_MODES[@]}"; do
 
   if [ $? -eq 0 ]; then
     echo "Successfully built $version all_plugins app."
-    echo "All first party plugins compile together."
+    echo "All first-party plugins compile together."
   else
     error "Failed to build $version all_plugins app."
-    if [[ "${#CHANGED_PACKAGE_LIST[@]}" == 0 ]]; then
-      error "There was a failure to compile all first party plugins together, but there were no changes detected in packages."
-    else
-      error "Changes to the following packages may prevent all first party plugins from compiling together:"
-      for package in "${CHANGED_PACKAGE_LIST[@]}"; do
-        error "$package"
-      done
-      echo ""
-    fi
+    error "This indicates a conflict between two or more first-party plugins."
     failures=$(($failures + 1))
   fi
 done

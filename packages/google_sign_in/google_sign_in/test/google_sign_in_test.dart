@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -77,6 +77,25 @@ void main() {
         log,
         <Matcher>[
           _isSignInMethodCall(),
+          isMethodCall('signIn', arguments: null),
+        ],
+      );
+    });
+
+    test('signIn prioritize clientId parameter when available', () async {
+      final fakeClientId = 'fakeClientId';
+      googleSignIn = GoogleSignIn(clientId: fakeClientId);
+      await googleSignIn.signIn();
+      expect(googleSignIn.currentUser, isNotNull);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('init', arguments: <String, dynamic>{
+            'signInOption': 'SignInOption.standard',
+            'scopes': <String>[],
+            'hostedDomain': null,
+            'clientId': fakeClientId,
+          }),
           isMethodCall('signIn', arguments: null),
         ],
       );
