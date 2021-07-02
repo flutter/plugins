@@ -70,7 +70,7 @@ void main() {
   });
 
   test(
-      '_handleObserverCallbacks should call SKTransactionObserverWrapper.restoreCompletedTransactionsFailed',
+      'handleObserverCallbacks should call SKTransactionObserverWrapper.restoreCompletedTransactionsFailed',
       () async {
     SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
     TestTransactionObserverWrapper testObserver =
