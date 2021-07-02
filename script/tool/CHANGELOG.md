@@ -7,6 +7,8 @@
   new output format.
 - Fixed some cases where a failure in a command for a single package would
   immediately abort the test.
+- Deprecated `--plugins` in favor of new `--packages`. `--plugins` continues to
+  work for now, but will be removed in the future.
 
 ## 0.3.0
 
