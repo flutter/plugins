@@ -301,7 +301,7 @@ class RecordingProcessRunner extends ProcessRunner {
 
     final io.Process? process = _getProcessToReturn(executable);
     final io.ProcessResult result = process == null
-        ? io.ProcessResult(0, 0, '', '')
+        ? io.ProcessResult(1, 0, '', '')
         : io.ProcessResult(process.pid, await process.exitCode,
             resultStdout ?? process.stdout, resultStderr ?? process.stderr);
 
