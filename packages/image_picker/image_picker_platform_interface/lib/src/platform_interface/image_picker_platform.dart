@@ -144,6 +144,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// See also:
   /// * [LostData], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
+  @Deprecated("Switch to using getLostData instead")
   Future<LostData> retrieveLostData() {
     throw UnimplementedError('retrieveLostData() has not been implemented.');
   }
@@ -173,7 +174,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// to work on an Android device.
   ///
   /// In Android, the MainActivity can be destroyed for various reasons. If that happens, the result will be lost
-  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
   Future<XFile?> getImage({
@@ -225,7 +226,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// Defaults to [CameraDevice.rear].
   ///
   /// In Android, the MainActivity can be destroyed for various fo reasons. If that happens, the result will be lost
-  /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
+  /// in this call. You can then call [getLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
   Future<XFile?> getVideo({
