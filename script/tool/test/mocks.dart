@@ -17,6 +17,18 @@ class MockPlatform extends Mock implements Platform {
 }
 
 class MockProcess extends Mock implements io.Process {
+  MockProcess();
+
+  /// A mock process that terminates with exitCode 0.
+  MockProcess.succeeding() {
+    exitCodeCompleter.complete(0);
+  }
+
+  /// A mock process that terminates with exitCode 1.
+  MockProcess.failing() {
+    exitCodeCompleter.complete(1);
+  }
+
   final Completer<int> exitCodeCompleter = Completer<int>();
   final StreamController<List<int>> stdoutController =
       StreamController<List<int>>();

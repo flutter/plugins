@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -12,6 +14,7 @@ import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
@@ -36,16 +39,49 @@ void main() {
     });
 
     test('fails if no plaform flags are passed', () async {
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runCapturingPrint(runner, <String>['build-examples']),
-        throwsA(isA<ToolExit>()),
-      );
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('At least one platform must be provided'),
+          ]));
+    });
+
+    test('fails if building fails', () async {
+      createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformIos: PlatformSupport.inline
+          });
+
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        MockProcess.failing() // flutter packages get
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('The following packages had errors:'),
+            contains('  plugin:\n'
+                '    plugin/example (iOS)'),
+          ]));
     });
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
         () async {
-      createFakePlugin('plugin', packagesDir,
-          extraFiles: <String>['example/test']);
+      createFakePlugin('plugin', packagesDir);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--ios']);
@@ -64,16 +100,10 @@ void main() {
     });
 
     test('building for ios', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformIos: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -108,9 +138,7 @@ void main() {
     test(
         'building for Linux when plugin is not set up for Linux results in no-op',
         () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ]);
+      createFakePlugin('plugin', packagesDir);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--linux']);
@@ -129,16 +157,10 @@ void main() {
     });
 
     test('building for Linux', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformLinux: PlatformSupport.inline,
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformLinux: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -165,9 +187,7 @@ void main() {
 
     test('building for macos with no implementation results in no-op',
         () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ]);
+      createFakePlugin('plugin', packagesDir);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--macos']);
@@ -186,17 +206,10 @@ void main() {
     });
 
     test('building for macos', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-          'example/macos/macos.swift',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformMacos: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -222,9 +235,7 @@ void main() {
     });
 
     test('building for web with no implementation results in no-op', () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ]);
+      createFakePlugin('plugin', packagesDir);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--web']);
@@ -243,17 +254,10 @@ void main() {
     });
 
     test('building for web', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-          'example/web/index.html',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWeb: PlatformSupport.inline,
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformWeb: PlatformSupport.inline,
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -281,9 +285,7 @@ void main() {
     test(
         'building for Windows when plugin is not set up for Windows results in no-op',
         () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ]);
+      createFakePlugin('plugin', packagesDir);
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--windows']);
@@ -302,16 +304,10 @@ void main() {
     });
 
     test('building for windows', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWindows: PlatformSupport.inline
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformWindows: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -339,9 +335,7 @@ void main() {
     test(
         'building for Android when plugin is not set up for Android results in no-op',
         () async {
-      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
-        'example/test',
-      ]);
+      createFakePlugin('plugin', packagesDir);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--apk']);
@@ -360,16 +354,10 @@ void main() {
     });
 
     test('building for android', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -397,16 +385,10 @@ void main() {
     });
 
     test('enable-experiment flag for Android', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
@@ -425,16 +407,10 @@ void main() {
     });
 
     test('enable-experiment flag for ios', () async {
-      final Directory pluginDirectory = createFakePlugin(
-        'plugin',
-        packagesDir,
-        extraFiles: <String>[
-          'example/test',
-        ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
-        },
-      );
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformIos: PlatformSupport.inline
+          });
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');

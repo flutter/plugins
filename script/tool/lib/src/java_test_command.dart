@@ -54,7 +54,8 @@ class JavaTestCommand extends PackageLoopingCommand {
       print('\nRUNNING JAVA TESTS for $exampleName');
 
       final Directory androidDirectory = example.childDirectory('android');
-      if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
+      final File gradleFile = androidDirectory.childFile(_gradleWrapper);
+      if (!gradleFile.existsSync()) {
         printError('ERROR: Run "flutter build apk" on $exampleName, or run '
             'this tool\'s "build-examples --apk" command, '
             'before executing tests.');
@@ -63,8 +64,7 @@ class JavaTestCommand extends PackageLoopingCommand {
       }
 
       final int exitCode = await processRunner.runAndStream(
-          p.join(androidDirectory.path, _gradleWrapper),
-          <String>['testDebugUnitTest', '--info'],
+          gradleFile.path, <String>['testDebugUnitTest', '--info'],
           workingDir: androidDirectory);
       if (exitCode != 0) {
         errors.add('$exampleName tests failed.');
