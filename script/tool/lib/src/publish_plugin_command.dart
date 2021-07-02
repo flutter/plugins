@@ -244,7 +244,7 @@ class PublishPluginCommand extends PluginCommand {
   }) async {
     if (!pubspecFile.existsSync()) {
       print('''
-The file at The pubspec file at ${pubspecFile.path} does not exist. Publishing will not happen for ${pubspecFile.parent.basename}.
+The pubspec file at ${pubspecFile.path} does not exist. Publishing will not happen for ${pubspecFile.parent.basename}.
 Safe to ignore if the package is deleted in this commit.
 ''');
       return _CheckNeedsReleaseResult.noRelease;
@@ -269,7 +269,8 @@ Safe to ignore if the package is deleted in this commit.
       return _CheckNeedsReleaseResult.failure;
     }
 
-    // Check if the package named `packageName` with `version` has already published.
+    // Check if the package named `packageName` with `version` has already
+    // been published.
     final Version version = pubspec.version!;
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(packageName: pubspec.name);
