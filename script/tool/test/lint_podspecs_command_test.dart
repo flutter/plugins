@@ -38,10 +38,6 @@ void main() {
       runner =
           CommandRunner<void>('podspec_test', 'Test for $LintPodspecsCommand');
       runner.addCommand(command);
-      final MockProcess mockLintProcess = MockProcess();
-      mockLintProcess.exitCodeCompleter.complete(0);
-      processRunner.processToReturn = mockLintProcess;
-      processRunner.recordedCalls.clear();
     });
 
     test('only runs on macOS', () async {
@@ -79,6 +75,10 @@ void main() {
         ],
       );
 
+      processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
+        MockProcess.succeeding(),
+        MockProcess.succeeding(),
+      ];
       processRunner.resultStdout = 'Foo';
       processRunner.resultStderr = 'Bar';
 
@@ -167,10 +167,8 @@ void main() {
           extraFiles: <String>['plugin1.podspec']);
 
       // Simulate failure from `which pod`.
-      final MockProcess mockWhichProcess = MockProcess();
-      mockWhichProcess.exitCodeCompleter.complete(1);
       processRunner.mockProcessesForExecutable['which'] = <io.Process>[
-        mockWhichProcess
+        MockProcess.failing(),
       ];
 
       Error? commandError;
@@ -190,15 +188,42 @@ void main() {
           ));
     });
 
-    test('fails if linting fails', () async {
+    test('fails if linting as a framework fails', () async {
       createFakePlugin('plugin1', packagesDir,
           extraFiles: <String>['plugin1.podspec']);
 
       // Simulate failure from `pod`.
-      final MockProcess mockDriveProcess = MockProcess();
-      mockDriveProcess.exitCodeCompleter.complete(1);
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
-        mockDriveProcess
+        MockProcess.failing(),
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('The following packages had errors:'),
+              contains('plugin1:\n'
+                  '    plugin1.podspec')
+            ],
+          ));
+    });
+
+    test('fails if linting as a static library fails', () async {
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+
+      // Simulate failure from the second call to `pod`.
+      processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
+        MockProcess.succeeding(),
+        MockProcess.failing(),
       ];
 
       Error? commandError;

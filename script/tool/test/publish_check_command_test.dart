@@ -46,10 +46,10 @@ void main() {
           createFakePlugin('plugin_tools_test_package_b', packagesDir);
 
       processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
+        MockProcess.succeeding(),
       );
       processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
+        MockProcess.succeeding(),
       );
       await runner.run(<String>['publish-check']);
 
@@ -70,10 +70,9 @@ void main() {
     test('fail on negative test', () async {
       createFakePlugin('plugin_tools_test_package_a', packagesDir);
 
-      final MockProcess process = MockProcess();
+      final MockProcess process = MockProcess.failing();
       process.stdoutController.close(); // ignore: unawaited_futures
       process.stderrController.close(); // ignore: unawaited_futures
-      process.exitCodeCompleter.complete(1);
 
       processRunner.processesToReturn.add(process);
 
@@ -100,12 +99,10 @@ void main() {
       const String preReleaseOutput = 'Package has 1 warning.'
           'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
 
-      final MockProcess process = MockProcess();
+      final MockProcess process = MockProcess.failing();
       process.stdoutController.add(preReleaseOutput.codeUnits);
       process.stdoutController.close(); // ignore: unawaited_futures
       process.stderrController.close(); // ignore: unawaited_futures
-
-      process.exitCodeCompleter.complete(1);
 
       processRunner.processesToReturn.add(process);
 
@@ -119,12 +116,10 @@ void main() {
       const String preReleaseOutput = 'Package has 1 warning.'
           'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
 
-      final MockProcess process = MockProcess();
+      final MockProcess process = MockProcess.failing();
       process.stdoutController.add(preReleaseOutput.codeUnits);
       process.stdoutController.close(); // ignore: unawaited_futures
       process.stderrController.close(); // ignore: unawaited_futures
-
-      process.exitCodeCompleter.complete(1);
 
       processRunner.processesToReturn.add(process);
 
@@ -136,12 +131,10 @@ void main() {
 
       const String publishOutput = 'Package has 0 warnings.';
 
-      final MockProcess process = MockProcess();
+      final MockProcess process = MockProcess.succeeding();
       process.stderrController.add(publishOutput.codeUnits);
       process.stdoutController.close(); // ignore: unawaited_futures
       process.stderrController.close(); // ignore: unawaited_futures
-
-      process.exitCodeCompleter.complete(0);
 
       processRunner.processesToReturn.add(process);
 
@@ -192,7 +185,7 @@ void main() {
       createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
       processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
+        MockProcess.succeeding(),
       );
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
@@ -251,7 +244,7 @@ void main() {
       createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
       processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
+        MockProcess.succeeding(),
       );
 
       final List<String> output = await runCapturingPrint(
@@ -316,7 +309,7 @@ void main() {
       await plugin1Dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
       processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
+        MockProcess.succeeding(),
       );
 
       bool hasError = false;
