@@ -58,11 +58,6 @@ class PublishPluginCommand extends PluginCommand {
         _stdin = stdinput ?? io.stdin,
         super(packagesDir,
             platform: platform, processRunner: processRunner, gitDir: gitDir) {
-    argParser.addOption(
-      _packageOption,
-      help: 'The package to publish.'
-          'If the package directory name is different than its pubspec.yaml name, then this should specify the directory.',
-    );
     argParser.addMultiOption(_pubFlagsOption,
         help:
             'A list of options that will be forwarded on to pub. Separate multiple flags with commas.');
@@ -76,7 +71,7 @@ class PublishPluginCommand extends PluginCommand {
       _allChangedFlag,
       help:
           'Release all plugins that contains pubspec changes at the current commit compares to the base-sha.\n'
-          'The $_packageOption option is ignored if this is on.',
+          'The --packages option is ignored if this is on.',
       defaultsTo: false,
     );
     argParser.addFlag(
@@ -95,7 +90,6 @@ class PublishPluginCommand extends PluginCommand {
         negatable: true);
   }
 
-  static const String _packageOption = 'package';
   static const String _pubFlagsOption = 'pub-publish-flags';
   static const String _remoteOption = 'remote';
   static const String _allChangedFlag = 'all-changed';
@@ -123,14 +117,6 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final String packageName = getStringArg(_packageOption);
-    final bool publishAllChanged = getBoolArg(_allChangedFlag);
-    if (packageName.isEmpty && !publishAllChanged) {
-      printError(
-          'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
-      throw ToolExit(1);
-    }
-
     print('Checking local repo...');
     final GitDir repository = await gitDir;
     final String remoteName = getStringArg(_remoteOption);
@@ -146,17 +132,21 @@ class PublishPluginCommand extends PluginCommand {
       print('===============  DRY RUN ===============');
     }
 
-    bool successful;
-    if (publishAllChanged) {
+    bool successful = true;
+    if (getBoolArg(_allChangedFlag)) {
       successful = await _publishAllChangedPackages(
         baseGitDir: repository,
         remoteForTagPush: remote,
       );
     } else {
-      successful = await _publishAndTagPackage(
-        packageDir: _getPackageDir(packageName),
-        remoteForTagPush: remote,
-      );
+      final Stream<PackageEnumerationEntry> packages = getTargetPackages()
+          .where((PackageEnumerationEntry entry) => !entry.excluded);
+      await for (final PackageEnumerationEntry entry in packages) {
+        successful &= await _publishAndTagPackage(
+          packageDir: entry.package.directory,
+          remoteForTagPush: remote,
+        );
+      }
     }
 
     _pubVersionFinder.httpClient.close();
@@ -359,17 +349,6 @@ Safe to ignore if the package is deleted in this commit.
       printError('Failed, see above for details.');
       throw ToolExit(1);
     }
-  }
-
-  // Returns the packageDirectory based on the package name.
-  // Throws ToolExit if the `package` doesn't exist.
-  Directory _getPackageDir(String packageName) {
-    final Directory packageDir = packagesDir.childDirectory(packageName);
-    if (!packageDir.existsSync()) {
-      printError('${packageDir.absolute.path} does not exist.');
-      throw ToolExit(1);
-    }
-    return packageDir;
   }
 
   Future<bool> _checkGitStatus(Directory packageDir) async {

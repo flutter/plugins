@@ -63,34 +63,6 @@ void main() {
   });
 
   group('Initial validation', () {
-    test('requires a package flag', () async {
-      Error? commandError;
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin'], errorHandler: (Error e) {
-        commandError = e;
-      });
-
-      expect(commandError, isA<ToolExit>());
-      expect(
-          output,
-          containsAllInOrder(<Matcher>[
-            contains('Must specify a package to publish.'),
-          ]));
-    });
-
-    test('requires an existing flag', () async {
-      Error? commandError;
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--package', 'iamerror'],
-          errorHandler: (Error e) {
-        commandError = e;
-      });
-
-      expect(commandError, isA<ToolExit>());
-      expect(output,
-          containsAllInOrder(<Matcher>[contains('iamerror does not exist')]));
-    });
-
     test('refuses to proceed with dirty files', () async {
       final Directory pluginDir =
           createFakePlugin('foo', packagesDir, examples: <String>[]);
@@ -100,9 +72,11 @@ void main() {
       ];
 
       Error? commandError;
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--package', 'foo'],
-          errorHandler: (Error e) {
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=foo',
+      ], errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -128,7 +102,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--package', 'foo'],
+          commandRunner, <String>['publish-plugin', '--packages=foo'],
           errorHandler: (Error e) {
         commandError = e;
       });
@@ -156,7 +130,7 @@ void main() {
       ];
 
       final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--package', 'foo']);
+          commandRunner, <String>['publish-plugin', '--packages=foo']);
 
       expect(
           output,
@@ -172,7 +146,7 @@ void main() {
       mockStdin.mockUserInputs.add(utf8.encode('user input'));
 
       await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--package', 'foo']);
+          commandRunner, <String>['publish-plugin', '--packages=foo']);
 
       expect(processRunner.mockPublishProcess.stdinMock.lines,
           contains('user input'));
@@ -184,17 +158,16 @@ void main() {
 
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
         '--pub-publish-flags',
-        '--dry-run,--server=foo'
+        '--dry-run,--server=bar'
       ]);
 
       expect(
           processRunner.recordedCalls,
           contains(ProcessCall(
               flutterCommand,
-              const <String>['pub', 'publish', '--dry-run', '--server=foo'],
+              const <String>['pub', 'publish', '--dry-run', '--server=bar'],
               pluginDir.path)));
     });
 
@@ -207,18 +180,17 @@ void main() {
 
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
         '--skip-confirmation',
         '--pub-publish-flags',
-        '--server=foo'
+        '--server=bar'
       ]);
 
       expect(
           processRunner.recordedCalls,
           contains(ProcessCall(
               flutterCommand,
-              const <String>['pub', 'publish', '--server=foo', '--force'],
+              const <String>['pub', 'publish', '--server=bar', '--force'],
               pluginDir.path)));
     });
 
@@ -233,8 +205,7 @@ void main() {
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -254,8 +225,7 @@ void main() {
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
         '--dry-run',
       ]);
 
@@ -300,8 +270,7 @@ void main() {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
       ]);
 
       expect(processRunner.recordedCalls,
@@ -319,8 +288,7 @@ void main() {
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -347,8 +315,7 @@ void main() {
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
       ]);
 
       expect(
@@ -371,8 +338,7 @@ void main() {
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--skip-confirmation',
-        '--package',
-        'foo',
+        '--packages=foo',
       ]);
 
       expect(
@@ -393,7 +359,7 @@ void main() {
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--package', 'foo', '--dry-run']);
+          <String>['publish-plugin', '--packages=foo', '--dry-run']);
 
       expect(
           processRunner.recordedCalls
@@ -418,8 +384,7 @@ void main() {
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        'foo',
+        '--packages=foo',
         '--remote',
         'origin',
       ]);
