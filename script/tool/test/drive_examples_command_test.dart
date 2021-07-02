@@ -52,8 +52,7 @@ void main() {
       ];
       final String output = '''[${devices.join(',')}]''';
 
-      final MockProcess mockDevicesProcess = MockProcess();
-      mockDevicesProcess.exitCodeCompleter.complete(0);
+      final MockProcess mockDevicesProcess = MockProcess.succeeding();
       mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
       processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
         mockDevicesProcess
@@ -115,12 +114,10 @@ void main() {
     });
 
     test('fails for iOS if getting devices fails', () async {
-      setMockFlutterDevicesOutput(hasIosDevice: false);
-
       // Simulate failure from `flutter devices`.
-      final MockProcess mockProcess = MockProcess();
-      mockProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockProcess;
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        MockProcess.failing()
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -935,9 +932,11 @@ void main() {
       );
 
       // Simulate failure from `flutter drive`.
-      final MockProcess mockDriveProcess = MockProcess();
-      mockDriveProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockDriveProcess;
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        // No mock for 'devices', since it's running for macOS.
+        MockProcess.failing(), // 'drive' #1
+        MockProcess.failing(), // 'drive' #2
+      ];
 
       Error? commandError;
       final List<String> output =

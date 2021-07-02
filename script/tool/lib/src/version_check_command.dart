@@ -128,7 +128,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
           'that intentionally has no version should be marked '
           '"publish_to: none".');
       // No remaining checks make sense, so fail immediately.
-      PackageResult.fail(<String>['No pubspec.yaml version.']);
+      return PackageResult.fail(<String>['No pubspec.yaml version.']);
     }
 
     final List<String> errors = <String>[];
