@@ -106,13 +106,13 @@ class AnalyzeCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final int exitCode = await processRunner.runAndStream(
         _dartBinaryPath, <String>['analyze', '--fatal-infos'],
         workingDir: package);
     if (exitCode != 0) {
-      return PackageLoopingCommand.failure;
+      return PackageResult.fail();
     }
-    return PackageLoopingCommand.success;
+    return PackageResult.success();
   }
 }

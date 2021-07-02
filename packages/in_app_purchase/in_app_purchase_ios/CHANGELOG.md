@@ -1,6 +1,14 @@
-## 0.1.1+1
+## 0.1.2+1
 
 * Fix wrong data type when cancelling user credentials dialog.
+
+## 0.1.2
+
+* Added countryCode to the SKPriceLocaleWrapper.
+
+## 0.1.1+1
+
+* iOS: Fix treating missing App Store receipt as an exception.
 
 ## 0.1.1
 

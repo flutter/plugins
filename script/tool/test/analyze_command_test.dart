@@ -125,7 +125,7 @@ void main() {
           extraFiles: <String>['analysis_options.yaml']);
 
       await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
     });
 
     test('fails .analysis_options', () async {
@@ -133,7 +133,7 @@ void main() {
           extraFiles: <String>['.analysis_options']);
 
       await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
     });
 
     test('takes an allow list', () async {
@@ -168,7 +168,7 @@ void main() {
       await expectLater(
           () => runCapturingPrint(
               runner, <String>['analyze', '--custom-analysis', '']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
     });
   });
 }

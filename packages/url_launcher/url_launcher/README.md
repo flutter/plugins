@@ -49,6 +49,37 @@ void _launchURL() async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 ```
 
+### Android
+
+Starting from API 30 Android requires package visibility configuration in your
+`AndroidManifest.xml` otherwise `canLaunch` will return `false`. A `<queries>`
+element must be added to your manifest as a child of the root element.
+
+The snippet below shows an example for an application that uses `https`, `tel`,
+and `mailto` URLs with `url_launcher`. See
+[the Android documentation](https://developer.android.com/training/package-visibility/use-cases)
+for examples of other queries.
+
+``` xml
+<queries>
+  <!-- If your app opens https URLs -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="https" />
+  </intent>
+  <!-- If your app makes calls -->
+  <intent>
+    <action android:name="android.intent.action.DIAL" />
+    <data android:scheme="tel" />
+  </intent>
+  <!-- If your app emails -->
+  <intent>
+    <action android:name="android.intent.action.SEND" />
+    <data android:mimeType="*/*" />
+  </intent>
+</queries>
+```
+
 ## Supported URL schemes
 
 The [`launch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/launch.html) method

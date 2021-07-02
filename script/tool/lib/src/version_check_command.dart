@@ -111,18 +111,15 @@ class VersionCheckCommand extends PackageLoopingCommand {
   Future<void> initializeRun() async {}
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    final List<String> errors = <String>[];
-
+  Future<PackageResult> runForPackage(Directory package) async {
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
-      errors.add('Invalid pubspec.yaml.');
-      return errors; // No remaining checks make sense.
+      // No remaining checks make sense, so fail immediately.
+      return PackageResult.fail(<String>['Invalid pubspec.yaml.']);
     }
 
     if (pubspec.publishTo == 'none') {
-      printSkip('${indentation}Found "publish_to: none".');
-      return PackageLoopingCommand.success;
+      return PackageResult.skip('Found "publish_to: none".');
     }
 
     final Version? currentPubspecVersion = pubspec.version;
@@ -130,9 +127,11 @@ class VersionCheckCommand extends PackageLoopingCommand {
       printError('${indentation}No version found in pubspec.yaml. A package '
           'that intentionally has no version should be marked '
           '"publish_to: none".');
-      errors.add('No pubspec.yaml version.');
-      return errors; // No remaining checks make sense.
+      // No remaining checks make sense, so fail immediately.
+      PackageResult.fail(<String>['No pubspec.yaml version.']);
     }
+
+    final List<String> errors = <String>[];
 
     if (!await _hasValidVersionChange(package, pubspec: pubspec)) {
       errors.add('Disallowed version change.');
@@ -142,7 +141,9 @@ class VersionCheckCommand extends PackageLoopingCommand {
       errors.add('pubspec.yaml and CHANGELOG.md have different versions');
     }
 
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   @override
@@ -210,7 +211,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (previousVersion == Version.none) {
       print('${indentation}Unable to find previous version '
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
-      printWarning(
+      logWarning(
           '${indentation}If this plugin is not new, something has gone wrong.');
       return true;
     }
