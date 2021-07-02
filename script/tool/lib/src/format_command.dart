@@ -8,7 +8,6 @@ import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:path/path.dart' as p;
-import 'package:quiver/iterables.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
@@ -43,9 +42,14 @@ class FormatCommand extends PluginCommand {
   Future<void> run() async {
     final String googleFormatterPath = await _getGoogleFormatterPath();
 
-    await _formatDart();
-    await _formatJava(googleFormatterPath);
-    await _formatCppAndObjectiveC();
+    await for (final Directory package in getPlugins()) {
+      print('Formatting files for ${package.basename}...');
+      final Iterable<String> files =
+          await _getFilteredFilePaths(getFilesForPackage(package));
+      await _formatDart(files);
+      await _formatJava(files, googleFormatterPath);
+      await _formatCppAndObjectiveC(files);
+    }
 
     if (getBoolArg('fail-on-change')) {
       final bool modified = await _didModifyAnything();
@@ -92,53 +96,65 @@ class FormatCommand extends PluginCommand {
     return true;
   }
 
-  Future<void> _formatCppAndObjectiveC() async {
-    print('Formatting all .cc, .cpp, .mm, .m, and .h files...');
-    final Iterable<String> allFiles = <String>[
-      ...await _getFilesWithExtension('.h'),
-      ...await _getFilesWithExtension('.m'),
-      ...await _getFilesWithExtension('.mm'),
-      ...await _getFilesWithExtension('.cc'),
-      ...await _getFilesWithExtension('.cpp'),
-    ];
-    // Split this into multiple invocations to avoid a
-    // 'ProcessException: Argument list too long'.
-    final Iterable<List<String>> batches = partition(allFiles, 100);
-    for (final List<String> batch in batches) {
+  Future<void> _formatCppAndObjectiveC(Iterable<String> files) async {
+    final Iterable<String> clangFiles = _getPathsWithExtensions(
+        files, <String>{'.h', '.m', '.mm', '.cc', '.cpp'});
+    if (clangFiles.isNotEmpty) {
+      print('Formatting .cc, .cpp, .h, .m, and .mm files...');
       await processRunner.runAndStream(getStringArg('clang-format'),
-          <String>['-i', '--style=Google', ...batch],
+          <String>['-i', '--style=Google', ...clangFiles],
           workingDir: packagesDir, exitOnError: true);
     }
   }
 
-  Future<void> _formatJava(String googleFormatterPath) async {
-    print('Formatting all .java files...');
-    final Iterable<String> javaFiles = await _getFilesWithExtension('.java');
-    await processRunner.runAndStream('java',
-        <String>['-jar', googleFormatterPath, '--replace', ...javaFiles],
-        workingDir: packagesDir, exitOnError: true);
+  Future<void> _formatJava(
+      Iterable<String> files, String googleFormatterPath) async {
+    final Iterable<String> javaFiles =
+        _getPathsWithExtensions(files, <String>{'.java'});
+    if (javaFiles.isNotEmpty) {
+      print('Formatting .java files...');
+      await processRunner.runAndStream('java',
+          <String>['-jar', googleFormatterPath, '--replace', ...javaFiles],
+          workingDir: packagesDir, exitOnError: true);
+    }
   }
 
-  Future<void> _formatDart() async {
-    // This actually should be fine for non-Flutter Dart projects, no need to
-    // specifically shell out to dartfmt -w in that case.
-    print('Formatting all .dart files...');
-    final Iterable<String> dartFiles = await _getFilesWithExtension('.dart');
-    if (dartFiles.isEmpty) {
-      print(
-          'No .dart files to format. If you set the `--exclude` flag, most likey they were skipped');
-    } else {
+  Future<void> _formatDart(Iterable<String> files) async {
+    final Iterable<String> dartFiles =
+        _getPathsWithExtensions(files, <String>{'.dart'});
+    if (dartFiles.isNotEmpty) {
+      print('Formatting .dart files...');
+      // `flutter format` doesn't require the project to actually be a Flutter
+      // project.
       await processRunner.runAndStream(
           'flutter', <String>['format', ...dartFiles],
           workingDir: packagesDir, exitOnError: true);
     }
   }
 
-  Future<List<String>> _getFilesWithExtension(String extension) async =>
-      getFiles()
-          .where((File file) => p.extension(file.path) == extension)
-          .map((File file) => file.path)
-          .toList();
+  Future<Iterable<String>> _getFilteredFilePaths(Stream<File> files) async {
+    // Returns a pattern to check for [directories] as a subset of a file path.
+    RegExp pathFragmentForDirectories(List<String> directories) {
+      final String s = p.separator;
+      return RegExp('(?:^|$s)${p.joinAll(directories)}$s');
+    }
+
+    return files
+        .map((File file) => file.path)
+        .where((String path) =>
+            // Ignore files in build/ directories (e.g., headers of frameworks)
+            // to avoid useless extra work in local repositories.
+            !path.contains(
+                pathFragmentForDirectories(<String>['example', 'build'])) &&
+            // Ignore files in Pods, which are not part of the repository.
+            !path.contains(pathFragmentForDirectories(<String>['Pods'])))
+        .toList();
+  }
+
+  Iterable<String> _getPathsWithExtensions(
+      Iterable<String> files, Set<String> extensions) {
+    return files.where((String path) => extensions.contains(p.extension(path)));
+  }
 
   Future<String> _getGoogleFormatterPath() async {
     final String javaFormatterPath = p.join(
