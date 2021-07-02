@@ -1,3 +1,7 @@
+## 2.0.3
+
+* Ensure video pauses correctly when it finishes.
+
 ## 2.0.2
 
 * Fix `VideoPlayerValue` size and aspect ratio documentation
