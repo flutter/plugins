@@ -11,6 +11,9 @@ export 'package:quick_actions_platform_interface/types/types.dart';
 
 /// Quick actions plugin.
 class QuickActions {
+  /// const constructor for [QuickActions].
+  const QuickActions();
+
   /// Initializes this plugin.
   ///
   /// Call this once before any further interaction with the the plugin.
