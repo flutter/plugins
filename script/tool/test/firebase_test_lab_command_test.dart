@@ -33,10 +33,12 @@ void main() {
       runner.addCommand(command);
     });
 
-    test('retries gcloud set', () async {
+    test('fails if gcloud auth fails', () async {
       final MockProcess mockProcess = MockProcess();
       mockProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockProcess;
+      processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
+        mockProcess
+      ];
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
@@ -50,6 +52,31 @@ void main() {
       });
 
       expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Unable to activate gcloud account.'),
+          ]));
+    });
+
+    test('retries gcloud set', () async {
+      final MockProcess mockAuthProcess = MockProcess();
+      mockAuthProcess.exitCodeCompleter.complete(0);
+      final MockProcess mockConfigProcess = MockProcess();
+      mockConfigProcess.exitCodeCompleter.complete(1);
+      processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
+        mockAuthProcess,
+        mockConfigProcess,
+      ];
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/integration_test/foo_test.dart',
+        'example/android/gradlew',
+        'example/android/app/src/androidTest/MainActivityTest.java',
+      ]);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['firebase-test-lab']);
+
       expect(
           output,
           containsAllInOrder(<Matcher>[

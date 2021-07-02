@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -53,7 +55,9 @@ void main() {
       final MockProcess mockDevicesProcess = MockProcess();
       mockDevicesProcess.exitCodeCompleter.complete(0);
       mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
-      processRunner.processToReturn = mockDevicesProcess;
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        mockDevicesProcess
+      ];
       processRunner.resultStdout = output;
     }
 
@@ -110,7 +114,31 @@ void main() {
       );
     });
 
-    test('fails if Android if no Android devices are present', () async {
+    test('fails for iOS if getting devices fails', () async {
+      setMockFlutterDevicesOutput(hasIosDevice: false);
+
+      // Simulate failure from `flutter devices`.
+      final MockProcess mockProcess = MockProcess();
+      mockProcess.exitCodeCompleter.complete(1);
+      processRunner.processToReturn = mockProcess;
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No iOS devices'),
+        ]),
+      );
+    });
+
+    test('fails for Android if no Android devices are present', () async {
+      setMockFlutterDevicesOutput(hasAndroidDevice: false);
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['drive-examples', '--android'],
