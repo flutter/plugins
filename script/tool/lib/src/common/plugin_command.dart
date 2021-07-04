@@ -24,11 +24,12 @@ abstract class PluginCommand extends Command<void> {
     GitDir? gitDir,
   }) : _gitDir = gitDir {
     argParser.addMultiOption(
-      _pluginsArg,
+      _packagesArg,
       splitCommas: true,
       help:
-          'Specifies which plugins the command should run on (before sharding).',
-      valueHelp: 'plugin1,plugin2,...',
+          'Specifies which packages the command should run on (before sharding).\n',
+      valueHelp: 'package1,package2,...',
+      aliases: <String>[_pluginsArg],
     );
     argParser.addOption(
       _shardIndexArg,
@@ -51,7 +52,7 @@ abstract class PluginCommand extends Command<void> {
     );
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
-            'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'If the $_packagesArg is specified, this flag is ignored.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
@@ -63,6 +64,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   static const String _pluginsArg = 'plugins';
+  static const String _packagesArg = 'packages';
   static const String _shardIndexArg = 'shardIndex';
   static const String _shardCountArg = 'shardCount';
   static const String _excludeArg = 'exclude';
@@ -203,7 +205,7 @@ abstract class PluginCommand extends Command<void> {
   ///    is a sibling of the packages directory. This is used for a small number
   ///    of packages in the flutter/packages repository.
   Stream<Directory> _getAllPlugins() async* {
-    Set<String> plugins = Set<String>.from(getStringListArg(_pluginsArg));
+    Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
     final Set<String> excludedPlugins =
         Set<String>.from(getStringListArg(_excludeArg));
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
