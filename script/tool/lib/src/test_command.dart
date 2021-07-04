@@ -20,7 +20,9 @@ class TestCommand extends PackageLoopingCommand {
       kEnableExperiment,
       defaultsTo: '',
       help:
-          'Runs Dart unit tests in Dart VM with the given experiments enabled.',
+          'Runs Dart unit tests in Dart VM with the given experiments enabled. '
+          'See https://github.com/dart-lang/sdk/blob/master/docs/process/experimental-flags.md '
+          'for details.',
     );
   }
 
@@ -56,6 +58,7 @@ class TestCommand extends PackageLoopingCommand {
         'test',
         '--color',
         if (experiment.isNotEmpty) '--enable-experiment=$experiment',
+        // TODO(ditman): Remove this once all plugins are migrated to 'drive'.
         if (isWebPlugin(package)) '--platform=chrome',
       ],
       workingDir: package,
