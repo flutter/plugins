@@ -1,3 +1,7 @@
+## 2.1.7
+
+* Fixed playback speed resetting on iOS (on seeking and on initialization).
+
 ## 2.1.6
 
 * Remove obsolete pre-1.0 warning from README.
