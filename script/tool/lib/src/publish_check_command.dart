@@ -6,19 +6,18 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
-import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 
 /// A command to check that packages are publishable via 'dart publish'.
-class PublishCheckCommand extends PluginCommand {
+class PublishCheckCommand extends PackageLoopingCommand {
   /// Creates an instance of the publish command.
   PublishCheckCommand(
     Directory packagesDir, {
@@ -52,12 +51,6 @@ class PublishCheckCommand extends PluginCommand {
   static const String _statusKey = 'status';
   static const String _humanMessageKey = 'humanMessage';
 
-  final List<String> _validStatus = <String>[
-    _statusNeedsPublish,
-    _statusMessageNoPublish,
-    _statusMessageError
-  ];
-
   @override
   final String name = 'publish-check';
 
@@ -67,68 +60,55 @@ class PublishCheckCommand extends PluginCommand {
 
   final PubVersionFinder _pubVersionFinder;
 
-  // The output JSON when the _machineFlag is on.
-  final Map<String, dynamic> _machineOutput = <String, dynamic>{};
-
-  final List<String> _humanMessages = <String>[];
+  /// The overall result of the run for machine-readable output. This is the
+  /// highest value that occurs during the run.
+  _PublishCheckResult _overallResult = _PublishCheckResult.nothingToPublish;
 
   @override
-  Future<void> run() async {
-    final ZoneSpecification logSwitchSpecification = ZoneSpecification(
-        print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
-      final bool logMachineMessage = getBoolArg(_machineFlag);
-      if (logMachineMessage && message != _prettyJson(_machineOutput)) {
-        _humanMessages.add(message);
-      } else {
-        parent.print(zone, message);
-      }
-    });
+  bool get captureOutput => getBoolArg(_machineFlag);
 
-    await runZoned(_runCommand, zoneSpecification: logSwitchSpecification);
+  @override
+  Future<void> initializeRun() async {
+    _overallResult = _PublishCheckResult.nothingToPublish;
   }
 
-  Future<void> _runCommand() async {
-    final List<Directory> failedPackages = <Directory>[];
-
-    String status = _statusMessageNoPublish;
-    await for (final Directory plugin in getPlugins()) {
-      final _PublishCheckResult result = await _passesPublishCheck(plugin);
-      switch (result) {
-        case _PublishCheckResult._notPublished:
-          if (failedPackages.isEmpty) {
-            status = _statusNeedsPublish;
-          }
-          break;
-        case _PublishCheckResult._published:
-          break;
-        case _PublishCheckResult._error:
-          failedPackages.add(plugin);
-          status = _statusMessageError;
-          break;
-      }
+  @override
+  Future<PackageResult> runForPackage(Directory package) async {
+    final _PublishCheckResult? result = await _passesPublishCheck(package);
+    if (result == null) {
+      return PackageResult.skip('Package is marked as unpublishable.');
     }
+    if (result.index > _overallResult.index) {
+      _overallResult = result;
+    }
+    return result == _PublishCheckResult.error
+        ? PackageResult.fail()
+        : PackageResult.success();
+  }
+
+  @override
+  Future<void> completeRun() async {
     _pubVersionFinder.httpClient.close();
+  }
 
-    if (failedPackages.isNotEmpty) {
-      final String error =
-          'The following ${failedPackages.length} package(s) failed the '
-          'publishing check:';
-      final String joinedFailedPackages = failedPackages.join('\n');
-      _printImportantStatusMessage('$error\n$joinedFailedPackages',
-          isError: true);
-    } else {
-      _printImportantStatusMessage('All packages passed publish check!',
-          isError: false);
-    }
+  @override
+  Future<void> handleCapturedOutput(List<String> output) async {
+    final Map<String, dynamic> machineOutput = <String, dynamic>{
+      _statusKey: _statusStringForResult(_overallResult),
+      _humanMessageKey: output,
+    };
 
-    if (getBoolArg(_machineFlag)) {
-      _setStatus(status);
-      _machineOutput[_humanMessageKey] = _humanMessages;
-      print(_prettyJson(_machineOutput));
-    }
+    print(const JsonEncoder.withIndent('  ').convert(machineOutput));
+  }
 
-    if (failedPackages.isNotEmpty) {
-      throw ToolExit(1);
+  String _statusStringForResult(_PublishCheckResult result) {
+    switch (result) {
+      case _PublishCheckResult.nothingToPublish:
+        return _statusMessageNoPublish;
+      case _PublishCheckResult.needsPublishing:
+        return _statusNeedsPublish;
+      case _PublishCheckResult.error:
+        return _statusMessageError;
     }
   }
 
@@ -146,6 +126,7 @@ class PublishCheckCommand extends PluginCommand {
   }
 
   Future<bool> _hasValidPublishCheckRun(Directory package) async {
+    print('Running pub publish --dry-run:');
     final io.Process process = await processRunner.start(
       'flutter',
       <String>['pub', 'publish', '--', '--dry-run'],
@@ -198,70 +179,60 @@ class PublishCheckCommand extends PluginCommand {
             'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.');
   }
 
-  Future<_PublishCheckResult> _passesPublishCheck(Directory package) async {
+  /// Returns the result of the publish check, or null if the package is marked
+  /// as unpublishable.
+  Future<_PublishCheckResult?> _passesPublishCheck(Directory package) async {
     final String packageName = package.basename;
-    print('Checking that $packageName can be published.');
-
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       print('no pubspec');
-      return _PublishCheckResult._error;
+      return _PublishCheckResult.error;
     } else if (pubspec.publishTo == 'none') {
-      print('Package $packageName is marked as unpublishable. Skipping.');
-      return _PublishCheckResult._published;
+      return null;
     }
 
     final Version? version = pubspec.version;
     final _PublishCheckResult alreadyPublishedResult =
-        await _checkIfAlreadyPublished(
+        await _checkPublishingStatus(
             packageName: packageName, version: version);
-    if (alreadyPublishedResult == _PublishCheckResult._published) {
+    if (alreadyPublishedResult == _PublishCheckResult.nothingToPublish) {
       print(
           'Package $packageName version: $version has already be published on pub.');
       return alreadyPublishedResult;
-    } else if (alreadyPublishedResult == _PublishCheckResult._error) {
+    } else if (alreadyPublishedResult == _PublishCheckResult.error) {
       print('Check pub version failed $packageName');
-      return _PublishCheckResult._error;
+      return _PublishCheckResult.error;
     }
 
     if (await _hasValidPublishCheckRun(package)) {
       print('Package $packageName is able to be published.');
-      return _PublishCheckResult._notPublished;
+      return _PublishCheckResult.needsPublishing;
     } else {
       print('Unable to publish $packageName');
-      return _PublishCheckResult._error;
+      return _PublishCheckResult.error;
     }
   }
 
   // Check if `packageName` already has `version` published on pub.
-  Future<_PublishCheckResult> _checkIfAlreadyPublished(
+  Future<_PublishCheckResult> _checkPublishingStatus(
       {required String packageName, required Version? version}) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
         await _pubVersionFinder.getPackageVersion(package: packageName);
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
         return pubVersionFinderResponse.versions.contains(version)
-            ? _PublishCheckResult._published
-            : _PublishCheckResult._notPublished;
+            ? _PublishCheckResult.nothingToPublish
+            : _PublishCheckResult.needsPublishing;
       case PubVersionFinderResult.fail:
         print('''
 Error fetching version on pub for $packageName.
 HTTP Status ${pubVersionFinderResponse.httpResponse.statusCode}
 HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 ''');
-        return _PublishCheckResult._error;
+        return _PublishCheckResult.error;
       case PubVersionFinderResult.noPackageFound:
-        return _PublishCheckResult._notPublished;
+        return _PublishCheckResult.needsPublishing;
     }
-  }
-
-  void _setStatus(String status) {
-    assert(_validStatus.contains(status));
-    _machineOutput[_statusKey] = status;
-  }
-
-  String _prettyJson(Map<String, dynamic> map) {
-    return const JsonEncoder.withIndent('  ').convert(_machineOutput);
   }
 
   void _printImportantStatusMessage(String message, {required bool isError}) {
@@ -269,21 +240,18 @@ HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (getBoolArg(_machineFlag)) {
       print(statusMessage);
     } else {
-      final Colorize colorizedMessage = Colorize(statusMessage);
       if (isError) {
-        colorizedMessage.red();
+        printError(statusMessage);
       } else {
-        colorizedMessage.green();
+        printSuccess(statusMessage);
       }
-      print(colorizedMessage);
     }
   }
 }
 
+/// Possible outcomes of of a publishing check.
 enum _PublishCheckResult {
-  _notPublished,
-
-  _published,
-
-  _error,
+  nothingToPublish,
+  needsPublishing,
+  error,
 }

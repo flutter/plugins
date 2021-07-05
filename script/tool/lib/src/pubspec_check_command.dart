@@ -56,14 +56,14 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool get includeSubpackages => true;
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final File pubspec = package.childFile('pubspec.yaml');
     final bool passesCheck = !pubspec.existsSync() ||
         await _checkPubspec(pubspec, packageName: package.basename);
     if (!passesCheck) {
-      return PackageLoopingCommand.failure;
+      return PackageResult.fail();
     }
-    return PackageLoopingCommand.success;
+    return PackageResult.success();
   }
 
   Future<bool> _checkPubspec(
