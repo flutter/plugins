@@ -12,7 +12,7 @@ class ProductDetails {
     required this.price,
     required this.rawPrice,
     required this.currencyCode,
-    required this.currencySymbol,
+    this.currencySymbol = '',
   });
 
   /// The identifier of the product.
