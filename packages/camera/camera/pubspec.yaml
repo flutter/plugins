@@ -18,6 +18,8 @@ flutter:
         pluginClass: CameraPlugin
       ios:
         pluginClass: CameraPlugin
+      # web:
+      #   default_package: camera_web  
 
 dependencies:
   camera_platform_interface: ^2.0.0
@@ -25,6 +27,10 @@ dependencies:
     sdk: flutter
   pedantic: ^1.10.0
   quiver: ^3.0.0
+  # camera_web:
+  #   path: ../camera_web
+  # After camera web release
+  # camera_web: ^0.1.0
 
 dev_dependencies:
   flutter_test:
