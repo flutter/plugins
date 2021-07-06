@@ -395,6 +395,7 @@ class WebSettings {
     this.hasProgressTracking,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
+    this.bouncesEnabled,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
   }) : assert(userAgent != null);
@@ -434,9 +435,14 @@ class WebSettings {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
+  /// Whether to allow swipe based navigation in iOS.
+  ///
+  /// See also: [WebView.bouncesEnabled]
+  final bool?  bouncesEnabled;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback, bouncesEnabled: $bouncesEnabled)';
   }
 }
 
