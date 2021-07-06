@@ -58,7 +58,12 @@ static bool compareColors(CIColor* aColor, CIColor* bColor) {
   }
   [transparentBackground tap];
 
-  sleep(5);
+  XCUIElement* transparentBackgroundLoaded =
+      app.webViews.staticTexts[@"Transparent background test"];
+  if (![transparentBackgroundLoaded waitForExistenceWithTimeout:30.0]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+    XCTFail(@"Failed due to not able to find Transparent background test");
+  }
 
   XCUIScreenshot* screenshot = [[XCUIScreen mainScreen] screenshot];
   XCTAttachment* screenshotAttachment = [XCTAttachment attachmentWithScreenshot:screenshot];

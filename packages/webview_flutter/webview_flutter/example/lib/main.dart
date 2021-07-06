@@ -38,9 +38,11 @@ const String kTransparentBackgroundPage = '''
     body { background: transparent; margin: 0; padding: 0; }
     #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
     #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
+    p { text-align: center; }
   </style>
   <body>
     <div id="container">
+      <p>Transparent background test</p>
       <div id="shape"></div>
     </div>
   </body>
