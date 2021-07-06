@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #import "FIAPReceiptManager.h"
-#import "FIAObjectTranslator.h"
 #import <Flutter/Flutter.h>
+#import "FIAObjectTranslator.h"
 
 @interface FIAPReceiptManager ()
 // Gets the receipt file data from the location of the url. Can be nil if
@@ -21,11 +21,10 @@
   NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
   if (!receipt || receiptError) {
     if (flutterError) {
-        NSDictionary *errorMap = [FIAObjectTranslator getMapFromNSError:receiptError];
-      *flutterError = [FlutterError
-          errorWithCode:[errorMap objectForKey: @"code"]
-                message:[errorMap objectForKey: @"domain"]
-                details:[errorMap objectForKey: @"userInfo"]];
+      NSDictionary *errorMap = [FIAObjectTranslator getMapFromNSError:receiptError];
+      *flutterError = [FlutterError errorWithCode:[errorMap objectForKey:@"code"]
+                                          message:[errorMap objectForKey:@"domain"]
+                                          details:[errorMap objectForKey:@"userInfo"]];
     }
     return nil;
   }
