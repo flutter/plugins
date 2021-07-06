@@ -263,7 +263,7 @@
   if (self.returnError) {
     *error = [NSError errorWithDomain:@"test"
                                  code:1
-                             userInfo:@{@"name" : @"test", @"houseNr" : @5}];
+                             userInfo:@{@"name" : @"test", @"houseNr" : @5, @"error": [[NSError alloc] init]}];
     return nil;
   }
   NSString *originalString = [NSString stringWithFormat:@"test"];

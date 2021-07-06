@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FIAPReceiptManager.h"
+#import "FIAObjectTranslator.h"
 #import <Flutter/Flutter.h>
 
 @interface FIAPReceiptManager ()
@@ -20,10 +21,11 @@
   NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
   if (!receipt || receiptError) {
     if (flutterError) {
+        NSDictionary *errorMap = [FIAObjectTranslator getMapFromNSError:receiptError];
       *flutterError = [FlutterError
-          errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
-                message:receiptError.domain
-                details:receiptError.userInfo.description];
+          errorWithCode:[errorMap objectForKey: @"code"]
+                message:[errorMap objectForKey: @"domain"]
+                details:[errorMap objectForKey: @"userInfo"]];
     }
     return nil;
   }
