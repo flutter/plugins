@@ -23,7 +23,7 @@
       *flutterError = [FlutterError
           errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
                 message:receiptError.domain
-                details:receiptError.userInfo];
+                details:receiptError.userInfo.description];
     }
     return nil;
   }
