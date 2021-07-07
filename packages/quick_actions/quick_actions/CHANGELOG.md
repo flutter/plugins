@@ -1,3 +1,7 @@
+## 0.7.0
+
+* Allow Android to trigger quick actions without restarting the app.
+
 ## 0.6.0+2
 
 * Migrate maven repository from jcenter to mavenCentral.
