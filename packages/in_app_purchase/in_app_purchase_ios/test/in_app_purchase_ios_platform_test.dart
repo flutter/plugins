@@ -273,6 +273,7 @@ void main() {
       expect(completerError.message, 'ios_domain');
       expect(completerError.details, {'message': 'an error message'});
     });
+
     test(
         'should get canceled purchase status when error code is SKErrorPaymentCancelled',
         () async {
@@ -300,6 +301,7 @@ void main() {
       PurchaseStatus purchaseStatus = await completer.future;
       expect(purchaseStatus, PurchaseStatus.canceled);
     });
+
     test(
         'should get canceled purchase status when error code is SKErrorOverlayCancelled',
         () async {
