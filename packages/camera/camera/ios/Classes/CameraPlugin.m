@@ -1315,13 +1315,6 @@ NSString *const errorMethod = @"error";
     _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
   }
 
-  // Invoke the plugin on another dispatch queue to avoid blocking the UI.
-  dispatch_async(_dispatchQueue, ^{
-    [self handleMethodCallAsync:call result:result];
-  });
-}
-
-- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     if (@available(iOS 10.0, *)) {
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
@@ -1358,27 +1351,30 @@ NSString *const errorMethod = @"error";
     NSString *cameraName = call.arguments[@"cameraName"];
     NSString *resolutionPreset = call.arguments[@"resolutionPreset"];
     NSNumber *enableAudio = call.arguments[@"enableAudio"];
-    NSError *error;
-    FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
-                                    resolutionPreset:resolutionPreset
-                                         enableAudio:[enableAudio boolValue]
-                                         orientation:[[UIDevice currentDevice] orientation]
-                                       dispatchQueue:_dispatchQueue
-                                               error:&error];
+    dispatch_async(_dispatchQueue, ^{
+      NSError *error;
+      FLTCam *cam = [[FLTCam alloc] initWithCameraName:cameraName
+                                      resolutionPreset:resolutionPreset
+                                           enableAudio:[enableAudio boolValue]
+                                           orientation:[[UIDevice currentDevice] orientation]
+                                         dispatchQueue:self->_dispatchQueue
+                                                 error:&error];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (error) {
+          result(getFlutterError(error));
+        } else {
+          if (self->_camera) {
+            [self->_camera close];
+          }
+          int64_t textureId = [self->_registry registerTexture:cam];
+          self->_camera = cam;
 
-    if (error) {
-      result(getFlutterError(error));
-    } else {
-      if (_camera) {
-        [_camera close];
-      }
-      int64_t textureId = [_registry registerTexture:cam];
-      _camera = cam;
-
-      result(@{
-        @"cameraId" : @(textureId),
+          result(@{
+            @"cameraId" : @(textureId),
+          });
+        }
       });
-    }
+    });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
     result(nil);
