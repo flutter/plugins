@@ -73,8 +73,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Tests for the following packages are failing'),
-            contains(' * plugin1'),
+            contains('The following packages had errors:'),
+            contains('  plugin1'),
           ]));
     });
 
@@ -137,7 +137,9 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Tests for the following packages are failing'),
+            contains('Unable to fetch dependencies'),
+            contains('The following packages had errors:'),
+            contains('  a_package'),
           ]));
     });
 
@@ -160,7 +162,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Tests for the following packages are failing'),
+            contains('The following packages had errors:'),
+            contains('  a_package'),
           ]));
     });
 
