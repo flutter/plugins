@@ -85,7 +85,7 @@ gmaps.MapOptions _rawOptionsToGmapsOptions(Map<String, dynamic> rawOptions) {
       rawOptions['zoomGesturesEnabled'] == false) {
     options.gestureHandling = 'none';
   } else {
-    options.gestureHandling = 'auto';
+    options.gestureHandling = 'greedy';
   }
 
   // These don't have any rawOptions entry, but they seem to be off in the native maps.
