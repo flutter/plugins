@@ -32,6 +32,9 @@ class CameraPlugin extends CameraPlatform {
     if (perm == null || perm.state == "denied") {
       throw CameraException('Missing permissions',
           'Permissions for the camera have not been obtained');
+    } else {
+      // OverconstrainedError given later when no permissions
+      await window.navigator.mediaDevices!.getUserMedia({'video': true});
     }
 
     final mediaDevices =
