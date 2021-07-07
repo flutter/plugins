@@ -1409,8 +1409,12 @@ NSString *const errorMethod = @"error";
                @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),
              }];
       [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
-      [_camera start];
-      result(nil);
+      dispatch_async(_dispatchQueue, ^{
+        [self->_camera start];
+        dispatch_async(dispatch_get_main_queue(), ^{
+          result(nil);
+        });
+      });
     } else if ([@"takePicture" isEqualToString:call.method]) {
       if (@available(iOS 10.0, *)) {
         [_camera captureToFile:result];
