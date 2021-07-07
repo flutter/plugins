@@ -1,3 +1,7 @@
+## 2.1.7
+
+* Update exoplayer to 2.14.1, removing dependency on Bintray.
+
 ## 2.1.6
 
 * Remove obsolete pre-1.0 warning from README.
