@@ -7,14 +7,37 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
+
+class MockPlatform extends Mock implements Platform {
+  MockPlatform({this.isMacOS = false});
+
+  @override
+  bool isMacOS;
+}
 
 class MockProcess extends Mock implements io.Process {
+  MockProcess();
+
+  /// A mock process that terminates with exitCode 0.
+  MockProcess.succeeding() {
+    exitCodeCompleter.complete(0);
+  }
+
+  /// A mock process that terminates with exitCode 1.
+  MockProcess.failing() {
+    exitCodeCompleter.complete(1);
+  }
+
   final Completer<int> exitCodeCompleter = Completer<int>();
   final StreamController<List<int>> stdoutController =
       StreamController<List<int>>();
   final StreamController<List<int>> stderrController =
       StreamController<List<int>>();
   final MockIOSink stdinMock = MockIOSink();
+
+  @override
+  int get pid => 99;
 
   @override
   Future<int> get exitCode => exitCodeCompleter.future;

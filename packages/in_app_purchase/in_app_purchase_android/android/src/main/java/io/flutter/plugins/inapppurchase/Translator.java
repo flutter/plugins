@@ -5,6 +5,7 @@
 package io.flutter.plugins.inapppurchase;
 
 import androidx.annotation.Nullable;
+import com.android.billingclient.api.AccountIdentifiers;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.Purchase;
 import com.android.billingclient.api.Purchase.PurchasesResult;
@@ -63,6 +64,11 @@ import java.util.List;
     info.put("developerPayload", purchase.getDeveloperPayload());
     info.put("isAcknowledged", purchase.isAcknowledged());
     info.put("purchaseState", purchase.getPurchaseState());
+    AccountIdentifiers accountIdentifiers = purchase.getAccountIdentifiers();
+    if (accountIdentifiers != null) {
+      info.put("obfuscatedAccountId", accountIdentifiers.getObfuscatedAccountId());
+      info.put("obfuscatedProfileId", accountIdentifiers.getObfuscatedProfileId());
+    }
     return info;
   }
 

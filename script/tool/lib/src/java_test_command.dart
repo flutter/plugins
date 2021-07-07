@@ -2,21 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/package_looping_command.dart';
+import 'common/process_runner.dart';
 
 /// A command to run the Java tests of Android plugins.
-class JavaTestCommand extends PluginCommand {
+class JavaTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test runner.
   JavaTestCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner);
+  }) : super(packagesDir, processRunner: processRunner);
+
+  static const String _gradleWrapper = 'gradlew';
 
   @override
   final String name = 'java-test';
@@ -26,68 +27,51 @@ class JavaTestCommand extends PluginCommand {
       'Building the apks of the example apps is required before executing this'
       'command.';
 
-  static const String _gradleWrapper = 'gradlew';
-
   @override
-  Future<void> run() async {
-    final Stream<Directory> examplesWithTests = getExamples().where(
-        (Directory d) =>
-            isFlutterPackage(d, fileSystem) &&
-            (fileSystem
-                    .directory(p.join(d.path, 'android', 'app', 'src', 'test'))
+  Future<PackageResult> runForPackage(Directory package) async {
+    final Iterable<Directory> examplesWithTests = getExamplesForPlugin(package)
+        .where((Directory d) =>
+            isFlutterPackage(d) &&
+            (d
+                    .childDirectory('android')
+                    .childDirectory('app')
+                    .childDirectory('src')
+                    .childDirectory('test')
                     .existsSync() ||
-                fileSystem
-                    .directory(p.join(d.path, '..', 'android', 'src', 'test'))
+                d.parent
+                    .childDirectory('android')
+                    .childDirectory('src')
+                    .childDirectory('test')
                     .existsSync()));
 
-    final List<String> failingPackages = <String>[];
-    final List<String> missingFlutterBuild = <String>[];
-    await for (final Directory example in examplesWithTests) {
-      final String packageName =
-          p.relative(example.path, from: packagesDir.path);
-      print('\nRUNNING JAVA TESTS for $packageName');
+    if (examplesWithTests.isEmpty) {
+      return PackageResult.skip('No Java unit tests.');
+    }
 
-      final Directory androidDirectory =
-          fileSystem.directory(p.join(example.path, 'android'));
-      if (!fileSystem
-          .file(p.join(androidDirectory.path, _gradleWrapper))
-          .existsSync()) {
-        print('ERROR: Run "flutter build apk" on example app of $packageName'
+    final List<String> errors = <String>[];
+    for (final Directory example in examplesWithTests) {
+      final String exampleName = p.relative(example.path, from: package.path);
+      print('\nRUNNING JAVA TESTS for $exampleName');
+
+      final Directory androidDirectory = example.childDirectory('android');
+      final File gradleFile = androidDirectory.childFile(_gradleWrapper);
+      if (!gradleFile.existsSync()) {
+        printError('ERROR: Run "flutter build apk" on $exampleName, or run '
+            'this tool\'s "build-examples --apk" command, '
             'before executing tests.');
-        missingFlutterBuild.add(packageName);
+        errors.add('$exampleName has not been built.');
         continue;
       }
 
       final int exitCode = await processRunner.runAndStream(
-          p.join(androidDirectory.path, _gradleWrapper),
-          <String>['testDebugUnitTest', '--info'],
+          gradleFile.path, <String>['testDebugUnitTest', '--info'],
           workingDir: androidDirectory);
       if (exitCode != 0) {
-        failingPackages.add(packageName);
+        errors.add('$exampleName tests failed.');
       }
     }
-
-    print('\n\n');
-    if (failingPackages.isNotEmpty) {
-      print(
-          'The Java tests for the following packages are failing (see above for'
-          'details):');
-      for (final String package in failingPackages) {
-        print(' * $package');
-      }
-    }
-    if (missingFlutterBuild.isNotEmpty) {
-      print('Run "pub global run flutter_plugin_tools build-examples --apk" on'
-          'the following packages before executing tests again:');
-      for (final String package in missingFlutterBuild) {
-        print(' * $package');
-      }
-    }
-
-    if (failingPackages.isNotEmpty || missingFlutterBuild.isNotEmpty) {
-      throw ToolExit(1);
-    }
-
-    print('All Java tests successful!');
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 }

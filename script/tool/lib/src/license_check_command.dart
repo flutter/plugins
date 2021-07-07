@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
 
 const Set<String> _codeFileExtensions = <String>{
   '.c',
@@ -97,14 +96,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
   /// Creates a new license check command for [packagesDir].
-  LicenseCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
-    Print print = print,
-  })  : _print = print,
-        super(packagesDir, fileSystem);
-
-  final Print _print;
+  LicenseCheckCommand(Directory packagesDir) : super(packagesDir);
 
   @override
   final String name = 'license-check';
@@ -123,7 +115,7 @@ class LicenseCheckCommand extends PluginCommand {
             p.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
 
     final bool copyrightCheckSucceeded = await _checkCodeLicenses(codeFiles);
-    _print('\n=======================================\n');
+    print('\n=======================================\n');
     final bool licenseCheckSucceeded =
         await _checkLicenseFiles(firstPartyLicenseFiles);
 
@@ -159,7 +151,7 @@ class LicenseCheckCommand extends PluginCommand {
     };
 
     for (final File file in codeFiles) {
-      _print('Checking ${file.path}');
+      print('Checking ${file.path}');
       final String content = await file.readAsString();
 
       final String firstParyLicense =
@@ -179,7 +171,7 @@ class LicenseCheckCommand extends PluginCommand {
         }
       }
     }
-    _print('\n');
+    print('\n');
 
     // Sort by path for more usable output.
     final int Function(File, File) pathCompare =
@@ -188,22 +180,22 @@ class LicenseCheckCommand extends PluginCommand {
     unrecognizedThirdPartyFiles.sort(pathCompare);
 
     if (incorrectFirstPartyFiles.isNotEmpty) {
-      _print('The license block for these files is missing or incorrect:');
+      print('The license block for these files is missing or incorrect:');
       for (final File file in incorrectFirstPartyFiles) {
-        _print('  ${file.path}');
+        print('  ${file.path}');
       }
-      _print('If this third-party code, move it to a "third_party/" directory, '
+      print('If this third-party code, move it to a "third_party/" directory, '
           'otherwise ensure that you are using the exact copyright and license '
           'text used by all first-party files in this repository.\n');
     }
 
     if (unrecognizedThirdPartyFiles.isNotEmpty) {
-      _print(
+      print(
           'No recognized license was found for the following third-party files:');
       for (final File file in unrecognizedThirdPartyFiles) {
-        _print('  ${file.path}');
+        print('  ${file.path}');
       }
-      _print('Please check that they have a license at the top of the file. '
+      print('Please check that they have a license at the top of the file. '
           'If they do, the license check needs to be updated to recognize '
           'the new third-party license block.\n');
     }
@@ -211,7 +203,7 @@ class LicenseCheckCommand extends PluginCommand {
     final bool succeeded =
         incorrectFirstPartyFiles.isEmpty && unrecognizedThirdPartyFiles.isEmpty;
     if (succeeded) {
-      _print('All source files passed validation!');
+      print('All source files passed validation!');
     }
     return succeeded;
   }
@@ -222,25 +214,25 @@ class LicenseCheckCommand extends PluginCommand {
     final List<File> incorrectLicenseFiles = <File>[];
 
     for (final File file in files) {
-      _print('Checking ${file.path}');
+      print('Checking ${file.path}');
       if (!file.readAsStringSync().contains(_fullBsdLicenseText)) {
         incorrectLicenseFiles.add(file);
       }
     }
-    _print('\n');
+    print('\n');
 
     if (incorrectLicenseFiles.isNotEmpty) {
-      _print('The following LICENSE files do not follow the expected format:');
+      print('The following LICENSE files do not follow the expected format:');
       for (final File file in incorrectLicenseFiles) {
-        _print('  ${file.path}');
+        print('  ${file.path}');
       }
-      _print(
+      print(
           'Please ensure that they use the exact format used in this repository".\n');
     }
 
     final bool succeeded = incorrectLicenseFiles.isEmpty;
     if (succeeded) {
-      _print('All LICENSE files passed validation!');
+      print('All LICENSE files passed validation!');
     }
     return succeeded;
   }
