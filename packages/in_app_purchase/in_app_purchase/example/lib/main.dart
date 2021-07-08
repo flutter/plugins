@@ -258,7 +258,9 @@ class _MyAppState extends State<_MyApp> {
               productDetails.description,
             ),
             trailing: previousPurchase != null
-                ? Icon(Icons.check)
+                ? IconButton(
+                    onPressed: () => confirmPriceChange(context),
+                    icon: Icon(Icons.upgrade))
                 : TextButton(
                     child: Text(productDetails.price),
                     style: TextButton.styleFrom(
@@ -451,7 +453,7 @@ class _MyAppState extends State<_MyApp> {
     });
   }
 
-  Future<void> confirmPriceChange() async {
+  Future<void> confirmPriceChange(BuildContext context) async {
     if (Platform.isAndroid) {
       final InAppPurchaseAndroidPlatformAddition androidAddition =
           _inAppPurchase
@@ -461,9 +463,16 @@ class _MyAppState extends State<_MyApp> {
         sku: 'purchaseId',
       );
       if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
-        // TODO acknowledge price change
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Price change accepted'),
+        ));
       } else {
-        // TODO show error
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            priceChangeConfirmationResult.debugMessage ??
+                "Price change failed with code ${priceChangeConfirmationResult.responseCode}",
+          ),
+        ));
       }
     }
     if (Platform.isIOS) {
