@@ -194,7 +194,6 @@ public class TranslatorTest {
 
   @Test
   public void currencyCodeFromSymbol() {
-    assertEquals("€", Translator.currencySymbolFromCode("EUR"));
     assertEquals("$", Translator.currencySymbolFromCode("USD"));
     try {
       Translator.currencySymbolFromCode("EUROPACOIN");
