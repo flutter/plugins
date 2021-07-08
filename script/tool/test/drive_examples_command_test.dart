@@ -123,7 +123,7 @@ void main() {
     });
 
     test('handles flutter tool banners when checking devices', () async {
-      final Directory pluginDirectory = createFakePlugin(
+      createFakePlugin(
         'plugin',
         packagesDir,
         extraFiles: <String>[
