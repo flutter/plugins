@@ -24,6 +24,7 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.source.dash.DashMediaSource;
 import com.google.android.exoplayer2.source.dash.DefaultDashChunkSource;
 import com.google.android.exoplayer2.source.hls.HlsMediaSource;
+import com.google.android.exoplayer2.source.rtsp.RtspMediaSource;
 import com.google.android.exoplayer2.source.smoothstreaming.DefaultSsChunkSource;
 import com.google.android.exoplayer2.source.smoothstreaming.SsMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
@@ -42,6 +43,7 @@ final class VideoPlayer {
   private static final String FORMAT_SS = "ss";
   private static final String FORMAT_DASH = "dash";
   private static final String FORMAT_HLS = "hls";
+  private static final String FORMAT_RTSP = "rtsp";
   private static final String FORMAT_OTHER = "other";
 
   private SimpleExoPlayer exoPlayer;
@@ -120,6 +122,9 @@ final class VideoPlayer {
         case FORMAT_HLS:
           type = C.TYPE_HLS;
           break;
+        case FORMAT_RTSP:
+          type = C.TYPE_RTSP;
+          break;
         case FORMAT_OTHER:
           type = C.TYPE_OTHER;
           break;
@@ -142,6 +147,8 @@ final class VideoPlayer {
       case C.TYPE_HLS:
         return new HlsMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));
+      case C.TYPE_RTSP:
+        return new RtspMediaSource.Factory().createMediaSource(MediaItem.fromUri(uri));
       case C.TYPE_OTHER:
         return new ProgressiveMediaSource.Factory(mediaDataSourceFactory)
             .createMediaSource(MediaItem.fromUri(uri));

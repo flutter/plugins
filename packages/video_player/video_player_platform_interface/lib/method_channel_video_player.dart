@@ -149,6 +149,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   static const Map<VideoFormat, String> _videoFormatStringMap =
       <VideoFormat, String>{
     VideoFormat.ss: 'ss',
+    VideoFormat.rtsp: 'rtsp',
     VideoFormat.hls: 'hls',
     VideoFormat.dash: 'dash',
     VideoFormat.other: 'other',

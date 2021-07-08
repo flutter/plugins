@@ -1,3 +1,7 @@
+## 2.1.10
+
+ * Add RTSP Support for Android
+
 ## 2.1.9
 
 * Silenced warnings that may occur during build when using a very
