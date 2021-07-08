@@ -194,6 +194,13 @@ public class DeviceOrientationManager {
   }
 
   /**
+   * @return the last received UI orientation.
+   */
+  public PlatformChannel.DeviceOrientation getLastUIOrientation() {
+    return this.lastOrientation;
+  }
+
+  /**
    * Handles orientation changes based on change events triggered by the OrientationIntentFilter.
    *
    * <p>This method is visible for testing purposes only and should never be used outside this
@@ -202,7 +209,8 @@ public class DeviceOrientationManager {
   @VisibleForTesting
   void handleUIOrientationChange() {
     PlatformChannel.DeviceOrientation orientation = getUIOrientation();
-    lastOrientation = handleOrientationChange(orientation, lastOrientation, messenger);
+    handleOrientationChange(orientation, lastOrientation, messenger);
+    lastOrientation = orientation;
   }
 
   /**
@@ -213,15 +221,13 @@ public class DeviceOrientationManager {
    * class.
    */
   @VisibleForTesting
-  static DeviceOrientation handleOrientationChange(
+  static void handleOrientationChange(
       DeviceOrientation newOrientation,
       DeviceOrientation previousOrientation,
       DartMessenger messenger) {
     if (!newOrientation.equals(previousOrientation)) {
       messenger.sendDeviceUIOrientationChangeEvent(newOrientation);
     }
-
-    return newOrientation;
   }
 
   /**

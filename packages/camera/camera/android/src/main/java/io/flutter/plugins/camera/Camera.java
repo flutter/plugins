@@ -198,20 +198,21 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         cameraFeatureFactory.createExposureLockFeature(cameraProperties));
     this.cameraFeatures.setExposureOffset(
         cameraFeatureFactory.createExposureOffsetFeature(cameraProperties));
+    SensorOrientationFeature sensorOrientationFeature = cameraFeatureFactory.createSensorOrientationFeature(
+            cameraProperties, activity, dartMessenger);
+    this.cameraFeatures.setSensorOrientation(sensorOrientationFeature);
     this.cameraFeatures.setExposurePoint(
-        cameraFeatureFactory.createExposurePointFeature(cameraProperties));
+        cameraFeatureFactory.createExposurePointFeature(cameraProperties, sensorOrientationFeature));
     this.cameraFeatures.setFlash(cameraFeatureFactory.createFlashFeature(cameraProperties));
     this.cameraFeatures.setFocusPoint(
-        cameraFeatureFactory.createFocusPointFeature(cameraProperties));
+        cameraFeatureFactory.createFocusPointFeature(cameraProperties, sensorOrientationFeature));
     this.cameraFeatures.setFpsRange(cameraFeatureFactory.createFpsRangeFeature(cameraProperties));
     this.cameraFeatures.setNoiseReduction(
         cameraFeatureFactory.createNoiseReductionFeature(cameraProperties));
     this.cameraFeatures.setResolution(
         cameraFeatureFactory.createResolutionFeature(
             cameraProperties, resolutionPreset, cameraProperties.getCameraName()));
-    this.cameraFeatures.setSensorOrientation(
-        cameraFeatureFactory.createSensorOrientationFeature(
-            cameraProperties, activity, dartMessenger));
+    
     this.cameraFeatures.setZoomLevel(cameraFeatureFactory.createZoomLevelFeature(cameraProperties));
 
     // Create capture callback
@@ -888,7 +889,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * @param result Flutter result.
    * @param newMode New mode.
    */
-  public void setFocusMode(@NonNull final Result result, FocusMode newMode) {
+  public void setFocusMode(final Result result, FocusMode newMode) {
     final AutoFocusFeature autoFocusFeature = cameraFeatures.getAutoFocus();
     autoFocusFeature.setValue(newMode);
     autoFocusFeature.updateBuilder(previewRequestBuilder);
@@ -910,7 +911,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           captureSession.setRepeatingRequest(
               previewRequestBuilder.build(), null, backgroundHandler);
         } catch (CameraAccessException e) {
-          result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+          if (result != null) {
+              result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+          }
         }
         break;
 
@@ -920,7 +923,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         break;
     }
 
-    result.success(null);
+    if (result != null) {
+      result.success(null);
+    }
   }
 
   /**
@@ -937,6 +942,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     refreshPreviewCaptureSession(
         () -> result.success(null),
         (code, message) -> result.error("setFocusPointFailed", "Could not set focus point.", null));
+
+    this.setFocusMode(null, cameraFeatures.getAutoFocus().getValue());
   }
 
   /**
