@@ -1,3 +1,7 @@
+# 2.1.0
+
+* Added getImage, getVideo and getFile methods that return XFile instances rather than PickedFile instances.
+
 # 2.0.0
 
 * Migrate to null safety.
