@@ -46,6 +46,6 @@ class ProductDetails {
 
   /// The currency symbol for the locale, e.g. $ for US locale.
   ///
-  /// When the currency symbol cannot be determined, the ISO 4217 currency code is returned. 
+  /// When the currency symbol cannot be determined, the ISO 4217 currency code is returned.
   final String currencySymbol;
 }
