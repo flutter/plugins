@@ -140,6 +140,7 @@ Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
     'price': original.price,
     'priceAmountMicros': original.priceAmountMicros,
     'priceCurrencyCode': original.priceCurrencyCode,
+    'priceCurrencySymbol': original.priceCurrencySymbol,
     'sku': original.sku,
     'subscriptionPeriod': original.subscriptionPeriod,
     'title': original.title,
