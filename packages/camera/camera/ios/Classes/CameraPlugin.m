@@ -8,6 +8,7 @@
 #import <CoreMotion/CoreMotion.h>
 #import <libkern/OSAtomic.h>
 #import <uuid/uuid.h>
+#import "FLTThreadSafeFlutterResult.h"
 
 static FlutterError *getFlutterError(NSError *error) {
   return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
@@ -1311,6 +1312,12 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
+  FLTThreadSafeFlutterResult *threadSafeResult =
+      [[FLTThreadSafeFlutterResult alloc] initWithResult:result];
+  [self handleMethodCallWithThreadSafeResult:call result:threadSafeResult];
+}
+- (void)handleMethodCallWithThreadSafeResult:(FlutterMethodCall *)call
+                                      result:(FLTThreadSafeFlutterResult *)result {
   if (_dispatchQueue == nil) {
     _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
   }
@@ -1343,9 +1350,9 @@ NSString *const errorMethod = @"error";
           @"sensorOrientation" : @90,
         }];
       }
-      result(reply);
+      [result successWithData:reply];
     } else {
-      result(FlutterMethodNotImplemented);
+      [result notImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
@@ -1361,26 +1368,25 @@ NSString *const errorMethod = @"error";
                                                  error:&error];
       dispatch_async(dispatch_get_main_queue(), ^{
         if (error) {
-          result(getFlutterError(error));
+          [result error:error];
         } else {
           if (self->_camera) {
             [self->_camera close];
           }
           int64_t textureId = [self->_registry registerTexture:cam];
           self->_camera = cam;
-
-          result(@{
+          [result successWithData:@{
             @"cameraId" : @(textureId),
-          });
+          }];
         }
       });
     });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
-    result(nil);
+    [result successWithData:nil];
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
-    result(nil);
+    [result successWithData:nil];
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
@@ -1411,21 +1417,19 @@ NSString *const errorMethod = @"error";
       [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
       dispatch_async(_dispatchQueue, ^{
         [self->_camera start];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          result(nil);
-        });
+        [result successWithData:nil];
       });
     } else if ([@"takePicture" isEqualToString:call.method]) {
       if (@available(iOS 10.0, *)) {
         [_camera captureToFile:result];
       } else {
-        result(FlutterMethodNotImplemented);
+        [result notImplemented];
       }
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:cameraId];
       [_camera close];
       _dispatchQueue = nil;
-      result(nil);
+      [result successWithData:nil];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       [_camera setUpCaptureSessionForAudio];
       result(nil);
