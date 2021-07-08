@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Add price symbol to platform interface object ProductDetail.
+
 ## 0.1.2+1
 
 * Fix wrong data type when cancelling user credentials dialog.
