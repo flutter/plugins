@@ -1,10 +1,11 @@
 ## 2.2.0
 
-* pickImage has been deprecated in favor of getImage
-* pickVideo has been deprecated in favor of getVideo
-* pickMultiImage has been deprecated in favor of getMultiImage
-* getImage, getVideo and getMultiImage functions have been added to return XFile instances instead of PickedFile instances.
-* PickedFile and related classes have been marked deprecated.
+* Added new methods that return `XFile` (from `package:cross_file`)
+  * `getImage` (will deprecate `pickImage`)
+  * `getVideo` (will deprecate `pickVideo`)
+  * `getMultiImage` (will deprecate `pickMultiImage`)
+
+_`PickedFile` will also be marked as deprecated in an upcoming release._
 
 ## 2.1.0
 

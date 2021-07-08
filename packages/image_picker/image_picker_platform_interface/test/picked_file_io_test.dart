@@ -21,7 +21,6 @@ final String textFilePath = textFile.path;
 
 void main() {
   group('Create with an objectUrl', () {
-    // ignore: deprecated_member_use_from_same_package
     final PickedFile pickedFile = PickedFile(textFilePath);
 
     test('Can be read as a string', () async {

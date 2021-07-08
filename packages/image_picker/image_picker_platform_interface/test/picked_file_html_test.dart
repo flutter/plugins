@@ -17,7 +17,6 @@ final String textFileUrl = html.Url.createObjectUrl(textFile);
 
 void main() {
   group('Create with an objectUrl', () {
-    // ignore: deprecated_member_use_from_same_package
     final pickedFile = PickedFile(textFileUrl);
 
     test('Can be read as a string', () async {
