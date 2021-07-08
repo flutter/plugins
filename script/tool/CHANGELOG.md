@@ -7,6 +7,9 @@
   new output format.
 - Fixed some cases where a failure in a command for a single package would
   immediately abort the test.
+- Deprecated `--plugins` in favor of new `--packages`. `--plugins` continues to
+  work for now, but will be removed in the future.
+- Make `drive-examples` device detection robust against Flutter tool banners.
 
 ## 0.3.0
 
