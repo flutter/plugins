@@ -251,6 +251,10 @@
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertNotNil(result);
   XCTAssert([result isKindOfClass:[FlutterError class]]);
+  NSDictionary* details = ((FlutterError*)result).details;
+  XCTAssertNotNil(details[@"error"]);
+  NSNumber* errorCode = (NSNumber*)details[@"error"][@"code"];
+  XCTAssertEqual(errorCode, [NSNumber numberWithInteger:99]);
 }
 
 - (void)testRefreshReceiptRequest {
