@@ -21,6 +21,7 @@ abstract class PluginCommand extends Command<void> {
   PluginCommand(
     this.packagesDir, {
     this.processRunner = const ProcessRunner(),
+    this.platform = const LocalPlatform(),
     GitDir? gitDir,
   }) : _gitDir = gitDir {
     argParser.addMultiOption(
@@ -79,6 +80,11 @@ abstract class PluginCommand extends Command<void> {
   /// This can be overridden for testing.
   final ProcessRunner processRunner;
 
+  /// The current platform.
+  ///
+  /// This can be overridden for testing.
+  final Platform platform;
+
   /// The git directory to use. If unset, [gitDir] populates it from the
   /// packages directory's enclosing repository.
   ///
@@ -89,8 +95,7 @@ abstract class PluginCommand extends Command<void> {
   int? _shardCount;
 
   /// The command to use when running `flutter`.
-  String get flutterCommand =>
-      const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+  String get flutterCommand => platform.isWindows ? 'flutter.bat' : 'flutter';
 
   /// The shard of the overall command execution that this instance should run.
   int get shardIndex {

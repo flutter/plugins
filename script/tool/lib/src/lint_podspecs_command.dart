@@ -25,8 +25,7 @@ class LintPodspecsCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
-  })  : _platform = platform,
-        super(packagesDir, processRunner: processRunner) {
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addMultiOption('ignore-warnings',
         help:
             'Do not pass --allow-warnings flag to "pod lib lint" for podspecs '
@@ -45,11 +44,9 @@ class LintPodspecsCommand extends PackageLoopingCommand {
       'Runs "pod lib lint" on all iOS and macOS plugin podspecs.\n\n'
       'This command requires "pod" and "flutter" to be in your path. Runs on macOS only.';
 
-  final Platform _platform;
-
   @override
   Future<void> initializeRun() async {
-    if (!_platform.isMacOS) {
+    if (!platform.isMacOS) {
       printError('This command is only supported on macOS');
       throw ToolExit(_exitUnsupportedPlatform);
     }

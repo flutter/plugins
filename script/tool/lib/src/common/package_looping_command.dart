@@ -8,6 +8,7 @@ import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'core.dart';
 import 'plugin_command.dart';
@@ -63,8 +64,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   PackageLoopingCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir,
+            processRunner: processRunner, platform: platform, gitDir: gitDir);
 
   /// Packages that had at least one [logWarning] call.
   final Set<Directory> _packagesWithWarnings = <Directory>{};
