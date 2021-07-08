@@ -44,13 +44,22 @@ void main() {
     void setMockFlutterDevicesOutput({
       bool hasIosDevice = true,
       bool hasAndroidDevice = true,
+      bool includeBanner = false,
     }) {
+      const String updateBanner = '''
+╔════════════════════════════════════════════════════════════════════════════╗
+║ A new version of Flutter is available!                                     ║
+║                                                                            ║
+║ To update to the latest version, run "flutter upgrade".                    ║
+╚════════════════════════════════════════════════════════════════════════════╝
+''';
       final List<String> devices = <String>[
         if (hasIosDevice) '{"id": "$_fakeIosDevice", "targetPlatform": "ios"}',
         if (hasAndroidDevice)
           '{"id": "$_fakeAndroidDevice", "targetPlatform": "android-x86"}',
       ];
-      final String output = '''[${devices.join(',')}]''';
+      final String output =
+          '''${includeBanner ? updateBanner : ''}[${devices.join(',')}]''';
 
       final MockProcess mockDevicesProcess = MockProcess.succeeding();
       mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
@@ -109,6 +118,32 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains('No iOS devices'),
+        ]),
+      );
+    });
+
+    test('handles flutter tool banners when checking devices', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/foo_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
+
+      setMockFlutterDevicesOutput(includeBanner: true);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
         ]),
       );
     });
