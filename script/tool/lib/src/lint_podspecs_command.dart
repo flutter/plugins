@@ -86,11 +86,10 @@ class LintPodspecsCommand extends PackageLoopingCommand {
     final List<File> podspecs =
         await getFilesForPackage(package).where((File entity) {
       final String filePath = entity.path;
-      return p.extension(filePath) == '.podspec';
+      return path.extension(filePath) == '.podspec';
     }).toList();
 
-    podspecs.sort(
-        (File a, File b) => p.basename(a.path).compareTo(p.basename(b.path)));
+    podspecs.sort((File a, File b) => a.basename.compareTo(b.basename));
     return podspecs;
   }
 

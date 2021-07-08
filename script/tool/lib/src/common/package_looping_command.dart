@@ -7,7 +7,6 @@ import 'dart:async';
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
-import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
 import 'core.dart';
@@ -161,8 +160,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// an exact format (e.g., published name, or basename) is required, that
   /// should be used instead.
   String getPackageDescription(Directory package) {
-    String packageName = p.relative(package.path, from: packagesDir.path);
-    final List<String> components = p.split(packageName);
+    String packageName = path.relative(package.path, from: packagesDir.path);
+    final List<String> components = path.split(packageName);
     // For the common federated plugin pattern of `foo/foo_subpackage`, drop
     // the first part since it's not useful.
     if (components.length == 2 &&

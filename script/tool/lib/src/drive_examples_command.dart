@@ -148,7 +148,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     for (final Directory example in getExamplesForPlugin(package)) {
       ++examplesFound;
       final String exampleName =
-          p.relative(example.path, from: packagesDir.path);
+          path.relative(example.path, from: packagesDir.path);
 
       final List<File> drivers = await _getDrivers(example);
       if (drivers.isEmpty) {
@@ -172,7 +172,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
         if (testTargets.isEmpty) {
           final String driverRelativePath =
-              p.relative(driver.path, from: package.path);
+              path.relative(driver.path, from: package.path);
           printError(
               'Found $driverRelativePath, but no integration_test/*_test.dart files.');
           errors.add(
@@ -296,9 +296,9 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             if (enableExperiment.isNotEmpty)
               '--enable-experiment=$enableExperiment',
             '--driver',
-            p.relative(driver.path, from: example.path),
+            path.relative(driver.path, from: example.path),
             '--target',
-            p.relative(target.path, from: example.path),
+            path.relative(target.path, from: example.path),
           ],
           workingDir: example);
       if (exitCode != 0) {

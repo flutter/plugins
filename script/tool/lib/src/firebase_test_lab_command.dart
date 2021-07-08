@@ -6,7 +6,6 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 import 'package:uuid/uuid.dart';
 
 import 'common/core.dart';
@@ -29,8 +28,9 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     );
     final String? homeDir = io.Platform.environment['HOME'];
     argParser.addOption('service-key',
-        defaultsTo:
-            homeDir == null ? null : p.join(homeDir, 'gcloud-service-key.json'),
+        defaultsTo: homeDir == null
+            ? null
+            : path.join(homeDir, 'gcloud-service-key.json'),
         help: 'The path to the service key for gcloud authentication.\n'
             r'If not provided, \$HOME/gcloud-service-key.json will be '
             r'assumed if $HOME is set.');
@@ -150,7 +150,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // test file's run.
     int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
-      final String testName = p.relative(test.path, from: package.path);
+      final String testName = path.relative(test.path, from: package.path);
       print('Testing $testName...');
       if (!await _runGradle(androidDirectory, 'app:assembleDebug',
           testFile: test)) {

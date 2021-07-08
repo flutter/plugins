@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -50,7 +49,8 @@ class JavaTestCommand extends PackageLoopingCommand {
 
     final List<String> errors = <String>[];
     for (final Directory example in examplesWithTests) {
-      final String exampleName = p.relative(example.path, from: package.path);
+      final String exampleName =
+          path.relative(example.path, from: package.path);
       print('\nRUNNING JAVA TESTS for $exampleName');
 
       final Directory androidDirectory = example.childDirectory('android');

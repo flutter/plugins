@@ -94,6 +94,9 @@ abstract class PluginCommand extends Command<void> {
   int? _shardIndex;
   int? _shardCount;
 
+  /// A context that matches the default for [platform].
+  p.Context get path => platform.isWindows ? p.windows : p.posix;
+
   /// The command to use when running `flutter`.
   String get flutterCommand => platform.isWindows ? 'flutter.bat' : 'flutter';
 
@@ -245,9 +248,9 @@ abstract class PluginCommand extends Command<void> {
               // plugins under 'my_plugin'. Also match if the exact plugin is
               // passed.
               final String relativePath =
-                  p.relative(subdir.path, from: dir.path);
-              final String packageName = p.basename(subdir.path);
-              final String basenamePath = p.basename(entity.path);
+                  path.relative(subdir.path, from: dir.path);
+              final String packageName = path.basename(subdir.path);
+              final String basenamePath = path.basename(entity.path);
               if (!excludedPlugins.contains(basenamePath) &&
                   !excludedPlugins.contains(packageName) &&
                   !excludedPlugins.contains(relativePath) &&

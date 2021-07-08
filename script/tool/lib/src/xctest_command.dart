@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -142,7 +141,7 @@ class XCTestCommand extends PackageLoopingCommand {
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
-          p.relative(example.path, from: plugin.parent.path);
+          path.relative(example.path, from: plugin.parent.path);
       print('Running $platform tests and analyzer for $examplePath...');
       int exitCode =
           await _runTests(true, example, platform, extraFlags: extraXcrunFlags);

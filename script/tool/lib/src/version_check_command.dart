@@ -6,7 +6,6 @@ import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
-import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -180,7 +179,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   }) async {
     final File pubspecFile = package.childFile('pubspec.yaml');
     return await gitVersionFinder.getPackageVersion(
-        p.relative(pubspecFile.absolute.path, from: (await gitDir).path));
+        path.relative(pubspecFile.absolute.path, from: (await gitDir).path));
   }
 
   /// Returns true if the version of [package] is either unchanged relative to

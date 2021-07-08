@@ -168,7 +168,7 @@ class FormatCommand extends PluginCommand {
   Future<Iterable<String>> _getFilteredFilePaths(Stream<File> files) async {
     // Returns a pattern to check for [directories] as a subset of a file path.
     RegExp pathFragmentForDirectories(List<String> directories) {
-      final String s = p.separator;
+      final String s = path.separator;
       return RegExp('(?:^|$s)${p.joinAll(directories)}$s');
     }
 
@@ -192,8 +192,8 @@ class FormatCommand extends PluginCommand {
   }
 
   Future<String> _getGoogleFormatterPath() async {
-    final String javaFormatterPath = p.join(
-        p.dirname(p.fromUri(io.Platform.script)),
+    final String javaFormatterPath = path.join(
+        path.dirname(p.fromUri(io.Platform.script)),
         'google-java-format-1.3-all-deps.jar');
     final File javaFormatterFile =
         packagesDir.fileSystem.file(javaFormatterPath);
