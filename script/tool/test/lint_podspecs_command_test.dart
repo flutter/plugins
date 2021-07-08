@@ -94,7 +94,10 @@ void main() {
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
+                plugin1Dir
+                    .childDirectory('ios')
+                    .childFile('plugin1.podspec')
+                    .path,
                 '--configuration=Debug',
                 '--skip-tests',
                 '--use-modular-headers',
@@ -106,7 +109,10 @@ void main() {
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
+                plugin1Dir
+                    .childDirectory('ios')
+                    .childFile('plugin1.podspec')
+                    .path,
                 '--configuration=Debug',
                 '--skip-tests',
                 '--use-modular-headers',
@@ -136,7 +142,7 @@ void main() {
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'plugin1.podspec'),
+                plugin1Dir.childFile('plugin1.podspec').path,
                 '--configuration=Debug',
                 '--skip-tests',
                 '--use-modular-headers',
@@ -149,7 +155,7 @@ void main() {
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'plugin1.podspec'),
+                plugin1Dir.childFile('plugin1.podspec').path,
                 '--configuration=Debug',
                 '--skip-tests',
                 '--use-modular-headers',
