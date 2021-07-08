@@ -68,7 +68,6 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
-  @Deprecated('Switch to using getImage instead')
   Future<PickedFile?> pickImage({
     required ImageSource source,
     double? maxWidth,
@@ -97,7 +96,6 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// a warning message will be logged.
   ///
   /// If no images were picked, the return value is null.
-  @Deprecated('Switch to using getMultiImage instead')
   Future<List<PickedFile>?> pickMultiImage({
     double? maxWidth,
     double? maxHeight,
@@ -122,7 +120,6 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// in this call. You can then call [retrieveLostData] when your app relaunches to retrieve the lost data.
   ///
   /// If no images were picked, the return value is null.
-  @Deprecated('Switch to using getVideo instead')
   Future<PickedFile?> pickVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
@@ -144,7 +141,6 @@ abstract class ImagePickerPlatform extends PlatformInterface {
   /// See also:
   /// * [LostData], for what's included in the response.
   /// * [Android Activity Lifecycle](https://developer.android.com/reference/android/app/Activity.html), for more information on MainActivity destruction.
-  @Deprecated("Switch to using getLostData instead")
   Future<LostData> retrieveLostData() {
     throw UnimplementedError('retrieveLostData() has not been implemented.');
   }

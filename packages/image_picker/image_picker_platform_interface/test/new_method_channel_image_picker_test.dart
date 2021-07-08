@@ -29,9 +29,7 @@ void main() {
 
     group('#pickImage', () {
       test('passes the image source argument correctly', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(source: ImageSource.camera);
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(source: ImageSource.gallery);
 
         expect(
@@ -56,37 +54,30 @@ void main() {
       });
 
       test('passes the width and height arguments correctly', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(source: ImageSource.camera);
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
           source: ImageSource.camera,
           maxWidth: 10.0,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
           source: ImageSource.camera,
           maxHeight: 10.0,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
           source: ImageSource.camera,
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
           source: ImageSource.camera,
           maxWidth: 10.0,
           imageQuality: 70,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
           source: ImageSource.camera,
           maxHeight: 10.0,
           imageQuality: 70,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
           source: ImageSource.camera,
           maxWidth: 10.0,
@@ -152,26 +143,22 @@ void main() {
 
       test('does not accept a invalid imageQuality argument', () {
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickImage(imageQuality: -1, source: ImageSource.gallery),
           throwsArgumentError,
         );
 
         expect(
           () =>
-              // ignore: deprecated_member_use_from_same_package
               picker.pickImage(imageQuality: 101, source: ImageSource.gallery),
           throwsArgumentError,
         );
 
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickImage(imageQuality: -1, source: ImageSource.camera),
           throwsArgumentError,
         );
 
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickImage(imageQuality: 101, source: ImageSource.camera),
           throwsArgumentError,
         );
@@ -179,13 +166,11 @@ void main() {
 
       test('does not accept a negative width or height argument', () {
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickImage(source: ImageSource.camera, maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickImage(source: ImageSource.camera, maxHeight: -1.0),
           throwsArgumentError,
         );
@@ -195,14 +180,11 @@ void main() {
         picker.channel
             .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        // ignore: deprecated_member_use_from_same_package
         expect(await picker.pickImage(source: ImageSource.gallery), isNull);
-        // ignore: deprecated_member_use_from_same_package
         expect(await picker.pickImage(source: ImageSource.camera), isNull);
       });
 
       test('camera position defaults to back', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(source: ImageSource.camera);
 
         expect(
@@ -220,7 +202,6 @@ void main() {
       });
 
       test('camera position can set to front', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickImage(
             source: ImageSource.camera,
             preferredCameraDevice: CameraDevice.front);
@@ -243,7 +224,6 @@ void main() {
     group('#pickMultiImage', () {
       test('calls the method correctly', () async {
         returnValue = ['0', '1'];
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage();
 
         expect(
@@ -260,32 +240,25 @@ void main() {
 
       test('passes the width and height arguments correctly', () async {
         returnValue = ['0', '1'];
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage();
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage(
           maxWidth: 10.0,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage(
           maxHeight: 10.0,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage(
           maxWidth: 10.0,
           maxHeight: 20.0,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage(
           maxWidth: 10.0,
           imageQuality: 70,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage(
           maxHeight: 10.0,
           imageQuality: 70,
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickMultiImage(
           maxWidth: 10.0,
           maxHeight: 20.0,
@@ -337,13 +310,11 @@ void main() {
       test('does not accept a negative width or height argument', () {
         returnValue = ['0', '1'];
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickMultiImage(maxWidth: -1.0),
           throwsArgumentError,
         );
 
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickMultiImage(maxHeight: -1.0),
           throwsArgumentError,
         );
@@ -352,13 +323,11 @@ void main() {
       test('does not accept a invalid imageQuality argument', () {
         returnValue = ['0', '1'];
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickMultiImage(imageQuality: -1),
           throwsArgumentError,
         );
 
         expect(
-          // ignore: deprecated_member_use_from_same_package
           () => picker.pickMultiImage(imageQuality: 101),
           throwsArgumentError,
         );
@@ -368,18 +337,14 @@ void main() {
         picker.channel
             .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        // ignore: deprecated_member_use_from_same_package
         expect(await picker.pickMultiImage(), isNull);
-        // ignore: deprecated_member_use_from_same_package
         expect(await picker.pickMultiImage(), isNull);
       });
     });
 
     group('#pickVideo', () {
       test('passes the image source argument correctly', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(source: ImageSource.camera);
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(source: ImageSource.gallery);
 
         expect(
@@ -400,19 +365,15 @@ void main() {
       });
 
       test('passes the duration argument correctly', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(source: ImageSource.camera);
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(
           source: ImageSource.camera,
           maxDuration: const Duration(seconds: 10),
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(
           source: ImageSource.camera,
           maxDuration: const Duration(minutes: 1),
         );
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(
           source: ImageSource.camera,
           maxDuration: const Duration(hours: 1),
@@ -448,14 +409,11 @@ void main() {
         picker.channel
             .setMockMethodCallHandler((MethodCall methodCall) => null);
 
-        // ignore: deprecated_member_use_from_same_package
         expect(await picker.pickVideo(source: ImageSource.gallery), isNull);
-        // ignore: deprecated_member_use_from_same_package
         expect(await picker.pickVideo(source: ImageSource.camera), isNull);
       });
 
       test('camera position defaults to back', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(source: ImageSource.camera);
 
         expect(
@@ -471,7 +429,6 @@ void main() {
       });
 
       test('camera position can set to front', () async {
-        // ignore: deprecated_member_use_from_same_package
         await picker.pickVideo(
           source: ImageSource.camera,
           preferredCameraDevice: CameraDevice.front,
@@ -498,7 +455,6 @@ void main() {
             'path': '/example/path',
           };
         });
-        // ignore: deprecated_member_use_from_same_package
         final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file, isNotNull);
@@ -513,7 +469,6 @@ void main() {
             'errorMessage': 'test_error_message',
           };
         });
-        // ignore: deprecated_member_use_from_same_package
         final LostData response = await picker.retrieveLostData();
         expect(response.type, RetrieveType.video);
         expect(response.exception, isNotNull);
@@ -525,7 +480,6 @@ void main() {
         picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
           return null;
         });
-        // ignore: deprecated_member_use_from_same_package
         expect((await picker.retrieveLostData()).isEmpty, true);
       });
 
@@ -538,7 +492,6 @@ void main() {
             'path': '/example/path',
           };
         });
-        // ignore: deprecated_member_use_from_same_package
         expect(picker.retrieveLostData(), throwsAssertionError);
       });
     });
@@ -970,7 +923,6 @@ void main() {
             'path': '/example/path',
           };
         });
-        // ignore: deprecated_member_use_from_same_package
         final LostDataResponse response = await picker.getLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file, isNotNull);
@@ -985,7 +937,6 @@ void main() {
             'errorMessage': 'test_error_message',
           };
         });
-        // ignore: deprecated_member_use_from_same_package
         final LostDataResponse response = await picker.getLostData();
         expect(response.type, RetrieveType.video);
         expect(response.exception, isNotNull);

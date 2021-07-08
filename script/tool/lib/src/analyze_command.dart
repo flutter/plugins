@@ -12,6 +12,7 @@ import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 
 const int _exitBadCustomAnalysisFile = 2;
+const int _exitPackagesGetFailed = 3;
 
 /// A command to run Dart analysis on packages.
 class AnalyzeCommand extends PackageLoopingCommand {
@@ -65,7 +66,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
       }
 
       printError(
-          'Found an extra analysis_options.yaml in ${file.absolute.path}.');
+          'Found an extra analysis_options.yaml at ${file.absolute.path}.');
       printError(
           'If this was deliberate, pass the package to the analyze command '
           'with the --$_customAnalysisFlag flag and try again.');
@@ -75,7 +76,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
   /// Ensures that the dependent packages have been fetched for all packages
   /// (including their sub-packages) that will be analyzed.
-  Future<void> _runPackagesGetOnTargetPackages() async {
+  Future<bool> _runPackagesGetOnTargetPackages() async {
     final List<Directory> packageDirectories = await getPackages().toList();
     final Set<String> packagePaths =
         packageDirectories.map((Directory dir) => dir.path).toSet();
@@ -87,9 +88,14 @@ class AnalyzeCommand extends PackageLoopingCommand {
           packagePaths.contains(directory.parent.path);
     });
     for (final Directory package in packageDirectories) {
-      await processRunner.runAndStream('flutter', <String>['packages', 'get'],
-          workingDir: package, exitOnError: true);
+      final int exitCode = await processRunner.runAndStream(
+          'flutter', <String>['packages', 'get'],
+          workingDir: package);
+      if (exitCode != 0) {
+        return false;
+      }
     }
+    return true;
   }
 
   @override
@@ -98,7 +104,10 @@ class AnalyzeCommand extends PackageLoopingCommand {
     _validateAnalysisOptions();
 
     print('Fetching dependencies...');
-    await _runPackagesGetOnTargetPackages();
+    if (!await _runPackagesGetOnTargetPackages()) {
+      printError('Unable to get dependencies.');
+      throw ToolExit(_exitPackagesGetFailed);
+    }
 
     // Use the Dart SDK override if one was passed in.
     final String? dartSdk = argResults![_analysisSdk] as String?;
@@ -106,13 +115,13 @@ class AnalyzeCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final int exitCode = await processRunner.runAndStream(
         _dartBinaryPath, <String>['analyze', '--fatal-infos'],
         workingDir: package);
     if (exitCode != 0) {
-      return PackageLoopingCommand.failure;
+      return PackageResult.fail();
     }
-    return PackageLoopingCommand.success;
+    return PackageResult.success();
   }
 }

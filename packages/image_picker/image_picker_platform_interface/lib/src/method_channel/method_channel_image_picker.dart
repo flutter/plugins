@@ -19,7 +19,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   MethodChannel get channel => _channel;
 
   @override
-  @Deprecated('Switch to using getImage instead')
   Future<PickedFile?> pickImage({
     required ImageSource source,
     double? maxWidth,
@@ -38,7 +37,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  @Deprecated('Switch to using getMultiImage instead')
   Future<List<PickedFile>?> pickMultiImage({
     double? maxWidth,
     double? maxHeight,
@@ -119,7 +117,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  @Deprecated('Switch to using getVideo instead')
   Future<PickedFile?> pickVideo({
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
@@ -149,7 +146,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
   }
 
   @override
-  @Deprecated("Switch to using getLostData instead")
   Future<LostData> retrieveLostData() async {
     final Map<String, dynamic>? result =
         await _channel.invokeMapMethod<String, dynamic>('retrieve');

@@ -7,7 +7,6 @@ import './base.dart';
 /// A PickedFile is a cross-platform, simplified File abstraction.
 ///
 /// It wraps the bytes of a selected file, and its (platform-dependant) path.
-@Deprecated("Switch to using XFile instead")
 class PickedFile extends PickedFileBase {
   /// Construct a PickedFile object, from its `bytes`.
   ///

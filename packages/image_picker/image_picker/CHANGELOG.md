@@ -1,3 +1,7 @@
+## 0.8.1+3
+
+* Fix image picker causing a crash when the cache directory is deleted.
+
 ## 0.8.1+2
 
 * Update the example app to support the multi-image feature.

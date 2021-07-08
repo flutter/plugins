@@ -120,7 +120,7 @@ void main() {
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
       expect(gitDirCommands.length, equals(1));
       expect(
@@ -188,7 +188,7 @@ void main() {
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -202,7 +202,7 @@ void main() {
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -244,7 +244,7 @@ void main() {
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
         output,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
       expect(gitDirCommands.length, equals(1));
       expect(
