@@ -9,6 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 import 'consumable_store.dart';
 
 void main() {
@@ -84,6 +86,12 @@ class _MyAppState extends State<_MyApp> {
       return;
     }
 
+    if (Platform.isIOS) {
+      var iosPlatformAddition = _inAppPurchase
+          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+      await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
+    }
+
     ProductDetailsResponse productDetailResponse =
         await _inAppPurchase.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
@@ -127,6 +135,11 @@ class _MyAppState extends State<_MyApp> {
 
   @override
   void dispose() {
+    if (Platform.isIOS) {
+      var iosPlatformAddition = _inAppPurchase
+          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+      iosPlatformAddition.setDelegate(null);
+    }
     _subscription.cancel();
     super.dispose();
   }
@@ -245,7 +258,9 @@ class _MyAppState extends State<_MyApp> {
               productDetails.description,
             ),
             trailing: previousPurchase != null
-                ? Icon(Icons.check)
+                ? IconButton(
+                    onPressed: () => confirmPriceChange(context),
+                    icon: Icon(Icons.upgrade))
                 : TextButton(
                     child: Text(productDetails.price),
                     style: TextButton.styleFrom(
@@ -438,6 +453,35 @@ class _MyAppState extends State<_MyApp> {
     });
   }
 
+  Future<void> confirmPriceChange(BuildContext context) async {
+    if (Platform.isAndroid) {
+      final InAppPurchaseAndroidPlatformAddition androidAddition =
+          _inAppPurchase
+              .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+      var priceChangeConfirmationResult =
+          await androidAddition.launchPriceChangeConfirmationFlow(
+        sku: 'purchaseId',
+      );
+      if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Price change accepted'),
+        ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            priceChangeConfirmationResult.debugMessage ??
+                "Price change failed with code ${priceChangeConfirmationResult.responseCode}",
+          ),
+        ));
+      }
+    }
+    if (Platform.isIOS) {
+      var iapIosPlatformAddition = _inAppPurchase
+          .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+      await iapIosPlatformAddition.showPriceConsentIfNeeded();
+    }
+  }
+
   GooglePlayPurchaseDetails? _getOldSubscription(
       ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
     // This is just to demonstrate a subscription upgrade or downgrade.
@@ -458,5 +502,23 @@ class _MyAppState extends State<_MyApp> {
           purchases[_kSilverSubscriptionId] as GooglePlayPurchaseDetails;
     }
     return oldSubscription;
+  }
+}
+
+/// Example implementation of the
+/// [`SKPaymentQueueDelegate`](https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate?language=objc).
+///
+/// The payment queue delegate can be implementated to provide information
+/// needed to complete transactions.
+class ExamplePaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
+  @override
+  bool shouldContinueTransaction(
+      SKPaymentTransactionWrapper transaction, SKStorefrontWrapper storefront) {
+    return true;
+  }
+
+  @override
+  bool shouldShowPriceConsent() {
+    return false;
   }
 }
