@@ -49,11 +49,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     );
     if (paths == null) return null;
 
-    final List<PickedFile> files = [];
-    for (final path in paths) {
-      files.add(PickedFile(path));
-    }
-    return files;
+    return paths.map((path) => PickedFile(path)).toList();
   }
 
   Future<List<dynamic>?> _getMultiImagePath({
@@ -154,7 +150,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       return LostData.empty();
     }
 
-    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
+    assert(result.containsKey('path') != result.containsKey('errorCode'));
 
     final String? type = result['type'];
     assert(type == kTypeImage || type == kTypeVideo);
@@ -212,11 +208,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     );
     if (paths == null) return null;
 
-    final List<XFile> files = [];
-    for (final path in paths) {
-      files.add(XFile(path));
-    }
-    return files;
+    return paths.map((path) => XFile(path)).toList();
   }
 
   @override
@@ -242,7 +234,7 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       return LostDataResponse.empty();
     }
 
-    assert(result.containsKey('path') ^ result.containsKey('errorCode'));
+    assert(result.containsKey('path') != result.containsKey('errorCode'));
 
     final String? type = result['type'];
     assert(type == kTypeImage || type == kTypeVideo);
