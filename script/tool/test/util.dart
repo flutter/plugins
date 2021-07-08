@@ -252,14 +252,21 @@ Future<List<String>> runCapturingPrint(
 
 /// A mock [ProcessRunner] which records process calls.
 class RecordingProcessRunner extends ProcessRunner {
-  io.Process? processToReturn;
   final List<ProcessCall> recordedCalls = <ProcessCall>[];
+
+  /// Maps an executable to a list of processes that should be used for each
+  /// successive call to it via [run], [runAndStream], or [start].
+  final Map<String, List<io.Process>> mockProcessesForExecutable =
+      <String, List<io.Process>>{};
 
   /// Populate for [io.ProcessResult] to use a String [stdout] instead of a [List] of [int].
   String? resultStdout;
 
   /// Populate for [io.ProcessResult] to use a String [stderr] instead of a [List] of [int].
   String? resultStderr;
+
+  // Deprecated--do not add new uses. Use mockProcessesForExecutable instead.
+  io.Process? processToReturn;
 
   @override
   Future<int> runAndStream(
@@ -269,11 +276,17 @@ class RecordingProcessRunner extends ProcessRunner {
     bool exitOnError = false,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    return Future<int>.value(
-        processToReturn == null ? 0 : await processToReturn!.exitCode);
+    final io.Process? processToReturn = _getProcessToReturn(executable);
+    final int exitCode =
+        processToReturn == null ? 0 : await processToReturn.exitCode;
+    if (exitOnError && (exitCode != 0)) {
+      throw io.ProcessException(executable, args);
+    }
+    return Future<int>.value(exitCode);
   }
 
-  /// Returns [io.ProcessResult] created from [processToReturn], [resultStdout], and [resultStderr].
+  /// Returns [io.ProcessResult] created from [mockProcessesForExecutable],
+  /// [resultStdout], and [resultStderr].
   @override
   Future<io.ProcessResult> run(
     String executable,
@@ -286,11 +299,15 @@ class RecordingProcessRunner extends ProcessRunner {
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
 
-    final io.Process? process = processToReturn;
+    final io.Process? process = _getProcessToReturn(executable);
     final io.ProcessResult result = process == null
-        ? io.ProcessResult(1, 1, '', '')
+        ? io.ProcessResult(1, 0, '', '')
         : io.ProcessResult(process.pid, await process.exitCode,
             resultStdout ?? process.stdout, resultStderr ?? process.stderr);
+
+    if (exitOnError && (result.exitCode != 0)) {
+      throw io.ProcessException(executable, args);
+    }
 
     return Future<io.ProcessResult>.value(result);
   }
@@ -299,7 +316,17 @@ class RecordingProcessRunner extends ProcessRunner {
   Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
     recordedCalls.add(ProcessCall(executable, args, workingDirectory?.path));
-    return Future<io.Process>.value(processToReturn);
+    return Future<io.Process>.value(_getProcessToReturn(executable));
+  }
+
+  io.Process? _getProcessToReturn(String executable) {
+    io.Process? process;
+    final List<io.Process>? processes = mockProcessesForExecutable[executable];
+    if (processes != null && processes.isNotEmpty) {
+      process = mockProcessesForExecutable[executable]!.removeAt(0);
+    }
+    // Fall back to `processToReturn` for backwards compatibility.
+    return process ?? processToReturn;
   }
 }
 

@@ -139,7 +139,7 @@ void main() {
       );
     });
 
-    test('can filter plugins with the --plugins argument', () async {
+    test('can filter plugins with the --packages argument', () async {
       createFakePlugin('plugin1', packagesDir);
 
       // Create a federated plugin by creating a directory under the packages
@@ -157,7 +157,7 @@ void main() {
       createFakePubspec(macLibrary);
 
       List<String> plugins = await runCapturingPrint(
-          runner, <String>['list', '--plugins=plugin1']);
+          runner, <String>['list', '--packages=plugin1']);
       expect(
         plugins,
         unorderedEquals(<String>[
@@ -166,7 +166,7 @@ void main() {
       );
 
       plugins = await runCapturingPrint(
-          runner, <String>['list', '--plugins=my_plugin']);
+          runner, <String>['list', '--packages=my_plugin']);
       expect(
         plugins,
         unorderedEquals(<String>[
@@ -177,7 +177,7 @@ void main() {
       );
 
       plugins = await runCapturingPrint(
-          runner, <String>['list', '--plugins=my_plugin/my_plugin_web']);
+          runner, <String>['list', '--packages=my_plugin/my_plugin_web']);
       expect(
         plugins,
         unorderedEquals(<String>[
@@ -186,7 +186,7 @@ void main() {
       );
 
       plugins = await runCapturingPrint(runner,
-          <String>['list', '--plugins=my_plugin/my_plugin_web,plugin1']);
+          <String>['list', '--packages=my_plugin/my_plugin_web,plugin1']);
       expect(
         plugins,
         unorderedEquals(<String>[

@@ -176,7 +176,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -196,7 +196,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -216,7 +216,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -236,7 +236,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -256,7 +256,7 @@ ${environmentSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -276,7 +276,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -296,7 +296,7 @@ ${dependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -316,7 +316,7 @@ ${dependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
   });

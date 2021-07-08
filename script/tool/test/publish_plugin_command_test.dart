@@ -77,7 +77,7 @@ void main() {
   group('Initial validation', () {
     test('requires a package flag', () async {
       await expectLater(() => commandRunner.run(<String>['publish-plugin']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
       expect(
           printedMessages.last, contains('Must specify a package to publish.'));
     });
@@ -90,7 +90,7 @@ void main() {
                 'iamerror',
                 '--no-push-tags'
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages.last, contains('iamerror does not exist'));
     });
@@ -105,7 +105,7 @@ void main() {
                 testPluginName,
                 '--no-push-tags'
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(
           printedMessages,
@@ -119,7 +119,7 @@ void main() {
       await expectLater(
           () => commandRunner
               .run(<String>['publish-plugin', '--package', testPluginName]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
       expect(processRunner.results.last.stderr, contains('No such remote'));
     });
 
@@ -248,7 +248,7 @@ void main() {
                 '--no-push-tags',
                 '--no-tag-release',
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages, contains('Publish foo failed.'));
     });
@@ -301,7 +301,7 @@ void main() {
                 testPluginName,
                 '--no-push-tags',
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages, contains('Publish foo failed.'));
       final String? tag = (await gitDir.runCommand(
@@ -327,7 +327,7 @@ void main() {
                 '--package',
                 testPluginName,
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages, contains('Tag push canceled.'));
     });
@@ -958,7 +958,7 @@ void main() {
       await expectLater(
           () => commandRunner.run(
               <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
       expect(processRunner.pushTagsArgs, isEmpty);
     });
 
