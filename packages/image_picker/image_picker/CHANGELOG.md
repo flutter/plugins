@@ -1,3 +1,15 @@
+## 0.8.1+3
+
+* Fix image picker causing a crash when the cache directory is deleted.
+
+## 0.8.1+2
+
+* Update the example app to support the multi-image feature.
+
+## 0.8.1+1
+
+* Expose errors thrown in `pickImage` and `pickVideo` docs.
+
 ## 0.8.1
 
 * Add a new method `getMultiImage` to allow picking multiple images on iOS 14 or higher

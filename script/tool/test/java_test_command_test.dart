@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -11,6 +13,7 @@ import 'package:flutter_plugin_tools/src/java_test_command.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
@@ -45,7 +48,7 @@ void main() {
         ],
       );
 
-      await runner.run(<String>['java-test']);
+      await runCapturingPrint(runner, <String>['java-test']);
 
       expect(
         processRunner.recordedCalls,
@@ -72,7 +75,7 @@ void main() {
         ],
       );
 
-      await runner.run(<String>['java-test']);
+      await runCapturingPrint(runner, <String>['java-test']);
 
       expect(
         processRunner.recordedCalls,
@@ -83,6 +86,91 @@ void main() {
             p.join(plugin.path, 'example/android'),
           ),
         ]),
+      );
+    });
+
+    test('fails when the app needs to be built', () async {
+      createFakePlugin(
+        'plugin1',
+        packagesDir,
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline
+        },
+        extraFiles: <String>[
+          'example/android/app/src/test/example_test.java',
+        ],
+      );
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['java-test'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('ERROR: Run "flutter build apk" on example'),
+          contains('plugin1:\n'
+              '    example has not been built.')
+        ]),
+      );
+    });
+
+    test('fails when a test fails', () async {
+      final Directory pluginDir = createFakePlugin(
+        'plugin1',
+        packagesDir,
+        platformSupport: <String, PlatformSupport>{
+          kPlatformAndroid: PlatformSupport.inline
+        },
+        extraFiles: <String>[
+          'example/android/gradlew',
+          'example/android/app/src/test/example_test.java',
+        ],
+      );
+
+      final String gradlewPath = pluginDir
+          .childDirectory('example')
+          .childDirectory('android')
+          .childFile('gradlew')
+          .path;
+      processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
+        MockProcess.failing()
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['java-test'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('plugin1:\n'
+              '    example tests failed.')
+        ]),
+      );
+    });
+
+    test('Skips when running no tests', () async {
+      createFakePlugin(
+        'plugin1',
+        packagesDir,
+      );
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['java-test']);
+
+      expect(
+        output,
+        containsAllInOrder(
+            <Matcher>[contains('SKIPPING: No Java unit tests.')]),
       );
     });
   });

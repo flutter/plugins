@@ -5,22 +5,33 @@
 #import "FIAPReceiptManager.h"
 #import <Flutter/Flutter.h>
 
+@interface FIAPReceiptManager ()
+// Gets the receipt file data from the location of the url. Can be nil if
+// there is an error. This interface is defined so it can be stubbed for testing.
+- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error;
+
+@end
+
 @implementation FIAPReceiptManager
 
-- (NSString *)retrieveReceiptWithError:(FlutterError **)error {
+- (NSString *)retrieveReceiptWithError:(FlutterError **)flutterError {
   NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-  NSData *receipt = [self getReceiptData:receiptURL];
-  if (!receipt) {
-    *error = [FlutterError errorWithCode:@"storekit_no_receipt"
-                                 message:@"Cannot find receipt for the current main bundle."
-                                 details:nil];
+  NSError *receiptError;
+  NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
+  if (!receipt || receiptError) {
+    if (flutterError) {
+      *flutterError = [FlutterError
+          errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
+                message:receiptError.domain
+                details:receiptError.userInfo];
+    }
     return nil;
   }
   return [receipt base64EncodedStringWithOptions:kNilOptions];
 }
 
-- (NSData *)getReceiptData:(NSURL *)url {
-  return [NSData dataWithContentsOfURL:url];
+- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error {
+  return [NSData dataWithContentsOfURL:url options:NSDataReadingMappedIfSafe error:error];
 }
 
 @end

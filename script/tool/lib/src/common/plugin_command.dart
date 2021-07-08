@@ -8,6 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'core.dart';
 import 'git_version_finder.dart';
@@ -20,14 +21,15 @@ abstract class PluginCommand extends Command<void> {
   PluginCommand(
     this.packagesDir, {
     this.processRunner = const ProcessRunner(),
-    this.gitDir,
-  }) {
+    GitDir? gitDir,
+  }) : _gitDir = gitDir {
     argParser.addMultiOption(
-      _pluginsArg,
+      _packagesArg,
       splitCommas: true,
       help:
-          'Specifies which plugins the command should run on (before sharding).',
-      valueHelp: 'plugin1,plugin2,...',
+          'Specifies which packages the command should run on (before sharding).\n',
+      valueHelp: 'package1,package2,...',
+      aliases: <String>[_pluginsArg],
     );
     argParser.addOption(
       _shardIndexArg,
@@ -50,7 +52,7 @@ abstract class PluginCommand extends Command<void> {
     );
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
-            'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'If the $_packagesArg is specified, this flag is ignored.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
@@ -62,6 +64,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   static const String _pluginsArg = 'plugins';
+  static const String _packagesArg = 'packages';
   static const String _shardIndexArg = 'shardIndex';
   static const String _shardCountArg = 'shardCount';
   static const String _excludeArg = 'exclude';
@@ -76,13 +79,18 @@ abstract class PluginCommand extends Command<void> {
   /// This can be overridden for testing.
   final ProcessRunner processRunner;
 
-  /// The git directory to use. By default it uses the parent directory.
+  /// The git directory to use. If unset, [gitDir] populates it from the
+  /// packages directory's enclosing repository.
   ///
   /// This can be mocked for testing.
-  final GitDir? gitDir;
+  GitDir? _gitDir;
 
   int? _shardIndex;
   int? _shardCount;
+
+  /// The command to use when running `flutter`.
+  String get flutterCommand =>
+      const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
   /// The shard of the overall command execution that this instance should run.
   int get shardIndex {
@@ -98,6 +106,26 @@ abstract class PluginCommand extends Command<void> {
       _checkSharding();
     }
     return _shardCount!;
+  }
+
+  /// Returns the [GitDir] containing [packagesDir].
+  Future<GitDir> get gitDir async {
+    GitDir? gitDir = _gitDir;
+    if (gitDir != null) {
+      return gitDir;
+    }
+
+    // Ensure there are no symlinks in the path, as it can break
+    // GitDir's allowSubdirectory:true.
+    final String packagesPath = packagesDir.resolveSymbolicLinksSync();
+    if (!await GitDir.isGitDir(packagesPath)) {
+      printError('$packagesPath is not a valid Git repository.');
+      throw ToolExit(2);
+    }
+    gitDir =
+        await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
+    _gitDir = gitDir;
+    return gitDir;
   }
 
   /// Convenience accessor for boolean arguments.
@@ -177,7 +205,7 @@ abstract class PluginCommand extends Command<void> {
   ///    is a sibling of the packages directory. This is used for a small number
   ///    of packages in the flutter/packages repository.
   Stream<Directory> _getAllPlugins() async* {
-    Set<String> plugins = Set<String>.from(getStringListArg(_pluginsArg));
+    Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
     final Set<String> excludedPlugins =
         Set<String>.from(getStringListArg(_excludeArg));
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
@@ -250,10 +278,16 @@ abstract class PluginCommand extends Command<void> {
   /// Returns the files contained, recursively, within the plugins
   /// involved in this command execution.
   Stream<File> getFiles() {
-    return getPlugins().asyncExpand<File>((Directory folder) => folder
+    return getPlugins()
+        .asyncExpand<File>((Directory folder) => getFilesForPackage(folder));
+  }
+
+  /// Returns the files contained, recursively, within [package].
+  Stream<File> getFilesForPackage(Directory package) {
+    return package
         .list(recursive: true, followLinks: false)
         .where((FileSystemEntity entity) => entity is File)
-        .cast<File>());
+        .cast<File>();
   }
 
   /// Returns whether the specified entity is a directory containing a
@@ -285,22 +319,10 @@ abstract class PluginCommand extends Command<void> {
   ///
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
-    final String rootDir = packagesDir.parent.absolute.path;
     final String baseSha = getStringArg(_kBaseSha);
 
-    GitDir? baseGitDir = gitDir;
-    if (baseGitDir == null) {
-      if (!await GitDir.isGitDir(rootDir)) {
-        printError(
-          '$rootDir is not a valid Git repository.',
-        );
-        throw ToolExit(2);
-      }
-      baseGitDir = await GitDir.fromExisting(rootDir);
-    }
-
     final GitVersionFinder gitVersionFinder =
-        GitVersionFinder(baseGitDir, baseSha);
+        GitVersionFinder(await gitDir, baseSha);
     return gitVersionFinder;
   }
 
