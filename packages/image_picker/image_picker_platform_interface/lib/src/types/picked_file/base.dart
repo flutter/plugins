@@ -16,7 +16,6 @@ import 'package:meta/meta.dart';
 /// This class is a very limited subset of dart:io [File], so all
 /// the methods should seem familiar.
 @immutable
-@Deprecated("Switch to using XFile instead")
 abstract class PickedFileBase {
   /// Construct a PickedFile
   PickedFileBase(String path);

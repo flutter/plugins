@@ -28,7 +28,7 @@ class JavaTestCommand extends PackageLoopingCommand {
       'command.';
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(Directory package) async {
     final Iterable<Directory> examplesWithTests = getExamplesForPlugin(package)
         .where((Directory d) =>
             isFlutterPackage(d) &&
@@ -44,13 +44,18 @@ class JavaTestCommand extends PackageLoopingCommand {
                     .childDirectory('test')
                     .existsSync()));
 
+    if (examplesWithTests.isEmpty) {
+      return PackageResult.skip('No Java unit tests.');
+    }
+
     final List<String> errors = <String>[];
     for (final Directory example in examplesWithTests) {
       final String exampleName = p.relative(example.path, from: package.path);
       print('\nRUNNING JAVA TESTS for $exampleName');
 
       final Directory androidDirectory = example.childDirectory('android');
-      if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
+      final File gradleFile = androidDirectory.childFile(_gradleWrapper);
+      if (!gradleFile.existsSync()) {
         printError('ERROR: Run "flutter build apk" on $exampleName, or run '
             'this tool\'s "build-examples --apk" command, '
             'before executing tests.');
@@ -59,13 +64,14 @@ class JavaTestCommand extends PackageLoopingCommand {
       }
 
       final int exitCode = await processRunner.runAndStream(
-          p.join(androidDirectory.path, _gradleWrapper),
-          <String>['testDebugUnitTest', '--info'],
+          gradleFile.path, <String>['testDebugUnitTest', '--info'],
           workingDir: androidDirectory);
       if (exitCode != 0) {
         errors.add('$exampleName tests failed.');
       }
     }
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 }

@@ -9,7 +9,6 @@ import 'dart:typed_data';
 import './base.dart';
 
 /// A PickedFile backed by a dart:io File.
-@Deprecated("Switch to using XFile instead")
 class PickedFile extends PickedFileBase {
   final File _file;
 

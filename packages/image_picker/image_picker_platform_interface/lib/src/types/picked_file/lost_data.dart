@@ -10,7 +10,6 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 /// Only applies to Android.
 /// See also:
 /// * [ImagePicker.retrieveLostData] for more details on retrieving lost data.
-@Deprecated("Switch to using LostDataResponse instead")
 class LostData {
   /// Creates an instance with the given [file], [exception], and [type]. Any of
   /// the params may be null, but this is never considered to be empty.
