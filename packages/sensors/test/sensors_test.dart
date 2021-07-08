@@ -52,14 +52,17 @@ void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
   const StandardMethodCodec standardMethod = StandardMethodCodec();
 
   void _emitEvent(ByteData? event) {
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-      channelName,
-      event,
-      (ByteData? reply) {},
-    );
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+          channelName,
+          event,
+          (ByteData? reply) {},
+        );
   }
 
-  ServicesBinding.instance!.defaultBinaryMessenger
+  _ambiguate(ServicesBinding.instance)!
+      .defaultBinaryMessenger
       .setMockMessageHandler(channelName, (ByteData? message) async {
     final MethodCall methodCall = standardMethod.decodeMethodCall(message);
     if (methodCall.method == 'listen') {
@@ -73,3 +76,10 @@ void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
     }
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

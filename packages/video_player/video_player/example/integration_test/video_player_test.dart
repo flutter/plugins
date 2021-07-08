@@ -78,6 +78,23 @@ void main() {
     );
 
     testWidgets(
+      'live stream duration != 0',
+      (WidgetTester tester) async {
+        VideoPlayerController networkController = VideoPlayerController.network(
+          'https://cph-p2p-msl.akamaized.net/hls/live/2000341/test/master.m3u8',
+        );
+        await networkController.initialize();
+
+        expect(networkController.value.isInitialized, true);
+        // Live streams should have either a positive duration or C.TIME_UNSET if the duration is unknown
+        // See https://exoplayer.dev/doc/reference/com/google/android/exoplayer2/Player.html#getDuration--
+        expect(networkController.value.duration,
+            (Duration duration) => duration != Duration.zero);
+      },
+      skip: (kIsWeb),
+    );
+
+    testWidgets(
       'can be played',
       (WidgetTester tester) async {
         await _controller.initialize();
