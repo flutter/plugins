@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -23,7 +24,8 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   BuildExamplesCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag(kPlatformLinux);
     argParser.addFlag(kPlatformMacos);
     argParser.addFlag(kPlatformWeb);
@@ -126,8 +128,9 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     print('');
 
     for (final Directory example in getExamplesForPlugin(package)) {
+      final p.Context posixContext = p.Context(style: p.Style.posix);
       final String packageName =
-          p.relative(example.path, from: packagesDir.path);
+          posixContext.relative(example.path, from: packagesDir.path);
 
       for (final _PlatformDetails platform in buildPlatforms) {
         String buildPlatform = platform.label;

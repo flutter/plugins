@@ -10,10 +10,20 @@ import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 
 class MockPlatform extends Mock implements Platform {
-  MockPlatform({this.isMacOS = false});
+  MockPlatform({
+    this.isLinux = false,
+    this.isMacOS = false,
+    this.isWindows = false,
+  });
+
+  @override
+  bool isLinux;
 
   @override
   bool isMacOS;
+
+  @override
+  bool isWindows;
 }
 
 class MockProcess extends Mock implements io.Process {
