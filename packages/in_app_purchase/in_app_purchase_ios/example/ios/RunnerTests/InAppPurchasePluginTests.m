@@ -254,7 +254,7 @@
   NSDictionary* details = ((FlutterError*)result).details;
   XCTAssertNotNil(details[@"error"]);
   NSNumber* errorCode = (NSNumber*)details[@"error"][@"code"];
-  XCTAssertEqual(errorCode, [NSNumber numberWithInteger:0]);
+  XCTAssertEqual(errorCode, [NSNumber numberWithInteger:99]);
 }
 
 - (void)testRefreshReceiptRequest {
