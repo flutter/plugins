@@ -1,3 +1,7 @@
+## 2.1.10
+
+* Ensure video pauses correctly when it finishes.
+
 ## 2.1.9
 
 * Silenced warnings that may occur during build when using a very
