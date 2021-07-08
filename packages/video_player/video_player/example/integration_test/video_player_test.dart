@@ -85,7 +85,7 @@ void main() {
         );
         await networkController.initialize();
 
-        expect(_controller.value.isInitialized, true);
+        expect(networkController.value.isInitialized, true);
         // Live streams should have either a positive duration or C.TIME_UNSET if the duration is unknown
         // See https://exoplayer.dev/doc/reference/com/google/android/exoplayer2/Player.html#getDuration--
         expect(networkController.value.duration,
