@@ -156,7 +156,7 @@ class FormatCommand extends PluginCommand {
       // `flutter format` doesn't require the project to actually be a Flutter
       // project.
       final int exitCode = await processRunner.runAndStream(
-          'flutter', <String>['format', ...dartFiles],
+          flutterCommand, <String>['format', ...dartFiles],
           workingDir: packagesDir);
       if (exitCode != 0) {
         printError('Failed to format Dart files: exit code $exitCode.');

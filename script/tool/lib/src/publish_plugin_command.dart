@@ -445,7 +445,7 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     final io.Process publish = await processRunner.start(
-        'flutter', <String>['pub', 'publish'] + publishFlags,
+        flutterCommand, <String>['pub', 'publish'] + publishFlags,
         workingDirectory: packageDir);
     publish.stdout
         .transform(utf8.decoder)

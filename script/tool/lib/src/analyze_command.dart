@@ -90,7 +90,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
     });
     for (final Directory package in packageDirectories) {
       final int exitCode = await processRunner.runAndStream(
-          'flutter', <String>['packages', 'get'],
+          flutterCommand, <String>['packages', 'get'],
           workingDir: package);
       if (exitCode != 0) {
         return false;

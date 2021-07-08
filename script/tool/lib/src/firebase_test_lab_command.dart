@@ -203,7 +203,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       print('Running flutter build apk...');
       final String experiment = getStringArg(kEnableExperiment);
       final int exitCode = await processRunner.runAndStream(
-          'flutter',
+          flutterCommand,
           <String>[
             'build',
             'apk',

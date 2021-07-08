@@ -51,7 +51,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
   Future<int> _createApp() async {
     final io.ProcessResult result = io.Process.runSync(
-      'flutter',
+      flutterCommand,
       <String>[
         'create',
         '--template=app',

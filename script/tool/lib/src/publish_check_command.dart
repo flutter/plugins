@@ -128,7 +128,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
   Future<bool> _hasValidPublishCheckRun(Directory package) async {
     print('Running pub publish --dry-run:');
     final io.Process process = await processRunner.start(
-      'flutter',
+      flutterCommand,
       <String>['pub', 'publish', '--', '--dry-run'],
       workingDirectory: package,
     );
