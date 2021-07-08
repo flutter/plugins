@@ -1,3 +1,7 @@
+## 2.1.8
+
+* Refactor `FLTCMTimeToMillis` to support indefinite streams. Fixes [#48670](https://github.com/flutter/flutter/issues/48670).
+
 ## 2.1.7
 
 * Update exoplayer to 2.14.1, removing dependency on Bintray.
