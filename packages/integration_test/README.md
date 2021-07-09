@@ -1,15 +1,19 @@
-# integration_test (deprecated)
+# integration_test (moved)
 
-## DEPRECATED
+## MOVED
 
-This package has been moved to the Flutter SDK. Starting with Flutter 2.0,
-it should be included as:
+This package has been [moved to the Flutter
+SDK](https://github.com/flutter/flutter/tree/master/packages/integration_test).
+Starting with Flutter 2.0, it should be included as:
 
 ```
 dev_dependencies:
   integration_test:
     sdk: flutter
 ```
+
+For the latest documentation, see [Integration
+testing](https://flutter.dev/docs/testing/integration-tests).
 
 ## Old instructions
 
