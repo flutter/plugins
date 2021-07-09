@@ -7,7 +7,7 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:quiver/iterables.dart';
 
 import 'common/core.dart';
@@ -28,7 +28,8 @@ class FormatCommand extends PluginCommand {
   FormatCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
         defaultsTo: 'clang-format',
@@ -156,7 +157,7 @@ class FormatCommand extends PluginCommand {
       // `flutter format` doesn't require the project to actually be a Flutter
       // project.
       final int exitCode = await processRunner.runAndStream(
-          'flutter', <String>['format', ...dartFiles],
+          flutterCommand, <String>['format', ...dartFiles],
           workingDir: packagesDir);
       if (exitCode != 0) {
         printError('Failed to format Dart files: exit code $exitCode.');
@@ -168,8 +169,12 @@ class FormatCommand extends PluginCommand {
   Future<Iterable<String>> _getFilteredFilePaths(Stream<File> files) async {
     // Returns a pattern to check for [directories] as a subset of a file path.
     RegExp pathFragmentForDirectories(List<String> directories) {
-      final String s = p.separator;
-      return RegExp('(?:^|$s)${p.joinAll(directories)}$s');
+      String s = path.separator;
+      // Escape the separator for use in the regex.
+      if (s == r'\') {
+        s = r'\\';
+      }
+      return RegExp('(?:^|$s)${path.joinAll(directories)}$s');
     }
 
     return files
@@ -188,12 +193,13 @@ class FormatCommand extends PluginCommand {
 
   Iterable<String> _getPathsWithExtensions(
       Iterable<String> files, Set<String> extensions) {
-    return files.where((String path) => extensions.contains(p.extension(path)));
+    return files.where(
+        (String filePath) => extensions.contains(path.extension(filePath)));
   }
 
   Future<String> _getGoogleFormatterPath() async {
-    final String javaFormatterPath = p.join(
-        p.dirname(p.fromUri(io.Platform.script)),
+    final String javaFormatterPath = path.join(
+        path.dirname(path.fromUri(platform.script)),
         'google-java-format-1.3-all-deps.jar');
     final File javaFormatterFile =
         packagesDir.fileSystem.file(javaFormatterPath);

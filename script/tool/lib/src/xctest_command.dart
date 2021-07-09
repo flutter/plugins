@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -32,7 +32,8 @@ class XCTestCommand extends PackageLoopingCommand {
   XCTestCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       _kiOSDestination,
       help:
@@ -142,7 +143,7 @@ class XCTestCommand extends PackageLoopingCommand {
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
-          p.relative(example.path, from: plugin.parent.path);
+          getRelativePosixPath(example, from: plugin.parent);
       print('Running $platform tests and analyzer for $examplePath...');
       int exitCode =
           await _runTests(true, example, platform, extraFlags: extraXcrunFlags);

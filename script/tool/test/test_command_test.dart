@@ -10,6 +10,7 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/test_command.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -18,16 +19,21 @@ import 'util.dart';
 void main() {
   group('$TestCommand', () {
     late FileSystem fileSystem;
+    late Platform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final TestCommand command =
-          TestCommand(packagesDir, processRunner: processRunner);
+      final TestCommand command = TestCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner = CommandRunner<void>('test_test', 'Test for $TestCommand');
       runner.addCommand(command);
@@ -44,10 +50,10 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall(
-              'flutter', const <String>['test', '--color'], plugin1Dir.path),
-          ProcessCall(
-              'flutter', const <String>['test', '--color'], plugin2Dir.path),
+          ProcessCall(getFlutterCommand(mockPlatform),
+              const <String>['test', '--color'], plugin1Dir.path),
+          ProcessCall(getFlutterCommand(mockPlatform),
+              const <String>['test', '--color'], plugin2Dir.path),
         ]),
       );
     });
@@ -58,7 +64,9 @@ void main() {
       createFakePlugin('plugin2', packagesDir,
           extraFiles: <String>['test/empty_test.dart']);
 
-      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[
         MockProcess.failing(), // plugin 1 test
         MockProcess.succeeding(), // plugin 2 test
       ];
@@ -88,8 +96,8 @@ void main() {
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall(
-              'flutter', const <String>['test', '--color'], plugin2Dir.path),
+          ProcessCall(getFlutterCommand(mockPlatform),
+              const <String>['test', '--color'], plugin2Dir.path),
         ]),
       );
     });
@@ -107,7 +115,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              'flutter',
+              getFlutterCommand(mockPlatform),
               const <String>['test', '--color', '--enable-experiment=exp1'],
               pluginDir.path),
           ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),
@@ -183,7 +191,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              'flutter',
+              getFlutterCommand(mockPlatform),
               const <String>['test', '--color', '--platform=chrome'],
               pluginDir.path),
         ]),
@@ -203,7 +211,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              'flutter',
+              getFlutterCommand(mockPlatform),
               const <String>['test', '--color', '--enable-experiment=exp1'],
               pluginDir.path),
           ProcessCall('dart', const <String>['pub', 'get'], packageDir.path),

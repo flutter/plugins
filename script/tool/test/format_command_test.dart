@@ -17,21 +17,28 @@ import 'util.dart';
 
 void main() {
   late FileSystem fileSystem;
+  late MockPlatform mockPlatform;
   late Directory packagesDir;
+  late p.Context path;
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
   late String javaFormatPath;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
+    mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = RecordingProcessRunner();
-    final FormatCommand analyzeCommand =
-        FormatCommand(packagesDir, processRunner: processRunner);
+    final FormatCommand analyzeCommand = FormatCommand(
+      packagesDir,
+      processRunner: processRunner,
+      platform: mockPlatform,
+    );
 
     // Create the java formatter file that the command checks for, to avoid
     // a download.
-    javaFormatPath = p.join(p.dirname(p.fromUri(io.Platform.script)),
+    path = analyzeCommand.path;
+    javaFormatPath = path.join(path.dirname(path.fromUri(mockPlatform.script)),
         'google-java-format-1.3-all-deps.jar');
     fileSystem.file(javaFormatPath).createSync(recursive: true);
 
@@ -42,7 +49,7 @@ void main() {
   List<String> _getAbsolutePaths(
       Directory package, List<String> relativePaths) {
     return relativePaths
-        .map((String path) => p.join(package.path, path))
+        .map((String relativePath) => path.join(package.path, relativePath))
         .toList();
   }
 

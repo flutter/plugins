@@ -112,7 +112,7 @@ class LicenseCheckCommand extends PluginCommand {
         !_shouldIgnoreFile(file));
     final Iterable<File> firstPartyLicenseFiles = (await _getAllFiles()).where(
         (File file) =>
-            p.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
+            path.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
 
     final bool copyrightCheckSucceeded = await _checkCodeLicenses(codeFiles);
     print('\n=======================================\n');
@@ -246,7 +246,7 @@ class LicenseCheckCommand extends PluginCommand {
   }
 
   bool _isThirdParty(File file) {
-    return p.split(file.path).contains('third_party');
+    return path.split(file.path).contains('third_party');
   }
 
   Future<List<File>> _getAllFiles() => packagesDir.parent

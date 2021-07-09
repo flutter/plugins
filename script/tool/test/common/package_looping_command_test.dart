@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
+import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
@@ -13,8 +13,10 @@ import 'package:flutter_plugin_tools/src/common/package_looping_command.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../mocks.dart';
 import '../util.dart';
 import 'plugin_command_test.mocks.dart';
 
@@ -36,11 +38,13 @@ const String _warningFile = 'warnings';
 
 void main() {
   late FileSystem fileSystem;
+  late MockPlatform mockPlatform;
   late Directory packagesDir;
   late Directory thirdPartyPackagesDir;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
+    mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     thirdPartyPackagesDir = packagesDir.parent
         .childDirectory('third_party')
@@ -69,11 +73,12 @@ void main() {
         when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(gitDiffResponse);
       }
-      return Future<ProcessResult>.value(mockProcessResult);
+      return Future<io.ProcessResult>.value(mockProcessResult);
     });
 
     return TestPackageLoopingCommand(
       packagesDir,
+      platform: mockPlatform,
       hasLongOutput: hasLongOutput,
       includeSubpackages: includeSubpackages,
       failsDuringInit: failsDuringInit,
@@ -502,7 +507,25 @@ void main() {
     test('getPackageDescription prints packageDir-relative paths by default',
         () async {
       final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir);
+          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
+
+      expect(
+        command.getPackageDescription(packagesDir.childDirectory('foo')),
+        'foo',
+      );
+      expect(
+        command.getPackageDescription(packagesDir
+            .childDirectory('foo')
+            .childDirectory('bar')
+            .childDirectory('baz')),
+        'foo/bar/baz',
+      );
+    });
+
+    test('getPackageDescription always uses Posix-style paths', () async {
+      mockPlatform.isWindows = true;
+      final TestPackageLoopingCommand command =
+          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
 
       expect(
         command.getPackageDescription(packagesDir.childDirectory('foo')),
@@ -521,7 +544,7 @@ void main() {
         'getPackageDescription elides group name in grouped federated plugin structure',
         () async {
       final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir);
+          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
 
       expect(
         command.getPackageDescription(packagesDir
@@ -542,6 +565,7 @@ void main() {
 class TestPackageLoopingCommand extends PackageLoopingCommand {
   TestPackageLoopingCommand(
     Directory packagesDir, {
+    required Platform platform,
     this.hasLongOutput = true,
     this.includeSubpackages = false,
     this.customFailureListHeader,
@@ -552,7 +576,8 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     this.captureOutput = false,
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir,
+            processRunner: processRunner, platform: platform, gitDir: gitDir);
 
   final List<String> checkedPackages = <String>[];
   final List<String> capturedOutput = <String>[];
@@ -629,4 +654,4 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   }
 }
 
-class MockProcessResult extends Mock implements ProcessResult {}
+class MockProcessResult extends Mock implements io.ProcessResult {}
