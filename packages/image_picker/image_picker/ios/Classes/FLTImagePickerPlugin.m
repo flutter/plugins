@@ -70,7 +70,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 }
 
 /**
- * Applies UIImagePickerControllerCameraDevice on the UIImagePickerController.
+ * Returns the UIImagePickerControllerCameraDevice to use given [arguments].
  *
  * If the cameraDevice value that is fetched from arguments is 1 then returns
  * UIImagePickerControllerCameraDeviceFront. If the cameraDevice value that is fetched
