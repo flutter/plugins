@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
+import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
 
 import 'common/core.dart';
@@ -20,7 +21,8 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   FirebaseTestLabCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       'project',
       defaultsTo: 'flutter-infra',

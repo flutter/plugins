@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -14,6 +15,7 @@ class JavaTestCommand extends PackageLoopingCommand {
   JavaTestCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
   }) : super(packagesDir, processRunner: processRunner);
 
   static const String _gradleWrapper = 'gradlew';

@@ -10,6 +10,7 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/java_test_command.dart';
+import 'package:mockito/mockito.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
 
@@ -19,16 +20,21 @@ import 'util.dart';
 void main() {
   group('$JavaTestCommand', () {
     late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final JavaTestCommand command =
-          JavaTestCommand(packagesDir, processRunner: processRunner);
+      final JavaTestCommand command = JavaTestCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner =
           CommandRunner<void>('java_test_test', 'Test for $JavaTestCommand');
@@ -50,13 +56,16 @@ void main() {
 
       await runCapturingPrint(runner, <String>['java-test']);
 
+      final Directory androidFolder =
+          plugin.childDirectory('example').childDirectory('android');
+
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-            p.join(plugin.path, 'example/android/gradlew'),
+            androidFolder.childFile('gradlew').path,
             const <String>['testDebugUnitTest', '--info'],
-            p.join(plugin.path, 'example/android'),
+            androidFolder.path,
           ),
         ]),
       );
@@ -77,13 +86,16 @@ void main() {
 
       await runCapturingPrint(runner, <String>['java-test']);
 
+      final Directory androidFolder =
+          plugin.childDirectory('example').childDirectory('android');
+
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-            p.join(plugin.path, 'example/android/gradlew'),
+            androidFolder.childFile('gradlew').path,
             const <String>['testDebugUnitTest', '--info'],
-            p.join(plugin.path, 'example/android'),
+            androidFolder.path,
           ),
         ]),
       );

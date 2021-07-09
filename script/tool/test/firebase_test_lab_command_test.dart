@@ -9,6 +9,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/firebase_test_lab_command.dart';
+import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -17,16 +18,21 @@ import 'util.dart';
 void main() {
   group('$FirebaseTestLabCommand', () {
     FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final FirebaseTestLabCommand command =
-          FirebaseTestLabCommand(packagesDir, processRunner: processRunner);
+      final FirebaseTestLabCommand command = FirebaseTestLabCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner = CommandRunner<void>(
           'firebase_test_lab_command', 'Test for $FirebaseTestLabCommand');
