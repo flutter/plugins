@@ -98,7 +98,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
