@@ -86,7 +86,6 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// `capture` is only supported in mobile browsers.
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
-  @Deprecated("Switch to using getFile instead")
   Future<PickedFile> pickFile({
     String? accept,
     String? capture,
@@ -193,7 +192,6 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   /// Monitors an <input type="file"> and returns the selected file.
-  @Deprecated("Use _getSelectedXFile instead")
   Future<PickedFile> _getSelectedFile(html.FileUploadInputElement input) {
     final Completer<PickedFile> _completer = Completer<PickedFile>();
     // Observe the input until we can return something
