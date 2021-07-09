@@ -146,6 +146,7 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
+          const ProcessCall('java', <String>['--version'], null),
           ProcessCall(
               'java',
               <String>[
@@ -158,7 +159,7 @@ void main() {
         ]));
   });
 
-  test('fails if Java formatter fails', () async {
+  test('fails with a clear message if Java is not in the path', () async {
     const List<String> files = <String>[
       'android/src/main/java/io/flutter/plugins/a_plugin/a.java',
       'android/src/main/java/io/flutter/plugins/a_plugin/b.java',
@@ -178,7 +179,63 @@ void main() {
     expect(
         output,
         containsAllInOrder(<Matcher>[
+          contains(
+              'Unable to run \'java\'. Make sure that it is in your path, or '
+              'provide a full path with --java.'),
+        ]));
+  });
+
+  test('fails if Java formatter fails', () async {
+    const List<String> files = <String>[
+      'android/src/main/java/io/flutter/plugins/a_plugin/a.java',
+      'android/src/main/java/io/flutter/plugins/a_plugin/b.java',
+    ];
+    createFakePlugin('a_plugin', packagesDir, extraFiles: files);
+
+    processRunner.mockProcessesForExecutable['java'] = <io.Process>[
+      MockProcess.succeeding(), // check for working java
+      MockProcess.failing(), // format
+    ];
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['format'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+        output,
+        containsAllInOrder(<Matcher>[
           contains('Failed to format Java files: exit code 1.'),
+        ]));
+  });
+
+  test('honors --java flag', () async {
+    const List<String> files = <String>[
+      'android/src/main/java/io/flutter/plugins/a_plugin/a.java',
+      'android/src/main/java/io/flutter/plugins/a_plugin/b.java',
+    ];
+    final Directory pluginDir = createFakePlugin(
+      'a_plugin',
+      packagesDir,
+      extraFiles: files,
+    );
+
+    await runCapturingPrint(runner, <String>['format', '--java=/path/to/java']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          const ProcessCall('/path/to/java', <String>['--version'], null),
+          ProcessCall(
+              '/path/to/java',
+              <String>[
+                '-jar',
+                javaFormatPath,
+                '--replace',
+                ..._getPackagesDirRelativePaths(pluginDir, files)
+              ],
+              packagesDir.path),
         ]));
   });
 
@@ -202,8 +259,65 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
+          const ProcessCall('clang-format', <String>['--version'], null),
           ProcessCall(
               'clang-format',
+              <String>[
+                '-i',
+                '--style=Google',
+                ..._getPackagesDirRelativePaths(pluginDir, files)
+              ],
+              packagesDir.path),
+        ]));
+  });
+
+  test('fails with a clear message if clang-format is not in the path',
+      () async {
+    const List<String> files = <String>[
+      'linux/foo_plugin.cc',
+      'macos/Classes/Foo.h',
+    ];
+    createFakePlugin('a_plugin', packagesDir, extraFiles: files);
+
+    processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
+      MockProcess.failing()
+    ];
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['format'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Unable to run \'clang-format\'. Make sure that it is in your '
+              'path, or provide a full path with --clang-format.'),
+        ]));
+  });
+
+  test('honors --clang-format flag', () async {
+    const List<String> files = <String>[
+      'windows/foo_plugin.cpp',
+    ];
+    final Directory pluginDir = createFakePlugin(
+      'a_plugin',
+      packagesDir,
+      extraFiles: files,
+    );
+
+    await runCapturingPrint(
+        runner, <String>['format', '--clang-format=/path/to/clang-format']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          const ProcessCall(
+              '/path/to/clang-format', <String>['--version'], null),
+          ProcessCall(
+              '/path/to/clang-format',
               <String>[
                 '-i',
                 '--style=Google',
@@ -221,7 +335,8 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess.succeeding(), // check for working clang-format
+      MockProcess.failing(), // format
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
