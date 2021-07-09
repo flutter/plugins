@@ -24,7 +24,11 @@
   return self;
 }
 
-- (void)successWithData:(id _Nullable)data {
+- (void)success {
+  [self send:nil];
+}
+
+- (void)successWithData:(id)data {
   [self send:data];
 }
 

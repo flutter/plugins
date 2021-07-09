@@ -10,12 +10,6 @@
 #import <uuid/uuid.h>
 #import "FLTThreadSafeFlutterResult.h"
 
-static FlutterError *getFlutterError(NSError *error) {
-  return [FlutterError errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-                             message:error.localizedDescription
-                             details:error.domain];
-}
-
 @interface FLTSavePhotoDelegate : NSObject <AVCapturePhotoCaptureDelegate>
 @property(readonly, nonatomic) NSString *path;
 @property(readonly, nonatomic) FLTThreadSafeFlutterResult *result;
@@ -832,7 +826,7 @@ NSString *const errorMethod = @"error";
     _audioTimeOffset = CMTimeMake(0, 1);
     _videoIsDisconnected = NO;
     _audioIsDisconnected = NO;
-    [result successWithData:nil];
+    [result success];
   } else {
     [result errorWithCode:@"Error" message:@"Video is already recording" details:nil];
   }
@@ -868,12 +862,12 @@ NSString *const errorMethod = @"error";
   _isRecordingPaused = YES;
   _videoIsDisconnected = YES;
   _audioIsDisconnected = YES;
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)resumeVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result {
   _isRecordingPaused = NO;
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)lockCaptureOrientationWithResult:(FLTThreadSafeFlutterResult *)result
@@ -891,13 +885,13 @@ NSString *const errorMethod = @"error";
     [self updateOrientation];
   }
 
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)unlockCaptureOrientationWithResult:(FLTThreadSafeFlutterResult *)result {
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   [self updateOrientation];
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)setFlashModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
@@ -948,7 +942,7 @@ NSString *const errorMethod = @"error";
     }
   }
   _flashMode = mode;
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
@@ -961,7 +955,7 @@ NSString *const errorMethod = @"error";
   }
   _exposureMode = mode;
   [self applyExposureMode];
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)applyExposureMode {
@@ -991,7 +985,7 @@ NSString *const errorMethod = @"error";
   }
   _focusMode = mode;
   [self applyFocusMode];
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)applyFocusMode {
@@ -1043,7 +1037,7 @@ NSString *const errorMethod = @"error";
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)setFocusPointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y {
@@ -1058,7 +1052,7 @@ NSString *const errorMethod = @"error";
   [_captureDevice unlockForConfiguration];
   // Retrigger auto focus
   [self applyFocusMode];
-  [result successWithData:nil];
+  [result success];
 }
 
 - (void)setExposureOffsetWithResult:(FLTThreadSafeFlutterResult *)result offset:(double)offset {
@@ -1125,7 +1119,7 @@ NSString *const errorMethod = @"error";
   _captureDevice.videoZoomFactor = zoom;
   [_captureDevice unlockForConfiguration];
 
-  [result successWithData:nil];
+  [result success];
 }
 
 - (CGFloat)getMinAvailableZoomFactor {
@@ -1380,10 +1374,10 @@ NSString *const errorMethod = @"error";
     });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
-    [result successWithData:nil];
+    [result success];
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
-    [result successWithData:nil];
+    [result success];
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
@@ -1414,7 +1408,7 @@ NSString *const errorMethod = @"error";
       [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
       dispatch_async(_dispatchQueue, ^{
         [self->_camera start];
-        [result successWithData:nil];
+        [result success];
       });
     } else if ([@"takePicture" isEqualToString:call.method]) {
       if (@available(iOS 10.0, *)) {
@@ -1426,10 +1420,10 @@ NSString *const errorMethod = @"error";
       [_registry unregisterTexture:cameraId];
       [_camera close];
       _dispatchQueue = nil;
-      [result successWithData:nil];
+      [result success];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       [_camera setUpCaptureSessionForAudio];
-      [result successWithData:nil];
+      [result success];
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingWithResult:result];
     } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
