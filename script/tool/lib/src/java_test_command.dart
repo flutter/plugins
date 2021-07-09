@@ -16,7 +16,7 @@ class JavaTestCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
-  }) : super(packagesDir, processRunner: processRunner);
+  }) : super(packagesDir, processRunner: processRunner, platform: platform);
 
   static const String _gradleWrapper = 'gradlew';
 

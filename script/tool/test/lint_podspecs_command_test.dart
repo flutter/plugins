@@ -23,7 +23,7 @@ void main() {
     late RecordingProcessRunner processRunner;
 
     setUp(() {
-      fileSystem = MemoryFileSystem();
+      fileSystem = MemoryFileSystem(style: FileSystemStyle.posix);
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
 
       mockPlatform = MockPlatform(isMacOS: true);

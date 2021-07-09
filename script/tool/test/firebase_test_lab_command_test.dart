@@ -9,7 +9,6 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/firebase_test_lab_command.dart';
-import 'package:mockito/mockito.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
