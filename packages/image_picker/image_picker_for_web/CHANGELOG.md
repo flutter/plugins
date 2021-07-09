@@ -1,6 +1,7 @@
 # 2.1.0
 
-* Added getImage, getVideo and getFile methods that return XFile instances rather than PickedFile instances.
+* Implemented `getImage`, `getVideo` and `getFile` methods that return `XFile` instances.
+* Move tests to `example` directory, so they run as integration_tests with `flutter drive`.
 
 # 2.0.0
 
