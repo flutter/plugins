@@ -96,6 +96,68 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return _getSelectedFile(input);
   }
 
+  /// Returns an [XFile] with the image that was picked.
+  ///
+  /// The `source` argument controls where the image comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// Note that the `maxWidth`, `maxHeight` and `imageQuality` arguments are not supported on the web. If any of these arguments is supplied, it'll be silently ignored by the web version of the plugin.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
+  /// If no images were picked, the return value is null.
+  @override
+  Future<XFile> getImage({
+    required ImageSource source,
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+  }) {
+    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    return getFile(accept: _kAcceptImageMimeType, capture: capture);
+  }
+
+  /// Returns an [XFile] containing the video that was picked.
+  ///
+  /// The [source] argument controls where the video comes from. This can
+  /// be either [ImageSource.camera] or [ImageSource.gallery].
+  ///
+  /// Note that the `maxDuration` argument is not supported on the web. If the argument is supplied, it'll be silently ignored by the web version of the plugin.
+  ///
+  /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
+  /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
+  /// Defaults to [CameraDevice.rear].
+  ///
+  /// If no images were picked, the return value is null.
+  @override
+  Future<XFile> getVideo({
+    required ImageSource source,
+    CameraDevice preferredCameraDevice = CameraDevice.rear,
+    Duration? maxDuration,
+  }) {
+    String? capture = computeCaptureAttribute(source, preferredCameraDevice);
+    return getFile(accept: _kAcceptVideoMimeType, capture: capture);
+  }
+
+  /// Injects a file input with the specified accept+capture attributes, and
+  /// returns the PickedFile that the user selected locally.
+  ///
+  /// `capture` is only supported in mobile browsers.
+  /// See https://caniuse.com/#feat=html-media-capture
+  @visibleForTesting
+  Future<XFile> getFile({
+    String? accept,
+    String? capture,
+  }) {
+    html.FileUploadInputElement input =
+        createInputElement(accept, capture) as html.FileUploadInputElement;
+    _injectAndActivate(input);
+    return _getSelectedXFile(input);
+  }
+
   // DOM methods
 
   /// Converts plugin configuration into a proper value for the `capture` attribute.
@@ -137,6 +199,26 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       final objectUrl = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && objectUrl != null) {
         _completer.complete(PickedFile(objectUrl));
+      }
+    });
+    input.onError.first.then((event) {
+      if (!_completer.isCompleted) {
+        _completer.completeError(event);
+      }
+    });
+    // Note that we don't bother detaching from these streams, since the
+    // "input" gets re-created in the DOM every time the user needs to
+    // pick a file.
+    return _completer.future;
+  }
+
+  Future<XFile> _getSelectedXFile(html.FileUploadInputElement input) {
+    final Completer<XFile> _completer = Completer<XFile>();
+    // Observe the input until we can return something
+    input.onChange.first.then((event) {
+      final objectUrl = _handleOnChangeEvent(event);
+      if (!_completer.isCompleted && objectUrl != null) {
+        _completer.complete(XFile(objectUrl));
       }
     });
     input.onError.first.then((event) {
