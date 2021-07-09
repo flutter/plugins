@@ -161,17 +161,26 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// an exact format (e.g., published name, or basename) is required, that
   /// should be used instead.
   String getPackageDescription(Directory package) {
-    final String packageName =
-        path.relative(package.path, from: packagesDir.path);
-    final List<String> components = path.split(packageName);
+    String packageName = getRelativePosixPath(package, from: packagesDir);
+    final List<String> components = p.posix.split(packageName);
     // For the common federated plugin pattern of `foo/foo_subpackage`, drop
     // the first part since it's not useful.
     if (components.length == 2 &&
         components[1].startsWith('${components[0]}_')) {
-      components.removeAt(0);
+      packageName = components[1];
     }
-    return p.posix.joinAll(components);
+    return packageName;
   }
+
+  /// Returns the relative path from [from] to [entity] in Posix style.
+  ///
+  /// This should be used when, for example, printing package-relative paths in
+  /// status or error messages.
+  String getRelativePosixPath(
+    FileSystemEntity entity, {
+    required Directory from,
+  }) =>
+      p.posix.joinAll(path.split(path.relative(entity.path, from: from.path)));
 
   /// The suggested indentation for printed output.
   String get indentation => hasLongOutput ? '' : '  ';

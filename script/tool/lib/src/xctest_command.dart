@@ -143,7 +143,7 @@ class XCTestCommand extends PackageLoopingCommand {
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
-          path.relative(example.path, from: plugin.parent.path);
+          getRelativePosixPath(example, from: plugin.parent);
       print('Running $platform tests and analyzer for $examplePath...');
       int exitCode =
           await _runTests(true, example, platform, extraFlags: extraXcrunFlags);

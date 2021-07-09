@@ -150,7 +150,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // test file's run.
     int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
-      final String testName = path.relative(test.path, from: package.path);
+      final String testName = getRelativePosixPath(test, from: package);
       print('Testing $testName...');
       if (!await _runGradle(androidDirectory, 'app:assembleDebug',
           testFile: test)) {

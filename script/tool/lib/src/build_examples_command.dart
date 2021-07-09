@@ -128,8 +128,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     print('');
 
     for (final Directory example in getExamplesForPlugin(package)) {
-      final String packageName =
-          p.posix.relative(example.path, from: packagesDir.path);
+      final String packageName = getRelativePosixPath(example, from: package);
 
       for (final _PlatformDetails platform in buildPlatforms) {
         String buildPlatform = platform.label;

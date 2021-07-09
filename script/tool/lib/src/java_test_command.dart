@@ -49,8 +49,7 @@ class JavaTestCommand extends PackageLoopingCommand {
 
     final List<String> errors = <String>[];
     for (final Directory example in examplesWithTests) {
-      final String exampleName =
-          path.relative(example.path, from: package.path);
+      final String exampleName = getRelativePosixPath(example, from: package);
       print('\nRUNNING JAVA TESTS for $exampleName');
 
       final Directory androidDirectory = example.childDirectory('android');
