@@ -2,6 +2,10 @@
 
 * Add price symbol to platform interface object ProductDetail.
 
+## 0.1.2+2
+
+* Fix crash when retrieveReceiptWithError gives an error.
+
 ## 0.1.2+1
 
 * Fix wrong data type when cancelling user credentials dialog.

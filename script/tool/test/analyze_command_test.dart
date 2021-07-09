@@ -126,6 +126,8 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains(
               'Found an extra analysis_options.yaml at /packages/foo/analysis_options.yaml'),
+          contains('  foo:\n'
+              '    Unexpected local analysis options'),
         ]),
       );
     });
@@ -146,6 +148,8 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains(
               'Found an extra analysis_options.yaml at /packages/foo/.analysis_options'),
+          contains('  foo:\n'
+              '    Unexpected local analysis options'),
         ]),
       );
     });

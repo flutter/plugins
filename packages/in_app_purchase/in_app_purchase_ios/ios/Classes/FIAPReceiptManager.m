@@ -4,6 +4,7 @@
 
 #import "FIAPReceiptManager.h"
 #import <Flutter/Flutter.h>
+#import "FIAObjectTranslator.h"
 
 @interface FIAPReceiptManager ()
 // Gets the receipt file data from the location of the url. Can be nil if
@@ -20,10 +21,10 @@
   NSData *receipt = [self getReceiptData:receiptURL error:&receiptError];
   if (!receipt || receiptError) {
     if (flutterError) {
-      *flutterError = [FlutterError
-          errorWithCode:[[NSString alloc] initWithFormat:@"%li", (long)receiptError.code]
-                message:receiptError.domain
-                details:receiptError.userInfo];
+      NSDictionary *errorMap = [FIAObjectTranslator getMapFromNSError:receiptError];
+      *flutterError = [FlutterError errorWithCode:errorMap[@"code"]
+                                          message:errorMap[@"domain"]
+                                          details:errorMap[@"userInfo"]];
     }
     return nil;
   }
