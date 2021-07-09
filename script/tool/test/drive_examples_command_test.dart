@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -42,18 +44,28 @@ void main() {
     void setMockFlutterDevicesOutput({
       bool hasIosDevice = true,
       bool hasAndroidDevice = true,
+      bool includeBanner = false,
     }) {
+      const String updateBanner = '''
+╔════════════════════════════════════════════════════════════════════════════╗
+║ A new version of Flutter is available!                                     ║
+║                                                                            ║
+║ To update to the latest version, run "flutter upgrade".                    ║
+╚════════════════════════════════════════════════════════════════════════════╝
+''';
       final List<String> devices = <String>[
         if (hasIosDevice) '{"id": "$_fakeIosDevice", "targetPlatform": "ios"}',
         if (hasAndroidDevice)
           '{"id": "$_fakeAndroidDevice", "targetPlatform": "android-x86"}',
       ];
-      final String output = '''[${devices.join(',')}]''';
+      final String output =
+          '''${includeBanner ? updateBanner : ''}[${devices.join(',')}]''';
 
-      final MockProcess mockDevicesProcess = MockProcess();
-      mockDevicesProcess.exitCodeCompleter.complete(0);
+      final MockProcess mockDevicesProcess = MockProcess.succeeding();
       mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
-      processRunner.processToReturn = mockDevicesProcess;
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        mockDevicesProcess
+      ];
       processRunner.resultStdout = output;
     }
 
@@ -110,7 +122,55 @@ void main() {
       );
     });
 
-    test('fails if Android if no Android devices are present', () async {
+    test('handles flutter tool banners when checking devices', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/foo_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
+
+      setMockFlutterDevicesOutput(includeBanner: true);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails for iOS if getting devices fails', () async {
+      // Simulate failure from `flutter devices`.
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        MockProcess.failing()
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No iOS devices'),
+        ]),
+      );
+    });
+
+    test('fails for Android if no Android devices are present', () async {
+      setMockFlutterDevicesOutput(hasAndroidDevice: false);
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['drive-examples', '--android'],
@@ -907,9 +967,11 @@ void main() {
       );
 
       // Simulate failure from `flutter drive`.
-      final MockProcess mockDriveProcess = MockProcess();
-      mockDriveProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockDriveProcess;
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        // No mock for 'devices', since it's running for macOS.
+        MockProcess.failing(), // 'drive' #1
+        MockProcess.failing(), // 'drive' #2
+      ];
 
       Error? commandError;
       final List<String> output =

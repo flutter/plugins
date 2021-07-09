@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
+
 import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
@@ -90,6 +92,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// opportunity to do any cleanup of run-level state.
   Future<void> completeRun() async {}
 
+  /// If [captureOutput], this is called just before exiting with all captured
+  /// [output].
+  Future<void> handleCapturedOutput(List<String> output) async {}
+
   /// Whether or not the output (if any) of [runForPackage] is long, or short.
   ///
   /// This changes the logging that happens at the start of each package's
@@ -119,6 +125,14 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// This only needs to be overridden if the summary should provide extra
   /// context.
   String get failureListFooter => 'See above for full details.';
+
+  /// If true, all printing (including the summary) will be redirected to a
+  /// buffer, and provided in a call to [handleCapturedOutput] at the end of
+  /// the run.
+  ///
+  /// Capturing output will disable any colorizing of output from this base
+  /// class.
+  bool get captureOutput => false;
 
   // ----------------------------------------
 
@@ -162,6 +176,26 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
+    bool succeeded;
+    if (captureOutput) {
+      final List<String> output = <String>[];
+      final ZoneSpecification logSwitchSpecification = ZoneSpecification(
+          print: (Zone self, ZoneDelegate parent, Zone zone, String message) {
+        output.add(message);
+      });
+      succeeded = await runZoned<Future<bool>>(_runInternal,
+          zoneSpecification: logSwitchSpecification);
+      await handleCapturedOutput(output);
+    } else {
+      succeeded = await _runInternal();
+    }
+
+    if (!succeeded) {
+      throw ToolExit(exitCommandFoundErrors);
+    }
+  }
+
+  Future<bool> _runInternal() async {
     _packagesWithWarnings.clear();
     _otherWarningCount = 0;
     _currentPackage = null;
@@ -178,8 +212,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
       _printPackageHeading(package);
       final PackageResult result = await runForPackage(package);
       if (result.state == RunState.skipped) {
-        print(Colorize('${indentation}SKIPPING: ${result.details.first}')
-          ..darkGray());
+        final String message =
+            '${indentation}SKIPPING: ${result.details.first}';
+        captureOutput ? print(message) : print(Colorize(message)..darkGray());
       }
       results[package] = result;
     }
@@ -187,11 +222,12 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
     completeRun();
 
+    print('\n');
     // If there were any errors reported, summarize them and exit.
     if (results.values
         .any((PackageResult result) => result.state == RunState.failed)) {
       _printFailureSummary(packages, results);
-      throw ToolExit(exitCommandFoundErrors);
+      return false;
     }
 
     // Otherwise, print a summary of what ran for ease of auditing that all the
@@ -199,7 +235,16 @@ abstract class PackageLoopingCommand extends PluginCommand {
     _printRunSummary(packages, results);
 
     print('\n');
-    printSuccess('No issues found!');
+    _printSuccess('No issues found!');
+    return true;
+  }
+
+  void _printSuccess(String message) {
+    captureOutput ? print(message) : printSuccess(message);
+  }
+
+  void _printError(String message) {
+    captureOutput ? print(message) : printError(message);
   }
 
   /// Prints the status message indicating that the command is being run for
@@ -220,7 +265,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
     } else {
       heading = '$heading...';
     }
-    print(Colorize(heading)..cyan());
+    captureOutput ? print(heading) : print(Colorize(heading)..cyan());
   }
 
   /// Prints a summary of packges run, packages skipped, and warnings.
@@ -265,19 +310,21 @@ abstract class PackageLoopingCommand extends PluginCommand {
     print('Run overview:');
     for (final Directory package in packages) {
       final bool hadWarning = _packagesWithWarnings.contains(package);
-      Colorize summary;
+      Styles style;
+      String summary;
       if (skipped.contains(package)) {
-        if (hadWarning) {
-          summary = Colorize('skipped (with warning)')..lightYellow();
-        } else {
-          summary = Colorize('skipped')..darkGray();
-        }
+        summary = 'skipped';
+        style = hadWarning ? Styles.LIGHT_YELLOW : Styles.DARK_GRAY;
       } else {
-        if (hadWarning) {
-          summary = Colorize('ran (with warning)')..yellow();
-        } else {
-          summary = Colorize('ran')..green();
-        }
+        summary = 'ran';
+        style = hadWarning ? Styles.YELLOW : Styles.GREEN;
+      }
+      if (hadWarning) {
+        summary += ' (with warning)';
+      }
+
+      if (!captureOutput) {
+        summary = (Colorize(summary)..apply(style)).toString();
       }
       print('  ${getPackageDescription(package)} - $summary');
     }
@@ -288,7 +335,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   void _printFailureSummary(
       List<Directory> packages, Map<Directory, PackageResult> results) {
     const String indentation = '  ';
-    printError(failureListHeader);
+    _printError(failureListHeader);
     for (final Directory package in packages) {
       final PackageResult result = results[package]!;
       if (result.state == RunState.failed) {
@@ -298,10 +345,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
           errorDetails =
               ':\n$errorIndentation${result.details.join('\n$errorIndentation')}';
         }
-        printError(
+        _printError(
             '$indentation${getPackageDescription(package)}$errorDetails');
       }
     }
-    printError(failureListFooter);
+    _printError(failureListFooter);
   }
 }

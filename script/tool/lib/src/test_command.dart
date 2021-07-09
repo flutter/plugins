@@ -3,15 +3,14 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
-import 'common/plugin_command.dart';
+import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
 /// A command to run Dart unit tests for packages.
-class TestCommand extends PluginCommand {
+class TestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   TestCommand(
     Directory packagesDir, {
@@ -20,7 +19,10 @@ class TestCommand extends PluginCommand {
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
-      help: 'Runs the tests in Dart VM with the given experiments enabled.',
+      help:
+          'Runs Dart unit tests in Dart VM with the given experiments enabled. '
+          'See https://github.com/dart-lang/sdk/blob/master/docs/process/experimental-flags.md '
+          'for details.',
     );
   }
 
@@ -32,72 +34,65 @@ class TestCommand extends PluginCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  Future<void> run() async {
-    final List<String> failingPackages = <String>[];
-    await for (final Directory packageDir in getPackages()) {
-      final String packageName =
-          p.relative(packageDir.path, from: packagesDir.path);
-      if (!packageDir.childDirectory('test').existsSync()) {
-        print('SKIPPING $packageName - no test subdirectory');
-        continue;
-      }
-
-      print('RUNNING $packageName tests...');
-
-      final String enableExperiment = getStringArg(kEnableExperiment);
-
-      // `flutter test` automatically gets packages.  `pub run test` does not.  :(
-      int exitCode = 0;
-      if (isFlutterPackage(packageDir)) {
-        final List<String> args = <String>[
-          'test',
-          '--color',
-          if (enableExperiment.isNotEmpty)
-            '--enable-experiment=$enableExperiment',
-        ];
-
-        if (isWebPlugin(packageDir)) {
-          args.add('--platform=chrome');
-        }
-        exitCode = await processRunner.runAndStream(
-          'flutter',
-          args,
-          workingDir: packageDir,
-        );
-      } else {
-        exitCode = await processRunner.runAndStream(
-          'dart',
-          <String>['pub', 'get'],
-          workingDir: packageDir,
-        );
-        if (exitCode == 0) {
-          exitCode = await processRunner.runAndStream(
-            'dart',
-            <String>[
-              'pub',
-              'run',
-              if (enableExperiment.isNotEmpty)
-                '--enable-experiment=$enableExperiment',
-              'test',
-            ],
-            workingDir: packageDir,
-          );
-        }
-      }
-      if (exitCode != 0) {
-        failingPackages.add(packageName);
-      }
+  Future<PackageResult> runForPackage(Directory package) async {
+    if (!package.childDirectory('test').existsSync()) {
+      return PackageResult.skip('No test/ directory.');
     }
 
-    print('\n\n');
-    if (failingPackages.isNotEmpty) {
-      print('Tests for the following packages are failing (see above):');
-      for (final String package in failingPackages) {
-        print(' * $package');
-      }
-      throw ToolExit(1);
+    bool passed;
+    if (isFlutterPackage(package)) {
+      passed = await _runFlutterTests(package);
+    } else {
+      passed = await _runDartTests(package);
+    }
+    return passed ? PackageResult.success() : PackageResult.fail();
+  }
+
+  /// Runs the Dart tests for a Flutter package, returning true on success.
+  Future<bool> _runFlutterTests(Directory package) async {
+    final String experiment = getStringArg(kEnableExperiment);
+
+    final int exitCode = await processRunner.runAndStream(
+      flutterCommand,
+      <String>[
+        'test',
+        '--color',
+        if (experiment.isNotEmpty) '--enable-experiment=$experiment',
+        // TODO(ditman): Remove this once all plugins are migrated to 'drive'.
+        if (isWebPlugin(package)) '--platform=chrome',
+      ],
+      workingDir: package,
+    );
+    return exitCode == 0;
+  }
+
+  /// Runs the Dart tests for a non-Flutter package, returning true on success.
+  Future<bool> _runDartTests(Directory package) async {
+    // Unlike `flutter test`, `pub run test` does not automatically get
+    // packages
+    int exitCode = await processRunner.runAndStream(
+      'dart',
+      <String>['pub', 'get'],
+      workingDir: package,
+    );
+    if (exitCode != 0) {
+      printError('Unable to fetch dependencies.');
+      return false;
     }
 
-    print('All tests are passing!');
+    final String experiment = getStringArg(kEnableExperiment);
+
+    exitCode = await processRunner.runAndStream(
+      'dart',
+      <String>[
+        'pub',
+        'run',
+        if (experiment.isNotEmpty) '--enable-experiment=$experiment',
+        'test',
+      ],
+      workingDir: package,
+    );
+
+    return exitCode == 0;
   }
 }

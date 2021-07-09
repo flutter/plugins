@@ -119,8 +119,8 @@ void main() {
 
     test('LocaleWrapper should have property values consistent with map', () {
       final SKPriceLocaleWrapper wrapper =
-          SKPriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
-      expect(wrapper, equals(dummyLocale));
+          SKPriceLocaleWrapper.fromJson(buildLocaleMap(dollarLocale));
+      expect(wrapper, equals(dollarLocale));
     });
   });
 

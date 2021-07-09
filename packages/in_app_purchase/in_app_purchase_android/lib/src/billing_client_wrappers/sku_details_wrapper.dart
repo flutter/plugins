@@ -38,6 +38,7 @@ class SkuDetailsWrapper {
     required this.price,
     required this.priceAmountMicros,
     required this.priceCurrencyCode,
+    required this.priceCurrencySymbol,
     required this.sku,
     required this.subscriptionPeriod,
     required this.title,
@@ -90,6 +91,12 @@ class SkuDetailsWrapper {
   /// [price] ISO 4217 currency code.
   @JsonKey(defaultValue: '')
   final String priceCurrencyCode;
+
+  /// [price] localized currency symbol
+  /// For example, for the US Dollar, the symbol is "$" if the locale
+  /// is the US, while for other locales it may be "US$".
+  @JsonKey(defaultValue: '')
+  final String priceCurrencySymbol;
 
   /// The product ID in Google Play Console.
   @JsonKey(defaultValue: '')

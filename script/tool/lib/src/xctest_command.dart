@@ -184,7 +184,7 @@ class XCTestCommand extends PackageLoopingCommand {
         '$_kXCRunCommand ${xctestArgs.join(' ')}';
     print(completeTestCommand);
     return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
-        workingDir: example, exitOnError: false);
+        workingDir: example);
   }
 
   Future<String?> _findAvailableIphoneSimulator() async {

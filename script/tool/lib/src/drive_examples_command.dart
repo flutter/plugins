@@ -203,14 +203,19 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
     final ProcessResult result = await processRunner.run(
         flutterCommand, <String>['devices', '--machine'],
-        stdoutEncoding: utf8, exitOnError: true);
+        stdoutEncoding: utf8);
     if (result.exitCode != 0) {
       return deviceIds;
     }
 
+    String output = result.stdout as String;
+    // --machine doesn't currently prevent the tool from printing banners;
+    // see https://github.com/flutter/flutter/issues/86055. This workaround
+    // can be removed once that is fixed.
+    output = output.substring(output.indexOf('['));
+
     final List<Map<String, dynamic>> devices =
-        (jsonDecode(result.stdout as String) as List<dynamic>)
-            .cast<Map<String, dynamic>>();
+        (jsonDecode(output) as List<dynamic>).cast<Map<String, dynamic>>();
     for (final Map<String, dynamic> deviceInfo in devices) {
       final String targetPlatform =
           (deviceInfo['targetPlatform'] as String?) ?? '';
@@ -295,8 +300,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             '--target',
             p.relative(target.path, from: example.path),
           ],
-          workingDir: example,
-          exitOnError: true);
+          workingDir: example);
       if (exitCode != 0) {
         failures.add(target);
       }

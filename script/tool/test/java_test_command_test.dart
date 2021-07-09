@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -118,7 +120,7 @@ void main() {
     });
 
     test('fails when a test fails', () async {
-      createFakePlugin(
+      final Directory pluginDir = createFakePlugin(
         'plugin1',
         packagesDir,
         platformSupport: <String, PlatformSupport>{
@@ -130,10 +132,14 @@ void main() {
         ],
       );
 
-      // Simulate failure from `gradlew`.
-      final MockProcess mockDriveProcess = MockProcess();
-      mockDriveProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockDriveProcess;
+      final String gradlewPath = pluginDir
+          .childDirectory('example')
+          .childDirectory('android')
+          .childFile('gradlew')
+          .path;
+      processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
+        MockProcess.failing()
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(

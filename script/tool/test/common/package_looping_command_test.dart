@@ -56,6 +56,7 @@ void main() {
     bool failsDuringInit = false,
     bool warnsDuringInit = false,
     bool warnsDuringCleanup = false,
+    bool captureOutput = false,
     String? customFailureListHeader,
     String? customFailureListFooter,
   }) {
@@ -80,6 +81,7 @@ void main() {
       warnsDuringCleanup: warnsDuringCleanup,
       customFailureListHeader: customFailureListHeader,
       customFailureListFooter: customFailureListFooter,
+      captureOutput: captureOutput,
       gitDir: gitDir,
     );
   }
@@ -254,6 +256,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
+            '\n',
             '${_startErrorColor}The following packages had errors:$_endColor',
             '$_startErrorColor  package_b$_endColor',
             '$_startErrorColor  package_d$_endColor',
@@ -285,6 +288,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
+            '\n',
             '${_startErrorColor}This is a custom header$_endColor',
             '$_startErrorColor  package_b$_endColor',
             '$_startErrorColor  package_d$_endColor',
@@ -319,10 +323,33 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
+            '\n',
             '${_startErrorColor}The following packages had errors:$_endColor',
             '$_startErrorColor  package_b:\n    just one detail$_endColor',
             '$_startErrorColor  package_d:\n    first detail\n    second detail$_endColor',
             '${_startErrorColor}See above for full details.$_endColor',
+          ]));
+    });
+
+    test('is captured, not printed, when requested', () async {
+      createFakePlugin('package_a', packagesDir);
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: true, captureOutput: true);
+      final List<String> output = await runCommand(command);
+
+      expect(output, isEmpty);
+
+      // None of the output should be colorized when captured.
+      const String separator =
+          '============================================================';
+      expect(
+          command.capturedOutput,
+          containsAllInOrder(<String>[
+            '\n$separator\n|| Running for package_a\n$separator\n',
+            '\n$separator\n|| Running for package_b\n$separator\n',
+            'No issues found!',
           ]));
     });
 
@@ -522,11 +549,13 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     this.failsDuringInit = false,
     this.warnsDuringInit = false,
     this.warnsDuringCleanup = false,
+    this.captureOutput = false,
     ProcessRunner processRunner = const ProcessRunner(),
     GitDir? gitDir,
   }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
 
   final List<String> checkedPackages = <String>[];
+  final List<String> capturedOutput = <String>[];
 
   final String? customFailureListHeader;
   final String? customFailureListFooter;
@@ -548,6 +577,9 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   @override
   String get failureListFooter =>
       customFailureListFooter ?? super.failureListFooter;
+
+  @override
+  bool captureOutput;
 
   @override
   final String name = 'loop-test';
@@ -589,6 +621,11 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     if (warnsDuringInit) {
       logWarning('Warning during completeRun');
     }
+  }
+
+  @override
+  Future<void> handleCapturedOutput(List<String> output) async {
+    capturedOutput.addAll(output);
   }
 }
 
