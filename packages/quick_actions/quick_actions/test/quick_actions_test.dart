@@ -16,6 +16,11 @@ void main() {
       QuickActionsPlatform.instance = MockQuickActionsPlatform();
     });
 
+    test('constructor() should return valid QuickActions instance', () {
+      const QuickActions quickActions = QuickActions();
+      expect(quickActions, isNotNull);
+    });
+
     test('initialize() PlatformInterface', () async {
       const QuickActions quickActions = QuickActions();
       QuickActionHandler handler = (type) {};
