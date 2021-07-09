@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -147,7 +146,8 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     final List<String> errors = <String>[];
     for (final Directory example in getExamplesForPlugin(package)) {
       ++examplesFound;
-      final String exampleName = getRelativePosixPath(example, from: package);
+      final String exampleName =
+          getRelativePosixPath(example, from: packagesDir);
 
       final List<File> drivers = await _getDrivers(example);
       if (drivers.isEmpty) {

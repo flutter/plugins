@@ -5,7 +5,6 @@
 import 'dart:async';
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
 import 'common/core.dart';
