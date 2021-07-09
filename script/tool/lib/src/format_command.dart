@@ -52,7 +52,8 @@ class FormatCommand extends PluginCommand {
     // This class is not based on PackageLoopingCommand because running the
     // formatters separately for each package is an order of magnitude slower,
     // due to the startup overhead of the formatters.
-    final Iterable<String> files = await _getFilteredFilePaths(getFiles());
+    final Iterable<String> files =
+        await _getFilteredFilePaths(getFiles(), relativeTo: packagesDir);
     await _formatDart(files);
     await _formatJava(files, googleFormatterPath);
     await _formatCppAndObjectiveC(files);
@@ -166,7 +167,12 @@ class FormatCommand extends PluginCommand {
     }
   }
 
-  Future<Iterable<String>> _getFilteredFilePaths(Stream<File> files) async {
+  /// Given a stream of [files], returns the paths of any that are not in known
+  /// locations to ignore, relative to [relativeTo].
+  Future<Iterable<String>> _getFilteredFilePaths(
+    Stream<File> files, {
+    required Directory relativeTo,
+  }) async {
     // Returns a pattern to check for [directories] as a subset of a file path.
     RegExp pathFragmentForDirectories(List<String> directories) {
       String s = path.separator;
@@ -177,8 +183,10 @@ class FormatCommand extends PluginCommand {
       return RegExp('(?:^|$s)${path.joinAll(directories)}$s');
     }
 
+    final String fromPath = relativeTo.path;
+
     return files
-        .map((File file) => file.path)
+        .map((File file) => path.relative(file.path, from: fromPath))
         .where((String path) =>
             // Ignore files in build/ directories (e.g., headers of frameworks)
             // to avoid useless extra work in local repositories.

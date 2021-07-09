@@ -46,10 +46,14 @@ void main() {
     runner.addCommand(analyzeCommand);
   });
 
-  List<String> _getAbsolutePaths(
+  /// Returns a modified version of a list of [relativePaths] that are relative
+  /// to [package] to instead be relative to [packagesDir].
+  List<String> _getPackagesDirRelativePaths(
       Directory package, List<String> relativePaths) {
+    final String relativeBase =
+        path.relative(package.path, from: packagesDir.path);
     return relativePaths
-        .map((String relativePath) => path.join(package.path, relativePath))
+        .map((String relativePath) => path.join(relativeBase, relativePath))
         .toList();
   }
 
@@ -72,7 +76,10 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
               'flutter',
-              <String>['format', ..._getAbsolutePaths(pluginDir, files)],
+              <String>[
+                'format',
+                ..._getPackagesDirRelativePaths(pluginDir, files)
+              ],
               packagesDir.path),
         ]));
   });
@@ -124,7 +131,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getAbsolutePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(pluginDir, files)
               ],
               packagesDir.path),
         ]));
@@ -179,7 +186,7 @@ void main() {
               <String>[
                 '-i',
                 '--style=Google',
-                ..._getAbsolutePaths(pluginDir, files)
+                ..._getPackagesDirRelativePaths(pluginDir, files)
               ],
               packagesDir.path),
         ]));
@@ -246,12 +253,15 @@ void main() {
               <String>[
                 '-i',
                 '--style=Google',
-                ..._getAbsolutePaths(pluginDir, clangFiles)
+                ..._getPackagesDirRelativePaths(pluginDir, clangFiles)
               ],
               packagesDir.path),
           ProcessCall(
               'flutter',
-              <String>['format', ..._getAbsolutePaths(pluginDir, dartFiles)],
+              <String>[
+                'format',
+                ..._getPackagesDirRelativePaths(pluginDir, dartFiles)
+              ],
               packagesDir.path),
           ProcessCall(
               'java',
@@ -259,7 +269,7 @@ void main() {
                 '-jar',
                 javaFormatPath,
                 '--replace',
-                ..._getAbsolutePaths(pluginDir, javaFiles)
+                ..._getPackagesDirRelativePaths(pluginDir, javaFiles)
               ],
               packagesDir.path),
         ]));
