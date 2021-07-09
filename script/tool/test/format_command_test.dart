@@ -384,8 +384,8 @@ void main() {
     mockPlatform.isWindows = true;
 
     const String pluginName = 'a_plugin';
-    const int windowsCommandLineMax = 8191;
-    const int batchSize = windowsCommandLineMax ~/ 100;
+    // -1 since the command itself takes some length.
+    const int batchSize = (windowsCommandLineMax ~/ 100) - 1;
 
     // Make the file list one file longer than would fit in the batch.
     final List<String> batch1 =
@@ -418,8 +418,8 @@ void main() {
 
   test('Does not batch moderately long file lists on non-Windows', () async {
     const String pluginName = 'a_plugin';
-    const int windowsCommandLineMax = 8191;
-    const int batchSize = windowsCommandLineMax ~/ 100;
+    // -1 since the command itself takes some length.
+    const int batchSize = (windowsCommandLineMax ~/ 100) - 1;
 
     // Make the file list one file longer than would fit in a Windows batch.
     final List<String> batch =
@@ -439,10 +439,8 @@ void main() {
   test('Batches extremely long file lists on non-Windows', () async {
     const String pluginName = 'a_plugin';
     const int commandLineMax = 1000000;
-    // Since commandLineMax is evenly divisible, there's no remainder to
-    // absorb the length of the format command itself, so the maximum number of
-    // arguments is one less.
-    const int batchSize = (commandLineMax ~/ 100) - 1;
+    // -1 since the command itself takes some length.
+    const int batchSize = (nonWindowsCommandLineMax ~/ 100) - 1;
 
     // Make the file list one file longer than would fit in the batch.
     final List<String> batch1 =

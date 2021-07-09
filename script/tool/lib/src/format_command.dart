@@ -7,11 +7,25 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
 import 'common/process_runner.dart';
+
+/// In theory this should be 8191, but in practice that was still resulting in
+/// "The input line is too long" errors. This was chosen as a value that worked
+/// in practice in testing with flutter/plugins, but may need to be adjusted
+/// based on further experience.
+@visibleForTesting
+const int windowsCommandLineMax = 8000;
+
+/// This value is picked somewhat arbitrarily based on checking `ARG_MAX` on a
+/// macOS and Linux machine. If anyone encounters a lower limit in pratice, it
+/// can be lowered accordingly.
+@visibleForTesting
+const int nonWindowsCommandLineMax = 1000000;
 
 const int _exitClangFormatFailed = 3;
 const int _exitFlutterFormatFailed = 4;
@@ -220,10 +234,8 @@ class FormatCommand extends PluginCommand {
     List<String> arguments, {
     required Iterable<String> files,
   }) async {
-    // The non-Windows value here is picked somewhat arbitrarily based on
-    // checking `ARG_MAX` on a macOS and Linux machine. If anyone encounters
-    // a lower limit in pratice, it can be lowered accordingly.
-    final int commandLineMax = platform.isWindows ? 8191 : 1000000;
+    final int commandLineMax =
+        platform.isWindows ? windowsCommandLineMax : nonWindowsCommandLineMax;
 
     // Compute the max length of the file argument portion of a batch.
     // Add one to each argument's length for the space before it.
