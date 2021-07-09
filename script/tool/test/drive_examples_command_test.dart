@@ -22,18 +22,18 @@ const String _fakeAndroidDevice = 'emulator-1234';
 void main() {
   group('test drive_example_command', () {
     late FileSystem fileSystem;
+    late Platform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final DriveExamplesCommand command =
-          DriveExamplesCommand(packagesDir, processRunner: processRunner);
+      final DriveExamplesCommand command = DriveExamplesCommand(packagesDir,
+          processRunner: processRunner, platform: mockPlatform);
 
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
@@ -62,9 +62,9 @@ void main() {
 
       final MockProcess mockDevicesProcess = MockProcess.succeeding();
       mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
-      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
-        mockDevicesProcess
-      ];
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[mockDevicesProcess];
       processRunner.resultStdout = output;
     }
 
@@ -149,9 +149,9 @@ void main() {
 
     test('fails for iOS if getting devices fails', () async {
       // Simulate failure from `flutter devices`.
-      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
-        MockProcess.failing()
-      ];
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[MockProcess.failing()];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -218,10 +218,10 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -337,10 +337,10 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -352,7 +352,7 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -424,7 +424,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -497,7 +497,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -568,7 +568,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -642,7 +642,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -689,10 +689,10 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -734,8 +734,8 @@ void main() {
 
       // Output should be empty other than the device query.
       expect(processRunner.recordedCalls, <ProcessCall>[
-        ProcessCall(
-            flutterCommand, const <String>['devices', '--machine'], null),
+        ProcessCall(getFlutterCommand(mockPlatform),
+            const <String>['devices', '--machine'], null),
       ]);
     });
 
@@ -767,8 +767,8 @@ void main() {
 
       // Output should be empty other than the device query.
       expect(processRunner.recordedCalls, <ProcessCall>[
-        ProcessCall(
-            flutterCommand, const <String>['devices', '--machine'], null),
+        ProcessCall(getFlutterCommand(mockPlatform),
+            const <String>['devices', '--machine'], null),
       ]);
     });
 
@@ -821,10 +821,10 @@ void main() {
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -950,7 +950,9 @@ void main() {
       );
 
       // Simulate failure from `flutter drive`.
-      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[
         // No mock for 'devices', since it's running for macOS.
         MockProcess.failing(), // 'drive' #1
         MockProcess.failing(), // 'drive' #2
@@ -981,7 +983,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',
@@ -993,7 +995,7 @@ void main() {
                 ],
                 pluginExampleDirectory.path),
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'drive',
                   '-d',

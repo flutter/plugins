@@ -24,6 +24,11 @@ class MockPlatform extends Mock implements Platform {
 
   @override
   bool isWindows;
+
+  @override
+  Uri get script => isWindows
+      ? Uri.file(r'C:\foo\bar', windows: true)
+      : Uri.file('/foo/bar', windows: false);
 }
 
 class MockProcess extends Mock implements io.Process {

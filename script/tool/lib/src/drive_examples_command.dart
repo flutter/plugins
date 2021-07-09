@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file/file.dart';
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -21,7 +22,8 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   DriveExamplesCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag(kPlatformAndroid,
         help: 'Runs the Android implementation of the examples');
     argParser.addFlag(kPlatformIos,
