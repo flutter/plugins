@@ -16,16 +16,21 @@ import 'util.dart';
 
 void main() {
   late FileSystem fileSystem;
+  late MockPlatform mockPlatform;
   late Directory packagesDir;
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
+    mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = RecordingProcessRunner();
-    final AnalyzeCommand analyzeCommand =
-        AnalyzeCommand(packagesDir, processRunner: processRunner);
+    final AnalyzeCommand analyzeCommand = AnalyzeCommand(
+      packagesDir,
+      processRunner: processRunner,
+      platform: mockPlatform,
+    );
 
     runner = CommandRunner<void>('analyze_command', 'Test for analyze_command');
     runner.addCommand(analyzeCommand);

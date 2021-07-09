@@ -21,16 +21,21 @@ import 'util.dart';
 void main() {
   group('$PublishCheckProcessRunner tests', () {
     FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late PublishCheckProcessRunner processRunner;
     late CommandRunner<void> runner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = PublishCheckProcessRunner();
-      final PublishCheckCommand publishCheckCommand =
-          PublishCheckCommand(packagesDir, processRunner: processRunner);
+      final PublishCheckCommand publishCheckCommand = PublishCheckCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner = CommandRunner<void>(
         'publish_check_command',
@@ -339,12 +344,16 @@ void main() {
       });
       expect(hasError, isTrue);
 
-      expect(output.first, r'''
+      expect(output.first, contains(r'''
 {
   "status": "error",
   "humanMessage": [
     "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
-    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException: line 1, column 1: Not a map\n  ╷\n1 │ bad-yaml\n  │ ^^^^^^^^\n  ╵}",
+    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException:'''));
+      // This is split into two checks since the details of the YamlException
+      // aren't controlled by this package, so asserting its exact format would
+      // make the test fragile to irrelevant changes in those details.
+      expect(output.first, contains(r'''
     "no pubspec",
     "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "url https://pub.dev/packages/no_publish_b.json",
@@ -356,7 +365,7 @@ void main() {
     "  no_publish_a",
     "See above for full details."
   ]
-}''');
+}'''));
     });
   });
 }

@@ -16,6 +16,7 @@ import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -1091,7 +1092,7 @@ class TestProcessRunner extends ProcessRunner {
       {Directory? workingDirectory}) async {
     /// Never actually publish anything. Start is always and only used for this
     /// since it returns something we can route stdin through.
-    assert(executable == 'flutter' &&
+    assert(executable == getFlutterCommand(const LocalPlatform()) &&
         args.isNotEmpty &&
         args[0] == 'pub' &&
         args[1] == 'publish');

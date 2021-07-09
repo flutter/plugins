@@ -4,6 +4,7 @@
 
 import 'package:file/file.dart';
 import 'package:git/git.dart';
+import 'package:platform/platform.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/package_looping_command.dart';
@@ -19,8 +20,14 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   PubspecCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(
+          packagesDir,
+          processRunner: processRunner,
+          platform: platform,
+          gitDir: gitDir,
+        );
 
   // Section order for plugins. Because the 'flutter' section is critical
   // information for plugins, and usually small, it goes near the top unlike in

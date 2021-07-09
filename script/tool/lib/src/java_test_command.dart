@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -15,7 +15,8 @@ class JavaTestCommand extends PackageLoopingCommand {
   JavaTestCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner);
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform);
 
   static const String _gradleWrapper = 'gradlew';
 
@@ -50,7 +51,7 @@ class JavaTestCommand extends PackageLoopingCommand {
 
     final List<String> errors = <String>[];
     for (final Directory example in examplesWithTests) {
-      final String exampleName = p.relative(example.path, from: package.path);
+      final String exampleName = getRelativePosixPath(example, from: package);
       print('\nRUNNING JAVA TESTS for $exampleName');
 
       final Directory androidDirectory = example.childDirectory('android');

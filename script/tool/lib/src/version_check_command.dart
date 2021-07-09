@@ -7,6 +7,7 @@ import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -77,11 +78,17 @@ class VersionCheckCommand extends PackageLoopingCommand {
   VersionCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
     http.Client? httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
+        super(
+          packagesDir,
+          processRunner: processRunner,
+          platform: platform,
+          gitDir: gitDir,
+        ) {
     argParser.addFlag(
       _againstPubFlag,
       help: 'Whether the version check should run against the version on pub.\n'
@@ -179,8 +186,13 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     required GitVersionFinder gitVersionFinder,
   }) async {
     final File pubspecFile = package.childFile('pubspec.yaml');
-    return await gitVersionFinder.getPackageVersion(
-        p.relative(pubspecFile.absolute.path, from: (await gitDir).path));
+    final String relativePath =
+        path.relative(pubspecFile.absolute.path, from: (await gitDir).path);
+    // Use Posix-style paths for git.
+    final String gitPath = path.style == p.Style.windows
+        ? p.posix.joinAll(path.split(relativePath))
+        : relativePath;
+    return await gitVersionFinder.getPackageVersion(gitPath);
   }
 
   /// Returns true if the version of [package] is either unchanged relative to

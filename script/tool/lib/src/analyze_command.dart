@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -19,7 +19,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
   AnalyzeCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addMultiOption(_customAnalysisFlag,
         help:
             'Directories (comma separated) that are allowed to have their own analysis options.',
@@ -57,9 +58,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
       final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
           (String directory) =>
-              directory != null &&
               directory.isNotEmpty &&
-              p.isWithin(
+              path.isWithin(
                   packagesDir.childDirectory(directory).path, file.path));
       if (allowed) {
         continue;
@@ -90,7 +90,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
     });
     for (final Directory package in packageDirectories) {
       final int exitCode = await processRunner.runAndStream(
-          'flutter', <String>['packages', 'get'],
+          flutterCommand, <String>['packages', 'get'],
           workingDir: package);
       if (exitCode != 0) {
         return false;
@@ -109,7 +109,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
     // Use the Dart SDK override if one was passed in.
     final String? dartSdk = argResults![_analysisSdk] as String?;
-    _dartBinaryPath = dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
+    _dartBinaryPath =
+        dartSdk == null ? 'dart' : path.join(dartSdk, 'bin', 'dart');
   }
 
   @override

@@ -90,16 +90,18 @@ void main() {
 
   group('test xctest_command', () {
     late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform(isMacOS: true);
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final XCTestCommand command =
-          XCTestCommand(packagesDir, processRunner: processRunner);
+      final XCTestCommand command = XCTestCommand(packagesDir,
+          processRunner: processRunner, platform: mockPlatform);
 
       runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
