@@ -14,7 +14,7 @@ issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+
 # be done when absolutely necessary and after the ecosystem has already migrated to 1.X.Y version
 # that is forward compatible with 2.0.0 (ideally the ecosystem have migrated to depend on:
 # `plugin_platform_interface: >=1.X.Y <3.0.0`).
-version: 2.0.0
+version: 2.0.1
 
 environment:
   sdk: ">=2.12.0 <3.0.0"

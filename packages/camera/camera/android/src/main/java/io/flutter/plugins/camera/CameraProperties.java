@@ -124,7 +124,7 @@ public interface CameraProperties {
    *   <li>@see android.hardware.camera2.CameraMetadata.LENS_FACING_EXTERNAL
    * </ul>
    *
-   * By default maps to the @see android.hardware.camera2.CameraCharacteristics.LENS_FACING key.
+   * <p>By default maps to the @see android.hardware.camera2.CameraCharacteristics.LENS_FACING key.
    *
    * @return int Direction the camera faces relative to device screen.
    */
@@ -216,7 +216,7 @@ public interface CameraProperties {
    *   <li>@see android.hardware.camera2.CameraMetadata.INFO_SUPPORTED_HARDWARE_LEVEL_EXTERNAL
    * </ul>
    *
-   * By default maps to the @see
+   * <p>By default maps to the @see
    * android.hardware.camera2.CameraCharacteristics#INFO_SUPPORTED_HARDWARE_LEVEL key.
    *
    * @return int Level which generally classifies the overall set of the camera device
