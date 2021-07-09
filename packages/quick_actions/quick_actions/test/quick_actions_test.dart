@@ -17,7 +17,7 @@ void main() {
     });
 
     test('initialize() PlatformInterface', () async {
-      QuickActions quickActions = QuickActions();
+      const QuickActions quickActions = QuickActions();
       QuickActionHandler handler = (type) {};
 
       await quickActions.initialize(handler);
@@ -25,7 +25,7 @@ void main() {
     });
 
     test('setShortcutItems() PlatformInterface', () {
-      QuickActions quickActions = QuickActions();
+      const QuickActions quickActions = QuickActions();
       QuickActionHandler handler = (type) {};
       quickActions.initialize(handler);
       quickActions.setShortcutItems([]);
@@ -35,7 +35,7 @@ void main() {
     });
 
     test('clearShortcutItems() PlatformInterface', () {
-      QuickActions quickActions = QuickActions();
+      const QuickActions quickActions = QuickActions();
       QuickActionHandler handler = (type) {};
 
       quickActions.initialize(handler);

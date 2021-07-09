@@ -1,3 +1,7 @@
+## 0.6.0+3
+
+* make const constructor for QuickActions.
+
 ## 0.6.0+2
 
 * Migrate maven repository from jcenter to mavenCentral.
