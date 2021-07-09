@@ -208,9 +208,14 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       return deviceIds;
     }
 
+    String output = result.stdout as String;
+    // --machine doesn't currently prevent the tool from printing banners;
+    // see https://github.com/flutter/flutter/issues/86055. This workaround
+    // can be removed once that is fixed.
+    output = output.substring(output.indexOf('['));
+
     final List<Map<String, dynamic>> devices =
-        (jsonDecode(result.stdout as String) as List<dynamic>)
-            .cast<Map<String, dynamic>>();
+        (jsonDecode(output) as List<dynamic>).cast<Map<String, dynamic>>();
     for (final Map<String, dynamic> deviceInfo in devices) {
       final String targetPlatform =
           (deviceInfo['targetPlatform'] as String?) ?? '';
