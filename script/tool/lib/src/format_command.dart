@@ -8,7 +8,6 @@ import 'dart:io' as io;
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
 import 'package:platform/platform.dart';
-import 'package:quiver/iterables.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
@@ -114,18 +113,9 @@ class FormatCommand extends PluginCommand {
         files, <String>{'.h', '.m', '.mm', '.cc', '.cpp'});
     if (clangFiles.isNotEmpty) {
       print('Formatting .cc, .cpp, .h, .m, and .mm files...');
-      final Iterable<List<String>> batches = partition(clangFiles, 100);
-      int exitCode = 0;
-      for (final List<String> batch in batches) {
-        batch.sort(); // For ease of testing; partition changes the order.
-        exitCode = await processRunner.runAndStream(
-            getStringArg('clang-format'),
-            <String>['-i', '--style=Google', ...batch],
-            workingDir: packagesDir);
-        if (exitCode != 0) {
-          break;
-        }
-      }
+      final int exitCode = await runBatched(
+          getStringArg('clang-format'), <String>['-i', '--style=Google'],
+          files: clangFiles);
       if (exitCode != 0) {
         printError(
             'Failed to format C, C++, and Objective-C files: exit code $exitCode.');
@@ -140,9 +130,9 @@ class FormatCommand extends PluginCommand {
         _getPathsWithExtensions(files, <String>{'.java'});
     if (javaFiles.isNotEmpty) {
       print('Formatting .java files...');
-      final int exitCode = await processRunner.runAndStream('java',
-          <String>['-jar', googleFormatterPath, '--replace', ...javaFiles],
-          workingDir: packagesDir);
+      final int exitCode = await runBatched(
+          'java', <String>['-jar', googleFormatterPath, '--replace'],
+          files: javaFiles);
       if (exitCode != 0) {
         printError('Failed to format Java files: exit code $exitCode.');
         throw ToolExit(_exitJavaFormatFailed);
@@ -157,9 +147,8 @@ class FormatCommand extends PluginCommand {
       print('Formatting .dart files...');
       // `flutter format` doesn't require the project to actually be a Flutter
       // project.
-      final int exitCode = await processRunner.runAndStream(
-          flutterCommand, <String>['format', ...dartFiles],
-          workingDir: packagesDir);
+      final int exitCode = await runBatched(flutterCommand, <String>['format'],
+          files: dartFiles);
       if (exitCode != 0) {
         printError('Failed to format Dart files: exit code $exitCode.');
         throw ToolExit(_exitFlutterFormatFailed);
@@ -219,5 +208,53 @@ class FormatCommand extends PluginCommand {
     }
 
     return javaFormatterPath;
+  }
+
+  /// Runs [command] on [arguments] on all of the files in [files], batched as
+  /// necessary to avoid OS command-line length limits.
+  ///
+  /// Returns the exit code of the first failure, which stops the run, or 0
+  /// on success.
+  Future<int> runBatched(
+    String command,
+    List<String> arguments, {
+    required Iterable<String> files,
+  }) async {
+    // The non-Windows value here is picked somewhat arbitrarily based on
+    // checking `ARG_MAX` on a macOS and Linux machine. If anyone encounters
+    // a lower limit in pratice, it can be lowered accordingly.
+    final int commandLineMax = platform.isWindows ? 8191 : 1000000;
+
+    // Compute the max length of the file argument portion of a batch.
+    // Add one to each argument's length for the space before it.
+    final int argumentTotalLength =
+        arguments.fold(0, (int sum, String arg) => sum + arg.length + 1);
+    final int batchMaxTotalLength =
+        commandLineMax - command.length - argumentTotalLength;
+
+    // Divide the list into batches that don't exceed the length.
+    final List<List<String>> batches = <List<String>>[<String>[]];
+    int currentBatchTotalLength = 0;
+    for (final String file in files) {
+      final int length = file.length + 1 /* for the space */;
+      if (currentBatchTotalLength + length > batchMaxTotalLength) {
+        // Start a new batch.
+        batches.add(<String>[]);
+        currentBatchTotalLength = 0;
+      }
+      batches.last.add(file);
+      currentBatchTotalLength += length;
+    }
+
+    for (final List<String> batch in batches) {
+      batch.sort(); // For ease of testing.
+      final int exitCode = await processRunner.runAndStream(
+          command, <String>[...arguments, ...batch],
+          workingDir: packagesDir);
+      if (exitCode != 0) {
+        return exitCode;
+      }
+    }
+    return 0;
   }
 }

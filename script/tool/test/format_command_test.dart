@@ -19,8 +19,8 @@ void main() {
   late FileSystem fileSystem;
   late MockPlatform mockPlatform;
   late Directory packagesDir;
-  late p.Context path;
   late RecordingProcessRunner processRunner;
+  late FormatCommand analyzeCommand;
   late CommandRunner<void> runner;
   late String javaFormatPath;
 
@@ -29,7 +29,7 @@ void main() {
     mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = RecordingProcessRunner();
-    final FormatCommand analyzeCommand = FormatCommand(
+    analyzeCommand = FormatCommand(
       packagesDir,
       processRunner: processRunner,
       platform: mockPlatform,
@@ -37,7 +37,7 @@ void main() {
 
     // Create the java formatter file that the command checks for, to avoid
     // a download.
-    path = analyzeCommand.path;
+    final p.Context path = analyzeCommand.path;
     javaFormatPath = path.join(path.dirname(path.fromUri(mockPlatform.script)),
         'google-java-format-1.3-all-deps.jar');
     fileSystem.file(javaFormatPath).createSync(recursive: true);
@@ -50,11 +50,33 @@ void main() {
   /// to [package] to instead be relative to [packagesDir].
   List<String> _getPackagesDirRelativePaths(
       Directory package, List<String> relativePaths) {
+    final p.Context path = analyzeCommand.path;
     final String relativeBase =
         path.relative(package.path, from: packagesDir.path);
     return relativePaths
         .map((String relativePath) => path.join(relativeBase, relativePath))
         .toList();
+  }
+
+  /// Returns a list of [count] relative paths to pass to [createFakePlugin]
+  /// with name [pluginName] such that each path will be 99 characters long
+  /// relative to [packagesDir].
+  ///
+  /// This is for each of testing batching, since it means each file will
+  /// consume 100 characters of the batch length.
+  List<String> _get99CharacterPathExtraFiles(String pluginName, int count) {
+    final int padding = 99 -
+        pluginName.length -
+        1 - // the path separator after the plugin name
+        1 - // the path separator after the padding
+        10; // the file name
+    const int filenameBase = 10000;
+
+    final p.Context path = analyzeCommand.path;
+    return <String>[
+      for (int i = filenameBase; i < filenameBase + count; ++i)
+        path.join('a' * padding, '$i.dart'),
+    ];
   }
 
   test('formats .dart files', () async {
@@ -75,7 +97,7 @@ void main() {
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
           ProcessCall(
-              'flutter',
+              getFlutterCommand(mockPlatform),
               <String>[
                 'format',
                 ..._getPackagesDirRelativePaths(pluginDir, files)
@@ -92,9 +114,8 @@ void main() {
     ];
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
-    processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-      MockProcess.failing()
-    ];
+    processRunner.mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+        <io.Process>[MockProcess.failing()];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
         runner, <String>['format'], errorHandler: (Error e) {
@@ -257,7 +278,7 @@ void main() {
               ],
               packagesDir.path),
           ProcessCall(
-              'flutter',
+              getFlutterCommand(mockPlatform),
               <String>[
                 'format',
                 ..._getPackagesDirRelativePaths(pluginDir, dartFiles)
@@ -357,5 +378,98 @@ void main() {
           contains(changedFilePath),
           contains('Unable to determine diff.'),
         ]));
+  });
+
+  test('Batches moderately long file lists on Windows', () async {
+    mockPlatform.isWindows = true;
+
+    const String pluginName = 'a_plugin';
+    const int windowsCommandLineMax = 8191;
+    const int batchSize = windowsCommandLineMax ~/ 100;
+
+    // Make the file list one file longer than would fit in the batch.
+    final List<String> batch1 =
+        _get99CharacterPathExtraFiles(pluginName, batchSize + 1);
+    final String extraFile = batch1.removeLast();
+
+    createFakePlugin(
+      pluginName,
+      packagesDir,
+      extraFiles: <String>[...batch1, extraFile],
+    );
+
+    await runCapturingPrint(runner, <String>['format']);
+
+    // Ensure that it was batched...
+    expect(processRunner.recordedCalls.length, 2);
+    // ... and that the spillover into the second batch was only one file.
+    expect(
+        processRunner.recordedCalls,
+        contains(
+          ProcessCall(
+              getFlutterCommand(mockPlatform),
+              <String>[
+                'format',
+                '$pluginName\\$extraFile',
+              ],
+              packagesDir.path),
+        ));
+  });
+
+  test('Does not batch moderately long file lists on non-Windows', () async {
+    const String pluginName = 'a_plugin';
+    const int windowsCommandLineMax = 8191;
+    const int batchSize = windowsCommandLineMax ~/ 100;
+
+    // Make the file list one file longer than would fit in a Windows batch.
+    final List<String> batch =
+        _get99CharacterPathExtraFiles(pluginName, batchSize + 1);
+
+    createFakePlugin(
+      pluginName,
+      packagesDir,
+      extraFiles: batch,
+    );
+
+    await runCapturingPrint(runner, <String>['format']);
+
+    expect(processRunner.recordedCalls.length, 1);
+  });
+
+  test('Batches extremely long file lists on non-Windows', () async {
+    const String pluginName = 'a_plugin';
+    const int commandLineMax = 1000000;
+    // Since commandLineMax is evenly divisible, there's no remainder to
+    // absorb the length of the format command itself, so the maximum number of
+    // arguments is one less.
+    const int batchSize = (commandLineMax ~/ 100) - 1;
+
+    // Make the file list one file longer than would fit in the batch.
+    final List<String> batch1 =
+        _get99CharacterPathExtraFiles(pluginName, batchSize + 1);
+    final String extraFile = batch1.removeLast();
+
+    createFakePlugin(
+      pluginName,
+      packagesDir,
+      extraFiles: <String>[...batch1, extraFile],
+    );
+
+    await runCapturingPrint(runner, <String>['format']);
+
+    // Ensure that it was batched...
+    expect(processRunner.recordedCalls.length, 2);
+    // ... and that the spillover into the second batch was only one file.
+    expect(
+        processRunner.recordedCalls,
+        contains(
+          ProcessCall(
+              getFlutterCommand(mockPlatform),
+              <String>[
+                'format',
+                '$pluginName/$extraFile',
+              ],
+              packagesDir.path),
+        ));
   });
 }
