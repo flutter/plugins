@@ -8,11 +8,14 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/camera_web.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 import 'helpers/helpers.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('CameraPlugin', () {
     const cameraId = 0;
 
@@ -44,14 +47,14 @@ void main() {
       expect(CameraPlatform.instance, isA<CameraPlugin>());
     });
 
-    test('availableCameras throws UnimplementedError', () {
+    testWidgets('availableCameras throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.availableCameras(),
         throwsUnimplementedError,
       );
     });
 
-    test('createCamera throws UnimplementedError', () {
+    testWidgets('createCamera throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.createCamera(
           CameraDescription(
@@ -65,14 +68,15 @@ void main() {
       );
     });
 
-    test('initializeCamera throws UnimplementedError', () {
+    testWidgets('initializeCamera throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.initializeCamera(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('lockCaptureOrientation throws UnimplementedError', () {
+    testWidgets('lockCaptureOrientation throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.lockCaptureOrientation(
           cameraId,
@@ -82,56 +86,61 @@ void main() {
       );
     });
 
-    test('unlockCaptureOrientation throws UnimplementedError', () {
+    testWidgets('unlockCaptureOrientation throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.unlockCaptureOrientation(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('takePicture throws UnimplementedError', () {
+    testWidgets('takePicture throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.takePicture(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('prepareForVideoRecording throws UnimplementedError', () {
+    testWidgets('prepareForVideoRecording throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.prepareForVideoRecording(),
         throwsUnimplementedError,
       );
     });
 
-    test('startVideoRecording throws UnimplementedError', () {
+    testWidgets('startVideoRecording throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.startVideoRecording(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('stopVideoRecording throws UnimplementedError', () {
+    testWidgets('stopVideoRecording throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.stopVideoRecording(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('pauseVideoRecording throws UnimplementedError', () {
+    testWidgets('pauseVideoRecording throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.pauseVideoRecording(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('resumeVideoRecording throws UnimplementedError', () {
+    testWidgets('resumeVideoRecording throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.resumeVideoRecording(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('setFlashMode throws UnimplementedError', () {
+    testWidgets('setFlashMode throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setFlashMode(
           cameraId,
@@ -141,7 +150,7 @@ void main() {
       );
     });
 
-    test('setExposureMode throws UnimplementedError', () {
+    testWidgets('setExposureMode throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setExposureMode(
           cameraId,
@@ -151,7 +160,7 @@ void main() {
       );
     });
 
-    test('setExposurePoint throws UnimplementedError', () {
+    testWidgets('setExposurePoint throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setExposurePoint(
           cameraId,
@@ -161,28 +170,31 @@ void main() {
       );
     });
 
-    test('getMinExposureOffset throws UnimplementedError', () {
+    testWidgets('getMinExposureOffset throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.getMinExposureOffset(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('getMaxExposureOffset throws UnimplementedError', () {
+    testWidgets('getMaxExposureOffset throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.getMaxExposureOffset(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('getExposureOffsetStepSize throws UnimplementedError', () {
+    testWidgets('getExposureOffsetStepSize throws UnimplementedError',
+        (tester) async {
       expect(
         () => CameraPlatform.instance.getExposureOffsetStepSize(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('setExposureOffset throws UnimplementedError', () {
+    testWidgets('setExposureOffset throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setExposureOffset(
           cameraId,
@@ -192,7 +204,7 @@ void main() {
       );
     });
 
-    test('setFocusMode throws UnimplementedError', () {
+    testWidgets('setFocusMode throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setFocusMode(
           cameraId,
@@ -202,7 +214,7 @@ void main() {
       );
     });
 
-    test('setFocusPoint throws UnimplementedError', () {
+    testWidgets('setFocusPoint throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setFocusPoint(
           cameraId,
@@ -212,21 +224,21 @@ void main() {
       );
     });
 
-    test('getMaxZoomLevel throws UnimplementedError', () {
+    testWidgets('getMaxZoomLevel throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.getMaxZoomLevel(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('getMinZoomLevel throws UnimplementedError', () {
+    testWidgets('getMinZoomLevel throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.getMinZoomLevel(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('setZoomLevel throws UnimplementedError', () {
+    testWidgets('setZoomLevel throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.setZoomLevel(
           cameraId,
@@ -236,14 +248,14 @@ void main() {
       );
     });
 
-    test('buildPreview throws UnimplementedError', () {
+    testWidgets('buildPreview throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.buildPreview(cameraId),
         throwsUnimplementedError,
       );
     });
 
-    test('dispose throws UnimplementedError', () {
+    testWidgets('dispose throws UnimplementedError', (tester) async {
       expect(
         () => CameraPlatform.instance.dispose(cameraId),
         throwsUnimplementedError,
@@ -251,42 +263,46 @@ void main() {
     });
 
     group('events', () {
-      test('onCameraInitialized throws UnimplementedError', () {
+      testWidgets('onCameraInitialized throws UnimplementedError',
+          (tester) async {
         expect(
           () => CameraPlatform.instance.onCameraInitialized(cameraId),
           throwsUnimplementedError,
         );
       });
 
-      test('onCameraResolutionChanged throws UnimplementedError', () {
+      testWidgets('onCameraResolutionChanged throws UnimplementedError',
+          (tester) async {
         expect(
           () => CameraPlatform.instance.onCameraResolutionChanged(cameraId),
           throwsUnimplementedError,
         );
       });
 
-      test('onCameraClosing throws UnimplementedError', () {
+      testWidgets('onCameraClosing throws UnimplementedError', (tester) async {
         expect(
           () => CameraPlatform.instance.onCameraClosing(cameraId),
           throwsUnimplementedError,
         );
       });
 
-      test('onCameraError throws UnimplementedError', () {
+      testWidgets('onCameraError throws UnimplementedError', (tester) async {
         expect(
           () => CameraPlatform.instance.onCameraError(cameraId),
           throwsUnimplementedError,
         );
       });
 
-      test('onVideoRecordedEvent throws UnimplementedError', () {
+      testWidgets('onVideoRecordedEvent throws UnimplementedError',
+          (tester) async {
         expect(
           () => CameraPlatform.instance.onVideoRecordedEvent(cameraId),
           throwsUnimplementedError,
         );
       });
 
-      test('onDeviceOrientationChanged throws UnimplementedError', () {
+      testWidgets('onDeviceOrientationChanged throws UnimplementedError',
+          (tester) async {
         expect(
           () => CameraPlatform.instance.onDeviceOrientationChanged(),
           throwsUnimplementedError,
