@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -32,7 +32,8 @@ class XCTestCommand extends PackageLoopingCommand {
   XCTestCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       _kiOSDestination,
       help:
@@ -86,42 +87,63 @@ class XCTestCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    final List<String> failures = <String>[];
-    final bool testIos = getBoolArg(kPlatformIos);
-    final bool testMacos = getBoolArg(kPlatformMacos);
-    // Only provide the failing platform(s) in the summary if testing multiple
-    // platforms, otherwise it's just noise.
-    final bool provideErrorDetails = testIos && testMacos;
+  Future<PackageResult> runForPackage(Directory package) async {
+    final bool testIos = getBoolArg(kPlatformIos) &&
+        pluginSupportsPlatform(kPlatformIos, package,
+            requiredMode: PlatformSupport.inline);
+    final bool testMacos = getBoolArg(kPlatformMacos) &&
+        pluginSupportsPlatform(kPlatformMacos, package,
+            requiredMode: PlatformSupport.inline);
 
+    final bool multiplePlatformsRequested =
+        getBoolArg(kPlatformIos) && getBoolArg(kPlatformMacos);
+    if (!(testIos || testMacos)) {
+      String description;
+      if (multiplePlatformsRequested) {
+        description = 'Neither iOS nor macOS is';
+      } else if (getBoolArg(kPlatformIos)) {
+        description = 'iOS is not';
+      } else {
+        description = 'macOS is not';
+      }
+      return PackageResult.skip(
+          '$description implemented by this plugin package.');
+    }
+
+    if (multiplePlatformsRequested && (!testIos || !testMacos)) {
+      print('Only running for ${testIos ? 'iOS' : 'macOS'}\n');
+    }
+
+    final List<String> failures = <String>[];
     if (testIos &&
         !await _testPlugin(package, 'iOS',
             extraXcrunFlags: _iosDestinationFlags)) {
-      failures.add(provideErrorDetails ? 'iOS' : '');
+      failures.add('iOS');
     }
     if (testMacos && !await _testPlugin(package, 'macOS')) {
-      failures.add(provideErrorDetails ? 'macOS' : '');
+      failures.add('macOS');
     }
-    return failures;
+
+    // Only provide the failing platform in the failure details if testing
+    // multiple platforms, otherwise it's just noise.
+    return failures.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(
+            multiplePlatformsRequested ? failures : <String>[]);
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
-  /// success if the tests passed (or did not exist).
+  /// success if the tests passed.
   Future<bool> _testPlugin(
     Directory plugin,
     String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
-    if (!pluginSupportsPlatform(platform.toLowerCase(), plugin,
-        requiredMode: PlatformSupport.inline)) {
-      printSkip('$platform is not implemented by this plugin package.\n');
-      return true;
-    }
     bool passing = true;
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
-          p.relative(example.path, from: plugin.parent.path);
+          getRelativePosixPath(example, from: plugin.parent);
       print('Running $platform tests and analyzer for $examplePath...');
       int exitCode =
           await _runTests(true, example, platform, extraFlags: extraXcrunFlags);
@@ -163,7 +185,7 @@ class XCTestCommand extends PackageLoopingCommand {
         '$_kXCRunCommand ${xctestArgs.join(' ')}';
     print(completeTestCommand);
     return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
-        workingDir: example, exitOnError: false);
+        workingDir: example);
   }
 
   Future<String?> _findAvailableIphoneSimulator() async {

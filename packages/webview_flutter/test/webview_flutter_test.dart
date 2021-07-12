@@ -1019,7 +1019,8 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
-    ServicesBinding.instance!.defaultBinaryMessenger
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
         .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 
@@ -1038,7 +1039,8 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    ServicesBinding.instance!.defaultBinaryMessenger
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
         .handlePlatformMessage(channel.name, data, (ByteData? data) {
       final bool allow = codec.decodeEnvelope(data!);
       if (allow) {
@@ -1055,11 +1057,13 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-      channel.name,
-      data,
-      (ByteData? data) {},
-    );
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+          channel.name,
+          data,
+          (ByteData? data) {},
+        );
   }
 
   void fakeOnPageFinishedCallback() {
@@ -1070,11 +1074,13 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-      channel.name,
-      data,
-      (ByteData? data) {},
-    );
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+          channel.name,
+          data,
+          (ByteData? data) {},
+        );
   }
 
   void fakeOnProgressCallback(int progress) {
@@ -1085,7 +1091,8 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'progress': progress},
     ));
 
-    ServicesBinding.instance!.defaultBinaryMessenger
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
         .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 
@@ -1244,3 +1251,10 @@ class MatchesCreationParams extends Matcher {
             .matches(creationParams.javascriptChannelNames, matchState);
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

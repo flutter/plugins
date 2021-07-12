@@ -3,6 +3,13 @@
 - Modified the output format of many commands
 - **Breaking change**: `firebase-test-lab` no longer supports `*_e2e.dart`
   files, only `integration_test/*_test.dart`.
+- Add a summary to the end of successful command runs for commands using the
+  new output format.
+- Fixed some cases where a failure in a command for a single package would
+  immediately abort the test.
+- Deprecated `--plugins` in favor of new `--packages`. `--plugins` continues to
+  work for now, but will be removed in the future.
+- Make `drive-examples` device detection robust against Flutter tool banners.
 
 ## 0.3.0
 
