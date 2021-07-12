@@ -28,6 +28,7 @@ import org.mockito.stubbing.Answer;
 
 public class CameraRegionUtilsTest {
 
+  private MockedStatic<CameraRegionUtils.MeteringRectangleFactory> mockedMeteringRectangleFactory;
   Size mockCameraBoundaries;
 
   @Before
@@ -273,52 +274,8 @@ public class CameraRegionUtilsTest {
 
   @Test
   public void convertPointToMeteringRectangle_should_return_valid_MeteringRectangle() {
-    try (MockedStatic<CameraRegionUtils.MeteringRectangleFactory> mockedMeteringRectangleFactory =
-        mockStatic(CameraRegionUtils.MeteringRectangleFactory.class)) {
-
-      mockedMeteringRectangleFactory
-          .when(
-              () ->
-                  CameraRegionUtils.MeteringRectangleFactory.create(
-                      anyInt(), anyInt(), anyInt(), anyInt(), anyInt()))
-          .thenAnswer(
-              new Answer<MeteringRectangle>() {
-                @Override
-                public MeteringRectangle answer(InvocationOnMock createInvocation)
-                    throws Throwable {
-                  MeteringRectangle mockMeteringRectangle = mock(MeteringRectangle.class);
-                  when(mockMeteringRectangle.getX()).thenReturn(createInvocation.getArgument(0));
-                  when(mockMeteringRectangle.getY()).thenReturn(createInvocation.getArgument(1));
-                  when(mockMeteringRectangle.getWidth())
-                      .thenReturn(createInvocation.getArgument(2));
-                  when(mockMeteringRectangle.getHeight())
-                      .thenReturn(createInvocation.getArgument(3));
-                  when(mockMeteringRectangle.getMeteringWeight())
-                      .thenReturn(createInvocation.getArgument(4));
-                  when(mockMeteringRectangle.equals(any()))
-                      .thenAnswer(
-                          new Answer<Boolean>() {
-                            @Override
-                            public Boolean answer(InvocationOnMock equalsInvocation)
-                                throws Throwable {
-                              MeteringRectangle otherMockMeteringRectangle =
-                                  equalsInvocation.getArgument(0);
-                              return mockMeteringRectangle.getX()
-                                      == otherMockMeteringRectangle.getX()
-                                  && mockMeteringRectangle.getY()
-                                      == otherMockMeteringRectangle.getY()
-                                  && mockMeteringRectangle.getWidth()
-                                      == otherMockMeteringRectangle.getWidth()
-                                  && mockMeteringRectangle.getHeight()
-                                      == otherMockMeteringRectangle.getHeight()
-                                  && mockMeteringRectangle.getMeteringWeight()
-                                      == otherMockMeteringRectangle.getMeteringWeight();
-                            }
-                          });
-                  return mockMeteringRectangle;
-                }
-              });
-
+    setUpTestMeteringRectangleFactory();
+    try {
       MeteringRectangle r;
       // Center
       r =
@@ -364,6 +321,40 @@ public class CameraRegionUtilsTest {
               0.0,
               PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 0, 10, 10, 1).equals(r));
+    } finally {
+      tearDownTestMeteringRectangleFactory();
+    }
+  }
+
+  @Test()
+  public void
+      convertPointToMeteringRectangle_should_rotate_metering_rectangle_according_to_ui_orientation() {
+    setUpTestMeteringRectangleFactory();
+    try {
+      MeteringRectangle r;
+      // PORTRAIT_UP
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
+      assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 0, 10, 10, 1).equals(r));
+      // PORTRAIT_DOWN
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.PORTRAIT_DOWN);
+      assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 89, 10, 10, 1).equals(r));
+      // PORTRAIT_UP
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT);
+      assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 0, 10, 10, 1).equals(r));
+      // LANDSCAPE_LEFT (no rotation)
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
+      assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 89, 10, 10, 1).equals(r));
+
+    } finally {
+      tearDownTestMeteringRectangleFactory();
     }
   }
 
@@ -387,5 +378,51 @@ public class CameraRegionUtilsTest {
 
   private static void updateSdkVersion(int version) {
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", version);
+  }
+
+  private void tearDownTestMeteringRectangleFactory() {
+    mockedMeteringRectangleFactory.close();
+  }
+
+  private void setUpTestMeteringRectangleFactory() {
+    mockedMeteringRectangleFactory = mockStatic(CameraRegionUtils.MeteringRectangleFactory.class);
+
+    mockedMeteringRectangleFactory
+        .when(
+            () ->
+                CameraRegionUtils.MeteringRectangleFactory.create(
+                    anyInt(), anyInt(), anyInt(), anyInt(), anyInt()))
+        .thenAnswer(
+            new Answer<MeteringRectangle>() {
+              @Override
+              public MeteringRectangle answer(InvocationOnMock createInvocation) throws Throwable {
+                MeteringRectangle mockMeteringRectangle = mock(MeteringRectangle.class);
+                when(mockMeteringRectangle.getX()).thenReturn(createInvocation.getArgument(0));
+                when(mockMeteringRectangle.getY()).thenReturn(createInvocation.getArgument(1));
+                when(mockMeteringRectangle.getWidth()).thenReturn(createInvocation.getArgument(2));
+                when(mockMeteringRectangle.getHeight()).thenReturn(createInvocation.getArgument(3));
+                when(mockMeteringRectangle.getMeteringWeight())
+                    .thenReturn(createInvocation.getArgument(4));
+                when(mockMeteringRectangle.equals(any()))
+                    .thenAnswer(
+                        new Answer<Boolean>() {
+                          @Override
+                          public Boolean answer(InvocationOnMock equalsInvocation)
+                              throws Throwable {
+                            MeteringRectangle otherMockMeteringRectangle =
+                                equalsInvocation.getArgument(0);
+                            return mockMeteringRectangle.getX() == otherMockMeteringRectangle.getX()
+                                && mockMeteringRectangle.getY() == otherMockMeteringRectangle.getY()
+                                && mockMeteringRectangle.getWidth()
+                                    == otherMockMeteringRectangle.getWidth()
+                                && mockMeteringRectangle.getHeight()
+                                    == otherMockMeteringRectangle.getHeight()
+                                && mockMeteringRectangle.getMeteringWeight()
+                                    == otherMockMeteringRectangle.getMeteringWeight();
+                          }
+                        });
+                return mockMeteringRectangle;
+              }
+            });
   }
 }
