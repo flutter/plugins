@@ -18,6 +18,7 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.os.Build;
 import android.util.Size;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.utils.TestUtils;
 import org.junit.Before;
 import org.junit.Test;
@@ -248,22 +249,26 @@ public class CameraRegionUtilsTest {
 
   @Test(expected = AssertionError.class)
   public void convertPointToMeteringRectangle_should_throw_for_x_upper_bound() {
-    CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 1.5, 0);
+    CameraRegionUtils.convertPointToMeteringRectangle(
+        this.mockCameraBoundaries, 1.5, 0, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
   public void convertPointToMeteringRectangle_should_throw_for_x_lower_bound() {
-    CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, -0.5, 0);
+    CameraRegionUtils.convertPointToMeteringRectangle(
+        this.mockCameraBoundaries, -0.5, 0, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
   public void convertPointToMeteringRectangle_should_throw_for_y_upper_bound() {
-    CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0, 1.5);
+    CameraRegionUtils.convertPointToMeteringRectangle(
+        this.mockCameraBoundaries, 0, 1.5, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
   public void convertPointToMeteringRectangle_should_throw_for_y_lower_bound() {
-    CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0, -0.5);
+    CameraRegionUtils.convertPointToMeteringRectangle(
+        this.mockCameraBoundaries, 0, -0.5, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test
@@ -316,23 +321,48 @@ public class CameraRegionUtilsTest {
 
       MeteringRectangle r;
       // Center
-      r = CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0.5, 0.5);
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries,
+              0.5,
+              0.5,
+              PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(45, 45, 10, 10, 1).equals(r));
 
       // Top left
-      r = CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0.0, 0.0);
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries,
+              0.0,
+              0.0,
+              PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 0, 10, 10, 1).equals(r));
 
       // Bottom right
-      r = CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 1.0, 1.0);
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries,
+              1.0,
+              1.0,
+              PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 89, 10, 10, 1).equals(r));
 
       // Top left
-      r = CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0.0, 1.0);
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries,
+              0.0,
+              1.0,
+              PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 89, 10, 10, 1).equals(r));
 
       // Top right
-      r = CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 1.0, 0.0);
+      r =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.mockCameraBoundaries,
+              1.0,
+              0.0,
+              PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 0, 10, 10, 1).equals(r));
     }
   }
@@ -342,7 +372,8 @@ public class CameraRegionUtilsTest {
     Size mockCameraBoundaries = mock(Size.class);
     when(mockCameraBoundaries.getWidth()).thenReturn(0);
     when(mockCameraBoundaries.getHeight()).thenReturn(50);
-    CameraRegionUtils.convertPointToMeteringRectangle(mockCameraBoundaries, 0, -0.5);
+    CameraRegionUtils.convertPointToMeteringRectangle(
+        mockCameraBoundaries, 0, -0.5, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
@@ -350,7 +381,8 @@ public class CameraRegionUtilsTest {
     Size mockCameraBoundaries = mock(Size.class);
     when(mockCameraBoundaries.getWidth()).thenReturn(50);
     when(mockCameraBoundaries.getHeight()).thenReturn(0);
-    CameraRegionUtils.convertPointToMeteringRectangle(this.mockCameraBoundaries, 0, -0.5);
+    CameraRegionUtils.convertPointToMeteringRectangle(
+        this.mockCameraBoundaries, 0, -0.5, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   private static void updateSdkVersion(int version) {

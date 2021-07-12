@@ -5,8 +5,6 @@
 package io.flutter.plugins.camera.features;
 
 import android.app.Activity;
-import android.hardware.Sensor;
-
 import androidx.annotation.NonNull;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.DartMessenger;
@@ -90,7 +88,9 @@ public interface CameraFeatureFactory {
    *     information about the sensor and device orientation.
    * @return newly created instance of the FocusPointFeature class.
    */
-  FocusPointFeature createFocusPointFeature(@NonNull CameraProperties cameraProperties, @NonNull SensorOrientationFeature sensorOrientationFeature);
+  FocusPointFeature createFocusPointFeature(
+      @NonNull CameraProperties cameraProperties,
+      @NonNull SensorOrientationFeature sensorOrientationFeature);
 
   /**
    * Creates a new instance of the FPS range feature.
@@ -130,11 +130,13 @@ public interface CameraFeatureFactory {
    *
    * @param cameraProperties instance of the CameraProperties class containing information about the
    *     cameras features.
-   * @param sensorOrientationFeature instance of the SensorOrientationFeature class containing 
+   * @param sensorOrientationFeature instance of the SensorOrientationFeature class containing
    *     information about the sensor and device orientation.
    * @return newly created instance of the ExposurePointFeature class.
    */
-  ExposurePointFeature createExposurePointFeature(@NonNull CameraProperties cameraProperties, @NonNull SensorOrientationFeature sensorOrientationFeature);
+  ExposurePointFeature createExposurePointFeature(
+      @NonNull CameraProperties cameraProperties,
+      @NonNull SensorOrientationFeature sensorOrientationFeature);
 
   /**
    * Creates a new instance of the noise reduction feature.

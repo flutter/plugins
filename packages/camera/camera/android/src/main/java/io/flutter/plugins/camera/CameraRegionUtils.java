@@ -8,13 +8,11 @@ import android.annotation.TargetApi;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.os.Build;
-import android.util.Log;
 import android.util.Size;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
-import java.util.Arrays;
-
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import java.util.Arrays;
 
 /**
  * Utility class offering functions to calculate values regarding the camera boundaries.
@@ -72,13 +70,16 @@ public final class CameraRegionUtils {
    *     boundaries.
    */
   public static MeteringRectangle convertPointToMeteringRectangle(
-          @NonNull Size boundaries, double x, double y, @NonNull PlatformChannel.DeviceOrientation orientation) {
+      @NonNull Size boundaries,
+      double x,
+      double y,
+      @NonNull PlatformChannel.DeviceOrientation orientation) {
     assert (boundaries.getWidth() > 0 && boundaries.getHeight() > 0);
     assert (x >= 0 && x <= 1);
     assert (y >= 0 && y <= 1);
     // Rotate the coordinates to match the device orientation
     double oldX = x, oldY = y;
-    switch(orientation) {
+    switch (orientation) {
       case PORTRAIT_UP: // 90 ccw
         y = 1 - oldX;
         x = oldY;
@@ -88,7 +89,7 @@ public final class CameraRegionUtils {
         y = oldX;
         break;
       case LANDSCAPE_LEFT:
-          // No rotation required
+        // No rotation required
         break;
       case LANDSCAPE_RIGHT: // 180
         x = 1 - x;

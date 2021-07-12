@@ -162,12 +162,10 @@ public class DeviceOrientationManagerTest {
     DeviceOrientation previousOrientation = DeviceOrientation.PORTRAIT_UP;
     DeviceOrientation newOrientation = DeviceOrientation.LANDSCAPE_LEFT;
 
-    DeviceOrientation orientation =
-        DeviceOrientationManager.handleOrientationChange(
-            newOrientation, previousOrientation, mockDartMessenger);
+    DeviceOrientationManager.handleOrientationChange(
+        newOrientation, previousOrientation, mockDartMessenger);
 
     verify(mockDartMessenger, times(1)).sendDeviceUIOrientationChangeEvent(newOrientation);
-    assertEquals(newOrientation, orientation);
   }
 
   @Test
@@ -175,12 +173,10 @@ public class DeviceOrientationManagerTest {
     DeviceOrientation previousOrientation = DeviceOrientation.PORTRAIT_UP;
     DeviceOrientation newOrientation = DeviceOrientation.PORTRAIT_UP;
 
-    DeviceOrientation orientation =
-        DeviceOrientationManager.handleOrientationChange(
-            newOrientation, previousOrientation, mockDartMessenger);
+    DeviceOrientationManager.handleOrientationChange(
+        newOrientation, previousOrientation, mockDartMessenger);
 
     verify(mockDartMessenger, never()).sendDeviceUIOrientationChangeEvent(any());
-    assertEquals(newOrientation, orientation);
   }
 
   @Test

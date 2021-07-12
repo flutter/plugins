@@ -6,6 +6,7 @@ package io.flutter.plugins.camera;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -20,6 +21,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
 import io.flutter.plugins.camera.features.Point;
 import io.flutter.plugins.camera.features.autofocus.AutoFocusFeature;
+import io.flutter.plugins.camera.features.autofocus.FocusMode;
 import io.flutter.plugins.camera.features.exposurelock.ExposureLockFeature;
 import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
 import io.flutter.plugins.camera.features.exposureoffset.ExposureOffsetFeature;
@@ -81,6 +83,9 @@ public class CameraTest {
     final boolean enableAudio = false;
 
     when(mockCameraProperties.getCameraName()).thenReturn(cameraName);
+    SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
+    when(mockCameraFeatureFactory.createSensorOrientationFeature(any(), any(), any()))
+        .thenReturn(mockSensorOrientationFeature);
 
     Camera camera =
         new Camera(
@@ -92,18 +97,20 @@ public class CameraTest {
             resolutionPreset,
             enableAudio);
 
+    verify(mockCameraFeatureFactory, times(1))
+        .createSensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
     verify(mockCameraFeatureFactory, times(1)).createAutoFocusFeature(mockCameraProperties, false);
     verify(mockCameraFeatureFactory, times(1)).createExposureLockFeature(mockCameraProperties);
-    verify(mockCameraFeatureFactory, times(1)).createExposurePointFeature(eq(mockCameraProperties));
+    verify(mockCameraFeatureFactory, times(1))
+        .createExposurePointFeature(eq(mockCameraProperties), eq(mockSensorOrientationFeature));
     verify(mockCameraFeatureFactory, times(1)).createExposureOffsetFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, times(1)).createFlashFeature(mockCameraProperties);
-    verify(mockCameraFeatureFactory, times(1)).createFocusPointFeature(eq(mockCameraProperties));
+    verify(mockCameraFeatureFactory, times(1))
+        .createFocusPointFeature(eq(mockCameraProperties), eq(mockSensorOrientationFeature));
     verify(mockCameraFeatureFactory, times(1)).createFpsRangeFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, times(1)).createNoiseReductionFeature(mockCameraProperties);
     verify(mockCameraFeatureFactory, times(1))
         .createResolutionFeature(mockCameraProperties, resolutionPreset, cameraName);
-    verify(mockCameraFeatureFactory, times(1))
-        .createSensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
     verify(mockCameraFeatureFactory, times(1)).createZoomLevelFeature(mockCameraProperties);
     assertNotNull("should create a camera", camera);
   }
@@ -222,8 +229,10 @@ public class CameraTest {
 
   @Test
   public void setExposurePoint_Should_update_exposure_point_feature_and_update_builder() {
+    SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
     ExposurePointFeature mockExposurePointFeature =
-        mockCameraFeatureFactory.createExposurePointFeature(mockCameraProperties);
+        mockCameraFeatureFactory.createExposurePointFeature(
+            mockCameraProperties, mockSensorOrientationFeature);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     Point point = new Point(42d, 42d);
 
@@ -248,10 +257,15 @@ public class CameraTest {
 
   @Test
   public void setFocusPoint_Should_update_focus_point_feature_and_update_builder() {
+    SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
     FocusPointFeature mockFocusPointFeature =
-        mockCameraFeatureFactory.createFocusPointFeature(mockCameraProperties);
+        mockCameraFeatureFactory.createFocusPointFeature(
+            mockCameraProperties, mockSensorOrientationFeature);
+    AutoFocusFeature mockAutoFocusFeature =
+        mockCameraFeatureFactory.createAutoFocusFeature(mockCameraProperties, false);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
     Point point = new Point(42d, 42d);
+    when(mockAutoFocusFeature.getValue()).thenReturn(FocusMode.auto);
 
     camera.setFocusPoint(mockResult, point);
 
@@ -336,7 +350,9 @@ public class CameraTest {
     }
 
     @Override
-    public FocusPointFeature createFocusPointFeature(@NonNull CameraProperties cameraProperties) {
+    public FocusPointFeature createFocusPointFeature(
+        @NonNull CameraProperties cameraProperties,
+        @NonNull SensorOrientationFeature sensorOrientationFeature) {
       return mockFocusPointFeature;
     }
 
@@ -360,7 +376,8 @@ public class CameraTest {
 
     @Override
     public ExposurePointFeature createExposurePointFeature(
-        @NonNull CameraProperties cameraProperties) {
+        @NonNull CameraProperties cameraProperties,
+        @NonNull SensorOrientationFeature sensorOrientationFeature) {
       return mockExposurePointFeature;
     }
 

@@ -198,11 +198,13 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         cameraFeatureFactory.createExposureLockFeature(cameraProperties));
     this.cameraFeatures.setExposureOffset(
         cameraFeatureFactory.createExposureOffsetFeature(cameraProperties));
-    SensorOrientationFeature sensorOrientationFeature = cameraFeatureFactory.createSensorOrientationFeature(
+    SensorOrientationFeature sensorOrientationFeature =
+        cameraFeatureFactory.createSensorOrientationFeature(
             cameraProperties, activity, dartMessenger);
     this.cameraFeatures.setSensorOrientation(sensorOrientationFeature);
     this.cameraFeatures.setExposurePoint(
-        cameraFeatureFactory.createExposurePointFeature(cameraProperties, sensorOrientationFeature));
+        cameraFeatureFactory.createExposurePointFeature(
+            cameraProperties, sensorOrientationFeature));
     this.cameraFeatures.setFlash(cameraFeatureFactory.createFlashFeature(cameraProperties));
     this.cameraFeatures.setFocusPoint(
         cameraFeatureFactory.createFocusPointFeature(cameraProperties, sensorOrientationFeature));
@@ -212,7 +214,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     this.cameraFeatures.setResolution(
         cameraFeatureFactory.createResolutionFeature(
             cameraProperties, resolutionPreset, cameraProperties.getCameraName()));
-    
+
     this.cameraFeatures.setZoomLevel(cameraFeatureFactory.createZoomLevelFeature(cameraProperties));
 
     // Create capture callback
@@ -912,7 +914,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
               previewRequestBuilder.build(), null, backgroundHandler);
         } catch (CameraAccessException e) {
           if (result != null) {
-              result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+            result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
           }
         }
         break;
