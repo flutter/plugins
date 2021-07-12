@@ -277,20 +277,9 @@ class FormatCommand extends PluginCommand {
     final int batchMaxTotalLength =
         commandLineMax - command.length - argumentTotalLength;
 
-    // Divide the list into batches that don't exceed the length.
-    final List<List<String>> batches = <List<String>>[<String>[]];
-    int currentBatchTotalLength = 0;
-    for (final String file in files) {
-      final int length = file.length + 1 /* for the space */;
-      if (currentBatchTotalLength + length > batchMaxTotalLength) {
-        // Start a new batch.
-        batches.add(<String>[]);
-        currentBatchTotalLength = 0;
-      }
-      batches.last.add(file);
-      currentBatchTotalLength += length;
-    }
-
+    // Run the command in batches.
+    final List<List<String>> batches =
+        _partitionFileList(files, maxStringLength: batchMaxTotalLength);
     for (final List<String> batch in batches) {
       batch.sort(); // For ease of testing.
       final int exitCode = await processRunner.runAndStream(
@@ -301,5 +290,25 @@ class FormatCommand extends PluginCommand {
       }
     }
     return 0;
+  }
+
+  /// Partitions [files] into batches whose max string length as parameters to
+  /// a command (including the spaces between them, and between the list and
+  /// the command itself) is no longer than [maxStringLength].
+  List<List<String>> _partitionFileList(Iterable<String> files,
+      {required int maxStringLength}) {
+    final List<List<String>> batches = <List<String>>[<String>[]];
+    int currentBatchTotalLength = 0;
+    for (final String file in files) {
+      final int length = file.length + 1 /* for the space */;
+      if (currentBatchTotalLength + length > maxStringLength) {
+        // Start a new batch.
+        batches.add(<String>[]);
+        currentBatchTotalLength = 0;
+      }
+      batches.last.add(file);
+      currentBatchTotalLength += length;
+    }
+    return batches;
   }
 }

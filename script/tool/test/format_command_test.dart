@@ -531,6 +531,9 @@ void main() {
         ));
   });
 
+  // Validates that the Windows limit--which is much lower than the limit on
+  // other platforms--isn't being used on all platforms, as that would make
+  // formatting slower on Linux and macOS.
   test('Does not batch moderately long file lists on non-Windows', () async {
     const String pluginName = 'a_plugin';
     // -1 since the command itself takes some length.
@@ -553,7 +556,6 @@ void main() {
 
   test('Batches extremely long file lists on non-Windows', () async {
     const String pluginName = 'a_plugin';
-    const int commandLineMax = 1000000;
     // -1 since the command itself takes some length.
     const int batchSize = (nonWindowsCommandLineMax ~/ 100) - 1;
 
