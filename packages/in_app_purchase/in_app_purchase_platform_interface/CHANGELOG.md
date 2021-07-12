@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Added `currencySymbol` in ProductDetails.
+
 ## 1.0.1
 
 * Fixed `Restoring previous purchases` link.

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:convert';
+import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
@@ -89,25 +90,36 @@ void main() {
 
   group('test xctest_command', () {
     late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform(isMacOS: true);
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final XCTestCommand command =
-          XCTestCommand(packagesDir, processRunner: processRunner);
+      final XCTestCommand command = XCTestCommand(packagesDir,
+          processRunner: processRunner, platform: mockPlatform);
 
       runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
       runner.addCommand(command);
     });
 
     test('Fails if no platforms are provided', () async {
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['xctest'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runner.run(<String>['xctest']),
-        throwsA(isA<ToolExit>()),
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('At least one platform flag must be provided'),
+        ]),
       );
     });
 
@@ -119,9 +131,6 @@ void main() {
           kPlatformMacos: PlatformSupport.inline,
         });
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
@@ -138,9 +147,6 @@ void main() {
           kPlatformIos: PlatformSupport.federated
         });
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--ios', _kDestination, 'foo_destination']);
         expect(
@@ -150,25 +156,18 @@ void main() {
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
-      test('running with correct destination, exclude 1 plugin', () async {
-        createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
-          'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
-        });
-        final Directory pluginDirectory2 =
-            createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+      test('running with correct destination', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
         ], platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
 
-        final Directory pluginExampleDirectory2 =
-            pluginDirectory2.childDirectory('example');
+        final Directory pluginExampleDirectory =
+            pluginDirectory.childDirectory('example');
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
+        processRunner.processToReturn = MockProcess.succeeding();
         processRunner.resultStdout =
             '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -176,16 +175,14 @@ void main() {
           '--ios',
           _kDestination,
           'foo_destination',
-          '--exclude',
-          'plugin1'
         ]);
 
-        expect(output, isNot(contains(contains('Running for plugin1'))));
-        expect(output, contains(contains('Running for plugin2')));
         expect(
             output,
-            contains(
-                contains('Successfully ran iOS xctest for plugin2/example')));
+            containsAllInOrder(<Matcher>[
+              contains('Running for plugin'),
+              contains('Successfully ran iOS xctest for plugin/example')
+            ]));
 
         expect(
             processRunner.recordedCalls,
@@ -206,7 +203,7 @@ void main() {
                     'foo_destination',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                   ],
-                  pluginExampleDirectory2.path),
+                  pluginExampleDirectory.path),
             ]));
       });
 
@@ -222,19 +219,17 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
         final Map<String, dynamic> schemeCommandResult = <String, dynamic>{
           'project': <String, dynamic>{
             'targets': <String>['bar_scheme', 'foo_scheme']
           }
         };
+        processRunner.processToReturn = MockProcess.succeeding();
         // For simplicity of the test, we combine all the mock results into a single mock result, each internal command
         // will get this result and they should still be able to parse them correctly.
         processRunner.resultStdout =
             jsonEncode(schemeCommandResult..addAll(_kDeviceListMap));
-        await runner.run(<String>['xctest', '--ios']);
+        await runCapturingPrint(runner, <String>['xctest', '--ios']);
 
         expect(
             processRunner.recordedCalls,
@@ -260,6 +255,43 @@ void main() {
                   pluginExampleDirectory.path),
             ]));
       });
+
+      test('fails if xcrun fails', () async {
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
+
+        processRunner.processToReturn = MockProcess.succeeding();
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess.failing()
+        ];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+          runner,
+          <String>[
+            'xctest',
+            '--ios',
+            _kDestination,
+            'foo_destination',
+          ],
+          errorHandler: (Error e) {
+            commandError = e;
+          },
+        );
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('The following packages are failing XCTests:'),
+              contains('  plugin'),
+            ]));
+      });
     });
 
     group('macOS', () {
@@ -272,9 +304,6 @@ void main() {
           ],
         );
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
         expect(
@@ -291,9 +320,6 @@ void main() {
           kPlatformMacos: PlatformSupport.federated,
         });
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
         final List<String> output = await runCapturingPrint(runner,
             <String>['xctest', '--macos', _kDestination, 'foo_destination']);
         expect(
@@ -314,9 +340,7 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        final MockProcess mockProcess = MockProcess();
-        mockProcess.exitCodeCompleter.complete(0);
-        processRunner.processToReturn = mockProcess;
+        processRunner.processToReturn = MockProcess.succeeding();
         processRunner.resultStdout =
             '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -348,6 +372,234 @@ void main() {
                   ],
                   pluginExampleDirectory.path),
             ]));
+      });
+
+      test('fails if xcrun fails', () async {
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
+
+        processRunner.processToReturn = MockProcess.succeeding();
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess.failing()
+        ];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['xctest', '--macos'], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('The following packages are failing XCTests:'),
+            contains('  plugin'),
+          ]),
+        );
+      });
+    });
+
+    group('combined', () {
+      test('runs both iOS and macOS when supported', () async {
+        final Directory pluginDirectory1 =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline,
+          kPlatformMacos: PlatformSupport.inline,
+        });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory1.childDirectory('example');
+
+        processRunner.processToReturn = MockProcess.succeeding();
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAll(<Matcher>[
+              contains('Successfully ran iOS xctest for plugin/example'),
+              contains('Successfully ran macOS xctest for plugin/example'),
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'ios/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    '-destination',
+                    'foo_destination',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'macos/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
+      test('runs only macOS for a macOS plugin', () async {
+        final Directory pluginDirectory1 =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformMacos: PlatformSupport.inline,
+        });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory1.childDirectory('example');
+
+        processRunner.processToReturn = MockProcess.succeeding();
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only running for macOS'),
+              contains('Successfully ran macOS xctest for plugin/example'),
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'macos/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
+      test('runs only iOS for a iOS plugin', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ], platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline
+        });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory.childDirectory('example');
+
+        processRunner.processToReturn = MockProcess.succeeding();
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only running for iOS'),
+              contains('Successfully ran iOS xctest for plugin/example')
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  'xcrun',
+                  const <String>[
+                    'xcodebuild',
+                    'test',
+                    'analyze',
+                    '-workspace',
+                    'ios/Runner.xcworkspace',
+                    '-configuration',
+                    'Debug',
+                    '-scheme',
+                    'Runner',
+                    '-destination',
+                    'foo_destination',
+                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                  ],
+                  pluginExampleDirectory.path),
+            ]));
+      });
+
+      test('skips when neither are supported', () async {
+        createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/test',
+        ]);
+
+        processRunner.processToReturn = MockProcess.succeeding();
+        processRunner.resultStdout =
+            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'xctest',
+          '--ios',
+          '--macos',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains(
+                  'SKIPPING: Neither iOS nor macOS is implemented by this plugin package.'),
+            ]));
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
     });
   });

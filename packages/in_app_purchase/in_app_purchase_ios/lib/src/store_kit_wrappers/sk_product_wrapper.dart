@@ -335,15 +335,19 @@ class SKProductWrapper {
 @JsonSerializable()
 class SKPriceLocaleWrapper {
   /// Creates a new price locale for `currencySymbol` and `currencyCode`.
-  SKPriceLocaleWrapper(
-      {required this.currencySymbol, required this.currencyCode});
+  SKPriceLocaleWrapper({
+    required this.currencySymbol,
+    required this.currencyCode,
+    required this.countryCode,
+  });
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
   /// This method should only be used with `map` values returned by [SKProductWrapper.fromJson] and [SKProductDiscountWrapper.fromJson].
   factory SKPriceLocaleWrapper.fromJson(Map<String, dynamic>? map) {
     if (map == null) {
-      return SKPriceLocaleWrapper(currencyCode: '', currencySymbol: '');
+      return SKPriceLocaleWrapper(
+          currencyCode: '', currencySymbol: '', countryCode: '');
     }
     return _$SKPriceLocaleWrapperFromJson(map);
   }
@@ -355,6 +359,10 @@ class SKPriceLocaleWrapper {
   ///The currency code for the locale, e.g. USD for US locale.
   @JsonKey(defaultValue: '')
   final String currencyCode;
+
+  ///The country code for the locale, e.g. US for US locale.
+  @JsonKey(defaultValue: '')
+  final String countryCode;
 
   @override
   bool operator ==(Object other) {

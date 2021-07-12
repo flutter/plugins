@@ -11,6 +11,7 @@
 
 @interface InAppPurchasePluginTest : XCTestCase
 
+@property(strong, nonatomic) FIAPReceiptManagerStub* receiptManagerStub;
 @property(strong, nonatomic) InAppPurchasePlugin* plugin;
 
 @end
@@ -18,8 +19,8 @@
 @implementation InAppPurchasePluginTest
 
 - (void)setUp {
-  self.plugin =
-      [[InAppPurchasePluginStub alloc] initWithReceiptManager:[FIAPReceiptManagerStub new]];
+  self.receiptManagerStub = [FIAPReceiptManagerStub new];
+  self.plugin = [[InAppPurchasePluginStub alloc] initWithReceiptManager:self.receiptManagerStub];
 }
 
 - (void)tearDown {
@@ -219,7 +220,7 @@
   XCTAssertTrue(callbackInvoked);
 }
 
-- (void)testRetrieveReceiptData {
+- (void)testRetrieveReceiptDataSuccess {
   XCTestExpectation* expectation = [self expectationWithDescription:@"receipt data retrieved"];
   FlutterMethodCall* call = [FlutterMethodCall
       methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
@@ -231,8 +232,29 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
-  NSLog(@"%@", result);
   XCTAssertNotNil(result);
+  XCTAssert([result isKindOfClass:[NSString class]]);
+}
+
+- (void)testRetrieveReceiptDataError {
+  XCTestExpectation* expectation = [self expectationWithDescription:@"receipt data retrieved"];
+  FlutterMethodCall* call = [FlutterMethodCall
+      methodCallWithMethodName:@"-[InAppPurchasePlugin retrieveReceiptData:result:]"
+                     arguments:nil];
+  __block NSDictionary* result;
+  self.receiptManagerStub.returnError = YES;
+  [self.plugin handleMethodCall:call
+                         result:^(id r) {
+                           result = r;
+                           [expectation fulfill];
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertNotNil(result);
+  XCTAssert([result isKindOfClass:[FlutterError class]]);
+  NSDictionary* details = ((FlutterError*)result).details;
+  XCTAssertNotNil(details[@"error"]);
+  NSNumber* errorCode = (NSNumber*)details[@"error"][@"code"];
+  XCTAssertEqual(errorCode, [NSNumber numberWithInteger:99]);
 }
 
 - (void)testRefreshReceiptRequest {
@@ -341,6 +363,83 @@
 
   // No observer should be set
   XCTAssertNil(queue.observer);
+}
+
+- (void)testRegisterPaymentQueueDelegate {
+  if (@available(iOS 13, *)) {
+    FlutterMethodCall* call =
+        [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue registerDelegate]"
+                                          arguments:nil];
+
+    self.plugin.paymentQueueHandler =
+        [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueueStub new]
+                                  transactionsUpdated:nil
+                                   transactionRemoved:nil
+                             restoreTransactionFailed:nil
+                 restoreCompletedTransactionsFinished:nil
+                                shouldAddStorePayment:nil
+                                     updatedDownloads:nil];
+
+    // Verify the delegate is nil before we register one.
+    XCTAssertNil(self.plugin.paymentQueueHandler.delegate);
+
+    [self.plugin handleMethodCall:call
+                           result:^(id r){
+                           }];
+
+    // Verify the delegate is not nil after we registered one.
+    XCTAssertNotNil(self.plugin.paymentQueueHandler.delegate);
+  }
+}
+
+- (void)testRemovePaymentQueueDelegate {
+  if (@available(iOS 13, *)) {
+    FlutterMethodCall* call =
+        [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue removeDelegate]"
+                                          arguments:nil];
+
+    self.plugin.paymentQueueHandler =
+        [[FIAPaymentQueueHandler alloc] initWithQueue:[SKPaymentQueueStub new]
+                                  transactionsUpdated:nil
+                                   transactionRemoved:nil
+                             restoreTransactionFailed:nil
+                 restoreCompletedTransactionsFinished:nil
+                                shouldAddStorePayment:nil
+                                     updatedDownloads:nil];
+    self.plugin.paymentQueueHandler.delegate = OCMProtocolMock(@protocol(SKPaymentQueueDelegate));
+
+    // Verify the delegate is not nil before removing it.
+    XCTAssertNotNil(self.plugin.paymentQueueHandler.delegate);
+
+    [self.plugin handleMethodCall:call
+                           result:^(id r){
+                           }];
+
+    // Verify the delegate is nill after removing it.
+    XCTAssertNil(self.plugin.paymentQueueHandler.delegate);
+  }
+}
+
+- (void)testShowPriceConsentIfNeeded {
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[SKPaymentQueue showPriceConsentIfNeeded]"
+                                        arguments:nil];
+
+  FIAPaymentQueueHandler* mockQueueHandler = OCMClassMock(FIAPaymentQueueHandler.class);
+  self.plugin.paymentQueueHandler = mockQueueHandler;
+
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wpartial-availability"
+  if (@available(iOS 13.4, *)) {
+    OCMVerify(times(1), [mockQueueHandler showPriceConsentIfNeeded]);
+  } else {
+    OCMVerify(never(), [mockQueueHandler showPriceConsentIfNeeded]);
+  }
+#pragma clang diagnostic pop
 }
 
 @end
