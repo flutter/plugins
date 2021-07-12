@@ -1,4 +1,4 @@
-name: regular_integration_tests
+name: camera_web_integration_tests
 publish_to: none
 
 environment:
