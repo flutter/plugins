@@ -10,13 +10,40 @@ import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 
 class MockPlatform extends Mock implements Platform {
-  MockPlatform({this.isMacOS = false});
+  MockPlatform({
+    this.isLinux = false,
+    this.isMacOS = false,
+    this.isWindows = false,
+  });
+
+  @override
+  bool isLinux;
 
   @override
   bool isMacOS;
+
+  @override
+  bool isWindows;
+
+  @override
+  Uri get script => isWindows
+      ? Uri.file(r'C:\foo\bar', windows: true)
+      : Uri.file('/foo/bar', windows: false);
 }
 
 class MockProcess extends Mock implements io.Process {
+  MockProcess();
+
+  /// A mock process that terminates with exitCode 0.
+  MockProcess.succeeding() {
+    exitCodeCompleter.complete(0);
+  }
+
+  /// A mock process that terminates with exitCode 1.
+  MockProcess.failing() {
+    exitCodeCompleter.complete(1);
+  }
+
   final Completer<int> exitCodeCompleter = Completer<int>();
   final StreamController<List<int>> stdoutController =
       StreamController<List<int>>();
