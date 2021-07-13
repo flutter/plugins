@@ -7,17 +7,31 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
+import 'package:meta/meta.dart';
 import 'package:platform/platform.dart';
-import 'package:quiver/iterables.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
 import 'common/process_runner.dart';
 
+/// In theory this should be 8191, but in practice that was still resulting in
+/// "The input line is too long" errors. This was chosen as a value that worked
+/// in practice in testing with flutter/plugins, but may need to be adjusted
+/// based on further experience.
+@visibleForTesting
+const int windowsCommandLineMax = 8000;
+
+/// This value is picked somewhat arbitrarily based on checking `ARG_MAX` on a
+/// macOS and Linux machine. If anyone encounters a lower limit in pratice, it
+/// can be lowered accordingly.
+@visibleForTesting
+const int nonWindowsCommandLineMax = 1000000;
+
 const int _exitClangFormatFailed = 3;
 const int _exitFlutterFormatFailed = 4;
 const int _exitJavaFormatFailed = 5;
 const int _exitGitFailed = 6;
+const int _exitDependencyMissing = 7;
 
 final Uri _googleFormatterUrl = Uri.https('github.com',
     '/google/google-java-format/releases/download/google-java-format-1.3/google-java-format-1.3-all-deps.jar');
@@ -32,8 +46,9 @@ class FormatCommand extends PluginCommand {
   }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag('fail-on-change', hide: true);
     argParser.addOption('clang-format',
-        defaultsTo: 'clang-format',
-        help: 'Path to executable of clang-format.');
+        defaultsTo: 'clang-format', help: 'Path to "clang-format" executable.');
+    argParser.addOption('java',
+        defaultsTo: 'java', help: 'Path to "java" executable.');
   }
 
   @override
@@ -52,7 +67,8 @@ class FormatCommand extends PluginCommand {
     // This class is not based on PackageLoopingCommand because running the
     // formatters separately for each package is an order of magnitude slower,
     // due to the startup overhead of the formatters.
-    final Iterable<String> files = await _getFilteredFilePaths(getFiles());
+    final Iterable<String> files =
+        await _getFilteredFilePaths(getFiles(), relativeTo: packagesDir);
     await _formatDart(files);
     await _formatJava(files, googleFormatterPath);
     await _formatCppAndObjectiveC(files);
@@ -112,19 +128,18 @@ class FormatCommand extends PluginCommand {
     final Iterable<String> clangFiles = _getPathsWithExtensions(
         files, <String>{'.h', '.m', '.mm', '.cc', '.cpp'});
     if (clangFiles.isNotEmpty) {
-      print('Formatting .cc, .cpp, .h, .m, and .mm files...');
-      final Iterable<List<String>> batches = partition(clangFiles, 100);
-      int exitCode = 0;
-      for (final List<String> batch in batches) {
-        batch.sort(); // For ease of testing; partition changes the order.
-        exitCode = await processRunner.runAndStream(
-            getStringArg('clang-format'),
-            <String>['-i', '--style=Google', ...batch],
-            workingDir: packagesDir);
-        if (exitCode != 0) {
-          break;
-        }
+      final String clangFormat = getStringArg('clang-format');
+      if (!await _hasDependency(clangFormat)) {
+        printError(
+            'Unable to run \'clang-format\'. Make sure that it is in your '
+            'path, or provide a full path with --clang-format.');
+        throw ToolExit(_exitDependencyMissing);
       }
+
+      print('Formatting .cc, .cpp, .h, .m, and .mm files...');
+      final int exitCode = await _runBatched(
+          getStringArg('clang-format'), <String>['-i', '--style=Google'],
+          files: clangFiles);
       if (exitCode != 0) {
         printError(
             'Failed to format C, C++, and Objective-C files: exit code $exitCode.');
@@ -138,10 +153,18 @@ class FormatCommand extends PluginCommand {
     final Iterable<String> javaFiles =
         _getPathsWithExtensions(files, <String>{'.java'});
     if (javaFiles.isNotEmpty) {
+      final String java = getStringArg('java');
+      if (!await _hasDependency(java)) {
+        printError(
+            'Unable to run \'java\'. Make sure that it is in your path, or '
+            'provide a full path with --java.');
+        throw ToolExit(_exitDependencyMissing);
+      }
+
       print('Formatting .java files...');
-      final int exitCode = await processRunner.runAndStream('java',
-          <String>['-jar', googleFormatterPath, '--replace', ...javaFiles],
-          workingDir: packagesDir);
+      final int exitCode = await _runBatched(
+          java, <String>['-jar', googleFormatterPath, '--replace'],
+          files: javaFiles);
       if (exitCode != 0) {
         printError('Failed to format Java files: exit code $exitCode.');
         throw ToolExit(_exitJavaFormatFailed);
@@ -156,9 +179,8 @@ class FormatCommand extends PluginCommand {
       print('Formatting .dart files...');
       // `flutter format` doesn't require the project to actually be a Flutter
       // project.
-      final int exitCode = await processRunner.runAndStream(
-          flutterCommand, <String>['format', ...dartFiles],
-          workingDir: packagesDir);
+      final int exitCode = await _runBatched(flutterCommand, <String>['format'],
+          files: dartFiles);
       if (exitCode != 0) {
         printError('Failed to format Dart files: exit code $exitCode.');
         throw ToolExit(_exitFlutterFormatFailed);
@@ -166,7 +188,12 @@ class FormatCommand extends PluginCommand {
     }
   }
 
-  Future<Iterable<String>> _getFilteredFilePaths(Stream<File> files) async {
+  /// Given a stream of [files], returns the paths of any that are not in known
+  /// locations to ignore, relative to [relativeTo].
+  Future<Iterable<String>> _getFilteredFilePaths(
+    Stream<File> files, {
+    required Directory relativeTo,
+  }) async {
     // Returns a pattern to check for [directories] as a subset of a file path.
     RegExp pathFragmentForDirectories(List<String> directories) {
       String s = path.separator;
@@ -177,8 +204,10 @@ class FormatCommand extends PluginCommand {
       return RegExp('(?:^|$s)${path.joinAll(directories)}$s');
     }
 
+    final String fromPath = relativeTo.path;
+
     return files
-        .map((File file) => file.path)
+        .map((File file) => path.relative(file.path, from: fromPath))
         .where((String path) =>
             // Ignore files in build/ directories (e.g., headers of frameworks)
             // to avoid useless extra work in local repositories.
@@ -211,5 +240,75 @@ class FormatCommand extends PluginCommand {
     }
 
     return javaFormatterPath;
+  }
+
+  /// Returns true if [command] can be run successfully.
+  Future<bool> _hasDependency(String command) async {
+    try {
+      final io.ProcessResult result =
+          await processRunner.run(command, <String>['--version']);
+      if (result.exitCode != 0) {
+        return false;
+      }
+    } on io.ProcessException {
+      // Thrown when the binary is missing entirely.
+      return false;
+    }
+    return true;
+  }
+
+  /// Runs [command] on [arguments] on all of the files in [files], batched as
+  /// necessary to avoid OS command-line length limits.
+  ///
+  /// Returns the exit code of the first failure, which stops the run, or 0
+  /// on success.
+  Future<int> _runBatched(
+    String command,
+    List<String> arguments, {
+    required Iterable<String> files,
+  }) async {
+    final int commandLineMax =
+        platform.isWindows ? windowsCommandLineMax : nonWindowsCommandLineMax;
+
+    // Compute the max length of the file argument portion of a batch.
+    // Add one to each argument's length for the space before it.
+    final int argumentTotalLength =
+        arguments.fold(0, (int sum, String arg) => sum + arg.length + 1);
+    final int batchMaxTotalLength =
+        commandLineMax - command.length - argumentTotalLength;
+
+    // Run the command in batches.
+    final List<List<String>> batches =
+        _partitionFileList(files, maxStringLength: batchMaxTotalLength);
+    for (final List<String> batch in batches) {
+      batch.sort(); // For ease of testing.
+      final int exitCode = await processRunner.runAndStream(
+          command, <String>[...arguments, ...batch],
+          workingDir: packagesDir);
+      if (exitCode != 0) {
+        return exitCode;
+      }
+    }
+    return 0;
+  }
+
+  /// Partitions [files] into batches whose max string length as parameters to
+  /// a command (including the spaces between them, and between the list and
+  /// the command itself) is no longer than [maxStringLength].
+  List<List<String>> _partitionFileList(Iterable<String> files,
+      {required int maxStringLength}) {
+    final List<List<String>> batches = <List<String>>[<String>[]];
+    int currentBatchTotalLength = 0;
+    for (final String file in files) {
+      final int length = file.length + 1 /* for the space */;
+      if (currentBatchTotalLength + length > maxStringLength) {
+        // Start a new batch.
+        batches.add(<String>[]);
+        currentBatchTotalLength = 0;
+      }
+      batches.last.add(file);
+      currentBatchTotalLength += length;
+    }
+    return batches;
   }
 }
