@@ -12,8 +12,10 @@ import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:git/git.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../mocks.dart';
 import '../util.dart';
 import 'plugin_command_test.mocks.dart';
 
@@ -22,6 +24,7 @@ void main() {
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
   late FileSystem fileSystem;
+  late MockPlatform mockPlatform;
   late Directory packagesDir;
   late Directory thirdPartyPackagesDir;
   late List<String> plugins;
@@ -30,6 +33,7 @@ void main() {
 
   setUp(() {
     fileSystem = MemoryFileSystem();
+    mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     thirdPartyPackagesDir = packagesDir.parent
         .childDirectory('third_party')
@@ -54,6 +58,7 @@ void main() {
       plugins,
       packagesDir,
       processRunner: processRunner,
+      platform: mockPlatform,
       gitDir: gitDir,
     );
     runner =
@@ -414,8 +419,10 @@ class SamplePluginCommand extends PluginCommand {
     this._plugins,
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir,
+            processRunner: processRunner, platform: platform, gitDir: gitDir);
 
   final List<String> _plugins;
 

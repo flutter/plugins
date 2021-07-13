@@ -8,6 +8,7 @@ import 'dart:io' as io;
 
 import 'package:file/file.dart';
 import 'package:http/http.dart' as http;
+import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -22,10 +23,11 @@ class PublishCheckCommand extends PackageLoopingCommand {
   PublishCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     http.Client? httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, processRunner: processRunner) {
+        super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag(
       _allowPrereleaseFlag,
       help: 'Allows the pre-release SDK warning to pass.\n'
@@ -128,7 +130,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
   Future<bool> _hasValidPublishCheckRun(Directory package) async {
     print('Running pub publish --dry-run:');
     final io.Process process = await processRunner.start(
-      'flutter',
+      flutterCommand,
       <String>['pub', 'publish', '--', '--dry-run'],
       workingDirectory: package,
     );
