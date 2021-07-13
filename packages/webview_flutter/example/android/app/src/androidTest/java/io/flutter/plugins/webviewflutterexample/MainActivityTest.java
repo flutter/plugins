@@ -4,23 +4,36 @@
 
 package io.flutter.plugins.webviewflutterexample;
 
-import static org.junit.Assert.assertEquals;
-
-import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.integration_test.FlutterTestRunner;
+import static androidx.test.espresso.flutter.EspressoFlutter.onFlutterWidget;
+import static androidx.test.espresso.flutter.assertion.FlutterAssertions.matches;
+import static androidx.test.espresso.flutter.matcher.FlutterMatchers.isExisting;
+import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withValueKey;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.runner.AndroidJUnit4;
 import io.flutter.embedding.android.FlutterActivity;
-import org.junit.Rule;
+
+import org.junit.After;
+import org.junit.Before;
 import org.junit.runner.RunWith;
 
 import org.junit.Test;
 
-@RunWith(FlutterTestRunner.class)
+@RunWith(AndroidJUnit4.class)
 public class MainActivityTest {
-  @Rule
-  public ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
+  ActivityScenario<FlutterActivity> scenario;
+
+  @Before
+  public void setup() {
+    scenario = ActivityScenario.launch(FlutterActivity.class);
+  }
+
+  @After
+  public void cleanup() {
+    scenario.close();
+  }
 
   @Test
-  void testSomething() {
-    assertEquals(1, 2);
+  public void testWebViewViewIsAddedToTree() {
+    onFlutterWidget(withValueKey("example_webView")).check(matches(isExisting()));
   }
 }

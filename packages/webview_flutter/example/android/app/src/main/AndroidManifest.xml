@@ -9,6 +9,7 @@
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="webview_flutter_example"
+    android:usesCleartextTraffic="true"
     android:name="io.flutter.app.FlutterApplication">
     <meta-data
         android:name="flutterEmbedding"
