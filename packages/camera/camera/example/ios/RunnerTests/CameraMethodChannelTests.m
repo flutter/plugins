@@ -17,11 +17,18 @@
 @end
 
 @implementation MockFLTThreadSafeFlutterResult
+/**
+ Initialize with a notification center.
+ */
 - (id)initWithNotificationCenter:(NSNotificationCenter *)notificationCenter {
   self = [super init];
   _notificationCenter = notificationCenter;
   return self;
 }
+
+/**
+ Called when result is successful. Sends "successWithData" to the notification center.
+ */
 - (void)successWithData:(id)data {
   _receivedResult = data;
   [self->_notificationCenter postNotificationName:@"successWithData" object:nil];
