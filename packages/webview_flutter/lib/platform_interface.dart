@@ -395,6 +395,7 @@ class WebSettings {
     this.hasProgressTracking,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
+    this.textZoomEnabled,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
   }) : assert(userAgent != null);
@@ -434,9 +435,14 @@ class WebSettings {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
+  /// Whether to allow system text zoom in Android.
+  ///
+  /// See also: [WebSettings.setTextZoom]
+  final bool? textZoomEnabled;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, textZoomEnabled: $textZoomEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
   }
 }
 
