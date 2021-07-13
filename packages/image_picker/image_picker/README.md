@@ -69,7 +69,7 @@ Future<void> getLostData() async {
       if (response.type == RetrieveType.video) {
         _handleVideo(response.file);
       } else {
-        _handleImage(response.file);  
+        _handleImage(response.file);
       }
     });
   } else {
