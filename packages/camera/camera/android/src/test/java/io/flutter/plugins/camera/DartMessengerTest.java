@@ -105,7 +105,7 @@ public class DartMessengerTest {
   @Test
   public void sendDeviceOrientationChangedEvent() {
     doAnswer(createPostHandlerAnswer()).when(mockHandler).post(any(Runnable.class));
-    dartMessenger.sendDeviceUIOrientationChangeEvent(PlatformChannel.DeviceOrientation.PORTRAIT_UP);
+    dartMessenger.sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation.PORTRAIT_UP);
 
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());

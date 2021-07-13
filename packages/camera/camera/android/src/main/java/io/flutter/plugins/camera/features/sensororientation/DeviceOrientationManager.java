@@ -224,7 +224,7 @@ public class DeviceOrientationManager {
       DeviceOrientation previousOrientation,
       DartMessenger messenger) {
     if (!newOrientation.equals(previousOrientation)) {
-      messenger.sendDeviceUIOrientationChangeEvent(newOrientation);
+      messenger.sendDeviceOrientationChangeEvent(newOrientation);
     }
   }
 

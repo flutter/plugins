@@ -25,7 +25,7 @@ public class DartMessenger {
   /** Specifies the different device related message types. */
   enum DeviceEventType {
     /** Indicates the device's orientation has changed. */
-    UI_ORIENTATION_CHANGED("orientation_changed");
+    ORIENTATION_CHANGED("orientation_changed");
     private final String method;
 
     DeviceEventType(String method) {
@@ -74,10 +74,10 @@ public class DartMessenger {
    *
    * @param orientation specifies the new orientation of the device.
    */
-  public void sendDeviceUIOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
+  public void sendDeviceOrientationChangeEvent(PlatformChannel.DeviceOrientation orientation) {
     assert (orientation != null);
     this.send(
-        DeviceEventType.UI_ORIENTATION_CHANGED,
+        DeviceEventType.ORIENTATION_CHANGED,
         new HashMap<String, Object>() {
           {
             put("orientation", CameraUtils.serializeDeviceOrientation(orientation));
