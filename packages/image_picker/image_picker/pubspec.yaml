@@ -24,11 +24,8 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_plugin_android_lifecycle: ^2.0.1
-  # TODO: CHANGE TO VERSION REFERENCES WHEN NEW VERSION OF INTERFACE AND WEB IMPL ARE PUBLISHED
-  image_picker_for_web:
-    path: ../image_picker_for_web
-  image_picker_platform_interface:
-    path: ../image_picker_platform_interface
+  image_picker_for_web: ^2.1.0
+  image_picker_platform_interface: ^2.2.0
 
 dev_dependencies:
   flutter_test:

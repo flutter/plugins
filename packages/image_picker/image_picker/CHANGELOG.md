@@ -1,7 +1,6 @@
 ## 0.8.2
 
-* Added pickImage, pickVideo, pickMultiImage and retrieveLostData methods
-that return XFile instances rather than PickedFile instances.
+* Added pickImage, pickVideo, pickMultiImage and retrieveLostData methods that return XFile instances.
 
 ## 0.8.1+3
 
