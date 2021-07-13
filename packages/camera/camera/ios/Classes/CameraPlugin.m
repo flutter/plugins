@@ -358,6 +358,7 @@ NSString *const errorMethod = @"error";
     _resolutionPreset = getResolutionPresetForString(resolutionPreset);
   } @catch (NSError *e) {
     *error = e;
+    return nil;
   }
   _enableAudio = enableAudio;
   _dispatchQueue = dispatchQueue;
