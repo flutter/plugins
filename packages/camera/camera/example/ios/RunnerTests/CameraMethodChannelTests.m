@@ -12,18 +12,19 @@
 @end
 
 @interface MockFLTThreadSafeFlutterResult : FLTThreadSafeFlutterResult
-@property(nonatomic, copy, readonly) void (^resultCallback)(id result);
+@property(readonly, nonatomic) NSNotificationCenter *notificationCenter;
+@property(nonatomic, nullable) id receivedResult;
 @end
 
 @implementation MockFLTThreadSafeFlutterResult
-- (id)initWithResultCallback:(void (^)(id))callback {
+- (id)initWithNotificationCenter:(NSNotificationCenter *)notificationCenter {
   self = [super init];
-  _resultCallback = callback;
+  _notificationCenter = notificationCenter;
   return self;
 }
-- (void)send:(id)result {
-  NSLog(@"getting result");
-  _resultCallback(result);
+- (void)successWithData:(id)data {
+  _receivedResult = data;
+  [self->_notificationCenter postNotificationName:@"successWithData" object:nil];
 }
 @end
 
@@ -34,6 +35,7 @@
 
 @interface CameraMethodChannelTests : XCTestCase
 @property(readonly, nonatomic) CameraPlugin *camera;
+@property(readonly, nonatomic) MockFLTThreadSafeFlutterResult *resultObject;
 @property(readonly, nonatomic) NSNotificationCenter *notificationCenter;
 @end
 
@@ -42,14 +44,7 @@
 - (void)setUp {
   _camera = [[CameraPlugin alloc] init];
   _notificationCenter = [[NSNotificationCenter alloc] init];
-}
 
-- (void)tearDown {
-  // Put teardown code here. This method is called after the invocation of each test method in the
-  // class.
-}
-
-- (void)testCreate_ShouldCallResultOnMainThread {
   // Setup mocks for initWithCameraName method
   id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
   OCMStub([avCaptureDeviceInputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg anyObjectRef]])
@@ -59,36 +54,39 @@
   OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
+  _resultObject =
+      [[MockFLTThreadSafeFlutterResult alloc] initWithNotificationCenter:_notificationCenter];
+}
+
+- (void)tearDown {
+  // Put teardown code here. This method is called after the invocation of each test method in the
+  // class.
+}
+
+- (void)testCreate_ShouldCallResultOnMainThread {
   // Setup method call
-  NSString *notificationName = @"resultNotification";
   XCTNSNotificationExpectation *notificationExpectation =
-      [[XCTNSNotificationExpectation alloc] initWithName:notificationName
+      [[XCTNSNotificationExpectation alloc] initWithName:@"successWithData"
                                                   object:nil
                                       notificationCenter:_notificationCenter];
 
   FlutterMethodCall *call = [FlutterMethodCall
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
-  __block id result = nil;
-  MockFLTThreadSafeFlutterResult *resultObject =
-      [[MockFLTThreadSafeFlutterResult alloc] initWithResultCallback:^(id actualResult) {
-        result = actualResult;
-        [self->_notificationCenter postNotificationName:notificationName object:nil];
-      }];
 
   // Call handleMethodCall
-  [_camera handleMethodCallWithThreadSafeResult:call result:resultObject];
+  [_camera handleMethodCallWithThreadSafeResult:call result:_resultObject];
 
   // Don't expect a result yet
-  XCTAssertNil(result);
+  XCTAssertNil(_resultObject.receivedResult);
 
-  [self waitForExpectations:[NSArray arrayWithObject:notificationExpectation] timeout:1];
+  [self waitForExpectations:[NSArray arrayWithObject:notificationExpectation] timeout:0.1];
 
   // Expect a result after waiting for thread to switch
-  XCTAssertNotNil(result);
+  XCTAssertNotNil(_resultObject.receivedResult);
 
   // Verify the result
-  NSDictionary *dictionaryResult = (NSDictionary *)result;
+  NSDictionary *dictionaryResult = (NSDictionary *)_resultObject.receivedResult;
   XCTAssertNotNil(dictionaryResult);
   XCTAssert([[dictionaryResult allKeys] containsObject:@"cameraId"]);
 }
