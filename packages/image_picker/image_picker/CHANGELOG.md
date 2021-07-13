@@ -1,3 +1,7 @@
+## 0.8.1+4
+
+* Fix using Camera as image source on Android 11+
+
 ## 0.8.1+3
 
 * Fix image picker causing a crash when the cache directory is deleted.
