@@ -11,13 +11,10 @@
 @property(readonly, nonatomic) FlutterResult flutterResult;
 @end
 
-@interface CameraMethodChannelTests : XCTestCase
-@property(readonly, nonatomic) CameraPlugin *camera;
-@end
-
 @interface MockFLTThreadSafeFlutterResult : FLTThreadSafeFlutterResult
 @property(nonatomic, copy, readonly) void (^resultCallback)(id result);
 @end
+
 @implementation MockFLTThreadSafeFlutterResult
 - (id)initWithResultCallback:(void (^)(id))callback {
   self = [super init];
@@ -35,10 +32,16 @@
                                       result:(FLTThreadSafeFlutterResult *)result;
 @end
 
+@interface CameraMethodChannelTests : XCTestCase
+@property(readonly, nonatomic) CameraPlugin *camera;
+@property(readonly, nonatomic) NSNotificationCenter *notificationCenter;
+@end
+
 @implementation CameraMethodChannelTests
 
 - (void)setUp {
   _camera = [[CameraPlugin alloc] init];
+  _notificationCenter = [[NSNotificationCenter alloc] init];
 }
 
 - (void)tearDown {
@@ -57,7 +60,11 @@
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
   // Setup method call
-  dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+  NSString *notificationName = @"resultNotification";
+  XCTNSNotificationExpectation *notificationExpectation =
+      [[XCTNSNotificationExpectation alloc] initWithName:notificationName
+                                                  object:nil
+                                      notificationCenter:_notificationCenter];
 
   FlutterMethodCall *call = [FlutterMethodCall
       methodCallWithMethodName:@"create"
@@ -66,7 +73,7 @@
   MockFLTThreadSafeFlutterResult *resultObject =
       [[MockFLTThreadSafeFlutterResult alloc] initWithResultCallback:^(id actualResult) {
         result = actualResult;
-        dispatch_semaphore_signal(semaphore);
+        [self->_notificationCenter postNotificationName:notificationName object:nil];
       }];
 
   // Call handleMethodCall
@@ -75,10 +82,8 @@
   // Don't expect a result yet
   XCTAssertNil(result);
 
-  while (dispatch_semaphore_wait(semaphore, DISPATCH_TIME_NOW)) {
-    [[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode
-                             beforeDate:[NSDate dateWithTimeIntervalSinceNow:0]];
-  }
+  [self waitForExpectations:[NSArray arrayWithObject:notificationExpectation] timeout:1];
+
   // Expect a result after waiting for thread to switch
   XCTAssertNotNil(result);
 
