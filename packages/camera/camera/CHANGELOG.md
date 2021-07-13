@@ -1,3 +1,7 @@
+## 0.8.1+4
+
+* Fix registerTexture and result being called on background thread on iOS. 
+
 ## 0.8.1+3
 
 * Do not change camera orientation when iOS device is flat.
