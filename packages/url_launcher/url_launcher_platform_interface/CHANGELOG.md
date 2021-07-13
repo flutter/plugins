@@ -1,8 +1,21 @@
-## 2.0.0-nullsafety.1
+## 2.0.4
 
-* Bump Dart SDK to support null safety.
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
 
-## 2.0.0-nullsafety
+## 2.0.3
+
+* Migrate `pushRouteNameToFramework` to use ChannelBuffers API.
+
+## 2.0.2
+
+* Update platform_plugin_interface version requirement.
+
+## 2.0.1
+
+* Fix SDK range.
+
+## 2.0.0
 
 * Migrate to null safety.
 

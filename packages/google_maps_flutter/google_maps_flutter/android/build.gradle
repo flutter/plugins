@@ -4,7 +4,7 @@ version '1.0-SNAPSHOT'
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -15,7 +15,7 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -25,7 +25,7 @@ android {
     compileSdkVersion 29
 
     defaultConfig {
-        minSdkVersion 16
+        minSdkVersion 20
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
@@ -38,6 +38,11 @@ android {
         androidTestImplementation 'androidx.test:runner:1.2.0'
         androidTestImplementation 'androidx.test:rules:1.2.0'
         androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
 }
 

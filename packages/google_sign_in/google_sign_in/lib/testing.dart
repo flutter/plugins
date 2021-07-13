@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class FakeSignInBackend {
   /// This does not represent the signed-in user, but rather an object that will
   /// be returned when [GoogleSignIn.signIn] or [GoogleSignIn.signInSilently] is
   /// called.
-  FakeUser user;
+  late FakeUser user;
 
   /// Handles method calls that would normally be sent to the native backend.
   /// Returns with the expected values based on the current [user].
@@ -42,7 +42,7 @@ class FakeSignInBackend {
         // do nothing
         return null;
       case 'getTokens':
-        return <String, String>{
+        return <String, String?>{
           'idToken': user.idToken,
           'accessToken': user.accessToken,
         };
@@ -72,24 +72,24 @@ class FakeUser {
   });
 
   /// Will be converted into [GoogleSignInUserData.id].
-  final String id;
+  final String? id;
 
   /// Will be converted into [GoogleSignInUserData.email].
-  final String email;
+  final String? email;
 
   /// Will be converted into [GoogleSignInUserData.displayName].
-  final String displayName;
+  final String? displayName;
 
   /// Will be converted into [GoogleSignInUserData.photoUrl].
-  final String photoUrl;
+  final String? photoUrl;
 
   /// Will be converted into [GoogleSignInTokenData.idToken].
-  final String idToken;
+  final String? idToken;
 
   /// Will be converted into [GoogleSignInTokenData.accessToken].
-  final String accessToken;
+  final String? accessToken;
 
-  Map<String, String> get _asMap => <String, String>{
+  Map<String, String?> get _asMap => <String, String?>{
         'id': id,
         'email': email,
         'displayName': displayName,

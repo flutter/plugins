@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,19 +39,19 @@ class CameraTargetBounds {
   /// The geographical bounding box for the map camera target.
   ///
   /// A null value means the camera target is unbounded.
-  final LatLngBounds bounds;
+  final LatLngBounds? bounds;
 
   /// Unbounded camera target.
   static const CameraTargetBounds unbounded = CameraTargetBounds(null);
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() => <dynamic>[bounds?.toJson()];
+  Object toJson() => <Object?>[bounds?.toJson()];
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
-    final CameraTargetBounds typedOther = other;
+    final CameraTargetBounds typedOther = other as CameraTargetBounds;
     return bounds == typedOther.bounds;
   }
 
@@ -76,23 +76,23 @@ class MinMaxZoomPreference {
       : assert(minZoom == null || maxZoom == null || minZoom <= maxZoom);
 
   /// The preferred minimum zoom level or null, if unbounded from below.
-  final double minZoom;
+  final double? minZoom;
 
   /// The preferred maximum zoom level or null, if unbounded from above.
-  final double maxZoom;
+  final double? maxZoom;
 
   /// Unbounded zooming.
   static const MinMaxZoomPreference unbounded =
       MinMaxZoomPreference(null, null);
 
   /// Converts this object to something serializable in JSON.
-  dynamic toJson() => <dynamic>[minZoom, maxZoom];
+  Object toJson() => <Object?>[minZoom, maxZoom];
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
-    final MinMaxZoomPreference typedOther = other;
+    final MinMaxZoomPreference typedOther = other as MinMaxZoomPreference;
     return minZoom == typedOther.minZoom && maxZoom == typedOther.maxZoom;
   }
 

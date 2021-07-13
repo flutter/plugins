@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,30 +24,31 @@ class PackageInfo {
   /// See [fromPlatform] for the right API to get a [PackageInfo] that's
   /// actually populated with real data.
   PackageInfo({
-    this.appName,
-    this.packageName,
-    this.version,
-    this.buildNumber,
+    required this.appName,
+    required this.packageName,
+    required this.version,
+    required this.buildNumber,
   });
 
-  static PackageInfo _fromPlatform;
+  static PackageInfo? _fromPlatform;
 
   /// Retrieves package information from the platform.
   /// The result is cached.
   static Future<PackageInfo> fromPlatform() async {
-    if (_fromPlatform != null) {
-      return _fromPlatform;
-    }
+    PackageInfo? packageInfo = _fromPlatform;
+    if (packageInfo != null) return packageInfo;
 
     final Map<String, dynamic> map =
-        await _kChannel.invokeMapMethod<String, dynamic>('getAll');
-    _fromPlatform = PackageInfo(
-      appName: map["appName"],
-      packageName: map["packageName"],
-      version: map["version"],
-      buildNumber: map["buildNumber"],
+        (await _kChannel.invokeMapMethod<String, dynamic>('getAll'))!;
+
+    packageInfo = PackageInfo(
+      appName: map["appName"] ?? '',
+      packageName: map["packageName"] ?? '',
+      version: map["version"] ?? '',
+      buildNumber: map["buildNumber"] ?? '',
     );
-    return _fromPlatform;
+    _fromPlatform = packageInfo;
+    return packageInfo;
   }
 
   /// The app name. `CFBundleDisplayName` on iOS, `application/label` on Android.

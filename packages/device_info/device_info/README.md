@@ -1,5 +1,20 @@
 # device_info
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`device_info_plus`](https://pub.dev/packages/device_info_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 Get current device information from within the Flutter application.
 
 # Usage
@@ -21,11 +36,11 @@ IosDeviceInfo iosInfo = await deviceInfo.iosInfo;
 print('Running on ${iosInfo.utsname.machine}');  // e.g. "iPod7,1"
 ```
 
-You will find links to the API docs on the [pub page](https://pub.dartlang.org/packages/device_info).
+You will find links to the API docs on the [pub page](https://pub.dev/packages/device_info).
 
 ## Getting Started
 
 For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+[documentation](https://flutter.dev/).
 
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).

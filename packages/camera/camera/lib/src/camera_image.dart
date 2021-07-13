@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,6 +6,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 
 /// A single color plane of image data.
 ///
@@ -25,7 +26,7 @@ class Plane {
   /// The distance between adjacent pixel samples on Android, in bytes.
   ///
   /// Will be `null` on iOS.
-  final int bytesPerPixel;
+  final int? bytesPerPixel;
 
   /// The row stride for this color plane, in bytes.
   final int bytesPerRow;
@@ -33,38 +34,12 @@ class Plane {
   /// Height of the pixel buffer on iOS.
   ///
   /// Will be `null` on Android
-  final int height;
+  final int? height;
 
   /// Width of the pixel buffer on iOS.
   ///
   /// Will be `null` on Android.
-  final int width;
-}
-
-// TODO:(bmparr) Turn [ImageFormatGroup] to a class with int values.
-/// Group of image formats that are comparable across Android and iOS platforms.
-enum ImageFormatGroup {
-  /// The image format does not fit into any specific group.
-  unknown,
-
-  /// Multi-plane YUV 420 format.
-  ///
-  /// This format is a generic YCbCr format, capable of describing any 4:2:0
-  /// chroma-subsampled planar or semiplanar buffer (but not fully interleaved),
-  /// with 8 bits per color sample.
-  ///
-  /// On Android, this is `android.graphics.ImageFormat.YUV_420_888`. See
-  /// https://developer.android.com/reference/android/graphics/ImageFormat.html#YUV_420_888
-  ///
-  /// On iOS, this is `kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange`. See
-  /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_420ypcbcr8biplanarvideorange?language=objc
-  yuv420,
-
-  /// 32-bit BGRA.
-  ///
-  /// On iOS, this is `kCVPixelFormatType_32BGRA`. See
-  /// https://developer.apple.com/documentation/corevideo/1563591-pixel_format_identifiers/kcvpixelformattype_32bgra?language=objc
-  bgra8888,
+  final int? width;
 }
 
 /// Describes how pixels are represented in an image.
@@ -86,9 +61,13 @@ class ImageFormat {
 
 ImageFormatGroup _asImageFormatGroup(dynamic rawFormat) {
   if (defaultTargetPlatform == TargetPlatform.android) {
-    // android.graphics.ImageFormat.YUV_420_888
-    if (rawFormat == 35) {
-      return ImageFormatGroup.yuv420;
+    switch (rawFormat) {
+      // android.graphics.ImageFormat.YUV_420_888
+      case 35:
+        return ImageFormatGroup.yuv420;
+      // android.graphics.ImageFormat.JPEG
+      case 256:
+        return ImageFormatGroup.jpeg;
     }
   }
 

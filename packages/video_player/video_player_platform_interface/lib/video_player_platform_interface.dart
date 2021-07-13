@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -151,6 +151,7 @@ class DataSource {
     this.formatHint,
     this.asset,
     this.package,
+    this.httpHeaders = const {},
   });
 
   /// The way in which the video was originally loaded.
@@ -168,6 +169,11 @@ class DataSource {
   /// **Android only**. Will override the platform's generic file format
   /// detection with whatever is set here.
   final VideoFormat? formatHint;
+
+  /// HTTP headers used for the request to the [uri].
+  /// Only for [DataSourceType.network] videos.
+  /// Always empty for other video types.
+  Map<String, String> httpHeaders;
 
   /// The name of the asset. Only set for [DataSourceType.asset] videos.
   final String? asset;
@@ -346,6 +352,9 @@ class DurationRange {
 class VideoPlayerOptions {
   /// Set this to true to mix the video players audio with other audio sources.
   /// The default value is false
+  ///
+  /// Note: This option will be silently ignored in the web platform (there is
+  /// currently no way to implement this feature in this platform).
   final bool mixWithOthers;
 
   /// set additional optional player settings

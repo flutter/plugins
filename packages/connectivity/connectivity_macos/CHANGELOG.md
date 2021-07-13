@@ -1,6 +1,19 @@
-## 0.2.0-nullsafety
+## NEXT
 
-* Update Dart SDK constraint.
+* Add Swift language version to podspec.
+
+## 0.2.1+1
+
+* Ignore Reachability pointer to int cast warning.
+
+## 0.2.1
+
+* Add `implements` to pubspec.yaml.
+
+## 0.2.0
+
+* Remove placeholder Dart file.
+* Update Dart SDK constraint for compatibility with null safety.
 
 ## 0.1.0+8
 

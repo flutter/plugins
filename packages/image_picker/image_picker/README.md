@@ -1,15 +1,18 @@
 # Image Picker plugin for Flutter
 
-[![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dartlang.org/packages/image_picker)
+[![pub package](https://img.shields.io/pub/v/image_picker.svg)](https://pub.dev/packages/image_picker)
 
 A Flutter plugin for iOS and Android for picking images from the image library,
 and taking new pictures with the camera.
 
 ## Installation
 
-First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.io/platform-plugins/).
+First, add `image_picker` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
 ### iOS
+
+Starting with version **0.8.1** the iOS implementation uses PHPicker to pick (multiple) images on iOS 14 or higher.
+As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS 14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue.[63426347 - Apple known issue](https://www.google.com/search?q=63426347+apple&sxsrf=ALeKk01YnTMid5S0PYvhL8GbgXJ40ZS[…]t=gws-wiz&ved=0ahUKEwjKh8XH_5HwAhWL_rsIHUmHDN8Q4dUDCA8&uact=5) 
 
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
@@ -19,72 +22,23 @@ Add the following keys to your _Info.plist_ file, located in `<project root>/ios
 
 ### Android
 
-#### API 29+
+Starting with version **0.8.1** the Android implementation support to pick (multiple) images on Android 4.3 or higher.
+
 No configuration required - the plugin should work out of the box.
 
-#### API < 29
+It is no longer required to add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml, as `image_picker` has been updated to make use of scoped storage.
 
-Add `android:requestLegacyExternalStorage="true"` as an attribute to the `<application>` tag in AndroidManifest.xml. The [attribute](https://developer.android.com/training/data-storage/compatibility) is `false` by default on apps targeting Android Q. 
+**Note:** Images and videos picked using the camera are saved to your application's local cache, and should therefore be expected to only be around temporarily.
+If you require your picked image to be stored permanently, it is your responsibility to move it to a more permanent location.
 
 ### Example
 
 ``` dart
-import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-void main() => runApp(MyApp());
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MyHomePage(),
-    );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  @override
-  _MyHomePageState createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  File _image;
-  final picker = ImagePicker();
-
-  Future getImage() async {
-    final pickedFile = await picker.getImage(source: ImageSource.camera);
-
-    setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
-      } else {
-        print('No image selected.');
-      }
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Image Picker Example'),
-      ),
-      body: Center(
-        child: _image == null
-            ? Text('No image selected.')
-            : Image.file(_image),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: getImage,
-        tooltip: 'Pick Image',
-        child: Icon(Icons.add_a_photo),
-      ),
-    );
-  }
-}
+    ...
+    final PickedFile? pickedFile = await picker.getImage(source: ImageSource.camera);
+    ...
 ```
 
 ### Handling MainActivity destruction on Android
@@ -113,6 +67,8 @@ Future<void> retrieveLostData() async {
 ```
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
+
+On Android, `getLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
 ## Deprecation warnings in `pickImage`, `pickVideo` and `LostDataResponse`
 

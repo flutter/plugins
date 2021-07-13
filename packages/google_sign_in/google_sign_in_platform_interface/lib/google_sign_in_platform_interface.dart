@@ -1,9 +1,9 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:meta/meta.dart' show required, visibleForTesting;
+import 'package:meta/meta.dart' show visibleForTesting;
 import 'src/method_channel_google_sign_in.dart';
 import 'src/types.dart';
 
@@ -78,27 +78,28 @@ abstract class GoogleSignInPlatform {
   ///
   /// See:
   /// https://developers.google.com/identity/sign-in/web/reference#gapiauth2initparams
-  Future<void> init(
-      {@required String hostedDomain,
-      List<String> scopes,
-      SignInOption signInOption,
-      String clientId}) async {
+  Future<void> init({
+    List<String> scopes = const <String>[],
+    SignInOption signInOption = SignInOption.standard,
+    String? hostedDomain,
+    String? clientId,
+  }) async {
     throw UnimplementedError('init() has not been implemented.');
   }
 
   /// Attempts to reuse pre-existing credentials to sign in again, without user interaction.
-  Future<GoogleSignInUserData> signInSilently() async {
+  Future<GoogleSignInUserData?> signInSilently() async {
     throw UnimplementedError('signInSilently() has not been implemented.');
   }
 
   /// Signs in the user with the options specified to [init].
-  Future<GoogleSignInUserData> signIn() async {
+  Future<GoogleSignInUserData?> signIn() async {
     throw UnimplementedError('signIn() has not been implemented.');
   }
 
   /// Returns the Tokens used to authenticate other API calls.
   Future<GoogleSignInTokenData> getTokens(
-      {@required String email, bool shouldRecoverAuth}) async {
+      {required String email, bool? shouldRecoverAuth}) async {
     throw UnimplementedError('getTokens() has not been implemented.');
   }
 
@@ -118,7 +119,7 @@ abstract class GoogleSignInPlatform {
   }
 
   /// Clears any cached information that the plugin may be holding on to.
-  Future<void> clearAuthCache({@required String token}) async {
+  Future<void> clearAuthCache({required String token}) async {
     throw UnimplementedError('clearAuthCache() has not been implemented.');
   }
 

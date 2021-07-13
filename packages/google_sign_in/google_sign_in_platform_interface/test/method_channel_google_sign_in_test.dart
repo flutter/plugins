@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,10 +29,12 @@ const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
   'disconnect': null,
   'isSignedIn': true,
   'getTokens': kTokenData,
+  'requestScopes': true,
 };
 
-final GoogleSignInUserData kUser = getUserDataFromMap(kUserData);
-final GoogleSignInTokenData kToken = getTokenDataFromMap(kTokenData);
+final GoogleSignInUserData? kUser = getUserDataFromMap(kUserData);
+final GoogleSignInTokenData? kToken =
+    getTokenDataFromMap(kTokenData as Map<String, dynamic>);
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -42,7 +44,8 @@ void main() {
     final MethodChannel channel = googleSignIn.channel;
 
     final List<MethodCall> log = <MethodCall>[];
-    Map<String, dynamic> responses; // Some tests mutate some kDefaultResponses
+    late Map<String, dynamic>
+        responses; // Some tests mutate some kDefaultResponses
 
     setUp(() {
       responses = Map<String, dynamic>.from(kDefaultResponses);
@@ -97,11 +100,12 @@ void main() {
               hostedDomain: 'example.com',
               scopes: <String>['two', 'scopes'],
               signInOption: SignInOption.games,
-              clientId: 'UNUSED!');
+              clientId: 'fakeClientId');
         }: isMethodCall('init', arguments: <String, dynamic>{
           'hostedDomain': 'example.com',
           'scopes': <String>['two', 'scopes'],
           'signInOption': 'SignInOption.games',
+          'clientId': 'fakeClientId',
         }),
         () {
           googleSignIn.getTokens(

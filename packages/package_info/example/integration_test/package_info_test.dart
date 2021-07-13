@@ -1,6 +1,8 @@
-// Copyright 2019, the Chromium project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// @dart=2.9
 
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
@@ -22,12 +24,12 @@ void main() {
     } else if (Platform.isIOS) {
       expect(info.appName, 'Package Info Example');
       expect(info.buildNumber, '1');
-      expect(info.packageName, 'io.flutter.plugins.packageInfoExample');
+      expect(info.packageName, 'dev.flutter.plugins.packageInfoExample');
       expect(info.version, '1.0');
     } else if (Platform.isMacOS) {
       expect(info.appName, 'Package Info Example');
       expect(info.buildNumber, '1');
-      expect(info.packageName, 'io.flutter.plugins.packageInfoExample');
+      expect(info.packageName, 'dev.flutter.plugins.packageInfoExample');
       expect(info.version, '1.0.0');
     } else {
       throw (UnsupportedError('platform not supported'));
@@ -47,13 +49,13 @@ void main() {
       expect(find.text('Package Info Example'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
       expect(
-          find.text('io.flutter.plugins.packageInfoExample'), findsOneWidget);
+          find.text('dev.flutter.plugins.packageInfoExample'), findsOneWidget);
       expect(find.text('1.0'), findsOneWidget);
     } else if (Platform.isMacOS) {
       expect(find.text('Package Info Example'), findsOneWidget);
       expect(find.text('1'), findsOneWidget);
       expect(
-          find.text('io.flutter.plugins.packageInfoExample'), findsOneWidget);
+          find.text('dev.flutter.plugins.packageInfoExample'), findsOneWidget);
       expect(find.text('1.0.0'), findsOneWidget);
     } else {
       throw (UnsupportedError('platform not supported'));

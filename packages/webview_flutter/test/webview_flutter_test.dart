@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -692,6 +692,62 @@ void main() {
     });
   });
 
+  group('$PageLoadingCallback', () {
+    testWidgets('onLoadingProgress is not null', (WidgetTester tester) async {
+      int? loadingProgress;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: (int progress) {
+          loadingProgress = progress;
+        },
+      ));
+
+      final FakePlatformWebView? platformWebView =
+          fakePlatformViewsController.lastCreatedView;
+
+      platformWebView?.fakeOnProgressCallback(50);
+
+      expect(loadingProgress, 50);
+    });
+
+    testWidgets('onLoadingProgress is null', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: null,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      // This is to test that it does not crash on a null callback.
+      platformWebView.fakeOnProgressCallback(50);
+    });
+
+    testWidgets('onLoadingProgress changed', (WidgetTester tester) async {
+      int? loadingProgress;
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: (int progress) {},
+      ));
+
+      await tester.pumpWidget(WebView(
+        initialUrl: 'https://youtube.com',
+        onProgress: (int progress) {
+          loadingProgress = progress;
+        },
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      platformWebView.fakeOnProgressCallback(50);
+
+      expect(loadingProgress, 50);
+    });
+  });
+
   group('navigationDelegate', () {
     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView(
@@ -963,7 +1019,8 @@ class FakePlatformWebView {
     };
     final ByteData data = codec
         .encodeMethodCall(MethodCall('javascriptChannelMessage', arguments));
-    ServicesBinding.instance!.defaultBinaryMessenger
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
         .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 
@@ -982,7 +1039,8 @@ class FakePlatformWebView {
     };
     final ByteData data =
         codec.encodeMethodCall(MethodCall('navigationRequest', arguments));
-    ServicesBinding.instance!.defaultBinaryMessenger
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
         .handlePlatformMessage(channel.name, data, (ByteData? data) {
       final bool allow = codec.decodeEnvelope(data!);
       if (allow) {
@@ -999,11 +1057,13 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-      channel.name,
-      data,
-      (ByteData? data) {},
-    );
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+          channel.name,
+          data,
+          (ByteData? data) {},
+        );
   }
 
   void fakeOnPageFinishedCallback() {
@@ -1014,11 +1074,26 @@ class FakePlatformWebView {
       <dynamic, dynamic>{'url': currentUrl},
     ));
 
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-      channel.name,
-      data,
-      (ByteData? data) {},
-    );
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+          channel.name,
+          data,
+          (ByteData? data) {},
+        );
+  }
+
+  void fakeOnProgressCallback(int progress) {
+    final StandardMethodCodec codec = const StandardMethodCodec();
+
+    final ByteData data = codec.encodeMethodCall(MethodCall(
+      'onProgress',
+      <dynamic, dynamic>{'progress': progress},
+    ));
+
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(channel.name, data, (ByteData? data) {});
   }
 
   void _loadUrl(String? url) {
@@ -1176,3 +1251,10 @@ class MatchesCreationParams extends Matcher {
             .matches(creationParams.javascriptChannelNames, matchState);
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;
