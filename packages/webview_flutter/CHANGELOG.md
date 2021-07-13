@@ -1,3 +1,7 @@
+## 2.0.10
+
+* Fixed [#70619](https://github.com/flutter/flutter/issues/70619) by removing gesture detector from android view.
+
 ## 2.0.9
 
 * Add iOS UI integration test target.
