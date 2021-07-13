@@ -1,3 +1,7 @@
+## NEXT
+
+- Improved `license-check` output.
+
 ## 0.4.0
 
 - Modified the output format of many commands
