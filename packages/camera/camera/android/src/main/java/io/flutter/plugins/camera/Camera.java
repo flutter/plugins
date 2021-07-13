@@ -32,7 +32,6 @@ import android.os.HandlerThread;
 import android.os.Looper;
 import android.util.Log;
 import android.util.Size;
-import android.util.SparseIntArray;
 import android.view.Display;
 import android.view.Surface;
 import androidx.annotation.NonNull;
@@ -95,17 +94,7 @@ interface ErrorCallback {
 class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private static final String TAG = "Camera";
 
-  /** Conversion from screen rotation to JPEG orientation. */
-  private static final SparseIntArray ORIENTATIONS = new SparseIntArray();
-
   private static final HashMap<String, Integer> supportedImageFormats;
-
-  static {
-    ORIENTATIONS.append(Surface.ROTATION_0, 90);
-    ORIENTATIONS.append(Surface.ROTATION_90, 0);
-    ORIENTATIONS.append(Surface.ROTATION_180, 270);
-    ORIENTATIONS.append(Surface.ROTATION_270, 180);
-  }
 
   // Current supported outputs
   static {
@@ -209,20 +198,23 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         cameraFeatureFactory.createExposureLockFeature(cameraProperties));
     this.cameraFeatures.setExposureOffset(
         cameraFeatureFactory.createExposureOffsetFeature(cameraProperties));
+    SensorOrientationFeature sensorOrientationFeature =
+        cameraFeatureFactory.createSensorOrientationFeature(
+            cameraProperties, activity, dartMessenger);
+    this.cameraFeatures.setSensorOrientation(sensorOrientationFeature);
     this.cameraFeatures.setExposurePoint(
-        cameraFeatureFactory.createExposurePointFeature(cameraProperties));
+        cameraFeatureFactory.createExposurePointFeature(
+            cameraProperties, sensorOrientationFeature));
     this.cameraFeatures.setFlash(cameraFeatureFactory.createFlashFeature(cameraProperties));
     this.cameraFeatures.setFocusPoint(
-        cameraFeatureFactory.createFocusPointFeature(cameraProperties));
+        cameraFeatureFactory.createFocusPointFeature(cameraProperties, sensorOrientationFeature));
     this.cameraFeatures.setFpsRange(cameraFeatureFactory.createFpsRangeFeature(cameraProperties));
     this.cameraFeatures.setNoiseReduction(
         cameraFeatureFactory.createNoiseReductionFeature(cameraProperties));
     this.cameraFeatures.setResolution(
         cameraFeatureFactory.createResolutionFeature(
             cameraProperties, resolutionPreset, cameraProperties.getCameraName()));
-    this.cameraFeatures.setSensorOrientation(
-        cameraFeatureFactory.createSensorOrientationFeature(
-            cameraProperties, activity, dartMessenger));
+
     this.cameraFeatures.setZoomLevel(cameraFeatureFactory.createZoomLevelFeature(cameraProperties));
 
     // Create capture callback
@@ -271,8 +263,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
                 lockedOrientation == null
-                    ? getDeviceOrientationManager().getMediaOrientation()
-                    : getDeviceOrientationManager().getMediaOrientation(lockedOrientation))
+                    ? getDeviceOrientationManager().getVideoOrientation()
+                    : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
             .build();
   }
 
@@ -596,8 +588,14 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
       updateBuilderSettings(stillBuilder);
 
       // Orientation
-      int rotation = getDefaultDisplay().getRotation();
-      stillBuilder.set(CaptureRequest.JPEG_ORIENTATION, getOrientation(rotation));
+      final PlatformChannel.DeviceOrientation lockedOrientation =
+          ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
+              .getLockedCaptureOrientation();
+      stillBuilder.set(
+          CaptureRequest.JPEG_ORIENTATION,
+          lockedOrientation == null
+              ? getDeviceOrientationManager().getPhotoOrientation()
+              : getDeviceOrientationManager().getPhotoOrientation(lockedOrientation));
 
       CameraCaptureSession.CaptureCallback captureCallback =
           new CameraCaptureSession.CaptureCallback() {
@@ -663,21 +661,6 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     } catch (InterruptedException e) {
       dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
     }
-  }
-
-  /**
-   * Retrieves the JPEG orientation from the specified screen rotation.
-   *
-   * @param rotation The screen rotation.
-   * @return The JPEG orientation (one of 0, 90, 270, and 360)
-   */
-  private int getOrientation(int rotation) {
-    // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
-    // We have to take that into account and rotate JPEG properly.
-    // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
-    // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
-    final Integer sensorOrientation = cameraFeatures.getSensorOrientation().getValue();
-    return (ORIENTATIONS.get(rotation) + sensorOrientation + 270) % 360;
   }
 
   /** Start capturing a picture, doing autofocus first. */
@@ -908,7 +891,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
    * @param result Flutter result.
    * @param newMode New mode.
    */
-  public void setFocusMode(@NonNull final Result result, FocusMode newMode) {
+  public void setFocusMode(final Result result, FocusMode newMode) {
     final AutoFocusFeature autoFocusFeature = cameraFeatures.getAutoFocus();
     autoFocusFeature.setValue(newMode);
     autoFocusFeature.updateBuilder(previewRequestBuilder);
@@ -930,7 +913,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           captureSession.setRepeatingRequest(
               previewRequestBuilder.build(), null, backgroundHandler);
         } catch (CameraAccessException e) {
-          result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+          if (result != null) {
+            result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+          }
         }
         break;
 
@@ -940,7 +925,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
         break;
     }
 
-    result.success(null);
+    if (result != null) {
+      result.success(null);
+    }
   }
 
   /**
@@ -957,6 +944,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     refreshPreviewCaptureSession(
         () -> result.success(null),
         (code, message) -> result.error("setFocusPointFailed", "Could not set focus point.", null));
+
+    this.setFocusMode(null, cameraFeatures.getAutoFocus().getValue());
   }
 
   /**
