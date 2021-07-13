@@ -14,7 +14,13 @@ import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:quiver/collection.dart';
+
+/// Returns the exe name that command will use when running Flutter on
+/// [platform].
+String getFlutterCommand(Platform platform) =>
+    platform.isWindows ? 'flutter.bat' : 'flutter';
 
 /// Creates a packages directory in the given location.
 ///

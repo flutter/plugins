@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -22,7 +22,8 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   DriveExamplesCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addFlag(kPlatformAndroid,
         help: 'Runs the Android implementation of the examples');
     argParser.addFlag(kPlatformIos,
@@ -148,7 +149,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     for (final Directory example in getExamplesForPlugin(package)) {
       ++examplesFound;
       final String exampleName =
-          p.relative(example.path, from: packagesDir.path);
+          getRelativePosixPath(example, from: packagesDir);
 
       final List<File> drivers = await _getDrivers(example);
       if (drivers.isEmpty) {
@@ -172,11 +173,10 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
         if (testTargets.isEmpty) {
           final String driverRelativePath =
-              p.relative(driver.path, from: package.path);
+              getRelativePosixPath(driver, from: package);
           printError(
               'Found $driverRelativePath, but no integration_test/*_test.dart files.');
-          errors.add(
-              'No test files for ${p.relative(driver.path, from: package.path)}');
+          errors.add('No test files for $driverRelativePath');
           continue;
         }
 
@@ -185,7 +185,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             example, driver, testTargets,
             deviceFlags: deviceFlags);
         for (final File failingTarget in failingTargets) {
-          errors.add(p.relative(failingTarget.path, from: package.path));
+          errors.add(getRelativePosixPath(failingTarget, from: package));
         }
       }
     }
@@ -208,9 +208,14 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       return deviceIds;
     }
 
+    String output = result.stdout as String;
+    // --machine doesn't currently prevent the tool from printing banners;
+    // see https://github.com/flutter/flutter/issues/86055. This workaround
+    // can be removed once that is fixed.
+    output = output.substring(output.indexOf('['));
+
     final List<Map<String, dynamic>> devices =
-        (jsonDecode(result.stdout as String) as List<dynamic>)
-            .cast<Map<String, dynamic>>();
+        (jsonDecode(output) as List<dynamic>).cast<Map<String, dynamic>>();
     for (final Map<String, dynamic> deviceInfo in devices) {
       final String targetPlatform =
           (deviceInfo['targetPlatform'] as String?) ?? '';
@@ -291,9 +296,9 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             if (enableExperiment.isNotEmpty)
               '--enable-experiment=$enableExperiment',
             '--driver',
-            p.relative(driver.path, from: example.path),
+            getRelativePosixPath(driver, from: example),
             '--target',
-            p.relative(target.path, from: example.path),
+            getRelativePosixPath(target, from: example),
           ],
           workingDir: example);
       if (exitCode != 0) {

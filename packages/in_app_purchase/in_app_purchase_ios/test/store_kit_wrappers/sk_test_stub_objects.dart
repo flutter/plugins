@@ -33,10 +33,16 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(
+final SKPriceLocaleWrapper dollarLocale = SKPriceLocaleWrapper(
   currencySymbol: '\$',
   currencyCode: 'USD',
   countryCode: 'US',
+);
+
+final SKPriceLocaleWrapper noSymbolLocale = SKPriceLocaleWrapper(
+  currencySymbol: '',
+  currencyCode: 'EUR',
+  countryCode: 'UK',
 );
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
@@ -47,7 +53,7 @@ final SKProductSubscriptionPeriodWrapper dummySubscription =
 
 final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   price: '1.0',
-  priceLocale: dummyLocale,
+  priceLocale: dollarLocale,
   numberOfPeriods: 1,
   paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
@@ -57,7 +63,7 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   productIdentifier: 'id',
   localizedTitle: 'title',
   localizedDescription: 'description',
-  priceLocale: dummyLocale,
+  priceLocale: dollarLocale,
   subscriptionGroupIdentifier: 'com.group',
   price: '1.0',
   subscriptionPeriod: dummySubscription,

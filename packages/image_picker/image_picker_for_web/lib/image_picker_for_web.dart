@@ -154,7 +154,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     String? capture,
   }) {
     html.FileUploadInputElement input =
-    createInputElement(accept, capture) as html.FileUploadInputElement;
+        createInputElement(accept, capture) as html.FileUploadInputElement;
     _injectAndActivate(input);
     return _getSelectedXFile(input);
   }

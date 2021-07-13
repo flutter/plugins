@@ -1,3 +1,12 @@
+## 2.1.10
+
+* Ensure video pauses correctly when it finishes.
+
+## 2.1.9
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
 ## 2.1.8
 
 * Refactor `FLTCMTimeToMillis` to support indefinite streams. Fixes [#48670](https://github.com/flutter/flutter/issues/48670).

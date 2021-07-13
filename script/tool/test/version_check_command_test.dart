@@ -18,6 +18,7 @@ import 'package:pub_semver/pub_semver.dart';
 import 'package:test/test.dart';
 
 import 'common/plugin_command_test.mocks.dart';
+import 'mocks.dart';
 import 'util.dart';
 
 void testAllowedVersion(
@@ -46,6 +47,7 @@ void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
     FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
@@ -55,6 +57,7 @@ void main() {
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       gitDirCommands = <List<String>>[];
       gitShowResponses = <String, String>{};
@@ -80,7 +83,7 @@ void main() {
       });
       processRunner = RecordingProcessRunner();
       final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir);
+          processRunner: processRunner, platform: mockPlatform, gitDir: gitDir);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
