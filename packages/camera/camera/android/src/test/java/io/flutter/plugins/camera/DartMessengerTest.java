@@ -110,7 +110,7 @@ public class DartMessengerTest {
     List<ByteBuffer> sentMessages = fakeBinaryMessenger.getMessages();
     assertEquals(1, sentMessages.size());
     MethodCall call = decodeSentMessage(sentMessages.get(0));
-    assertEquals("ui_orientation_changed", call.method);
+    assertEquals("orientation_changed", call.method);
     assertEquals(call.argument("orientation"), "portraitUp");
   }
 

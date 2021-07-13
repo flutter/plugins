@@ -169,9 +169,9 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
-  Stream<DeviceUIOrientationChangedEvent> onDeviceUIOrientationChanged() {
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     return deviceEventStreamController.stream
-        .whereType<DeviceUIOrientationChangedEvent>();
+        .whereType<DeviceOrientationChangedEvent>();
   }
 
   @override
@@ -446,8 +446,8 @@ class MethodChannelCamera extends CameraPlatform {
   /// the plugin as it may break or change at any time.
   Future<dynamic> handleDeviceMethodCall(MethodCall call) async {
     switch (call.method) {
-      case 'ui_orientation_changed':
-        deviceEventStreamController.add(DeviceUIOrientationChangedEvent(
+      case 'orientation_changed':
+        deviceEventStreamController.add(DeviceOrientationChangedEvent(
             deserializeDeviceOrientation(call.arguments['orientation'])));
         break;
       default:

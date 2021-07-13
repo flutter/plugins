@@ -20,20 +20,20 @@ import 'package:flutter/services.dart';
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
 abstract class DeviceEvent {}
 
-/// The [DeviceUIOrientationChangedEvent] is fired every time the orientation of the device UI changes.
-class DeviceUIOrientationChangedEvent extends DeviceEvent {
+/// The [DeviceOrientationChangedEvent] is fired every time the orientation of the device UI changes.
+class DeviceOrientationChangedEvent extends DeviceEvent {
   /// The new orientation of the device
   final DeviceOrientation orientation;
 
   /// Build a new orientation changed event.
-  DeviceUIOrientationChangedEvent(this.orientation);
+  DeviceOrientationChangedEvent(this.orientation);
 
-  /// Converts the supplied [Map] to an instance of the [DeviceUIOrientationChangedEvent]
+  /// Converts the supplied [Map] to an instance of the [DeviceOrientationChangedEvent]
   /// class.
-  DeviceUIOrientationChangedEvent.fromJson(Map<String, dynamic> json)
+  DeviceOrientationChangedEvent.fromJson(Map<String, dynamic> json)
       : orientation = deserializeDeviceOrientation(json['orientation']);
 
-  /// Converts the [DeviceUIOrientationChangedEvent] instance into a [Map] instance that
+  /// Converts the [DeviceOrientationChangedEvent] instance into a [Map] instance that
   /// can be serialized to JSON.
   Map<String, dynamic> toJson() => {
         'orientation': serializeDeviceOrientation(orientation),
@@ -42,7 +42,7 @@ class DeviceUIOrientationChangedEvent extends DeviceEvent {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is DeviceUIOrientationChangedEvent &&
+      other is DeviceOrientationChangedEvent &&
           runtimeType == other.runtimeType &&
           orientation == other.orientation;
 

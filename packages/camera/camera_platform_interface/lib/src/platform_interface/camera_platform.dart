@@ -100,9 +100,9 @@ abstract class CameraPlatform extends PlatformInterface {
   ///
   /// Implementations for this:
   /// - Should support all 4 orientations.
-  Stream<DeviceUIOrientationChangedEvent> onDeviceUIOrientationChanged() {
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     throw UnimplementedError(
-        'onDeviceUIOrientationChanged() is not implemented.');
+        'onDeviceOrientationChanged() is not implemented.');
   }
 
   /// Locks the capture orientation.

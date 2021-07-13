@@ -44,7 +44,7 @@ class CameraValue {
     required this.focusMode,
     required this.exposurePointSupported,
     required this.focusPointSupported,
-    required this.deviceUIOrientation,
+    required this.deviceOrientation,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
@@ -62,7 +62,7 @@ class CameraValue {
           exposurePointSupported: false,
           focusMode: FocusMode.auto,
           focusPointSupported: false,
-          deviceUIOrientation: DeviceOrientation.portraitUp,
+          deviceOrientation: DeviceOrientation.portraitUp,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -119,7 +119,7 @@ class CameraValue {
   final bool focusPointSupported;
 
   /// The current device UI orientation.
-  final DeviceOrientation deviceUIOrientation;
+  final DeviceOrientation deviceOrientation;
 
   /// The currently locked capture orientation.
   final DeviceOrientation? lockedCaptureOrientation;
@@ -147,7 +147,7 @@ class CameraValue {
     FocusMode? focusMode,
     bool? exposurePointSupported,
     bool? focusPointSupported,
-    DeviceOrientation? deviceUIOrientation,
+    DeviceOrientation? deviceOrientation,
     Optional<DeviceOrientation>? lockedCaptureOrientation,
     Optional<DeviceOrientation>? recordingOrientation,
   }) {
@@ -165,7 +165,7 @@ class CameraValue {
       exposurePointSupported:
           exposurePointSupported ?? this.exposurePointSupported,
       focusPointSupported: focusPointSupported ?? this.focusPointSupported,
-      deviceUIOrientation: deviceUIOrientation ?? this.deviceUIOrientation,
+      deviceOrientation: deviceOrientation ?? this.deviceOrientation,
       lockedCaptureOrientation: lockedCaptureOrientation == null
           ? this.lockedCaptureOrientation
           : lockedCaptureOrientation.orNull,
@@ -188,7 +188,7 @@ class CameraValue {
         'focusMode: $focusMode, '
         'exposurePointSupported: $exposurePointSupported, '
         'focusPointSupported: $focusPointSupported, '
-        'deviceUIOrientation: $deviceUIOrientation, '
+        'deviceOrientation: $deviceOrientation, '
         'lockedCaptureOrientation: $lockedCaptureOrientation, '
         'recordingOrientation: $recordingOrientation)';
   }
@@ -237,7 +237,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   bool _isDisposed = false;
   StreamSubscription<dynamic>? _imageStreamSubscription;
   FutureOr<bool>? _initCalled;
-  StreamSubscription? _deviceUIOrientationSubscription;
+  StreamSubscription? _deviceOrientationSubscription;
 
   /// Checks whether [CameraController.dispose] has completed successfully.
   ///
@@ -262,11 +262,10 @@ class CameraController extends ValueNotifier<CameraValue> {
     try {
       Completer<CameraInitializedEvent> _initializeCompleter = Completer();
 
-      _deviceUIOrientationSubscription = CameraPlatform.instance
-          .onDeviceUIOrientationChanged()
-          .listen((event) {
+      _deviceOrientationSubscription =
+          CameraPlatform.instance.onDeviceOrientationChanged().listen((event) {
         value = value.copyWith(
-          deviceUIOrientation: event.orientation,
+          deviceOrientation: event.orientation,
         );
       });
 
@@ -458,7 +457,7 @@ class CameraController extends ValueNotifier<CameraValue> {
           isRecordingVideo: true,
           isRecordingPaused: false,
           recordingOrientation: Optional.fromNullable(
-              value.lockedCaptureOrientation ?? value.deviceUIOrientation));
+              value.lockedCaptureOrientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -696,10 +695,10 @@ class CameraController extends ValueNotifier<CameraValue> {
   Future<void> lockCaptureOrientation([DeviceOrientation? orientation]) async {
     try {
       await CameraPlatform.instance.lockCaptureOrientation(
-          _cameraId, orientation ?? value.deviceUIOrientation);
+          _cameraId, orientation ?? value.deviceOrientation);
       value = value.copyWith(
           lockedCaptureOrientation:
-              Optional.fromNullable(orientation ?? value.deviceUIOrientation));
+              Optional.fromNullable(orientation ?? value.deviceOrientation));
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
@@ -756,7 +755,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     if (_isDisposed) {
       return;
     }
-    unawaited(_deviceUIOrientationSubscription?.cancel());
+    unawaited(_deviceOrientationSubscription?.cancel());
     _isDisposed = true;
     super.dispose();
     if (_initCalled != null) {

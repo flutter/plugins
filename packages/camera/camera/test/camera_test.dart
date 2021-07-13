@@ -39,7 +39,7 @@ get mockOnCameraInitializedEvent => CameraInitializedEvent(
     );
 
 get mockOnDeviceOrientationChangedEvent =>
-    DeviceUIOrientationChangedEvent(DeviceOrientation.portraitUp);
+    DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
 
 get mockOnCameraClosingEvent => null;
 
@@ -1287,7 +1287,7 @@ class MockCameraPlatform extends Mock
       Stream.value(mockOnCameraErrorEvent);
 
   @override
-  Stream<DeviceUIOrientationChangedEvent> onDeviceUIOrientationChanged() =>
+  Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() =>
       Stream.value(mockOnDeviceOrientationChangedEvent);
 
   @override

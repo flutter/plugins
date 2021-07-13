@@ -66,6 +66,6 @@ class CameraPreview extends StatelessWidget {
     return controller.value.isRecordingVideo
         ? controller.value.recordingOrientation!
         : (controller.value.lockedCaptureOrientation ??
-            controller.value.deviceUIOrientation);
+            controller.value.deviceOrientation);
   }
 }

@@ -356,7 +356,7 @@ void main() {
 
         // Emit test events
         final event =
-            DeviceUIOrientationChangedEvent(DeviceOrientation.portraitUp);
+            DeviceOrientationChangedEvent(DeviceOrientation.portraitUp);
         await camera.handleDeviceMethodCall(
             MethodCall('orientation_changed', event.toJson()));
         await camera.handleDeviceMethodCall(

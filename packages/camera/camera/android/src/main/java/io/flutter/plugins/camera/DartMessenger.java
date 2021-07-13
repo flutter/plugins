@@ -25,7 +25,7 @@ public class DartMessenger {
   /** Specifies the different device related message types. */
   enum DeviceEventType {
     /** Indicates the device's orientation has changed. */
-    UI_ORIENTATION_CHANGED("ui_orientation_changed");
+    UI_ORIENTATION_CHANGED("orientation_changed");
     private final String method;
 
     DeviceEventType(String method) {
