@@ -29,7 +29,8 @@ void main() {
       mediaDevices = MockMediaDevices();
 
       final videoElement = VideoElement()
-        ..src = 'https://www.w3schools.com/tags/mov_bbb.mp4'
+        ..src =
+            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'
         ..preload = 'true'
         ..width = 10
         ..height = 10;
