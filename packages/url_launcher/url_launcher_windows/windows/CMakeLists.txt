@@ -12,7 +12,8 @@ list(APPEND PLUGIN_SOURCES
 )
 
 add_library(${PLUGIN_NAME} SHARED
-  "url_launcher_plugin_registration.cpp"
+  "include/url_launcher_windows/url_launcher_windows.h"
+  "url_launcher_windows.cpp"
   ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${PLUGIN_NAME})
