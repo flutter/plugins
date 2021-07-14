@@ -7,7 +7,7 @@
 @import AVFoundation;
 #import <OCMock/OCMock.h>
 
-@interface FLTThreadSafeFlutterResult : NSObject
+@interface FLTThreadSafeFlutterResult ()
 @property(readonly, nonatomic) FlutterResult flutterResult;
 @end
 
