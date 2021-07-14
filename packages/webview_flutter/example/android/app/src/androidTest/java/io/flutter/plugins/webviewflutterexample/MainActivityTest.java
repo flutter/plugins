@@ -9,31 +9,38 @@ import static androidx.test.espresso.flutter.assertion.FlutterAssertions.matches
 import static androidx.test.espresso.flutter.matcher.FlutterMatchers.isExisting;
 import static androidx.test.espresso.flutter.matcher.FlutterMatchers.withValueKey;
 import androidx.test.core.app.ActivityScenario;
+import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
+
+import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import io.flutter.embedding.android.FlutterActivity;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.runner.RunWith;
 
 import org.junit.Test;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(FlutterTestRunner.class)
 public class MainActivityTest {
-  ActivityScenario<FlutterActivity> scenario;
+  //ActivityScenario<FlutterActivity> scenario;
+
+  @Rule
+  public final ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
 
   @Before
   public void setup() {
-    scenario = ActivityScenario.launch(FlutterActivity.class);
+    //scenario = ActivityScenario.launch(FlutterActivity.class);
   }
 
   @After
   public void cleanup() {
-    scenario.close();
+    //scenario.close();
   }
 
   @Test
   public void testWebViewViewIsAddedToTree() {
-    onFlutterWidget(withValueKey("example_webView")).check(matches(isExisting()));
+    //onFlutterWidget(withValueKey("example_webView")).check(matches(isExisting()));
   }
 }

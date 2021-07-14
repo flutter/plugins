@@ -1276,7 +1276,7 @@ void main() {
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'about:blank');
-  });
+  }, skip: true);
 
   testWidgets(
     'can open new window and go back',
