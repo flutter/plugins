@@ -112,8 +112,7 @@ TEST(UrlLauncherPlugin, CanLaunchHandlesOpenFailure) {
       std::make_unique<MockMethodResult>();
 
   // Return failure for opening.
-  EXPECT_CALL(*system, RegOpenKeyExW)
-      .WillOnce(Return(ERROR_BAD_PATHNAME));
+  EXPECT_CALL(*system, RegOpenKeyExW).WillOnce(Return(ERROR_BAD_PATHNAME));
   // Expect a success response.
   EXPECT_CALL(*result, SuccessInternal(Pointee(EncodableValue(false))));
 
