@@ -20,7 +20,7 @@ set_target_properties(${PLUGIN_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter_wrapper_plugin)
+target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(file_chooser_bundled_libraries
@@ -28,14 +28,15 @@ set(file_chooser_bundled_libraries
   PARENT_SCOPE
 )
 
+
 # === Tests ===
 
 if (${include_${PROJECT_NAME}_tests})
 set(TEST_RUNNER "${PROJECT_NAME}_test")
 enable_testing()
-# TODO(stuartmorgan): Use a single shared, pre-checked-in googletest instance
-# rather than downloading for each plugin. This approach makes sense for a
-# template, but not for a monorepo with many plugins.
+# TODO(stuartmorgan): Consider using a single shared, pre-checked-in googletest
+# instance rather than downloading for each plugin. This approach makes sense
+# for a template, but not for a monorepo with many plugins.
 include(FetchContent)
 FetchContent_Declare(
   googletest
