@@ -1,9 +1,13 @@
+## 0.8.1+4
+
+* Fixes an issue where `preferredCameraDevice` option is not working for `getVideo` method.
+* Refactor unit tests that were device-only before.
+
 ## 0.8.1+3
 
 * Fix image picker causing a crash when the cache directory is deleted.
 
 ## 0.8.1+2
-
 * Update the example app to support the multi-image feature.
 
 ## 0.8.1+1
