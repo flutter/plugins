@@ -4,16 +4,23 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 
 set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 
-add_library(${PLUGIN_NAME} SHARED
+list(APPEND PLUGIN_SOURCES
+  "system_apis.cpp"
+  "system_apis.h"
   "url_launcher_plugin.cpp"
+  "url_launcher_plugin.h"
+)
+
+add_library(${PLUGIN_NAME} SHARED
+  "url_launcher_plugin_registration.cpp"
+  ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${PLUGIN_NAME})
-set_target_properties(${PLUGIN_NAME} PROPERTIES
-  CXX_VISIBILITY_PRESET hidden)
+set_target_properties(${PLUGIN_NAME} PROPERTIES CXX_VISIBILITY_PRESET hidden)
 target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
-target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
+target_link_libraries(${PLUGIN_NAME} PRIVATE flutter_wrapper_plugin)
 
 # List of absolute paths to libraries that should be bundled with the plugin
 set(file_chooser_bundled_libraries
@@ -24,7 +31,7 @@ set(file_chooser_bundled_libraries
 # === Tests ===
 
 if (${include_${PROJECT_NAME}_tests})
-set(TEST_RUNNER_NAME "${PROJECT_NAME}_test")
+set(TEST_RUNNER "${PROJECT_NAME}_test")
 enable_testing()
 # TODO(stuartmorgan): Use a single shared, pre-checked-in googletest instance
 # rather than downloading for each plugin. This approach makes sense for a
@@ -41,12 +48,22 @@ set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
 
 FetchContent_MakeAvailable(googletest)
 
-add_executable(${TEST_RUNNER_NAME}
+# The plugin's C API is not very useful for unit testing, so build the sources
+# directly into the test binary rather than using the DLL.
+add_executable(${TEST_RUNNER}
   test/url_launcher_windows_test.cpp
+  ${PLUGIN_SOURCES}
 )
-target_link_libraries(${TEST_RUNNER_NAME}
-  gtest_main
+apply_standard_settings(${TEST_RUNNER})
+target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
+target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
+target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)
+# flutter_wrapper_plugin has link dependencies on the Flutter DLL.
+add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${FLUTTER_LIBRARY}" $<TARGET_FILE_DIR:${TEST_RUNNER}>
 )
+
 include(GoogleTest)
-gtest_discover_tests(${TEST_RUNNER_NAME})
+gtest_discover_tests(${TEST_RUNNER})
 endif()

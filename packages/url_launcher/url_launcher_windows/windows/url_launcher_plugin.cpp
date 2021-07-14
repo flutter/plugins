@@ -13,8 +13,6 @@
 #include <sstream>
 #include <string>
 
-#include "include/url_launcher_windows/url_launcher_plugin.h"
-
 namespace url_launcher_plugin {
 
 namespace {
@@ -68,8 +66,8 @@ void UrlLauncherPlugin::RegisterWithRegistrar(
       registrar->messenger(), "plugins.flutter.io/url_launcher",
       &flutter::StandardMethodCodec::GetInstance());
 
-  // Uses new instead of make_unique due to private constructor.
-  std::unique_ptr<UrlLauncherPlugin> plugin(new UrlLauncherPlugin());
+  std::unique_ptr<UrlLauncherPlugin> plugin =
+      std::make_unique<UrlLauncherPlugin>();
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto& call, auto result) {
@@ -155,10 +153,3 @@ std::optional<std::string> UrlLauncherPlugin::LaunchUrl(
 }
 
 }  // namespace url_launcher_plugin
-
-void UrlLauncherPluginRegisterWithRegistrar(
-    FlutterDesktopPluginRegistrarRef registrar) {
-  url_launcher_plugin::UrlLauncherPlugin::RegisterWithRegistrar(
-      flutter::PluginRegistrarManager::GetInstance()
-          ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
-}

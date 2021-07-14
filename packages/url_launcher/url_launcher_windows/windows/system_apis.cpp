@@ -9,7 +9,11 @@ namespace url_launcher_plugin {
 
 SystemApis::SystemApis() {}
 
+SystemApis::~SystemApis() {}
+
 SystemApisImpl::SystemApisImpl() {}
+
+SystemApisImpl::~SystemApisImpl() {}
 
 LSTATUS SystemApisImpl::RegCloseKey(HKEY key) { return ::RegCloseKey(key); }
 

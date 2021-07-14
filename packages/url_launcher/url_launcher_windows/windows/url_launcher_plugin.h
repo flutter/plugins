@@ -18,13 +18,6 @@ class UrlLauncherPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrar* registrar);
 
-  virtual ~UrlLauncherPlugin();
-
-  // Disallow copy and move.
-  UrlLauncherPlugin(const UrlLauncherPlugin&) = delete;
-  UrlLauncherPlugin& operator=(const UrlLauncherPlugin&) = delete;
-
- private:
   UrlLauncherPlugin();
 
   // Creates a plugin instance with the given SystemApi instance.
@@ -32,10 +25,17 @@ class UrlLauncherPlugin : public flutter::Plugin {
   // Exists for unit testing with mock implementations.
   UrlLauncherPlugin(std::unique_ptr<SystemApis> system_apis);
 
-  // Called when a method is called on plugin channel;
+  virtual ~UrlLauncherPlugin();
+
+  // Disallow copy and move.
+  UrlLauncherPlugin(const UrlLauncherPlugin&) = delete;
+  UrlLauncherPlugin& operator=(const UrlLauncherPlugin&) = delete;
+
+  // Called when a method is called on the plugin channel.
   void HandleMethodCall(const flutter::MethodCall<>& method_call,
                         std::unique_ptr<flutter::MethodResult<>> result);
 
+ private:
   // Returns whether or not the given URL has a registered handler.
   bool CanLaunchUrl(const std::string& url);
 
