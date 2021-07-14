@@ -87,7 +87,7 @@
   // Don't expect a result yet
   XCTAssertNil(_resultObject.receivedResult);
 
-  [self waitForExpectations:[NSArray arrayWithObject:notificationExpectation] timeout:0.1];
+  [self waitForExpectations:[NSArray arrayWithObject:notificationExpectation] timeout:1];
 
   // Expect a result after waiting for thread to switch
   XCTAssertNotNil(_resultObject.receivedResult);
