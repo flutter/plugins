@@ -113,7 +113,7 @@ void main() {
 
       group('throws CameraException', () {
         testWidgets(
-            'containing notSupported error '
+            'with notSupported error '
             'when there are no media devices', (tester) async {
           when(() => navigator.mediaDevices).thenReturn(null);
 
@@ -135,7 +135,7 @@ void main() {
         });
 
         testWidgets(
-            'containing notFound error '
+            'with notFound error '
             'when getUserMedia throws DomException '
             'with NotFoundError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -159,7 +159,7 @@ void main() {
         });
 
         testWidgets(
-            'containing notFound error '
+            'with notFound error '
             'when getUserMedia throws DomException '
             'with DevicesNotFoundError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -183,7 +183,7 @@ void main() {
         });
 
         testWidgets(
-            'containing notReadable error '
+            'with notReadable error '
             'when getUserMedia throws DomException '
             'with NotReadableError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -207,7 +207,7 @@ void main() {
         });
 
         testWidgets(
-            'containing notReadable error '
+            'with notReadable error '
             'when getUserMedia throws DomException '
             'with TrackStartError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -231,7 +231,7 @@ void main() {
         });
 
         testWidgets(
-            'containing overconstrained error '
+            'with overconstrained error '
             'when getUserMedia throws DomException '
             'with OverconstrainedError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -255,7 +255,7 @@ void main() {
         });
 
         testWidgets(
-            'containing overconstrained error '
+            'with overconstrained error '
             'when getUserMedia throws DomException '
             'with ConstraintNotSatisfiedError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -279,7 +279,7 @@ void main() {
         });
 
         testWidgets(
-            'containing permissionDenied error '
+            'with permissionDenied error '
             'when getUserMedia throws DomException '
             'with NotAllowedError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -303,7 +303,7 @@ void main() {
         });
 
         testWidgets(
-            'containing permissionDenied error '
+            'with permissionDenied error '
             'when getUserMedia throws DomException '
             'with PermissionDeniedError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -327,7 +327,7 @@ void main() {
         });
 
         testWidgets(
-            'containing type error '
+            'with type error '
             'when getUserMedia throws DomException '
             'with TypeError', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -351,7 +351,7 @@ void main() {
         });
 
         testWidgets(
-            'containing unknown error '
+            'with unknown error '
             'when getUserMedia throws DomException '
             'with an unknown error', (tester) async {
           when(() => mediaDevices.getUserMedia(any()))
@@ -375,7 +375,7 @@ void main() {
         });
 
         testWidgets(
-            'containing unknown error '
+            'with unknown error '
             'when getUserMedia throws an unknown exception', (tester) async {
           when(() => mediaDevices.getUserMedia(any())).thenThrow(Exception());
 
