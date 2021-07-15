@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:ui' show hashValues;
+
 /// Options used to create a camera with the given
 /// [audio] and [video] media constraints.
 ///
@@ -32,6 +34,18 @@ class CameraOptions {
       'video': video.toJson(),
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is CameraOptions &&
+        other.audio == audio &&
+        other.video == video;
+  }
+
+  @override
+  int get hashCode => hashValues(audio, video);
 }
 
 /// Indicates whether the audio track is requested.
@@ -47,6 +61,16 @@ class AudioConstraints {
 
   /// Converts the current instance to a Map.
   Object toJson() => enabled;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is AudioConstraints && other.enabled == enabled;
+  }
+
+  @override
+  int get hashCode => enabled.hashCode;
 }
 
 /// Defines constraints that the video track must have
@@ -84,6 +108,20 @@ class VideoConstraints {
 
     return json;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is VideoConstraints &&
+        other.facingMode == facingMode &&
+        other.width == width &&
+        other.height == height &&
+        other.deviceId == deviceId;
+  }
+
+  @override
+  int get hashCode => hashValues(facingMode, width, height, deviceId);
 }
 
 /// The camera type used in [FacingModeConstraint].
@@ -142,6 +180,18 @@ class FacingModeConstraint {
       if (exact != null) 'exact': exact.toString(),
     };
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is FacingModeConstraint &&
+        other.ideal == ideal &&
+        other.exact == exact;
+  }
+
+  @override
+  int get hashCode => hashValues(ideal, exact);
 }
 
 /// The size of the requested video track used in
@@ -179,4 +229,17 @@ class VideoSizeConstraint {
 
     return json;
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is VideoSizeConstraint &&
+        other.minimum == minimum &&
+        other.ideal == ideal &&
+        other.maximum == maximum;
+  }
+
+  @override
+  int get hashCode => hashValues(minimum, ideal, maximum);
 }
