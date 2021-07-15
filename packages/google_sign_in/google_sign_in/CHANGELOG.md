@@ -1,7 +1,8 @@
-## NEXT
+## 5.0.5
 
 * Add iOS unit and UI integration test targets.
 * Exclude arm64 simulators in example app.
+* Remove references to the Android V1 embedding.
 
 ## 5.0.4
 

@@ -26,16 +26,7 @@
        FlutterApplication and put your custom class here. -->
   <application
     android:icon="@mipmap/ic_launcher"
-    android:label="url_launcher_example"
-    android:name="io.flutter.app.FlutterApplication">
-    <activity
-      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:hardwareAccelerated="true"
-      android:exported="true"
-      android:name="io.flutter.plugins.urllauncherexample.EmbeddingV1Activity"
-      android:theme="@android:style/Theme.Black.NoTitleBar"
-      android:windowSoftInputMode="adjustResize">
-    </activity>
+    android:label="url_launcher_example">
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"

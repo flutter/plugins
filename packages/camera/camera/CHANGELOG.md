@@ -1,3 +1,7 @@
+## 0.8.1+5
+
+* Remove references to the Android V1 embedding.
+
 ## 0.8.1+4
 
 * Silenced warnings that may occur during build when using a very
