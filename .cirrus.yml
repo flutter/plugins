@@ -51,7 +51,6 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
-          CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
@@ -74,7 +73,6 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
-          CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
@@ -99,7 +97,6 @@ task:
           PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
         matrix:
           CHANNEL: "master"
-          CHANNEL: "stable"
         SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
       create_simulator_script:
         - xcrun simctl list
