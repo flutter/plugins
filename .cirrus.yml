@@ -31,176 +31,13 @@ macos_template: &MACOS_TEMPLATE
   osx_instance:
     image: big-sur-xcode-12.5
 
-# Light-workload Linux tasks.
-# These use default machines, with fewer CPUs, to reduce pressure on the
-# concurrency limits.
-task:
-  << : *FLUTTER_UPGRADE_TEMPLATE
-  gke_container:
-    dockerfile: .ci/Dockerfile
-    builder_image_name: docker-builder-linux # gce vm image
-    builder_image_project: flutter-cirrus
-    cluster_name: test-cluster
-    zone: us-central1-a
-    namespace: default
-  matrix:
-    ### Platform-agnostic tasks ###
-    - name: plugin_tools_tests
-      script:
-        - cd script/tool
-        - CIRRUS_BUILD_ID=null pub run test
-    - name: publishable
-      version_check_script: ./script/tool_runner.sh version-check
-      publish_check_script: ./script/tool_runner.sh publish-check
-    - name: format
-      format_script: ./script/tool_runner.sh format --fail-on-change
-      pubspec_script: ./script/tool_runner.sh pubspec-check
-      license_script: dart $PLUGIN_TOOL license-check
-    - name: test
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      test_script:
-        - ./script/tool_runner.sh test
-    - name: analyze
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      tool_script:
-        - cd script/tool
-        - dart analyze --fatal-infos
-      script:
-        - ./script/tool_runner.sh analyze
-    ### Android tasks ###
-    - name: build_all_plugins_apk
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh apk
-    ### Web tasks ###
-    - name: build_all_plugins_web
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh web
-    ### Linux desktop tasks ###
-    - name: build_all_plugins_linux
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - flutter config --enable-linux-desktop
-        - ./script/build_all_plugins_app.sh linux
-    - name: build-linux+drive-examples
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      build_script:
-        - flutter config --enable-linux-desktop
-        - ./script/tool_runner.sh build-examples --linux
-      drive_script:
-        - xvfb-run ./script/tool_runner.sh drive-examples --linux
-
-# Heavy-workload Linux tasks.
-# These use machines with more CPUs and memory, so will reduce parallelization
-# for non-credit runs.
-task:
-  << : *FLUTTER_UPGRADE_TEMPLATE
-  gke_container:
-    dockerfile: .ci/Dockerfile
-    builder_image_name: docker-builder-linux # gce vm image
-    builder_image_project: flutter-cirrus
-    cluster_name: test-cluster
-    zone: us-central1-a
-    namespace: default
-    cpu: 4
-    memory: 12G
-  matrix:
-    ### Android tasks ###
-    - name: build-apks+java-test+firebase-test-lab
-      env:
-        matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-        MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
-      build_script:
-        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
-        # might include non-ASCII characters which makes Gradle crash.
-        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
-        - export CIRRUS_CHANGE_MESSAGE=""
-        - export CIRRUS_COMMIT_MESSAGE=""
-        - ./script/tool_runner.sh build-examples --apk
-      java_test_script:
-        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
-        # might include non-ASCII characters which makes Gradle crash.
-        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
-        - export CIRRUS_CHANGE_MESSAGE=""
-        - export CIRRUS_COMMIT_MESSAGE=""
-        - ./script/tool_runner.sh java-test  # must come after apk build
-      firebase_test_lab_script:
-        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
-        # might include non-ASCII characters which makes Gradle crash.
-        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
-        - export CIRRUS_CHANGE_MESSAGE=""
-        - export CIRRUS_COMMIT_MESSAGE=""
-        - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
-        -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
-        - else
-        -   echo "This user does not have permission to run Firebase Test Lab tests."
-        - fi
-    ### Web tasks ###
-    - name: build-web+drive-examples
-      env:
-        # Currently missing; see https://github.com/flutter/flutter/issues/81982
-        # and https://github.com/flutter/flutter/issues/82211
-        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "file_selector,shared_preferences_web"
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      install_script:
-        - git clone https://github.com/flutter/web_installers.git
-        - cd web_installers/packages/web_drivers/
-        - dart pub get
-        - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
-      build_script:
-        - ./script/tool_runner.sh build-examples --web
-      drive_script:
-        - ./script/tool_runner.sh drive-examples --web --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
-
 # macOS tasks.
 task:
   << : *MACOS_TEMPLATE
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
-    ### iOS+macOS tasks ***
-    - name: lint_darwin_plugins
-      script:
-        - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
-    - name: build_all_plugins_ipa
-      env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh ios --no-codesign
-    - name: build-ipas+drive-examples
+    - name: all-in-one
       env:
         PATH: $PATH:/usr/local/bin
         # in_app_purchase_ios is currently missing tests; see https://github.com/flutter/flutter/issues/81695
@@ -223,33 +60,55 @@ task:
         - ./script/tool_runner.sh build-examples --ios
       xctest_script:
         - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
-      drive_script:
-        # `drive-examples` contains integration tests, which changes the UI of the application.
-        # This UI change sometimes affects `xctest`.
-        # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
-        - ./script/tool_runner.sh drive-examples --ios --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
-    ### macOS desktop tasks ###
-    - name: build_all_plugins_macos
+    - name: anaylyze+all-tests
       env:
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
-      script:
-        - flutter config --enable-macos-desktop
-        - ./script/build_all_plugins_app.sh macos
-    - name: build-macos+drive-examples
-      env:
-        # conncectivity_macos is deprecated, so is not getting unit test backfill.
-        # package_info is deprecated, so is not getting unit test backfill.
-        PLUGINS_TO_EXCLUDE_MACOS_XCTESTS: "connectivity_macos,package_info"
-        matrix:
-          CHANNEL: "master"
-          CHANNEL: "stable"
         PATH: $PATH:/usr/local/bin
+        # in_app_purchase_ios is currently missing tests; see https://github.com/flutter/flutter/issues/81695
+        # ios_platform_images is currently missing tests; see https://github.com/flutter/flutter/issues/82208
+        # sensor hangs on CI.
+        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "in_app_purchase_ios,ios_platform_images,sensors"
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+      create_simulator_script:
+        - xcrun simctl list
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
       build_script:
-        - flutter config --enable-macos-desktop
-        - ./script/tool_runner.sh build-examples --macos
-      xctest_script:
-        - ./script/tool_runner.sh xctest --macos --exclude $PLUGINS_TO_EXCLUDE_MACOS_XCTESTS
-      drive_script:
-        - ./script/tool_runner.sh drive-examples --macos
+        - ./script/tool_runner.sh build-examples --ios
+      analyze_script:
+        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --no-run-tests
+      test_script:
+        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --no-analyze
+    - name: all-split
+      env:
+        PATH: $PATH:/usr/local/bin
+        # in_app_purchase_ios is currently missing tests; see https://github.com/flutter/flutter/issues/81695
+        # ios_platform_images is currently missing tests; see https://github.com/flutter/flutter/issues/82208
+        # sensor hangs on CI.
+        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "in_app_purchase_ios,ios_platform_images,sensors"
+        matrix:
+          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
+          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
+        matrix:
+          CHANNEL: "master"
+          CHANNEL: "stable"
+        SIMCTL_CHILD_MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
+      create_simulator_script:
+        - xcrun simctl list
+        - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
+      build_script:
+        - ./script/tool_runner.sh build-examples --ios
+      analyze_script:
+        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --no-run-tests
+      unittest_script:
+        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --no-analyze --test-target=RunnerTests
+      uitest_script:
+        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --no-analyze --test-target=RunnerUITests
