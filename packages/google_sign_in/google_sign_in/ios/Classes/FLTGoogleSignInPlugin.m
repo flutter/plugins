@@ -90,10 +90,10 @@ static FlutterError *getFlutterError(NSError *error) {
         NSMutableDictionary<NSString *, NSString *> *plist =
             [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         BOOL hasDynamicClientId =
-            [[call.arguments valueForKey:@"clientId"] isKindOfClass:[NSString class]];
+            [call.arguments[@"clientId"] isKindOfClass:[NSString class]];
 
         if (hasDynamicClientId) {
-          self.signIn.clientID = [call.arguments valueForKey:@"clientId"];
+          self.signIn.clientID = call.arguments[@"clientId"];
         } else {
           self.signIn.clientID = plist[kClientIdKey];
         }
