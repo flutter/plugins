@@ -6,12 +6,10 @@ import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
-import 'package:file/local.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/build_examples_command.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
-import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
