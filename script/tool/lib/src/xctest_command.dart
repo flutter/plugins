@@ -13,11 +13,12 @@ import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 
-const String _kiOSDestination = 'ios-destination';
-const String _kXcodeBuildCommand = 'xcodebuild';
-const String _kXCRunCommand = 'xcrun';
-const String _kFoundNoSimulatorsMessage =
-    'Cannot find any available simulators, tests failed';
+const String _iosDestinationFlag = 'ios-destination';
+const String _analyzeFlag = 'analyze';
+const String _testTargetFlag = 'test-target';
+
+const String _xcodeBuildCommand = 'xcodebuild';
+const String _xcRunCommand = 'xcrun';
 
 const int _exitFindingSimulatorsFailed = 3;
 const int _exitNoSimulators = 4;
@@ -35,12 +36,19 @@ class XCTestCommand extends PackageLoopingCommand {
     Platform platform = const LocalPlatform(),
   }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
-      _kiOSDestination,
+      _iosDestinationFlag,
       help:
           'Specify the destination when running the test, used for -destination flag for xcodebuild command.\n'
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
     );
+    argParser.addOption(
+      _testTargetFlag,
+      help:
+          'Limits the tests to a specific target (e.g., RunnerTests or RunnerUITests)',
+    );
+    argParser.addFlag(_analyzeFlag,
+        help: 'Includes analyze step', defaultsTo: true);
     argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs the macOS tests');
   }
@@ -70,11 +78,11 @@ class XCTestCommand extends PackageLoopingCommand {
     }
 
     if (shouldTestIos) {
-      String destination = getStringArg(_kiOSDestination);
+      String destination = getStringArg(_iosDestinationFlag);
       if (destination.isEmpty) {
         final String? simulatorId = await _findAvailableIphoneSimulator();
         if (simulatorId == null) {
-          printError(_kFoundNoSimulatorsMessage);
+          printError('Cannot find any available simulators, tests failed');
           throw ToolExit(_exitNoSimulators);
         }
         destination = 'id=$simulatorId';
@@ -140,18 +148,19 @@ class XCTestCommand extends PackageLoopingCommand {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
     bool passing = true;
+    final bool analyze = getBoolArg(_analyzeFlag);
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
           getRelativePosixPath(example, from: plugin.parent);
       print('Running $platform tests and analyzer for $examplePath...');
-      int exitCode =
-          await _runTests(true, example, platform, extraFlags: extraXcrunFlags);
+      int exitCode = await _runTests(true, example, platform,
+          analyze: analyze, extraFlags: extraXcrunFlags);
       // 66 = there is no test target (this fails fast). Try again with just the analyzer.
-      if (exitCode == 66) {
+      if (analyze && exitCode == 66) {
         print('Tests not found for $examplePath, running analyzer only...');
         exitCode = await _runTests(false, example, platform,
-            extraFlags: extraXcrunFlags);
+            analyze: true, extraFlags: extraXcrunFlags);
       }
       if (exitCode == 0) {
         printSuccess('Successfully ran $platform xctest for $examplePath');
@@ -166,25 +175,27 @@ class XCTestCommand extends PackageLoopingCommand {
     bool runTests,
     Directory example,
     String platform, {
+    required bool analyze,
     List<String> extraFlags = const <String>[],
   }) {
+    final String testTarget = getStringArg(_testTargetFlag);
     final List<String> xctestArgs = <String>[
-      _kXcodeBuildCommand,
+      _xcodeBuildCommand,
       if (runTests) 'test',
-      'analyze',
+      if (analyze) 'analyze',
       '-workspace',
       '${platform.toLowerCase()}/Runner.xcworkspace',
       '-configuration',
       'Debug',
       '-scheme',
       'Runner',
+      if (runTests && testTarget.isNotEmpty) '-only-testing:$testTarget',
       ...extraFlags,
       'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
     ];
-    final String completeTestCommand =
-        '$_kXCRunCommand ${xctestArgs.join(' ')}';
+    final String completeTestCommand = '$_xcRunCommand ${xctestArgs.join(' ')}';
     print(completeTestCommand);
-    return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
+    return processRunner.runAndStream(_xcRunCommand, xctestArgs,
         workingDir: example);
   }
 
@@ -196,11 +207,11 @@ class XCTestCommand extends PackageLoopingCommand {
       '--json'
     ];
     final String findSimulatorCompleteCommand =
-        '$_kXCRunCommand ${findSimulatorsArguments.join(' ')}';
+        '$_xcRunCommand ${findSimulatorsArguments.join(' ')}';
     print('Looking for available simulators...');
     print(findSimulatorCompleteCommand);
     final io.ProcessResult findSimulatorsResult =
-        await processRunner.run(_kXCRunCommand, findSimulatorsArguments);
+        await processRunner.run(_xcRunCommand, findSimulatorsArguments);
     if (findSimulatorsResult.exitCode != 0) {
       printError(
           'Error occurred while running "$findSimulatorCompleteCommand":\n'

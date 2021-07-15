@@ -123,6 +123,165 @@ void main() {
       );
     });
 
+    test('allows target filtering', () async {
+      final Directory pluginDirectory1 =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformSupport>{
+        kPlatformMacos: PlatformSupport.inline,
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory1.childDirectory('example');
+
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout =
+          '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'xctest',
+        '--macos',
+        '--test-target=RunnerTests',
+      ]);
+
+      expect(
+          output,
+          contains(
+              contains('Successfully ran macOS xctest for plugin/example')));
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                const <String>[
+                  'xcodebuild',
+                  'test',
+                  'analyze',
+                  '-workspace',
+                  'macos/Runner.xcworkspace',
+                  '-configuration',
+                  'Debug',
+                  '-scheme',
+                  'Runner',
+                  '-only-testing:RunnerTests',
+                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('allows disabling analyzing', () async {
+      final Directory pluginDirectory1 =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformSupport>{
+        kPlatformMacos: PlatformSupport.inline,
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory1.childDirectory('example');
+
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout =
+          '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'xctest',
+        '--macos',
+        '--no-analyze',
+      ]);
+
+      expect(
+          output,
+          contains(
+              contains('Successfully ran macOS xctest for plugin/example')));
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                const <String>[
+                  'xcodebuild',
+                  'test',
+                  '-workspace',
+                  'macos/Runner.xcworkspace',
+                  '-configuration',
+                  'Debug',
+                  '-scheme',
+                  'Runner',
+                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('runs analyze separately if there are no tests', () async {
+      final Directory pluginDirectory1 =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformSupport>{
+        kPlatformMacos: PlatformSupport.inline,
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory1.childDirectory('example');
+
+      // Exit code 66 from testing indicates no tests.
+      final MockProcess noTestsProcessResult = MockProcess();
+      noTestsProcessResult.exitCodeCompleter.complete(66);
+
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout =
+          '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        noTestsProcessResult,
+        MockProcess.succeeding(),
+      ];
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'xctest',
+        '--macos',
+      ]);
+
+      expect(
+          output,
+          contains(
+              contains('Successfully ran macOS xctest for plugin/example')));
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                const <String>[
+                  'xcodebuild',
+                  'test',
+                  'analyze',
+                  '-workspace',
+                  'macos/Runner.xcworkspace',
+                  '-configuration',
+                  'Debug',
+                  '-scheme',
+                  'Runner',
+                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                ],
+                pluginExampleDirectory.path),
+            ProcessCall(
+                'xcrun',
+                const <String>[
+                  'xcodebuild',
+                  'analyze',
+                  '-workspace',
+                  'macos/Runner.xcworkspace',
+                  '-configuration',
+                  'Debug',
+                  '-scheme',
+                  'Runner',
+                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
     group('iOS', () {
       test('skip if iOS is not supported', () async {
         createFakePlugin('plugin', packagesDir, extraFiles: <String>[
