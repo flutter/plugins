@@ -39,7 +39,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 @implementation FLTGoogleSignInPlugin {
   FlutterResult _accountRequest;
-  NSArray *_additionalScopesRequest;
+  NSArray<NSString *> *_additionalScopesRequest;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -76,7 +76,7 @@ static FlutterError *getFlutterError(NSError *error) {
       NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
                                                        ofType:@"plist"];
       if (path) {
-        NSMutableDictionary *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+        NSMutableDictionary<NSString *, NSString *> *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         BOOL hasDynamicClientId =
             [[call.arguments valueForKey:@"clientId"] isKindOfClass:[NSString class]];
 
@@ -146,9 +146,9 @@ static FlutterError *getFlutterError(NSError *error) {
       return;
     }
 
-    NSArray *currentScopes = [GIDSignIn sharedInstance].scopes;
-    NSArray *scopes = call.arguments[@"scopes"];
-    NSArray *missingScopes = [scopes
+    NSArray<NSString *> *currentScopes = [GIDSignIn sharedInstance].scopes;
+    NSArray<NSString *> *scopes = call.arguments[@"scopes"];
+    NSArray<NSString *> *missingScopes = [scopes
         filteredArrayUsingPredicate:[NSPredicate
                                         predicateWithBlock:^BOOL(id scope, NSDictionary *bindings) {
                                           return ![user.grantedScopes containsObject:scope];
@@ -187,7 +187,7 @@ static FlutterError *getFlutterError(NSError *error) {
   return YES;
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary *)options {
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
@@ -251,7 +251,7 @@ static FlutterError *getFlutterError(NSError *error) {
 
 #pragma mark - private methods
 
-- (void)respondWithAccount:(id)account error:(NSError *)error {
+- (void)respondWithAccount:(NSDictionary<NSString *, id> *)account error:(NSError *)error {
   FlutterResult result = _accountRequest;
   _accountRequest = nil;
   result(error != nil ? getFlutterError(error) : account);
