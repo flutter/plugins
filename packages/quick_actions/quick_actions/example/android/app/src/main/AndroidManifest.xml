@@ -7,17 +7,16 @@
       <meta-data
           android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
           android:value="true"/>
-    </activity>
-    <activity android:name="io.flutter.embedding.android.FlutterActivity"
-      android:theme="@style/LaunchTheme"
-      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:hardwareAccelerated="true"
-      android:windowSoftInputMode="adjustResize">
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN"/>
-        <category android:name="android.intent.category.LAUNCHER"/>
-      </intent-filter>
-    </activity>
+      <activity android:name="io.flutter.embedding.android.FlutterActivity"
+          android:theme="@style/LaunchTheme"
+          android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
+          android:hardwareAccelerated="true"
+          android:windowSoftInputMode="adjustResize">
+          <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+          </intent-filter>
+      </activity>
     <meta-data android:name="flutterEmbedding" android:value="2"/>
   </application>
 </manifest>
