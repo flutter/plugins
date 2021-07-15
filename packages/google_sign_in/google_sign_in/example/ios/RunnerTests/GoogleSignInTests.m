@@ -16,7 +16,7 @@
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *mockBinaryMessenger;
 @property(strong, nonatomic) NSObject<FlutterPluginRegistrar> *mockPluginRegistrar;
 @property(strong, nonatomic) FLTGoogleSignInPlugin *plugin;
-@property(strong, nonatomic) id mockSharedInstance;
+@property(strong, nonatomic) id mockSignIn;
 
 @end
 
@@ -27,18 +27,12 @@
   self.mockBinaryMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
   self.mockPluginRegistrar = OCMProtocolMock(@protocol(FlutterPluginRegistrar));
 
-  id mockSharedInstance = OCMClassMock([GIDSignIn class]);
-  OCMStub([mockSharedInstance sharedInstance]).andReturn(mockSharedInstance);
-  self.mockSharedInstance = mockSharedInstance;
+  id mockSignIn = OCMClassMock([GIDSignIn class]);
+  self.mockSignIn = mockSignIn;
 
   OCMStub(self.mockPluginRegistrar.messenger).andReturn(self.mockBinaryMessenger);
-  self.plugin = [[FLTGoogleSignInPlugin alloc] init];
+  self.plugin = [[FLTGoogleSignInPlugin alloc] initWithSignIn:mockSignIn];
   [FLTGoogleSignInPlugin registerWithRegistrar:self.mockPluginRegistrar];
-}
-
-- (void)tearDown {
-  [self.mockSharedInstance stopMocking];
-  [super tearDown];
 }
 
 - (void)testUnimplementedMethod {
@@ -65,7 +59,7 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectationsWithTimeout:5.0 handler:nil];
-  OCMVerify([self.mockSharedInstance signOut]);
+  OCMVerify([self.mockSignIn signOut]);
 }
 
 - (void)testDisconnect {
@@ -75,7 +69,7 @@
   [self.plugin handleMethodCall:methodCall
                          result:^(id result){
                          }];
-  OCMVerify([self.mockSharedInstance disconnect]);
+  OCMVerify([self.mockSignIn disconnect]);
 }
 
 - (void)testClearAuthCache {
@@ -120,14 +114,14 @@
                          }];
   [self waitForExpectationsWithTimeout:5.0 handler:nil];
 
-  id mockSharedInstance = self.mockSharedInstance;
-  OCMVerify([mockSharedInstance setScopes:@[ @"mockScope1" ]]);
-  OCMVerify([mockSharedInstance setHostedDomain:@"example.com"]);
+  id mockSignIn = self.mockSignIn;
+  OCMVerify([mockSignIn setScopes:@[ @"mockScope1" ]]);
+  OCMVerify([mockSignIn setHostedDomain:@"example.com"]);
 
   // Set in example app GoogleService-Info.plist.
-  OCMVerify([mockSharedInstance
+  OCMVerify([mockSignIn
       setClientID:@"479882132969-9i9aqik3jfjd7qhci1nqf0bm2g71rm1u.apps.googleusercontent.com"]);
-  OCMVerify([mockSharedInstance setServerClientID:@"YOUR_SERVER_CLIENT_ID"]);
+  OCMVerify([mockSignIn setServerClientID:@"YOUR_SERVER_CLIENT_ID"]);
 }
 
 - (void)testInitNullDomain {
@@ -141,7 +135,7 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectationsWithTimeout:5.0 handler:nil];
-  OCMVerify([self.mockSharedInstance setHostedDomain:nil]);
+  OCMVerify([self.mockSignIn setHostedDomain:nil]);
 }
 
 - (void)testInitDynamicClientId {
@@ -155,13 +149,13 @@
                            [expectation fulfill];
                          }];
   [self waitForExpectationsWithTimeout:5.0 handler:nil];
-  OCMVerify([self.mockSharedInstance setClientID:@"mockClientId"]);
+  OCMVerify([self.mockSignIn setClientID:@"mockClientId"]);
 }
 
 #pragma mark - Is signed in
 
 - (void)testIsNotSignedIn {
-  OCMStub([self.mockSharedInstance hasPreviousSignIn]).andReturn(NO);
+  OCMStub([self.mockSignIn hasPreviousSignIn]).andReturn(NO);
 
   FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"isSignedIn"
                                                                     arguments:nil];
@@ -176,7 +170,7 @@
 }
 
 - (void)testIsSignedIn {
-  OCMStub([self.mockSharedInstance hasPreviousSignIn]).andReturn(YES);
+  OCMStub([self.mockSignIn hasPreviousSignIn]).andReturn(YES);
 
   FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"isSignedIn"
                                                                     arguments:nil];
@@ -193,7 +187,7 @@
 #pragma mark - Sign in silently
 
 - (void)testSignInSilently {
-  OCMExpect([self.mockSharedInstance restorePreviousSignIn]);
+  OCMExpect([self.mockSignIn restorePreviousSignIn]);
 
   FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"signInSilently"
                                                                     arguments:nil];
@@ -201,7 +195,7 @@
   [self.plugin handleMethodCall:methodCall
                          result:^(id result){
                          }];
-  OCMVerifyAll(self.mockSharedInstance);
+  OCMVerifyAll(self.mockSignIn);
 }
 
 - (void)testSignInSilentlyFailsConcurrently {
@@ -210,7 +204,7 @@
 
   XCTestExpectation *expectation = [self expectationWithDescription:@"expect result returns true"];
 
-  OCMExpect([self.mockSharedInstance restorePreviousSignIn]).andDo(^(NSInvocation *invocation) {
+  OCMExpect([self.mockSignIn restorePreviousSignIn]).andDo(^(NSInvocation *invocation) {
     // Simulate calling the same method while the previous one is in flight.
     [self.plugin handleMethodCall:methodCall
                            result:^(FlutterError *result) {
@@ -236,16 +230,16 @@
                          result:^(NSNumber *result){
                          }];
 
-  id mockSharedInstance = self.mockSharedInstance;
-  OCMVerify([mockSharedInstance
+  id mockSignIn = self.mockSignIn;
+  OCMVerify([mockSignIn
       setPresentingViewController:[OCMArg isKindOfClass:[FlutterViewController class]]]);
-  OCMVerify([mockSharedInstance signIn]);
+  OCMVerify([mockSignIn signIn]);
 }
 
 - (void)testSignInExecption {
   FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"signIn"
                                                                     arguments:nil];
-  OCMExpect([self.mockSharedInstance signIn])
+  OCMExpect([self.mockSignIn signIn])
       .andThrow([NSException exceptionWithName:@"MockName" reason:@"MockReason" userInfo:nil]);
 
   __block FlutterError *error;
@@ -263,7 +257,7 @@
 
 - (void)testGetTokens {
   id mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
 
   id mockAuthentication = OCMClassMock([GIDAuthentication class]);
   OCMStub([mockAuthentication idToken]).andReturn(@"mockIdToken");
@@ -287,7 +281,7 @@
 
 - (void)testGetTokensNoAuthKeychainError {
   id mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
 
   id mockAuthentication = OCMClassMock([GIDAuthentication class]);
   NSError *error = [NSError errorWithDomain:kGIDSignInErrorDomain
@@ -312,7 +306,7 @@
 
 - (void)testGetTokensCancelledError {
   id mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
 
   id mockAuthentication = OCMClassMock([GIDAuthentication class]);
   NSError *error = [NSError errorWithDomain:kGIDSignInErrorDomain
@@ -337,7 +331,7 @@
 
 - (void)testGetTokensURLError {
   id mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
 
   id mockAuthentication = OCMClassMock([GIDAuthentication class]);
   NSError *error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorTimedOut userInfo:nil];
@@ -360,7 +354,7 @@
 
 - (void)testGetTokensUnknownError {
   id mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
 
   id mockAuthentication = OCMClassMock([GIDAuthentication class]);
   NSError *error = [NSError errorWithDomain:@"BogusDomain" code:42 userInfo:nil];
@@ -384,7 +378,7 @@
 #pragma mark - Request scopes
 
 - (void)testRequestScopesResultErrorIfNotSignedIn {
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(nil);
+  OCMStub([self.mockSignIn currentUser]).andReturn(nil);
 
   FlutterMethodCall *methodCall =
       [FlutterMethodCall methodCallWithMethodName:@"requestScopes"
@@ -402,7 +396,7 @@
 - (void)testRequestScopesIfNoMissingScope {
   // Mock Google Signin internal calls
   GIDGoogleUser *mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
   NSArray *requestedScopes = @[ @"mockScope1" ];
   OCMStub(mockUser.grantedScopes).andReturn(requestedScopes);
   FlutterMethodCall *methodCall =
@@ -421,11 +415,11 @@
 - (void)testRequestScopesRequestsIfNotGranted {
   // Mock Google Signin internal calls
   GIDGoogleUser *mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
   NSArray *requestedScopes = @[ @"mockScope1" ];
   OCMStub(mockUser.grantedScopes).andReturn(@[]);
-  id mockSharedInstance = self.mockSharedInstance;
-  OCMStub([mockSharedInstance scopes]).andReturn(@[]);
+  id mockSignIn = self.mockSignIn;
+  OCMStub([mockSignIn scopes]).andReturn(@[]);
 
   FlutterMethodCall *methodCall =
       [FlutterMethodCall methodCallWithMethodName:@"requestScopes"
@@ -435,19 +429,19 @@
                          result:^(id r){
                          }];
 
-  OCMVerify([mockSharedInstance setScopes:@[ @"mockScope1" ]]);
-  OCMVerify([mockSharedInstance signIn]);
+  OCMVerify([mockSignIn setScopes:@[ @"mockScope1" ]]);
+  OCMVerify([mockSignIn signIn]);
 }
 
 - (void)testRequestScopesReturnsFalseIfNotGranted {
   // Mock Google Signin internal calls
   GIDGoogleUser *mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
   NSArray *requestedScopes = @[ @"mockScope1" ];
   OCMStub(mockUser.grantedScopes).andReturn(@[]);
 
-  OCMStub([self.mockSharedInstance signIn]).andDo(^(NSInvocation *invocation) {
-    [((NSObject<GIDSignInDelegate> *)self.plugin) signIn:self.mockSharedInstance
+  OCMStub([self.mockSignIn signIn]).andDo(^(NSInvocation *invocation) {
+    [((NSObject<GIDSignInDelegate> *)self.plugin) signIn:self.mockSignIn
                                         didSignInForUser:mockUser
                                                withError:nil];
   });
@@ -468,14 +462,14 @@
 - (void)testRequestScopesReturnsTrueIfGranted {
   // Mock Google Signin internal calls
   GIDGoogleUser *mockUser = OCMClassMock([GIDGoogleUser class]);
-  OCMStub([self.mockSharedInstance currentUser]).andReturn(mockUser);
+  OCMStub([self.mockSignIn currentUser]).andReturn(mockUser);
   NSArray *requestedScopes = @[ @"mockScope1" ];
   NSMutableArray *availableScopes = [NSMutableArray new];
   OCMStub(mockUser.grantedScopes).andReturn(availableScopes);
 
-  OCMStub([self.mockSharedInstance signIn]).andDo(^(NSInvocation *invocation) {
+  OCMStub([self.mockSignIn signIn]).andDo(^(NSInvocation *invocation) {
     [availableScopes addObject:@"mockScope1"];
-    [((NSObject<GIDSignInDelegate> *)self.plugin) signIn:self.mockSharedInstance
+    [((NSObject<GIDSignInDelegate> *)self.plugin) signIn:self.mockSignIn
                                         didSignInForUser:mockUser
                                                withError:nil];
   });
