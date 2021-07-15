@@ -1,3 +1,7 @@
+## 0.8.1+5
+
+* Fixed setFocusPoint and setExposurePoint coordinates only being correct in a single orientation on iOS.
+
 ## 0.8.1+4
 
 * Silenced warnings that may occur during build when using a very
