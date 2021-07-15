@@ -215,6 +215,53 @@ void main() {
           ]));
     });
 
+    test('reports skips with no tests and no analyze', () async {
+      final Directory pluginDirectory1 =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformSupport>{
+        kPlatformMacos: PlatformSupport.inline,
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory1.childDirectory('example');
+
+      // Exit code 66 from testing indicates no tests.
+      final MockProcess noTestsProcessResult = MockProcess();
+      noTestsProcessResult.exitCodeCompleter.complete(66);
+
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout =
+          '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        noTestsProcessResult,
+      ];
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['xctest', '--macos', '--no-analyze']);
+
+      expect(output,
+          contains(contains('No tests found, and analyze was not requested.')));
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                const <String>[
+                  'xcodebuild',
+                  'test',
+                  '-workspace',
+                  'macos/Runner.xcworkspace',
+                  '-configuration',
+                  'Debug',
+                  '-scheme',
+                  'Runner',
+                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+                ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
     test('runs analyze separately if there are no tests', () async {
       final Directory pluginDirectory1 =
           createFakePlugin('plugin', packagesDir, extraFiles: <String>[

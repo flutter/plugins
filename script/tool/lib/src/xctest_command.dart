@@ -123,15 +123,27 @@ class XCTestCommand extends PackageLoopingCommand {
     }
 
     final List<String> failures = <String>[];
-    if (testIos &&
-        !await _testPlugin(package, 'iOS',
-            extraXcrunFlags: _iosDestinationFlags)) {
-      failures.add('iOS');
+    bool ranTests = false;
+    if (testIos) {
+      final RunState result = await _testPlugin(package, 'iOS',
+          extraXcrunFlags: _iosDestinationFlags);
+      ranTests |= result != RunState.skipped;
+      if (result == RunState.failed) {
+        failures.add('iOS');
+      }
     }
-    if (testMacos && !await _testPlugin(package, 'macOS')) {
-      failures.add('macOS');
+    if (testMacos) {
+      final RunState result = await _testPlugin(package, 'macOS');
+      ranTests |= result != RunState.skipped;
+      if (result == RunState.failed) {
+        failures.add('macOS');
+      }
     }
 
+    if (!ranTests) {
+      return PackageResult.skip(
+          'No tests found, and analyze was not requested.');
+    }
     // Only provide the failing platform in the failure details if testing
     // multiple platforms, otherwise it's just noise.
     return failures.isEmpty
@@ -141,13 +153,14 @@ class XCTestCommand extends PackageLoopingCommand {
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
-  /// success if the tests passed.
-  Future<bool> _testPlugin(
+  /// the test result.
+  Future<RunState> _testPlugin(
     Directory plugin,
     String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
-    bool passing = true;
+    // Assume skipped until at least one test has run.
+    RunState overallResult = RunState.skipped;
     final bool analyze = getBoolArg(_analyzeFlag);
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
@@ -157,18 +170,27 @@ class XCTestCommand extends PackageLoopingCommand {
       int exitCode = await _runTests(true, example, platform,
           analyze: analyze, extraFlags: extraXcrunFlags);
       // 66 = there is no test target (this fails fast). Try again with just the analyzer.
-      if (analyze && exitCode == 66) {
+      if (exitCode == 66) {
+        if (!analyze) {
+          print('Tests not found for $examplePath');
+          continue;
+        }
         print('Tests not found for $examplePath, running analyzer only...');
         exitCode = await _runTests(false, example, platform,
             analyze: true, extraFlags: extraXcrunFlags);
       }
       if (exitCode == 0) {
         printSuccess('Successfully ran $platform xctest for $examplePath');
+        // If this is the first test, assume success until something fails.
+        if (overallResult == RunState.skipped) {
+          overallResult = RunState.succeeded;
+        }
       } else {
-        passing = false;
+        // Any failure means a failure overall.
+        overallResult = RunState.failed;
       }
     }
-    return passing;
+    return overallResult;
   }
 
   Future<int> _runTests(
