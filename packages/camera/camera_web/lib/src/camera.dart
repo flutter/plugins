@@ -149,7 +149,7 @@ class Camera {
 
   /// Stops the camera stream and resets the camera source.
   void stop() {
-    final tracks = videoElement.srcObject?.getVideoTracks();
+    final tracks = videoElement.srcObject?.getTracks();
     if (tracks != null) {
       for (final track in tracks) {
         track.stop();
