@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-import 'dart:io' as io;
-
 import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
@@ -12,16 +9,13 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/xcode.dart';
 
 const String _iosDestinationFlag = 'ios-destination';
 const String _analyzeFlag = 'analyze';
 const String _testTargetFlag = 'test-target';
 
-const String _xcodeBuildCommand = 'xcodebuild';
-const String _xcRunCommand = 'xcrun';
-
-const int _exitFindingSimulatorsFailed = 3;
-const int _exitNoSimulators = 4;
+const int _exitNoSimulators = 3;
 
 /// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
 /// The tests target have to be added to the Xcode project of the example app,
@@ -34,7 +28,8 @@ class XCTestCommand extends PackageLoopingCommand {
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
-  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
+  })  : _xcode = Xcode(processRunner: processRunner, log: true),
+        super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       _iosDestinationFlag,
       help:
@@ -55,6 +50,8 @@ class XCTestCommand extends PackageLoopingCommand {
 
   // The device destination flags for iOS tests.
   List<String> _iosDestinationFlags = <String>[];
+
+  final Xcode _xcode;
 
   @override
   final String name = 'xctest';
@@ -80,7 +77,8 @@ class XCTestCommand extends PackageLoopingCommand {
     if (shouldTestIos) {
       String destination = getStringArg(_iosDestinationFlag);
       if (destination.isEmpty) {
-        final String? simulatorId = await _findAvailableIphoneSimulator();
+        final String? simulatorId =
+            await _xcode.findBestAvailableIphoneSimulator();
         if (simulatorId == null) {
           printError('Cannot find any available simulators, tests failed');
           throw ToolExit(_exitNoSimulators);
@@ -200,90 +198,23 @@ class XCTestCommand extends PackageLoopingCommand {
     required bool analyze,
     List<String> extraFlags = const <String>[],
   }) {
+    assert(runTests || analyze);
     final String testTarget = getStringArg(_testTargetFlag);
-    final List<String> xctestArgs = <String>[
-      _xcodeBuildCommand,
-      if (runTests) 'test',
-      if (analyze) 'analyze',
-      '-workspace',
-      '${platform.toLowerCase()}/Runner.xcworkspace',
-      '-configuration',
-      'Debug',
-      '-scheme',
-      'Runner',
-      if (runTests && testTarget.isNotEmpty) '-only-testing:$testTarget',
-      ...extraFlags,
-      'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-    ];
-    final String completeTestCommand = '$_xcRunCommand ${xctestArgs.join(' ')}';
-    print(completeTestCommand);
-    return processRunner.runAndStream(_xcRunCommand, xctestArgs,
-        workingDir: example);
-  }
 
-  Future<String?> _findAvailableIphoneSimulator() async {
-    // Find the first available destination if not specified.
-    final List<String> findSimulatorsArguments = <String>[
-      'simctl',
-      'list',
-      '--json'
-    ];
-    final String findSimulatorCompleteCommand =
-        '$_xcRunCommand ${findSimulatorsArguments.join(' ')}';
-    print('Looking for available simulators...');
-    print(findSimulatorCompleteCommand);
-    final io.ProcessResult findSimulatorsResult =
-        await processRunner.run(_xcRunCommand, findSimulatorsArguments);
-    if (findSimulatorsResult.exitCode != 0) {
-      printError(
-          'Error occurred while running "$findSimulatorCompleteCommand":\n'
-          '${findSimulatorsResult.stderr}');
-      throw ToolExit(_exitFindingSimulatorsFailed);
-    }
-    final Map<String, dynamic> simulatorListJson =
-        jsonDecode(findSimulatorsResult.stdout as String)
-            as Map<String, dynamic>;
-    final List<Map<String, dynamic>> runtimes =
-        (simulatorListJson['runtimes'] as List<dynamic>)
-            .cast<Map<String, dynamic>>();
-    final Map<String, Object> devices =
-        (simulatorListJson['devices'] as Map<String, dynamic>)
-            .cast<String, Object>();
-    if (runtimes.isEmpty || devices.isEmpty) {
-      return null;
-    }
-    String? id;
-    // Looking for runtimes, trying to find one with highest OS version.
-    for (final Map<String, dynamic> rawRuntimeMap in runtimes.reversed) {
-      final Map<String, Object> runtimeMap =
-          rawRuntimeMap.cast<String, Object>();
-      if ((runtimeMap['name'] as String?)?.contains('iOS') != true) {
-        continue;
-      }
-      final String? runtimeID = runtimeMap['identifier'] as String?;
-      if (runtimeID == null) {
-        continue;
-      }
-      final List<Map<String, dynamic>>? devicesForRuntime =
-          (devices[runtimeID] as List<dynamic>?)?.cast<Map<String, dynamic>>();
-      if (devicesForRuntime == null || devicesForRuntime.isEmpty) {
-        continue;
-      }
-      // Looking for runtimes, trying to find latest version of device.
-      for (final Map<String, dynamic> rawDevice in devicesForRuntime.reversed) {
-        final Map<String, Object> device = rawDevice.cast<String, Object>();
-        if (device['availabilityError'] != null ||
-            (device['isAvailable'] as bool?) == false) {
-          continue;
-        }
-        id = device['udid'] as String?;
-        if (id == null) {
-          continue;
-        }
-        print('device selected: $device');
-        return id;
-      }
-    }
-    return null;
+    return _xcode.runXcodeBuild(
+      example,
+      actions: <String>[
+        if (runTests) 'test',
+        if (analyze) 'analyze',
+      ],
+      workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
+      scheme: 'Runner',
+      configuration: 'Debug',
+      extraFlags: <String>[
+        if (runTests && testTarget.isNotEmpty) '-only-testing:$testTarget',
+        ...extraFlags,
+        'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+      ],
+    );
   }
 }

@@ -16,22 +16,8 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
-// Note: This uses `dynamic` deliberately, and should not be updated to Object,
-// in order to ensure that the code correctly handles this return type from
-// JSON decoding.
 final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   'runtimes': <Map<String, dynamic>>[
-    <String, dynamic>{
-      'bundlePath':
-          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime',
-      'buildversion': '17A577',
-      'runtimeRoot':
-          '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.0.simruntime/Contents/Resources/RuntimeRoot',
-      'identifier': 'com.apple.CoreSimulator.SimRuntime.iOS-13-0',
-      'version': '13.0',
-      'isAvailable': true,
-      'name': 'iOS 13.0'
-    },
     <String, dynamic>{
       'bundlePath':
           '/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 13.4.simruntime',
@@ -43,32 +29,9 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
       'isAvailable': true,
       'name': 'iOS 13.4'
     },
-    <String, dynamic>{
-      'bundlePath':
-          '/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime',
-      'buildversion': '17T531',
-      'runtimeRoot':
-          '/Applications/Xcode_11_7.app/Contents/Developer/Platforms/WatchOS.platform/Library/Developer/CoreSimulator/Profiles/Runtimes/watchOS.simruntime/Contents/Resources/RuntimeRoot',
-      'identifier': 'com.apple.CoreSimulator.SimRuntime.watchOS-6-2',
-      'version': '6.2.1',
-      'isAvailable': true,
-      'name': 'watchOS 6.2'
-    }
   ],
   'devices': <String, dynamic>{
     'com.apple.CoreSimulator.SimRuntime.iOS-13-4': <Map<String, dynamic>>[
-      <String, dynamic>{
-        'dataPath':
-            '/Users/xxx/Library/Developer/CoreSimulator/Devices/2706BBEB-1E01-403E-A8E9-70E8E5A24774/data',
-        'logPath':
-            '/Users/xxx/Library/Logs/CoreSimulator/2706BBEB-1E01-403E-A8E9-70E8E5A24774',
-        'udid': '2706BBEB-1E01-403E-A8E9-70E8E5A24774',
-        'isAvailable': true,
-        'deviceTypeIdentifier':
-            'com.apple.CoreSimulator.SimDeviceType.iPhone-8',
-        'state': 'Shutdown',
-        'name': 'iPhone 8'
-      },
       <String, dynamic>{
         'dataPath':
             '/Users/xxx/Library/Developer/CoreSimulator/Devices/1E76A0FD-38AC-4537-A989-EA639D7D012A/data',
@@ -85,6 +48,8 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   }
 };
 
+// TODO(stuartmorgan): Rework these tests to use a mock Xcode instead of
+// doing all the process mocking and validation.
 void main() {
   const String _kDestination = '--ios-destination';
 
@@ -159,10 +124,10 @@ void main() {
                   'analyze',
                   '-workspace',
                   'macos/Runner.xcworkspace',
-                  '-configuration',
-                  'Debug',
                   '-scheme',
                   'Runner',
+                  '-configuration',
+                  'Debug',
                   '-only-testing:RunnerTests',
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
@@ -205,10 +170,10 @@ void main() {
                   'test',
                   '-workspace',
                   'macos/Runner.xcworkspace',
-                  '-configuration',
-                  'Debug',
                   '-scheme',
                   'Runner',
+                  '-configuration',
+                  'Debug',
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
                 pluginExampleDirectory.path),
@@ -252,10 +217,10 @@ void main() {
                   'test',
                   '-workspace',
                   'macos/Runner.xcworkspace',
-                  '-configuration',
-                  'Debug',
                   '-scheme',
                   'Runner',
+                  '-configuration',
+                  'Debug',
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
                 pluginExampleDirectory.path),
@@ -305,10 +270,10 @@ void main() {
                   'analyze',
                   '-workspace',
                   'macos/Runner.xcworkspace',
-                  '-configuration',
-                  'Debug',
                   '-scheme',
                   'Runner',
+                  '-configuration',
+                  'Debug',
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
                 pluginExampleDirectory.path),
@@ -319,10 +284,10 @@ void main() {
                   'analyze',
                   '-workspace',
                   'macos/Runner.xcworkspace',
-                  '-configuration',
-                  'Debug',
                   '-scheme',
                   'Runner',
+                  '-configuration',
+                  'Debug',
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
                 pluginExampleDirectory.path),
@@ -401,10 +366,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'ios/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     '-destination',
                     'foo_destination',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
@@ -450,10 +415,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'ios/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     '-destination',
                     'id=1E76A0FD-38AC-4537-A989-EA639D7D012A',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
@@ -570,10 +535,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'macos/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                   ],
                   pluginExampleDirectory.path),
@@ -653,10 +618,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'ios/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     '-destination',
                     'foo_destination',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
@@ -670,10 +635,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'macos/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                   ],
                   pluginExampleDirectory.path),
@@ -720,10 +685,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'macos/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                   ],
                   pluginExampleDirectory.path),
@@ -770,10 +735,10 @@ void main() {
                     'analyze',
                     '-workspace',
                     'ios/Runner.xcworkspace',
-                    '-configuration',
-                    'Debug',
                     '-scheme',
                     'Runner',
+                    '-configuration',
+                    'Debug',
                     '-destination',
                     'foo_destination',
                     'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
