@@ -26,6 +26,31 @@ void main() {
         }),
       );
     });
+
+    testWidgets('supports value equality', (tester) async {
+      expect(
+        CameraOptions(
+          audio: AudioConstraints(enabled: false),
+          video: VideoConstraints(
+            facingMode: FacingModeConstraint(CameraType.environment),
+            width: VideoSizeConstraint(minimum: 10, ideal: 15, maximum: 20),
+            height: VideoSizeConstraint(minimum: 15, ideal: 20, maximum: 25),
+            deviceId: 'deviceId',
+          ),
+        ),
+        equals(
+          CameraOptions(
+            audio: AudioConstraints(enabled: false),
+            video: VideoConstraints(
+              facingMode: FacingModeConstraint(CameraType.environment),
+              width: VideoSizeConstraint(minimum: 10, ideal: 15, maximum: 20),
+              height: VideoSizeConstraint(minimum: 15, ideal: 20, maximum: 25),
+              deviceId: 'deviceId',
+            ),
+          ),
+        ),
+      );
+    });
   });
 
   group('AudioConstraints', () {
@@ -33,6 +58,13 @@ void main() {
       expect(
         AudioConstraints(enabled: true).toJson(),
         equals(true),
+      );
+    });
+
+    testWidgets('supports value equality', (tester) async {
+      expect(
+        AudioConstraints(enabled: true),
+        equals(AudioConstraints(enabled: true)),
       );
     });
   });
@@ -56,6 +88,25 @@ void main() {
         }),
       );
     });
+
+    testWidgets('supports value equality', (tester) async {
+      expect(
+        VideoConstraints(
+          facingMode: FacingModeConstraint.exact(CameraType.environment),
+          width: VideoSizeConstraint(minimum: 90, ideal: 100, maximum: 100),
+          height: VideoSizeConstraint(minimum: 40, ideal: 50, maximum: 50),
+          deviceId: 'deviceId',
+        ),
+        equals(
+          VideoConstraints(
+            facingMode: FacingModeConstraint.exact(CameraType.environment),
+            width: VideoSizeConstraint(minimum: 90, ideal: 100, maximum: 100),
+            height: VideoSizeConstraint(minimum: 40, ideal: 50, maximum: 50),
+            deviceId: 'deviceId',
+          ),
+        ),
+      );
+    });
   });
 
   group('FacingModeConstraint', () {
@@ -64,9 +115,7 @@ void main() {
           'serializes correctly '
           'for environment camera type', (tester) async {
         expect(
-          FacingModeConstraint(
-            CameraType.environment,
-          ).toJson(),
+          FacingModeConstraint(CameraType.environment).toJson(),
           equals({'ideal': 'environment'}),
         );
       });
@@ -75,10 +124,15 @@ void main() {
           'serializes correctly '
           'for user camera type', (tester) async {
         expect(
-          FacingModeConstraint(
-            CameraType.user,
-          ).toJson(),
+          FacingModeConstraint(CameraType.user).toJson(),
           equals({'ideal': 'user'}),
+        );
+      });
+
+      testWidgets('supports value equality', (tester) async {
+        expect(
+          FacingModeConstraint(CameraType.user),
+          equals(FacingModeConstraint(CameraType.user)),
         );
       });
     });
@@ -88,9 +142,7 @@ void main() {
           'serializes correctly '
           'for environment camera type', (tester) async {
         expect(
-          FacingModeConstraint.exact(
-            CameraType.environment,
-          ).toJson(),
+          FacingModeConstraint.exact(CameraType.environment).toJson(),
           equals({'exact': 'environment'}),
         );
       });
@@ -99,10 +151,15 @@ void main() {
           'serializes correctly '
           'for user camera type', (tester) async {
         expect(
-          FacingModeConstraint.exact(
-            CameraType.user,
-          ).toJson(),
+          FacingModeConstraint.exact(CameraType.user).toJson(),
           equals({'exact': 'user'}),
+        );
+      });
+
+      testWidgets('supports value equality', (tester) async {
+        expect(
+          FacingModeConstraint.exact(CameraType.environment),
+          equals(FacingModeConstraint.exact(CameraType.environment)),
         );
       });
     });
@@ -112,15 +169,32 @@ void main() {
     testWidgets('serializes correctly', (tester) async {
       expect(
         VideoSizeConstraint(
-          ideal: 400,
           minimum: 200,
+          ideal: 400,
           maximum: 400,
         ).toJson(),
         equals({
-          'ideal': 400,
           'min': 200,
+          'ideal': 400,
           'max': 400,
         }),
+      );
+    });
+
+    testWidgets('supports value equality', (tester) async {
+      expect(
+        VideoSizeConstraint(
+          minimum: 100,
+          ideal: 200,
+          maximum: 300,
+        ),
+        equals(
+          VideoSizeConstraint(
+            minimum: 100,
+            ideal: 200,
+            maximum: 300,
+          ),
+        ),
       );
     });
   });
