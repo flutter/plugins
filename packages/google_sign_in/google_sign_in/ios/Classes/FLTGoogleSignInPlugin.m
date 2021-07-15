@@ -76,7 +76,8 @@ static FlutterError *getFlutterError(NSError *error) {
       NSString *path = [[NSBundle mainBundle] pathForResource:@"GoogleService-Info"
                                                        ofType:@"plist"];
       if (path) {
-        NSMutableDictionary<NSString *, NSString *> *plist = [[NSMutableDictionary alloc] initWithContentsOfFile:path];
+        NSMutableDictionary<NSString *, NSString *> *plist =
+            [[NSMutableDictionary alloc] initWithContentsOfFile:path];
         BOOL hasDynamicClientId =
             [[call.arguments valueForKey:@"clientId"] isKindOfClass:[NSString class]];
 
@@ -187,7 +188,9 @@ static FlutterError *getFlutterError(NSError *error) {
   return YES;
 }
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
   return [[GIDSignIn sharedInstance] handleURL:url];
 }
 
