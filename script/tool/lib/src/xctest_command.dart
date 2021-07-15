@@ -47,6 +47,7 @@ class XCTestCommand extends PackageLoopingCommand {
       help:
           'Limits the tests to a specific target (e.g., RunnerTests or RunnerUITests)',
     );
+    argParser.addFlag('run-tests', help: 'Includes tests', defaultsTo: true);
     argParser.addFlag(_analyzeFlag,
         help: 'Includes analyze step', defaultsTo: true);
     argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
@@ -148,14 +149,17 @@ class XCTestCommand extends PackageLoopingCommand {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
     bool passing = true;
+    final bool runTests = getBoolArg('run-tests');
     final bool analyze = getBoolArg(_analyzeFlag);
     for (final Directory example in getExamplesForPlugin(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
           getRelativePosixPath(example, from: plugin.parent);
       print('Running $platform tests and analyzer for $examplePath...');
-      int exitCode = await _runTests(true, example, platform,
-          analyze: analyze, extraFlags: extraXcrunFlags);
+      int exitCode = runTests
+          ? await _runTests(true, example, platform,
+              analyze: analyze, extraFlags: extraXcrunFlags)
+          : 66;
       // 66 = there is no test target (this fails fast). Try again with just the analyzer.
       if (analyze && exitCode == 66) {
         print('Tests not found for $examplePath, running analyzer only...');
