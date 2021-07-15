@@ -54,10 +54,18 @@ API_AVAILABLE(ios(11.2), macos(10.13.2))
 @end
 
 @interface FIAPReceiptManagerStub : FIAPReceiptManager
+// Indicates whether getReceiptData of this stub is going to return an error.
+// Setting this to true will let getReceiptData give a basic NSError and return nil.
+@property(assign, nonatomic) BOOL returnError;
 @end
 
 @interface SKReceiptRefreshRequestStub : SKReceiptRefreshRequest
 - (instancetype)initWithFailureError:(NSError *)error;
+@end
+
+API_AVAILABLE(ios(13.0), macos(10.15))
+@interface SKStorefrontStub : SKStorefront
+- (instancetype)initWithMap:(NSDictionary *)map;
 @end
 
 NS_ASSUME_NONNULL_END

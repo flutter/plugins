@@ -45,7 +45,7 @@ void main() {
       createFakePlugin('pluginb', packagesDir);
       createFakePlugin('pluginc', packagesDir);
 
-      await runner.run(<String>['all-plugins-app']);
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
       final List<String> pubspec =
           appDir.childFile('pubspec.yaml').readAsLinesSync();
 
@@ -63,7 +63,7 @@ void main() {
       createFakePlugin('pluginb', packagesDir);
       createFakePlugin('pluginc', packagesDir);
 
-      await runner.run(<String>['all-plugins-app']);
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
       final List<String> pubspec =
           appDir.childFile('pubspec.yaml').readAsLinesSync();
 
@@ -80,7 +80,7 @@ void main() {
     test('pubspec is compatible with null-safe app code', () async {
       createFakePlugin('plugina', packagesDir);
 
-      await runner.run(<String>['all-plugins-app']);
+      await runCapturingPrint(runner, <String>['all-plugins-app']);
       final String pubspec =
           appDir.childFile('pubspec.yaml').readAsStringSync();
 

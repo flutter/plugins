@@ -9,6 +9,7 @@ import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/pubspec_check_command.dart';
 import 'package:test/test.dart';
 
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
@@ -16,15 +17,20 @@ void main() {
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
     late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = fileSystem.currentDirectory.childDirectory('packages');
       createPackagesDirectory(parentDir: packagesDir.parent);
       processRunner = RecordingProcessRunner();
-      final PubspecCheckCommand command =
-          PubspecCheckCommand(packagesDir, processRunner: processRunner);
+      final PubspecCheckCommand command = PubspecCheckCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner = CommandRunner<void>(
           'pubspec_check_command', 'Test for pubspec_check_command');
@@ -104,10 +110,10 @@ ${devDependenciesSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking plugin...',
-          'Checking plugin/example...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
+          contains('Running for plugin/example...'),
+          contains('No issues found!'),
         ]),
       );
     });
@@ -129,10 +135,10 @@ ${flutterSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking plugin...',
-          'Checking plugin/example...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
+          contains('Running for plugin/example...'),
+          contains('No issues found!'),
         ]),
       );
     });
@@ -153,9 +159,9 @@ ${dependenciesSection()}
 
       expect(
         output,
-        containsAllInOrder(<String>[
-          'Checking package...',
-          '\nNo pubspec issues found!',
+        containsAllInOrder(<Matcher>[
+          contains('Running for package...'),
+          contains('No issues found!'),
         ]),
       );
     });
@@ -176,7 +182,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -196,7 +202,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -216,7 +222,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -236,7 +242,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -256,7 +262,7 @@ ${environmentSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -276,7 +282,7 @@ ${devDependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -296,7 +302,7 @@ ${dependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
 
@@ -316,7 +322,7 @@ ${dependenciesSection()}
 
       await expectLater(
         result,
-        throwsA(const TypeMatcher<ToolExit>()),
+        throwsA(isA<ToolExit>()),
       );
     });
   });

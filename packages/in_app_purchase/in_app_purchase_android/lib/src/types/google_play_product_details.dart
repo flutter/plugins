@@ -18,6 +18,7 @@ class GooglePlayProductDetails extends ProductDetails {
     required double rawPrice,
     required String currencyCode,
     required this.skuDetails,
+    required String currencySymbol,
   }) : super(
           id: id,
           title: title,
@@ -25,6 +26,7 @@ class GooglePlayProductDetails extends ProductDetails {
           price: price,
           rawPrice: rawPrice,
           currencyCode: currencyCode,
+          currencySymbol: currencySymbol,
         );
 
   /// Points back to the [SkuDetailsWrapper] object that was used to generate
@@ -43,6 +45,7 @@ class GooglePlayProductDetails extends ProductDetails {
       price: skuDetails.price,
       rawPrice: ((skuDetails.priceAmountMicros) / 1000000.0).toDouble(),
       currencyCode: skuDetails.priceCurrencyCode,
+      currencySymbol: skuDetails.priceCurrencySymbol,
       skuDetails: skuDetails,
     );
   }

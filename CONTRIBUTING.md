@@ -20,6 +20,9 @@ Additional resources specific to the plugins repository:
   As explained in the Flutter guide,
   [**PRs needs tests**](https://github.com/flutter/flutter/wiki/Tree-hygiene#tests), so
   this is critical to read before submitting a PR.
+- [Contributing to Plugins and Packages](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages),
+  for more information about how to make PRs for this repository, especially when
+  changing federated plugins.
 
 ## Important note
 
