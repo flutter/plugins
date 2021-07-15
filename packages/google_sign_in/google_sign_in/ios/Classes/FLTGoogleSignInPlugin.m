@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #import "FLTGoogleSignInPlugin.h"
-#import "FLTGoogleSignInPlugin_Private.h"
+#import "FLTGoogleSignInPlugin_Test.h"
 
 #import <GoogleSignIn/GoogleSignIn.h>
 
@@ -89,8 +89,7 @@ static FlutterError *getFlutterError(NSError *error) {
       if (path) {
         NSMutableDictionary<NSString *, NSString *> *plist =
             [[NSMutableDictionary alloc] initWithContentsOfFile:path];
-        BOOL hasDynamicClientId =
-            [call.arguments[@"clientId"] isKindOfClass:[NSString class]];
+        BOOL hasDynamicClientId = [call.arguments[@"clientId"] isKindOfClass:[NSString class]];
 
         if (hasDynamicClientId) {
           self.signIn.clientID = call.arguments[@"clientId"];
