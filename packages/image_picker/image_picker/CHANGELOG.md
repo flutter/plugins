@@ -1,7 +1,8 @@
 ## 0.8.3
 
 * Update cache system to save list of images and retrieve them when it is needed. On Android, 
-`getLostData` will return `LostData` object that has new `List<PickedFile>` property to get multiple lost images.
+`List<PickedFile> files` property added to `LostData` and `List<XFile> files` property added to 
+`LostDataResponse` in the case multiple picked images were recovered.
 
 ## 0.8.2
 
