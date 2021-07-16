@@ -66,7 +66,7 @@ class SKPaymentQueueWrapper {
   /// addTransactionObserver:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506042-addtransactionobserver?language=objc).
   void setTransactionObserver(SKTransactionObserverWrapper observer) {
     _observer = observer;
-    channel.setMethodCallHandler(_handleObserverCallbacks);
+    channel.setMethodCallHandler(handleObserverCallbacks);
   }
 
   /// Instructs the iOS implementation to register a transaction observer and
@@ -208,8 +208,12 @@ class SKPaymentQueueWrapper {
         .invokeMethod<void>('-[SKPaymentQueue showPriceConsentIfNeeded]');
   }
 
-  // Triage a method channel call from the platform and triggers the correct observer method.
-  Future<dynamic> _handleObserverCallbacks(MethodCall call) async {
+  /// Triage a method channel call from the platform and triggers the correct observer method.
+  ///
+  /// This method is public for testing purposes only and should not be used
+  /// outside this class.
+  @visibleForTesting
+  Future<dynamic> handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null,
         '[in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. Make sure the observer is added right at the App Launch.');
     final SKTransactionObserverWrapper observer = _observer!;
@@ -232,7 +236,8 @@ class SKPaymentQueueWrapper {
         }
       case 'restoreCompletedTransactionsFailed':
         {
-          SKError error = SKError.fromJson(call.arguments);
+          SKError error =
+              SKError.fromJson(Map<String, dynamic>.from(call.arguments));
           return Future<void>(() {
             observer.restoreCompletedTransactionsFailed(error: error);
           });

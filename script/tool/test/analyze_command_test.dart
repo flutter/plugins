@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
@@ -14,16 +16,21 @@ import 'util.dart';
 
 void main() {
   late FileSystem fileSystem;
+  late MockPlatform mockPlatform;
   late Directory packagesDir;
   late RecordingProcessRunner processRunner;
   late CommandRunner<void> runner;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
+    mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = RecordingProcessRunner();
-    final AnalyzeCommand analyzeCommand =
-        AnalyzeCommand(packagesDir, processRunner: processRunner);
+    final AnalyzeCommand analyzeCommand = AnalyzeCommand(
+      packagesDir,
+      processRunner: processRunner,
+      platform: mockPlatform,
+    );
 
     runner = CommandRunner<void>('analyze_command', 'Test for analyze_command');
     runner.addCommand(analyzeCommand);
@@ -33,9 +40,6 @@ void main() {
     final Directory plugin1Dir = createFakePlugin('a', packagesDir);
     final Directory plugin2Dir = createFakePlugin('b', packagesDir);
 
-    final MockProcess mockProcess = MockProcess();
-    mockProcess.exitCodeCompleter.complete(0);
-    processRunner.processToReturn = mockProcess;
     await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
@@ -55,9 +59,6 @@ void main() {
   test('skips flutter pub get for examples', () async {
     final Directory plugin1Dir = createFakePlugin('a', packagesDir);
 
-    final MockProcess mockProcess = MockProcess();
-    mockProcess.exitCodeCompleter.complete(0);
-    processRunner.processToReturn = mockProcess;
     await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
@@ -74,9 +75,6 @@ void main() {
     final Directory plugin1Dir = createFakePlugin('a', packagesDir);
     final Directory plugin2Dir = createFakePlugin('example', packagesDir);
 
-    final MockProcess mockProcess = MockProcess();
-    mockProcess.exitCodeCompleter.complete(0);
-    processRunner.processToReturn = mockProcess;
     await runCapturingPrint(runner, <String>['analyze']);
 
     expect(
@@ -96,9 +94,6 @@ void main() {
   test('uses a separate analysis sdk', () async {
     final Directory pluginDir = createFakePlugin('a', packagesDir);
 
-    final MockProcess mockProcess = MockProcess();
-    mockProcess.exitCodeCompleter.complete(0);
-    processRunner.processToReturn = mockProcess;
     await runCapturingPrint(
         runner, <String>['analyze', '--analysis-sdk', 'foo/bar/baz']);
 
@@ -124,25 +119,50 @@ void main() {
       createFakePlugin('foo', packagesDir,
           extraFiles: <String>['analysis_options.yaml']);
 
-      await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
-          throwsA(const TypeMatcher<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['analyze'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Found an extra analysis_options.yaml at /packages/foo/analysis_options.yaml'),
+          contains('  foo:\n'
+              '    Unexpected local analysis options'),
+        ]),
+      );
     });
 
     test('fails .analysis_options', () async {
       createFakePlugin('foo', packagesDir,
           extraFiles: <String>['.analysis_options']);
 
-      await expectLater(() => runCapturingPrint(runner, <String>['analyze']),
-          throwsA(const TypeMatcher<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['analyze'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Found an extra analysis_options.yaml at /packages/foo/.analysis_options'),
+          contains('  foo:\n'
+              '    Unexpected local analysis options'),
+        ]),
+      );
     });
 
     test('takes an allow list', () async {
       final Directory pluginDir = createFakePlugin('foo', packagesDir,
           extraFiles: <String>['analysis_options.yaml']);
 
-      final MockProcess mockProcess = MockProcess();
-      mockProcess.exitCodeCompleter.complete(0);
-      processRunner.processToReturn = mockProcess;
       await runCapturingPrint(
           runner, <String>['analyze', '--custom-analysis', 'foo']);
 
@@ -161,14 +181,55 @@ void main() {
       createFakePlugin('foo', packagesDir,
           extraFiles: <String>['analysis_options.yaml']);
 
-      final MockProcess mockProcess = MockProcess();
-      mockProcess.exitCodeCompleter.complete(0);
-      processRunner.processToReturn = mockProcess;
-
       await expectLater(
           () => runCapturingPrint(
               runner, <String>['analyze', '--custom-analysis', '']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
     });
+  });
+
+  test('fails if "packages get" fails', () async {
+    createFakePlugin('foo', packagesDir);
+
+    processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+      MockProcess.failing() // flutter packages get
+    ];
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['analyze'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('Unable to get dependencies'),
+      ]),
+    );
+  });
+
+  test('fails if "analyze" fails', () async {
+    createFakePlugin('foo', packagesDir);
+
+    processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
+      MockProcess.failing() // dart analyze
+    ];
+
+    Error? commandError;
+    final List<String> output = await runCapturingPrint(
+        runner, <String>['analyze'], errorHandler: (Error e) {
+      commandError = e;
+    });
+
+    expect(commandError, isA<ToolExit>());
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('The following packages had errors:'),
+        contains('  foo'),
+      ]),
+    );
   });
 }

@@ -16,6 +16,7 @@ import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -77,7 +78,7 @@ void main() {
   group('Initial validation', () {
     test('requires a package flag', () async {
       await expectLater(() => commandRunner.run(<String>['publish-plugin']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
       expect(
           printedMessages.last, contains('Must specify a package to publish.'));
     });
@@ -90,7 +91,7 @@ void main() {
                 'iamerror',
                 '--no-push-tags'
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages.last, contains('iamerror does not exist'));
     });
@@ -105,7 +106,7 @@ void main() {
                 testPluginName,
                 '--no-push-tags'
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(
           printedMessages,
@@ -119,7 +120,7 @@ void main() {
       await expectLater(
           () => commandRunner
               .run(<String>['publish-plugin', '--package', testPluginName]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
       expect(processRunner.results.last.stderr, contains('No such remote'));
     });
 
@@ -248,7 +249,7 @@ void main() {
                 '--no-push-tags',
                 '--no-tag-release',
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages, contains('Publish foo failed.'));
     });
@@ -301,7 +302,7 @@ void main() {
                 testPluginName,
                 '--no-push-tags',
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages, contains('Publish foo failed.'));
       final String? tag = (await gitDir.runCommand(
@@ -327,7 +328,7 @@ void main() {
                 '--package',
                 testPluginName,
               ]),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
 
       expect(printedMessages, contains('Tag push canceled.'));
     });
@@ -958,7 +959,7 @@ void main() {
       await expectLater(
           () => commandRunner.run(
               <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']),
-          throwsA(const TypeMatcher<ToolExit>()));
+          throwsA(isA<ToolExit>()));
       expect(processRunner.pushTagsArgs, isEmpty);
     });
 
@@ -1091,7 +1092,7 @@ class TestProcessRunner extends ProcessRunner {
       {Directory? workingDirectory}) async {
     /// Never actually publish anything. Start is always and only used for this
     /// since it returns something we can route stdin through.
-    assert(executable == 'flutter' &&
+    assert(executable == getFlutterCommand(const LocalPlatform()) &&
         args.isNotEmpty &&
         args[0] == 'pub' &&
         args[1] == 'publish');

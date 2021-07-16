@@ -1,3 +1,19 @@
+## 0.1.3
+
+* Add price symbol to platform interface object ProductDetail.
+
+## 0.1.2+2
+
+* Fix crash when retrieveReceiptWithError gives an error.
+
+## 0.1.2+1
+
+* Fix wrong data type when cancelling user credentials dialog.
+
+## 0.1.2
+
+* Added countryCode to the SKPriceLocaleWrapper.
+
 ## 0.1.1+1
 
 * iOS: Fix treating missing App Store receipt as an exception.
@@ -8,7 +24,7 @@
 
 ## 0.1.0+2
 
-* Changed the iOS payment queue handler in such a way that it only adds a listener to the `SKPaymentQueue` when there 
+* Changed the iOS payment queue handler in such a way that it only adds a listener to the `SKPaymentQueue` when there
   is a listener to the Dart `purchaseStream`.
 
 ## 0.1.0+1

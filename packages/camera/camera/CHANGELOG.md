@@ -1,3 +1,12 @@
+## 0.8.1+5
+
+* Make sure the `setFocusPoint` and `setExposurePoint` coordinates work correctly in all orientations on iOS (instead of only in portrait mode). 
+
+## 0.8.1+4
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
 ## 0.8.1+3
 
 * Do not change camera orientation when iOS device is flat.

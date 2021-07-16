@@ -7,6 +7,8 @@ package io.flutter.plugins.inapppurchase;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -22,8 +24,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import org.json.JSONException;
+import org.junit.Before;
 import org.junit.Test;
 
 public class TranslatorTest {
@@ -31,6 +35,12 @@ public class TranslatorTest {
       "{\"productId\":\"example\",\"type\":\"inapp\",\"price\":\"$0.99\",\"price_amount_micros\":990000,\"price_currency_code\":\"USD\",\"title\":\"Example title\",\"description\":\"Example description.\",\"original_price\":\"$0.99\",\"original_price_micros\":990000}";
   private static final String PURCHASE_EXAMPLE_JSON =
       "{\"orderId\":\"foo\",\"packageName\":\"bar\",\"productId\":\"consumable\",\"purchaseTime\":11111111,\"purchaseState\":0,\"purchaseToken\":\"baz\",\"developerPayload\":\"dummy payload\",\"isAcknowledged\":\"true\", \"obfuscatedAccountId\":\"Account101\", \"obfuscatedProfileId\": \"Profile105\"}";
+
+  @Before
+  public void setup() {
+    Locale locale = new Locale("en", "us");
+    Locale.setDefault(locale);
+  }
 
   @Test
   public void fromSkuDetail() throws JSONException {
@@ -182,6 +192,17 @@ public class TranslatorTest {
     assertEquals(billingResultMap.get("debugMessage"), newBillingResult.getDebugMessage());
   }
 
+  @Test
+  public void currencyCodeFromSymbol() {
+    assertEquals("$", Translator.currencySymbolFromCode("USD"));
+    try {
+      Translator.currencySymbolFromCode("EUROPACOIN");
+      fail("Translator should throw an exception");
+    } catch (Exception e) {
+      assertTrue(e instanceof IllegalArgumentException);
+    }
+  }
+
   private void assertSerialized(SkuDetails expected, Map<String, Object> serialized) {
     assertEquals(expected.getDescription(), serialized.get("description"));
     assertEquals(expected.getFreeTrialPeriod(), serialized.get("freeTrialPeriod"));
@@ -194,6 +215,7 @@ public class TranslatorTest {
     assertEquals(expected.getPrice(), serialized.get("price"));
     assertEquals(expected.getPriceAmountMicros(), serialized.get("priceAmountMicros"));
     assertEquals(expected.getPriceCurrencyCode(), serialized.get("priceCurrencyCode"));
+    assertEquals("$", serialized.get("priceCurrencySymbol"));
     assertEquals(expected.getSku(), serialized.get("sku"));
     assertEquals(expected.getSubscriptionPeriod(), serialized.get("subscriptionPeriod"));
     assertEquals(expected.getTitle(), serialized.get("title"));

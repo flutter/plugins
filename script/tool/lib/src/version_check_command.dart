@@ -7,6 +7,7 @@ import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
@@ -77,11 +78,17 @@ class VersionCheckCommand extends PackageLoopingCommand {
   VersionCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
     http.Client? httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
+        super(
+          packagesDir,
+          processRunner: processRunner,
+          platform: platform,
+          gitDir: gitDir,
+        ) {
     argParser.addFlag(
       _againstPubFlag,
       help: 'Whether the version check should run against the version on pub.\n'
@@ -111,18 +118,15 @@ class VersionCheckCommand extends PackageLoopingCommand {
   Future<void> initializeRun() async {}
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    final List<String> errors = <String>[];
-
+  Future<PackageResult> runForPackage(Directory package) async {
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
-      errors.add('Invalid pubspec.yaml.');
-      return errors; // No remaining checks make sense.
+      // No remaining checks make sense, so fail immediately.
+      return PackageResult.fail(<String>['Invalid pubspec.yaml.']);
     }
 
     if (pubspec.publishTo == 'none') {
-      printSkip('${indentation}Found "publish_to: none".');
-      return PackageLoopingCommand.success;
+      return PackageResult.skip('Found "publish_to: none".');
     }
 
     final Version? currentPubspecVersion = pubspec.version;
@@ -130,9 +134,11 @@ class VersionCheckCommand extends PackageLoopingCommand {
       printError('${indentation}No version found in pubspec.yaml. A package '
           'that intentionally has no version should be marked '
           '"publish_to: none".');
-      errors.add('No pubspec.yaml version.');
-      return errors; // No remaining checks make sense.
+      // No remaining checks make sense, so fail immediately.
+      return PackageResult.fail(<String>['No pubspec.yaml version.']);
     }
+
+    final List<String> errors = <String>[];
 
     if (!await _hasValidVersionChange(package, pubspec: pubspec)) {
       errors.add('Disallowed version change.');
@@ -142,7 +148,9 @@ class VersionCheckCommand extends PackageLoopingCommand {
       errors.add('pubspec.yaml and CHANGELOG.md have different versions');
     }
 
-    return errors;
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   @override
@@ -178,8 +186,13 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     required GitVersionFinder gitVersionFinder,
   }) async {
     final File pubspecFile = package.childFile('pubspec.yaml');
-    return await gitVersionFinder.getPackageVersion(
-        p.relative(pubspecFile.absolute.path, from: (await gitDir).path));
+    final String relativePath =
+        path.relative(pubspecFile.absolute.path, from: (await gitDir).path);
+    // Use Posix-style paths for git.
+    final String gitPath = path.style == p.Style.windows
+        ? p.posix.joinAll(path.split(relativePath))
+        : relativePath;
+    return await gitVersionFinder.getPackageVersion(gitPath);
   }
 
   /// Returns true if the version of [package] is either unchanged relative to
@@ -210,7 +223,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (previousVersion == Version.none) {
       print('${indentation}Unable to find previous version '
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
-      printWarning(
+      logWarning(
           '${indentation}If this plugin is not new, something has gone wrong.');
       return true;
     }

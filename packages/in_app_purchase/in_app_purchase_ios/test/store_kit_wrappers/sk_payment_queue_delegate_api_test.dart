@@ -68,6 +68,65 @@ void main() {
       },
     );
   });
+
+  test(
+      'handleObserverCallbacks should call SKTransactionObserverWrapper.restoreCompletedTransactionsFailed',
+      () async {
+    SKPaymentQueueWrapper queue = SKPaymentQueueWrapper();
+    TestTransactionObserverWrapper testObserver =
+        TestTransactionObserverWrapper();
+    queue.setTransactionObserver(testObserver);
+
+    final arguments = <dynamic, dynamic>{
+      'code': 100,
+      'domain': 'domain',
+      'userInfo': <String, dynamic>{'error': 'underlying_error'},
+    };
+
+    await queue.handleObserverCallbacks(
+      MethodCall('restoreCompletedTransactionsFailed', arguments),
+    );
+
+    expect(
+      testObserver.log,
+      <Matcher>{
+        equals('restoreCompletedTransactionsFailed'),
+      },
+    );
+  });
+}
+
+class TestTransactionObserverWrapper extends SKTransactionObserverWrapper {
+  final List<String> log = <String>[];
+
+  @override
+  void updatedTransactions(
+      {required List<SKPaymentTransactionWrapper> transactions}) {
+    log.add('updatedTransactions');
+  }
+
+  @override
+  void removedTransactions(
+      {required List<SKPaymentTransactionWrapper> transactions}) {
+    log.add('removedTransactions');
+  }
+
+  @override
+  void restoreCompletedTransactionsFailed({required SKError error}) {
+    log.add('restoreCompletedTransactionsFailed');
+  }
+
+  @override
+  void paymentQueueRestoreCompletedTransactionsFinished() {
+    log.add('paymentQueueRestoreCompletedTransactionsFinished');
+  }
+
+  @override
+  bool shouldAddStorePayment(
+      {required SKPaymentWrapper payment, required SKProductWrapper product}) {
+    log.add('shouldAddStorePayment');
+    return false;
+  }
 }
 
 class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {

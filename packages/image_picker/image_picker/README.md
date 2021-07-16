@@ -12,7 +12,7 @@ First, add `image_picker` as a [dependency in your pubspec.yaml file](https://fl
 ### iOS
 
 Starting with version **0.8.1** the iOS implementation uses PHPicker to pick (multiple) images on iOS 14 or higher.
-As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS 14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue.[63426347 - Apple known issue](https://www.google.com/search?q=63426347+apple&sxsrf=ALeKk01YnTMid5S0PYvhL8GbgXJ40ZS[…]t=gws-wiz&ved=0ahUKEwjKh8XH_5HwAhWL_rsIHUmHDN8Q4dUDCA8&uact=5) 
+As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS 14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue.[63426347 - Apple known issue](https://www.google.com/search?q=63426347+apple&sxsrf=ALeKk01YnTMid5S0PYvhL8GbgXJ40ZS[…]t=gws-wiz&ved=0ahUKEwjKh8XH_5HwAhWL_rsIHUmHDN8Q4dUDCA8&uact=5)
 
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
@@ -37,7 +37,19 @@ If you require your picked image to be stored permanently, it is your responsibi
 import 'package:image_picker/image_picker.dart';
 
     ...
-    final PickedFile? pickedFile = await picker.getImage(source: ImageSource.camera);
+    final ImagePicker _picker = ImagePicker();
+    // Pick an image
+    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+    // Capture a photo
+    final XFile? photo = await _picker.pickImage(source: ImageSource.camera);
+    // Pick a video
+    final XFile? image = await _picker.pickVideo(source: ImageSource.gallery);
+    // Capture a video
+    final XFile? photo = await _picker.pickVideo(source: ImageSource.camera);
+    // Pick multiple images
+    final List<XFile>? images = await _picker.pickMultiImage(source: ImageSource.gallery);
+    // Pick multiple photos
+    final List<XFile>? photos = await _picker.pickMultiImage(source: ImageSource.camera);
     ...
 ```
 
@@ -46,9 +58,9 @@ import 'package:image_picker/image_picker.dart';
 Android system -- although very rarely -- sometimes kills the MainActivity after the image_picker finishes. When this happens, we lost the data selected from the image_picker. You can use `retrieveLostData` to retrieve the lost data in this situation. For example:
 
 ```dart
-Future<void> retrieveLostData() async {
-  final LostData response =
-      await picker.getLostData();
+Future<void> getLostData() async {
+  final LostDataResponse response =
+      await picker.retrieveLostData();
   if (response.isEmpty) {
     return;
   }
@@ -68,65 +80,17 @@ Future<void> retrieveLostData() async {
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
 
-On Android, `getLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
+On Android, `retrieveLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
-## Deprecation warnings in `pickImage`, `pickVideo` and `LostDataResponse`
+## Migrating to 0.8.2+
 
-Starting with version **0.6.7** of the image_picker plugin, the API of the plugin changed slightly to allow for web implementations to exist.
-
-The **old methods that returned `dart:io` File objects were marked as deprecated**, and a new set of methods that return [`PickedFile` objects](https://pub.dev/documentation/image_picker_platform_interface/latest/image_picker_platform_interface/PickedFile-class.html) were introduced.
-
-### How to migrate from to ^0.6.7
-
-#### Instantiate the `ImagePicker`
-
-The new ImagePicker API does not rely in static methods anymore, so the first thing you'll need to do is to create a new instance of the plugin where you need it:
-
-```dart
-final _picker = ImagePicker();
-```
+Starting with version **0.8.2** of the image_picker plugin, new methods have been added for picking files that return `XFile` instances (from the [cross_file](https://pub.dev/packages/cross_file) package) rather than the plugin's own `PickedFile` instances. While the previous methods still exist, it is already recommended to start migrating over to their new equivalents. Eventually, `PickedFile` and the methods that return instances of it will be deprecated and removed.
 
 #### Call the new methods
 
-The new methods **receive the same parameters as before**, but they **return a `PickedFile`, instead of a `File`**. The `LostDataResponse` class has been replaced by the [`LostData` class](https://pub.dev/documentation/image_picker_platform_interface/latest/image_picker_platform_interface/LostData-class.html).
-
 | Old API | New API |
 |---------|---------|
-| `File image = await ImagePicker.pickImage(...)` | `PickedFile image = await _picker.getImage(...)` |
-| `File video = await ImagePicker.pickVideo(...)` | `PickedFile video = await _picker.getVideo(...)` |
-| `LostDataResponse response = await ImagePicker.retrieveLostData()` | `LostData response = await _picker.getLostData()` |
-
-#### `PickedFile` to `File`
-
-If your app needs dart:io `File` objects to operate, you may transform `PickedFile` to `File` like so:
-
-```dart
-final pickedFile = await _picker.getImage(...);
-final File file = File(pickedFile.path);
-```
-
-You may also retrieve the bytes from the pickedFile directly if needed:
-
-```dart
-final bytes = await pickedFile.readAsBytes();
-```
-
-#### Getting ready for the web platform
-
-Note that on the web platform (`kIsWeb == true`), `File` is not available, so the `path` of the `PickedFile` will point to a network resource instead:
-
-```dart
-if (kIsWeb) {
-  image = Image.network(pickedFile.path);
-} else {
-  image = Image.file(File(pickedFile.path));
-}
-```
-
-Alternatively, the code may be unified at the expense of memory utilization:
-
-```dart
-image = Image.memory(await pickedFile.readAsBytes())
-```
-
-Take a look at the changes to the `example` app introduced in version 0.6.7 to see the migration steps applied there.
+| `PickedFile image = await _picker.getImage(...)` | `XFile image = await _picker.pickImage(...)` |
+| `List<PickedFile> images = await _picker.getMultiImage(...)` | `List<XFile> images = await _picker.pickMultiImage(...)` |
+| `PickedFile video = await _picker.getVideo(...)` | `XFile video = await _picker.pickVideo(...)` |
+| `LostData response = await _picker.getLostData()` | `LostDataResponse response = await _picker.retrieveLostData()` |
