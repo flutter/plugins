@@ -2,7 +2,14 @@
 
 - Added an `xctest` flag to select specific test targets, to allow running only
   unit tests or integration tests.
-- Split Xcode analysis out of `xctest` and into a new `xcode-analyze` command.
+- **Breaking change**: Split Xcode analysis out of `xctest` and into a new
+  `xcode-analyze` command.
+- **Breaking change**: Replaced `xctest` with a new `native-test` command that
+  will eventually be able to run native unit and integration tests for all
+  platforms.
+  - Adds the ability to disable test types via `--no-unit` or
+    `--no-integration`.
+- **Breaking change**: Folded `java-test` into the new `native-test` command.
 
 ## 0.4.1
 
