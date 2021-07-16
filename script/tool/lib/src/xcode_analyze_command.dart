@@ -11,11 +11,7 @@ import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 import 'common/xcode.dart';
 
-/// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
-/// The tests target have to be added to the Xcode project of the example app,
-/// usually at "example/{ios,macos}/Runner.xcworkspace".
-///
-/// The static analyzer is also run.
+/// The command to run Xcode's static analyzer on plugins.
 class XcodeAnalyzeCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   XcodeAnalyzeCommand(
@@ -24,8 +20,8 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
     Platform platform = const LocalPlatform(),
   })  : _xcode = Xcode(processRunner: processRunner, log: true),
         super(packagesDir, processRunner: processRunner, platform: platform) {
-    argParser.addFlag(kPlatformIos, help: 'Analyzes iOS');
-    argParser.addFlag(kPlatformMacos, help: 'Analyzes macOS');
+    argParser.addFlag(kPlatformIos, help: 'Analyze iOS');
+    argParser.addFlag(kPlatformMacos, help: 'Analyze macOS');
   }
 
   final Xcode _xcode;
