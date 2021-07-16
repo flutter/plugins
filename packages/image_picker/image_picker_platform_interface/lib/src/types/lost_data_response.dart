@@ -14,7 +14,7 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 class LostDataResponse {
   /// Creates an instance with the given [file], [exception], and [type]. Any of
   /// the params may be null, but this is never considered to be empty.
-  LostDataResponse({this.file, this.exception, this.type});
+  LostDataResponse({this.file, this.exception, this.type, this.files,});
 
   /// Initializes an instance with all member params set to null and considered
   /// to be empty.
@@ -22,7 +22,8 @@ class LostDataResponse {
       : file = null,
         exception = null,
         type = null,
-        _empty = true;
+        _empty = true,
+        files = null;
 
   /// Whether it is an empty response.
   ///
@@ -50,4 +51,9 @@ class LostDataResponse {
   final RetrieveType? type;
 
   bool _empty = false;
+
+  /// The list of files that were lost in a previous [getMultiImage] call due to MainActivity being destroyed.
+  ///
+  /// Can be null if [exception] exists.
+  final List<XFile>? files;
 }
