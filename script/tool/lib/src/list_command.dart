@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
+import 'package:platform/platform.dart';
 
 import 'common/plugin_command.dart';
 
@@ -10,7 +11,10 @@ import 'common/plugin_command.dart';
 class ListCommand extends PluginCommand {
   /// Creates an instance of the list command, whose behavior depends on the
   /// 'type' argument it provides.
-  ListCommand(Directory packagesDir) : super(packagesDir) {
+  ListCommand(
+    Directory packagesDir, {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, platform: platform) {
     argParser.addOption(
       _type,
       defaultsTo: _plugin,

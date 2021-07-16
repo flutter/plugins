@@ -58,21 +58,21 @@ Note that the `plugins` argument, despite the name, applies to any package.
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart format --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart format --packages plugin_name
 ```
 
 ### Run the Dart Static Analyzer
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --packages plugin_name
 ```
 
 ### Run Dart Unit Tests
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart test --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages plugin_name
 ```
 
 ### Run XCTests
@@ -80,9 +80,9 @@ dart run ./script/tool/bin/flutter_plugin_tools.dart test --plugins plugin_name
 ```sh
 cd <repository root>
 # For iOS:
-dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --ios --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --ios --packages plugin_name
 # For macOS:
-dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --macos --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --macos --packages plugin_name
 ```
 
 ### Publish a Release

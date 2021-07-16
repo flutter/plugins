@@ -1,6 +1,15 @@
-## 2.2.0
+## 2.2.1
 
 * Update `LostData` object and `retrieveLostData` method to fetch `List<PickedFile>` when multiple images are lost and need to be retrieved.
+
+## 2.2.0
+
+* Added new methods that return `XFile` (from `package:cross_file`)
+  * `getImage` (will deprecate `pickImage`)
+  * `getVideo` (will deprecate `pickVideo`)
+  * `getMultiImage` (will deprecate `pickMultiImage`)
+
+_`PickedFile` will also be marked as deprecated in an upcoming release._
 
 ## 2.1.0
 

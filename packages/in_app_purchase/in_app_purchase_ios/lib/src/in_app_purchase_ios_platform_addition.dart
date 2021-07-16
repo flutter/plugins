@@ -21,14 +21,18 @@ class InAppPurchaseIosPlatformAddition extends InAppPurchasePlatformAddition {
   /// If no results, a `null` value is returned.
   Future<PurchaseVerificationData?> refreshPurchaseVerificationData() async {
     await SKRequestMaker().startRefreshReceiptRequest();
-    final String? receipt = await SKReceiptManager.retrieveReceiptData();
-    if (receipt == null) {
+    try {
+      String receipt = await SKReceiptManager.retrieveReceiptData();
+      return PurchaseVerificationData(
+          localVerificationData: receipt,
+          serverVerificationData: receipt,
+          source: kIAPSource);
+    } catch (e) {
+      print(
+          'Something is wrong while fetching the receipt, this normally happens when the app is '
+          'running on a simulator: $e');
       return null;
     }
-    return PurchaseVerificationData(
-        localVerificationData: receipt,
-        serverVerificationData: receipt,
-        source: kIAPSource);
   }
 
   /// Sets an implementation of the [SKPaymentQueueDelegateWrapper].

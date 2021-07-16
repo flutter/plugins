@@ -19,6 +19,7 @@ class AppStoreProductDetails extends ProductDetails {
     required double rawPrice,
     required String currencyCode,
     required this.skProduct,
+    required String currencySymbol,
   }) : super(
           id: id,
           title: title,
@@ -26,6 +27,7 @@ class AppStoreProductDetails extends ProductDetails {
           price: price,
           rawPrice: rawPrice,
           currencyCode: currencyCode,
+          currencySymbol: currencySymbol,
         );
 
   /// Points back to the [SKProductWrapper] object that was used to generate
@@ -41,6 +43,9 @@ class AppStoreProductDetails extends ProductDetails {
       price: product.priceLocale.currencySymbol + product.price,
       rawPrice: double.parse(product.price),
       currencyCode: product.priceLocale.currencyCode,
+      currencySymbol: product.priceLocale.currencySymbol.isNotEmpty
+          ? product.priceLocale.currencySymbol
+          : product.priceLocale.currencyCode,
       skProduct: product,
     );
   }
