@@ -1,6 +1,6 @@
 ## 0.8.1+5
 
-* Fixed setFocusPoint and setExposurePoint coordinates only being correct in a single orientation on iOS.
+* Make sure the `setFocusPoint` and `setExposurePoint` coordinates work correctly in all orientations on iOS (instead of only in portrait mode). 
 
 ## 0.8.1+4
 
