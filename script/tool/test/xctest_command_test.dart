@@ -97,9 +97,6 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory1.childDirectory('example');
 
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout =
-          '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
       final List<String> output = await runCapturingPrint(runner, <String>[
         'xctest',
         '--macos',
@@ -144,10 +141,6 @@ void main() {
       // Exit code 66 from testing indicates no tests.
       final MockProcess noTestsProcessResult = MockProcess();
       noTestsProcessResult.exitCodeCompleter.complete(66);
-
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout =
-          '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
         noTestsProcessResult,
       ];
@@ -216,9 +209,6 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xctest',
           '--ios',
@@ -265,16 +255,8 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
 
-        final Map<String, dynamic> schemeCommandResult = <String, dynamic>{
-          'project': <String, dynamic>{
-            'targets': <String>['bar_scheme', 'foo_scheme']
-          }
-        };
         processRunner.processToReturn = MockProcess.succeeding();
-        // For simplicity of the test, we combine all the mock results into a single mock result, each internal command
-        // will get this result and they should still be able to parse them correctly.
-        processRunner.resultStdout =
-            jsonEncode(schemeCommandResult..addAll(_kDeviceListMap));
+        processRunner.resultStdout = jsonEncode(_kDeviceListMap);
         await runCapturingPrint(runner, <String>['xctest', '--ios']);
 
         expect(
@@ -307,9 +289,6 @@ void main() {
               kPlatformIos: PlatformSupport.inline
             });
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
           MockProcess.failing()
         ];
@@ -376,9 +355,6 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xctest',
           '--macos',
@@ -415,9 +391,6 @@ void main() {
               kPlatformMacos: PlatformSupport.inline,
             });
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
           MockProcess.failing()
         ];
@@ -451,9 +424,6 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xctest',
           '--ios',
@@ -515,9 +485,6 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xctest',
           '--ios',
@@ -562,9 +529,6 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xctest',
           '--ios',
@@ -605,9 +569,6 @@ void main() {
       test('skips when neither are supported', () async {
         createFakePlugin('plugin', packagesDir);
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["bar_scheme", "foo_scheme"]}}';
         final List<String> output = await runCapturingPrint(runner, <String>[
           'xctest',
           '--ios',
