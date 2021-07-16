@@ -12,16 +12,16 @@ import 'common/process_runner.dart';
 import 'common/xcode.dart';
 
 const String _iosDestinationFlag = 'ios-destination';
-const String _analyzeFlag = 'analyze';
 const String _testTargetFlag = 'test-target';
+
+// The exit code from 'xcodebuild test' when there are no tests.
+const int _xcodebuildNoTestExitCode = 66;
 
 const int _exitNoSimulators = 3;
 
 /// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
 /// The tests target have to be added to the Xcode project of the example app,
 /// usually at "example/{ios,macos}/Runner.xcworkspace".
-///
-/// The static analyzer is also run.
 class XCTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   XCTestCommand(
@@ -42,8 +42,6 @@ class XCTestCommand extends PackageLoopingCommand {
       help:
           'Limits the tests to a specific target (e.g., RunnerTests or RunnerUITests)',
     );
-    argParser.addFlag(_analyzeFlag,
-        help: 'Includes analyze step', defaultsTo: true);
     argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs the macOS tests');
   }
@@ -60,9 +58,6 @@ class XCTestCommand extends PackageLoopingCommand {
   final String description =
       'Runs the xctests in the iOS and/or macOS example apps.\n\n'
       'This command requires "flutter" and "xcrun" to be in your path.';
-
-  @override
-  String get failureListHeader => 'The following packages are failing XCTests:';
 
   @override
   Future<void> initializeRun() async {
@@ -139,8 +134,7 @@ class XCTestCommand extends PackageLoopingCommand {
     }
 
     if (!ranTests) {
-      return PackageResult.skip(
-          'No tests found, and analyze was not requested.');
+      return PackageResult.skip('No tests found.');
     }
     // Only provide the failing platform in the failure details if testing
     // multiple platforms, otherwise it's just noise.
@@ -157,64 +151,44 @@ class XCTestCommand extends PackageLoopingCommand {
     String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
+    final String testTarget = getStringArg(_testTargetFlag);
+
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
-    final bool analyze = getBoolArg(_analyzeFlag);
     for (final Directory example in getExamplesForPlugin(plugin)) {
-      // Running tests and static analyzer.
       final String examplePath =
           getRelativePosixPath(example, from: plugin.parent);
       print('Running $platform tests and analyzer for $examplePath...');
-      int exitCode = await _runTests(true, example, platform,
-          analyze: analyze, extraFlags: extraXcrunFlags);
-      // 66 = there is no test target (this fails fast). Try again with just the analyzer.
-      if (exitCode == 66) {
-        if (!analyze) {
-          print('Tests not found for $examplePath');
+      final int exitCode = await _xcode.runXcodeBuild(
+        example,
+        actions: <String>['test'],
+        workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
+        scheme: 'Runner',
+        configuration: 'Debug',
+        extraFlags: <String>[
+          if (testTarget.isNotEmpty) '-only-testing:$testTarget',
+          ...extraXcrunFlags,
+          'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+        ],
+      );
+
+      switch (exitCode) {
+        case _xcodebuildNoTestExitCode:
+          print('No tests found for $examplePath');
           continue;
-        }
-        print('Tests not found for $examplePath, running analyzer only...');
-        exitCode = await _runTests(false, example, platform,
-            analyze: true, extraFlags: extraXcrunFlags);
-      }
-      if (exitCode == 0) {
-        printSuccess('Successfully ran $platform xctest for $examplePath');
-        // If this is the first test, assume success until something fails.
-        if (overallResult == RunState.skipped) {
-          overallResult = RunState.succeeded;
-        }
-      } else {
-        // Any failure means a failure overall.
-        overallResult = RunState.failed;
+        case 0:
+          printSuccess('Successfully ran $platform xctest for $examplePath');
+          // If this is the first test, assume success until something fails.
+          if (overallResult == RunState.skipped) {
+            overallResult = RunState.succeeded;
+          }
+          break;
+        default:
+          // Any failure means a failure overall.
+          overallResult = RunState.failed;
+          break;
       }
     }
     return overallResult;
-  }
-
-  Future<int> _runTests(
-    bool runTests,
-    Directory example,
-    String platform, {
-    required bool analyze,
-    List<String> extraFlags = const <String>[],
-  }) {
-    assert(runTests || analyze);
-    final String testTarget = getStringArg(_testTargetFlag);
-
-    return _xcode.runXcodeBuild(
-      example,
-      actions: <String>[
-        if (runTests) 'test',
-        if (analyze) 'analyze',
-      ],
-      workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
-      scheme: 'Runner',
-      configuration: 'Debug',
-      extraFlags: <String>[
-        if (runTests && testTarget.isNotEmpty) '-only-testing:$testTarget',
-        ...extraFlags,
-        'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-      ],
-    );
   }
 }
