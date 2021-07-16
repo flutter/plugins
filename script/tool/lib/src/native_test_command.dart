@@ -11,8 +11,10 @@ import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
 import 'common/xcode.dart';
 
+const String _unitTestFlag = 'unit';
+const String _integrationTestFlag = 'integration';
+
 const String _iosDestinationFlag = 'ios-destination';
-const String _testTargetFlag = 'test-target';
 
 const int _exitNoIosSimulators = 3;
 
@@ -33,13 +35,15 @@ class NativeTestCommand extends PackageLoopingCommand {
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT '
           'for details on how to specify the destination.',
     );
-    argParser.addOption(
-      _testTargetFlag,
-      help:
-          'Limits the tests to a specific target (e.g., RunnerTests or RunnerUITests)',
-    );
     argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
+
+    // By default, both unit tests and integration tests are run, but provide
+    // flags to disable one or the other.
+    argParser.addFlag(_unitTestFlag,
+        help: 'Runs native unit tests', defaultsTo: true);
+    argParser.addFlag(_integrationTestFlag,
+        help: 'Runs native integration (UI) tests', defaultsTo: true);
   }
 
   // The device destination flags for iOS tests.
@@ -82,6 +86,11 @@ this command.
       throw ToolExit(exitInvalidArguments);
     }
 
+    if (!(getBoolArg(_unitTestFlag) || getBoolArg(_integrationTestFlag))) {
+      printError('At least one test type must be enabled.');
+      throw ToolExit(exitInvalidArguments);
+    }
+
     // iOS-specific run-level state.
     if (_requestedPlatforms.contains('ios')) {
       String destination = getStringArg(_iosDestinationFlag);
@@ -117,11 +126,16 @@ this command.
       return PackageResult.skip('Not implemented for target platform(s).');
     }
 
+    final _TestMode mode = _TestMode(
+      unit: getBoolArg(_unitTestFlag),
+      integration: getBoolArg(_integrationTestFlag),
+    );
+
     final List<String> failures = <String>[];
     bool ranTests = false;
     for (final String platform in testPlatforms) {
       final _PlatformDetails platformInfo = _platforms[platform]!;
-      final RunState result = await platformInfo.testFunction(package);
+      final RunState result = await platformInfo.testFunction(package, mode);
       ranTests |= result != RunState.skipped;
       if (result == RunState.failed) {
         failures.add(platformInfo.label);
@@ -139,12 +153,13 @@ this command.
             _requestedPlatforms.length > 1 ? failures : <String>[]);
   }
 
-  Future<RunState> _testIos(Directory plugin) {
-    return _runXcodeTests(plugin, 'iOS', extraFlags: _iosDestinationFlags);
+  Future<RunState> _testIos(Directory plugin, _TestMode mode) {
+    return _runXcodeTests(plugin, 'iOS', mode,
+        extraFlags: _iosDestinationFlags);
   }
 
-  Future<RunState> _testMacOs(Directory plugin) {
-    return _runXcodeTests(plugin, 'macOS');
+  Future<RunState> _testMacOs(Directory plugin, _TestMode mode) {
+    return _runXcodeTests(plugin, 'macOS', mode);
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
@@ -154,10 +169,16 @@ this command.
   /// usually at "example/{ios,macos}/Runner.xcworkspace".
   Future<RunState> _runXcodeTests(
     Directory plugin,
-    String platform, {
+    String platform,
+    _TestMode mode, {
     List<String> extraFlags = const <String>[],
   }) async {
-    final String testTarget = getStringArg(_testTargetFlag);
+    String? testTarget;
+    if (mode.unitOnly) {
+      testTarget = 'RunnerTests';
+    } else if (mode.integrationOnly) {
+      testTarget = 'RunnerUITests';
+    }
 
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
@@ -165,7 +186,7 @@ this command.
       final String examplePath =
           getRelativePosixPath(example, from: plugin.parent);
 
-      if (testTarget.isNotEmpty) {
+      if (testTarget != null) {
         final Directory project = example
             .childDirectory(platform.toLowerCase())
             .childDirectory('Runner.xcodeproj');
@@ -189,7 +210,7 @@ this command.
         scheme: 'Runner',
         configuration: 'Debug',
         extraFlags: <String>[
-          if (testTarget.isNotEmpty) '-only-testing:$testTarget',
+          if (testTarget != null) '-only-testing:$testTarget',
           ...extraFlags,
           'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
         ],
@@ -220,7 +241,7 @@ this command.
 
 // The type for a function that takes a plugin directory and runs its native
 // tests for a specific platform.
-typedef _TestFunction = Future<RunState> Function(Directory);
+typedef _TestFunction = Future<RunState> Function(Directory, _TestMode);
 
 /// A collection of information related to a specific platform.
 class _PlatformDetails {
@@ -234,4 +255,15 @@ class _PlatformDetails {
 
   /// The function to call to run tests.
   final _TestFunction testFunction;
+}
+
+/// Enabled state for different test types.
+class _TestMode {
+  const _TestMode({required this.unit, required this.integration});
+
+  final bool unit;
+  final bool integration;
+
+  bool get integrationOnly => integration && !unit;
+  bool get unitOnly => unit && !integration;
 }
