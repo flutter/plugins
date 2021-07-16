@@ -97,6 +97,9 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory1.childDirectory('example');
 
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout = '{"project":{"targets":["RunnerTests"]}}';
+
       final List<String> output = await runCapturingPrint(runner, <String>[
         'xctest',
         '--macos',
@@ -113,6 +116,19 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
                 'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  pluginExampleDirectory
+                      .childDirectory('macos')
+                      .childDirectory('Runner.xcodeproj')
+                      .path,
+                ],
+                null),
+            ProcessCall(
+                'xcrun',
                 const <String>[
                   'xcodebuild',
                   'test',
@@ -126,6 +142,95 @@ void main() {
                   'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
                 ],
                 pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('skips when the requested target is not present', () async {
+      final Directory pluginDirectory1 = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformMacos: PlatformSupport.inline,
+          });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory1.childDirectory('example');
+
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout = '{"project":{"targets":["Runner"]}}';
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'xctest',
+        '--macos',
+        '--test-target=RunnerTests',
+      ]);
+
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No "RunnerTests" target in plugin/example; skipping.'),
+          ]));
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  pluginExampleDirectory
+                      .childDirectory('macos')
+                      .childDirectory('Runner.xcodeproj')
+                      .path,
+                ],
+                null),
+          ]));
+    });
+
+    test('fails if unable to check for requested target', () async {
+      final Directory pluginDirectory1 = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformMacos: PlatformSupport.inline,
+          });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory1.childDirectory('example');
+
+      processRunner.processToReturn = MockProcess.failing();
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'xctest',
+        '--macos',
+        '--test-target=RunnerTests',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Unable to check targets for plugin/example.'),
+        ]),
+      );
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  pluginExampleDirectory
+                      .childDirectory('macos')
+                      .childDirectory('Runner.xcodeproj')
+                      .path,
+                ],
+                null),
           ]));
     });
 

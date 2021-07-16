@@ -158,7 +158,24 @@ class XCTestCommand extends PackageLoopingCommand {
     for (final Directory example in getExamplesForPlugin(plugin)) {
       final String examplePath =
           getRelativePosixPath(example, from: plugin.parent);
-      print('Running $platform tests and analyzer for $examplePath...');
+
+      if (testTarget.isNotEmpty) {
+        final Directory project = example
+            .childDirectory(platform.toLowerCase())
+            .childDirectory('Runner.xcodeproj');
+        final bool? hasTarget =
+            await _xcode.projectHasTarget(project, testTarget);
+        if (hasTarget == null) {
+          printError('Unable to check targets for $examplePath.');
+          overallResult = RunState.failed;
+          continue;
+        } else if (!hasTarget) {
+          print('No "$testTarget" target in $examplePath; skipping.');
+          continue;
+        }
+      }
+
+      print('Running $platform tests for $examplePath...');
       final int exitCode = await _xcode.runXcodeBuild(
         example,
         actions: <String>['test'],

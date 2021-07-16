@@ -321,4 +321,153 @@ void main() {
           ]));
     });
   });
+
+  group('projectHasTarget', () {
+    test('returns true when present', () async {
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout = '''
+{
+  "project" : {
+    "configurations" : [
+      "Debug",
+      "Release"
+    ],
+    "name" : "Runner",
+    "schemes" : [
+      "Runner"
+    ],
+    "targets" : [
+      "Runner",
+      "RunnerTests",
+      "RunnerUITests"
+    ]
+  }
+}''';
+
+      final Directory project =
+          const LocalFileSystem().directory('/foo.xcodeproj');
+      expect(await xcode.projectHasTarget(project, 'RunnerTests'), true);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  project.path,
+                ],
+                null),
+          ]));
+    });
+
+    test('returns false when not present', () async {
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout = '''
+{
+  "project" : {
+    "configurations" : [
+      "Debug",
+      "Release"
+    ],
+    "name" : "Runner",
+    "schemes" : [
+      "Runner"
+    ],
+    "targets" : [
+      "Runner",
+      "RunnerUITests"
+    ]
+  }
+}''';
+
+      final Directory project =
+          const LocalFileSystem().directory('/foo.xcodeproj');
+      expect(await xcode.projectHasTarget(project, 'RunnerTests'), false);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  project.path,
+                ],
+                null),
+          ]));
+    });
+
+    test('returns null for unexpected output', () async {
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout = '{}';
+
+      final Directory project =
+          const LocalFileSystem().directory('/foo.xcodeproj');
+      expect(await xcode.projectHasTarget(project, 'RunnerTests'), null);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  project.path,
+                ],
+                null),
+          ]));
+    });
+
+    test('returns null for invalid output', () async {
+      processRunner.processToReturn = MockProcess.succeeding();
+      processRunner.resultStdout = ':)';
+
+      final Directory project =
+          const LocalFileSystem().directory('/foo.xcodeproj');
+      expect(await xcode.projectHasTarget(project, 'RunnerTests'), null);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  project.path,
+                ],
+                null),
+          ]));
+    });
+
+    test('returns null for failure', () async {
+      processRunner.processToReturn = MockProcess.failing();
+
+      final Directory project =
+          const LocalFileSystem().directory('/foo.xcodeproj');
+      expect(await xcode.projectHasTarget(project, 'RunnerTests'), null);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'xcrun',
+                <String>[
+                  'xcodebuild',
+                  '-list',
+                  '-json',
+                  '-project',
+                  project.path,
+                ],
+                null),
+          ]));
+    });
+  });
 }

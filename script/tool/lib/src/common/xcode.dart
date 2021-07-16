@@ -39,7 +39,7 @@ class Xcode {
     String? configuration,
     List<String> extraFlags = const <String>[],
   }) {
-    final List<String> xctestArgs = <String>[
+    final List<String> args = <String>[
       _xcodeBuildCommand,
       ...actions,
       if (workspace != null) ...<String>['-workspace', workspace],
@@ -47,12 +47,42 @@ class Xcode {
       if (configuration != null) ...<String>['-configuration', configuration],
       ...extraFlags,
     ];
-    final String completeTestCommand = '$_xcRunCommand ${xctestArgs.join(' ')}';
+    final String completeTestCommand = '$_xcRunCommand ${args.join(' ')}';
     if (log) {
       print(completeTestCommand);
     }
-    return processRunner.runAndStream(_xcRunCommand, xctestArgs,
+    return processRunner.runAndStream(_xcRunCommand, args,
         workingDir: directory);
+  }
+
+  /// Returns true if [project], which should be an .xcodeproj directory,
+  /// contains a target called [target], false if it does not, and null if the
+  /// check fails (e.g., if [project] is not an Xcode project).
+  Future<bool?> projectHasTarget(Directory project, String target) async {
+    final io.ProcessResult result =
+        await processRunner.run(_xcRunCommand, <String>[
+      _xcodeBuildCommand,
+      '-list',
+      '-json',
+      '-project',
+      project.path,
+    ]);
+    if (result.exitCode != 0) {
+      return null;
+    }
+    Map<String, dynamic>? projectInfo;
+    try {
+      projectInfo = (jsonDecode(result.stdout as String)
+          as Map<String, dynamic>)['project'] as Map<String, dynamic>?;
+    } on FormatException {
+      return null;
+    }
+    if (projectInfo == null) {
+      return null;
+    }
+    final List<String>? targets =
+        (projectInfo['targets'] as List<dynamic>?)?.cast<String>();
+    return targets?.contains(target) ?? false;
   }
 
   /// Returns the newest available simulator (highest OS version, with ties
