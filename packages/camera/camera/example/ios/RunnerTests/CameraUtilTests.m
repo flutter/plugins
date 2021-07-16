@@ -28,11 +28,6 @@
   _camera = [[FLTCam alloc] init];
 }
 
-- (void)tearDown {
-  // Put teardown code here. This method is called after the invocation of each test method in the
-  // class.
-}
-
 - (void)testGetCGPointForCoordsWithOrientation_ShouldRotateCoords {
   CGPoint point;
   point = [_camera getCGPointForCoordsWithOrientation:UIDeviceOrientationLandscapeLeft x:1 y:1];

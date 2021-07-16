@@ -37,8 +37,6 @@ typedef enum {
 }
 
 - (void)tearDown {
-  // Put teardown code here. This method is called after the invocation of each test method in the
-  // class.
   [_mockDevice stopMocking];
   [_mockUIDevice stopMocking];
 }
