@@ -12,12 +12,14 @@ class MockNavigator extends Mock implements Navigator {}
 
 class MockMediaDevices extends Mock implements MediaDevices {}
 
-/// A fake [DomException] that returns the provided [errorName].
-class FakeDomException extends Fake implements DomException {
-  FakeDomException(this.errorName);
+class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
-  final String errorName;
+/// A fake [DomException] that returns the provided error [_name].
+class FakeDomException extends Fake implements DomException {
+  FakeDomException(this._name);
+
+  final String _name;
 
   @override
-  String get name => errorName;
+  String get name => _name;
 }
