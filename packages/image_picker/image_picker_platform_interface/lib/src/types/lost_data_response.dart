@@ -14,7 +14,12 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 class LostDataResponse {
   /// Creates an instance with the given [file], [exception], and [type]. Any of
   /// the params may be null, but this is never considered to be empty.
-  LostDataResponse({this.file, this.exception, this.type, this.files,});
+  LostDataResponse({
+    this.file,
+    this.exception,
+    this.type,
+    this.files,
+  });
 
   /// Initializes an instance with all member params set to null and considered
   /// to be empty.

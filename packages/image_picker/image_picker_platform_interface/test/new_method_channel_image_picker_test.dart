@@ -980,24 +980,23 @@ void main() {
         expect(response.files!.first.path, '/example/path');
       });
 
-      test('getLostData is failed for multiRetrieve method call',
-              () async {
-            picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
-              switch (methodCall.method) {
-                case 'multiRetrieve':
-                  throw MissingPluginException();
-                case 'retrieve':
-                  return <String, dynamic>{
-                    'type': 'image',
-                    'path': '/example/path',
-                    'pathList': null,
-                  };
-              }
-            });
+      test('getLostData is failed for multiRetrieve method call', () async {
+        picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
+          switch (methodCall.method) {
+            case 'multiRetrieve':
+              throw MissingPluginException();
+            case 'retrieve':
+              return <String, dynamic>{
+                'type': 'image',
+                'path': '/example/path',
+                'pathList': null,
+              };
+          }
+        });
 
-            final LostDataResponse response = await picker.getLostData();
-            expect(response.files, null);
-          });
+        final LostDataResponse response = await picker.getLostData();
+        expect(response.files, null);
+      });
 
       test('getLostData get error response', () async {
         picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
