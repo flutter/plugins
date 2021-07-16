@@ -131,8 +131,12 @@ void main() {
           await runCapturingPrint(runner, <String>['license-check']);
 
       // Sanity check that the test did actually check a file.
-      expect(output, contains('Checking checked.cc'));
-      expect(output, contains('All source files passed validation!'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking checked.cc'),
+            contains('All files passed validation!'),
+          ]));
     });
 
     test('handles the comment styles for all supported languages', () async {
@@ -150,10 +154,14 @@ void main() {
           await runCapturingPrint(runner, <String>['license-check']);
 
       // Sanity check that the test did actually check the files.
-      expect(output, contains('Checking file_a.cc'));
-      expect(output, contains('Checking file_b.sh'));
-      expect(output, contains('Checking file_c.html'));
-      expect(output, contains('All source files passed validation!'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking file_a.cc'),
+            contains('Checking file_b.sh'),
+            contains('Checking file_c.html'),
+            contains('All files passed validation!'),
+          ]));
     });
 
     test('fails if any checked files are missing license blocks', () async {
@@ -176,12 +184,14 @@ void main() {
       // Failure should give information about the problematic files.
       expect(
           output,
-          contains(
-              'The license block for these files is missing or incorrect:'));
-      expect(output, contains('  bad.cc'));
-      expect(output, contains('  bad.h'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'The license block for these files is missing or incorrect:'),
+            contains('  bad.cc'),
+            contains('  bad.h'),
+          ]));
       // Failure shouldn't print the success message.
-      expect(output, isNot(contains('All source files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('fails if any checked files are missing just the copyright', () async {
@@ -202,11 +212,13 @@ void main() {
       // Failure should give information about the problematic files.
       expect(
           output,
-          contains(
-              'The license block for these files is missing or incorrect:'));
-      expect(output, contains('  bad.cc'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'The license block for these files is missing or incorrect:'),
+            contains('  bad.cc'),
+          ]));
       // Failure shouldn't print the success message.
-      expect(output, isNot(contains('All source files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('fails if any checked files are missing just the license', () async {
@@ -227,11 +239,13 @@ void main() {
       // Failure should give information about the problematic files.
       expect(
           output,
-          contains(
-              'The license block for these files is missing or incorrect:'));
-      expect(output, contains('  bad.cc'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'The license block for these files is missing or incorrect:'),
+            contains('  bad.cc'),
+          ]));
       // Failure shouldn't print the success message.
-      expect(output, isNot(contains('All source files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('fails if any third-party code is not in a third_party directory',
@@ -250,11 +264,13 @@ void main() {
       // Failure should give information about the problematic files.
       expect(
           output,
-          contains(
-              'The license block for these files is missing or incorrect:'));
-      expect(output, contains('  third_party.cc'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'The license block for these files is missing or incorrect:'),
+            contains('  third_party.cc'),
+          ]));
       // Failure shouldn't print the success message.
-      expect(output, isNot(contains('All source files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('succeeds for third-party code in a third_party directory', () async {
@@ -276,8 +292,12 @@ void main() {
           await runCapturingPrint(runner, <String>['license-check']);
 
       // Sanity check that the test did actually check the file.
-      expect(output, contains('Checking a_plugin/lib/src/third_party/file.cc'));
-      expect(output, contains('All source files passed validation!'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking a_plugin/lib/src/third_party/file.cc'),
+            contains('All files passed validation!'),
+          ]));
     });
 
     test('allows first-party code in a third_party directory', () async {
@@ -294,9 +314,12 @@ void main() {
           await runCapturingPrint(runner, <String>['license-check']);
 
       // Sanity check that the test did actually check the file.
-      expect(output,
-          contains('Checking a_plugin/lib/src/third_party/first_party.cc'));
-      expect(output, contains('All source files passed validation!'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking a_plugin/lib/src/third_party/first_party.cc'),
+            contains('All files passed validation!'),
+          ]));
     });
 
     test('fails for licenses that the tool does not expect', () async {
@@ -320,11 +343,13 @@ void main() {
       // Failure should give information about the problematic files.
       expect(
           output,
-          contains(
-              'No recognized license was found for the following third-party files:'));
-      expect(output, contains('  third_party/bad.cc'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'No recognized license was found for the following third-party files:'),
+            contains('  third_party/bad.cc'),
+          ]));
       // Failure shouldn't print the success message.
-      expect(output, isNot(contains('All source files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('Apache is not recognized for new authors without validation changes',
@@ -353,11 +378,13 @@ void main() {
       // Failure should give information about the problematic files.
       expect(
           output,
-          contains(
-              'No recognized license was found for the following third-party files:'));
-      expect(output, contains('  third_party/bad.cc'));
+          containsAllInOrder(<Matcher>[
+            contains(
+                'No recognized license was found for the following third-party files:'),
+            contains('  third_party/bad.cc'),
+          ]));
       // Failure shouldn't print the success message.
-      expect(output, isNot(contains('All source files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('passes if all first-party LICENSE files are correctly formatted',
@@ -370,8 +397,12 @@ void main() {
           await runCapturingPrint(runner, <String>['license-check']);
 
       // Sanity check that the test did actually check the file.
-      expect(output, contains('Checking LICENSE'));
-      expect(output, contains('All LICENSE files passed validation!'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking LICENSE'),
+            contains('All files passed validation!'),
+          ]));
     });
 
     test('fails if any first-party LICENSE files are incorrectly formatted',
@@ -387,7 +418,7 @@ void main() {
       });
 
       expect(commandError, isA<ToolExit>());
-      expect(output, isNot(contains('All LICENSE files passed validation!')));
+      expect(output, isNot(contains(contains('All files passed validation!'))));
     });
 
     test('ignores third-party LICENSE format', () async {
@@ -400,8 +431,42 @@ void main() {
           await runCapturingPrint(runner, <String>['license-check']);
 
       // The file shouldn't be checked.
-      expect(output, isNot(contains('Checking third_party/LICENSE')));
-      expect(output, contains('All LICENSE files passed validation!'));
+      expect(output, isNot(contains(contains('Checking third_party/LICENSE'))));
+    });
+
+    test('outputs all errors at the end', () async {
+      root.childFile('bad.cc').createSync();
+      root
+          .childDirectory('third_party')
+          .childFile('bad.cc')
+          .createSync(recursive: true);
+      final File license = root.childFile('LICENSE');
+      license.createSync();
+      license.writeAsStringSync(_incorrectLicenseFileText);
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['license-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking LICENSE'),
+            contains('Checking bad.cc'),
+            contains('Checking third_party/bad.cc'),
+            contains(
+                'The following LICENSE files do not follow the expected format:'),
+            contains('  LICENSE'),
+            contains(
+                'The license block for these files is missing or incorrect:'),
+            contains('  bad.cc'),
+            contains(
+                'No recognized license was found for the following third-party files:'),
+            contains('  third_party/bad.cc'),
+          ]));
     });
   });
 }
