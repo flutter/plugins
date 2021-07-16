@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		033B94BE269C40A200B4DF97 /* CameraMethodChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 033B94BD269C40A200B4DF97 /* CameraMethodChannelTests.m */; };
 		03BB766B2665316900CE5A93 /* CameraFocusTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BB766A2665316900CE5A93 /* CameraFocusTests.m */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		334733EA2668111C00DCC49E /* CameraOrientationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BB767226653ABE00CE5A93 /* CameraOrientationTests.m */; };
@@ -44,6 +45,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		033B94BD269C40A200B4DF97 /* CameraMethodChannelTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraMethodChannelTests.m; sourceTree = "<group>"; };
 		03BB76682665316900CE5A93 /* RunnerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		03BB766A2665316900CE5A93 /* CameraFocusTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraFocusTests.m; sourceTree = "<group>"; };
 		03BB766C2665316900CE5A93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -96,6 +98,7 @@
 				03BB766A2665316900CE5A93 /* CameraFocusTests.m */,
 				03BB767226653ABE00CE5A93 /* CameraOrientationTests.m */,
 				03BB766C2665316900CE5A93 /* Info.plist */,
+				033B94BD269C40A200B4DF97 /* CameraMethodChannelTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -358,6 +361,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				033B94BE269C40A200B4DF97 /* CameraMethodChannelTests.m in Sources */,
 				03BB766B2665316900CE5A93 /* CameraFocusTests.m in Sources */,
 				334733EA2668111C00DCC49E /* CameraOrientationTests.m in Sources */,
 			);
