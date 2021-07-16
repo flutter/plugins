@@ -14,17 +14,13 @@ import 'common/xcode.dart';
 const String _iosDestinationFlag = 'ios-destination';
 const String _testTargetFlag = 'test-target';
 
-// The exit code from 'xcodebuild test' when there are no tests.
-const int _xcodebuildNoTestExitCode = 66;
+const int _exitNoIosSimulators = 3;
 
-const int _exitNoSimulators = 3;
-
-/// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
-/// The tests target have to be added to the Xcode project of the example app,
-/// usually at "example/{ios,macos}/Runner.xcworkspace".
-class XCTestCommand extends PackageLoopingCommand {
+/// The command to run native tests for plugins:
+/// - iOS and macOS: XCTests (XCUnitTest and XCUITest) in plugins.
+class NativeTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
-  XCTestCommand(
+  NativeTestCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
     Platform platform = const LocalPlatform(),
@@ -32,18 +28,18 @@ class XCTestCommand extends PackageLoopingCommand {
         super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       _iosDestinationFlag,
-      help:
-          'Specify the destination when running the test, used for -destination flag for xcodebuild command.\n'
-          'this is passed to the `-destination` argument in xcodebuild command.\n'
-          'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
+      help: 'Specify the destination when running iOS tests.\n'
+          'This is passed to the `-destination` argument in the xcodebuild command.\n'
+          'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT '
+          'for details on how to specify the destination.',
     );
     argParser.addOption(
       _testTargetFlag,
       help:
           'Limits the tests to a specific target (e.g., RunnerTests or RunnerUITests)',
     );
-    argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
-    argParser.addFlag(kPlatformMacos, help: 'Runs the macOS tests');
+    argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
+    argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
   }
 
   // The device destination flags for iOS tests.
@@ -52,31 +48,49 @@ class XCTestCommand extends PackageLoopingCommand {
   final Xcode _xcode;
 
   @override
-  final String name = 'xctest';
+  final String name = 'native-test';
 
   @override
-  final String description =
-      'Runs the xctests in the iOS and/or macOS example apps.\n\n'
-      'This command requires "flutter" and "xcrun" to be in your path.';
+  final String description = '''
+Runs native unit tests and native integration tests.
+
+Currently supported platforms:
+- iOS: requires 'xcrun' to be in your path.
+- macOS: requires 'xcrun' to be in your path.
+
+The example app(s) must be built for all targeted platforms before running
+this command.
+''';
+
+  Map<String, _PlatformDetails> _platforms = <String, _PlatformDetails>{};
+
+  List<String> _requestedPlatforms = <String>[];
 
   @override
   Future<void> initializeRun() async {
-    final bool shouldTestIos = getBoolArg(kPlatformIos);
-    final bool shouldTestMacos = getBoolArg(kPlatformMacos);
+    _platforms = <String, _PlatformDetails>{
+      kPlatformIos: _PlatformDetails('iOS', _testIos),
+      kPlatformMacos: _PlatformDetails('macOS', _testMacOs),
+    };
+    _requestedPlatforms = _platforms.keys
+        .where((String platform) => getBoolArg(platform))
+        .toList();
+    _requestedPlatforms.sort();
 
-    if (!(shouldTestIos || shouldTestMacos)) {
+    if (_requestedPlatforms.isEmpty) {
       printError('At least one platform flag must be provided.');
       throw ToolExit(exitInvalidArguments);
     }
 
-    if (shouldTestIos) {
+    // iOS-specific run-level state.
+    if (_requestedPlatforms.contains('ios')) {
       String destination = getStringArg(_iosDestinationFlag);
       if (destination.isEmpty) {
         final String? simulatorId =
             await _xcode.findBestAvailableIphoneSimulator();
         if (simulatorId == null) {
-          printError('Cannot find any available simulators, tests failed');
-          throw ToolExit(_exitNoSimulators);
+          printError('Cannot find any available iOS simulators.');
+          throw ToolExit(_exitNoIosSimulators);
         }
         destination = 'id=$simulatorId';
       }
@@ -89,67 +103,59 @@ class XCTestCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(Directory package) async {
-    final bool testIos = getBoolArg(kPlatformIos) &&
-        pluginSupportsPlatform(kPlatformIos, package,
-            requiredMode: PlatformSupport.inline);
-    final bool testMacos = getBoolArg(kPlatformMacos) &&
-        pluginSupportsPlatform(kPlatformMacos, package,
-            requiredMode: PlatformSupport.inline);
-
-    final bool multiplePlatformsRequested =
-        getBoolArg(kPlatformIos) && getBoolArg(kPlatformMacos);
-    if (!(testIos || testMacos)) {
-      String description;
-      if (multiplePlatformsRequested) {
-        description = 'Neither iOS nor macOS is';
-      } else if (getBoolArg(kPlatformIos)) {
-        description = 'iOS is not';
+    final List<String> testPlatforms = <String>[];
+    for (final String platform in _requestedPlatforms) {
+      if (pluginSupportsPlatform(platform, package,
+          requiredMode: PlatformSupport.inline)) {
+        testPlatforms.add(platform);
       } else {
-        description = 'macOS is not';
+        print('No implementation for ${_platforms[platform]!.label}.');
       }
-      return PackageResult.skip(
-          '$description implemented by this plugin package.');
     }
 
-    if (multiplePlatformsRequested && (!testIos || !testMacos)) {
-      print('Only running for ${testIos ? 'iOS' : 'macOS'}\n');
+    if (testPlatforms.isEmpty) {
+      return PackageResult.skip('Not implemented for target platform(s).');
     }
 
     final List<String> failures = <String>[];
     bool ranTests = false;
-    if (testIos) {
-      final RunState result = await _testPlugin(package, 'iOS',
-          extraXcrunFlags: _iosDestinationFlags);
+    for (final String platform in testPlatforms) {
+      final _PlatformDetails platformInfo = _platforms[platform]!;
+      final RunState result = await platformInfo.testFunction(package);
       ranTests |= result != RunState.skipped;
       if (result == RunState.failed) {
-        failures.add('iOS');
-      }
-    }
-    if (testMacos) {
-      final RunState result = await _testPlugin(package, 'macOS');
-      ranTests |= result != RunState.skipped;
-      if (result == RunState.failed) {
-        failures.add('macOS');
+        failures.add(platformInfo.label);
       }
     }
 
     if (!ranTests) {
       return PackageResult.skip('No tests found.');
     }
-    // Only provide the failing platform in the failure details if testing
+    // Only provide the failing platforms in the failure details if testing
     // multiple platforms, otherwise it's just noise.
     return failures.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(
-            multiplePlatformsRequested ? failures : <String>[]);
+            _requestedPlatforms.length > 1 ? failures : <String>[]);
+  }
+
+  Future<RunState> _testIos(Directory plugin) {
+    return _runXcodeTests(plugin, 'iOS', extraFlags: _iosDestinationFlags);
+  }
+
+  Future<RunState> _testMacOs(Directory plugin) {
+    return _runXcodeTests(plugin, 'macOS');
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
   /// the test result.
-  Future<RunState> _testPlugin(
+  ///
+  /// The tests targets must be added to the Xcode project of the example app,
+  /// usually at "example/{ios,macos}/Runner.xcworkspace".
+  Future<RunState> _runXcodeTests(
     Directory plugin,
     String platform, {
-    List<String> extraXcrunFlags = const <String>[],
+    List<String> extraFlags = const <String>[],
   }) async {
     final String testTarget = getStringArg(_testTargetFlag);
 
@@ -184,11 +190,13 @@ class XCTestCommand extends PackageLoopingCommand {
         configuration: 'Debug',
         extraFlags: <String>[
           if (testTarget.isNotEmpty) '-only-testing:$testTarget',
-          ...extraXcrunFlags,
+          ...extraFlags,
           'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
         ],
       );
 
+      // The exit code from 'xcodebuild test' when there are no tests.
+      const int _xcodebuildNoTestExitCode = 66;
       switch (exitCode) {
         case _xcodebuildNoTestExitCode:
           print('No tests found for $examplePath');
@@ -208,4 +216,22 @@ class XCTestCommand extends PackageLoopingCommand {
     }
     return overallResult;
   }
+}
+
+// The type for a function that takes a plugin directory and runs its native
+// tests for a specific platform.
+typedef _TestFunction = Future<RunState> Function(Directory);
+
+/// A collection of information related to a specific platform.
+class _PlatformDetails {
+  const _PlatformDetails(
+    this.label,
+    this.testFunction,
+  );
+
+  /// The name to use in output.
+  final String label;
+
+  /// The function to call to run tests.
+  final _TestFunction testFunction;
 }

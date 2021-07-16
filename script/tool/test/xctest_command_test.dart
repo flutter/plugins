@@ -53,7 +53,7 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
 void main() {
   const String _kDestination = '--ios-destination';
 
-  group('test xctest_command', () {
+  group('test native_test_command', () {
     late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
@@ -65,17 +65,18 @@ void main() {
       mockPlatform = MockPlatform(isMacOS: true);
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final XCTestCommand command = XCTestCommand(packagesDir,
+      final NativeTestCommand command = NativeTestCommand(packagesDir,
           processRunner: processRunner, platform: mockPlatform);
 
-      runner = CommandRunner<void>('xctest_command', 'Test for xctest_command');
+      runner = CommandRunner<void>(
+          'native_test_command', 'Test for native_test_command');
       runner.addCommand(command);
     });
 
     test('Fails if no platforms are provided', () async {
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['xctest'], errorHandler: (Error e) {
+          runner, <String>['native-test'], errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -101,7 +102,7 @@ void main() {
       processRunner.resultStdout = '{"project":{"targets":["RunnerTests"]}}';
 
       final List<String> output = await runCapturingPrint(runner, <String>[
-        'xctest',
+        'native-test',
         '--macos',
         '--test-target=RunnerTests',
       ]);
@@ -157,7 +158,7 @@ void main() {
       processRunner.processToReturn = MockProcess.succeeding();
       processRunner.resultStdout = '{"project":{"targets":["Runner"]}}';
       final List<String> output = await runCapturingPrint(runner, <String>[
-        'xctest',
+        'native-test',
         '--macos',
         '--test-target=RunnerTests',
       ]);
@@ -200,7 +201,7 @@ void main() {
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
-        'xctest',
+        'native-test',
         '--macos',
         '--test-target=RunnerTests',
       ], errorHandler: (Error e) {
@@ -250,7 +251,7 @@ void main() {
         noTestsProcessResult,
       ];
       final List<String> output =
-          await runCapturingPrint(runner, <String>['xctest', '--macos']);
+          await runCapturingPrint(runner, <String>['native-test', '--macos']);
 
       expect(output, contains(contains('No tests found.')));
 
@@ -282,11 +283,13 @@ void main() {
             });
 
         final List<String> output = await runCapturingPrint(runner,
-            <String>['xctest', '--ios', _kDestination, 'foo_destination']);
+            <String>['native-test', '--ios', _kDestination, 'foo_destination']);
         expect(
             output,
-            contains(
-                contains('iOS is not implemented by this plugin package.')));
+            containsAllInOrder(<Matcher>[
+              contains('No implementation for iOS.'),
+              contains('SKIPPING: Not implemented for target platform(s).'),
+            ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -297,11 +300,13 @@ void main() {
             });
 
         final List<String> output = await runCapturingPrint(runner,
-            <String>['xctest', '--ios', _kDestination, 'foo_destination']);
+            <String>['native-test', '--ios', _kDestination, 'foo_destination']);
         expect(
             output,
-            contains(
-                contains('iOS is not implemented by this plugin package.')));
+            containsAllInOrder(<Matcher>[
+              contains('No implementation for iOS.'),
+              contains('SKIPPING: Not implemented for target platform(s).'),
+            ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -315,7 +320,7 @@ void main() {
             pluginDirectory.childDirectory('example');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
-          'xctest',
+          'native-test',
           '--ios',
           _kDestination,
           'foo_destination',
@@ -362,7 +367,7 @@ void main() {
 
         processRunner.processToReturn = MockProcess.succeeding();
         processRunner.resultStdout = jsonEncode(_kDeviceListMap);
-        await runCapturingPrint(runner, <String>['xctest', '--ios']);
+        await runCapturingPrint(runner, <String>['native-test', '--ios']);
 
         expect(
             processRunner.recordedCalls,
@@ -411,7 +416,7 @@ void main() {
         final List<String> output = await runCapturingPrint(
           runner,
           <String>[
-            'xctest',
+            'native-test',
             '--ios',
             _kDestination,
             'foo_destination',
@@ -436,11 +441,14 @@ void main() {
         createFakePlugin('plugin', packagesDir);
 
         final List<String> output =
-            await runCapturingPrint(runner, <String>['xctest', '--macos']);
+            await runCapturingPrint(runner, <String>['native-test', '--macos']);
+
         expect(
             output,
-            contains(
-                contains('macOS is not implemented by this plugin package.')));
+            containsAllInOrder(<Matcher>[
+              contains('No implementation for macOS.'),
+              contains('SKIPPING: Not implemented for target platform(s).'),
+            ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -451,11 +459,14 @@ void main() {
             });
 
         final List<String> output =
-            await runCapturingPrint(runner, <String>['xctest', '--macos']);
+            await runCapturingPrint(runner, <String>['native-test', '--macos']);
+
         expect(
             output,
-            contains(
-                contains('macOS is not implemented by this plugin package.')));
+            containsAllInOrder(<Matcher>[
+              contains('No implementation for macOS.'),
+              contains('SKIPPING: Not implemented for target platform(s).'),
+            ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
 
@@ -470,7 +481,7 @@ void main() {
             pluginDirectory1.childDirectory('example');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
-          'xctest',
+          'native-test',
           '--macos',
         ]);
 
@@ -510,8 +521,9 @@ void main() {
         ];
 
         Error? commandError;
-        final List<String> output = await runCapturingPrint(
-            runner, <String>['xctest', '--macos'], errorHandler: (Error e) {
+        final List<String> output =
+            await runCapturingPrint(runner, <String>['native-test', '--macos'],
+                errorHandler: (Error e) {
           commandError = e;
         });
 
@@ -539,7 +551,7 @@ void main() {
             pluginDirectory1.childDirectory('example');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
-          'xctest',
+          'native-test',
           '--ios',
           '--macos',
           _kDestination,
@@ -600,7 +612,7 @@ void main() {
             pluginDirectory1.childDirectory('example');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
-          'xctest',
+          'native-test',
           '--ios',
           '--macos',
           _kDestination,
@@ -610,7 +622,7 @@ void main() {
         expect(
             output,
             containsAllInOrder(<Matcher>[
-              contains('Only running for macOS'),
+              contains('No implementation for iOS.'),
               contains('Successfully ran macOS xctest for plugin/example'),
             ]));
 
@@ -644,7 +656,7 @@ void main() {
             pluginDirectory.childDirectory('example');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
-          'xctest',
+          'native-test',
           '--ios',
           '--macos',
           _kDestination,
@@ -654,7 +666,7 @@ void main() {
         expect(
             output,
             containsAllInOrder(<Matcher>[
-              contains('Only running for iOS'),
+              contains('No implementation for macOS.'),
               contains('Successfully ran iOS xctest for plugin/example')
             ]));
 
@@ -684,7 +696,7 @@ void main() {
         createFakePlugin('plugin', packagesDir);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
-          'xctest',
+          'native-test',
           '--ios',
           '--macos',
           _kDestination,
@@ -694,8 +706,9 @@ void main() {
         expect(
             output,
             containsAllInOrder(<Matcher>[
-              contains(
-                  'SKIPPING: Neither iOS nor macOS is implemented by this plugin package.'),
+              contains('No implementation for iOS.'),
+              contains('No implementation for macOS.'),
+              contains('SKIPPING: Not implemented for target platform(s).'),
             ]));
 
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
