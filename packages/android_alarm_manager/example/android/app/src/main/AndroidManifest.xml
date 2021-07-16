@@ -6,7 +6,6 @@
     <uses-permission android:name="android.permission.INTERNET"/>
 
     <application
-        android:name=".Application"
         android:label="android_alarm_manager_example"
         android:icon="@mipmap/ic_launcher">
         <activity

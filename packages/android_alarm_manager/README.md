@@ -82,41 +82,6 @@ alarm manager plugin itself, it may be necessary to inform the background servic
 to initialize plugins depending on which Flutter Android embedding the application is
 using.
 
-### Flutter Android Embedding V1
-
-For the Flutter Android Embedding V1, the background service must be provided a
-callback to register plugins with the background isolate. This is done by giving
-the `AlarmService` a callback to call the application's `onCreate` method. See the example's
-[Application overrides](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/plugins/androidalarmmanagerexample/Application.java).
-
-In particular, its `Application` class is as follows:
-
-```java
-public class Application extends FlutterApplication implements PluginRegistrantCallback {
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    AlarmService.setPluginRegistrant(this);
-  }
-
-  @Override
-  public void registerWith(PluginRegistry registry) {
-    GeneratedPluginRegistrant.registerWith(registry);
-  }
-}
-```
-
-Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
-
-```xml
-    <application
-        android:name=".Application"
-        ...
-```
-
-**Note:** Not calling `AlarmService.setPluginRegistrant` will result in an exception being
-thrown when an alarm eventually fires.
-
 ### Flutter Android Embedding V2
 
 For the Flutter Android Embedding V2, plugins are registered with the background
