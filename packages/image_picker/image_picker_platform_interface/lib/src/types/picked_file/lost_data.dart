@@ -13,7 +13,7 @@ import 'package:image_picker_platform_interface/src/types/types.dart';
 class LostData {
   /// Creates an instance with the given [file], [exception], and [type]. Any of
   /// the params may be null, but this is never considered to be empty.
-  LostData({this.file, this.exception, this.type, this.fileList});
+  LostData({this.file, this.exception, this.type, this.files});
 
   /// Initializes an instance with all member params set to null and considered
   /// to be empty.
@@ -22,7 +22,7 @@ class LostData {
         exception = null,
         type = null,
         _empty = true,
-        fileList = null;
+        files = null;
 
   /// Whether it is an empty response.
   ///
@@ -53,5 +53,5 @@ class LostData {
   /// The list of files that were lost in a previous [pickMultiImage] call due to MainActivity being destroyed.
   ///
   /// Can be null if [exception] exists.
-  final List<PickedFile>? fileList;
+  final List<PickedFile>? files;
 }
