@@ -1,3 +1,7 @@
+# 2.1.1
+
+* Implement `pickMultiImage` and `getMultiImage`
+
 # 2.1.0
 
 * Implemented `getImage`, `getVideo` and `getFile` methods that return `XFile` instances.
