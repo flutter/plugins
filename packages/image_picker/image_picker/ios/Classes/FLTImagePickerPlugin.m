@@ -160,11 +160,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     _imagePickerController.modalPresentationStyle = UIModalPresentationCurrentContext;
     _imagePickerController.delegate = self;
     _imagePickerController.mediaTypes = @[
-      (NSString *)kUTTypeMovie, (NSString *)kUTTypeAVIMovie, (NSString *)kUTTypeVideo,
-      (NSString *)kUTTypeMPEG4
+      (NSString *)kUTTypeMovie,
+      (NSString *)kUTTypeAVIMovie,
+      (NSString *)kUTTypeVideo,
+      (NSString *)kUTTypeMPEG4,
     ];
     _imagePickerController.videoQuality = UIImagePickerControllerQualityTypeHigh;
-
+    if (@available(iOS 11.0, *)) {
+      // Enable passthrough mode in video-picking mode.
+      _imagePickerController.videoExportPreset = AVAssetExportPresetPassthrough;
+    }
     self.result = result;
     _arguments = call.arguments;
 
@@ -429,7 +434,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 - (void)imagePickerController:(UIImagePickerController *)picker
     didFinishPickingMediaWithInfo:(NSDictionary<NSString *, id> *)info {
-  NSURL *videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+  NSString *mediaType = info[UIImagePickerControllerMediaType];
+  NSURL *videoURL = nil;
+
+  if (CFStringCompare((__bridge CFStringRef)mediaType, kUTTypeMovie, 0) == kCFCompareEqualTo) {
+    videoURL = [info objectForKey:UIImagePickerControllerMediaURL];
+
+    if (videoURL == nil) {
+      videoURL = (NSURL *)info[UIImagePickerControllerReferenceURL];
+    }
+  }
   [_imagePickerController dismissViewControllerAnimated:YES completion:nil];
   // The method dismissViewControllerAnimated does not immediately prevent
   // further didFinishPickingMediaWithInfo invocations. A nil check is necessary
@@ -439,11 +453,19 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     return;
   }
   if (videoURL != nil) {
-    if (@available(iOS 13.0, *)) {
+    if (@available(iOS 11.0, *)) {
       NSString *fileName = [videoURL lastPathComponent];
       NSURL *destination =
           [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingPathComponent:fileName]];
 
+      // Two different code paths exist for getting accessible real file path,
+      // even with the same OS version( on iOS 14.3).
+      //
+      // The first half is for newer devices(tested with iPhone Xs, 11 and 12),
+      // in which "videoURL" is prefixed with "file://".
+      //
+      // The second half is for older devices(tested with iPhone 7), in which
+      // "videoURL" is prefixed with "assets-library://".
       if ([[NSFileManager defaultManager] isReadableFileAtPath:[videoURL path]]) {
         NSError *error;
         if (![[videoURL path] isEqualToString:[destination path]]) {
@@ -458,8 +480,45 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
           }
         }
         videoURL = destination;
+      } else {
+        // PhotoKit for "assets-library://" schema handling.
+
+        PHAsset *originalAsset = [FLTImagePickerPhotoAssetUtil getAssetFromImagePickerInfo:info];
+
+        PHVideoRequestOptions *options = [PHVideoRequestOptions new];
+        options.version = PHVideoRequestOptionsVersionOriginal;
+
+        __weak typeof(self) weakSelf = self;
+        [[PHImageManager defaultManager]
+            requestAVAssetForVideo:originalAsset
+                           options:options
+                     resultHandler:^(AVAsset *_Nullable avasset, AVAudioMix *_Nullable audioMix,
+                                     NSDictionary *_Nullable info) {
+                       NSError *error;
+                       AVURLAsset *avAsset = (AVURLAsset *)avasset;
+
+                       // Destination is a tmp file, reset/drop it before copy operation anyway.
+                       [[NSFileManager defaultManager] removeItemAtURL:destination error:&error];
+                       // Write to app tmp folder.
+                       if ([[NSFileManager defaultManager] copyItemAtURL:avAsset.URL
+                                                                   toURL:destination
+                                                                   error:&error]) {
+                         weakSelf.result(destination.path);
+                         weakSelf.result = nil;
+                       } else {
+                         self.result([FlutterError
+                             errorWithCode:@"flutter_image_picker_copy_video_error"
+                                   message:@"Could not cache the video file."
+                                   details:nil]);
+                         self.result = nil;
+                         return;
+                       }
+                     }];
+
+        return;
       }
     }
+
     self.result(videoURL.path);
     self.result = nil;
     _arguments = nil;
