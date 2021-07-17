@@ -18,7 +18,7 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('initalUrl', (WidgetTester tester) async {
+  testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     await tester.pumpWidget(
@@ -532,6 +532,7 @@ void main() {
       expect(fullScreen, _webviewBool(false));
     });
 
+    // allowsInlineMediaPlayback is a noop on Android, so it is skipped.
     testWidgets(
         'Video plays full screen when allowsInlineMediaPlayback is false',
         (WidgetTester tester) async {
@@ -581,7 +582,7 @@ void main() {
       String fullScreen =
           await controller.evaluateJavascript('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
-    });
+    }, skip: Platform.isAndroid);
   });
 
   group('Audio playback policy', () {
@@ -1251,39 +1252,12 @@ void main() {
     expect(currentUrl, 'https://flutter.dev/');
   });
 
-  testWidgets('target _blank opens in same window',
-      (WidgetTester tester) async {
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final Completer<void> pageLoaded = Completer<void>();
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          javascriptMode: JavascriptMode.unrestricted,
-          onPageFinished: (String url) {
-            pageLoaded.complete(null);
-          },
-        ),
-      ),
-    );
-    final WebViewController controller = await controllerCompleter.future;
-    await controller.evaluateJavascript('window.open("about:blank", "_blank")');
-    await pageLoaded.future;
-    final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, 'about:blank');
-  }, skip: true);
-
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      final Completer<void> pageLoaded = Completer<void>();
+      Completer<void> pageLoaded = Completer<void>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -1297,17 +1271,25 @@ void main() {
               pageLoaded.complete();
             },
             initialUrl: 'https://flutter.dev',
+            navigationDelegate: (_) => NavigationDecision.navigate,
           ),
         ),
       );
       final WebViewController controller = await controllerCompleter.future;
-      await controller
-          .evaluateJavascript('window.open("https://www.google.com")');
+      expect(controller.currentUrl(), completion('https://flutter.dev/'));
       await pageLoaded.future;
+      pageLoaded = Completer<void>();
+
+      await controller
+          .evaluateJavascript('window.open("https://www.google.com/")');
+      await pageLoaded.future;
+      pageLoaded = Completer<void>();
       expect(controller.currentUrl(), completion('https://www.google.com/'));
 
+      expect(controller.canGoBack(), completion(true));
       await controller.goBack();
-      expect(controller.currentUrl(), completion('https://www.flutter.dev'));
+      await pageLoaded.future;
+      expect(controller.currentUrl(), completion('https://flutter.dev/'));
     },
     skip: !Platform.isAndroid,
   );
