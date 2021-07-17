@@ -96,6 +96,16 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return _getSelectedFile(input);
   }
 
+  /// Injects a file input, and returns a list of PickedFile that the user selected locally.
+  @override
+  Future<List<PickedFile>?> pickMultiImage(
+      {double? maxWidth, double? maxHeight, int? imageQuality}) {
+    html.FileUploadInputElement input =
+    createInputElement(_kAcceptImageMimeType,null,multiple: true) as html.FileUploadInputElement;
+    _injectAndActivate(input);
+    return _getSelectedFiles(input);
+  }
+
   /// Returns an [XFile] with the image that was picked.
   ///
   /// The `source` argument controls where the image comes from. This can
@@ -142,8 +152,31 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return getFile(accept: _kAcceptVideoMimeType, capture: capture);
   }
 
+  /// Injects a file input, and returns a list of XFile that the user selected locally.
+  @override
+  Future<List<XFile>?> getMultiImage({double? maxWidth, double? maxHeight, int? imageQuality}) {
+    return getFiles(accept: _kAcceptImageMimeType);
+  }
+
   /// Injects a file input with the specified accept+capture attributes, and
-  /// returns the PickedFile that the user selected locally.
+  /// returns a list of XFile that the user selected locally.
+  ///
+  /// `capture` is only supported in mobile browsers.
+  /// See https://caniuse.com/#feat=html-media-capture
+  @visibleForTesting
+  Future<List<XFile>> getFiles({
+    String? accept,
+    String? capture,
+  }) {
+    html.FileUploadInputElement input =
+    createInputElement(accept, capture,multiple: true) as html.FileUploadInputElement;
+    _injectAndActivate(input);
+
+    return _getSelectedXFiles(input);
+  }
+
+  /// Injects a file input with the specified accept+capture attributes, and
+  /// returns the XFile that the user selected locally.
   ///
   /// `capture` is only supported in mobile browsers.
   /// See https://caniuse.com/#feat=html-media-capture
@@ -178,6 +211,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return input.files?.first;
   }
 
+  List<html.File>? _getFilesFromInput(html.FileUploadInputElement input) {
+    return input.files;
+  }
+
   /// Handles the OnChange event from a FileUploadInputElement object
   /// Returns the objectURL of the selected file.
   String? _handleOnChangeEvent(html.Event event) {
@@ -191,6 +228,16 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return null;
   }
 
+  List<String>? _handleOnChangeEventForMultipleFiles(html.Event event) {
+    final html.FileUploadInputElement input =
+    event.target as html.FileUploadInputElement;
+    final List<html.File>? files = _getFilesFromInput(input);
+    if (files != null) {
+      return files.map((e) => html.Url.createObjectUrl(e)).toList();
+    }
+    return null;
+  }
+
   /// Monitors an <input type="file"> and returns the selected file.
   Future<PickedFile> _getSelectedFile(html.FileUploadInputElement input) {
     final Completer<PickedFile> _completer = Completer<PickedFile>();
@@ -199,6 +246,26 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       final objectUrl = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && objectUrl != null) {
         _completer.complete(PickedFile(objectUrl));
+      }
+    });
+    input.onError.first.then((event) {
+      if (!_completer.isCompleted) {
+        _completer.completeError(event);
+      }
+    });
+    // Note that we don't bother detaching from these streams, since the
+    // "input" gets re-created in the DOM every time the user needs to
+    // pick a file.
+    return _completer.future;
+  }
+
+  Future<List<PickedFile>> _getSelectedFiles(html.FileUploadInputElement input) {
+    final Completer<List<PickedFile>> _completer = Completer<List<PickedFile>>();
+    // Observe the input until we can return something
+    input.onChange.first.then((event) {
+      final objectUrls = _handleOnChangeEventForMultipleFiles(event);
+      if (!_completer.isCompleted && objectUrls != null) {
+        _completer.complete(objectUrls.map((objectUrl) => PickedFile((objectUrl))).toList());
       }
     });
     input.onError.first.then((event) {
@@ -232,6 +299,26 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return _completer.future;
   }
 
+  Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
+    final Completer<List<XFile>> _completer = Completer<List<XFile>>();
+    // Observe the input until we can return something
+    input.onChange.first.then((event) {
+      final objectUrls = _handleOnChangeEventForMultipleFiles(event);
+      if (!_completer.isCompleted && objectUrls != null) {
+
+        _completer.complete(objectUrls.map((e) => XFile(e)).toList());
+      }
+    });
+    input.onError.first.then((event) {
+      if (!_completer.isCompleted) {
+        _completer.completeError(event);
+      }
+    });
+    // Note that we don't bother detaching from these streams, since the
+    // "input" gets re-created in the DOM every time the user needs to
+    // pick a file.
+    return _completer.future;
+  }
   /// Initializes a DOM container where we can host input elements.
   html.Element _ensureInitialized(String id) {
     var target = html.querySelector('#${id}');
@@ -248,12 +335,12 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Creates an input element that accepts certain file types, and
   /// allows to `capture` from the device's cameras (where supported)
   @visibleForTesting
-  html.Element createInputElement(String? accept, String? capture) {
+  html.Element createInputElement(String? accept, String? capture,{bool multiple = false} ) {
     if (_hasOverrides) {
       return _overrides!.createInputElement(accept, capture);
     }
 
-    html.Element element = html.FileUploadInputElement()..accept = accept;
+    html.Element element = html.FileUploadInputElement()..accept = accept..multiple = multiple;
 
     if (capture != null) {
       element.setAttribute('capture', capture);
@@ -284,6 +371,8 @@ typedef OverrideExtractFilesFromInputFunction = html.File Function(
   html.Element? input,
 );
 
+
+
 /// Overrides for some of the functionality above.
 @visibleForTesting
 class ImagePickerPluginTestOverrides {
@@ -292,4 +381,6 @@ class ImagePickerPluginTestOverrides {
 
   /// Override the extraction of the selected file from an input element.
   late OverrideExtractFilesFromInputFunction getFileFromInput;
+
+
 }
