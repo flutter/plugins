@@ -1255,6 +1255,34 @@ void main() {
     expect(currentUrl, 'https://flutter.dev/');
   });
 
+  testWidgets('target _blank opens in same window',
+      (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    final Completer<void> pageLoaded = Completer<void>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+          onPageFinished: (String url) {
+            pageLoaded.complete(null);
+          },
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    await controller
+        .evaluateJavascript('window.open("https://flutter.dev/", "_blank")');
+    await pageLoaded.future;
+    final String? currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter.dev/');
+  });
+
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
