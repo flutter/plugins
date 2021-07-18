@@ -10,8 +10,8 @@ This package is not an endorsed implementation of the google_maps_flutter plugin
 
 ```yaml
 dependencies:
-  google_maps_flutter: ^0.5.28
-  google_maps_flutter_web: ^0.1.0
+  google_maps_flutter: ^2.0.0
+  google_maps_flutter_web: ^0.3.0
 ```
 
 ### Modify web/index.html
