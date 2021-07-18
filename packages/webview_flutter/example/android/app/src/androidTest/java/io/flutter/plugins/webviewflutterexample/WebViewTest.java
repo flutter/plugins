@@ -6,6 +6,6 @@ import static org.junit.Assert.assertEquals;
 public class WebViewTest {
   @Test
   public void placeHolderTest() {
-    assertEquals(1, 2);
+    assertEquals(1, 1);
   }
 }

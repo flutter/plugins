@@ -10,7 +10,7 @@ import io.flutter.embedding.android.FlutterActivity;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
-//@RunWith(FlutterTestRunner.class)
+@RunWith(FlutterTestRunner.class)
 public class MainActivityTest {
   @Rule
   public final ActivityTestRule<FlutterActivity> rule = new ActivityTestRule<>(FlutterActivity.class);
