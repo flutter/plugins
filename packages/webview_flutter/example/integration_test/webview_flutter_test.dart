@@ -18,28 +18,25 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets(
-    'initialUrl',
-    (WidgetTester tester) async {
-      final Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            key: GlobalKey(),
-            initialUrl: 'https://flutter.dev/',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-          ),
+  testWidgets('initialUrl', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: 'https://flutter.dev/',
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
         ),
-      );
-      final WebViewController controller = await controllerCompleter.future;
-      final String? currentUrl = await controller.currentUrl();
-      expect(currentUrl, 'https://flutter.dev/');
-    },
-  );
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String? currentUrl = await controller.currentUrl();
+    expect(currentUrl, 'https://flutter.dev/');
+  });
 
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -1302,7 +1299,6 @@ void main() {
               pageLoaded.complete();
             },
             initialUrl: 'https://flutter.dev',
-            navigationDelegate: (_) => NavigationDecision.navigate,
           ),
         ),
       );
