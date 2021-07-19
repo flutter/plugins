@@ -116,9 +116,13 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
-  }) {
+  }) async {
     String? capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return getFile(accept: _kAcceptImageMimeType, capture: capture);
+    List<XFile> files = await getFiles(
+      accept: _kAcceptImageMimeType,
+      capture: capture,
+    );
+    return files.first;
   }
 
   /// Returns an [XFile] containing the video that was picked.
@@ -138,51 +142,48 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     required ImageSource source,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
     Duration? maxDuration,
-  }) {
+  }) async {
     String? capture = computeCaptureAttribute(source, preferredCameraDevice);
-    return getFile(accept: _kAcceptVideoMimeType, capture: capture);
+    List<XFile> files = await getFiles(
+      accept: _kAcceptVideoMimeType,
+      capture: capture,
+    );
+    return files.first;
   }
 
   /// Injects a file input, and returns a list of XFile that the user selected locally.
   @override
-  Future<List<XFile>?> getMultiImage(
-      {double? maxWidth, double? maxHeight, int? imageQuality}) {
-    return getFiles(accept: _kAcceptImageMimeType);
+  Future<List<XFile>> getMultiImage({
+    double? maxWidth,
+    double? maxHeight,
+    int? imageQuality,
+  }) {
+    return getFiles(accept: _kAcceptImageMimeType, multiple: true);
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
   /// returns a list of XFile that the user selected locally.
   ///
   /// `capture` is only supported in mobile browsers.
+  ///
+  /// `multiple` can be passed to allow for multiple selection of files. Defaults
+  /// to false.
+  ///
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
   Future<List<XFile>> getFiles({
     String? accept,
     String? capture,
+    bool multiple = false,
   }) {
-    html.FileUploadInputElement input =
-        createInputElement(accept, capture, multiple: true)
-            as html.FileUploadInputElement;
+    html.FileUploadInputElement input = createInputElement(
+      accept,
+      capture,
+      multiple: multiple,
+    ) as html.FileUploadInputElement;
     _injectAndActivate(input);
 
     return _getSelectedXFiles(input);
-  }
-
-  /// Injects a file input with the specified accept+capture attributes, and
-  /// returns the XFile that the user selected locally.
-  ///
-  /// `capture` is only supported in mobile browsers.
-  /// See https://caniuse.com/#feat=html-media-capture
-  @visibleForTesting
-  Future<XFile> getFile({
-    String? accept,
-    String? capture,
-  }) async {
-    html.FileUploadInputElement input =
-        createInputElement(accept, capture) as html.FileUploadInputElement;
-    _injectAndActivate(input);
-    final files = await _getSelectedXFiles(input);
-    return files.first;
   }
 
   // DOM methods
@@ -218,10 +219,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     final Completer<PickedFile> _completer = Completer<PickedFile>();
     // Observe the input until we can return something
     input.onChange.first.then((event) {
-      final pickedFile = _handleOnChangeEvent(event);
-      if (!_completer.isCompleted && pickedFile != null) {
-        _completer
-            .complete(PickedFile(html.Url.createObjectUrl(pickedFile.first)));
+      final files = _handleOnChangeEvent(event);
+      if (!_completer.isCompleted && files != null) {
+        _completer.complete(PickedFile(
+          html.Url.createObjectUrl(files.first),
+        ));
       }
     });
     input.onError.first.then((event) {
@@ -235,6 +237,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     return _completer.future;
   }
 
+  /// Monitors an <input type="file"> and returns the selected file(s).
   Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
     final Completer<List<XFile>> _completer = Completer<List<XFile>>();
     // Observe the input until we can return something
@@ -246,7 +249,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
                   html.Url.createObjectUrl(file),
                   name: file.name,
                   length: file.size,
-                  lastModified: file.lastModifiedDate,
+                  lastModified: DateTime.fromMillisecondsSinceEpoch(
+                    file.lastModified ?? DateTime.now().millisecondsSinceEpoch,
+                  ),
+                  mimeType: file.type,
                 ))
             .toList());
       }
@@ -278,8 +284,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Creates an input element that accepts certain file types, and
   /// allows to `capture` from the device's cameras (where supported)
   @visibleForTesting
-  html.Element createInputElement(String? accept, String? capture,
-      {bool multiple = false}) {
+  html.Element createInputElement(
+    String? accept,
+    String? capture, {
+    bool multiple = false,
+  }) {
     if (_hasOverrides) {
       return _overrides!.createInputElement(accept, capture);
     }
@@ -314,9 +323,7 @@ typedef OverrideCreateInputFunction = html.Element Function(
 /// A function that extracts list of files from the file `input` passed in.
 @visibleForTesting
 typedef OverrideExtractMultipleFilesFromInputFunction = List<html.File>
-    Function(
-  html.Element? input,
-);
+    Function(html.Element? input);
 
 /// Overrides for some of the functionality above.
 @visibleForTesting

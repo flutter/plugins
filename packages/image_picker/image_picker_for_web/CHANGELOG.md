@@ -1,7 +1,8 @@
 # 2.1.1
 
 * Implemented `getMultiImage`.
-* Added support for getting name,length,mimeType and lastModified from XFile.
+* Initialized the following `XFile` attributes for picked files:
+  * `name`, `length`, `mimeType` and `lastModified`.
 
 # 2.1.0
 
