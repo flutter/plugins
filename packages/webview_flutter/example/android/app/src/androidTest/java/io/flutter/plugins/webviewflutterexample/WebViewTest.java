@@ -13,12 +13,11 @@ import org.junit.Test;
 public class WebViewTest {
   @Test
   public void webViewPluginIsAdded() {
-    try (ActivityScenario<WebViewTestActivity> scenario =
-        ActivityScenario.launch(WebViewTestActivity.class)) {
-      scenario.onActivity(
-          activity -> {
-            assertTrue(activity.engine.getPlugins().has(WebViewFlutterPlugin.class));
-          });
-    }
+    final ActivityScenario<WebViewTestActivity> scenario =
+        ActivityScenario.launch(WebViewTestActivity.class);
+    scenario.onActivity(
+        activity -> {
+          assertTrue(activity.engine.getPlugins().has(WebViewFlutterPlugin.class));
+        });
   }
 }
