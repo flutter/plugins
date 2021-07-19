@@ -1,3 +1,30 @@
+## 2.0.4
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.3
+
+* Do not tear down method channel onDetachedFromActivity.
+
+## 2.0.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.1
+
+* Migrate unit tests to sound null safety.
+
+## 2.0.0
+
+* Migrate to null safety.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update README with the new documentation urls.
+
+## 0.6.5+5
+
+* Update Flutter SDK constraint.
+
 ## 0.6.5+4
 
 * Fix iPad share window not showing when `origin` is null.

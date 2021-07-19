@@ -1,3 +1,28 @@
+## NEXT
+
+* Add Swift language version to podspec.
+* Add native unit tests.
+
+## 2.0.1
+
+* Add `implements` to pubspec.yaml.
+
+## 2.0.0
+
+* Update Dart SDK constraint for null safety compatibility.
+
+## 0.0.4+9
+
+* Remove placeholder Dart file.
+
+## 0.0.4+8
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 0.0.4+7
+
+* Update Flutter SDK constraint.
+
 ## 0.0.4+6
 
 * Remove unused `test` dependency.

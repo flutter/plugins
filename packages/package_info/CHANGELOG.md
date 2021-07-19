@@ -1,3 +1,23 @@
+## 2.0.2
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.3+4
+
+* Ensure `IntegrationTestPlugin` is registered in `example` app, so Firebase Test Lab tests report test results correctly. [Issue](https://github.com/flutter/flutter/issues/74944).
+
+## 0.4.3+3
+
+* Update Flutter SDK constraint.
+
 ## 0.4.3+2
 
 * Remove unused `test` dependency.

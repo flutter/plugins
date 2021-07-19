@@ -1,3 +1,20 @@
+## 2.0.2
+
+* Add `implements` to pubspec.yaml.
+* Add `registerWith()` to the Dart main class.
+
+## 2.0.1
+
+* Fix a crash when a known folder can't be located.
+
+## 2.0.0
+
+* Migrate to null safety
+
+## 0.0.4+4
+
+* Update Flutter SDK constraint.
+
 ## 0.0.4+3
 
 * Remove unused `test` dependency.

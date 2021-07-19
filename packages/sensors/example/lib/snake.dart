@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -56,15 +56,14 @@ class SnakeBoardPainter extends CustomPainter {
 }
 
 class SnakeState extends State<Snake> {
-  SnakeState(int rows, int columns, this.cellSize) {
-    state = GameState(rows, columns);
-  }
+  SnakeState(int rows, int columns, this.cellSize)
+      : state = GameState(rows, columns);
 
   double cellSize;
   GameState state;
-  AccelerometerEvent acceleration;
-  StreamSubscription<AccelerometerEvent> _streamSubscription;
-  Timer _timer;
+  AccelerometerEvent? acceleration;
+  late StreamSubscription<AccelerometerEvent> _streamSubscription;
+  late Timer _timer;
 
   @override
   Widget build(BuildContext context) {
@@ -96,21 +95,21 @@ class SnakeState extends State<Snake> {
   }
 
   void _step() {
-    final math.Point<int> newDirection = acceleration == null
+    final AccelerometerEvent? currentAcceleration = acceleration;
+    final math.Point<int>? newDirection = currentAcceleration == null
         ? null
-        : acceleration.x.abs() < 1.0 && acceleration.y.abs() < 1.0
+        : currentAcceleration.x.abs() < 1.0 && currentAcceleration.y.abs() < 1.0
             ? null
-            : (acceleration.x.abs() < acceleration.y.abs())
-                ? math.Point<int>(0, acceleration.y.sign.toInt())
-                : math.Point<int>(-acceleration.x.sign.toInt(), 0);
+            : (currentAcceleration.x.abs() < currentAcceleration.y.abs())
+                ? math.Point<int>(0, currentAcceleration.y.sign.toInt())
+                : math.Point<int>(-currentAcceleration.x.sign.toInt(), 0);
     state.step(newDirection);
   }
 }
 
 class GameState {
-  GameState(this.rows, this.columns) {
-    snakeLength = math.min(rows, columns) - 5;
-  }
+  GameState(this.rows, this.columns)
+      : snakeLength = math.min(rows, columns) - 5;
 
   int rows;
   int columns;
@@ -119,7 +118,7 @@ class GameState {
   List<math.Point<int>> body = <math.Point<int>>[const math.Point<int>(0, 0)];
   math.Point<int> direction = const math.Point<int>(1, 0);
 
-  void step(math.Point<int> newDirection) {
+  void step(math.Point<int>? newDirection) {
     math.Point<int> next = body.last + direction;
     next = math.Point<int>(next.x % columns, next.y % rows);
 

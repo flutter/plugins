@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -19,7 +19,7 @@ const _safariTargetTopSchemes = {
   'tel',
   'sms',
 };
-String _getUrlScheme(String url) => Uri.tryParse(url)?.scheme;
+String? _getUrlScheme(String url) => Uri.tryParse(url)?.scheme;
 
 bool _isSafariTargetTopScheme(String url) =>
     _safariTargetTopSchemes.contains(_getUrlScheme(url));
@@ -38,7 +38,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   }.union(_safariTargetTopSchemes);
 
   /// A constructor that allows tests to override the window object used by the plugin.
-  UrlLauncherPlugin({@visibleForTesting html.Window debugWindow})
+  UrlLauncherPlugin({@visibleForTesting html.Window? debugWindow})
       : _window = debugWindow ?? html.window {
     _isSafari = navigatorIsSafari(_window.navigator);
   }
@@ -58,7 +58,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   ///
   /// Returns the newly created window.
   @visibleForTesting
-  html.WindowBase openNewWindow(String url, {String webOnlyWindowName}) {
+  html.WindowBase openNewWindow(String url, {String? webOnlyWindowName}) {
     // We need to open mailto, tel and sms urls on the _top window context on safari browsers.
     // See https://github.com/flutter/flutter/issues/51461 for reference.
     final target = webOnlyWindowName ??
@@ -74,13 +74,13 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
   @override
   Future<bool> launch(
     String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
-    String webOnlyWindowName,
+    bool useSafariVC = false,
+    bool useWebView = false,
+    bool enableJavaScript = false,
+    bool enableDomStorage = false,
+    bool universalLinksOnly = false,
+    Map<String, String> headers = const <String, String>{},
+    String? webOnlyWindowName,
   }) {
     return Future<bool>.value(
         openNewWindow(url, webOnlyWindowName: webOnlyWindowName) != null);

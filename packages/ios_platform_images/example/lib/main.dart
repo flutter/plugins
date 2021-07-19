@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:flutter/material.dart';
 import 'package:ios_platform_images/ios_platform_images.dart';
 
@@ -14,8 +18,7 @@ class _MyAppState extends State<MyApp> {
   void initState() {
     super.initState();
 
-    IosPlatformImages.resolveURL("textfile", null)
-        .then((value) => print(value));
+    IosPlatformImages.resolveURL("textfile").then((value) => print(value));
   }
 
   @override
@@ -26,8 +29,11 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          // "pug" is a resource in Assets.xcassets.
-          child: Image(image: IosPlatformImages.load("flutter")),
+          // "flutter" is a resource in Assets.xcassets.
+          child: Image(
+            image: IosPlatformImages.load("flutter"),
+            semanticLabel: 'Flutter logo',
+          ),
         ),
       ),
     );

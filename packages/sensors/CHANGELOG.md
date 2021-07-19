@@ -1,3 +1,27 @@
+## 2.0.3
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.2
+
+* Fix -Wstrict-prototypes analyzer warning in iOS plugin.
+
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.2+8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.4.2+7
+
+* Update Flutter SDK constraint.
+
 ## 0.4.2+6
 
 * Update android compileSdkVersion to 29.

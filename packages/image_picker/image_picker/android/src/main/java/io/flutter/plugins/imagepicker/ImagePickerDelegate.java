@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -22,6 +22,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -42,10 +43,8 @@ enum CameraDevice {
  * means that the chooseImageFromGallery() or takeImageWithCamera() method was called at least
  * twice. In this case, stop executing and finish with an error.
  *
- * <p>2. Check that a required runtime permission has been granted. The chooseImageFromGallery()
- * method checks if the {@link Manifest.permission#READ_EXTERNAL_STORAGE} permission has been
- * granted. Similarly, the takeImageWithCamera() method checks that {@link
- * Manifest.permission#CAMERA} has been granted.
+ * <p>2. Check that a required runtime permission has been granted. The takeImageWithCamera() method
+ * checks that {@link Manifest.permission#CAMERA} has been granted.
  *
  * <p>The permission check can end up in two different outcomes:
  *
@@ -76,17 +75,16 @@ public class ImagePickerDelegate
         PluginRegistry.RequestPermissionsResultListener {
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION = 2344;
   @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY = 2346;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
-  @VisibleForTesting static final int REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION = 2354;
   @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
   private final Activity activity;
-  private final File externalFilesDirectory;
+  @VisibleForTesting final File externalFilesDirectory;
   private final ImageResizer imageResizer;
   private final ImagePickerCache cache;
   private final PermissionManager permissionManager;
@@ -257,12 +255,6 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      permissionManager.askForPermission(
-          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION);
-      return;
-    }
-
     launchPickVideoFromGalleryIntent();
   }
 
@@ -322,13 +314,16 @@ public class ImagePickerDelegate
       return;
     }
 
-    if (!permissionManager.isPermissionGranted(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-      permissionManager.askForPermission(
-          Manifest.permission.READ_EXTERNAL_STORAGE, REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION);
+    launchPickImageFromGalleryIntent();
+  }
+
+  public void chooseMultiImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError(result);
       return;
     }
 
-    launchPickImageFromGalleryIntent();
+    launchMultiPickImageFromGalleryIntent();
   }
 
   private void launchPickImageFromGalleryIntent() {
@@ -336,6 +331,16 @@ public class ImagePickerDelegate
     pickImageIntent.setType("image/*");
 
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+  }
+
+  private void launchMultiPickImageFromGalleryIntent() {
+    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      pickImageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+    }
+    pickImageIntent.setType("image/*");
+
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -396,6 +401,7 @@ public class ImagePickerDelegate
     File image;
 
     try {
+      externalFilesDirectory.mkdirs();
       image = File.createTempFile(filename, suffix, externalFilesDirectory);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -424,16 +430,6 @@ public class ImagePickerDelegate
         grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
 
     switch (requestCode) {
-      case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
-        if (permissionGranted) {
-          launchPickImageFromGalleryIntent();
-        }
-        break;
-      case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
-        if (permissionGranted) {
-          launchPickVideoFromGalleryIntent();
-        }
-        break;
       case REQUEST_CAMERA_IMAGE_PERMISSION:
         if (permissionGranted) {
           launchTakeImageWithCameraIntent();
@@ -450,10 +446,6 @@ public class ImagePickerDelegate
 
     if (!permissionGranted) {
       switch (requestCode) {
-        case REQUEST_EXTERNAL_IMAGE_STORAGE_PERMISSION:
-        case REQUEST_EXTERNAL_VIDEO_STORAGE_PERMISSION:
-          finishWithError("photo_access_denied", "The user did not allow photo access.");
-          break;
         case REQUEST_CAMERA_IMAGE_PERMISSION:
         case REQUEST_CAMERA_VIDEO_PERMISSION:
           finishWithError("camera_access_denied", "The user did not allow camera access.");
@@ -469,6 +461,9 @@ public class ImagePickerDelegate
     switch (requestCode) {
       case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
         handleChooseImageResult(resultCode, data);
+        break;
+      case REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY:
+        handleChooseMultiImageResult(resultCode, data);
         break;
       case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
         handleCaptureImageResult(resultCode);
@@ -490,6 +485,24 @@ public class ImagePickerDelegate
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
       handleImageResult(path, false);
+      return;
+    }
+
+    // User cancelled choosing a picture.
+    finishWithSuccess(null);
+  }
+
+  private void handleChooseMultiImageResult(int resultCode, Intent intent) {
+    if (resultCode == Activity.RESULT_OK && intent != null) {
+      ArrayList<String> paths = new ArrayList<>();
+      if (intent.getClipData() != null) {
+        for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+          paths.add(fileUtils.getPathFromUri(activity, intent.getClipData().getItemAt(i).getUri()));
+        }
+      } else {
+        paths.add(fileUtils.getPathFromUri(activity, intent.getData()));
+      }
+      handleMultiImageResult(paths, false);
       return;
     }
 
@@ -546,24 +559,43 @@ public class ImagePickerDelegate
     finishWithSuccess(null);
   }
 
+  private void handleMultiImageResult(
+      ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
+    if (methodCall != null) {
+      for (int i = 0; i < paths.size(); i++) {
+        String finalImagePath = getResizedImagePath(paths.get(i));
+
+        //delete original file if scaled
+        if (finalImagePath != null
+            && !finalImagePath.equals(paths.get(i))
+            && shouldDeleteOriginalIfScaled) {
+          new File(paths.get(i)).delete();
+        }
+        paths.set(i, finalImagePath);
+      }
+      finishWithListSuccess(paths);
+    }
+  }
+
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
-      Double maxWidth = methodCall.argument("maxWidth");
-      Double maxHeight = methodCall.argument("maxHeight");
-      Integer imageQuality = methodCall.argument("imageQuality");
-
-      String finalImagePath =
-          imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
-
-      finishWithSuccess(finalImagePath);
-
+      String finalImagePath = getResizedImagePath(path);
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
+      finishWithSuccess(finalImagePath);
     } else {
       finishWithSuccess(path);
     }
+  }
+
+  private String getResizedImagePath(String path) {
+    Double maxWidth = methodCall.argument("maxWidth");
+    Double maxHeight = methodCall.argument("maxHeight");
+    Integer imageQuality = methodCall.argument("imageQuality");
+
+    return imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
   }
 
   private void handleVideoResult(String path) {
@@ -591,6 +623,17 @@ public class ImagePickerDelegate
       return;
     }
     pendingResult.success(imagePath);
+    clearMethodCallAndResult();
+  }
+
+  private void finishWithListSuccess(ArrayList<String> imagePaths) {
+    if (pendingResult == null) {
+      for (String imagePath : imagePaths) {
+        cache.saveResult(imagePath, null, null);
+      }
+      return;
+    }
+    pendingResult.success(imagePaths);
     clearMethodCallAndResult();
   }
 

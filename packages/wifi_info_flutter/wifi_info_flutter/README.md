@@ -1,5 +1,20 @@
 # wifi_info_flutter
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`network_info_plus`](https://pub.dev/packages/network_info_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 This plugin retrieves information about a device's connection to wifi.
 
 > Note that on Android, this does not guarantee connection to Internet. For instance,
@@ -24,9 +39,9 @@ You can get wi-fi related information using:
 ```dart
 import 'package:wifi_info_flutter/wifi_info_flutter.dart';
 
-var wifiBSSID = await WifiFlutter().getWifiBSSID();
-var wifiIP = await WifiFlutter().getWifiIP();
-var wifiName = await WifiFlutter().getWifiName();
+var wifiBSSID = await WifiInfo().getWifiBSSID();
+var wifiIP = await WifiInfo().getWifiIP();
+var wifiName = await WifiInfo().getWifiName();
 ```
 
 ### iOS 12
