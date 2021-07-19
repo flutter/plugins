@@ -63,10 +63,10 @@ void main() {
     group('availableCameras', () {
       setUp(() {
         when(
-          () => cameraSettings.getLensDirectionForVideoTrack(
+          () => cameraSettings.getFacingModeForVideoTrack(
             any(),
           ),
-        ).thenReturn(CameraLensDirection.external);
+        ).thenReturn(null);
       });
 
       testWidgets(
@@ -140,7 +140,7 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verify(
-          () => cameraSettings.getLensDirectionForVideoTrack(
+          () => cameraSettings.getFacingModeForVideoTrack(
             videoStream.getVideoTracks().first,
           ),
         ).called(1);
@@ -157,7 +157,7 @@ void main() {
 
         final secondVideoDevice = FakeMediaDeviceInfo(
           '4',
-          '', // The device label might be empty.
+          'Camera 4',
           MediaDeviceKind.videoInput,
         );
 
@@ -207,21 +207,27 @@ void main() {
           ),
         ).thenAnswer((_) => Future.value(secondVideoStream));
 
-        // Mock camera settings to return a front lens direction
+        // Mock camera settings to return a user facing mode
         // for the first video stream.
         when(
-          () => cameraSettings.getLensDirectionForVideoTrack(
+          () => cameraSettings.getFacingModeForVideoTrack(
             firstVideoStream.getVideoTracks().first,
           ),
-        ).thenReturn(CameraLensDirection.front);
+        ).thenReturn('user');
 
-        // Mock camera settings to return a back lens direction
+        when(() => cameraSettings.mapFacingModeToLensDirection('user'))
+            .thenReturn(CameraLensDirection.front);
+
+        // Mock camera settings to return an environment facing mode
         // for the second video stream.
         when(
-          () => cameraSettings.getLensDirectionForVideoTrack(
+          () => cameraSettings.getFacingModeForVideoTrack(
             secondVideoStream.getVideoTracks().first,
           ),
-        ).thenReturn(CameraLensDirection.back);
+        ).thenReturn('environment');
+
+        when(() => cameraSettings.mapFacingModeToLensDirection('environment'))
+            .thenReturn(CameraLensDirection.back);
 
         final cameras = await CameraPlatform.instance.availableCameras();
 
@@ -230,14 +236,12 @@ void main() {
           cameras,
           equals([
             CameraDescription(
-              // Uses the device label as a camera name.
               name: firstVideoDevice.label!,
               lensDirection: CameraLensDirection.front,
               sensorOrientation: 0,
             ),
             CameraDescription(
-              // Fallbacks to the device id if the label is empty.
-              name: secondVideoDevice.deviceId!,
+              name: secondVideoDevice.label!,
               lensDirection: CameraLensDirection.back,
               sensorOrientation: 0,
             )

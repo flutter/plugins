@@ -4,8 +4,7 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 
-/// A utility to fetch camera settings
-/// based on the camera tracks.
+/// A utility to fetch and map camera settings.
 class CameraSettings {
   // A facing mode constraint name.
   static const _facingModeKey = "facingMode";
@@ -14,10 +13,9 @@ class CameraSettings {
   @visibleForTesting
   html.Window? window = html.window;
 
-  /// Returns a camera lens direction based on the [videoTrack]'s facing mode.
-  CameraLensDirection getLensDirectionForVideoTrack(
-    html.MediaStreamTrack videoTrack,
-  ) {
+  /// Returns a facing mode of the [videoTrack]
+  /// (null if the facing mode is not available).
+  String? getFacingModeForVideoTrack(html.MediaStreamTrack videoTrack) {
     final mediaDevices = window?.navigator.mediaDevices;
 
     // Throw a not supported exception if the current browser window
@@ -29,14 +27,13 @@ class CameraSettings {
       );
     }
 
-    // Check if the facing mode is supported by the current browser.
+    // Check if the camera facing mode is supported by the current browser.
     final supportedConstraints = mediaDevices.getSupportedConstraints();
     final facingModeSupported = supportedConstraints[_facingModeKey] ?? false;
 
-    // Fallback to the external lens direction
-    // if the facing mode is not supported.
+    // Return null if the facing mode is not supported.
     if (!facingModeSupported) {
-      return CameraLensDirection.external;
+      return null;
     }
 
     // Extract the facing mode from the video track settings.
@@ -49,7 +46,7 @@ class CameraSettings {
     final facingMode = videoTrackSettings[_facingModeKey];
 
     if (facingMode == null) {
-      // If the facing mode does not exist on the video track settings,
+      // If the facing mode does not exist in the video track settings,
       // check for the facing mode in video track capabilities.
       //
       // MediaTrackCapabilities:
@@ -63,22 +60,20 @@ class CameraSettings {
 
       if (facingModeCapabilities.isNotEmpty) {
         final facingModeCapability = facingModeCapabilities.first;
-        return mapFacingModeToLensDirection(facingModeCapability);
+        return facingModeCapability;
       } else {
-        // Fallback to the external lens direction
-        // if there are no facing mode capabilities.
-        return CameraLensDirection.external;
+        // Return null if there are no facing mode capabilities.
+        return null;
       }
     }
 
-    return mapFacingModeToLensDirection(facingMode);
+    return facingMode;
   }
 
-  /// Maps the facing mode to appropriate camera lens direction.
+  /// Maps the given [facingMode] to [CameraLensDirection].
   ///
   /// The following values for the facing mode are supported:
   /// https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings/facingMode
-  @visibleForTesting
   CameraLensDirection mapFacingModeToLensDirection(String facingMode) {
     switch (facingMode) {
       case 'user':

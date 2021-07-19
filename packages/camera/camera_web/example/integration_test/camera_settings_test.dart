@@ -33,7 +33,7 @@ void main() {
       settings = CameraSettings()..window = window;
     });
 
-    group('getLensDirectionForVideoTrack', () {
+    group('getFacingModeForVideoTrack', () {
       testWidgets(
           'throws CameraException '
           'with notSupported error '
@@ -41,7 +41,7 @@ void main() {
         when(() => navigator.mediaDevices).thenReturn(null);
 
         expect(
-          () => settings.getLensDirectionForVideoTrack(MockMediaStreamTrack()),
+          () => settings.getFacingModeForVideoTrack(MockMediaStreamTrack()),
           throwsA(
             isA<CameraException>().having(
               (e) => e.code,
@@ -53,18 +53,18 @@ void main() {
       });
 
       testWidgets(
-          'returns external '
+          'returns null '
           'when the facing mode is not supported', (tester) async {
         when(mediaDevices.getSupportedConstraints).thenReturn({
           'facingMode': false,
         });
 
-        final lensDirection =
-            settings.getLensDirectionForVideoTrack(MockMediaStreamTrack());
+        final facingMode =
+            settings.getFacingModeForVideoTrack(MockMediaStreamTrack());
 
         expect(
-          lensDirection,
-          equals(CameraLensDirection.external),
+          facingMode,
+          equals(null),
         );
       });
 
@@ -76,23 +76,22 @@ void main() {
         });
 
         testWidgets(
-            'returns appropriate lens direction '
+            'returns an appropriate facing mode '
             'based on the video track settings', (tester) async {
           final videoTrack = MockMediaStreamTrack();
 
           when(videoTrack.getSettings).thenReturn({'facingMode': 'user'});
 
-          final lensDirection =
-              settings.getLensDirectionForVideoTrack(videoTrack);
+          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
 
           expect(
-            lensDirection,
-            equals(CameraLensDirection.front),
+            facingMode,
+            equals('user'),
           );
         });
 
         testWidgets(
-            'returns appropriate lens direction '
+            'returns an appropriate facing mode '
             'based on the video track capabilities '
             'when the facing mode setting is empty', (tester) async {
           final videoTrack = MockMediaStreamTrack();
@@ -102,17 +101,16 @@ void main() {
             'facingMode': ['environment', 'left']
           });
 
-          final lensDirection =
-              settings.getLensDirectionForVideoTrack(videoTrack);
+          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
 
           expect(
-            lensDirection,
-            equals(CameraLensDirection.back),
+            facingMode,
+            equals('environment'),
           );
         });
 
         testWidgets(
-            'returns external '
+            'returns null '
             'when the facing mode setting '
             'and capabilities are empty', (tester) async {
           final videoTrack = MockMediaStreamTrack();
@@ -120,12 +118,11 @@ void main() {
           when(videoTrack.getSettings).thenReturn({});
           when(videoTrack.getCapabilities).thenReturn({'facingMode': []});
 
-          final lensDirection =
-              settings.getLensDirectionForVideoTrack(videoTrack);
+          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
 
           expect(
-            lensDirection,
-            equals(CameraLensDirection.external),
+            facingMode,
+            equals(null),
           );
         });
       });
@@ -137,7 +134,7 @@ void main() {
           'when the facing mode is user', (tester) async {
         expect(
           settings.mapFacingModeToLensDirection('user'),
-          CameraLensDirection.front,
+          equals(CameraLensDirection.front),
         );
       });
 
@@ -146,7 +143,7 @@ void main() {
           'when the facing mode is environment', (tester) async {
         expect(
           settings.mapFacingModeToLensDirection('environment'),
-          CameraLensDirection.back,
+          equals(CameraLensDirection.back),
         );
       });
 
@@ -155,7 +152,7 @@ void main() {
           'when the facing mode is left', (tester) async {
         expect(
           settings.mapFacingModeToLensDirection('left'),
-          CameraLensDirection.external,
+          equals(CameraLensDirection.external),
         );
       });
 
@@ -164,7 +161,7 @@ void main() {
           'when the facing mode is right', (tester) async {
         expect(
           settings.mapFacingModeToLensDirection('right'),
-          CameraLensDirection.external,
+          equals(CameraLensDirection.external),
         );
       });
     });

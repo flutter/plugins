@@ -79,15 +79,22 @@ class CameraPlugin extends CameraPlatform {
       final videoTracks = videoStream.getVideoTracks();
 
       if (videoTracks.isNotEmpty) {
-        // Get the lens direction from the first available video track.
-        final lensDirection = _cameraSettings.getLensDirectionForVideoTrack(
+        // Get the facing mode from the first available video track.
+        final facingMode = _cameraSettings.getFacingModeForVideoTrack(
           videoTracks.first,
         );
 
+        // Get the lens direction based on the facing mode.
+        // Fallback to the external lens direction
+        // if the facing mode is not available.
+        final lensDirection = facingMode != null
+            ? _cameraSettings.mapFacingModeToLensDirection(facingMode)
+            : CameraLensDirection.external;
+
         // Create a camera description.
         //
-        // The name is a camera label with a fallback to a device id if empty.
-        // This is because the label might not exist if no permissions have been granted.
+        // The name is a camera label which might be empty
+        // if no permissions to media devices have been granted.
         //
         // MediaDeviceInfo.label:
         // https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo/label
@@ -95,8 +102,7 @@ class CameraPlugin extends CameraPlatform {
         // Sensor orientation is currently not supported.
         final cameraLabel = videoInputDevice.label ?? '';
         final camera = CameraDescription(
-          name:
-              cameraLabel.isNotEmpty ? cameraLabel : videoInputDevice.deviceId!,
+          name: cameraLabel,
           lensDirection: lensDirection,
           sensorOrientation: 0,
         );
