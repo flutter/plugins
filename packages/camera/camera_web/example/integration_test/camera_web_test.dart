@@ -248,6 +248,52 @@ void main() {
           ]),
         );
       });
+
+      testWidgets(
+          'sets camera metadata '
+          'for the camera description', (tester) async {
+        final videoDevice = FakeMediaDeviceInfo(
+          '1',
+          'Camera 1',
+          MediaDeviceKind.videoInput,
+        );
+
+        final videoStream =
+            FakeMediaStream([MockMediaStreamTrack(), MockMediaStreamTrack()]);
+
+        when(mediaDevices.enumerateDevices).thenAnswer(
+          (_) => Future.value([videoDevice]),
+        );
+
+        when(
+          () => mediaDevices.getUserMedia(
+            CameraOptions(
+              video: VideoConstraints(deviceId: videoDevice.deviceId),
+            ).toJson(),
+          ),
+        ).thenAnswer((_) => Future.value(videoStream));
+
+        when(
+          () => cameraSettings.getFacingModeForVideoTrack(
+            videoStream.getVideoTracks().first,
+          ),
+        ).thenReturn('left');
+
+        when(() => cameraSettings.mapFacingModeToLensDirection('left'))
+            .thenReturn(CameraLensDirection.external);
+
+        final camera = (await CameraPlatform.instance.availableCameras()).first;
+
+        expect(
+          (CameraPlatform.instance as CameraPlugin).camerasMetadata,
+          equals({
+            camera: CameraMetadata(
+              deviceId: videoDevice.deviceId!,
+              facingMode: 'left',
+            )
+          }),
+        );
+      });
     });
 
     testWidgets('createCamera throws UnimplementedError', (tester) async {

@@ -33,7 +33,8 @@ class CameraPlugin extends CameraPlatform {
 
   /// Metadata associated with each camera description.
   /// Populated in [availableCameras].
-  final _camerasMetadata = <CameraDescription, CameraMetadata>{};
+  @visibleForTesting
+  final camerasMetadata = <CameraDescription, CameraMetadata>{};
 
   /// The current browser window used to access media devices.
   @visibleForTesting
@@ -114,7 +115,7 @@ class CameraPlugin extends CameraPlatform {
 
         cameras.add(camera);
 
-        _camerasMetadata[camera] = cameraMetadata;
+        camerasMetadata[camera] = cameraMetadata;
       } else {
         // Ignore as no video tracks exist in the current video input device.
         continue;
