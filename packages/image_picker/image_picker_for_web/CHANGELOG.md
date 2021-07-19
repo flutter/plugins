@@ -1,6 +1,6 @@
 # 2.1.1
 
-* Implemented `pickMultiImage`.
+* Implemented `getMultiImage`.
 * Added support for getting name,length,mimeType and lastModified from XFile.
 
 # 2.1.0
