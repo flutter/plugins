@@ -20,6 +20,5 @@ public class WebViewTest {
         activity -> {
           assertTrue(activity.engine.getPlugins().has(WebViewFlutterPlugin.class));
         });
-    assertEquals(1, 1);
   }
 }
