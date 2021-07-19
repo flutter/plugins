@@ -6,13 +6,8 @@ This is an implementation of the [google_maps_flutter](https://pub.dev/packages/
 
 ### Depend on the package
 
-This package is not an endorsed implementation of the google_maps_flutter plugin yet, so you'll need to modify the `pubspec.yaml` file of your app to depend on this package:
-
-```yaml
-dependencies:
-  google_maps_flutter: ^2.0.0
-  google_maps_flutter_web: ^0.3.0
-```
+This package is not an endorsed implementation of the google_maps_flutter plugin yet, so you'll need to 
+[add it explicitly](https://pub.dev/packages/google_maps_flutter_web/install).
 
 ### Modify web/index.html
 
