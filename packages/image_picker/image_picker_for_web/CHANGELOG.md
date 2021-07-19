@@ -1,6 +1,7 @@
 # 2.1.1
 
 * Implement `pickMultiImage` and `getMultiImage`
+* Add support for getting name,length and lastModified from XFile
 
 # 2.1.0
 
