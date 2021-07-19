@@ -1,5 +1,9 @@
 ## NEXT
 
+- Improved `license-check` output.
+
+## 0.4.0
+
 - Modified the output format of many commands
 - **Breaking change**: `firebase-test-lab` no longer supports `*_e2e.dart`
   files, only `integration_test/*_test.dart`.
@@ -10,6 +14,7 @@
 - Deprecated `--plugins` in favor of new `--packages`. `--plugins` continues to
   work for now, but will be removed in the future.
 - Make `drive-examples` device detection robust against Flutter tool banners.
+- `format` is now supported on Windows.
 
 ## 0.3.0
 
