@@ -1,6 +1,6 @@
 ## 0.1.1
 
-* Added CameraOptions used to create a camera with the audio and video constraints.
+* Added CameraOptions used to constrain the camera audio and video.
 
 ## 0.1.0
 
