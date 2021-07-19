@@ -6,6 +6,7 @@
 
 @import XCTest;
 @import google_sign_in;
+@import google_sign_in.Test;
 @import GoogleSignIn;
 
 // OCMock library doesn't generate a valid modulemap.
