@@ -9,7 +9,7 @@ import 'dart:ui' show hashValues;
 ///
 /// These options represent web `MediaStreamConstraints`
 /// and can be used to request the browser for media streams
-/// with the requested types of media.
+/// with audio and video tracks containing the requested types of media.
 ///
 /// https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamConstraints
 class CameraOptions {
