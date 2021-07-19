@@ -1,4 +1,4 @@
-## 2.0.3
+## NEXT
 
 * Add iOS unit test target.
 * Remove references to the Android V1 embedding.

@@ -1,4 +1,4 @@
-## 5.0.5
+## NEXT
 
 * Add iOS unit and UI integration test targets.
 * Exclude arm64 simulators in example app.
