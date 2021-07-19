@@ -1,3 +1,9 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import 'dart:ui' show hashValues;
+
 /// Metadata used along the camera description
 /// to store additional web-specific camera details.
 class CameraMetadata {
@@ -16,4 +22,16 @@ class CameraMetadata {
   ///
   /// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings/facingMode
   final String? facingMode;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+
+    return other is CameraMetadata &&
+        other.deviceId == deviceId &&
+        other.facingMode == facingMode;
+  }
+
+  @override
+  int get hashCode => hashValues(deviceId.hashCode, facingMode.hashCode);
 }
