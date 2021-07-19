@@ -14,6 +14,7 @@ import 'package:integration_test/integration_test.dart';
 final String expectedStringContents = "Hello, world!";
 final Uint8List bytes = utf8.encode(expectedStringContents) as Uint8List;
 final html.File textFile = html.File([bytes], "hello.txt");
+final html.File secondTextFile = html.File([bytes], "secondFile.txt");
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +66,29 @@ void main() {
     expect(file, completes);
     // And readable
     expect((await file).readAsBytes(), completion(isNotEmpty));
+  });
+
+  testWidgets('Can select multiple files', (WidgetTester tester) async {
+    final mockInput = html.FileUploadInputElement();
+
+    final overrides = ImagePickerPluginTestOverrides()
+      ..createInputElement = ((_, __) => mockInput)
+      ..getMultipleFilesFromInput = ((_) => [textFile, secondTextFile]);
+
+    final plugin = ImagePickerPlugin(overrides: overrides);
+
+    // Init the pick file dialog...
+    final files = plugin.getMultiImage();
+
+    // Mock the browser behavior of selecting a file...
+    mockInput.dispatchEvent(html.Event('change'));
+
+    // Now the file should be available
+    expect(files, completes);
+    // And readable
+
+    expect((await files)?.first.readAsBytes(), completion(isNotEmpty));
+    expect((await files)?[1].readAsBytes(), completion(isNotEmpty));
   });
 
   // There's no good way of detecting when the user has "aborted" the selection.

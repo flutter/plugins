@@ -216,6 +216,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   List<html.File>? _getFilesFromInput(html.FileUploadInputElement input) {
+    if (_hasOverrides) {
+      return _overrides!.getMultipleFilesFromInput(input);
+    }
     return input.files;
   }
 
@@ -290,8 +293,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
             name: file.name,
             length: file.size,
             mimeType: file.type,
-            lastModified: file.lastModifiedDate
-        ));
+            lastModified: file.lastModifiedDate));
       }
     });
     input.onError.first.then((event) {
@@ -387,6 +389,13 @@ typedef OverrideExtractFilesFromInputFunction = html.File Function(
   html.Element? input,
 );
 
+/// A function that extracts list of files from the file `input` passed in.
+@visibleForTesting
+typedef OverrideExtractMultipleFilesFromInputFunction = List<html.File>
+    Function(
+  html.Element? input,
+);
+
 /// Overrides for some of the functionality above.
 @visibleForTesting
 class ImagePickerPluginTestOverrides {
@@ -395,4 +404,7 @@ class ImagePickerPluginTestOverrides {
 
   /// Override the extraction of the selected file from an input element.
   late OverrideExtractFilesFromInputFunction getFileFromInput;
+
+  /// Override the extraction of the selected files from an input element.
+  late OverrideExtractMultipleFilesFromInputFunction getMultipleFilesFromInput;
 }
