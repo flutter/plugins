@@ -31,6 +31,10 @@ class CameraPlugin extends CameraPlatform {
 
   final CameraSettings _cameraSettings;
 
+  /// Metadata associated with each camera description.
+  /// Populated in [availableCameras].
+  final _camerasMetadata = <CameraDescription, CameraMetadata>{};
+
   /// The current browser window used to access media devices.
   @visibleForTesting
   html.Window? window = html.window;
@@ -57,7 +61,7 @@ class CameraPlugin extends CameraPlatform {
         .whereType<html.MediaDeviceInfo>()
         .where((device) => device.kind == MediaDeviceKind.videoInput)
 
-        /// The device id property is currently not supported on Internet Explorer.
+        /// The device id property is currently not supported on Internet Explorer:
         /// https://developer.mozilla.org/en-US/docs/Web/API/MediaDeviceInfo/deviceId#browser_compatibility
         .where((device) => device.deviceId != null);
 
@@ -97,7 +101,14 @@ class CameraPlugin extends CameraPlatform {
           sensorOrientation: 0,
         );
 
+        final cameraMetadata = CameraMetadata(
+          deviceId: videoInputDevice.deviceId!,
+          facingMode: facingMode,
+        );
+
         cameras.add(camera);
+
+        _camerasMetadata[camera] = cameraMetadata;
       } else {
         // Ignore as no video tracks exist in the current video input device.
         continue;
