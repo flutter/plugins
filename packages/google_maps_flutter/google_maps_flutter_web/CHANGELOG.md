@@ -1,6 +1,6 @@
 ## 0.3.0+3
 
-* Update the `README.md` usage instructions to reflect current package versions.
+* Update the `README.md` usage instructions to not be tied to explicit package versions.
 
 ## 0.3.0+2
 
