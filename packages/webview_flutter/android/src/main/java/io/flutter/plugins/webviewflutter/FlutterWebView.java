@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -98,7 +99,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView =
         (usesHybridComposition)
             ? new WebView(context)
-            : new InputAwareWebView(context, containerView, opaque);
+            : new InputAwareWebView(context, containerView);
+
+    if (!opaque) {
+      webView.setBackgroundColor(Color.TRANSPARENT);
+    }
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
