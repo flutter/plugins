@@ -5,12 +5,21 @@
 package io.flutter.plugins.webviewflutterexample;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import androidx.test.core.app.ActivityScenario;
+import io.flutter.plugins.webviewflutter.WebViewFlutterPlugin;
 import org.junit.Test;
 
 public class WebViewTest {
   @Test
-  public void placeHolderTest() {
+  public void webViewPluginIsAdded() {
+    final ActivityScenario<WebViewTestActivity> scenario =
+        ActivityScenario.launch(WebViewTestActivity.class);
+    scenario.onActivity(
+        activity -> {
+          assertTrue(activity.engine.getPlugins().has(WebViewFlutterPlugin.class));
+        });
     assertEquals(1, 1);
   }
 }
