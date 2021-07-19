@@ -311,12 +311,6 @@ typedef OverrideCreateInputFunction = html.Element Function(
   String? capture,
 );
 
-/// A function that extracts a [html.File] from the file `input` passed in.
-@visibleForTesting
-typedef OverrideExtractFilesFromInputFunction = html.File Function(
-  html.Element? input,
-);
-
 /// A function that extracts list of files from the file `input` passed in.
 @visibleForTesting
 typedef OverrideExtractMultipleFilesFromInputFunction = List<html.File>
@@ -329,9 +323,6 @@ typedef OverrideExtractMultipleFilesFromInputFunction = List<html.File>
 class ImagePickerPluginTestOverrides {
   /// Override the creation of the input element.
   late OverrideCreateInputFunction createInputElement;
-
-  /// Override the extraction of the selected file from an input element.
-  late OverrideExtractFilesFromInputFunction getFileFromInput;
 
   /// Override the extraction of the selected files from an input element.
   late OverrideExtractMultipleFilesFromInputFunction getMultipleFilesFromInput;

@@ -31,7 +31,7 @@ void main() {
 
     final overrides = ImagePickerPluginTestOverrides()
       ..createInputElement = ((_, __) => mockInput)
-      ..getFileFromInput = ((_) => textFile);
+      ..getMultipleFilesFromInput = ((_) => [textFile]);
 
     final plugin = ImagePickerPlugin(overrides: overrides);
 
@@ -52,7 +52,7 @@ void main() {
 
     final overrides = ImagePickerPluginTestOverrides()
       ..createInputElement = ((_, __) => mockInput)
-      ..getFileFromInput = ((_) => textFile);
+      ..getMultipleFilesFromInput = ((_) => [textFile]);
 
     final plugin = ImagePickerPlugin(overrides: overrides);
 
