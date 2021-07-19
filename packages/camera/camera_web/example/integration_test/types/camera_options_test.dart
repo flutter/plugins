@@ -84,7 +84,9 @@ void main() {
           'facingMode': videoConstraints.facingMode!.toJson(),
           'width': videoConstraints.width!.toJson(),
           'height': videoConstraints.height!.toJson(),
-          'deviceId': 'deviceId',
+          'deviceId': {
+            'exact': 'deviceId',
+          }
         }),
       );
     });

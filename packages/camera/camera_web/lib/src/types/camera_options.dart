@@ -104,7 +104,7 @@ class VideoConstraints {
     if (width != null) json['width'] = width!.toJson();
     if (height != null) json['height'] = height!.toJson();
     if (facingMode != null) json['facingMode'] = facingMode!.toJson();
-    if (deviceId != null) json['deviceId'] = deviceId!;
+    if (deviceId != null) json['deviceId'] = {'exact': deviceId!};
 
     return json;
   }
