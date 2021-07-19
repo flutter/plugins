@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutterexample;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import androidx.test.core.app.ActivityScenario;
