@@ -1,6 +1,8 @@
 ## NEXT
 
 - Improved `license-check` output.
+- Fixed a bug that caused `firebase-test-lab` to hang if it tried to run more
+  than one plugin's tests in a single run.
 - **Breaking change**: If `firebase-test-lab` is run on a package that supports
   Android, but for which no tests are run, it now fails instead of skipping.
   This matches `drive-examples`, as this command is what is used for driving
