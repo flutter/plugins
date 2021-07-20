@@ -143,14 +143,8 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
   @override
   Future<LostData> retrieveLostData() async {
-    Map<String, dynamic>? result;
-    List<PickedFile>? pickedFileList;
-
-    try {
-      result = await _channel.invokeMapMethod<String, dynamic>('multiRetrieve');
-    } on MissingPluginException {
-      result = await _channel.invokeMapMethod<String, dynamic>('retrieve');
-    }
+    final Map<String, dynamic>? result =
+        await _channel.invokeMapMethod<String, dynamic>('retrieve');
 
     if (result == null) {
       return LostData.empty();
@@ -176,20 +170,10 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
 
     final String? path = result['path'];
 
-    final pathList = result['pathList'];
-    if (pathList != null) {
-      pickedFileList = [];
-      // In this case, multiRetrieve is invoked.
-      for (String path in pathList) {
-        pickedFileList.add(PickedFile(path));
-      }
-    }
-
     return LostData(
       file: path != null ? PickedFile(path) : null,
       exception: exception,
       type: retrieveType,
-      files: pickedFileList,
     );
   }
 
