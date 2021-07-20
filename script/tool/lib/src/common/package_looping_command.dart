@@ -8,6 +8,7 @@ import 'package:colorize/colorize.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'core.dart';
 import 'plugin_command.dart';
@@ -63,8 +64,10 @@ abstract class PackageLoopingCommand extends PluginCommand {
   PackageLoopingCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir,
+            processRunner: processRunner, platform: platform, gitDir: gitDir);
 
   /// Packages that had at least one [logWarning] call.
   final Set<Directory> _packagesWithWarnings = <Directory>{};
@@ -158,8 +161,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// an exact format (e.g., published name, or basename) is required, that
   /// should be used instead.
   String getPackageDescription(Directory package) {
-    String packageName = p.relative(package.path, from: packagesDir.path);
-    final List<String> components = p.split(packageName);
+    String packageName = getRelativePosixPath(package, from: packagesDir);
+    final List<String> components = p.posix.split(packageName);
     // For the common federated plugin pattern of `foo/foo_subpackage`, drop
     // the first part since it's not useful.
     if (components.length == 2 &&
@@ -168,6 +171,16 @@ abstract class PackageLoopingCommand extends PluginCommand {
     }
     return packageName;
   }
+
+  /// Returns the relative path from [from] to [entity] in Posix style.
+  ///
+  /// This should be used when, for example, printing package-relative paths in
+  /// status or error messages.
+  String getRelativePosixPath(
+    FileSystemEntity entity, {
+    required Directory from,
+  }) =>
+      p.posix.joinAll(path.split(path.relative(entity.path, from: from.path)));
 
   /// The suggested indentation for printed output.
   String get indentation => hasLongOutput ? '' : '  ';

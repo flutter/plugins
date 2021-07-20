@@ -208,9 +208,13 @@ class PublishPluginCommand extends PluginCommand {
     final List<String> packagesFailed = <String>[];
 
     for (final String pubspecPath in changedPubspecs) {
+      // Convert git's Posix-style paths to a path that matches the current
+      // filesystem.
+      final String localStylePubspecPath =
+          path.joinAll(p.posix.split(pubspecPath));
       final File pubspecFile = packagesDir.fileSystem
           .directory(baseGitDir.path)
-          .childFile(pubspecPath);
+          .childFile(localStylePubspecPath);
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
         pubspecFile: pubspecFile,
         existingTags: existingTags,
@@ -445,7 +449,7 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     final io.Process publish = await processRunner.start(
-        'flutter', <String>['pub', 'publish'] + publishFlags,
+        flutterCommand, <String>['pub', 'publish'] + publishFlags,
         workingDirectory: packageDir);
     publish.stdout
         .transform(utf8.decoder)

@@ -13,8 +13,10 @@ import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.SkuDetails;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Currency;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 
 /** Handles serialization of {@link com.android.billingclient.api.BillingClient} related objects. */
 /*package*/ class Translator {
@@ -30,6 +32,7 @@ import java.util.List;
     info.put("price", detail.getPrice());
     info.put("priceAmountMicros", detail.getPriceAmountMicros());
     info.put("priceCurrencyCode", detail.getPriceCurrencyCode());
+    info.put("priceCurrencySymbol", currencySymbolFromCode(detail.getPriceCurrencyCode()));
     info.put("sku", detail.getSku());
     info.put("type", detail.getType());
     info.put("subscriptionPeriod", detail.getSubscriptionPeriod());
@@ -122,5 +125,22 @@ import java.util.List;
     info.put("responseCode", billingResult.getResponseCode());
     info.put("debugMessage", billingResult.getDebugMessage());
     return info;
+  }
+
+  /**
+   * Gets the symbol of for the given currency code for the default {@link Locale.Category#DISPLAY
+   * DISPLAY} locale. For example, for the US Dollar, the symbol is "$" if the default locale is the
+   * US, while for other locales it may be "US$". If no symbol can be determined, the ISO 4217
+   * currency code is returned.
+   *
+   * @param currencyCode the ISO 4217 code of the currency
+   * @return the symbol of this currency code for the default {@link Locale.Category#DISPLAY
+   *     DISPLAY} locale
+   * @exception NullPointerException if <code>currencyCode</code> is null
+   * @exception IllegalArgumentException if <code>currencyCode</code> is not a supported ISO 4217
+   *     code.
+   */
+  static String currencySymbolFromCode(String currencyCode) {
+    return Currency.getInstance(currencyCode).getSymbol();
   }
 }

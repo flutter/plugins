@@ -5,13 +5,12 @@
 import 'dart:async';
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 
-const int _exitBadCustomAnalysisFile = 2;
 const int _exitPackagesGetFailed = 3;
 
 /// A command to run Dart analysis on packages.
@@ -20,7 +19,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
   AnalyzeCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addMultiOption(_customAnalysisFlag,
         help:
             'Directories (comma separated) that are allowed to have their own analysis options.',
@@ -48,8 +48,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
   final bool hasLongOutput = false;
 
   /// Checks that there are no unexpected analysis_options.yaml files.
-  void _validateAnalysisOptions() {
-    final List<FileSystemEntity> files = packagesDir.listSync(recursive: true);
+  bool _hasUnexpecetdAnalysisOptions(Directory package) {
+    final List<FileSystemEntity> files = package.listSync(recursive: true);
     for (final FileSystemEntity file in files) {
       if (file.basename != 'analysis_options.yaml' &&
           file.basename != '.analysis_options') {
@@ -58,9 +58,9 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
       final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
           (String directory) =>
-              directory != null &&
               directory.isNotEmpty &&
-              p.isWithin(p.join(packagesDir.path, directory), file.path));
+              path.isWithin(
+                  packagesDir.childDirectory(directory).path, file.path));
       if (allowed) {
         continue;
       }
@@ -70,8 +70,9 @@ class AnalyzeCommand extends PackageLoopingCommand {
       printError(
           'If this was deliberate, pass the package to the analyze command '
           'with the --$_customAnalysisFlag flag and try again.');
-      throw ToolExit(_exitBadCustomAnalysisFile);
+      return true;
     }
+    return false;
   }
 
   /// Ensures that the dependent packages have been fetched for all packages
@@ -89,7 +90,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
     });
     for (final Directory package in packageDirectories) {
       final int exitCode = await processRunner.runAndStream(
-          'flutter', <String>['packages', 'get'],
+          flutterCommand, <String>['packages', 'get'],
           workingDir: package);
       if (exitCode != 0) {
         return false;
@@ -100,9 +101,6 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
   @override
   Future<void> initializeRun() async {
-    print('Verifying analysis settings...');
-    _validateAnalysisOptions();
-
     print('Fetching dependencies...');
     if (!await _runPackagesGetOnTargetPackages()) {
       printError('Unable to get dependencies.');
@@ -111,11 +109,15 @@ class AnalyzeCommand extends PackageLoopingCommand {
 
     // Use the Dart SDK override if one was passed in.
     final String? dartSdk = argResults![_analysisSdk] as String?;
-    _dartBinaryPath = dartSdk == null ? 'dart' : p.join(dartSdk, 'bin', 'dart');
+    _dartBinaryPath =
+        dartSdk == null ? 'dart' : path.join(dartSdk, 'bin', 'dart');
   }
 
   @override
   Future<PackageResult> runForPackage(Directory package) async {
+    if (_hasUnexpecetdAnalysisOptions(package)) {
+      return PackageResult.fail(<String>['Unexpected local analysis options']);
+    }
     final int exitCode = await processRunner.runAndStream(
         _dartBinaryPath, <String>['analyze', '--fatal-infos'],
         workingDir: package);

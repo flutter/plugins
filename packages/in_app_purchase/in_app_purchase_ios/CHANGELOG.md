@@ -1,3 +1,7 @@
+## 0.1.3
+
+* Add price symbol to platform interface object ProductDetail.
+
 ## 0.1.2+2
 
 * Fix crash when retrieveReceiptWithError gives an error.

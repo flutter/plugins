@@ -10,8 +10,6 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/build_examples_command.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
-import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -20,18 +18,21 @@ import 'util.dart';
 void main() {
   group('build-example', () {
     late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final BuildExamplesCommand command =
-          BuildExamplesCommand(packagesDir, processRunner: processRunner);
+      final BuildExamplesCommand command = BuildExamplesCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner = CommandRunner<void>(
           'build_examples_command', 'Test for build_example_command');
@@ -59,7 +60,9 @@ void main() {
             kPlatformIos: PlatformSupport.inline
           });
 
-      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[
         MockProcess.failing() // flutter packages get
       ];
 
@@ -81,6 +84,7 @@ void main() {
 
     test('building for iOS when plugin is not set up for iOS results in no-op',
         () async {
+      mockPlatform.isMacOS = true;
       createFakePlugin('plugin', packagesDir);
 
       final List<String> output =
@@ -99,7 +103,8 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for ios', () async {
+    test('building for iOS', () async {
+      mockPlatform.isMacOS = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformIos: PlatformSupport.inline
@@ -110,13 +115,11 @@ void main() {
 
       final List<String> output = await runCapturingPrint(runner,
           <String>['build-examples', '--ios', '--enable-experiment=exp1']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING $packageName for iOS',
+          '\nBUILDING plugin/example for iOS',
         ]),
       );
 
@@ -124,7 +127,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'build',
                   'ios',
@@ -138,6 +141,7 @@ void main() {
     test(
         'building for Linux when plugin is not set up for Linux results in no-op',
         () async {
+      mockPlatform.isLinux = true;
       createFakePlugin('plugin', packagesDir);
 
       final List<String> output = await runCapturingPrint(
@@ -157,6 +161,7 @@ void main() {
     });
 
     test('building for Linux', () async {
+      mockPlatform.isLinux = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformLinux: PlatformSupport.inline,
@@ -167,26 +172,25 @@ void main() {
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--linux']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING $packageName for Linux',
+          '\nBUILDING plugin/example for Linux',
         ]),
       );
 
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, const <String>['build', 'linux'],
-                pluginExampleDirectory.path),
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'linux'], pluginExampleDirectory.path),
           ]));
     });
 
-    test('building for macos with no implementation results in no-op',
+    test('building for macOS with no implementation results in no-op',
         () async {
+      mockPlatform.isMacOS = true;
       createFakePlugin('plugin', packagesDir);
 
       final List<String> output = await runCapturingPrint(
@@ -205,7 +209,8 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for macos', () async {
+    test('building for macOS', () async {
+      mockPlatform.isMacOS = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformMacos: PlatformSupport.inline,
@@ -216,21 +221,19 @@ void main() {
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--macos']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING $packageName for macOS',
+          '\nBUILDING plugin/example for macOS',
         ]),
       );
 
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, const <String>['build', 'macos'],
-                pluginExampleDirectory.path),
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'macos'], pluginExampleDirectory.path),
           ]));
     });
 
@@ -264,27 +267,26 @@ void main() {
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['build-examples', '--web']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING $packageName for web',
+          '\nBUILDING plugin/example for web',
         ]),
       );
 
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, const <String>['build', 'web'],
-                pluginExampleDirectory.path),
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'web'], pluginExampleDirectory.path),
           ]));
     });
 
     test(
         'building for Windows when plugin is not set up for Windows results in no-op',
         () async {
+      mockPlatform.isWindows = true;
       createFakePlugin('plugin', packagesDir);
 
       final List<String> output = await runCapturingPrint(
@@ -303,7 +305,8 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for windows', () async {
+    test('building for Windows', () async {
+      mockPlatform.isWindows = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformWindows: PlatformSupport.inline
@@ -314,20 +317,20 @@ void main() {
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--windows']);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING $packageName for Windows',
+          '\nBUILDING plugin/example for Windows',
         ]),
       );
 
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, const <String>['build', 'windows'],
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['build', 'windows'],
                 pluginExampleDirectory.path),
           ]));
     });
@@ -353,7 +356,7 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for android', () async {
+    test('building for Android', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformAndroid: PlatformSupport.inline
@@ -366,21 +369,19 @@ void main() {
         'build-examples',
         '--apk',
       ]);
-      final String packageName =
-          p.relative(pluginExampleDirectory.path, from: packagesDir.path);
 
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING $packageName for Android (apk)',
+          '\nBUILDING plugin/example for Android (apk)',
         ]),
       );
 
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(flutterCommand, const <String>['build', 'apk'],
-                pluginExampleDirectory.path),
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'apk'], pluginExampleDirectory.path),
           ]));
     });
 
@@ -400,7 +401,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>['build', 'apk', '--enable-experiment=exp1'],
                 pluginExampleDirectory.path),
           ]));
@@ -421,7 +422,7 @@ void main() {
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
+                getFlutterCommand(mockPlatform),
                 const <String>[
                   'build',
                   'ios',

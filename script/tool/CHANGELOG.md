@@ -1,4 +1,10 @@
-## NEXT
+## 0.4.1
+
+- Improved `license-check` output.
+- Use `java -version` rather than `java --version`, for compatibility with more
+  versions of Java.
+
+## 0.4.0
 
 - Modified the output format of many commands
 - **Breaking change**: `firebase-test-lab` no longer supports `*_e2e.dart`
@@ -10,6 +16,7 @@
 - Deprecated `--plugins` in favor of new `--packages`. `--plugins` continues to
   work for now, but will be removed in the future.
 - Make `drive-examples` device detection robust against Flutter tool banners.
+- `format` is now supported on Windows.
 
 ## 0.3.0
 
