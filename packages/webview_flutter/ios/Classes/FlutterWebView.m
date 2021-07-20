@@ -194,6 +194,17 @@
   }
 }
 
+- (void)onPostUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  if (![self postRequest:[call arguments]]) {
+    result([FlutterError
+        errorWithCode:@"postUrl_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    result(nil);
+  }
+}
+
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
   result(@(canGoBack));
