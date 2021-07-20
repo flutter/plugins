@@ -59,6 +59,7 @@ import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationMan
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
+import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
@@ -167,6 +168,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
   /** Holds the current capture timeouts */
   private CaptureTimeoutsWrapper captureTimeouts;
+  /** Holds the last known capture properties */
+  private CameraCaptureProperties captureProps;
 
   private MethodChannel.Result flutterResult;
 
@@ -219,7 +222,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
 
     // Create capture callback
     captureTimeouts = new CaptureTimeoutsWrapper(3000, 3000);
-    cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts);
+    captureProps = new CameraCaptureProperties();
+    cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts, captureProps);
 
     // Start background thread.
     startBackgroundThread();
@@ -1079,6 +1083,10 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
           imageBuffer.put("height", img.getHeight());
           imageBuffer.put("format", img.getFormat());
           imageBuffer.put("planes", planes);
+          imageBuffer.put("lensAperture", this.captureProps.getLastLensAperture());
+          imageBuffer.put("sensorExposureTime", this.captureProps.getLastSensorExposureTime());
+          imageBuffer.put(
+              "sensorSensitivity", (double) this.captureProps.getLastSensorSensitivity());
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.post(() -> imageStreamSink.success(imageBuffer));

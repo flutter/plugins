@@ -661,6 +661,11 @@ NSString *const errorMethod = @"error";
       imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
       imageBuffer[@"format"] = @(videoFormat);
       imageBuffer[@"planes"] = planes;
+      imageBuffer[@"lensAperture"] = [NSNumber numberWithFloat:[_captureDevice lensAperture]];
+      Float64 exposureDuration = CMTimeGetSeconds([_captureDevice exposureDuration]);
+      Float64 nsExposureDuration = 1000000000 * exposureDuration;
+      imageBuffer[@"sensorExposureTime"] = [NSNumber numberWithInt:nsExposureDuration];
+      imageBuffer[@"sensorSensitivity"] = [NSNumber numberWithFloat:[_captureDevice ISO]];
 
       _imageStreamHandler.eventSink(imageBuffer);
 
