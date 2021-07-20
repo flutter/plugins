@@ -36,9 +36,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  List<PickedFile>? _imageFileList;
+  List<XFile>? _imageFileList;
 
-  set _imageFile(PickedFile? value) {
+  set _imageFile(XFile? value) {
     _imageFileList = value == null ? null : [value];
   }
 
@@ -54,7 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController maxHeightController = TextEditingController();
   final TextEditingController qualityController = TextEditingController();
 
-  Future<void> _playVideo(PickedFile? file) async {
+  Future<void> _playVideo(XFile? file) async {
     if (file != null && mounted) {
       await _disposeVideoController();
       late VideoPlayerController controller;
@@ -84,14 +84,14 @@ class _MyHomePageState extends State<MyHomePage> {
       await _controller!.setVolume(0.0);
     }
     if (isVideo) {
-      final PickedFile? file = await _picker.getVideo(
+      final XFile? file = await _picker.pickVideo(
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else if (isMultiImage) {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final pickedFileList = await _picker.getMultiImage(
+          final pickedFileList = await _picker.pickMultiImage(
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,
@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
       await _displayPickImageDialog(context!,
           (double? maxWidth, double? maxHeight, int? quality) async {
         try {
-          final pickedFile = await _picker.getImage(
+          final pickedFile = await _picker.pickImage(
             source: source,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
@@ -214,7 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> retrieveLostData() async {
-    final LostData response = await _picker.getLostData();
+    final LostDataResponse response = await _picker.retrieveLostData();
     if (response.isEmpty) {
       return;
     }

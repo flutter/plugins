@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
+
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/drive_examples_command.dart';
-import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
@@ -21,18 +22,18 @@ const String _fakeAndroidDevice = 'emulator-1234';
 void main() {
   group('test drive_example_command', () {
     late FileSystem fileSystem;
+    late Platform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
       processRunner = RecordingProcessRunner();
-      final DriveExamplesCommand command =
-          DriveExamplesCommand(packagesDir, processRunner: processRunner);
+      final DriveExamplesCommand command = DriveExamplesCommand(packagesDir,
+          processRunner: processRunner, platform: mockPlatform);
 
       runner = CommandRunner<void>(
           'drive_examples_command', 'Test for drive_example_command');
@@ -42,18 +43,28 @@ void main() {
     void setMockFlutterDevicesOutput({
       bool hasIosDevice = true,
       bool hasAndroidDevice = true,
+      bool includeBanner = false,
     }) {
+      const String updateBanner = '''
+╔════════════════════════════════════════════════════════════════════════════╗
+║ A new version of Flutter is available!                                     ║
+║                                                                            ║
+║ To update to the latest version, run "flutter upgrade".                    ║
+╚════════════════════════════════════════════════════════════════════════════╝
+''';
       final List<String> devices = <String>[
         if (hasIosDevice) '{"id": "$_fakeIosDevice", "targetPlatform": "ios"}',
         if (hasAndroidDevice)
           '{"id": "$_fakeAndroidDevice", "targetPlatform": "android-x86"}',
       ];
-      final String output = '''[${devices.join(',')}]''';
+      final String output =
+          '''${includeBanner ? updateBanner : ''}[${devices.join(',')}]''';
 
-      final MockProcess mockDevicesProcess = MockProcess();
-      mockDevicesProcess.exitCodeCompleter.complete(0);
+      final MockProcess mockDevicesProcess = MockProcess.succeeding();
       mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
-      processRunner.processToReturn = mockDevicesProcess;
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[mockDevicesProcess];
       processRunner.resultStdout = output;
     }
 
@@ -110,7 +121,55 @@ void main() {
       );
     });
 
-    test('fails if Android if no Android devices are present', () async {
+    test('handles flutter tool banners when checking devices', () async {
+      createFakePlugin(
+        'plugin',
+        packagesDir,
+        extraFiles: <String>[
+          'example/test_driver/integration_test.dart',
+          'example/integration_test/foo_test.dart',
+        ],
+        platformSupport: <String, PlatformSupport>{
+          kPlatformIos: PlatformSupport.inline,
+        },
+      );
+
+      setMockFlutterDevicesOutput(includeBanner: true);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['drive-examples', '--ios']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('fails for iOS if getting devices fails', () async {
+      // Simulate failure from `flutter devices`.
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[MockProcess.failing()];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['drive-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No iOS devices'),
+        ]),
+      );
+    });
+
+    test('fails for Android if no Android devices are present', () async {
+      setMockFlutterDevicesOutput(hasAndroidDevice: false);
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['drive-examples', '--android'],
@@ -156,23 +215,21 @@ void main() {
         ]),
       );
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   _fakeIosDevice,
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -277,35 +334,33 @@ void main() {
         ]),
       );
 
-      final String driverTestPath =
-          p.join('test_driver', 'integration_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   _fakeIosDevice,
                   '--driver',
-                  driverTestPath,
+                  'test_driver/integration_test.dart',
                   '--target',
-                  p.join('integration_test', 'bar_test.dart'),
+                  'integration_test/bar_test.dart',
                 ],
                 pluginExampleDirectory.path),
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   _fakeIosDevice,
                   '--driver',
-                  driverTestPath,
+                  'test_driver/integration_test.dart',
                   '--target',
-                  p.join('integration_test', 'foo_test.dart'),
+                  'integration_test/foo_test.dart',
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -365,21 +420,19 @@ void main() {
         ]),
       );
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   'linux',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -440,21 +493,19 @@ void main() {
         ]),
       );
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   'macos',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -513,23 +564,21 @@ void main() {
         ]),
       );
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   'web-server',
                   '--web-port=7357',
                   '--browser-name=chrome',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -589,21 +638,19 @@ void main() {
         ]),
       );
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   'windows',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -639,23 +686,21 @@ void main() {
         ]),
       );
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   _fakeAndroidDevice,
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -689,8 +734,8 @@ void main() {
 
       // Output should be empty other than the device query.
       expect(processRunner.recordedCalls, <ProcessCall>[
-        ProcessCall(
-            flutterCommand, const <String>['devices', '--machine'], null),
+        ProcessCall(getFlutterCommand(mockPlatform),
+            const <String>['devices', '--machine'], null),
       ]);
     });
 
@@ -722,8 +767,8 @@ void main() {
 
       // Output should be empty other than the device query.
       expect(processRunner.recordedCalls, <ProcessCall>[
-        ProcessCall(
-            flutterCommand, const <String>['devices', '--machine'], null),
+        ProcessCall(getFlutterCommand(mockPlatform),
+            const <String>['devices', '--machine'], null),
       ]);
     });
 
@@ -740,7 +785,7 @@ void main() {
         containsAllInOrder(<Matcher>[
           contains('Running for aplugin_platform_interface'),
           contains(
-              'SKIPPING: Platform interfaces are not expected to have integratino tests.'),
+              'SKIPPING: Platform interfaces are not expected to have integration tests.'),
           contains('No issues found!'),
         ]),
       );
@@ -773,24 +818,22 @@ void main() {
         '--enable-experiment=exp1',
       ]);
 
-      final String deviceTestPath = p.join('test_driver', 'plugin.dart');
-      final String driverTestPath = p.join('test_driver', 'plugin_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['devices', '--machine'], null),
             ProcessCall(
-                flutterCommand, const <String>['devices', '--machine'], null),
-            ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   _fakeIosDevice,
                   '--enable-experiment=exp1',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/plugin_test.dart',
                   '--target',
-                  deviceTestPath
+                  'test_driver/plugin.dart'
                 ],
                 pluginExampleDirectory.path),
           ]));
@@ -907,9 +950,13 @@ void main() {
       );
 
       // Simulate failure from `flutter drive`.
-      final MockProcess mockDriveProcess = MockProcess();
-      mockDriveProcess.exitCodeCompleter.complete(1);
-      processRunner.processToReturn = mockDriveProcess;
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[
+        // No mock for 'devices', since it's running for macOS.
+        MockProcess.failing(), // 'drive' #1
+        MockProcess.failing(), // 'drive' #2
+      ];
 
       Error? commandError;
       final List<String> output =
@@ -932,33 +979,31 @@ void main() {
 
       final Directory pluginExampleDirectory =
           pluginDirectory.childDirectory('example');
-      final String driverTestPath =
-          p.join('test_driver', 'integration_test.dart');
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   'macos',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/integration_test.dart',
                   '--target',
-                  p.join('integration_test', 'bar_test.dart'),
+                  'integration_test/bar_test.dart',
                 ],
                 pluginExampleDirectory.path),
             ProcessCall(
-                flutterCommand,
-                <String>[
+                getFlutterCommand(mockPlatform),
+                const <String>[
                   'drive',
                   '-d',
                   'macos',
                   '--driver',
-                  driverTestPath,
+                  'test_driver/integration_test.dart',
                   '--target',
-                  p.join('integration_test', 'foo_test.dart'),
+                  'integration_test/foo_test.dart',
                 ],
                 pluginExampleDirectory.path),
           ]));

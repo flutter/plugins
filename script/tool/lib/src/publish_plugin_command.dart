@@ -208,9 +208,13 @@ class PublishPluginCommand extends PluginCommand {
     final List<String> packagesFailed = <String>[];
 
     for (final String pubspecPath in changedPubspecs) {
+      // Convert git's Posix-style paths to a path that matches the current
+      // filesystem.
+      final String localStylePubspecPath =
+          path.joinAll(p.posix.split(pubspecPath));
       final File pubspecFile = packagesDir.fileSystem
           .directory(baseGitDir.path)
-          .childFile(pubspecPath);
+          .childFile(localStylePubspecPath);
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
         pubspecFile: pubspecFile,
         existingTags: existingTags,
@@ -355,7 +359,6 @@ Safe to ignore if the package is deleted in this commit.
         'git',
         <String>['tag', tag],
         workingDir: packageDir,
-        exitOnError: false,
         logOnError: true,
       );
       if (result.exitCode != 0) {
@@ -402,7 +405,6 @@ Safe to ignore if the package is deleted in this commit.
       <String>['status', '--porcelain', '--ignored', packageDir.absolute.path],
       workingDir: packageDir,
       logOnError: true,
-      exitOnError: false,
     );
     if (statusResult.exitCode != 0) {
       return false;
@@ -423,9 +425,11 @@ Safe to ignore if the package is deleted in this commit.
       'git',
       <String>['remote', 'get-url', remote],
       workingDir: packagesDir,
-      exitOnError: true,
       logOnError: true,
     );
+    if (getRemoteUrlResult.exitCode != 0) {
+      return null;
+    }
     return getRemoteUrlResult.stdout as String?;
   }
 
@@ -445,7 +449,7 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     final io.Process publish = await processRunner.start(
-        'flutter', <String>['pub', 'publish'] + publishFlags,
+        flutterCommand, <String>['pub', 'publish'] + publishFlags,
         workingDirectory: packageDir);
     publish.stdout
         .transform(utf8.decoder)
@@ -498,7 +502,6 @@ Safe to ignore if the package is deleted in this commit.
         'git',
         <String>['push', remote.name, tag],
         workingDir: packagesDir,
-        exitOnError: false,
         logOnError: true,
       );
       if (result.exitCode != 0) {

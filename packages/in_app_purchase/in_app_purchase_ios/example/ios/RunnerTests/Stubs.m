@@ -261,7 +261,15 @@
 
 - (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error {
   if (self.returnError) {
-    *error = [[NSError alloc] init];
+    *error = [NSError errorWithDomain:@"test"
+                                 code:1
+                             userInfo:@{
+                               @"name" : @"test",
+                               @"houseNr" : @5,
+                               @"error" : [[NSError alloc] initWithDomain:@"internalTestDomain"
+                                                                     code:99
+                                                                 userInfo:nil]
+                             }];
     return nil;
   }
   NSString *originalString = [NSString stringWithFormat:@"test"];

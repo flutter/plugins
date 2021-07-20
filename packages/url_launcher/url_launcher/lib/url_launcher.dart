@@ -84,10 +84,13 @@ Future<bool> launch(
   bool previousAutomaticSystemUiAdjustment = true;
   if (statusBarBrightness != null &&
       defaultTargetPlatform == TargetPlatform.iOS &&
-      WidgetsBinding.instance != null) {
-    previousAutomaticSystemUiAdjustment =
-        WidgetsBinding.instance!.renderView.automaticSystemUiAdjustment;
-    WidgetsBinding.instance!.renderView.automaticSystemUiAdjustment = false;
+      _ambiguate(WidgetsBinding.instance) != null) {
+    previousAutomaticSystemUiAdjustment = _ambiguate(WidgetsBinding.instance)!
+        .renderView
+        .automaticSystemUiAdjustment;
+    _ambiguate(WidgetsBinding.instance)!
+        .renderView
+        .automaticSystemUiAdjustment = false;
     SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light
         ? SystemUiOverlayStyle.dark
         : SystemUiOverlayStyle.light);
@@ -104,9 +107,11 @@ Future<bool> launch(
     webOnlyWindowName: webOnlyWindowName,
   );
 
-  if (statusBarBrightness != null && WidgetsBinding.instance != null) {
-    WidgetsBinding.instance!.renderView.automaticSystemUiAdjustment =
-        previousAutomaticSystemUiAdjustment;
+  if (statusBarBrightness != null &&
+      _ambiguate(WidgetsBinding.instance) != null) {
+    _ambiguate(WidgetsBinding.instance)!
+        .renderView
+        .automaticSystemUiAdjustment = previousAutomaticSystemUiAdjustment;
   }
 
   return result;
@@ -139,3 +144,10 @@ Future<bool> canLaunch(String urlString) async {
 Future<void> closeWebView() async {
   return await UrlLauncherPlatform.instance.closeWebView();
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;
