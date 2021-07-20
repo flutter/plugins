@@ -203,10 +203,85 @@ void main() {
       );
     });
 
-    test('skips packages with no androidTest directory', () async {
+    test('fails for packages with no androidTest directory', () async {
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
         'example/android/gradlew',
+      ]);
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+        runner,
+        <String>[
+          'firebase-test-lab',
+          '--device',
+          'model=flame,version=29',
+          '--device',
+          'model=seoul,version=26',
+          '--test-run-id',
+          'testRunId',
+          '--build-id',
+          'buildId',
+        ],
+        errorHandler: (Error e) {
+          commandError = e;
+        },
+      );
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No androidTest directory found.'),
+          contains('The following packages had errors:'),
+          contains('plugin:\n'
+              '    No tests ran (use --exclude if this is intentional).'),
+        ]),
+      );
+    });
+
+    test('fails for packages with no integration test files', () async {
+      createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/android/gradlew',
+        'example/android/app/src/androidTest/MainActivityTest.java',
+      ]);
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+        runner,
+        <String>[
+          'firebase-test-lab',
+          '--device',
+          'model=flame,version=29',
+          '--device',
+          'model=seoul,version=26',
+          '--test-run-id',
+          'testRunId',
+          '--build-id',
+          'buildId',
+        ],
+        errorHandler: (Error e) {
+          commandError = e;
+        },
+      );
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('No integration tests were run'),
+          contains('The following packages had errors:'),
+          contains('plugin:\n'
+              '    No tests ran (use --exclude if this is intentional).'),
+        ]),
+      );
+    });
+
+    test('skips packages with no android directory', () async {
+      createFakePackage('package', packagesDir, extraFiles: <String>[
+        'example/integration_test/foo_test.dart',
       ]);
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -224,8 +299,8 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('Running for plugin'),
-          contains('No example with androidTest directory'),
+          contains('Running for package'),
+          contains('package/example does not support Android'),
         ]),
       );
       expect(output,

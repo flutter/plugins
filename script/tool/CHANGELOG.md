@@ -1,6 +1,10 @@
 ## NEXT
 
 - Improved `license-check` output.
+- **Breaking change**: If `firebase-test-lab` is run on a package that supports
+  Android, but for which no tests are run, it now fails instead of skipping.
+  This matches `drive-examples`, as this command is what is used for driving
+  Android Flutter integration tests on CI.
 
 ## 0.4.0
 

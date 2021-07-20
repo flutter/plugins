@@ -121,19 +121,23 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   @override
   Future<PackageResult> runForPackage(Directory package) async {
-    if (!package
-        .childDirectory('example')
-        .childDirectory('android')
+    final Directory exampleDirectory = package.childDirectory('example');
+    final Directory androidDirectory =
+        exampleDirectory.childDirectory('android');
+    if (!androidDirectory.existsSync()) {
+      return PackageResult.skip(
+          '${getPackageDescription(exampleDirectory)} does not support Android.');
+    }
+
+    if (!androidDirectory
         .childDirectory('app')
         .childDirectory('src')
         .childDirectory('androidTest')
         .existsSync()) {
-      return PackageResult.skip('No example with androidTest directory');
+      printError('No androidTest directory found.');
+      return PackageResult.fail(
+          <String>['No tests ran (use --exclude if this is intentional).']);
     }
-
-    final Directory exampleDirectory = package.childDirectory('example');
-    final Directory androidDirectory =
-        exampleDirectory.childDirectory('android');
 
     // Ensures that gradle wrapper exists
     if (!await _ensureGradleWrapperExists(androidDirectory)) {
@@ -191,6 +195,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         errors.add('$testName failed tests');
       }
     }
+
+    if (errors.isEmpty && resultsCounter == 0) {
+      printError('No integration tests were run.');
+      errors.add('No tests ran (use --exclude if this is intentional).');
+    }
+
     return errors.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(errors);
