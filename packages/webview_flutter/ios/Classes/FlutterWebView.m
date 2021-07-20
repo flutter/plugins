@@ -477,6 +477,19 @@
   }
   return false;
 }
+
+- (bool)postUrl:(NSString*)url withBody:(FlutterStandardTypedData*)postData {
+  NSURL* nsUrl = [NSURL URLWithString:url];
+  if (!nsUrl) {
+    return false;
+  }
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setHTTPMethod:@"POST"];
+  [request setHTTPBody:[postData data]];
+  [_webView loadRequest:request];
+  return true;
+}
+
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
                         controller:(WKUserContentController*)userContentController {
   for (NSString* channelName in channelNames) {
