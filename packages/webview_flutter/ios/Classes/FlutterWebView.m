@@ -463,6 +463,20 @@
   return true;
 }
 
+- (bool)postRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* url = request[@"url"];
+  if ([url isKindOfClass:[NSString class]]) {
+    id postData = request[@"postData"];
+    if ([postData isKindOfClass:[FlutterStandardTypedData class]]) {
+      return [self postUrl:url withBody:postData];
+    }
+  }
+  return false;
+}
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
                         controller:(WKUserContentController*)userContentController {
   for (NSString* channelName in channelNames) {
