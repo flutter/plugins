@@ -352,6 +352,179 @@ void main() {
       });
     });
 
+    group('Android', () {
+      test('runs Java tests in Android implementation folder', () async {
+        final Directory plugin = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'android/src/test/example_test.java',
+          ],
+        );
+
+        await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        final Directory androidFolder =
+            plugin.childDirectory('example').childDirectory('android');
+
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>['testDebugUnitTest', '--info'],
+              androidFolder.path,
+            ),
+          ]),
+        );
+      });
+
+      test('runs Java tests in example folder', () async {
+        final Directory plugin = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/test/example_test.java',
+          ],
+        );
+
+        await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        final Directory androidFolder =
+            plugin.childDirectory('example').childDirectory('android');
+
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>['testDebugUnitTest', '--info'],
+              androidFolder.path,
+            ),
+          ]),
+        );
+      });
+
+      test('fails when the app needs to be built', () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/app/src/test/example_test.java',
+          ],
+        );
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('ERROR: Run "flutter build apk" on plugin/example'),
+            contains('plugin:\n'
+                '    Examples must be built before testing.')
+          ]),
+        );
+      });
+
+      test('fails when a test fails', () async {
+        final Directory pluginDir = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/test/example_test.java',
+          ],
+        );
+
+        final String gradlewPath = pluginDir
+            .childDirectory('example')
+            .childDirectory('android')
+            .childFile('gradlew')
+            .path;
+        processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
+          MockProcess.failing()
+        ];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('plugin/example tests failed.'),
+            contains('The following packages had errors:'),
+            contains('plugin')
+          ]),
+        );
+      });
+
+      test('skips if Android is not supported', () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+        );
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No implementation for Android.'),
+            contains('SKIPPING: Not implemented for target platform(s).'),
+          ]),
+        );
+      });
+
+      test('skips when running no tests', () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+        );
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No Android tests found for plugin/example'),
+            contains('SKIPPING: No tests found.'),
+          ]),
+        );
+      });
+    });
+
     // Tests behaviors of implementation that is shared between iOS and macOS.
     group('iOS/macOS', () {
       test('fails if xcrun fails', () async {
@@ -597,19 +770,29 @@ void main() {
     });
 
     group('multiplatform', () {
-      test('runs both iOS and macOS when supported', () async {
-        final Directory pluginDirectory1 = createFakePlugin(
-            'plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformIos: PlatformSupport.inline,
-              kPlatformMacos: PlatformSupport.inline,
-            });
+      test('runs all platfroms when supported', () async {
+        final Directory pluginDirectory = createFakePlugin(
+          'plugin',
+          packagesDir,
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'android/src/test/example_test.java',
+          ],
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+            kPlatformMacos: PlatformSupport.inline,
+          },
+        );
 
         final Directory pluginExampleDirectory =
-            pluginDirectory1.childDirectory('example');
+            pluginDirectory.childDirectory('example');
+        final Directory androidFolder =
+            pluginExampleDirectory.childDirectory('android');
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
+          '--android',
           '--ios',
           '--macos',
           _kDestination,
@@ -619,6 +802,7 @@ void main() {
         expect(
             output,
             containsAll(<Matcher>[
+              contains('Running Android tests for plugin/example'),
               contains('Successfully ran iOS xctest for plugin/example'),
               contains('Successfully ran macOS xctest for plugin/example'),
             ]));
@@ -626,6 +810,10 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  androidFolder.childFile('gradlew').path,
+                  const <String>['testDebugUnitTest', '--info'],
+                  androidFolder.path),
               ProcessCall(
                   'xcrun',
                   const <String>[
@@ -750,11 +938,12 @@ void main() {
             ]));
       });
 
-      test('skips when neither are supported', () async {
+      test('skips when nothing is supported', () async {
         createFakePlugin('plugin', packagesDir);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
+          '--android',
           '--ios',
           '--macos',
           _kDestination,
@@ -764,12 +953,118 @@ void main() {
         expect(
             output,
             containsAllInOrder(<Matcher>[
+              contains('No implementation for Android.'),
               contains('No implementation for iOS.'),
               contains('No implementation for macOS.'),
               contains('SKIPPING: Not implemented for target platform(s).'),
             ]));
 
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('failing one platform does not stop the tests', () async {
+        final Directory pluginDir = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/test/example_test.java',
+          ],
+        );
+
+        // Simulate failing Android, but not iOS.
+        final String gradlewPath = pluginDir
+            .childDirectory('example')
+            .childDirectory('android')
+            .childFile('gradlew')
+            .path;
+        processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
+          MockProcess.failing()
+        ];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--android',
+          '--ios',
+          '--ios-destination',
+          'foo_destination',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running tests for Android...'),
+            contains('plugin/example tests failed.'),
+            contains('Running tests for iOS...'),
+            contains('Successfully ran iOS xctest for plugin/example'),
+            contains('The following packages had errors:'),
+            contains('plugin:\n'
+                '    Android')
+          ]),
+        );
+      });
+
+      test('failing multiple platforms reports multiple failures', () async {
+        final Directory pluginDir = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline,
+            kPlatformIos: PlatformSupport.inline,
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/test/example_test.java',
+          ],
+        );
+
+        // Simulate failing Android.
+        final String gradlewPath = pluginDir
+            .childDirectory('example')
+            .childDirectory('android')
+            .childFile('gradlew')
+            .path;
+        processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
+          MockProcess.failing()
+        ];
+        // Simulate failing Android.
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess.failing()
+        ];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--android',
+          '--ios',
+          '--ios-destination',
+          'foo_destination',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running tests for Android...'),
+            contains('Running tests for iOS...'),
+            contains('The following packages had errors:'),
+            contains('plugin:\n'
+                '    Android\n'
+                '    iOS')
+          ]),
+        );
       });
     });
   });

@@ -9,7 +9,8 @@
   platforms.
   - Adds the ability to disable test types via `--no-unit` or
     `--no-integration`.
-- **Breaking change**: Folded `java-test` into the new `native-test` command.
+- **Breaking change**: Replaced `java-test` with Android unit test support for
+  the new `native-test` command.
 
 ## 0.4.1
 
