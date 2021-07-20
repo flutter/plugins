@@ -131,7 +131,14 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     final List<String> deviceFlags = <String>[];
     for (final MapEntry<String, List<String>> entry
         in _targetDeviceFlags.entries) {
-      if (pluginSupportsPlatform(entry.key, package)) {
+      final String platform = entry.key;
+      String? variant;
+      if (platform == kPlatformWindows) {
+        variant = platformVariantWin32;
+      }
+      // TODO(stuartmorgan): Add UWP variant support here once
+      // https://github.com/flutter/flutter/issues/82821 is fixed.
+      if (pluginSupportsPlatform(platform, package, variant: variant)) {
         deviceFlags.addAll(entry.value);
       } else {
         print('Skipping unsupported platform ${entry.key}...');

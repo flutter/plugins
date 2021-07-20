@@ -10,23 +10,42 @@ import 'package:yaml/yaml.dart';
 /// print destination.
 typedef Print = void Function(Object? object);
 
-/// Key for windows platform.
-const String kPlatformWindows = 'windows';
-
-/// Key for macos platform.
-const String kPlatformMacos = 'macos';
-
-/// Key for linux platform.
-const String kPlatformLinux = 'linux';
+/// Key for APK (Android) platform.
+const String kPlatformAndroid = 'android';
 
 /// Key for IPA (iOS) platform.
 const String kPlatformIos = 'ios';
 
-/// Key for APK (Android) platform.
-const String kPlatformAndroid = 'android';
+/// Key for linux platform.
+const String kPlatformLinux = 'linux';
+
+/// Key for macos platform.
+const String kPlatformMacos = 'macos';
 
 /// Key for Web platform.
 const String kPlatformWeb = 'web';
+
+/// Key for windows platform.
+///
+/// Note that this corresponds to the Win32 variant for flutter commands like
+/// `build` and `run`, but is a general platform containing all Windows
+/// variants for purposes of the `platform` section of a plugin pubspec).
+const String kPlatformWindows = 'windows';
+
+/// Key for WinUWP platform.
+///
+/// Note that UWP is a platform for the purposes of flutter commands like
+/// `build` and `run`, but a variant of the `windows` platform for the purposes
+/// of plugin pubspecs).
+const String kPlatformWinUwp = 'winuwp';
+
+/// Key for Win32 variant of the Windows platform.
+const String platformVariantWin32 = 'win32';
+
+/// Key for UWP variant of the Windows platform.
+///
+/// See the note on [kPlatformWinUwp].
+const String platformVariantWinUwp = 'uwp';
 
 /// Key for enable experiment.
 const String kEnableExperiment = 'enable-experiment';

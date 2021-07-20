@@ -33,13 +33,13 @@ void main() {
 
     test('all platforms', () async {
       final Directory plugin = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline,
-            kPlatformIos: PlatformSupport.inline,
-            kPlatformLinux: PlatformSupport.inline,
-            kPlatformMacos: PlatformSupport.inline,
-            kPlatformWeb: PlatformSupport.inline,
-            kPlatformWindows: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
           });
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
@@ -51,15 +51,12 @@ void main() {
     });
 
     test('some platforms', () async {
-      final Directory plugin = createFakePlugin(
-        'plugin',
-        packagesDir,
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformLinux: PlatformSupport.inline,
-          kPlatformWeb: PlatformSupport.inline,
-        },
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+          });
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isFalse);
@@ -70,18 +67,15 @@ void main() {
     });
 
     test('inline plugins are only detected as inline', () async {
-      final Directory plugin = createFakePlugin(
-        'plugin',
-        packagesDir,
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
-          kPlatformLinux: PlatformSupport.inline,
-          kPlatformMacos: PlatformSupport.inline,
-          kPlatformWeb: PlatformSupport.inline,
-          kPlatformWindows: PlatformSupport.inline,
-        },
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+          });
 
       expect(
           pluginSupportsPlatform(kPlatformAndroid, plugin,
@@ -134,19 +128,15 @@ void main() {
     });
 
     test('federated plugins are only detected as federated', () async {
-      const String pluginName = 'plugin';
-      final Directory plugin = createFakePlugin(
-        pluginName,
-        packagesDir,
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.federated,
-          kPlatformIos: PlatformSupport.federated,
-          kPlatformLinux: PlatformSupport.federated,
-          kPlatformMacos: PlatformSupport.federated,
-          kPlatformWeb: PlatformSupport.federated,
-          kPlatformWindows: PlatformSupport.federated,
-        },
-      );
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.federated),
+            kPlatformIos: const PlatformDetails(PlatformSupport.federated),
+            kPlatformLinux: const PlatformDetails(PlatformSupport.federated),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
+            kPlatformWeb: const PlatformDetails(PlatformSupport.federated),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.federated),
+          });
 
       expect(
           pluginSupportsPlatform(kPlatformAndroid, plugin,
@@ -196,6 +186,83 @@ void main() {
           pluginSupportsPlatform(kPlatformWindows, plugin,
               requiredMode: PlatformSupport.inline),
           isFalse);
+    });
+
+    test('windows without variants is only win32', () async {
+      final Directory plugin = createFakePlugin(
+        'plugin',
+        packagesDir,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+        },
+      );
+
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWin32),
+          isTrue);
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWinUwp),
+          isFalse);
+    });
+
+    test('windows with both variants matches win32 and winuwp', () async {
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWindows: const PlatformDetails(
+              PlatformSupport.federated,
+              variants: <String>[platformVariantWin32, platformVariantWinUwp],
+            ),
+          });
+
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWin32),
+          isTrue);
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWinUwp),
+          isTrue);
+    });
+
+    test('win32 plugin is only win32', () async {
+      final Directory plugin = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWindows: const PlatformDetails(
+              PlatformSupport.federated,
+              variants: <String>[platformVariantWin32],
+            ),
+          });
+
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWin32),
+          isTrue);
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWinUwp),
+          isFalse);
+    });
+
+    test('winup plugin is only winuwp', () async {
+      final Directory plugin = createFakePlugin(
+        'plugin',
+        packagesDir,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+              variants: <String>[platformVariantWinUwp]),
+        },
+      );
+
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWin32),
+          isFalse);
+      expect(
+          pluginSupportsPlatform(kPlatformWindows, plugin,
+              variant: platformVariantWinUwp),
+          isTrue);
     });
   });
 }

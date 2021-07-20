@@ -129,8 +129,8 @@ void main() {
           'example/test_driver/integration_test.dart',
           'example/integration_test/foo_test.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -194,9 +194,9 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -244,9 +244,9 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/plugin_test.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -277,9 +277,9 @@ void main() {
         extraFiles: <String>[
           'example/lib/main.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -313,9 +313,9 @@ void main() {
           'example/integration_test/foo_test.dart',
           'example/integration_test/ignore_me.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -399,8 +399,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformLinux: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -472,8 +472,8 @@ void main() {
           'example/test_driver/plugin.dart',
           'example/macos/macos.swift',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -543,8 +543,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWeb: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -617,8 +617,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWindows: PlatformSupport.inline
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -664,8 +664,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -714,8 +714,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -747,8 +747,8 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -802,9 +802,9 @@ void main() {
           'example/test_driver/plugin_test.dart',
           'example/test_driver/plugin.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformAndroid: PlatformSupport.inline,
-          kPlatformIos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -844,8 +844,8 @@ void main() {
         'plugin',
         packagesDir,
         examples: <String>[],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWeb: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -876,8 +876,8 @@ void main() {
           'example/integration_test/bar_test.dart',
           'example/integration_test/foo_test.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWeb: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -908,8 +908,8 @@ void main() {
         extraFiles: <String>[
           'example/test_driver/integration_test.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWeb: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 
@@ -944,8 +944,8 @@ void main() {
           'example/integration_test/bar_test.dart',
           'example/integration_test/foo_test.dart',
         ],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         },
       );
 

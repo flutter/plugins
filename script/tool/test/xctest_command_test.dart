@@ -127,8 +127,8 @@ void main() {
       test('skip if iOS is not supported', () async {
         createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
         });
 
         final List<String> output = await runCapturingPrint(runner,
@@ -143,8 +143,8 @@ void main() {
       test('skip if iOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.federated
+        ], platformSupport: <String, PlatformDetails>{
+          'ios': const PlatformDetails(PlatformSupport.federated)
         });
 
         final List<String> output = await runCapturingPrint(runner,
@@ -160,8 +160,8 @@ void main() {
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         });
 
         final Directory pluginExampleDirectory =
@@ -212,8 +212,8 @@ void main() {
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
         });
 
         final Directory pluginExampleDirectory =
@@ -259,8 +259,8 @@ void main() {
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
         });
 
         processRunner.processToReturn = MockProcess.succeeding();
@@ -316,8 +316,8 @@ void main() {
       test('skip if macOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.federated,
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
         });
 
         final List<String> output = await runCapturingPrint(runner,
@@ -333,8 +333,8 @@ void main() {
         final Directory pluginDirectory1 =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         });
 
         final Directory pluginExampleDirectory =
@@ -377,8 +377,8 @@ void main() {
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         });
 
         processRunner.processToReturn = MockProcess.succeeding();
@@ -410,9 +410,9 @@ void main() {
         final Directory pluginDirectory1 =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline,
-          kPlatformMacos: PlatformSupport.inline,
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         });
 
         final Directory pluginExampleDirectory =
@@ -478,8 +478,8 @@ void main() {
         final Directory pluginDirectory1 =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformMacos: PlatformSupport.inline,
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
         });
 
         final Directory pluginExampleDirectory =
@@ -528,8 +528,8 @@ void main() {
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/test',
-        ], platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
         });
 
         final Directory pluginExampleDirectory =

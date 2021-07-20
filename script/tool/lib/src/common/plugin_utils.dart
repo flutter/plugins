@@ -27,8 +27,12 @@ enum PlatformSupport {
 ///
 /// If [requiredMode] is provided, the plugin must have the given type of
 /// implementation in order to return true.
-bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
-    {PlatformSupport? requiredMode}) {
+bool pluginSupportsPlatform(
+  String platform,
+  FileSystemEntity entity, {
+  PlatformSupport? requiredMode,
+  String? variant,
+}) {
   assert(platform == kPlatformIos ||
       platform == kPlatformAndroid ||
       platform == kPlatformWeb ||
@@ -69,9 +73,34 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
     }
     // If the platform entry is present, then it supports the platform. Check
     // for required mode if specified.
-    final bool federated = platformEntry.containsKey('default_package');
-    return requiredMode == null ||
-        federated == (requiredMode == PlatformSupport.federated);
+    if (requiredMode != null) {
+      final bool federated = platformEntry.containsKey('default_package');
+      if (federated != (requiredMode == PlatformSupport.federated)) {
+        return false;
+      }
+    }
+
+    // If a variant is specified, check for that variant.
+    if (variant != null) {
+      const String variantsKey = 'supportedVariants';
+      if (platformEntry.containsKey(variantsKey)) {
+        if (!(platformEntry['supportedVariants']! as YamlList)
+            .contains(variant)) {
+          return false;
+        }
+      } else {
+        // Platforms with variants have a default variant when unspecified for
+        // backward compatibility. Must match the flutter tool logic.
+        const Map<String, String> defaultVariants = <String, String>{
+          kPlatformWindows: platformVariantWin32,
+        };
+        if (variant != defaultVariants[platform]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   } on FileSystemException {
     return false;
   } on YamlException {
@@ -94,9 +123,10 @@ bool isWebPlugin(FileSystemEntity entity) {
   return pluginSupportsPlatform(kPlatformWeb, entity);
 }
 
-/// Returns whether the given directory contains a Flutter Windows plugin.
-bool isWindowsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformWindows, entity);
+/// Returns whether the given directory contains a Flutter Windows plugin
+/// supporting the given variant.
+bool isWindowsPlugin(FileSystemEntity entity, {required String variant}) {
+  return pluginSupportsPlatform(kPlatformWindows, entity, variant: variant);
 }
 
 /// Returns whether the given directory contains a Flutter macOS plugin.

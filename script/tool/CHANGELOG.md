@@ -1,6 +1,7 @@
 ## NEXT
 
 - Improved `license-check` output.
+- `build-examples` now supports UWP plugins via a `--winuwp` flag.
 
 ## 0.4.0
 

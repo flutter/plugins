@@ -29,6 +29,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     argParser.addFlag(kPlatformMacos);
     argParser.addFlag(kPlatformWeb);
     argParser.addFlag(kPlatformWindows);
+    argParser.addFlag(kPlatformWinUwp);
     argParser.addFlag(kPlatformIos);
     argParser.addFlag(_platformFlagApk);
     argParser.addOption(
@@ -69,9 +70,16 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       flutterBuildType: 'web',
     ),
     kPlatformWindows: const _PlatformDetails(
-      'Windows',
+      'Win32',
       pluginPlatform: kPlatformWindows,
+      pluginPlatformVariant: platformVariantWin32,
       flutterBuildType: 'windows',
+    ),
+    kPlatformWinUwp: const _PlatformDetails(
+      'UWP',
+      pluginPlatform: kPlatformWindows,
+      pluginPlatformVariant: platformVariantWinUwp,
+      flutterBuildType: 'winuwp',
     ),
   };
 
@@ -106,7 +114,8 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     final Set<_PlatformDetails> buildPlatforms = <_PlatformDetails>{};
     final Set<_PlatformDetails> unsupportedPlatforms = <_PlatformDetails>{};
     for (final _PlatformDetails platform in requestedPlatforms) {
-      if (pluginSupportsPlatform(platform.pluginPlatform, package)) {
+      if (pluginSupportsPlatform(platform.pluginPlatform, package,
+          variant: platform.pluginPlatformVariant)) {
         buildPlatforms.add(platform);
       } else {
         unsupportedPlatforms.add(platform);
@@ -155,6 +164,22 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   }) async {
     final String enableExperiment = getStringArg(kEnableExperiment);
 
+    // The UWP template is not yet stable, so the UWP directory
+    // needs to be created on the fly with 'flutter create .'
+    Directory? temporaryPlatformDirectory;
+    if (flutterBuildType == 'winuwp') {
+      final Directory uwpFolder = example.childDirectory('winuwp');
+      if (!uwpFolder.existsSync()) {
+        print('Creating temporary winuwp folder');
+        final int exitCode = await processRunner.runAndStream(
+            flutterCommand, <String>['create', '--platforms=winuwp', '.'],
+            workingDir: example);
+        if (exitCode == 0) {
+          temporaryPlatformDirectory = uwpFolder;
+        }
+      }
+    }
+
     final int exitCode = await processRunner.runAndStream(
       flutterCommand,
       <String>[
@@ -166,6 +191,13 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       ],
       workingDir: example,
     );
+
+    if (temporaryPlatformDirectory != null &&
+        temporaryPlatformDirectory.existsSync()) {
+      print('Cleaning up ${temporaryPlatformDirectory.path}');
+      temporaryPlatformDirectory.deleteSync(recursive: true);
+    }
+
     return exitCode == 0;
   }
 }
@@ -175,6 +207,7 @@ class _PlatformDetails {
   const _PlatformDetails(
     this.label, {
     required this.pluginPlatform,
+    this.pluginPlatformVariant,
     required this.flutterBuildType,
     this.extraBuildFlags = const <String>[],
   });
@@ -184,6 +217,10 @@ class _PlatformDetails {
 
   /// The key in a pubspec's platform: entry.
   final String pluginPlatform;
+
+  /// The supportedVariants key under a plugin's [pluginPlatform] entry, if
+  /// applicable.
+  final String? pluginPlatformVariant;
 
   /// The `flutter build` build type.
   final String flutterBuildType;
