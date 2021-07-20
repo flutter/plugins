@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
@@ -76,16 +75,15 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   static const String _gradleWrapper = 'gradlew';
 
-  Completer<void>? _firebaseProjectConfigured;
+  bool _firebaseProjectConfigured = false;
 
   Future<void> _configureFirebaseProject() async {
     print('#### a'); // XXX
-    if (_firebaseProjectConfigured != null) {
+    if (_firebaseProjectConfigured) {
       print('#### z'); // XXX
-      return _firebaseProjectConfigured!.future;
+      return;
     }
     print('#### b'); // XXX
-    _firebaseProjectConfigured = Completer<void>();
 
     final String serviceKey = getStringArg('service-key');
     if (serviceKey.isEmpty) {
@@ -113,15 +111,13 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       print('');
       if (exitCode == 0) {
         print('Firebase project configured.');
-        return;
       } else {
         logWarning(
             'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
+    _firebaseProjectConfigured = true;
     print('#### c'); // XXX
-    _firebaseProjectConfigured!.complete(null);
-    print('#### d'); // XXX
   }
 
   @override
