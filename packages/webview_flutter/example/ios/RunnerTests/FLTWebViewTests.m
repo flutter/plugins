@@ -11,6 +11,63 @@
 
 static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
+@interface FLTWebViewController (Test)
+- (bool)postUrl:(NSString *)url withBody:(FlutterStandardTypedData *)postData;
+- (void)onPostUrl:(FlutterMethodCall *)call result:(FlutterResult)result;
+- (bool)postRequest:(NSDictionary<NSString *, id> *)request;
+@end
+
+@interface MockFLTWebViewControllerForOnPostUrl : FLTWebViewController
+- (instancetype)initWithPostRequest:(BOOL)postRequestResult;
+@end
+
+@implementation MockFLTWebViewControllerForOnPostUrl {
+  bool _postRequestResult;
+}
+
+- (instancetype)initWithPostRequest:(bool)postRequestResult {
+  _postRequestResult = postRequestResult;
+  return self;
+}
+
+- (bool)postRequest:(NSDictionary<NSString *, id> *)request {
+  return _postRequestResult;
+}
+
+@end
+
+@interface MockFLTWebViewControllerForPostRequest : FLTWebViewController
+- (instancetype)initWithPostUrl:(BOOL)postUrlResult;
+@end
+
+@implementation MockFLTWebViewControllerForPostRequest {
+  bool _postUrlResult;
+}
+
+- (instancetype)initWithPostUrl:(bool)postUrlResult {
+  _postUrlResult = postUrlResult;
+  return self;
+}
+
+- (bool)postUrl:(NSString *)url withBody:(FlutterStandardTypedData *)postData {
+  return _postUrlResult;
+}
+
+@end
+
+@interface MockWKWebViewForPostUrl : FLTWKWebView
+@property(nonatomic, nullable) NSMutableURLRequest *receivedResult;
+@end
+
+@implementation MockWKWebViewForPostUrl
+
+- (WKNavigation *)loadRequest:(NSMutableURLRequest *)request {
+  _receivedResult = request;
+  return nil;
+}
+
+@end
+
 @interface FLTWebViewTests : XCTestCase
 
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *mockBinaryMessenger;
