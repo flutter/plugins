@@ -17,6 +17,7 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -77,6 +78,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     public void onProgressChanged(WebView view, int progress) {
       flutterWebViewClient.onLoadingProgress(progress);
     }
+  }
+
+  @VisibleForTesting
+  FlutterWebView(WebView webView, MethodChannel methodChannel, Handler platformThreadHandler) {
+    this.webView = webView;
+    this.methodChannel = methodChannel;
+    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
+    this.platformThreadHandler = platformThreadHandler;
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
