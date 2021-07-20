@@ -74,20 +74,6 @@ will not run in the same isolate as the main application. Unlike threads, isolat
 memory and communication between isolates must be done via message passing (see more documentation on
 isolates [here](https://api.dart.dev/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
 
-
-## Using other plugins in alarm callbacks
-
-If alarm callbacks will need access to other Flutter plugins, including the
-alarm manager plugin itself, it may be necessary to inform the background service how
-to initialize plugins depending on which Flutter Android embedding the application is
-using.
-
-### Flutter Android Embedding V2
-
-For the Flutter Android Embedding V2, plugins are registered with the background
-isolate via reflection so `AlarmService.setPluginRegistrant` does not need to be
-called.
-
 For help getting started with Flutter, view our online
 [documentation](https://flutter.dev/).
 

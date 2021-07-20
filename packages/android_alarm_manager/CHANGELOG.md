@@ -1,6 +1,6 @@
 ## NEXT
 
-* Remove references to the V1 Android embedding.
+* Remove support for the V1 Android embedding.
 
 ## 2.0.2
 
