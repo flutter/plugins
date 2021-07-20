@@ -79,9 +79,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   Completer<void>? _firebaseProjectConfigured;
 
   Future<void> _configureFirebaseProject() async {
+    print('#### a'); // XXX
     if (_firebaseProjectConfigured != null) {
+      print('#### z'); // XXX
       return _firebaseProjectConfigured!.future;
     }
+    print('#### b'); // XXX
     _firebaseProjectConfigured = Completer<void>();
 
     final String serviceKey = getStringArg('service-key');
@@ -116,7 +119,9 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
             'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
+    print('#### c'); // XXX
     _firebaseProjectConfigured!.complete(null);
+    print('#### d'); // XXX
   }
 
   @override
