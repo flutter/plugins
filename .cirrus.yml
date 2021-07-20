@@ -49,13 +49,6 @@ task:
     ### Android tasks ###
     - name: ftl
       env:
-        matrix:
-          PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 2 --shardCount 4"
-          PLUGIN_SHARDING: "--shardIndex 3 --shardCount 4"
-        matrix:
-          CHANNEL: "master"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
         GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
       build_script:
@@ -73,7 +66,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
+        -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26 --packages=android_alarm_manager,battery
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
