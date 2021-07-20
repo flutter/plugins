@@ -322,6 +322,14 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getScrollY is not implemented on the current platform");
   }
+
+  /// Get the color's hexadecimal code at the given position.
+  ///
+  /// The parameters `x` and `y` must be in the interval [0,1]
+  Future<String> getPixelColorAt(double x, double y) {
+    throw UnimplementedError(
+        "WebView getPixelColorAt is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.

@@ -11,9 +11,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -1404,6 +1404,8 @@ void main() {
         ''';
         final String transparentBackgroundTestBase64 = base64Encode(
             const Utf8Encoder().convert(transparentBackgroundTest));
+        final Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
         Completer<void> pageLoadCompleter = Completer<void>();
 
         await tester.pumpWidget(Directionality(
@@ -1413,6 +1415,9 @@ void main() {
               child: Container(
                 color: Color.fromRGBO(0, 255, 0, 1),
                 child: WebView(
+                  onWebViewCreated: (WebViewController controller) {
+                    controllerCompleter.complete(controller);
+                  },
                   initialUrl:
                       'data:text/html;charset=utf-8;base64,$transparentBackgroundTestBase64',
                   onPageFinished: (String url) {
@@ -1424,8 +1429,17 @@ void main() {
           ),
         ));
 
+        final WebViewController controller = await controllerCompleter.future;
         await pageLoadCompleter.future;
         await tester.pumpAndSettle();
+
+        String centerLeftColor = await controller.getPixelColorAt(0.0, 0.5);
+        String centerColor = await controller.getPixelColorAt(0.5, 0.5);
+
+        // The square in the center must be red (#FFFF0000)
+        // and the background around white (#FFFFFFFF)
+        expect("#FFFF0000", centerColor);
+        expect("#FFFFFFFF", centerLeftColor);
       },
       skip: !Platform.isAndroid,
     );
@@ -1453,6 +1467,8 @@ void main() {
         ''';
         final String transparentBackgroundTestBase64 = base64Encode(
             const Utf8Encoder().convert(transparentBackgroundTest));
+        final Completer<WebViewController> controllerCompleter =
+            Completer<WebViewController>();
         Completer<void> pageLoadCompleter = Completer<void>();
 
         await tester.pumpWidget(Directionality(
@@ -1462,6 +1478,9 @@ void main() {
               child: Container(
                 color: Color.fromRGBO(0, 255, 0, 1),
                 child: WebView(
+                  onWebViewCreated: (WebViewController controller) {
+                    controllerCompleter.complete(controller);
+                  },
                   transparent: true,
                   initialUrl:
                       'data:text/html;charset=utf-8;base64,$transparentBackgroundTestBase64',
@@ -1474,8 +1493,17 @@ void main() {
           ),
         ));
 
+        final WebViewController controller = await controllerCompleter.future;
         await pageLoadCompleter.future;
         await tester.pumpAndSettle();
+
+        String centerLeftColor = await controller.getPixelColorAt(0.0, 0.5);
+        String centerColor = await controller.getPixelColorAt(0.5, 0.5);
+
+        // The square in the center must be red (#FFFF0000)
+        // and the background around transparent (#00000000)
+        expect("#FFFF0000", centerColor);
+        expect("#00000000", centerLeftColor);
       },
       skip: !Platform.isAndroid,
     );
