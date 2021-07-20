@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add postUrl to use POST request and accept POST data.
+
 ## 2.0.10
 
 * Fix keyboard issues link in the README.
