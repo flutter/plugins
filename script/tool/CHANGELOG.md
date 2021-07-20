@@ -1,6 +1,8 @@
-## NEXT
+## 0.4.1
 
 - Improved `license-check` output.
+- Use `java -version` rather than `java --version`, for compatibility with more
+  versions of Java.
 
 ## 0.4.0
 
