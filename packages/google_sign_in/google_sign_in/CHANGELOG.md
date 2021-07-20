@@ -1,6 +1,7 @@
-## NEXT
+## 5.0.5
 
 * Add iOS unit and UI integration test targets.
+* Add iOS unit test module map.
 * Exclude arm64 simulators in example app.
 
 ## 5.0.4
