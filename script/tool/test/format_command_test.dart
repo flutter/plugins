@@ -146,7 +146,7 @@ void main() {
     expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          const ProcessCall('java', <String>['--version'], null),
+          const ProcessCall('java', <String>['-version'], null),
           ProcessCall(
               'java',
               <String>[
