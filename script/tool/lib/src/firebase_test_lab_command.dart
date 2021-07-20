@@ -76,13 +76,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   static const String _gradleWrapper = 'gradlew';
 
-  Completer<void>? _firebaseProjectConfigured;
+  bool _firebaseProjectConfigured = false;
 
   Future<void> _configureFirebaseProject() async {
-    if (_firebaseProjectConfigured != null) {
-      return _firebaseProjectConfigured!.future;
+    if (_firebaseProjectConfigured) {
+      return;
     }
-    _firebaseProjectConfigured = Completer<void>();
 
     final String serviceKey = getStringArg('service-key');
     if (serviceKey.isEmpty) {
@@ -110,13 +109,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       print('');
       if (exitCode == 0) {
         print('Firebase project configured.');
-        return;
       } else {
         logWarning(
             'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
-    _firebaseProjectConfigured!.complete(null);
+    _firebaseProjectConfigured = true;
   }
 
   @override

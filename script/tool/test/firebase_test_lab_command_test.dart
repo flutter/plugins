@@ -84,6 +84,85 @@ void main() {
           ]));
     });
 
+    test('only runs gcloud configuration once', () async {
+      createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
+        'test/plugin_test.dart',
+        'example/integration_test/foo_test.dart',
+        'example/android/gradlew',
+        'example/android/app/src/androidTest/MainActivityTest.java',
+      ]);
+      createFakePlugin('plugin2', packagesDir, extraFiles: <String>[
+        'test/plugin_test.dart',
+        'example/integration_test/bar_test.dart',
+        'example/android/gradlew',
+        'example/android/app/src/androidTest/MainActivityTest.java',
+      ]);
+
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'firebase-test-lab',
+        '--device',
+        'model=flame,version=29',
+        '--device',
+        'model=seoul,version=26',
+        '--test-run-id',
+        'testRunId',
+        '--build-id',
+        'buildId',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin1'),
+          contains('Firebase project configured.'),
+          contains('Testing example/integration_test/foo_test.dart...'),
+          contains('Running for plugin2'),
+          contains('Testing example/integration_test/bar_test.dart...'),
+        ]),
+      );
+
+      expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              'gcloud',
+              'auth activate-service-account --key-file=${Platform.environment['HOME']}/gcloud-service-key.json'
+                  .split(' '),
+              null),
+          ProcessCall(
+              'gcloud', 'config set project flutter-infra'.split(' '), null),
+          ProcessCall(
+              '/packages/plugin1/example/android/gradlew',
+              'app:assembleAndroidTest -Pverbose=true'.split(' '),
+              '/packages/plugin1/example/android'),
+          ProcessCall(
+              '/packages/plugin1/example/android/gradlew',
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin1/example/integration_test/foo_test.dart'
+                  .split(' '),
+              '/packages/plugin1/example/android'),
+          ProcessCall(
+              'gcloud',
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 5m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin1/buildId/testRunId/0/ --device model=flame,version=29 --device model=seoul,version=26'
+                  .split(' '),
+              '/packages/plugin1/example'),
+          ProcessCall(
+              '/packages/plugin2/example/android/gradlew',
+              'app:assembleAndroidTest -Pverbose=true'.split(' '),
+              '/packages/plugin2/example/android'),
+          ProcessCall(
+              '/packages/plugin2/example/android/gradlew',
+              'app:assembleDebug -Pverbose=true -Ptarget=/packages/plugin2/example/integration_test/bar_test.dart'
+                  .split(' '),
+              '/packages/plugin2/example/android'),
+          ProcessCall(
+              'gcloud',
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 5m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin2/buildId/testRunId/0/ --device model=flame,version=29 --device model=seoul,version=26'
+                  .split(' '),
+              '/packages/plugin2/example'),
+        ]),
+      );
+    });
+
     test('runs integration tests', () async {
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'test/plugin_test.dart',
