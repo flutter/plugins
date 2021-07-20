@@ -4,6 +4,7 @@
 
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
@@ -180,7 +181,7 @@ class JavascriptChannel {
   JavascriptChannel({
     required this.name,
     required this.onMessageReceived,
-  })  : assert(name != null),
+  })   : assert(name != null),
         assert(onMessageReceived != null),
         assert(_validChannelNames.hasMatch(name));
 
@@ -647,6 +648,24 @@ class WebViewController {
     assert(url != null);
     _validateUrlString(url);
     return _webViewPlatformController.loadUrl(url, headers);
+  }
+
+  /// Loads the URL with postData using "POST" method.
+  ///
+  /// If `url` is not a network URL, it will be loaded with `loadUrl` instead,
+  /// ignoring the `postData` param on Android.
+  ///
+  /// `url` and `postData` must not be null.
+  ///
+  /// Throws an ArgumentError if `url` is not a valid URL string.
+  Future<void> postUrl(
+    String url,
+    Uint8List postData,
+  ) async {
+    assert(url != null);
+    assert(postData != null);
+    _validateUrlString(url);
+    return _webViewPlatformController.postUrl(url, postData);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
