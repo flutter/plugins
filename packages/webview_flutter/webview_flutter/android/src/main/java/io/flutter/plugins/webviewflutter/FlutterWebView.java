@@ -99,8 +99,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             new WebViewBuilder(context, containerView), params, new FlutterWebChromeClient());
 
     // Transparent background
-    boolean opaque = (boolean) params.get("opaque");
-    if (!opaque) {
+    boolean transparent = (boolean) params.get("transparent");
+    if (transparent) {
       webView.setBackgroundColor(0x00000000);
     }
 
