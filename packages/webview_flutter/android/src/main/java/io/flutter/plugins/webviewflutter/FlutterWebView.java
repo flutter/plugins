@@ -261,6 +261,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(null);
   }
 
+  public void postUrl(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+    byte[] postData = (byte[]) request.get("postData");
+    webView.postUrl(url, postData);
+    result.success(null);
+  }
+
   private void canGoBack(Result result) {
     result.success(webView.canGoBack());
   }
