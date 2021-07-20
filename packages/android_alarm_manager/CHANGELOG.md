@@ -1,4 +1,4 @@
-## 2.0.3
+## NEXT
 
 * Remove references to the V1 Android embedding.
 
