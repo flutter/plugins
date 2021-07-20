@@ -368,7 +368,16 @@ void main() {
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
               const ProcessCall(
-                  'xcrun', <String>['simctl', 'list', '--json'], null),
+                  'xcrun',
+                  <String>[
+                    'simctl',
+                    'list',
+                    'devices',
+                    'runtimes',
+                    'available',
+                    '--json',
+                  ],
+                  null),
               ProcessCall(
                   'xcrun',
                   const <String>[

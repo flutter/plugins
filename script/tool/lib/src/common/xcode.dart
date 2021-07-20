@@ -91,7 +91,10 @@ class Xcode {
     final List<String> findSimulatorsArguments = <String>[
       'simctl',
       'list',
-      '--json'
+      'devices',
+      'runtimes',
+      'available',
+      '--json',
     ];
     final String findSimulatorCompleteCommand =
         '$_xcRunCommand ${findSimulatorsArguments.join(' ')}';
@@ -141,10 +144,6 @@ class Xcode {
       // Looking for runtimes, trying to find latest version of device.
       for (final Map<String, dynamic> rawDevice in devicesForRuntime.reversed) {
         final Map<String, Object> device = rawDevice.cast<String, Object>();
-        if (device['availabilityError'] != null ||
-            (device['isAvailable'] as bool?) == false) {
-          continue;
-        }
         id = device['udid'] as String?;
         if (id == null) {
           continue;
