@@ -193,6 +193,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "postUrl":
+        postUrl(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
