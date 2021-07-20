@@ -13,7 +13,7 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 
-const int _exitGcloudAuthFailed = 2;
+const int _exitGcloudAuthFailed = 3;
 
 /// A command to run tests via Firebase test lab.
 class FirebaseTestLabCommand extends PackageLoopingCommand {
@@ -139,16 +139,21 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
           <String>['No tests ran (use --exclude if this is intentional).']);
     }
 
+    print('### A');
+
     // Ensures that gradle wrapper exists
     if (!await _ensureGradleWrapperExists(androidDirectory)) {
       return PackageResult.fail(<String>['Unable to build example apk']);
     }
+    print('### B');
 
     await _configureFirebaseProject();
+    print('### C');
 
     if (!await _runGradle(androidDirectory, 'app:assembleAndroidTest')) {
       return PackageResult.fail(<String>['Unable to assemble androidTest']);
     }
+    print('### D');
 
     final List<String> errors = <String>[];
 
@@ -156,6 +161,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // test file's run.
     int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
+      print('### E $resultsCounter');
       final String testName = getRelativePosixPath(test, from: package);
       print('Testing $testName...');
       if (!await _runGradle(androidDirectory, 'app:assembleDebug',
@@ -195,6 +201,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         errors.add('$testName failed tests');
       }
     }
+    print('### F');
 
     if (errors.isEmpty && resultsCounter == 0) {
       printError('No integration tests were run.');
