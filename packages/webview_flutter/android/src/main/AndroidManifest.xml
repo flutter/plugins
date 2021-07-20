@@ -1,2 +1,23 @@
-<manifest package="io.flutter.plugins.webviewflutter">
+<manifest package="io.flutter.plugins.webviewflutter"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <application>
+        <activity
+            android:name="io.flutter.plugins.webviewflutter.RequestCameraPermissionActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+        <activity
+            android:name="io.flutter.plugins.webviewflutter.FileChooserActivity"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+
+        <provider
+            android:name="io.flutter.plugins.webviewflutter.GenericFileProvider"
+            android:authorities="${applicationId}.generic.provider"
+            android:exported="false"
+            android:grantUriPermissions="true"
+            >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_paths"
+                />
+        </provider>
+    </application>
 </manifest>

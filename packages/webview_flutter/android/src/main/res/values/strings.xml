@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="webview_file_chooser_title">Choose a file</string>
+    <string name="webview_image_chooser_title">Choose an image</string>
+    <string name="webview_video_chooser_title">Choose a video</string>
+</resources>

@@ -4,6 +4,7 @@
 
 ## 2.0.9
 
+* Add file chooser on Android
 * Add iOS UI integration test target.
 * Suppress deprecation warning for iOS APIs deprecated in iOS 9.
 
