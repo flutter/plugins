@@ -79,7 +79,7 @@ this command.
     _platforms = <String, _PlatformDetails>{
       kPlatformAndroid: _PlatformDetails('Android', _testAndroid),
       kPlatformIos: _PlatformDetails('iOS', _testIos),
-      kPlatformMacos: _PlatformDetails('macOS', _testMacOs),
+      kPlatformMacos: _PlatformDetails('macOS', _testMacOS),
     };
     _requestedPlatforms = _platforms.keys
         .where((String platform) => getBoolArg(platform))
@@ -239,7 +239,7 @@ this command.
         extraFlags: _iosDestinationFlags);
   }
 
-  Future<_PlatformResult> _testMacOs(Directory plugin, _TestMode mode) {
+  Future<_PlatformResult> _testMacOS(Directory plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'macOS', mode);
   }
 
