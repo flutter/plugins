@@ -46,24 +46,39 @@ class CameraSettings {
     final facingMode = videoTrackSettings[_facingModeKey];
 
     if (facingMode == null) {
-      // If the facing mode does not exist in the video track settings,
-      // check for the facing mode in video track capabilities.
-      //
-      // MediaTrackCapabilities:
-      // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
-      final videoTrackCapabilities = videoTrack.getCapabilities();
+      try {
+        // If the facing mode does not exist in the video track settings,
+        // check for the facing mode in the video track capabilities.
+        //
+        // MediaTrackCapabilities:
+        // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
+        //
+        // This may throw a not supported error on Firefox.
+        final videoTrackCapabilities = videoTrack.getCapabilities();
 
-      // A list of facing mode capabilities as
-      // the camera may support multiple facing modes.
-      final facingModeCapabilities =
-          List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
+        // A list of facing mode capabilities as
+        // the camera may support multiple facing modes.
+        final facingModeCapabilities =
+            List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
 
-      if (facingModeCapabilities.isNotEmpty) {
-        final facingModeCapability = facingModeCapabilities.first;
-        return facingModeCapability;
-      } else {
-        // Return null if there are no facing mode capabilities.
-        return null;
+        if (facingModeCapabilities.isNotEmpty) {
+          final facingModeCapability = facingModeCapabilities.first;
+          return facingModeCapability;
+        } else {
+          // Return null if there are no facing mode capabilities.
+          return null;
+        }
+      } catch (e) {
+        switch (e.runtimeType.toString()) {
+          case 'JSNoSuchMethodError':
+            // Return null if getting capabilities is currently not supported.
+            return null;
+          default:
+            throw CameraException(
+              CameraErrorCodes.unknown,
+              'An unknown error occured when getting the video track capabilities.',
+            );
+        }
       }
     }
 

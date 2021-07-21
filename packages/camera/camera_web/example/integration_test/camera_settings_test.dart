@@ -125,6 +125,45 @@ void main() {
             equals(null),
           );
         });
+
+        testWidgets(
+            'returns null '
+            'when the facing mode setting is empty and '
+            'the video track capabilities are not supported', (tester) async {
+          final videoTrack = MockMediaStreamTrack();
+
+          when(videoTrack.getSettings).thenReturn({});
+          when(videoTrack.getCapabilities).thenThrow(JSNoSuchMethodError());
+
+          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
+
+          expect(
+            facingMode,
+            equals(null),
+          );
+        });
+
+        testWidgets(
+            'throws CameraException '
+            'with unknown error '
+            'when getting the video track capabilities '
+            'throws an unknown error', (tester) async {
+          final videoTrack = MockMediaStreamTrack();
+
+          when(videoTrack.getSettings).thenReturn({});
+          when(videoTrack.getCapabilities).thenThrow(Exception('Unknown'));
+
+          expect(
+            () => settings.getFacingModeForVideoTrack(videoTrack),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCodes.unknown,
+              ),
+            ),
+          );
+        });
       });
     });
 
@@ -167,3 +206,5 @@ void main() {
     });
   });
 }
+
+class JSNoSuchMethodError implements Exception {}
