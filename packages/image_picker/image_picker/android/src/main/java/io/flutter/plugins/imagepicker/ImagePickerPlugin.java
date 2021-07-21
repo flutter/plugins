@@ -94,7 +94,6 @@ public class ImagePickerPlugin
   static final String METHOD_CALL_MULTI_IMAGE = "pickMultiImage";
   static final String METHOD_CALL_VIDEO = "pickVideo";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
-  private static final String METHOD_CALL_MULTI_RETRIEVE = "multiRetrieve";
   private static final int CAMERA_DEVICE_FRONT = 1;
   private static final int CAMERA_DEVICE_REAR = 0;
   private static final String CHANNEL = "plugins.flutter.io/image_picker";
@@ -321,7 +320,6 @@ public class ImagePickerPlugin
         }
         break;
       case METHOD_CALL_RETRIEVE:
-      case METHOD_CALL_MULTI_RETRIEVE:
         delegate.retrieveLostImage(result);
         break;
       default:
