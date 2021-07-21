@@ -17,6 +17,7 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
+
   private static final String JS_CHANNEL_NAMES_FIELD = "javascriptChannelNames";
   private final WebView webView;
   private final MethodChannel methodChannel;
@@ -36,6 +38,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
+
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
@@ -94,36 +97,32 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
     Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
-    webView =
-        (usesHybridComposition)
-            ? new WebView(context)
-            : new InputAwareWebView(context, containerView);
+    webView = createWebView(context, params, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
-    // Allow local storage.
-    webView.getSettings().setDomStorageEnabled(true);
-    webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
-
-    // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
-    webView.getSettings().setSupportMultipleWindows(true);
-    webView.setWebChromeClient(new FlutterWebChromeClient());
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
-    if (settings != null) applySettings(settings);
+    if (settings != null) {
+      applySettings(settings);
+    }
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       List<String> names = (List<String>) params.get(JS_CHANNEL_NAMES_FIELD);
-      if (names != null) registerJavaScriptChannelNames(names);
+      if (names != null) {
+        registerJavaScriptChannelNames(names);
+      }
     }
 
     Integer autoMediaPlaybackPolicy = (Integer) params.get("autoMediaPlaybackPolicy");
-    if (autoMediaPlaybackPolicy != null) updateAutoMediaPlaybackPolicy(autoMediaPlaybackPolicy);
+    if (autoMediaPlaybackPolicy != null) {
+      updateAutoMediaPlaybackPolicy(autoMediaPlaybackPolicy);
+    }
     if (params.containsKey("userAgent")) {
       String userAgent = (String) params.get("userAgent");
       updateUserAgent(userAgent);
@@ -132,6 +131,48 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       String url = (String) params.get("initialUrl");
       webView.loadUrl(url);
     }
+  }
+
+  /**
+   * Creates a {@link android.webkit.WebView} and configures it according to the supplied
+   * parameters.
+   *
+   * <p>The {@link WebView} is configured with the following predefined settings:
+   * <ul>
+   *   <li>always enable the DOM storage API;</li>
+   *   <li>always allow JavaScript to automatically open windows;</li>
+   *   <li>always allow support for multiple windows;</li>
+   *   <li>always use the {@link FlutterWebChromeClient} as web Chrome client.</li>
+   * </ul>
+   * </p>
+   *
+   * <p>
+   * <strong>Important:</strong>
+   * This method is visible for testing purposes only and should never be called from outside this
+   * class.
+   * </p>
+   * @param context       an Activity Context to access application assets. This value cannot be
+   *                      null.
+   * @param params        creation parameters received over the method channel.
+   * @param containerView must be supplied when the {@code useHybridComposition} parameter is set to
+   *                      {@code false}. Used to create an InputConnection on the WebView's
+   *                      dedicated input, or IME, thread (see also {@link InputAwareWebView}).
+   * @return The new {@link android.webkit.WebView} object.
+   */
+  @VisibleForTesting
+  WebView createWebView(
+      Context context,
+      Map<String, Object> params,
+      View containerView
+  ) {
+    Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
+    WebViewBuilder builder = new WebViewBuilder(context, usesHybridComposition, containerView)
+        .setDomStorageEnabled(true) // Always enable DOM storage API.
+        .setJavaScriptCanOpenWindowsAutomatically(true) // Always allow automatically opening of windows.
+        .setSupportMultipleWindows(true) // Always support multiple windows.
+        .setWebChromeClient(new FlutterWebChromeClient()); // Always use {@link FlutterWebChromeClient} as web Chrome client.
+
+    return builder.build();
   }
 
   @Override
@@ -369,7 +410,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       switch (key) {
         case "jsMode":
           Integer mode = (Integer) settings.get(key);
-          if (mode != null) updateJsMode(mode);
+          if (mode != null) {
+            updateJsMode(mode);
+          }
           break;
         case "hasNavigationDelegate":
           final boolean hasNavigationDelegate = (boolean) settings.get(key);

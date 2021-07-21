@@ -12,11 +12,11 @@ import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugin.platform.PlatformViewFactory;
 import java.util.Map;
 
-public final class WebViewFactory extends PlatformViewFactory {
+public final class FlutterWebViewFactory extends PlatformViewFactory {
   private final BinaryMessenger messenger;
   private final View containerView;
 
-  WebViewFactory(BinaryMessenger messenger, View containerView) {
+  FlutterWebViewFactory(BinaryMessenger messenger, View containerView) {
     super(StandardMessageCodec.INSTANCE);
     this.messenger = messenger;
     this.containerView = containerView;
