@@ -76,7 +76,7 @@ class CameraPlugin extends CameraPlatform {
       );
 
       // Get all video tracks in the video stream
-      // to later extract the lens direction mode from the first track.
+      // to later extract the lens direction from the first track.
       final videoTracks = videoStream.getVideoTracks();
 
       if (videoTracks.isNotEmpty) {
