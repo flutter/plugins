@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Re-use server auth code obtained on login.
+
 ## 2.0.1
 
 * Updates `init` function in `MethodChannelGoogleSignIn` to parametrize `clientId` property.
