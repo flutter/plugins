@@ -20,6 +20,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 
 import java.util.Collections;
@@ -144,7 +145,7 @@ public class WebViewActivity extends Activity {
     registerReceiver(broadcastReceiver, closeIntentFilter);
   }
 
-  private Map<String, String> extractHeaders(Bundle headersBundle) {
+  private Map<String, String> extractHeaders(@Nullable Bundle headersBundle) {
     if (headersBundle == null) {
       return Collections.emptyMap();
     }

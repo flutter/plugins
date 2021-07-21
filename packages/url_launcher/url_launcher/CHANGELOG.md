@@ -1,3 +1,7 @@
+## NEXT
+
+* Fix NPE failure on Nexus5X
+
 ## 6.0.9
 
 * Silenced warnings that may occur during build when using a very
