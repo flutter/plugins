@@ -15,9 +15,9 @@ dependencies:
     # the parent directory to use the current plugin's version.
     path: ../
   
-  # Temporarily include the web implementation of a camera plugin
+  # Temporarily include a web implementation of the camera plugin
   # as it is not yet integrated into the official package.
-  # TODO(bselwe): Remove when camera_web is integrated into the camera package.
+  # TODO(bselwe): Remove when camera_web is integrated into the camera plugin.
   camera_web:
     path: ../../camera_web/
 
