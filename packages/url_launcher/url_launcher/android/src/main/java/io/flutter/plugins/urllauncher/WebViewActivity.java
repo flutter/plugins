@@ -21,6 +21,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -143,6 +145,9 @@ public class WebViewActivity extends Activity {
   }
 
   private Map<String, String> extractHeaders(Bundle headersBundle) {
+    if (headersBundle == null) {
+      return Collections.emptyMap();
+    }
     final Map<String, String> headersMap = new HashMap<>();
     for (String key : headersBundle.keySet()) {
       final String value = headersBundle.getString(key);
