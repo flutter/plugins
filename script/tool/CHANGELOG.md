@@ -1,3 +1,9 @@
+## NEXT
+
+- Added an `xctest` flag to select specific test targets, to allow running only
+  unit tests or integration tests.
+- Split Xcode analysis out of `xctest` and into a new `xcode-analyze` command.
+
 ## 0.4.1
 
 - Improved `license-check` output.
