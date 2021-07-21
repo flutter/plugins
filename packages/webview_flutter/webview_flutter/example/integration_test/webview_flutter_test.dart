@@ -1398,7 +1398,7 @@ void main() {
           onPageFinished: (String url) {
             pageLoads.add(url);
           },
-          onReceivedHttpAuthRequest: (String host, String realm) {
+          onReceivedHttpAuthRequest: (String host, String realm) async {
             return WebViewAuthInfo(username: 'guest', password: 'guest');
           },
         ),

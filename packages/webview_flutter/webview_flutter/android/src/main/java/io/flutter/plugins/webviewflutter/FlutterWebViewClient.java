@@ -172,10 +172,8 @@ class FlutterWebViewClient {
               Map<?, ?> argsMap = (Map<?, ?>) args;
               Object username = argsMap.get("username");
               Object password = argsMap.get("password");
-              if (username != null && password != null) {
-                handler.proceed(username.toString(), password.toString());
-                return;
-              }
+              handler.proceed(username.toString(), password.toString());
+              return;
             }
             handler.cancel();
           }

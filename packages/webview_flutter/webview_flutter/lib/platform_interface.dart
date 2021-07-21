@@ -38,7 +38,12 @@ abstract class WebViewPlatformCallbacksHandler {
   void onWebResourceError(WebResourceError error);
 
   /// Invoked by [WebViewPlatformController] when a page requests authorization.
-  WebViewAuthInfo? onReceivedHttpAuthRequest(String host, String realm);
+  Future<WebViewAuthInfo?> onReceivedHttpAuthRequest(
+    String host,
+    String realm,
+  ) async {
+    return null;
+  }
 }
 
 /// Possible error type categorizations used by [WebResourceError].

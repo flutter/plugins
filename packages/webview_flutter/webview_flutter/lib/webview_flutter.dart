@@ -152,7 +152,7 @@ typedef void PageLoadingCallback(int progress);
 typedef void WebResourceErrorCallback(WebResourceError error);
 
 /// Signature for when a [WebView] is requesting authentication.
-typedef WebViewAuthInfo OnReceivedHttpAuthRequestCallback(
+typedef Future<WebViewAuthInfo?> OnReceivedHttpAuthRequestCallback(
     String host, String realm);
 
 /// Specifies possible restrictions on automatic media playback.
@@ -622,7 +622,8 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  WebViewAuthInfo? onReceivedHttpAuthRequest(String host, String realm) {
+  Future<WebViewAuthInfo?> onReceivedHttpAuthRequest(
+      String host, String realm) async {
     if (_widget.onReceivedHttpAuthRequest != null) {
       return _widget.onReceivedHttpAuthRequest!(host, realm);
     }

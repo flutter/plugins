@@ -926,7 +926,7 @@ void main() {
         (WidgetTester tester) async {
       await tester.pumpWidget(WebView(
         initialUrl: 'https://youtube.com',
-        onReceivedHttpAuthRequest: (String host, String realm) {
+        onReceivedHttpAuthRequest: (String host, String realm) async {
           return WebViewAuthInfo(username: 'user', password: 'pass');
         },
       ));

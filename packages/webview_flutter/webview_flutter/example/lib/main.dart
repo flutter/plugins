@@ -62,7 +62,7 @@ class _WebViewExampleState extends State<WebViewExample> {
           onWebViewCreated: (WebViewController webViewController) {
             _controller.complete(webViewController);
           },
-          onReceivedHttpAuthRequest: (String host, String realm) {
+          onReceivedHttpAuthRequest: (String host, String realm) async {
             return WebViewAuthInfo(username: 'guest', password: 'guest');
           },
           onProgress: (int progress) {
