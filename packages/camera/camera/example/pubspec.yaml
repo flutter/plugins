@@ -14,13 +14,6 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
-  
-  # Temporarily include a web implementation of the camera plugin
-  # as it is not yet integrated into the official package.
-  # TODO(bselwe): Remove when camera_web is integrated into the camera plugin.
-  camera_web:
-    path: ../../camera_web/
-
   path_provider: ^2.0.0
   flutter:
     sdk: flutter
