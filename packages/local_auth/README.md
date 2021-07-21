@@ -157,20 +157,13 @@ manifest (or your own Activity class if you are extending the base class).
 Update your MainActivity.java:
 
 ```java
-import android.os.Bundle;
-import io.flutter.app.FlutterFragmentActivity;
-import io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin;
-import io.flutter.plugins.localauth.LocalAuthPlugin;
+import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.FlutterEngine;
+import io.flutter.embedding.android.FlutterFragmentActivity;
+import io.flutter.plugins.GeneratedPluginRegistrant;
+import io.flutter.embedding.android.FlutterActivity;
 
 public class MainActivity extends FlutterFragmentActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        FlutterAndroidLifecyclePlugin.registerWith(
-                registrarFor(
-                        "io.flutter.plugins.flutter_plugin_android_lifecycle.FlutterAndroidLifecyclePlugin"));
-        LocalAuthPlugin.registerWith(registrarFor("io.flutter.plugins.localauth.LocalAuthPlugin"));
-    }
 }
 ```
 
