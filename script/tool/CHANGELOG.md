@@ -2,13 +2,21 @@
 
 - Added an `xctest` flag to select specific test targets, to allow running only
   unit tests or integration tests.
-- Split Xcode analysis out of `xctest` and into a new `xcode-analyze` command.
+- **Breaking change**: Split Xcode analysis out of `xctest` and into a new
+  `xcode-analyze` command.
 - Fixed a bug that caused `firebase-test-lab` to hang if it tried to run more
   than one plugin's tests in a single run.
 - **Breaking change**: If `firebase-test-lab` is run on a package that supports
   Android, but for which no tests are run, it now fails instead of skipping.
   This matches `drive-examples`, as this command is what is used for driving
   Android Flutter integration tests on CI.
+- **Breaking change**: Replaced `xctest` with a new `native-test` command that
+  will eventually be able to run native unit and integration tests for all
+  platforms.
+  - Adds the ability to disable test types via `--no-unit` or
+    `--no-integration`.
+- **Breaking change**: Replaced `java-test` with Android unit test support for
+  the new `native-test` command.
 
 ## 0.4.1
 
