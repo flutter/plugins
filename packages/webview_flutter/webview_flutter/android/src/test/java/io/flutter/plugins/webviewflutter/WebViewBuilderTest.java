@@ -1,6 +1,5 @@
 package io.flutter.plugins.webviewflutter;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
@@ -9,46 +8,60 @@ import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import io.flutter.plugins.webviewflutter.WebViewBuilder.WebViewFactory;
 import java.io.IOException;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.MockedStatic.Verification;
 
 public class WebViewBuilderTest {
   private Context mockContext;
   private View mockContainerView;
+  private WebView mockWebView;
+  private MockedStatic<WebViewFactory> mockedStaticWebViewFactory;
 
   @Before
   public void before() {
     mockContext = mock(Context.class);
     mockContainerView = mock(View.class);
+    mockWebView = mock(WebView.class);
+    mockedStaticWebViewFactory = mockStatic(WebViewFactory.class);
+
+    mockedStaticWebViewFactory.when(new Verification() {
+      @Override
+      public void apply() {
+        WebViewFactory.create(mockContext, false, mockContainerView);
+      }
+    }).thenReturn(mockWebView);
+  }
+
+  @After
+  public void after() {
+    mockedStaticWebViewFactory.close();
   }
 
   @Test
   public void ctor_test() {
-    WebViewBuilder builder =
-        new WebViewBuilder(mockContext, false, mockContainerView);
+    WebViewBuilder builder = new WebViewBuilder(mockContext, mockContainerView);
 
     assertNotNull(builder);
   }
 
   @Test
-  public void build_Should_set_values() throws IOException {
-    WebViewBuilder.WebViewFactory mockFactory =
-        mock(WebViewBuilder.WebViewFactory.class);
-    WebView mockWebView = mock(WebView.class);
+  public void build_should_set_values() throws IOException {
     WebSettings mockWebSettings = mock(WebSettings.class);
     WebChromeClient mockWebChromeClient = mock(WebChromeClient.class);
 
     when(mockWebView.getSettings()).thenReturn(mockWebSettings);
 
     WebViewBuilder builder =
-        new WebViewBuilder(mockContext, false, mockContainerView, mockFactory)
+        new WebViewBuilder(mockContext, mockContainerView)
             .setDomStorageEnabled(true)
             .setJavaScriptCanOpenWindowsAutomatically(true)
             .setSupportMultipleWindows(true)
             .setWebChromeClient(mockWebChromeClient);
-
-    when(mockFactory.create(mockContext, false, mockContainerView)).thenReturn(mockWebView);
 
     WebView webView = builder.build();
 

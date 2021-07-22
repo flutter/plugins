@@ -96,15 +96,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
-    webView = createWebView(context, params, containerView);
+    webView =
+        createWebView(
+            new WebViewBuilder(context, containerView), params, new FlutterWebChromeClient());
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
 
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    methodChannel.setMethodCallHandler(this);
+    methodChannel = createMethodChannel(messenger, id, this);
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
@@ -138,41 +138,61 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
    * parameters.
    *
    * <p>The {@link WebView} is configured with the following predefined settings:
-   * <ul>
-   *   <li>always enable the DOM storage API;</li>
-   *   <li>always allow JavaScript to automatically open windows;</li>
-   *   <li>always allow support for multiple windows;</li>
-   *   <li>always use the {@link FlutterWebChromeClient} as web Chrome client.</li>
-   * </ul>
-   * </p>
    *
-   * <p>
-   * <strong>Important:</strong>
-   * This method is visible for testing purposes only and should never be called from outside this
-   * class.
-   * </p>
-   * @param context       an Activity Context to access application assets. This value cannot be
-   *                      null.
-   * @param params        creation parameters received over the method channel.
-   * @param containerView must be supplied when the {@code useHybridComposition} parameter is set to
-   *                      {@code false}. Used to create an InputConnection on the WebView's
-   *                      dedicated input, or IME, thread (see also {@link InputAwareWebView}).
+   * <ul>
+   *   <li>always enable the DOM storage API;
+   *   <li>always allow JavaScript to automatically open windows;
+   *   <li>always allow support for multiple windows;
+   *   <li>always use the {@link FlutterWebChromeClient} as web Chrome client.
+   * </ul>
+   *
+   * <p><strong>Important:</strong> This method is visible for testing purposes only and should
+   * never be called from outside this class.
+   *
+   * @param webViewBuilder a {@link WebViewBuilder} which is responsible for building the {@link
+   *     WebView}.
+   * @param params creation parameters received over the method channel.
+   * @param webChromeClient an implementation of WebChromeClient This value may be null.
    * @return The new {@link android.webkit.WebView} object.
    */
   @VisibleForTesting
-  WebView createWebView(
-      Context context,
-      Map<String, Object> params,
-      View containerView
-  ) {
+  static WebView createWebView(
+      WebViewBuilder webViewBuilder, Map<String, Object> params, WebChromeClient webChromeClient) {
     Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
-    WebViewBuilder builder = new WebViewBuilder(context, usesHybridComposition, containerView)
+    webViewBuilder
+        .setUsesHybridComposition(usesHybridComposition)
         .setDomStorageEnabled(true) // Always enable DOM storage API.
-        .setJavaScriptCanOpenWindowsAutomatically(true) // Always allow automatically opening of windows.
+        .setJavaScriptCanOpenWindowsAutomatically(
+            true) // Always allow automatically opening of windows.
         .setSupportMultipleWindows(true) // Always support multiple windows.
-        .setWebChromeClient(new FlutterWebChromeClient()); // Always use {@link FlutterWebChromeClient} as web Chrome client.
+        .setWebChromeClient(
+            webChromeClient); // Always use {@link FlutterWebChromeClient} as web Chrome client.
 
-    return builder.build();
+    return webViewBuilder.build();
+  }
+
+  /**
+   * Creates a {@link MethodChannel} used to handle communication with the Flutter application about
+   * the {@link FlutterWebView} instance.
+   *
+   * <p><strong>Important:</strong> This method is visible for testing purposes only and should
+   * never be called from outside this class.
+   *
+   * @param messenger a {@link BinaryMessenger} to facilitate communication with Flutter.
+   * @param id an identifier used to create a unique channel name and identify communication with a
+   *     particular {@link FlutterWebView} instance.
+   * @param handler a {@link MethodCallHandler} responsible for handling messages that arrive from
+   *     the Flutter application.
+   * @return The {@link MethodChannel} configured using the supplied {@link BinaryMessenger} and
+   *     {@link MethodCallHandler}.
+   */
+  @VisibleForTesting
+  static MethodChannel createMethodChannel(
+      BinaryMessenger messenger, int id, MethodCallHandler handler) {
+    MethodChannel methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
+    methodChannel.setMethodCallHandler(handler);
+
+    return methodChannel;
   }
 
   @Override

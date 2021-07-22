@@ -11,30 +11,24 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import androidx.annotation.NonNull;
 
-/**
- * Builder used to create {@link android.webkit.WebView} objects.
- */
+/** Builder used to create {@link android.webkit.WebView} objects. */
 public class WebViewBuilder {
 
-  /**
-   * Factory used to create a new {@link android.webkit.WebView} instance.
-   */
+  /** Factory used to create a new {@link android.webkit.WebView} instance. */
   static class WebViewFactory {
 
     /**
      * Creates a new {@link android.webkit.WebView} instance.
      *
-     * @param context               an Activity Context to access application assets. This value
-     *                              cannot be null.
+     * @param context an Activity Context to access application assets. This value cannot be null.
      * @param usesHybridComposition If {@code false} a {@link InputAwareWebView} instance is
-     *                              returned.
-     * @param containerView         must be supplied when the {@code useHybridComposition} parameter
-     *                              is set to {@code false}. Used to create an InputConnection on
-     *                              the WebView's dedicated input, or IME, thread (see also {@link
-     *                              InputAwareWebView})
+     *     returned.
+     * @param containerView must be supplied when the {@code useHybridComposition} parameter is set
+     *     to {@code false}. Used to create an InputConnection on the WebView's dedicated input, or
+     *     IME, thread (see also {@link InputAwareWebView})
      * @return A new instance of the {@link android.webkit.WebView} object.
      */
-    WebView create(Context context, boolean usesHybridComposition, View containerView) {
+    static WebView create(Context context, boolean usesHybridComposition, View containerView) {
       return usesHybridComposition
           ? new WebView(context)
           : new InputAwareWebView(context, containerView);
@@ -43,55 +37,25 @@ public class WebViewBuilder {
 
   private final Context context;
   private final View containerView;
-  private final boolean usesHybridComposition;
-  private final WebViewFactory webViewFactory;
 
   private boolean enableDomStorage;
   private boolean javaScriptCanOpenWindowsAutomatically;
   private boolean supportMultipleWindows;
+  private boolean usesHybridComposition;
   private WebChromeClient webChromeClient;
-
-  /**
-   * Constructs a new {@link WebViewBuilder} object.
-   *
-   * @param context               an Activity Context to access application assets. This value
-   *                              cannot be null.
-   * @param usesHybridComposition if {@code false} a {@link InputAwareWebView} instance is returned.
-   * @param containerView         must be supplied when the {@code useHybridComposition} parameter
-   *                              is set to {@code false}. Used to create an InputConnection on the
-   *                              WebView's dedicated input, or IME, thread (see also {@link
-   *                              InputAwareWebView})
-   */
-  public WebViewBuilder(
-      @NonNull final Context context,
-      boolean usesHybridComposition,
-      View containerView) {
-    this(context, usesHybridComposition, containerView, new WebViewFactory());
-  }
 
   /**
    * Constructs a new {@link WebViewBuilder} object with a custom implementation of the {@link
    * WebViewFactory} object.
    *
-   * @param context               an Activity Context to access application assets. This value
-   *                              cannot be null.
-   * @param usesHybridComposition if {@code false} a {@link InputAwareWebView} instance is returned.
-   * @param containerView         must be supplied when the {@code useHybridComposition} parameter
-   *                              is set to {@code false}. Used to create an InputConnection on the
-   *                              WebView's dedicated input, or IME, thread (see also {@link
-   *                              InputAwareWebView})
-   * @param webViewFactory        custom implementation of the {@link WebViewFactory} object.
+   * @param context an Activity Context to access application assets. This value cannot be null.
+   * @param containerView must be supplied when the {@code useHybridComposition} parameter is set to
+   *     {@code false}. Used to create an InputConnection on the WebView's dedicated input, or IME,
+   *     thread (see also {@link InputAwareWebView})
    */
-  WebViewBuilder(
-      @NonNull final Context context,
-      boolean usesHybridComposition,
-      View containerView,
-      WebViewFactory webViewFactory
-  ) {
+  WebViewBuilder(@NonNull final Context context, View containerView) {
     this.context = context;
-    this.usesHybridComposition = usesHybridComposition;
     this.containerView = containerView;
-    this.webViewFactory = webViewFactory;
   }
 
   /**
@@ -118,7 +82,7 @@ public class WebViewBuilder {
   }
 
   /**
-   * Set whether the WebView supports multiple windows. If set to {@code true}, {@link
+   * Sets whether the {@link WebView} supports multiple windows. If set to {@code true}, {@link
    * WebChromeClient#onCreateWindow} must be implemented by the host application. The default is
    * {@code false}.
    *
@@ -127,6 +91,21 @@ public class WebViewBuilder {
    */
   public WebViewBuilder setSupportMultipleWindows(boolean flag) {
     this.supportMultipleWindows = flag;
+    return this;
+  }
+
+  /**
+   * Sets whether the hybrid composition should be used.
+   *
+   * <p>If set to {@code true} a standard {@link WebView} is created. If set to {@code false} the
+   * {@link WebViewBuilder} will create a {@link InputAwareWebView} to workaround issues using the
+   * {@link WebView} on Android versions below N.
+   *
+   * @param flag {@code true} if uses hybrid composition. The default is {@code false}.
+   * @return This builder. This value cannot be {@code null}
+   */
+  public WebViewBuilder setUsesHybridComposition(boolean flag) {
+    this.usesHybridComposition = flag;
     return this;
   }
 
@@ -148,7 +127,7 @@ public class WebViewBuilder {
    * @return The {@link android.webkit.WebView} using the current settings.
    */
   public WebView build() {
-    WebView webView = webViewFactory.create(context, usesHybridComposition, containerView);
+    WebView webView = WebViewFactory.create(context, usesHybridComposition, containerView);
 
     WebSettings webSettings = webView.getSettings();
     webSettings.setDomStorageEnabled(enableDomStorage);
