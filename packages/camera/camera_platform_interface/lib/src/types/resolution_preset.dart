@@ -6,10 +6,10 @@
 ///
 /// If a preset is not available on the camera being used a preset of lower quality will be selected automatically.
 enum ResolutionPreset {
-  /// 352x288 on iOS, 240p (320x240) on Android and Web
+  /// 352x288 on iOS, 240p (320x240) on Android
   low,
 
-  /// 480p (640x480 on iOS, 720x480 on Android and Web)
+  /// 480p (640x480 on iOS, 720x480 on Android)
   medium,
 
   /// 720p (1280x720)
