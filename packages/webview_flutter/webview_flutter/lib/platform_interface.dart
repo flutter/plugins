@@ -322,6 +322,14 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getScrollY is not implemented on the current platform");
   }
+
+  /// Get the color's hexadecimal code at the given position.
+  ///
+  /// The parameters `x` and `y` must be in the interval [0,1]
+  Future<String> getPixelColorAt(double x, double y) {
+    throw UnimplementedError(
+        "WebView getPixelColorAt is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
@@ -455,6 +463,7 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+    this.transparent = false,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -487,6 +496,9 @@ class CreationParams {
 
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
+
+  /// If set to `true`, the webview background will be transparent.
+  final bool transparent;
 
   @override
   String toString() {

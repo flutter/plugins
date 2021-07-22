@@ -844,6 +844,26 @@ void main() {
     });
   });
 
+  group('Transparent background', () {
+    testWidgets('Defaults to false', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.transparent, false);
+    });
+
+    testWidgets('Can be transparent', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(transparent: true));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.transparent, true);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUpAll(() {
       WebView.platform = MyWebViewPlatform();
@@ -943,6 +963,7 @@ class FakePlatformWebView {
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
+    transparent = params['transparent'];
   }
 
   late MethodChannel channel;
@@ -959,6 +980,7 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
+  bool? transparent;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {

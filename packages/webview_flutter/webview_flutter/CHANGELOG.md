@@ -1,3 +1,7 @@
+## 2.0.11
+
+* Add an option to set a transparent background for the webview.
+
 ## 2.0.10
 
 * Fix keyboard issues link in the README.
