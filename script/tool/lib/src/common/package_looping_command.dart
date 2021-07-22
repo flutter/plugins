@@ -165,9 +165,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
     final List<String> components = p.posix.split(packageName);
     // For the common federated plugin pattern of `foo/foo_subpackage`, drop
     // the first part since it's not useful.
-    if (components.length == 2 &&
+    if (components.length >= 2 &&
         components[1].startsWith('${components[0]}_')) {
-      packageName = components[1];
+      packageName = p.posix.joinAll(components.sublist(1));
     }
     return packageName;
   }

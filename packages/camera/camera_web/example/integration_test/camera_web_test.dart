@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:html';
+import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/camera_web.dart';
+import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/services.dart';
@@ -296,18 +298,140 @@ void main() {
       });
     });
 
-    testWidgets('createCamera throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.createCamera(
-          CameraDescription(
-            name: 'name',
-            lensDirection: CameraLensDirection.external,
-            sensorOrientation: 0,
+    group('createCamera', () {
+      testWidgets(
+          'throws CameraException '
+          'with missingMetadata error '
+          'if there is no metadata '
+          'for the given camera description', (tester) async {
+        expect(
+          () => CameraPlatform.instance.createCamera(
+            CameraDescription(
+              name: 'name',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 0,
+            ),
+            ResolutionPreset.ultraHigh,
           ),
-          ResolutionPreset.medium,
-        ),
-        throwsUnimplementedError,
-      );
+          throwsA(
+            isA<CameraException>().having(
+              (e) => e.code,
+              'code',
+              CameraErrorCodes.missingMetadata,
+            ),
+          ),
+        );
+      });
+
+      group('creates a camera', () {
+        const ultraHighResolutionSize = Size(3840, 2160);
+        const maxResolutionSize = Size(3840, 2160);
+
+        late CameraDescription cameraDescription;
+        late CameraMetadata cameraMetadata;
+
+        setUp(() {
+          cameraDescription = CameraDescription(
+            name: 'name',
+            lensDirection: CameraLensDirection.front,
+            sensorOrientation: 0,
+          );
+
+          cameraMetadata = CameraMetadata(
+            deviceId: 'deviceId',
+            facingMode: 'user',
+          );
+
+          // Add metadata for the camera description.
+          (CameraPlatform.instance as CameraPlugin)
+              .camerasMetadata[cameraDescription] = cameraMetadata;
+
+          when(
+            () => cameraSettings.mapFacingModeToCameraType('user'),
+          ).thenReturn(CameraType.user);
+        });
+
+        testWidgets('with appropriate options', (tester) async {
+          when(
+            () => cameraSettings
+                .mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
+          ).thenReturn(ultraHighResolutionSize);
+
+          final cameraId = await CameraPlatform.instance.createCamera(
+            cameraDescription,
+            ResolutionPreset.ultraHigh,
+            enableAudio: true,
+          );
+
+          expect(
+            (CameraPlatform.instance as CameraPlugin).cameras[cameraId],
+            isA<Camera>()
+                .having(
+                  (camera) => camera.textureId,
+                  'textureId',
+                  cameraId,
+                )
+                .having(
+                  (camera) => camera.window,
+                  'window',
+                  window,
+                )
+                .having(
+                  (camera) => camera.options,
+                  'options',
+                  CameraOptions(
+                    audio: AudioConstraints(enabled: true),
+                    video: VideoConstraints(
+                      facingMode: FacingModeConstraint(CameraType.user),
+                      width: VideoSizeConstraint(
+                        ideal: ultraHighResolutionSize.width.toInt(),
+                      ),
+                      height: VideoSizeConstraint(
+                        ideal: ultraHighResolutionSize.height.toInt(),
+                      ),
+                      deviceId: cameraMetadata.deviceId,
+                    ),
+                  ),
+                ),
+          );
+        });
+
+        testWidgets(
+            'with a max resolution preset '
+            'and enabled audio set to false '
+            'when no options are specified', (tester) async {
+          when(
+            () =>
+                cameraSettings.mapResolutionPresetToSize(ResolutionPreset.max),
+          ).thenReturn(maxResolutionSize);
+
+          final cameraId = await CameraPlatform.instance.createCamera(
+            cameraDescription,
+            null,
+          );
+
+          expect(
+            (CameraPlatform.instance as CameraPlugin).cameras[cameraId],
+            isA<Camera>().having(
+              (camera) => camera.options,
+              'options',
+              CameraOptions(
+                audio: AudioConstraints(enabled: false),
+                video: VideoConstraints(
+                  facingMode: FacingModeConstraint(CameraType.user),
+                  width: VideoSizeConstraint(
+                    ideal: maxResolutionSize.width.toInt(),
+                  ),
+                  height: VideoSizeConstraint(
+                    ideal: maxResolutionSize.height.toInt(),
+                  ),
+                  deviceId: cameraMetadata.deviceId,
+                ),
+              ),
+            ),
+          );
+        });
+      });
     });
 
     testWidgets('initializeCamera throws UnimplementedError', (tester) async {
