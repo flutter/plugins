@@ -29,13 +29,7 @@ void main() {
       navigator = MockNavigator();
       mediaDevices = MockMediaDevices();
 
-      final videoElement = VideoElement()
-        ..src =
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'
-        ..preload = 'true'
-        ..width = 10
-        ..height = 10;
-
+      final videoElement = getVideoElementWithBlankStream(Size(10, 10));
       mediaStream = videoElement.captureStream();
 
       when(() => window.navigator).thenReturn(navigator);

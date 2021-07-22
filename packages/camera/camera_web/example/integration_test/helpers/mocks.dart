@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html';
+import 'dart:ui';
 
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
@@ -56,4 +57,23 @@ class FakeDomException extends Fake implements DomException {
 
   @override
   String get name => _name;
+}
+
+/// Returns a video element with a blank stream of size [videoSize].
+///
+/// Can be used to mock a video stream:
+/// ```dart
+/// final videoElement = getVideoElementWithBlankStream(Size(100, 100));
+/// final videoStream = videoElement.captureStream();
+/// ```
+VideoElement getVideoElementWithBlankStream(Size videoSize) {
+  final canvasElement = CanvasElement(
+    width: videoSize.width.toInt(),
+    height: videoSize.height.toInt(),
+  )..context2D.fillRect(0, 0, videoSize.width, videoSize.height);
+
+  final videoElement = VideoElement()
+    ..srcObject = canvasElement.captureStream();
+
+  return videoElement;
 }

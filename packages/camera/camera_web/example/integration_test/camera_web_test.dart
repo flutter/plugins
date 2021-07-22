@@ -34,13 +34,8 @@ void main() {
       window = MockWindow();
       navigator = MockNavigator();
       mediaDevices = MockMediaDevices();
-      videoElement = VideoElement()
-        ..src =
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'
-        ..preload = 'true'
-        ..width = 10
-        ..height = 10
-        ..crossOrigin = 'anonymous';
+
+      videoElement = getVideoElementWithBlankStream(Size(10, 10));
 
       cameraSettings = MockCameraSettings();
 
