@@ -95,15 +95,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
     Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
-    boolean opaque = (boolean) params.get("opaque");
     webView =
         (usesHybridComposition)
             ? new WebView(context)
             : new InputAwareWebView(context, containerView);
 
-    if (!opaque) {
-      webView.setBackgroundColor(Color.TRANSPARENT);
-    }
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
@@ -401,6 +397,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "allowsInlineMediaPlayback":
           // no-op inline media playback is always allowed on Android.
+          break;
+        case "opaque":
+          boolean opaque = (boolean) settings.get(key);
+          webView.setBackgroundColor(opaque ? Color.WHITE : Color.TRANSPARENT);
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);

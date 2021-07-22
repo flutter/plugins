@@ -397,6 +397,7 @@ class WebSettings {
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
+    this.opaque,
   }) : assert(userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
@@ -434,6 +435,9 @@ class WebSettings {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
+  /// If set to `false`, the webview background will be transparent.
+  final bool? opaque;
+
   @override
   String toString() {
     return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
@@ -455,7 +459,6 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
-    this.opaque = true,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -488,9 +491,6 @@ class CreationParams {
 
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
-
-  /// If set to `false`, the webview background will be transparent.
-  final bool opaque;
 
   @override
   String toString() {

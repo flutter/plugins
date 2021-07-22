@@ -483,7 +483,6 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
-    opaque: widget.opaque,
   );
 }
 
@@ -496,6 +495,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
+    opaque: widget.opaque,
   );
 }
 
@@ -517,6 +517,7 @@ WebSettings _clearUnchangedWebSettings(
   bool? hasProgressTracking;
   bool? debuggingEnabled;
   WebSetting<String?> userAgent = WebSetting.absent();
+  bool? opaque;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }
@@ -532,6 +533,9 @@ WebSettings _clearUnchangedWebSettings(
   if (currentValue.userAgent != newValue.userAgent) {
     userAgent = newValue.userAgent;
   }
+  if (currentValue.opaque != newValue.opaque) {
+    opaque = newValue.opaque;
+  }
 
   return WebSettings(
     javascriptMode: javascriptMode,
@@ -539,6 +543,7 @@ WebSettings _clearUnchangedWebSettings(
     hasProgressTracking: hasProgressTracking,
     debuggingEnabled: debuggingEnabled,
     userAgent: userAgent,
+    opaque: opaque,
   );
 }
 

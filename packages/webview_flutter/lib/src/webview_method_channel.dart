@@ -193,6 +193,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
     _addSettingIfPresent('userAgent', settings.userAgent);
+    _addIfNonNull('opaque', settings.opaque);
     return map;
   }
 
@@ -211,7 +212,6 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
-      'opaque': creationParams.opaque,
     };
   }
 }
