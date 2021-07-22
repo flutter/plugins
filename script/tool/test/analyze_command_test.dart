@@ -176,6 +176,25 @@ void main() {
           ]));
     });
 
+    test('takes an allow config file', () async {
+      final Directory pluginDir = createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
+      final File allowFile = packagesDir.childFile('custom.yaml');
+      allowFile.writeAsStringSync('- foo');
+
+      await runCapturingPrint(
+          runner, <String>['analyze', '--custom-analysis', allowFile.path]);
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'flutter', const <String>['packages', 'get'], pluginDir.path),
+            ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+                pluginDir.path),
+          ]));
+    });
+
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
       createFakePlugin('foo', packagesDir,
