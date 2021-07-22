@@ -1,3 +1,8 @@
+## 2.0.0
+
+* BREAKING CHANGE : Refactor to handle new `PurchaseStatus` named `canceled`. This means developers
+  can distinguish between an error and user cancellation.
+
 ## 1.0.6
 
 * Added import flutter foundation dependency in README.md to be able to use `defaultTargetPlatform`.
