@@ -1,3 +1,7 @@
+## 1.2.0
+
+* Added `toString()` to `IAPError`
+
 ## 1.1.0
 
 * Added `currencySymbol` in ProductDetails.
