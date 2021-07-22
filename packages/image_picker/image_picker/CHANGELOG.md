@@ -1,3 +1,7 @@
+## 0.8.3
+
+* Update `ImagePickerCache` to save list of images and recover them when it is needed.
+
 ## 0.8.2
 
 * Added new methods that return `package:cross_file` `XFile` instances. [Docs](https://pub.dev/documentation/cross_file/latest/index.html).
