@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html';
+import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera_settings.dart';
@@ -201,6 +202,100 @@ void main() {
         expect(
           settings.mapFacingModeToLensDirection('right'),
           equals(CameraLensDirection.external),
+        );
+      });
+    });
+
+    group('mapFacingModeToCameraType', () {
+      testWidgets(
+          'returns user '
+          'when the facing mode is user', (tester) async {
+        expect(
+          settings.mapFacingModeToCameraType('user'),
+          equals(CameraType.user),
+        );
+      });
+
+      testWidgets(
+          'returns environment '
+          'when the facing mode is environment', (tester) async {
+        expect(
+          settings.mapFacingModeToCameraType('environment'),
+          equals(CameraType.environment),
+        );
+      });
+
+      testWidgets(
+          'returns user '
+          'when the facing mode is left', (tester) async {
+        expect(
+          settings.mapFacingModeToCameraType('left'),
+          equals(CameraType.user),
+        );
+      });
+
+      testWidgets(
+          'returns user '
+          'when the facing mode is right', (tester) async {
+        expect(
+          settings.mapFacingModeToCameraType('right'),
+          equals(CameraType.user),
+        );
+      });
+    });
+
+    group('mapResolutionPresetToSize', () {
+      testWidgets(
+          'returns 3840x2160 '
+          'when the resolution preset is max', (tester) async {
+        expect(
+          settings.mapResolutionPresetToSize(ResolutionPreset.max),
+          equals(Size(3840, 2160)),
+        );
+      });
+
+      testWidgets(
+          'returns 3840x2160 '
+          'when the resolution preset is ultraHigh', (tester) async {
+        expect(
+          settings.mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
+          equals(Size(3840, 2160)),
+        );
+      });
+
+      testWidgets(
+          'returns 1920x1080 '
+          'when the resolution preset is veryHigh', (tester) async {
+        expect(
+          settings.mapResolutionPresetToSize(ResolutionPreset.veryHigh),
+          equals(Size(1920, 1080)),
+        );
+      });
+
+      testWidgets(
+          'returns 1280x720 '
+          'when the resolution preset is high', (tester) async {
+        expect(
+          settings.mapResolutionPresetToSize(ResolutionPreset.high),
+          equals(Size(1280, 720)),
+        );
+      });
+
+      testWidgets(
+          'returns 720x480 '
+          'when the resolution preset is medium', (tester) async {
+        expect(
+          settings.mapResolutionPresetToSize(ResolutionPreset.medium),
+          equals(Size(720, 480)),
+        );
+      });
+
+      testWidgets(
+          'returns 320x240 '
+          'when the resolution preset is low', (tester) async {
+        expect(
+          settings.mapResolutionPresetToSize(ResolutionPreset.low),
+          equals(Size(320, 240)),
         );
       });
     });

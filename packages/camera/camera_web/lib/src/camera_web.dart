@@ -7,6 +7,7 @@ import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/material.dart';
@@ -30,6 +31,11 @@ class CameraPlugin extends CameraPlatform {
   }
 
   final CameraSettings _cameraSettings;
+
+  /// The cameras managed by the [CameraPlugin].
+  @visibleForTesting
+  final cameras = <int, Camera>{};
+  var _textureCounter = 1;
 
   /// Metadata associated with each camera description.
   /// Populated in [availableCameras].
@@ -130,8 +136,51 @@ class CameraPlugin extends CameraPlatform {
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
-  }) {
-    throw UnimplementedError('createCamera() is not implemented.');
+  }) async {
+    if (!camerasMetadata.containsKey(cameraDescription)) {
+      throw CameraException(
+        CameraErrorCodes.missingMetadata,
+        'Missing camera metadata. Make sure to call `availableCameras` before creating a camera.',
+      );
+    }
+
+    final textureId = _textureCounter++;
+
+    final cameraMetadata = camerasMetadata[cameraDescription]!;
+
+    final cameraType = cameraMetadata.facingMode != null
+        ? _cameraSettings.mapFacingModeToCameraType(cameraMetadata.facingMode!)
+        : null;
+
+    // Use the highest resolution possible
+    // if the resolution preset is not specified.
+    final videoSize = _cameraSettings
+        .mapResolutionPresetToSize(resolutionPreset ?? ResolutionPreset.max);
+
+    // Create a camera with the given audio and video constraints.
+    // Sensor orientation is currently not supported.
+    final camera = Camera(
+      textureId: textureId,
+      window: window,
+      options: CameraOptions(
+        audio: AudioConstraints(enabled: enableAudio),
+        video: VideoConstraints(
+          facingMode:
+              cameraType != null ? FacingModeConstraint(cameraType) : null,
+          width: VideoSizeConstraint(
+            ideal: videoSize.width.toInt(),
+          ),
+          height: VideoSizeConstraint(
+            ideal: videoSize.height.toInt(),
+          ),
+          deviceId: cameraMetadata.deviceId,
+        ),
+      ),
+    );
+
+    cameras[textureId] = camera;
+
+    return textureId;
   }
 
   @override
