@@ -86,8 +86,7 @@ public class WebViewBuilderTest {
 
     when(mockWebView.getSettings()).thenReturn(mockWebSettings);
 
-    WebViewBuilder builder =
-        new WebViewBuilder(mockContext, mockContainerView);
+    WebViewBuilder builder = new WebViewBuilder(mockContext, mockContainerView);
 
     WebView webView = builder.build();
 
