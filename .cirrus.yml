@@ -125,7 +125,7 @@ task:
     memory: 12G
   matrix:
     ### Android tasks ###
-    - name: build-apks+java-test+firebase-test-lab
+    - name: build-apks+android-unit+firebase-test-lab
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
@@ -160,13 +160,15 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/tool_runner.sh build-examples --apk
-      java_test_script:
+      native_unit_test_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
-        - ./script/tool_runner.sh java-test  # must come after apk build
+        # Native integration tests are handled by firebase-test-lab below, so
+        # only run unit tests.
+        - ./script/tool_runner.sh native-test --android --no-integration  # must come after apk build
       firebase_test_lab_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -239,12 +241,12 @@ task:
         - ./script/tool_runner.sh build-examples --ios
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --ios
-      xctest_script:
-        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
+      native_test_script:
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
-        # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
+        # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
         - ./script/tool_runner.sh drive-examples --ios --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
     ### macOS desktop tasks ###
     - name: build_all_plugins_macos
@@ -269,7 +271,7 @@ task:
         - ./script/tool_runner.sh build-examples --macos
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --macos
-      xctest_script:
-        - ./script/tool_runner.sh xctest --macos --exclude $PLUGINS_TO_EXCLUDE_MACOS_XCTESTS
+      native_test_script:
+        - ./script/tool_runner.sh native-test --macos --exclude $PLUGINS_TO_EXCLUDE_MACOS_XCTESTS
       drive_script:
         - ./script/tool_runner.sh drive-examples --macos
