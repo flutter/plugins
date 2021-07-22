@@ -26,10 +26,12 @@ public class FlutterWebViewTest {
     mockWebView = mock(WebView.class);
 
     when(mockWebViewBuilder.setDomStorageEnabled(anyBoolean())).thenReturn(mockWebViewBuilder);
-    when(mockWebViewBuilder.setJavaScriptCanOpenWindowsAutomatically(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setJavaScriptCanOpenWindowsAutomatically(anyBoolean()))
+        .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setSupportMultipleWindows(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setUsesHybridComposition(anyBoolean())).thenReturn(mockWebViewBuilder);
-    when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class))).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
+        .thenReturn(mockWebViewBuilder);
 
     when(mockWebViewBuilder.build()).thenReturn(mockWebView);
   }

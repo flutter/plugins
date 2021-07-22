@@ -56,7 +56,8 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
     binding
         .getPlatformViewRegistry()
         .registerViewFactory(
-            "plugins.flutter.io/webview", new FlutterWebViewFactory(messenger, /*containerView=*/ null));
+            "plugins.flutter.io/webview",
+            new FlutterWebViewFactory(messenger, /*containerView=*/ null));
     flutterCookieManager = new FlutterCookieManager(messenger);
   }
 

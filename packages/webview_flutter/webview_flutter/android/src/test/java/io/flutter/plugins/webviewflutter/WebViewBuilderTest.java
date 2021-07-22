@@ -29,12 +29,15 @@ public class WebViewBuilderTest {
     mockWebView = mock(WebView.class);
     mockedStaticWebViewFactory = mockStatic(WebViewFactory.class);
 
-    mockedStaticWebViewFactory.when(new Verification() {
-      @Override
-      public void apply() {
-        WebViewFactory.create(mockContext, false, mockContainerView);
-      }
-    }).thenReturn(mockWebView);
+    mockedStaticWebViewFactory
+        .when(
+            new Verification() {
+              @Override
+              public void apply() {
+                WebViewFactory.create(mockContext, false, mockContainerView);
+              }
+            })
+        .thenReturn(mockWebView);
   }
 
   @After
