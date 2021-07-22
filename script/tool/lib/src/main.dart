@@ -24,6 +24,7 @@ import 'publish_plugin_command.dart';
 import 'pubspec_check_command.dart';
 import 'test_command.dart';
 import 'version_check_command.dart';
+import 'xcode_analyze_command.dart';
 import 'xctest_command.dart';
 
 void main(List<String> args) {
@@ -59,6 +60,7 @@ void main(List<String> args) {
     ..addCommand(PubspecCheckCommand(packagesDir))
     ..addCommand(TestCommand(packagesDir))
     ..addCommand(VersionCheckCommand(packagesDir))
+    ..addCommand(XcodeAnalyzeCommand(packagesDir))
     ..addCommand(XCTestCommand(packagesDir));
 
   commandRunner.run(args).catchError((Object e) {
