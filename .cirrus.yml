@@ -70,9 +70,9 @@ task:
           CHANNEL: "stable"
       tool_script:
         - cd script/tool
-        - dart analyze --fatal-infos --custom_analysis=script/configs/custom_analysis.yaml
+        - dart analyze --fatal-infos
       script:
-        - ./script/tool_runner.sh analyze
+        - ./script/tool_runner.sh analyze --custom_analysis=script/configs/custom_analysis.yaml
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
