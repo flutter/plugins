@@ -507,6 +507,24 @@ void main() {
       });
     });
 
+    group('getViewType', () {
+      testWidgets('returns a correct view type', (tester) async {
+        const textureId = 1;
+
+        final camera = Camera(
+          textureId: textureId,
+          window: window,
+        );
+
+        await camera.initialize();
+
+        expect(
+          camera.getViewType(),
+          equals('plugins.flutter.io/camera_$textureId'),
+        );
+      });
+    });
+
     group('dispose', () {
       testWidgets('resets the video element\'s source', (tester) async {
         final camera = Camera(
