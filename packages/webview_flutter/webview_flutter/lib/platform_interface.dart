@@ -397,6 +397,7 @@ class WebSettings {
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
+    this.opaque,
   }) : assert(userAgent != null);
 
   /// The JavaScript execution mode to be used by the webview.
@@ -433,6 +434,9 @@ class WebSettings {
   ///
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
+
+  /// If set to `false`, the webview background will be transparent.
+  final bool? opaque;
 
   @override
   String toString() {

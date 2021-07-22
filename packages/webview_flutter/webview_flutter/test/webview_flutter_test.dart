@@ -71,6 +71,27 @@ void main() {
     expect(platformWebView.javascriptMode, JavascriptMode.disabled);
   });
 
+  testWidgets('opaque', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://youtube.com',
+        opaque: false,
+      ),
+    );
+
+    final FakePlatformWebView platformWebView =
+        fakePlatformViewsController.lastCreatedView!;
+    expect(platformWebView.opaque, false);
+
+    await tester.pumpWidget(
+      const WebView(
+        initialUrl: 'https://youtube.com',
+        opaque: true,
+      ),
+    );
+    expect(platformWebView.opaque, true);
+  });
+
   testWidgets('Load url', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
@@ -940,6 +961,7 @@ class FakePlatformWebView {
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
     userAgent = params['settings']['userAgent'];
+    opaque = params['settings']['opaque'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -959,6 +981,7 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
+  bool? opaque;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -975,6 +998,9 @@ class FakePlatformWebView {
         }
         if (call.arguments['debuggingEnabled'] != null) {
           debuggingEnabled = call.arguments['debuggingEnabled'];
+        }
+        if (call.arguments['opaque'] != null) {
+          opaque = call.arguments['opaque'];
         }
         userAgent = call.arguments['userAgent'];
         break;

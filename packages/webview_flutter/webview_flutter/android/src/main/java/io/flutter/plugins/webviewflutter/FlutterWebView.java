@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -434,6 +435,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "allowsInlineMediaPlayback":
           // no-op inline media playback is always allowed on Android.
+          break;
+        case "opaque":
+          boolean opaque = (boolean) settings.get(key);
+          webView.setBackgroundColor(opaque ? Color.WHITE : Color.TRANSPARENT);
           break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);

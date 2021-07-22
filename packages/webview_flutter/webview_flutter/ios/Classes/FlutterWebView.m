@@ -348,6 +348,11 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+    } else if ([key isEqualToString:@"opaque"]) {
+      bool opaque = [settings[@"opaque"] boolValue];
+      _webView.opaque = opaque;
+      _webView.backgroundColor = opaque ? UIColor.whiteColor : UIColor.clearColor;
+      _webView.scrollView.backgroundColor = opaque ? UIColor.whiteColor : UIColor.clearColor;
     } else {
       [unknownKeys addObject:key];
     }
