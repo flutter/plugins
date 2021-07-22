@@ -11,8 +11,8 @@ import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugins.camera.types.ExposureMode;
-import io.flutter.plugins.camera.types.FocusMode;
+import io.flutter.plugins.camera.features.autofocus.FocusMode;
+import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -177,5 +177,29 @@ public class DartMessenger {
             deviceChannel.invokeMethod(eventType.method, args);
           }
         });
+  }
+
+  /**
+   * Send a success payload to a {@link MethodChannel.Result} on the main thread.
+   *
+   * @param payload The payload to send.
+   */
+  public void finish(MethodChannel.Result result, Object payload) {
+    handler.post(() -> result.success(payload));
+  }
+
+  /**
+   * Send an error payload to a {@link MethodChannel.Result} on the main thread.
+   *
+   * @param errorCode error code.
+   * @param errorMessage error message.
+   * @param errorDetails error details.
+   */
+  public void error(
+      MethodChannel.Result result,
+      String errorCode,
+      @Nullable String errorMessage,
+      @Nullable Object errorDetails) {
+    handler.post(() -> result.error(errorCode, errorMessage, errorDetails));
   }
 }

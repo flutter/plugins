@@ -19,9 +19,12 @@ import static org.mockito.Mockito.when;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.Point;
+import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationManager;
+import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
@@ -30,19 +33,27 @@ import org.mockito.Mockito;
 public class FocusPointFeatureTest {
 
   Size mockCameraBoundaries;
+  SensorOrientationFeature mockSensorOrientationFeature;
+  DeviceOrientationManager mockDeviceOrientationManager;
 
   @Before
   public void setUp() {
     this.mockCameraBoundaries = mock(Size.class);
     when(this.mockCameraBoundaries.getWidth()).thenReturn(100);
     when(this.mockCameraBoundaries.getHeight()).thenReturn(100);
+    mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
+    mockDeviceOrientationManager = mock(DeviceOrientationManager.class);
+    when(mockSensorOrientationFeature.getDeviceOrientationManager())
+        .thenReturn(mockDeviceOrientationManager);
+    when(mockDeviceOrientationManager.getLastUIOrientation())
+        .thenReturn(PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
   }
 
   @Test
   public void getDebugName_should_return_the_name_of_the_feature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegionUtils mockCameraRegions = mock(CameraRegionUtils.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
 
     assertEquals("FocusPointFeature", focusPointFeature.getDebugName());
   }
@@ -50,7 +61,8 @@ public class FocusPointFeatureTest {
   @Test
   public void getValue_should_return_null_if_not_set() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     Point actualPoint = focusPointFeature.getValue();
     assertNull(focusPointFeature.getValue());
   }
@@ -58,7 +70,8 @@ public class FocusPointFeatureTest {
   @Test
   public void getValue_should_echo_the_set_value() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(this.mockCameraBoundaries);
     Point expectedPoint = new Point(0.0, 0.0);
 
@@ -71,7 +84,8 @@ public class FocusPointFeatureTest {
   @Test
   public void setValue_should_reset_point_when_x_coord_is_null() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(this.mockCameraBoundaries);
 
     focusPointFeature.setValue(new Point(null, 0.0));
@@ -82,7 +96,8 @@ public class FocusPointFeatureTest {
   @Test
   public void setValue_should_reset_point_when_y_coord_is_null() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(this.mockCameraBoundaries);
 
     focusPointFeature.setValue(new Point(0.0, null));
@@ -93,7 +108,8 @@ public class FocusPointFeatureTest {
   @Test
   public void setValue_should_set_point_when_valid_coords_are_supplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(this.mockCameraBoundaries);
     Point point = new Point(0.0, 0.0);
 
@@ -107,7 +123,8 @@ public class FocusPointFeatureTest {
       setValue_should_determine_metering_rectangle_when_valid_boundaries_and_coords_are_supplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     Size mockedCameraBoundaries = mock(Size.class);
     focusPointFeature.setCameraBoundaries(mockedCameraBoundaries);
 
@@ -117,7 +134,12 @@ public class FocusPointFeatureTest {
       focusPointFeature.setValue(new Point(0.5, 0.5));
 
       mockedCameraRegionUtils.verify(
-          () -> CameraRegionUtils.convertPointToMeteringRectangle(mockedCameraBoundaries, 0.5, 0.5),
+          () ->
+              CameraRegionUtils.convertPointToMeteringRectangle(
+                  mockedCameraBoundaries,
+                  0.5,
+                  0.5,
+                  PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT),
           times(1));
     }
   }
@@ -126,7 +148,8 @@ public class FocusPointFeatureTest {
   public void setValue_should_throw_assertion_error_when_no_valid_boundaries_are_set() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
 
     try (MockedStatic<CameraRegionUtils> mockedCameraRegionUtils =
         Mockito.mockStatic(CameraRegionUtils.class)) {
@@ -138,7 +161,8 @@ public class FocusPointFeatureTest {
   public void setValue_should_not_determine_metering_rectangle_when_null_coords_are_set() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     Size mockedCameraBoundaries = mock(Size.class);
     focusPointFeature.setCameraBoundaries(mockedCameraBoundaries);
 
@@ -158,7 +182,8 @@ public class FocusPointFeatureTest {
       setCameraBoundaries_should_determine_metering_rectangle_when_valid_boundaries_and_coords_are_supplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(this.mockCameraBoundaries);
     focusPointFeature.setValue(new Point(0.5, 0.5));
     Size mockedCameraBoundaries = mock(Size.class);
@@ -169,7 +194,12 @@ public class FocusPointFeatureTest {
       focusPointFeature.setCameraBoundaries(mockedCameraBoundaries);
 
       mockedCameraRegionUtils.verify(
-          () -> CameraRegionUtils.convertPointToMeteringRectangle(mockedCameraBoundaries, 0.5, 0.5),
+          () ->
+              CameraRegionUtils.convertPointToMeteringRectangle(
+                  mockedCameraBoundaries,
+                  0.5,
+                  0.5,
+                  PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT),
           times(1));
     }
   }
@@ -177,7 +207,8 @@ public class FocusPointFeatureTest {
   @Test
   public void checkIsSupported_should_return_false_when_max_regions_is_null() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(new Size(100, 100));
 
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(null);
@@ -188,7 +219,8 @@ public class FocusPointFeatureTest {
   @Test
   public void checkIsSupported_should_return_false_when_max_regions_is_zero() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(new Size(100, 100));
 
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(0);
@@ -199,7 +231,8 @@ public class FocusPointFeatureTest {
   @Test
   public void checkIsSupported_should_return_true_when_max_regions_is_bigger_then_zero() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(new Size(100, 100));
 
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
@@ -211,7 +244,8 @@ public class FocusPointFeatureTest {
   public void updateBuilder_should_return_when_checkIsSupported_is_false() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
 
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(0);
 
@@ -226,7 +260,8 @@ public class FocusPointFeatureTest {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
     CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     Size mockedCameraBoundaries = mock(Size.class);
     MeteringRectangle mockedMeteringRectangle = mock(MeteringRectangle.class);
 
@@ -236,7 +271,10 @@ public class FocusPointFeatureTest {
           .when(
               () ->
                   CameraRegionUtils.convertPointToMeteringRectangle(
-                      mockedCameraBoundaries, 0.5, 0.5))
+                      mockedCameraBoundaries,
+                      0.5,
+                      0.5,
+                      PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT))
           .thenReturn(mockedMeteringRectangle);
       focusPointFeature.setCameraBoundaries(mockedCameraBoundaries);
       focusPointFeature.setValue(new Point(0.5, 0.5));
@@ -254,7 +292,8 @@ public class FocusPointFeatureTest {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
     CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     MeteringRectangle mockedMeteringRectangle = mock(MeteringRectangle.class);
 
     focusPointFeature.updateBuilder(mockCaptureRequestBuilder);
@@ -267,7 +306,8 @@ public class FocusPointFeatureTest {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     when(mockCameraProperties.getControlMaxRegionsAutoFocus()).thenReturn(1);
     CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
-    FocusPointFeature focusPointFeature = new FocusPointFeature(mockCameraProperties);
+    FocusPointFeature focusPointFeature =
+        new FocusPointFeature(mockCameraProperties, mockSensorOrientationFeature);
     focusPointFeature.setCameraBoundaries(this.mockCameraBoundaries);
 
     focusPointFeature.setValue(null);

@@ -96,11 +96,10 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
   }
 
-  /// The device orientation changed.
+  /// The ui orientation changed.
   ///
   /// Implementations for this:
   /// - Should support all 4 orientations.
-  /// - Should not emit new values when the screen orientation is locked.
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     throw UnimplementedError(
         'onDeviceOrientationChanged() is not implemented.');

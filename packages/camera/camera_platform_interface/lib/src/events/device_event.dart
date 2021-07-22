@@ -20,8 +20,7 @@ import 'package:flutter/services.dart';
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
 abstract class DeviceEvent {}
 
-/// The [DeviceOrientationChangedEvent] is fired every time the user changes the
-/// physical orientation of the device.
+/// The [DeviceOrientationChangedEvent] is fired every time the orientation of the device UI changes.
 class DeviceOrientationChangedEvent extends DeviceEvent {
   /// The new orientation of the device
   final DeviceOrientation orientation;

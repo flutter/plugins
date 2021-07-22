@@ -8,10 +8,12 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
 import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
+import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 
 /** Exposure point controls where in the frame exposure metering will come from. */
 public class ExposurePointFeature extends CameraFeature<Point> {
@@ -19,14 +21,17 @@ public class ExposurePointFeature extends CameraFeature<Point> {
   private Size cameraBoundaries;
   private Point exposurePoint;
   private MeteringRectangle exposureRectangle;
+  private final SensorOrientationFeature sensorOrientationFeature;
 
   /**
    * Creates a new instance of the {@link ExposurePointFeature}.
    *
    * @param cameraProperties Collection of the characteristics for the current camera device.
    */
-  public ExposurePointFeature(CameraProperties cameraProperties) {
+  public ExposurePointFeature(
+      CameraProperties cameraProperties, SensorOrientationFeature sensorOrientationFeature) {
     super(cameraProperties);
+    this.sensorOrientationFeature = sensorOrientationFeature;
   }
 
   /**
@@ -80,9 +85,15 @@ public class ExposurePointFeature extends CameraFeature<Point> {
     if (this.exposurePoint == null) {
       this.exposureRectangle = null;
     } else {
+      PlatformChannel.DeviceOrientation orientation =
+          this.sensorOrientationFeature.getLockedCaptureOrientation();
+      if (orientation == null) {
+        orientation =
+            this.sensorOrientationFeature.getDeviceOrientationManager().getLastUIOrientation();
+      }
       this.exposureRectangle =
           CameraRegionUtils.convertPointToMeteringRectangle(
-              this.cameraBoundaries, this.exposurePoint.x, this.exposurePoint.y);
+              this.cameraBoundaries, this.exposurePoint.x, this.exposurePoint.y, orientation);
     }
   }
 }

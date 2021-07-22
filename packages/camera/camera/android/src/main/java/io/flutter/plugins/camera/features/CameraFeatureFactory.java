@@ -84,9 +84,13 @@ public interface CameraFeatureFactory {
    *
    * @param cameraProperties instance of the CameraProperties class containing information about the
    *     cameras features.
+   * @param sensorOrientationFeature instance of the SensorOrientationFeature class containing
+   *     information about the sensor and device orientation.
    * @return newly created instance of the FocusPointFeature class.
    */
-  FocusPointFeature createFocusPointFeature(@NonNull CameraProperties cameraProperties);
+  FocusPointFeature createFocusPointFeature(
+      @NonNull CameraProperties cameraProperties,
+      @NonNull SensorOrientationFeature sensorOrientationFeature);
 
   /**
    * Creates a new instance of the FPS range feature.
@@ -126,9 +130,13 @@ public interface CameraFeatureFactory {
    *
    * @param cameraProperties instance of the CameraProperties class containing information about the
    *     cameras features.
+   * @param sensorOrientationFeature instance of the SensorOrientationFeature class containing
+   *     information about the sensor and device orientation.
    * @return newly created instance of the ExposurePointFeature class.
    */
-  ExposurePointFeature createExposurePointFeature(@NonNull CameraProperties cameraProperties);
+  ExposurePointFeature createExposurePointFeature(
+      @NonNull CameraProperties cameraProperties,
+      @NonNull SensorOrientationFeature sensorOrientationFeature);
 
   /**
    * Creates a new instance of the noise reduction feature.
