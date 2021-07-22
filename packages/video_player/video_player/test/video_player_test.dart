@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
+  @override
+  Map<String, String> get httpHeaders => {};
 
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
@@ -200,22 +203,60 @@ void main() {
         );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-            'https://127.0.0.1');
         expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint, null);
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          null,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
       });
 
       test('network with hint', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
-            'https://127.0.0.1',
-            formatHint: VideoFormat.dash);
+          'https://127.0.0.1',
+          formatHint: VideoFormat.dash,
+        );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-            'https://127.0.0.1');
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
-            'dash');
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          'dash',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
+      });
+
+      test('network with some headers', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          httpHeaders: {'Authorization': 'Bearer token'},
+        );
+        await controller.initialize();
+
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          null,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {'Authorization': 'Bearer token'},
+        );
       });
 
       test('init errors', () async {
@@ -275,6 +316,23 @@ void main() {
               .calls[fakeVideoPlayerPlatform.calls.length - 2],
           'play');
       expect(fakeVideoPlayerPlatform.calls.last, 'setPlaybackSpeed');
+    });
+
+    test('play restarts from beginning if video is at end', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+      await controller.initialize();
+      const Duration nonzeroDuration = Duration(milliseconds: 100);
+      controller.value = controller.value.copyWith(duration: nonzeroDuration);
+      await controller.seekTo(nonzeroDuration);
+      expect(controller.value.isPlaying, isFalse);
+      expect(controller.value.position, nonzeroDuration);
+
+      await controller.play();
+
+      expect(controller.value.isPlaying, isTrue);
+      expect(controller.value.position, Duration.zero);
     });
 
     test('setLooping', () async {
@@ -418,6 +476,8 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
+        const Duration nonzeroDuration = Duration(milliseconds: 100);
+        controller.value = controller.value.copyWith(duration: nonzeroDuration);
         expect(controller.value.isPlaying, isFalse);
         await controller.play();
         expect(controller.value.isPlaying, isTrue);
@@ -429,7 +489,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(controller.value.isPlaying, isFalse);
-        expect(controller.value.position, controller.value.duration);
+        expect(controller.value.position, nonzeroDuration);
       });
 
       testWidgets('buffering status', (WidgetTester tester) async {
@@ -796,7 +856,16 @@ class FakeEventsChannel {
   }
 
   void _sendMessage(ByteData data) {
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-        eventsMethodChannel.name, data, (ByteData? data) {});
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+            eventsMethodChannel.name, data, (ByteData? data) {});
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

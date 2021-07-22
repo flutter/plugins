@@ -1,6 +1,14 @@
-## 2.0.6
+## NEXT
+
+* Add iOS unit test target.
+
+## 2.0.7
 
 * Add `prefix` named argument to `getInstance` method.
+
+## 2.0.6
+
+* Migrate maven repository from jcenter to mavenCentral.
 
 ## 2.0.5
 
