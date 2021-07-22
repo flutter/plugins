@@ -7,7 +7,6 @@
 - shared_preferences/shared_preferences
 - url_launcher/url_launcher
 - video_player/video_player
-- webview_flutter
 
 # Deprecated; no plan to backfill the missing files
 - android_intent

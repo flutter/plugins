@@ -18,7 +18,8 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('initalUrl', (WidgetTester tester) async {
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
+  testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     await tester.pumpWidget(
@@ -36,8 +37,9 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
-  });
+  }, skip: true);
 
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -57,8 +59,9 @@ void main() {
     await controller.loadUrl('https://www.google.com/');
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
-  });
+  }, skip: true);
 
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -98,7 +101,7 @@ void main() {
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
-  });
+  }, skip: Platform.isAndroid);
 
   testWidgets('JavaScriptChannel', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -274,6 +277,7 @@ void main() {
     expect(customUserAgent2, 'Custom_User_Agent2');
   });
 
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('use default platform userAgent after webView is rebuilt',
       (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -323,7 +327,7 @@ void main() {
 
     final String customUserAgent2 = await _getUserAgent(controller);
     expect(customUserAgent2, defaultPlatformUserAgent);
-  });
+  }, skip: Platform.isAndroid);
 
   group('Video playback policy', () {
     late String videoTestBase64;
@@ -532,6 +536,7 @@ void main() {
       expect(fullScreen, _webviewBool(false));
     });
 
+    // allowsInlineMediaPlayback is a noop on Android, so it is skipped.
     testWidgets(
         'Video plays full screen when allowsInlineMediaPlayback is false',
         (WidgetTester tester) async {
@@ -581,7 +586,7 @@ void main() {
       String fullScreen =
           await controller.evaluateJavascript('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
-    });
+    }, skip: Platform.isAndroid);
   });
 
   group('Audio playback policy', () {
@@ -796,6 +801,7 @@ void main() {
   });
 
   group('Programmatic Scroll', () {
+    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
@@ -870,7 +876,7 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(scrollPosX, X_SCROLL * 2);
       expect(scrollPosY, Y_SCROLL * 2);
-    });
+    }, skip: Platform.isAndroid);
   });
 
   group('SurfaceAndroidWebView', () {
@@ -882,6 +888,7 @@ void main() {
       WebView.platform = null;
     });
 
+    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
       final String scrollTestPage = '''
         <!DOCTYPE html>
@@ -948,8 +955,9 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: !Platform.isAndroid);
+    }, skip: true);
 
+    // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('inputs are scrolled into view when focused',
         (WidgetTester tester) async {
       final String scrollTestPage = '''
@@ -1053,7 +1061,7 @@ void main() {
           lastInputClientRectRelativeToViewport['right'] <=
               viewportRectRelativeToViewport['right'],
           isTrue);
-    }, skip: !Platform.isAndroid);
+    }, skip: true);
   });
 
   group('NavigationDelegate', () {
@@ -1272,18 +1280,20 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    await controller.evaluateJavascript('window.open("about:blank", "_blank")');
+    await controller
+        .evaluateJavascript('window.open("https://flutter.dev/", "_blank")');
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, 'about:blank');
+    expect(currentUrl, 'https://flutter.dev/');
   });
 
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =
           Completer<WebViewController>();
-      final Completer<void> pageLoaded = Completer<void>();
+      Completer<void> pageLoaded = Completer<void>();
       await tester.pumpWidget(
         Directionality(
           textDirection: TextDirection.ltr,
@@ -1301,15 +1311,22 @@ void main() {
         ),
       );
       final WebViewController controller = await controllerCompleter.future;
-      await controller
-          .evaluateJavascript('window.open("https://www.google.com")');
+      expect(controller.currentUrl(), completion('https://flutter.dev/'));
       await pageLoaded.future;
+      pageLoaded = Completer<void>();
+
+      await controller
+          .evaluateJavascript('window.open("https://www.google.com/")');
+      await pageLoaded.future;
+      pageLoaded = Completer<void>();
       expect(controller.currentUrl(), completion('https://www.google.com/'));
 
+      expect(controller.canGoBack(), completion(true));
       await controller.goBack();
-      expect(controller.currentUrl(), completion('https://www.flutter.dev'));
+      await pageLoaded.future;
+      expect(controller.currentUrl(), completion('https://flutter.dev/'));
     },
-    skip: !Platform.isAndroid,
+    skip: true,
   );
 
   testWidgets(
