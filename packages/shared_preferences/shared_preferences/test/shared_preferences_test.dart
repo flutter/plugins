@@ -40,6 +40,7 @@ void main() {
     tearDown(() async {
       await preferences.clear();
       await store.clear();
+      SharedPreferences.destroy();
     });
 
     test('reading', () async {
@@ -189,25 +190,148 @@ void main() {
 
     test('writing copy of strings list', () async {
       final List<String> myList = <String>[];
-      await preferences.setStringList("myList", myList);
-      myList.add("foobar");
+      await preferences.setStringList('myList', myList);
+      myList.add('foobar');
 
       final List<String> cachedList = preferences.getStringList('myList')!;
       expect(cachedList, <String>[]);
 
-      cachedList.add("foobar2");
+      cachedList.add('foobar2');
 
       expect(preferences.getStringList('myList'), <String>[]);
     });
   });
 
-  test('calling mock initial values with non-prefixed keys succeeds', () async {
-    SharedPreferences.setMockInitialValues(<String, Object>{
-      'test': 'foo',
+  group('Mock with non-prefixed', () {
+    late SharedPreferences prefs;
+
+    setUp(() async {
+      SharedPreferences.setMockInitialValues(<String, String>{
+        'test': 'foo',
+      });
+      prefs = await SharedPreferences.getInstance();
     });
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    final String? value = prefs.getString('test');
-    expect(value, 'foo');
+
+    tearDown(() {
+      SharedPreferences.destroy();
+    });
+
+    test('calling mock initial values with non-prefixed keys succeeds',
+        () async {
+      final String value = prefs.getString('test')!;
+      expect(value, 'foo');
+    });
+  });
+
+  group('Custom prefix', () {
+    const Map<String, Object> kTestValues = <String, Object>{
+      'flutter.String': 'hello world',
+      'flutter.bool': true,
+      'flutter.int': 42,
+      'flutter.double': 3.14159,
+      'flutter.List': <String>['foo', 'bar'],
+      'custom.customString': 'hello custom prefix',
+      'custom.customBool': false,
+      'custom.customInt': 24,
+      'custom.customDouble': 2.71828,
+      'custom.customList': <String>['boo', 'doo'],
+    };
+
+    tearDown(() {
+      SharedPreferences.destroy();
+    });
+
+    test('read keys with default prefix only', () async {
+      FakeSharedPreferencesStore store =
+          FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences = await SharedPreferences.getInstance();
+
+      expect(preferences.prefix, 'flutter.');
+
+      expect(preferences.getKeys(),
+          Set<String>.from(['String', 'bool', 'int', 'double', 'List']));
+
+      expect(preferences.get('String'), kTestValues['flutter.String']);
+      expect(preferences.get('bool'), kTestValues['flutter.bool']);
+      expect(preferences.get('int'), kTestValues['flutter.int']);
+      expect(preferences.get('double'), kTestValues['flutter.double']);
+      expect(preferences.get('List'), kTestValues['flutter.List']);
+
+      expect(preferences.get('customString'), null);
+      expect(preferences.get('customBool'), null);
+      expect(preferences.get('customInt'), null);
+      expect(preferences.get('customDouble'), null);
+      expect(preferences.get('customList'), null);
+    });
+
+    test('read keys with custom prefix only', () async {
+      FakeSharedPreferencesStore store =
+          FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences =
+          await SharedPreferences.getInstance(prefix: 'custom.');
+
+      expect(preferences.prefix, 'custom.');
+
+      expect(
+          preferences.getKeys(),
+          Set<String>.from([
+            'customString',
+            'customBool',
+            'customInt',
+            'customDouble',
+            'customList'
+          ]));
+
+      expect(preferences.get('String'), null);
+      expect(preferences.get('bool'), null);
+      expect(preferences.get('int'), null);
+      expect(preferences.get('double'), null);
+      expect(preferences.get('List'), null);
+
+      expect(
+          preferences.get('customString'), kTestValues['custom.customString']);
+      expect(preferences.get('customBool'), kTestValues['custom.customBool']);
+      expect(preferences.get('customInt'), kTestValues['custom.customInt']);
+      expect(
+          preferences.get('customDouble'), kTestValues['custom.customDouble']);
+      expect(preferences.get('customList'), kTestValues['custom.customList']);
+    });
+
+    test('switch prefix should throw exception', () async {
+      FakeSharedPreferencesStore store = FakeSharedPreferencesStore({});
+      SharedPreferencesStorePlatform.instance = store;
+      await SharedPreferences.getInstance();
+
+      expect(
+        () async => await SharedPreferences.getInstance(prefix: 'pre'),
+        throwsA(isInstanceOf<SharedPreferencesException>()),
+      );
+    });
+
+    test('no prefix should load all keys from device as is', () async {
+      FakeSharedPreferencesStore store =
+          FakeSharedPreferencesStore(kTestValues);
+      SharedPreferencesStorePlatform.instance = store;
+      SharedPreferences preferences =
+          await SharedPreferences.getInstance(prefix: '');
+
+      expect(
+          preferences.getKeys(),
+          Set<String>.from([
+            'flutter.String',
+            'flutter.bool',
+            'flutter.int',
+            'flutter.double',
+            'flutter.List',
+            'custom.customString',
+            'custom.customBool',
+            'custom.customInt',
+            'custom.customDouble',
+            'custom.customList'
+          ]));
+    });
   });
 }
 

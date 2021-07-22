@@ -19,7 +19,8 @@ import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
-  static const String _prefix = 'flutter.';
+  static const _DEFAULT_PREFIX = 'flutter.';
+  static String _prefix = _DEFAULT_PREFIX;
   static Completer<SharedPreferences>? _completer;
   static bool _manualDartRegistrationNeeded = true;
 
@@ -48,8 +49,11 @@ class SharedPreferences {
   ///
   /// Because this is reading from disk, it shouldn't be awaited in
   /// performance-sensitive blocks.
-  static Future<SharedPreferences> getInstance() async {
+  static Future<SharedPreferences> getInstance(
+      {String prefix = _DEFAULT_PREFIX}) async {
     if (_completer == null) {
+      _prefix = prefix;
+      _completer = Completer<SharedPreferences>();
       final completer = Completer<SharedPreferences>();
       try {
         final Map<String, Object> preferencesMap =
@@ -65,7 +69,18 @@ class SharedPreferences {
       }
       _completer = completer;
     }
+    // The user is trying to change the prefix
+    // after the instance has been initialized.
+    else if (prefix != _prefix) {
+      throw SharedPreferencesException(
+          "prefix cannon be changed once the inctance has been initialized.");
+    }
     return _completer!.future;
+  }
+
+  /// Prefix getter, defaults to `flutter.`
+  String get prefix {
+    return _prefix;
   }
 
   /// The cache that holds all preferences.
@@ -182,8 +197,9 @@ class SharedPreferences {
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
     for (String key in fromSystem.keys) {
-      assert(key.startsWith(_prefix));
-      preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
+      if (key.startsWith(_prefix)) {
+        preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
+      }
     }
     return preferencesMap;
   }
@@ -205,4 +221,19 @@ class SharedPreferences {
         InMemorySharedPreferencesStore.withData(newValues);
     _completer = null;
   }
+
+  /// Destroy the instance.
+  @visibleForTesting
+  static void destroy() {
+    _completer = null;
+  }
+}
+
+/// SharedPreferencesException class.
+class SharedPreferencesException implements Exception {
+  /// Exception message.
+  final String message;
+
+  /// SharedPreferencesException constructor.
+  SharedPreferencesException(this.message);
 }
