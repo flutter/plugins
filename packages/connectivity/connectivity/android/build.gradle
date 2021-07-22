@@ -36,4 +36,16 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+    testOptions {
+        unitTests.all {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
 }

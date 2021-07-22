@@ -36,4 +36,16 @@ android {
         implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.exifinterface:exifinterface:1.3.0'
     }
+
+    testOptions {
+        unitTests.all {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
 }

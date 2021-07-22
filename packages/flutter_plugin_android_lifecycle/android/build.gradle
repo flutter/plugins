@@ -36,6 +36,18 @@ android {
     dependencies {
         implementation "androidx.annotation:annotation:1.1.0"
     }
+
+    testOptions {
+        unitTests.all {
+            includeAndroidResources = true
+            returnDefaultValues = true
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
 }
 
 dependencies {
