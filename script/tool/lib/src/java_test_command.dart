@@ -65,7 +65,7 @@ class JavaTestCommand extends PackageLoopingCommand {
       }
 
       final int exitCode = await processRunner.runAndStream(
-          gradleFile.path, <String>['testDebugUnitTest', '--info'],
+          gradleFile.path, <String>['testDebugUnitTest'],
           workingDir: androidDirectory);
       if (exitCode != 0) {
         errors.add('$exampleName tests failed.');
