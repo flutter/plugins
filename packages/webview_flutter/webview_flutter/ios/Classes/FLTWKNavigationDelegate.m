@@ -113,4 +113,31 @@
   [self onWebResourceError:contentProcessTerminatedError];
 }
 
+- (void)webView:(WKWebView *)webView
+    didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
+                    completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition,
+                                                NSURLCredential *_Nullable))completionHandler {
+  NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
+  [_methodChannel
+      invokeMethod:@"onReceivedHttpAuthRequest"
+         arguments:@{
+           @"host" : protectionSpace.host,
+           @"realm" : protectionSpace.realm ? protectionSpace.realm : @""
+         }
+            result:^(id _Nullable result) {
+              if (result && [result isKindOfClass:[NSDictionary class]]) {
+                NSString *username = result[@"username"];
+                NSString *password = result[@"password"];
+                if (username && password) {
+                  completionHandler(
+                      NSURLSessionAuthChallengeUseCredential,
+                      [NSURLCredential credentialWithUser:username
+                                                 password:password
+                                              persistence:NSURLCredentialPersistenceForSession]);
+                  return;
+                }
+              }
+              completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, nil);
+            }];
+}
 @end
