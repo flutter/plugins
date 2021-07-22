@@ -70,7 +70,7 @@ task:
           CHANNEL: "stable"
       tool_script:
         - cd script/tool
-        - dart analyze --fatal-infos
+        - dart analyze --fatal-infos --custom_analysis=configs/custom_analysis.yaml
       script:
         - ./script/tool_runner.sh analyze
     ### Android tasks ###
