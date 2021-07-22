@@ -206,6 +206,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   CameraController(
     this.description,
     this.resolutionPreset, {
+    this.enableTakePictureWithMaxResolution = false,
     this.enableAudio = true,
     this.imageFormatGroup,
   }) : super(const CameraValue.uninitialized());
@@ -220,6 +221,11 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// See also: [ResolutionPreset].
   final ResolutionPreset resolutionPreset;
+
+  /// Whether to use max resolution for takePicture method,
+  /// It may be higher than ResolutionPreset.max, because the max resolution is for still image.
+  /// When the value is false, resolution set in resolutionPreset will be used for takePicture.
+  final bool enableTakePictureWithMaxResolution;
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
@@ -272,6 +278,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       _cameraId = await CameraPlatform.instance.createCamera(
         description,
         resolutionPreset,
+        enableTakePictureWithMaxResolution: enableTakePictureWithMaxResolution,
         enableAudio: enableAudio,
       );
 
