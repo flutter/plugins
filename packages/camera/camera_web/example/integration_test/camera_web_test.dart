@@ -481,11 +481,39 @@ void main() {
       );
     });
 
-    testWidgets('takePicture throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.takePicture(cameraId),
-        throwsUnimplementedError,
-      );
+    group('takePicture', () {
+      testWidgets(
+          'throws CameraException '
+          'with notFound error '
+          'if the camera does not exist', (tester) async {
+        expect(
+          () => CameraPlatform.instance.initializeCamera(cameraId),
+          throwsA(
+            isA<CameraException>().having(
+              (e) => e.code,
+              'code',
+              CameraErrorCodes.notFound,
+            ),
+          ),
+        );
+      });
+
+      testWidgets('captures a picture', (tester) async {
+        final camera = MockCamera();
+        final capturedPicture = MockXFile();
+
+        when(camera.takePicture)
+            .thenAnswer((_) => Future.value(capturedPicture));
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        final picture = await CameraPlatform.instance.takePicture(cameraId);
+
+        verify(camera.takePicture).called(1);
+
+        expect(picture, equals(capturedPicture));
+      });
     });
 
     testWidgets('prepareForVideoRecording throws UnimplementedError',
