@@ -17,6 +17,7 @@ import android.webkit.WebStorage;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -77,6 +78,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     public void onProgressChanged(WebView view, int progress) {
       flutterWebViewClient.onLoadingProgress(progress);
     }
+  }
+
+  @VisibleForTesting
+  FlutterWebView(WebView webView, MethodChannel methodChannel, Handler platformThreadHandler) {
+    this.webView = webView;
+    this.methodChannel = methodChannel;
+    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
+    this.platformThreadHandler = platformThreadHandler;
   }
 
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
@@ -193,6 +202,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "postUrl":
+        postUrl(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -255,6 +267,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       headers = Collections.emptyMap();
     }
     webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  public void postUrl(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+    byte[] postData = (byte[]) request.get("postData");
+    webView.postUrl(url, postData);
     result.success(null);
   }
 

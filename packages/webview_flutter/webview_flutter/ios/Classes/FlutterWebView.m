@@ -68,6 +68,12 @@
   FLTWKProgressionDelegate* _progressionDelegate;
 }
 
+- (instancetype)initWithWebView:(FLTWKWebView*)webView {
+  self = [super init];
+  _webView = webView;
+  return self;
+}
+
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
@@ -137,6 +143,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"postUrl"]) {
+    [self onPostUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -185,6 +193,17 @@
   if (![self loadRequest:[call arguments]]) {
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    result(nil);
+  }
+}
+
+- (void)onPostUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  if (![self postRequest:[call arguments]]) {
+    result([FlutterError
+        errorWithCode:@"postUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
@@ -446,6 +465,33 @@
   }
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
   [request setAllHTTPHeaderFields:headers];
+  [_webView loadRequest:request];
+  return true;
+}
+
+- (bool)postRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* url = request[@"url"];
+  if ([url isKindOfClass:[NSString class]]) {
+    id postData = request[@"postData"];
+    if ([postData isKindOfClass:[FlutterStandardTypedData class]]) {
+      return [self postUrl:url withBody:postData];
+    }
+  }
+  return false;
+}
+
+- (bool)postUrl:(NSString*)url withBody:(FlutterStandardTypedData*)postData {
+  NSURL* nsUrl = [NSURL URLWithString:url];
+  if (!nsUrl) {
+    return false;
+  }
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setHTTPMethod:@"POST"];
+  [request setHTTPBody:[postData data]];
   [_webView loadRequest:request];
   return true;
 }

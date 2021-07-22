@@ -37,5 +37,6 @@ android {
         implementation 'androidx.annotation:annotation:1.0.0'
         implementation 'androidx.webkit:webkit:1.0.0'
         testImplementation 'junit:junit:4.12'
+        testImplementation 'org.mockito:mockito-core:3.10.0'
     }
 }
