@@ -1,6 +1,10 @@
+## 0.8.1+6
+
+* Remove references to the Android V1 embedding.
+
 ## 0.8.1+5
 
-* Make sure the `setFocusPoint` and `setExposurePoint` coordinates work correctly in all orientations on iOS (instead of only in portrait mode). 
+* Make sure the `setFocusPoint` and `setExposurePoint` coordinates work correctly in all orientations on iOS (instead of only in portrait mode).
 
 ## 0.8.1+4
 

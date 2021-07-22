@@ -1,3 +1,7 @@
+## 2.1.11
+
+* Remove references to the Android V1 embedding.
+
 ## 2.1.10
 
 * Ensure video pauses correctly when it finishes.

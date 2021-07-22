@@ -4,20 +4,7 @@
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="video_player_example"
-    android:name="io.flutter.app.FlutterApplication"
     android:networkSecurityConfig="@xml/network_security_config">
-    <activity
-      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:exported="true"
-      android:hardwareAccelerated="true"
-      android:launchMode="singleTop"
-      android:name=".EmbeddingV1Activity"
-      android:theme="@style/LaunchTheme"
-      android:windowSoftInputMode="adjustResize">
-      <meta-data
-        android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
-        android:value="true"/>
-    </activity>
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"

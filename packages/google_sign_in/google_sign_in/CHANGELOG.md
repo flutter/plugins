@@ -1,3 +1,7 @@
+## 5.0.6
+
+* Remove references to the Android V1 embedding.
+
 ## 5.0.5
 
 * Add iOS unit and UI integration test targets.

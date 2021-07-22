@@ -49,8 +49,6 @@ public class AlarmService extends JobIntentService {
    * <ul>
    *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
    *       handle does not resolve to a Dart callback then this method does nothing.
-   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
-   *       PluginRegistrantException} will be thrown.
    * </ul>
    */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
@@ -87,23 +85,6 @@ public class AlarmService extends JobIntentService {
    */
   public static void setCallbackDispatcher(Context context, long callbackHandle) {
     FlutterBackgroundExecutor.setCallbackDispatcher(context, callbackHandle);
-  }
-
-  /**
-   * Sets the {@link io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback} used to
-   * register the plugins used by an application with the newly spawned background isolate.
-   *
-   * <p>This should be invoked in {@link Application.onCreate} with {@link
-   * GeneratedPluginRegistrant} in applications using the V1 embedding API in order to use other
-   * plugins in the background isolate. For applications using the V2 embedding API, it is not
-   * necessary to set a {@link io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback} as
-   * plugins are registered automatically.
-   */
-  @SuppressWarnings("deprecation")
-  public static void setPluginRegistrant(
-      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
-    // Indirectly set in FlutterBackgroundExecutor for backwards compatibility.
-    FlutterBackgroundExecutor.setPluginRegistrant(callback);
   }
 
   private static void scheduleAlarm(

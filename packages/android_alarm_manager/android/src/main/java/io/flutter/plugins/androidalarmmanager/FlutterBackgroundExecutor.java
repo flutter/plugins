@@ -46,20 +46,6 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
   private AtomicBoolean isCallbackDispatcherReady = new AtomicBoolean(false);
 
   /**
-   * Sets the {@code io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback} used to
-   * register plugins with the newly spawned isolate.
-   *
-   * <p>Note: this is only necessary for applications using the V1 engine embedding API as plugins
-   * are automatically registered via reflection in the V2 engine embedding API. If not set, alarm
-   * callbacks will not be able to utilize functionality from other plugins.
-   */
-  @SuppressWarnings("deprecation")
-  public static void setPluginRegistrant(
-      io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback callback) {
-    pluginRegistrantCallback = callback;
-  }
-
-  /**
    * Sets the Dart callback handle for the Dart method that is responsible for initializing the
    * background Dart isolate, preparing it to receive Dart callback tasks requests.
    */
@@ -81,19 +67,15 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall call, Result result) {
     String method = call.method;
-    try {
-      if (method.equals("AlarmService.initialized")) {
-        // This message is sent by the background method channel as soon as the background isolate
-        // is running. From this point forward, the Android side of this plugin can send
-        // callback handles through the background method channel, and the Dart side will execute
-        // the Dart methods corresponding to those callback handles.
-        onInitialized();
-        result.success(true);
-      } else {
-        result.notImplemented();
-      }
-    } catch (PluginRegistrantException e) {
-      result.error("error", "AlarmManager error: " + e.getMessage(), null);
+    if (method.equals("AlarmService.initialized")) {
+      // This message is sent by the background method channel as soon as the background isolate
+      // is running. From this point forward, the Android side of this plugin can send
+      // callback handles through the background method channel, and the Dart side will execute
+      // the Dart methods corresponding to those callback handles.
+      onInitialized();
+      result.success(true);
+    } else {
+      result.notImplemented();
     }
   }
 
@@ -115,8 +97,6 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
    * <ul>
    *   <li>The given callback must correspond to a registered Dart callback. If the handle does not
    *       resolve to a Dart callback then this method does nothing.
-   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
-   *       PluginRegistrantException} will be thrown.
    * </ul>
    */
   public void startBackgroundIsolate(Context context) {
@@ -143,8 +123,6 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
    * <ul>
    *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
    *       handle does not resolve to a Dart callback then this method does nothing.
-   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
-   *       PluginRegistrantException} will be thrown.
    * </ul>
    */
   public void startBackgroundIsolate(Context context, long callbackHandle) {

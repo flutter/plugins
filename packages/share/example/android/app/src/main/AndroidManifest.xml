@@ -3,14 +3,7 @@
 
     <uses-permission android:name="android.permission.INTERNET"/>
 
-    <application android:name="io.flutter.app.FlutterApplication" android:label="share_example" android:icon="@mipmap/ic_launcher">
-        <activity android:name=".EmbeddingV1Activity"
-                  android:launchMode="singleTop"
-                  android:theme="@android:style/Theme.Black.NoTitleBar"
-                  android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-                  android:hardwareAccelerated="true"
-                  android:windowSoftInputMode="adjustResize">
-        </activity>
+    <application android:label="share_example" android:icon="@mipmap/ic_launcher">
         <activity android:name="io.flutter.embedding.android.FlutterActivity"
             android:theme="@android:style/Theme.Black.NoTitleBar"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
