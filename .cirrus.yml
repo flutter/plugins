@@ -152,7 +152,7 @@ task:
         # No integration tests to run:
         #   image_picker/image_picker - Native UI is the critical functionality
         #   espresso - No Dart code, so no integration tests
-        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "camera/camera,google_sign_in/google_sign_in,in_app_purchase/in_app_purchase,in_app_purchase_android,quick_actions,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,webview_flutter,android_intent,connectivity/connectivity,device_info/device_info,sensors,share,wifi_info_flutter/wifi_info_flutter,image_picker/image_picker,espresso"
+        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "camera/camera,google_sign_in/google_sign_in,in_app_purchase/in_app_purchase,in_app_purchase_android,quick_actions,shared_preferences/shared_preferences,url_launcher/url_launcher,video_player/video_player,android_intent,connectivity/connectivity,device_info/device_info,sensors,share,wifi_info_flutter/wifi_info_flutter,image_picker/image_picker,espresso"
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
