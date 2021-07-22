@@ -25,7 +25,6 @@
 - integration_test
 - ios_platform_images
 - local_auth
-- plugin_platform_interface
 - quick_actions
 - shared_preferences
 - url_launcher
