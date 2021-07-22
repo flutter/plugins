@@ -361,7 +361,9 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Widget buildPreview(int cameraId) {
-    throw UnimplementedError('buildPreview() is not implemented.');
+    return HtmlElementView(
+      viewType: getCamera(cameraId).getViewType(),
+    );
   }
 
   @override
