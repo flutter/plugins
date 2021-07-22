@@ -21,7 +21,6 @@
 - google_sign_in
 - image_picker
 - in_app_purchase
-- integration_test
 - ios_platform_images
 - local_auth
 - quick_actions
