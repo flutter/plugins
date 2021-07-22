@@ -196,6 +196,9 @@ class Camera {
     }
   }
 
+  /// Returns the registered view type of the camera.
+  String getViewType() => _getViewType(textureId);
+
   /// Disposes the camera by stopping the camera stream
   /// and reloading the camera source.
   void dispose() {
