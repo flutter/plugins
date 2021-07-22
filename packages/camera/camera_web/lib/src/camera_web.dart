@@ -13,6 +13,7 @@ import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 /// The web implementation of [CameraPlatform].
 ///
@@ -41,6 +42,18 @@ class CameraPlugin extends CameraPlatform {
   /// Populated in [availableCameras].
   @visibleForTesting
   final camerasMetadata = <CameraDescription, CameraMetadata>{};
+
+  /// The controller used to broadcast different camera events.
+  ///
+  /// It is `broadcast` as multiple controllers may subscribe
+  /// to different stream views of this controller.
+  @visibleForTesting
+  final cameraEventStreamController = StreamController<CameraEvent>.broadcast();
+
+  /// Returns a stream of camera events for the given [cameraId].
+  Stream<CameraEvent> _cameraEvents(int cameraId) =>
+      cameraEventStreamController.stream
+          .where((event) => event.cameraId == cameraId);
 
   /// The current browser window used to access media devices.
   @visibleForTesting
@@ -186,14 +199,34 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> initializeCamera(
     int cameraId, {
+    // The image format group is currently not supported.
     ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
-  }) {
-    throw UnimplementedError('initializeCamera() is not implemented.');
+  }) async {
+    final camera = getCamera(cameraId);
+
+    await camera.initialize();
+    await camera.play();
+
+    final cameraSize = await camera.getVideoSize();
+
+    cameraEventStreamController.add(
+      CameraInitializedEvent(
+        cameraId,
+        cameraSize.width,
+        cameraSize.height,
+        // TODO(camera_web): Add support for exposure mode and point (https://github.com/flutter/flutter/issues/86857).
+        ExposureMode.auto,
+        false,
+        // TODO(camera_web): Add support for focus mode and point (https://github.com/flutter/flutter/issues/86858).
+        FocusMode.auto,
+        false,
+      ),
+    );
   }
 
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
-    throw UnimplementedError('onCameraInitialized() is not implemented.');
+    return _cameraEvents(cameraId).whereType<CameraInitializedEvent>();
   }
 
   @override
@@ -347,5 +380,22 @@ class CameraPlugin extends CameraPlatform {
     );
 
     return mediaDevices.getUserMedia(cameraOptions.toJson());
+  }
+
+  /// Returns a camera for the given [cameraId].
+  ///
+  /// Throws a [CameraException] if the camera does not exist.
+  @visibleForTesting
+  Camera getCamera(int cameraId) {
+    final camera = cameras[cameraId];
+
+    if (camera == null) {
+      throw CameraException(
+        CameraErrorCodes.notFound,
+        'No camera found for the given camera id $cameraId.',
+      );
+    }
+
+    return camera;
   }
 }
