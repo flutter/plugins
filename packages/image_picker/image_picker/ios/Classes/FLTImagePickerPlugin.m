@@ -37,7 +37,6 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
 @implementation FLTImagePickerPlugin {
   UIImagePickerController *_imagePickerController;
-  UIImagePickerControllerCameraDevice _device;
 }
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
@@ -70,6 +69,21 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   return topController;
 }
 
+/**
+ * Returns the UIImagePickerControllerCameraDevice to use given [arguments].
+ *
+ * If the cameraDevice value that is fetched from arguments is 1 then returns
+ * UIImagePickerControllerCameraDeviceFront. If the cameraDevice value that is fetched
+ * from arguments is 0 then returns UIImagePickerControllerCameraDeviceRear.
+ *
+ * @param arguments that should be used to get cameraDevice value.
+ */
+- (UIImagePickerControllerCameraDevice)getCameraDeviceFromArguments:(NSDictionary *)arguments {
+  NSInteger cameraDevice = [[arguments objectForKey:@"cameraDevice"] intValue];
+  return (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
+                             : UIImagePickerControllerCameraDeviceRear;
+}
+
 - (void)pickImageWithPHPicker:(int)maxImagesAllowed API_AVAILABLE(ios(14)) {
   PHPickerConfiguration *config =
       [[PHPickerConfiguration alloc] initWithPhotoLibrary:PHPhotoLibrary.sharedPhotoLibrary];
@@ -95,13 +109,9 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
   self.maxImagesAllowed = 1;
 
   switch (imageSource) {
-    case SOURCE_CAMERA: {
-      NSInteger cameraDevice = [[_arguments objectForKey:@"cameraDevice"] intValue];
-      _device = (cameraDevice == 1) ? UIImagePickerControllerCameraDeviceFront
-                                    : UIImagePickerControllerCameraDeviceRear;
+    case SOURCE_CAMERA:
       [self checkCameraAuthorization];
       break;
-    }
     case SOURCE_GALLERY:
       [self checkPhotoAuthorization];
       break;
@@ -188,11 +198,12 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
       return;
     }
   }
+  UIImagePickerControllerCameraDevice device = [self getCameraDeviceFromArguments:_arguments];
   // Camera is not available on simulators
   if ([UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] &&
-      [UIImagePickerController isCameraDeviceAvailable:_device]) {
+      [UIImagePickerController isCameraDeviceAvailable:device]) {
     _imagePickerController.sourceType = UIImagePickerControllerSourceTypeCamera;
-    _imagePickerController.cameraDevice = _device;
+    _imagePickerController.cameraDevice = device;
     [[self viewControllerWithWindow:nil] presentViewController:_imagePickerController
                                                       animated:YES
                                                     completion:nil];
@@ -406,8 +417,8 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * The difference with initWithCapacity is that initWithCapacity still gives an empty array making
  * it impossible to add objects on an index larger than the size.
  *
- * @param @size The length of the required array
- * @return @NSMutableArray An array of a specified size
+ * @param size The length of the required array
+ * @return NSMutableArray An array of a specified size
  */
 - (NSMutableArray *)createNSMutableArrayWithSize:(NSUInteger)size {
   NSMutableArray *mutableArray = [[NSMutableArray alloc] initWithCapacity:size];
@@ -528,14 +539,14 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
  * Applies NSMutableArray on the FLutterResult.
  *
  * NSString must be returned by FlutterResult if the single image
- * mode is active. It is checked by @c maxImagesAllowed and
- * returns the first object of the @c pathlist.
+ * mode is active. It is checked by maxImagesAllowed and
+ * returns the first object of the pathlist.
  *
  * NSMutableArray must be returned by FlutterResult if the multi-image
- * mode is active. After the @c pathlist count is checked then it returns
- * the @c pathlist.
+ * mode is active. After the pathlist count is checked then it returns
+ * the pathlist.
  *
- * @param @pathList that should be applied to FlutterResult.
+ * @param pathList that should be applied to FlutterResult.
  */
 - (void)handleSavedPathList:(NSArray *)pathList {
   if (!self.result) {

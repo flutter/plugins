@@ -2,43 +2,45 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:convert';
-import 'dart:io' as io;
-
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/xcode.dart';
 
-const String _kiOSDestination = 'ios-destination';
-const String _kXcodeBuildCommand = 'xcodebuild';
-const String _kXCRunCommand = 'xcrun';
-const String _kFoundNoSimulatorsMessage =
-    'Cannot find any available simulators, tests failed';
+const String _iosDestinationFlag = 'ios-destination';
+const String _testTargetFlag = 'test-target';
 
-const int _exitFindingSimulatorsFailed = 3;
-const int _exitNoSimulators = 4;
+// The exit code from 'xcodebuild test' when there are no tests.
+const int _xcodebuildNoTestExitCode = 66;
+
+const int _exitNoSimulators = 3;
 
 /// The command to run XCTests (XCUnitTest and XCUITest) in plugins.
 /// The tests target have to be added to the Xcode project of the example app,
 /// usually at "example/{ios,macos}/Runner.xcworkspace".
-///
-/// The static analyzer is also run.
 class XCTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   XCTestCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  })  : _xcode = Xcode(processRunner: processRunner, log: true),
+        super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
-      _kiOSDestination,
+      _iosDestinationFlag,
       help:
           'Specify the destination when running the test, used for -destination flag for xcodebuild command.\n'
           'this is passed to the `-destination` argument in xcodebuild command.\n'
           'See https://developer.apple.com/library/archive/technotes/tn2339/_index.html#//apple_ref/doc/uid/DTS40014588-CH1-UNIT for details on how to specify the destination.',
+    );
+    argParser.addOption(
+      _testTargetFlag,
+      help:
+          'Limits the tests to a specific target (e.g., RunnerTests or RunnerUITests)',
     );
     argParser.addFlag(kPlatformIos, help: 'Runs the iOS tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs the macOS tests');
@@ -47,6 +49,8 @@ class XCTestCommand extends PackageLoopingCommand {
   // The device destination flags for iOS tests.
   List<String> _iosDestinationFlags = <String>[];
 
+  final Xcode _xcode;
+
   @override
   final String name = 'xctest';
 
@@ -54,9 +58,6 @@ class XCTestCommand extends PackageLoopingCommand {
   final String description =
       'Runs the xctests in the iOS and/or macOS example apps.\n\n'
       'This command requires "flutter" and "xcrun" to be in your path.';
-
-  @override
-  String get failureListHeader => 'The following packages are failing XCTests:';
 
   @override
   Future<void> initializeRun() async {
@@ -69,11 +70,12 @@ class XCTestCommand extends PackageLoopingCommand {
     }
 
     if (shouldTestIos) {
-      String destination = getStringArg(_kiOSDestination);
+      String destination = getStringArg(_iosDestinationFlag);
       if (destination.isEmpty) {
-        final String? simulatorId = await _findAvailableIphoneSimulator();
+        final String? simulatorId =
+            await _xcode.findBestAvailableIphoneSimulator();
         if (simulatorId == null) {
-          printError(_kFoundNoSimulatorsMessage);
+          printError('Cannot find any available simulators, tests failed');
           throw ToolExit(_exitNoSimulators);
         }
         destination = 'id=$simulatorId';
@@ -86,149 +88,124 @@ class XCTestCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    final List<String> failures = <String>[];
-    final bool testIos = getBoolArg(kPlatformIos);
-    final bool testMacos = getBoolArg(kPlatformMacos);
-    // Only provide the failing platform(s) in the summary if testing multiple
-    // platforms, otherwise it's just noise.
-    final bool provideErrorDetails = testIos && testMacos;
+  Future<PackageResult> runForPackage(Directory package) async {
+    final bool testIos = getBoolArg(kPlatformIos) &&
+        pluginSupportsPlatform(kPlatformIos, package,
+            requiredMode: PlatformSupport.inline);
+    final bool testMacos = getBoolArg(kPlatformMacos) &&
+        pluginSupportsPlatform(kPlatformMacos, package,
+            requiredMode: PlatformSupport.inline);
 
-    if (testIos &&
-        !await _testPlugin(package, 'iOS',
-            extraXcrunFlags: _iosDestinationFlags)) {
-      failures.add(provideErrorDetails ? 'iOS' : '');
+    final bool multiplePlatformsRequested =
+        getBoolArg(kPlatformIos) && getBoolArg(kPlatformMacos);
+    if (!(testIos || testMacos)) {
+      String description;
+      if (multiplePlatformsRequested) {
+        description = 'Neither iOS nor macOS is';
+      } else if (getBoolArg(kPlatformIos)) {
+        description = 'iOS is not';
+      } else {
+        description = 'macOS is not';
+      }
+      return PackageResult.skip(
+          '$description implemented by this plugin package.');
     }
-    if (testMacos && !await _testPlugin(package, 'macOS')) {
-      failures.add(provideErrorDetails ? 'macOS' : '');
+
+    if (multiplePlatformsRequested && (!testIos || !testMacos)) {
+      print('Only running for ${testIos ? 'iOS' : 'macOS'}\n');
     }
-    return failures;
+
+    final List<String> failures = <String>[];
+    bool ranTests = false;
+    if (testIos) {
+      final RunState result = await _testPlugin(package, 'iOS',
+          extraXcrunFlags: _iosDestinationFlags);
+      ranTests |= result != RunState.skipped;
+      if (result == RunState.failed) {
+        failures.add('iOS');
+      }
+    }
+    if (testMacos) {
+      final RunState result = await _testPlugin(package, 'macOS');
+      ranTests |= result != RunState.skipped;
+      if (result == RunState.failed) {
+        failures.add('macOS');
+      }
+    }
+
+    if (!ranTests) {
+      return PackageResult.skip('No tests found.');
+    }
+    // Only provide the failing platform in the failure details if testing
+    // multiple platforms, otherwise it's just noise.
+    return failures.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(
+            multiplePlatformsRequested ? failures : <String>[]);
   }
 
   /// Runs all applicable tests for [plugin], printing status and returning
-  /// success if the tests passed (or did not exist).
-  Future<bool> _testPlugin(
+  /// the test result.
+  Future<RunState> _testPlugin(
     Directory plugin,
     String platform, {
     List<String> extraXcrunFlags = const <String>[],
   }) async {
-    if (!pluginSupportsPlatform(platform.toLowerCase(), plugin,
-        requiredMode: PlatformSupport.inline)) {
-      printSkip('$platform is not implemented by this plugin package.\n');
-      return true;
-    }
-    bool passing = true;
+    final String testTarget = getStringArg(_testTargetFlag);
+
+    // Assume skipped until at least one test has run.
+    RunState overallResult = RunState.skipped;
     for (final Directory example in getExamplesForPlugin(plugin)) {
-      // Running tests and static analyzer.
       final String examplePath =
-          p.relative(example.path, from: plugin.parent.path);
-      print('Running $platform tests and analyzer for $examplePath...');
-      int exitCode =
-          await _runTests(true, example, platform, extraFlags: extraXcrunFlags);
-      // 66 = there is no test target (this fails fast). Try again with just the analyzer.
-      if (exitCode == 66) {
-        print('Tests not found for $examplePath, running analyzer only...');
-        exitCode = await _runTests(false, example, platform,
-            extraFlags: extraXcrunFlags);
-      }
-      if (exitCode == 0) {
-        printSuccess('Successfully ran $platform xctest for $examplePath');
-      } else {
-        passing = false;
-      }
-    }
-    return passing;
-  }
+          getRelativePosixPath(example, from: plugin.parent);
 
-  Future<int> _runTests(
-    bool runTests,
-    Directory example,
-    String platform, {
-    List<String> extraFlags = const <String>[],
-  }) {
-    final List<String> xctestArgs = <String>[
-      _kXcodeBuildCommand,
-      if (runTests) 'test',
-      'analyze',
-      '-workspace',
-      '${platform.toLowerCase()}/Runner.xcworkspace',
-      '-configuration',
-      'Debug',
-      '-scheme',
-      'Runner',
-      ...extraFlags,
-      'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-    ];
-    final String completeTestCommand =
-        '$_kXCRunCommand ${xctestArgs.join(' ')}';
-    print(completeTestCommand);
-    return processRunner.runAndStream(_kXCRunCommand, xctestArgs,
-        workingDir: example, exitOnError: false);
-  }
-
-  Future<String?> _findAvailableIphoneSimulator() async {
-    // Find the first available destination if not specified.
-    final List<String> findSimulatorsArguments = <String>[
-      'simctl',
-      'list',
-      '--json'
-    ];
-    final String findSimulatorCompleteCommand =
-        '$_kXCRunCommand ${findSimulatorsArguments.join(' ')}';
-    print('Looking for available simulators...');
-    print(findSimulatorCompleteCommand);
-    final io.ProcessResult findSimulatorsResult =
-        await processRunner.run(_kXCRunCommand, findSimulatorsArguments);
-    if (findSimulatorsResult.exitCode != 0) {
-      printError(
-          'Error occurred while running "$findSimulatorCompleteCommand":\n'
-          '${findSimulatorsResult.stderr}');
-      throw ToolExit(_exitFindingSimulatorsFailed);
-    }
-    final Map<String, dynamic> simulatorListJson =
-        jsonDecode(findSimulatorsResult.stdout as String)
-            as Map<String, dynamic>;
-    final List<Map<String, dynamic>> runtimes =
-        (simulatorListJson['runtimes'] as List<dynamic>)
-            .cast<Map<String, dynamic>>();
-    final Map<String, Object> devices =
-        (simulatorListJson['devices'] as Map<String, dynamic>)
-            .cast<String, Object>();
-    if (runtimes.isEmpty || devices.isEmpty) {
-      return null;
-    }
-    String? id;
-    // Looking for runtimes, trying to find one with highest OS version.
-    for (final Map<String, dynamic> rawRuntimeMap in runtimes.reversed) {
-      final Map<String, Object> runtimeMap =
-          rawRuntimeMap.cast<String, Object>();
-      if ((runtimeMap['name'] as String?)?.contains('iOS') != true) {
-        continue;
-      }
-      final String? runtimeID = runtimeMap['identifier'] as String?;
-      if (runtimeID == null) {
-        continue;
-      }
-      final List<Map<String, dynamic>>? devicesForRuntime =
-          (devices[runtimeID] as List<dynamic>?)?.cast<Map<String, dynamic>>();
-      if (devicesForRuntime == null || devicesForRuntime.isEmpty) {
-        continue;
-      }
-      // Looking for runtimes, trying to find latest version of device.
-      for (final Map<String, dynamic> rawDevice in devicesForRuntime.reversed) {
-        final Map<String, Object> device = rawDevice.cast<String, Object>();
-        if (device['availabilityError'] != null ||
-            (device['isAvailable'] as bool?) == false) {
+      if (testTarget.isNotEmpty) {
+        final Directory project = example
+            .childDirectory(platform.toLowerCase())
+            .childDirectory('Runner.xcodeproj');
+        final bool? hasTarget =
+            await _xcode.projectHasTarget(project, testTarget);
+        if (hasTarget == null) {
+          printError('Unable to check targets for $examplePath.');
+          overallResult = RunState.failed;
+          continue;
+        } else if (!hasTarget) {
+          print('No "$testTarget" target in $examplePath; skipping.');
           continue;
         }
-        id = device['udid'] as String?;
-        if (id == null) {
+      }
+
+      print('Running $platform tests for $examplePath...');
+      final int exitCode = await _xcode.runXcodeBuild(
+        example,
+        actions: <String>['test'],
+        workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
+        scheme: 'Runner',
+        configuration: 'Debug',
+        extraFlags: <String>[
+          if (testTarget.isNotEmpty) '-only-testing:$testTarget',
+          ...extraXcrunFlags,
+          'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+        ],
+      );
+
+      switch (exitCode) {
+        case _xcodebuildNoTestExitCode:
+          print('No tests found for $examplePath');
           continue;
-        }
-        print('device selected: $device');
-        return id;
+        case 0:
+          printSuccess('Successfully ran $platform xctest for $examplePath');
+          // If this is the first test, assume success until something fails.
+          if (overallResult == RunState.skipped) {
+            overallResult = RunState.succeeded;
+          }
+          break;
+        default:
+          // Any failure means a failure overall.
+          overallResult = RunState.failed;
+          break;
       }
     }
-    return null;
+    return overallResult;
   }
 }

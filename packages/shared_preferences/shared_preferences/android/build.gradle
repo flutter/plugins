@@ -39,4 +39,8 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+    dependencies {
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.mockito:mockito-inline:3.9.0'
+    }
 }
