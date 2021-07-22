@@ -1,4 +1,5 @@
 # Plugins that deliberately use their own analysis_options.yaml.
+#
 # This only exists to allow incrementally switching to the newer, stricter
 # analysis_options.yaml based on flutter/flutter, rather than the original
 # rules based on pedantic (now at analysis_options_legacy.yaml).
