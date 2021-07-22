@@ -1,5 +1,9 @@
 ## NEXT
 
+- `--exclude` and `--custom-analysis` now accept paths to YAML files that
+  contain lists of packages to exclude, in addition to just package names,
+  so that exclude lists can be maintained separately from scripts and CI
+  configuration.
 - Added an `xctest` flag to select specific test targets, to allow running only
   unit tests or integration tests.
 - **Breaking change**: Split Xcode analysis out of `xctest` and into a new
