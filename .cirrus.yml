@@ -223,7 +223,7 @@ task:
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
-        # So we run `drive-examples` after `native-test`, changing the order will result ci failure.
+        # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
         - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
     - name: build_all_plugins_macos
@@ -245,7 +245,7 @@ task:
         - ./script/tool_runner.sh build-examples --macos
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --macos
-      xctest_script:
+      native_test_script:
         - ./script/tool_runner.sh native-test --macos --exclude=script/configs/exclude_native_macos.yaml
       drive_script:
         - ./script/tool_runner.sh drive-examples --macos
