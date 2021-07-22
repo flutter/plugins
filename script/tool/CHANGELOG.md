@@ -1,4 +1,4 @@
-## NEXT
+## 0.5.0
 
 - `--exclude` and `--custom-analysis` now accept paths to YAML files that
   contain lists of packages to exclude, in addition to just package names,
@@ -21,6 +21,7 @@
     `--no-integration`.
 - **Breaking change**: Replaced `java-test` with Android unit test support for
   the new `native-test` command.
+- Added Android native integration test support to `native-test`.
 
 ## 0.4.1
 
