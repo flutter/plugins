@@ -75,7 +75,7 @@ class _VideoAppState extends State<VideoApp> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-        'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
@@ -129,7 +129,7 @@ This is not complete as of now. You can contribute to this section by [opening a
 ### Playback speed
 
 You can set the playback speed on your `_controller` (instance of `VideoPlayerController`) by
-calling `_controller.setPlaybackSpeed`. `setPlaybackSpeed` takes a `double` speed value indicating 
+calling `_controller.setPlaybackSpeed`. `setPlaybackSpeed` takes a `double` speed value indicating
 the rate of playback for your video.  
 For example, when given a value of `2.0`, your video will play at 2x the regular playback speed
 and so on.
