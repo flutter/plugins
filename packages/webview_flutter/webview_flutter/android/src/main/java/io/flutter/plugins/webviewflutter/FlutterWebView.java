@@ -86,8 +86,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(
       final Context context,
-      BinaryMessenger messenger,
-      int id,
+      MethodChannel methodChannel,
       Map<String, Object> params,
       View containerView) {
 
@@ -104,7 +103,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     platformThreadHandler = new Handler(context.getMainLooper());
 
-    methodChannel = createMethodChannel(messenger, id, this);
+    this.methodChannel = methodChannel;
+    this.methodChannel.setMethodCallHandler(this);
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
@@ -158,7 +158,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @VisibleForTesting
   static WebView createWebView(
       WebViewBuilder webViewBuilder, Map<String, Object> params, WebChromeClient webChromeClient) {
-    Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
+    boolean usesHybridComposition = Boolean.TRUE.equals(params.get("usesHybridComposition"));
     webViewBuilder
         .setUsesHybridComposition(usesHybridComposition)
         .setDomStorageEnabled(true) // Always enable DOM storage API.
@@ -169,30 +169,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             webChromeClient); // Always use {@link FlutterWebChromeClient} as web Chrome client.
 
     return webViewBuilder.build();
-  }
-
-  /**
-   * Creates a {@link MethodChannel} used to handle communication with the Flutter application about
-   * the {@link FlutterWebView} instance.
-   *
-   * <p><strong>Important:</strong> This method is visible for testing purposes only and should
-   * never be called from outside this class.
-   *
-   * @param messenger a {@link BinaryMessenger} to facilitate communication with Flutter.
-   * @param id an identifier used to create a unique channel name and identify communication with a
-   *     particular {@link FlutterWebView} instance.
-   * @param handler a {@link MethodCallHandler} responsible for handling messages that arrive from
-   *     the Flutter application.
-   * @return The {@link MethodChannel} configured using the supplied {@link BinaryMessenger} and
-   *     {@link MethodCallHandler}.
-   */
-  @VisibleForTesting
-  static MethodChannel createMethodChannel(
-      BinaryMessenger messenger, int id, MethodCallHandler handler) {
-    MethodChannel methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    methodChannel.setMethodCallHandler(handler);
-
-    return methodChannel;
   }
 
   @Override

@@ -78,4 +78,23 @@ public class WebViewBuilderTest {
     verify(mockWebSettings).setSupportMultipleWindows(true);
     verify(mockWebView).setWebChromeClient(mockWebChromeClient);
   }
+
+  @Test
+  public void build_should_use_default_values() throws IOException {
+    WebSettings mockWebSettings = mock(WebSettings.class);
+    WebChromeClient mockWebChromeClient = mock(WebChromeClient.class);
+
+    when(mockWebView.getSettings()).thenReturn(mockWebSettings);
+
+    WebViewBuilder builder =
+        new WebViewBuilder(mockContext, mockContainerView);
+
+    WebView webView = builder.build();
+
+    assertNotNull(webView);
+    verify(mockWebSettings).setDomStorageEnabled(false);
+    verify(mockWebSettings).setJavaScriptCanOpenWindowsAutomatically(false);
+    verify(mockWebSettings).setSupportMultipleWindows(false);
+    verify(mockWebView).setWebChromeClient(null);
+  }
 }

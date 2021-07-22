@@ -10,6 +10,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 /** Builder used to create {@link android.webkit.WebView} objects. */
 public class WebViewBuilder {
@@ -116,7 +117,7 @@ public class WebViewBuilder {
    * @param webChromeClient an implementation of WebChromeClient This value may be null.
    * @return This builder. This value cannot be {@code null}.
    */
-  public WebViewBuilder setWebChromeClient(WebChromeClient webChromeClient) {
+  public WebViewBuilder setWebChromeClient(@Nullable WebChromeClient webChromeClient) {
     this.webChromeClient = webChromeClient;
     return this;
   }
