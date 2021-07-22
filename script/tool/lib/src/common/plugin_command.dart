@@ -49,7 +49,9 @@ abstract class PluginCommand extends Command<void> {
     argParser.addMultiOption(
       _excludeArg,
       abbr: 'e',
-      help: 'Exclude packages from this command.',
+      help: 'A list of packages to exclude from from this command.\n\n'
+          'Alternately, a list of one or more YAML files that contain a list '
+          'of packages to exclude.',
       defaultsTo: <String>[],
     );
     argParser.addFlag(_runOnChangedPackagesArg,
