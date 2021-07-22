@@ -1,3 +1,7 @@
+## NEXT
+
+* Added unit tests.
+
 ## 2.0.0
 
 * Migrate to null-safety.

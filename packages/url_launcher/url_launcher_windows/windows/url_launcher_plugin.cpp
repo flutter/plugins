@@ -1,7 +1,7 @@
 // Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "include/url_launcher_windows/url_launcher_plugin.h"
+#include "url_launcher_plugin.h"
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
@@ -9,8 +9,11 @@
 #include <windows.h>
 
 #include <memory>
+#include <optional>
 #include <sstream>
 #include <string>
+
+namespace url_launcher_plugin {
 
 namespace {
 
@@ -54,19 +57,7 @@ std::string GetUrlArgument(const flutter::MethodCall<>& method_call) {
   return url;
 }
 
-class UrlLauncherPlugin : public flutter::Plugin {
- public:
-  static void RegisterWithRegistrar(flutter::PluginRegistrar* registrar);
-
-  virtual ~UrlLauncherPlugin();
-
- private:
-  UrlLauncherPlugin();
-
-  // Called when a method is called on plugin channel;
-  void HandleMethodCall(const flutter::MethodCall<>& method_call,
-                        std::unique_ptr<flutter::MethodResult<>> result);
-};
+}  // namespace
 
 // static
 void UrlLauncherPlugin::RegisterWithRegistrar(
@@ -75,8 +66,8 @@ void UrlLauncherPlugin::RegisterWithRegistrar(
       registrar->messenger(), "plugins.flutter.io/url_launcher",
       &flutter::StandardMethodCodec::GetInstance());
 
-  // Uses new instead of make_unique due to private constructor.
-  std::unique_ptr<UrlLauncherPlugin> plugin(new UrlLauncherPlugin());
+  std::unique_ptr<UrlLauncherPlugin> plugin =
+      std::make_unique<UrlLauncherPlugin>();
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto& call, auto result) {
@@ -86,7 +77,11 @@ void UrlLauncherPlugin::RegisterWithRegistrar(
   registrar->AddPlugin(std::move(plugin));
 }
 
-UrlLauncherPlugin::UrlLauncherPlugin() = default;
+UrlLauncherPlugin::UrlLauncherPlugin()
+    : system_apis_(std::make_unique<SystemApisImpl>()) {}
+
+UrlLauncherPlugin::UrlLauncherPlugin(std::unique_ptr<SystemApis> system_apis)
+    : system_apis_(std::move(system_apis)) {}
 
 UrlLauncherPlugin::~UrlLauncherPlugin() = default;
 
@@ -99,17 +94,10 @@ void UrlLauncherPlugin::HandleMethodCall(
       result->Error("argument_error", "No URL provided");
       return;
     }
-    std::wstring url_wide = Utf16FromUtf8(url);
 
-    int status = static_cast<int>(reinterpret_cast<INT_PTR>(
-        ::ShellExecute(nullptr, TEXT("open"), url_wide.c_str(), nullptr,
-                       nullptr, SW_SHOWNORMAL)));
-
-    if (status <= 32) {
-      std::ostringstream error_message;
-      error_message << "Failed to open " << url << ": ShellExecute error code "
-                    << status;
-      result->Error("open_error", error_message.str());
+    std::optional<std::string> error = LaunchUrl(url);
+    if (error) {
+      result->Error("open_error", error.value());
       return;
     }
     result->Success(EncodableValue(true));
@@ -120,29 +108,48 @@ void UrlLauncherPlugin::HandleMethodCall(
       return;
     }
 
-    bool can_launch = false;
-    size_t separator_location = url.find(":");
-    if (separator_location != std::string::npos) {
-      std::wstring scheme = Utf16FromUtf8(url.substr(0, separator_location));
-      HKEY key = nullptr;
-      if (::RegOpenKeyEx(HKEY_CLASSES_ROOT, scheme.c_str(), 0, KEY_QUERY_VALUE,
-                         &key) == ERROR_SUCCESS) {
-        can_launch = ::RegQueryValueEx(key, L"URL Protocol", nullptr, nullptr,
-                                       nullptr, nullptr) == ERROR_SUCCESS;
-        ::RegCloseKey(key);
-      }
-    }
+    bool can_launch = CanLaunchUrl(url);
     result->Success(EncodableValue(can_launch));
   } else {
     result->NotImplemented();
   }
 }
 
-}  // namespace
+bool UrlLauncherPlugin::CanLaunchUrl(const std::string& url) {
+  size_t separator_location = url.find(":");
+  if (separator_location == std::string::npos) {
+    return false;
+  }
+  std::wstring scheme = Utf16FromUtf8(url.substr(0, separator_location));
 
-void UrlLauncherPluginRegisterWithRegistrar(
-    FlutterDesktopPluginRegistrarRef registrar) {
-  UrlLauncherPlugin::RegisterWithRegistrar(
-      flutter::PluginRegistrarManager::GetInstance()
-          ->GetRegistrar<flutter::PluginRegistrarWindows>(registrar));
+  HKEY key = nullptr;
+  if (system_apis_->RegOpenKeyExW(HKEY_CLASSES_ROOT, scheme.c_str(), 0,
+                                  KEY_QUERY_VALUE, &key) != ERROR_SUCCESS) {
+    return false;
+  }
+  bool has_handler =
+      system_apis_->RegQueryValueExW(key, L"URL Protocol", nullptr, nullptr,
+                                     nullptr) == ERROR_SUCCESS;
+  system_apis_->RegCloseKey(key);
+  return has_handler;
 }
+
+std::optional<std::string> UrlLauncherPlugin::LaunchUrl(
+    const std::string& url) {
+  std::wstring url_wide = Utf16FromUtf8(url);
+
+  int status = static_cast<int>(reinterpret_cast<INT_PTR>(
+      system_apis_->ShellExecuteW(nullptr, TEXT("open"), url_wide.c_str(),
+                                  nullptr, nullptr, SW_SHOWNORMAL)));
+
+  // Per ::ShellExecuteW documentation, anything >32 indicates success.
+  if (status <= 32) {
+    std::ostringstream error_message;
+    error_message << "Failed to open " << url << ": ShellExecute error code "
+                  << status;
+    return std::optional<std::string>(error_message.str());
+  }
+  return std::nullopt;
+}
+
+}  // namespace url_launcher_plugin
