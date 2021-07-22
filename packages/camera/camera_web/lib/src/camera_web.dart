@@ -271,7 +271,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<XFile> takePicture(int cameraId) {
-    throw UnimplementedError('takePicture() is not implemented.');
+    return getCamera(cameraId).takePicture();
   }
 
   @override
