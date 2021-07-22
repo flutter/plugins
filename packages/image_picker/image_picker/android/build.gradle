@@ -37,10 +37,11 @@ android {
         implementation 'androidx.exifinterface:exifinterface:1.3.0'
     }
 
+
     testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
         unitTests.all {
-            includeAndroidResources = true
-            returnDefaultValues = true
             testLogging {
                events "passed", "skipped", "failed", "standardOut", "standardError"
                outputs.upToDateWhen {false}
