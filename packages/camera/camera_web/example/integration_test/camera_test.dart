@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html';
+import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
@@ -28,13 +29,7 @@ void main() {
       navigator = MockNavigator();
       mediaDevices = MockMediaDevices();
 
-      final videoElement = VideoElement()
-        ..src =
-            'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4'
-        ..preload = 'true'
-        ..width = 10
-        ..height = 10;
-
+      final videoElement = getVideoElementWithBlankStream(Size(10, 10));
       mediaStream = videoElement.captureStream();
 
       when(() => window.navigator).thenReturn(navigator);
@@ -466,6 +461,49 @@ void main() {
         final pictureFile = await camera.takePicture();
 
         expect(pictureFile, isNotNull);
+      });
+    });
+
+    group('getVideoSize', () {
+      testWidgets(
+          'returns a size '
+          'based on the first video track settings', (tester) async {
+        const videoSize = Size(1280, 720);
+
+        final videoElement = getVideoElementWithBlankStream(videoSize);
+        mediaStream = videoElement.captureStream();
+
+        final camera = Camera(
+          textureId: 1,
+          window: window,
+        );
+
+        await camera.initialize();
+
+        expect(
+          await camera.getVideoSize(),
+          equals(videoSize),
+        );
+      });
+
+      testWidgets(
+          'returns Size.zero '
+          'if the camera is missing video tracks', (tester) async {
+        // Create a video stream with no video tracks.
+        final videoElement = VideoElement();
+        mediaStream = videoElement.captureStream();
+
+        final camera = Camera(
+          textureId: 1,
+          window: window,
+        );
+
+        await camera.initialize();
+
+        expect(
+          await camera.getVideoSize(),
+          equals(Size.zero),
+        );
       });
     });
 
