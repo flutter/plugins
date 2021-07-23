@@ -25,7 +25,7 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
 		9FC8F0EC229FA68500C8D58F /* gifImage.gif in Resources */ = {isa = PBXBuildFile; fileRef = 9FC8F0E8229FA49E00C8D58F /* gifImage.gif */; };
-		BE7AEE7926403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BE7AEE7826403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m */; };
+		BE6173D826A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */; };
 		F4F7A436CCA4BF276270A3AE /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = EC32F6993F4529982D9519F1 /* libPods-Runner.a */; };
 /* End PBXBuildFile section */
 
@@ -38,13 +38,6 @@
 			remoteInfo = Runner;
 		};
 		6801C83B2555D726009DAF8D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 97C146ED1CF9000F007C117D;
-			remoteInfo = Runner;
-		};
-		BE7AEE7126403C46006181AA /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 97C146E61CF9000F007C117D /* Project object */;
 			proxyType = 1;
@@ -100,7 +93,7 @@
 		9FC8F0E8229FA49E00C8D58F /* gifImage.gif */ = {isa = PBXFileReference; lastKnownFileType = image.gif; path = gifImage.gif; sourceTree = "<group>"; };
 		9FC8F0ED229FB90B00C8D58F /* ImageUtilTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageUtilTests.m; sourceTree = "<group>"; };
 		A908FAEEA2A9B26D903C09C5 /* libPods-RunnerUITests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-RunnerUITests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
-		BE7AEE6C26403C46006181AA /* RunnerUITestiOS14.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = RunnerUITestiOS14.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromLimitedGalleryUITests.m; sourceTree = "<group>"; };
 		BE7AEE7026403C46006181AA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BE7AEE7826403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImagePickerFromLimitedGalleryUITests.m; sourceTree = "<group>"; };
 		DC6FCAAD4E7580C9B3C2E21D /* Pods-RunnerTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-RunnerTests/Pods-RunnerTests.debug.xcconfig"; sourceTree = "<group>"; };
@@ -134,13 +127,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		BE7AEE6926403C46006181AA /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -171,6 +157,7 @@
 		6801C8372555D726009DAF8D /* RunnerUITests */ = {
 			isa = PBXGroup;
 			children = (
+				BE6173D726A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m */,
 				6801C8382555D726009DAF8D /* ImagePickerFromGalleryUITests.m */,
 				6801C83A2555D726009DAF8D /* Info.plist */,
 			);
@@ -221,7 +208,6 @@
 			children = (
 				97C146EE1CF9000F007C117D /* Runner.app */,
 				6801C8362555D726009DAF8D /* RunnerUITests.xctest */,
-				BE7AEE6C26403C46006181AA /* RunnerUITestiOS14.xctest */,
 				334733F22668136400DCC49E /* RunnerTests.xctest */,
 			);
 			name = Products;
@@ -332,24 +318,6 @@
 			productReference = 97C146EE1CF9000F007C117D /* Runner.app */;
 			productType = "com.apple.product-type.application";
 		};
-		BE7AEE6B26403C46006181AA /* RunnerUITestiOS14 */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = BE7AEE7526403C46006181AA /* Build configuration list for PBXNativeTarget "RunnerUITestiOS14" */;
-			buildPhases = (
-				BE7AEE6826403C46006181AA /* Sources */,
-				BE7AEE6926403C46006181AA /* Frameworks */,
-				BE7AEE6A26403C46006181AA /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				BE7AEE7226403C46006181AA /* PBXTargetDependency */,
-			);
-			name = RunnerUITestiOS14;
-			productName = RunnerUITestiOS14;
-			productReference = BE7AEE6C26403C46006181AA /* RunnerUITestiOS14.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -378,11 +346,6 @@
 							};
 						};
 					};
-					BE7AEE6B26403C46006181AA = {
-						CreatedOnToolsVersion = 12.4;
-						ProvisioningStyle = Automatic;
-						TestTargetID = 97C146ED1CF9000F007C117D;
-					};
 				};
 			};
 			buildConfigurationList = 97C146E91CF9000F007C117D /* Build configuration list for PBXProject "Runner" */;
@@ -401,7 +364,6 @@
 				97C146ED1CF9000F007C117D /* Runner */,
 				334733F12668136400DCC49E /* RunnerTests */,
 				6801C8352555D726009DAF8D /* RunnerUITests */,
-				BE7AEE6B26403C46006181AA /* RunnerUITestiOS14 */,
 			);
 		};
 /* End PBXProject section */
@@ -432,13 +394,6 @@
 				9FC8F0E9229FA49E00C8D58F /* gifImage.gif in Resources */,
 				3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BE7AEE6A26403C46006181AA /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -555,6 +510,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6801C8392555D726009DAF8D /* ImagePickerFromGalleryUITests.m in Sources */,
+				BE6173D826A958B800D0974D /* ImagePickerFromLimitedGalleryUITests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -565,14 +521,6 @@
 				978B8F6F1D3862AE00F588F7 /* AppDelegate.m in Sources */,
 				97C146F31CF9000F007C117D /* main.m in Sources */,
 				5C9513011EC38BD300040975 /* GeneratedPluginRegistrant.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BE7AEE6826403C46006181AA /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BE7AEE7926403CC8006181AA /* ImagePickerFromLimitedGalleryUITests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -588,11 +536,6 @@
 			isa = PBXTargetDependency;
 			target = 97C146ED1CF9000F007C117D /* Runner */;
 			targetProxy = 6801C83B2555D726009DAF8D /* PBXContainerItemProxy */;
-		};
-		BE7AEE7226403C46006181AA /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 97C146ED1CF9000F007C117D /* Runner */;
-			targetProxy = BE7AEE7126403C46006181AA /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -843,53 +786,6 @@
 			};
 			name = Release;
 		};
-		BE7AEE7326403C46006181AA /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = RunnerUITestiOS14/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.baseflow.RunnerUITestiOS14;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Runner;
-			};
-			name = Debug;
-		};
-		BE7AEE7426403C46006181AA /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = RunnerUITestiOS14/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = com.baseflow.RunnerUITestiOS14;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = Runner;
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -925,15 +821,6 @@
 			buildConfigurations = (
 				97C147061CF9000F007C117D /* Debug */,
 				97C147071CF9000F007C117D /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		BE7AEE7526403C46006181AA /* Build configuration list for PBXNativeTarget "RunnerUITestiOS14" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				BE7AEE7326403C46006181AA /* Debug */,
-				BE7AEE7426403C46006181AA /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
