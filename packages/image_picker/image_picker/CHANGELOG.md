@@ -1,4 +1,4 @@
-## 0.8.2+1
+## NEXT
 
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
 
