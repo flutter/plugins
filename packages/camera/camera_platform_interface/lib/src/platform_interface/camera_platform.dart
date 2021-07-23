@@ -64,7 +64,6 @@ abstract class CameraPlatform extends PlatformInterface {
   /// [imageFormatGroup] is used to specify the image formatting used.
   /// On Android this defaults to ImageFormat.YUV_420_888 and applies only to the imageStream.
   /// On iOS this defaults to kCVPixelFormatType_32BGRA.
-  /// On Web this parameter is currently not supported.
   Future<void> initializeCamera(
     int cameraId, {
     ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
