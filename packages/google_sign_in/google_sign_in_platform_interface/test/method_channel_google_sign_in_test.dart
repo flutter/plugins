@@ -13,6 +13,8 @@ const Map<String, String> kUserData = <String, String>{
   "id": "8162538176523816253123",
   "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
   "displayName": "John Doe",
+  'idToken': '123',
+  'serverAuthCode': '789',
 };
 
 const Map<dynamic, dynamic> kTokenData = <String, dynamic>{
