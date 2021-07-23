@@ -1,3 +1,7 @@
+## 5.0.6
+
+* Re-use server auth code obtained on login.
+
 ## 5.0.5
 
 * Add iOS unit and UI integration test targets.

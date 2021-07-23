@@ -23,6 +23,7 @@ void main() {
       "id": "8162538176523816253123",
       "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
       "displayName": "John Doe",
+      "serverAuthCode": "789"
     };
 
     const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
@@ -36,7 +37,7 @@ void main() {
       'getTokens': <dynamic, dynamic>{
         'idToken': '123',
         'accessToken': '456',
-        'serverAuthCode': '789',
+        'serverAuthCode': null,
       },
     };
 
