@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -239,7 +239,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized()
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
@@ -268,7 +268,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized()
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
@@ -283,3 +283,11 @@ void main() {
     });
   });
 }
+
+/// This removes the type information from a value so that it can be cast
+/// to another type even if that cast is redundant.
+///
+/// We use this so that APIs whose type have become more descriptive can still
+/// be used on the stable branch where they require a cast.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+Object? _anonymize<T>(T? value) => value;

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -113,15 +113,13 @@ html.Element _findSingleAnchor() {
     }
   }
 
-  // Search inside platform views with shadow roots as well.
-  for (final html.Element platformView
-      in html.document.querySelectorAll('flt-platform-view')) {
-    final html.ShadowRoot shadowRoot = platformView.shadowRoot!;
-    if (shadowRoot != null) {
-      for (final html.Element anchor in shadowRoot.querySelectorAll('a')) {
-        if (hasProperty(anchor, linkViewIdProperty)) {
-          foundAnchors.add(anchor);
-        }
+  // Search inside the shadow DOM as well.
+  final html.ShadowRoot? shadowRoot =
+      html.document.querySelector('flt-glass-pane')?.shadowRoot;
+  if (shadowRoot != null) {
+    for (final html.Element anchor in shadowRoot.querySelectorAll('a')) {
+      if (hasProperty(anchor, linkViewIdProperty)) {
+        foundAnchors.add(anchor);
       }
     }
   }
