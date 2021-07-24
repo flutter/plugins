@@ -1,6 +1,61 @@
-## 2.0.3
+## 2.1.13
 
 * Fixed empty caption text still showing the caption widget.
+
+## 2.1.12
+
+* Update the video url in the readme code sample
+
+## 2.1.11
+
+* Remove references to the Android V1 embedding.
+
+## 2.1.10
+
+* Ensure video pauses correctly when it finishes.
+
+## 2.1.9
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
+## 2.1.8
+
+* Refactor `FLTCMTimeToMillis` to support indefinite streams. Fixes [#48670](https://github.com/flutter/flutter/issues/48670).
+
+## 2.1.7
+
+* Update exoplayer to 2.14.1, removing dependency on Bintray.
+
+## 2.1.6
+
+* Remove obsolete pre-1.0 warning from README.
+* Add iOS unit and UI integration test targets.
+
+## 2.1.5
+
+* Update example code in README to fix broken url.
+
+## 2.1.4
+
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
+
+## 2.1.3
+
+* Fix pointer value to boolean conversion analyzer warnings.
+
+## 2.1.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
 
 ## 2.0.2
 

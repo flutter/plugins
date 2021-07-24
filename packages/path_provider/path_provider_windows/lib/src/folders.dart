@@ -1,9 +1,12 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:win32/win32.dart';
 
+// ignore_for_file: non_constant_identifier_names
+
+// ignore: avoid_classes_with_only_static_members
 /// A class containing the GUID references for each of the documented Windows
 /// known folders. A property of this class may be passed to the `getPath`
 /// method in the [PathProvidersWindows] class to retrieve a known folder from

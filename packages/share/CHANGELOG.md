@@ -1,3 +1,19 @@
+## NEXT
+
+* Remove references to the Android V1 embedding.
+
+## 2.0.4
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.3
+
+* Do not tear down method channel onDetachedFromActivity.
+
+## 2.0.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.1
 
 * Migrate unit tests to sound null safety.
