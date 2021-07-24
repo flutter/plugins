@@ -1,5 +1,10 @@
 name: android_alarm_manager_example
 description: Demonstrates how to use the android_alarm_manager plugin.
+publish_to: none
+
+environment:
+  sdk: '>=2.12.0 <3.0.0'
+  flutter: ">=1.20.0"
 
 dependencies:
   flutter:
@@ -13,7 +18,7 @@ dependencies:
     path: ../
   shared_preferences: ^2.0.0
   integration_test:
-    path: ../../integration_test
+    sdk: flutter
   path_provider: ^2.0.0
 
 dev_dependencies:
@@ -26,7 +31,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: '>=2.12.0-259.9.beta <3.0.0'
-  flutter: ">=1.20.0"

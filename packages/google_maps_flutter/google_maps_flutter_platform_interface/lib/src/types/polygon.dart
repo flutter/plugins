@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -15,7 +15,7 @@ import 'types.dart';
 @immutable
 class PolygonId extends MapsObjectId<Polygon> {
   /// Creates an immutable identifier for a [Polygon].
-  PolygonId(String value) : super(value);
+  const PolygonId(String value) : super(value);
 }
 
 /// Draws a polygon through geographical locations on the map.
@@ -167,7 +167,7 @@ class Polygon implements MapsObject {
         fillColor == typedOther.fillColor &&
         geodesic == typedOther.geodesic &&
         listEquals(points, typedOther.points) &&
-        DeepCollectionEquality().equals(holes, typedOther.holes) &&
+        const DeepCollectionEquality().equals(holes, typedOther.holes) &&
         visible == typedOther.visible &&
         strokeColor == typedOther.strokeColor &&
         strokeWidth == typedOther.strokeWidth &&

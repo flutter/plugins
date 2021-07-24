@@ -1,5 +1,20 @@
 # Share plugin
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`share_plus`](https://pub.dev/packages/share_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 [![pub package](https://img.shields.io/pub/v/share.svg)](https://pub.dev/packages/share)
 
 A Flutter plugin to share content from your Flutter app via the platform's
