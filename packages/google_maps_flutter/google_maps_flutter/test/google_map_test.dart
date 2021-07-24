@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -587,4 +587,34 @@ void main() {
 
     expect(platformGoogleMap.buildingsEnabled, true);
   });
+
+  testWidgets(
+    'Default Android widget is AndroidView',
+    (WidgetTester tester) async {
+      await tester.pumpWidget(
+        const Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+          ),
+        ),
+      );
+
+      expect(find.byType(AndroidView), findsOneWidget);
+    },
+  );
+
+  // TODO(bparrishMines): Uncomment once https://github.com/flutter/plugins/pull/4017 has landed.
+  // testWidgets('Use AndroidViewSurface on Android', (WidgetTester tester) async {
+  //   await tester.pumpWidget(
+  //     const Directionality(
+  //       textDirection: TextDirection.ltr,
+  //       child: GoogleMap(
+  //         initialCameraPosition: CameraPosition(target: LatLng(10.0, 15.0)),
+  //       ),
+  //     ),
+  //   );
+  //
+  //   expect(find.byType(AndroidViewSurface), findsOneWidget);
+  // });
 }

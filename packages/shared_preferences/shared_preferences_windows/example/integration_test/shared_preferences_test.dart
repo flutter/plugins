@@ -1,8 +1,6 @@
-// Copyright 2017, the Chromium project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
-
-// @dart=2.9
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
@@ -29,7 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferencesWindows preferences;
+    late SharedPreferencesWindows preferences;
 
     setUp(() async {
       preferences = SharedPreferencesWindows.instance;

@@ -1,3 +1,23 @@
+## NEXT
+
+* Remove references to the Android V1 embedding.
+
+## 3.0.6
+
+* Update README to point to Plus Plugins version.
+
+## 3.0.5
+
+* Ignore Reachability pointer to int cast warning.
+
+## 3.0.4
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 3.0.3
+
+* Re-endorse connectivity_for_web
+
 ## 3.0.2
 
 * Update platform_plugin_interface version requirement.
