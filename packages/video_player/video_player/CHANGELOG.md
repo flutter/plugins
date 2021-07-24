@@ -1,6 +1,6 @@
 ## 2.1.11
 
-* Update the video url in the readme code sample
+* Remove references to the Android V1 embedding.
 
 ## 2.1.10
 

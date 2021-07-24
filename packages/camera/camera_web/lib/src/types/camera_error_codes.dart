@@ -24,6 +24,9 @@ abstract class CameraErrorCodes {
   /// to access the media input from an insecure context.
   static const type = 'cameraType';
 
+  /// The camera metadata is missing.
+  static const missingMetadata = 'missingMetadata';
+
   /// An unknown camera error.
   static const unknown = 'cameraUnknown';
 }

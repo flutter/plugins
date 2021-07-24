@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html' as html;
+import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/types/types.dart';
@@ -103,6 +104,40 @@ class CameraSettings {
       case 'right':
       default:
         return CameraLensDirection.external;
+    }
+  }
+
+  /// Maps the given [facingMode] to [CameraType].
+  ///
+  /// See [CameraMetadata.facingMode] for more details.
+  CameraType mapFacingModeToCameraType(String facingMode) {
+    switch (facingMode) {
+      case 'user':
+        return CameraType.user;
+      case 'environment':
+        return CameraType.environment;
+      case 'left':
+      case 'right':
+      default:
+        return CameraType.user;
+    }
+  }
+
+  /// Maps the given [resolutionPreset] to [Size].
+  Size mapResolutionPresetToSize(ResolutionPreset resolutionPreset) {
+    switch (resolutionPreset) {
+      case ResolutionPreset.max:
+      case ResolutionPreset.ultraHigh:
+        return Size(3840, 2160);
+      case ResolutionPreset.veryHigh:
+        return Size(1920, 1080);
+      case ResolutionPreset.high:
+        return Size(1280, 720);
+      case ResolutionPreset.medium:
+        return Size(720, 480);
+      case ResolutionPreset.low:
+      default:
+        return Size(320, 240);
     }
   }
 }
