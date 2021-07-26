@@ -94,21 +94,15 @@
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
 
-    _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
-    _webView.UIDelegate = self;
-    _webView.navigationDelegate = _navigationDelegate;
+    _webView = [self createFLTWKWebViewWithFrame:frame
+                                   configuration:configuration
+                              navigationDelegate:_navigationDelegate];
+
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
     }];
-
-    if (@available(iOS 11.0, *)) {
-      _webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
-      if (@available(iOS 13.0, *)) {
-        _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
-      }
-    }
 
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
@@ -120,6 +114,22 @@
     }
   }
   return self;
+}
+
+- (FLTWKWebView*)createFLTWKWebViewWithFrame:(CGRect)frame
+                               configuration:(WKWebViewConfiguration*)configuration
+                          navigationDelegate:(FLTWKNavigationDelegate*)navigationDelegate {
+  FLTWKWebView* webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
+  webView.UIDelegate = self;
+  webView.navigationDelegate = navigationDelegate;
+
+  if (@available(iOS 11.0, *)) {
+    webView.scrollView.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
+    if (@available(iOS 13.0, *)) {
+      webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
+    }
+  }
+  return webView;
 }
 
 - (void)dealloc {
