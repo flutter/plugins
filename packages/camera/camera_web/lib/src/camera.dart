@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:html' as html;
+import 'dart:ui';
 import 'shims/dart_ui.dart' as ui;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
@@ -169,6 +170,30 @@ class Camera {
       ..drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
     final blob = await canvas.toBlob('image/jpeg');
     return XFile(html.Url.createObjectUrl(blob));
+  }
+
+  /// Returns a size of the camera video based on its first video track size.
+  ///
+  /// Returns [Size.zero] if the camera is missing a video track or
+  /// the video track does not include the width or height setting.
+  Future<Size> getVideoSize() async {
+    final videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
+
+    if (videoTracks.isEmpty) {
+      return Size.zero;
+    }
+
+    final defaultVideoTrack = videoTracks.first;
+    final defaultVideoTrackSettings = defaultVideoTrack.getSettings();
+
+    final width = defaultVideoTrackSettings['width'];
+    final height = defaultVideoTrackSettings['height'];
+
+    if (width != null && height != null) {
+      return Size(width, height);
+    } else {
+      return Size.zero;
+    }
   }
 
   /// Disposes the camera by stopping the camera stream

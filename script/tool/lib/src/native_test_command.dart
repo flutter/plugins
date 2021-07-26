@@ -235,7 +235,7 @@ this command.
       if (runUnitTests) {
         print('Running unit tests...');
         final int exitCode = await processRunner.runAndStream(
-            gradleFile.path, <String>['testDebugUnitTest', '--info'],
+            gradleFile.path, <String>['testDebugUnitTest'],
             workingDir: androidDirectory);
         if (exitCode != 0) {
           printError('$exampleName unit tests failed.');
@@ -247,7 +247,7 @@ this command.
       if (runIntegrationTests) {
         print('Running integration tests...');
         final int exitCode = await processRunner.runAndStream(
-            gradleFile.path, <String>['app:connectedAndroidTest', '--info'],
+            gradleFile.path, <String>['app:connectedAndroidTest'],
             workingDir: androidDirectory);
         if (exitCode != 0) {
           printError('$exampleName integration tests failed.');
