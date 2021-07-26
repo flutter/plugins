@@ -251,4 +251,43 @@ void main() {
       ]),
     );
   });
+
+  // Ensure that the command used to analyze flutter/plugins in the Dart repo:
+  // https://github.com/dart-lang/sdk/blob/master/tools/bots/flutter/analyze_flutter_plugins.sh
+  // continues to work.
+  //
+  // DO NOT remove or modify this test without a coordination plan in place to
+  // modify the script above, as it is run from source, but out-of-repo.
+  // Contact stuartmorgan or devoncarew for assistance.
+  test('Dart repo analyze command works', () async {
+    final Directory pluginDir = createFakePlugin('foo', packagesDir,
+        extraFiles: <String>['analysis_options.yaml']);
+    final File allowFile = packagesDir.childFile('custom.yaml');
+    allowFile.writeAsStringSync('- foo');
+
+    await runCapturingPrint(runner, <String>[
+      // DO NOT change this call; see comment above.
+      'analyze',
+      '--analysis-sdk',
+      'foo/bar/baz',
+      '--custom-analysis',
+      allowFile.path
+    ]);
+
+    expect(
+      processRunner.recordedCalls,
+      orderedEquals(<ProcessCall>[
+        ProcessCall(
+          'flutter',
+          const <String>['packages', 'get'],
+          pluginDir.path,
+        ),
+        ProcessCall(
+          'foo/bar/baz/bin/dart',
+          const <String>['analyze', '--fatal-infos'],
+          pluginDir.path,
+        ),
+      ]),
+    );
+  });
 }

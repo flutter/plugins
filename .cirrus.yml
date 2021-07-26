@@ -72,6 +72,8 @@ task:
         - cd script/tool
         - dart analyze --fatal-infos
       script:
+        # DO NOT change the custom-analysis argument here without changing the Dart repo.
+        # See the comment in script/configs/custom_analysis.yaml for details.
         - ./script/tool_runner.sh analyze --custom-analysis=script/configs/custom_analysis.yaml
     ### Android tasks ###
     - name: build_all_plugins_apk
