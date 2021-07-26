@@ -7,12 +7,10 @@ package io.flutter.plugins.webviewflutter;
 import static org.junit.Assert.assertEquals;
 
 import android.webkit.WebViewClient;
-
 import org.junit.Test;
 
-
 public class WebViewTest {
-  
+
   @Test
   public void errorCodes() {
     assertEquals(

@@ -5,7 +5,6 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
@@ -30,6 +29,6 @@ public final class FlutterWebViewFactory extends PlatformViewFactory {
     Map<String, Object> params = (Map<String, Object>) args;
     MethodChannel methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
-    return new FlutterWebView(context, methodChannel, params, containerView,displayListenerProxy);
+    return new FlutterWebView(context, methodChannel, params, containerView, displayListenerProxy);
   }
 }
