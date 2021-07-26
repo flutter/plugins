@@ -162,6 +162,8 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private MediaRecorder mediaRecorder;
   /** True when recording video. */
   private boolean recordingVideo;
+  /** True when the preview is paused. */
+  private boolean pausedPreview;
 
   private File captureFile;
 
@@ -189,6 +191,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     this.applicationContext = activity.getApplicationContext();
     this.cameraProperties = cameraProperties;
     this.cameraFeatureFactory = cameraFeatureFactory;
+    this.pausedPreview = false;
 
     // Setup camera features
     this.cameraFeatures = new CameraFeatures();
@@ -484,8 +487,10 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     }
 
     try {
-      captureSession.setRepeatingRequest(
-          previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
+      if (!pausedPreview) {
+        captureSession.setRepeatingRequest(
+            previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
+      }
 
       if (onSuccessCallback != null) {
         onSuccessCallback.run();
@@ -900,29 +905,32 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
      * For focus mode we need to do an extra step of actually locking/unlocking the
      * focus in order to ensure it goes into the correct state.
      */
-    switch (newMode) {
-      case locked:
-        // Perform a single focus trigger
-        lockAutoFocus();
+    if (!pausedPreview) {
+      switch (newMode) {
+        case locked:
+          // Perform a single focus trigger
+          lockAutoFocus();
 
-        // Set AF state to idle again
-        previewRequestBuilder.set(
-            CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+          // Set AF state to idle again
+          previewRequestBuilder.set(
+              CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
-        try {
-          captureSession.setRepeatingRequest(
-              previewRequestBuilder.build(), null, backgroundHandler);
-        } catch (CameraAccessException e) {
-          if (result != null) {
-            result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+          try {
+            captureSession.setRepeatingRequest(
+                previewRequestBuilder.build(), null, backgroundHandler);
+          } catch (CameraAccessException e) {
+            if (result != null) {
+              result.error(
+                  "setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+            }
           }
-        }
-        break;
+          break;
 
-      case auto:
-        // Cancel current AF trigger and set AF to idle again
-        unlockAutoFocus();
-        break;
+        case auto:
+          // Cancel current AF trigger and set AF to idle again
+          unlockAutoFocus();
+          break;
+      }
     }
 
     if (result != null) {
@@ -1024,6 +1032,19 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   /** Unlock capture orientation from dart. */
   public void unlockCaptureOrientation() {
     cameraFeatures.getSensorOrientation().unlockCaptureOrientation();
+  }
+
+  /** Pause the preview from dart. */
+  public void pausePreview() throws CameraAccessException {
+    this.pausedPreview = true;
+    this.captureSession.stopRepeating();
+  }
+
+  /** Resume the preview from dart. */
+  public void resumePreview() throws CameraAccessException {
+    this.pausedPreview = false;
+    this.refreshPreviewCaptureSession(
+        null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
   }
 
   public void startPreview() throws CameraAccessException {

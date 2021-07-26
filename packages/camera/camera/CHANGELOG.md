@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Added functions to pause and resume the camera preview
+
 ## 0.9.0
 
 * Complete rewrite of Android plugin to fix many capture, focus, flash, orientation and exposure issues.
