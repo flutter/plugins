@@ -76,13 +76,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   static const String _gradleWrapper = 'gradlew';
 
-  Completer<void>? _firebaseProjectConfigured;
+  bool _firebaseProjectConfigured = false;
 
   Future<void> _configureFirebaseProject() async {
-    if (_firebaseProjectConfigured != null) {
-      return _firebaseProjectConfigured!.future;
+    if (_firebaseProjectConfigured) {
+      return;
     }
-    _firebaseProjectConfigured = Completer<void>();
 
     final String serviceKey = getStringArg('service-key');
     if (serviceKey.isEmpty) {
@@ -110,30 +109,33 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       print('');
       if (exitCode == 0) {
         print('Firebase project configured.');
-        return;
       } else {
         logWarning(
             'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
-    _firebaseProjectConfigured!.complete(null);
+    _firebaseProjectConfigured = true;
   }
 
   @override
   Future<PackageResult> runForPackage(Directory package) async {
-    if (!package
-        .childDirectory('example')
-        .childDirectory('android')
+    final Directory exampleDirectory = package.childDirectory('example');
+    final Directory androidDirectory =
+        exampleDirectory.childDirectory('android');
+    if (!androidDirectory.existsSync()) {
+      return PackageResult.skip(
+          '${getPackageDescription(exampleDirectory)} does not support Android.');
+    }
+
+    if (!androidDirectory
         .childDirectory('app')
         .childDirectory('src')
         .childDirectory('androidTest')
         .existsSync()) {
-      return PackageResult.skip('No example with androidTest directory');
+      printError('No androidTest directory found.');
+      return PackageResult.fail(
+          <String>['No tests ran (use --exclude if this is intentional).']);
     }
-
-    final Directory exampleDirectory = package.childDirectory('example');
-    final Directory androidDirectory =
-        exampleDirectory.childDirectory('android');
 
     // Ensures that gradle wrapper exists
     if (!await _ensureGradleWrapperExists(androidDirectory)) {
@@ -191,6 +193,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         errors.add('$testName failed tests');
       }
     }
+
+    if (errors.isEmpty && resultsCounter == 0) {
+      printError('No integration tests were run.');
+      errors.add('No tests ran (use --exclude if this is intentional).');
+    }
+
     return errors.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(errors);
