@@ -89,7 +89,7 @@ public class FlutterWebViewTest {
 
     doNothing().when(mockWebView).postUrl(valueCapture.capture(), isA(byte[].class));
 
-    flutterWebView.postUrl(call, mockResult);
+    flutterWebView.onMethodCall(call, mockResult);
 
     assertEquals(URL, valueCapture.getValue());
   }
@@ -104,7 +104,7 @@ public class FlutterWebViewTest {
 
     doNothing().when(mockWebView).postUrl(isA(String.class), valueCapture.capture());
 
-    flutterWebView.postUrl(call, mockResult);
+    flutterWebView.onMethodCall(call, mockResult);
 
     assertEquals(postData, valueCapture.getValue());
   }
@@ -119,7 +119,7 @@ public class FlutterWebViewTest {
 
     doNothing().when(mockResult).success(valueCapture.capture());
 
-    flutterWebView.postUrl(call, mockResult);
+    flutterWebView.onMethodCall(call, mockResult);
 
     assertEquals(null, valueCapture.getValue());
   }
