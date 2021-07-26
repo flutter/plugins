@@ -81,14 +81,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  @VisibleForTesting
-  FlutterWebView(WebView webView, MethodChannel methodChannel, Handler platformThreadHandler) {
-    this.webView = webView;
-    this.methodChannel = methodChannel;
-    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
-    this.platformThreadHandler = platformThreadHandler;
-  }
-
   @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
   @SuppressWarnings("unchecked")
   FlutterWebView(
