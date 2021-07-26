@@ -15,6 +15,11 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 - (bool)postUrl:(NSString *)url withBody:(FlutterStandardTypedData *)postData;
 - (void)onPostUrl:(FlutterMethodCall *)call result:(FlutterResult)result;
 - (bool)postRequest:(NSDictionary<NSString *, id> *)request;
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+              binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
+
 @end
 
 @interface MockFLTWebViewControllerForOnPostUrl : FLTWebViewController
@@ -100,7 +105,6 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 - (void)setUp {
   [super setUp];
   self.mockBinaryMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
-  _resultObject = [MockWKWebViewForPostUrl new];
 }
 
 - (void)testPostUrl_should_return_false_when_url_is_nil {
@@ -110,10 +114,13 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
   FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
 
-  FLTWebViewController *controller = [[FLTWebViewController alloc] initWithWebView:_resultObject];
-
+  MockFLTWebViewController *mockController =
+      [[MockFLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                       viewIdentifier:1
+                                            arguments:nil
+                                      binaryMessenger:self.mockBinaryMessenger];
   // Run test
-  bool result = [controller postUrl:url withBody:postData];
+  bool result = [mockController postUrl:url withBody:postData];
 
   XCTAssertFalse(result);
 }
@@ -125,17 +132,23 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
   FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
 
-  FLTWebViewController *controller = [[FLTWebViewController alloc] initWithWebView:_resultObject];
-
+  MockFLTWebViewController *mockController =
+      [[MockFLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                       viewIdentifier:1
+                                            arguments:nil
+                                      binaryMessenger:self.mockBinaryMessenger];
   // Run test
-  bool result = [controller postUrl:url withBody:postData];
-  NSString *decodedHTTPBody = [[NSString alloc] initWithData:_resultObject.receivedResult.HTTPBody
-                                                    encoding:NSUTF8StringEncoding];
+  bool result = [mockController postUrl:url withBody:postData];
+  NSString *decodedHTTPBody =
+      [[NSString alloc] initWithData:[mockController getResultObject].receivedResult.HTTPBody
+                            encoding:NSUTF8StringEncoding];
 
   XCTAssertTrue(result);
   XCTAssertTrue([decodedHTTPBody isEqualToString:str]);
-  XCTAssertTrue([_resultObject.receivedResult.HTTPMethod isEqualToString:@"POST"]);
-  XCTAssertTrue([_resultObject.receivedResult.URL.absoluteString isEqualToString:url]);
+  XCTAssertTrue(
+      [[mockController getResultObject].receivedResult.HTTPMethod isEqualToString:@"POST"]);
+  XCTAssertTrue(
+      [[mockController getResultObject].receivedResult.URL.absoluteString isEqualToString:url]);
 }
 
 - (void)testOnPostUrl_should_call_result_flutter_error_when_postRequest_return_false {
@@ -167,9 +180,13 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 }
 
 - (void)testPostRequest_should_return_false_when_request_is_nil {
-  FLTWebViewController *controller = [[FLTWebViewController alloc] initWithWebView:_resultObject];
+  MockFLTWebViewController *mockController =
+      [[MockFLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                       viewIdentifier:1
+                                            arguments:nil
+                                      binaryMessenger:self.mockBinaryMessenger];
 
-  bool result = [controller postRequest:nil];
+  bool result = [mockController postRequest:nil];
 
   XCTAssertFalse(result);
 }
