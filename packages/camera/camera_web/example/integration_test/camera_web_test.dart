@@ -11,6 +11,7 @@ import 'package:camera_web/camera_web.dart';
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
+import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -634,10 +635,24 @@ void main() {
       );
     });
 
-    testWidgets('buildPreview throws UnimplementedError', (tester) async {
+    testWidgets(
+        'buildPreview returns an HtmlElementView '
+        'with an appropriate view type', (tester) async {
+      final camera = Camera(
+        textureId: cameraId,
+        window: window,
+      );
+
+      // Save the camera in the camera plugin.
+      (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
       expect(
-        () => CameraPlatform.instance.buildPreview(cameraId),
-        throwsUnimplementedError,
+        CameraPlatform.instance.buildPreview(cameraId),
+        isA<widgets.HtmlElementView>().having(
+          (view) => view.viewType,
+          'viewType',
+          camera.getViewType(),
+        ),
       );
     });
 
