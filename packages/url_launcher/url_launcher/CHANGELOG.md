@@ -1,3 +1,7 @@
+## 6.0.10
+
+* Remove references to the Android v1 embedding.
+
 ## 6.0.9
 
 * Silenced warnings that may occur during build when using a very
