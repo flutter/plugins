@@ -172,6 +172,19 @@ void main() {
       expect(plugins, unorderedEquals(<String>[plugin2.path]));
     });
 
+    test('exclude accepts config files', () async {
+      createFakePlugin('plugin1', packagesDir);
+      final File configFile = packagesDir.childFile('exclude.yaml');
+      configFile.writeAsStringSync('- plugin1');
+
+      await runCapturingPrint(runner, <String>[
+        'sample',
+        '--packages=plugin1',
+        '--exclude=${configFile.path}'
+      ]);
+      expect(plugins, unorderedEquals(<String>[]));
+    });
+
     group('test run-on-changed-packages', () {
       test('all plugins should be tested if there are no changes.', () async {
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
