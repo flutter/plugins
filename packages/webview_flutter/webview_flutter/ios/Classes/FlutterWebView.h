@@ -22,8 +22,6 @@ NS_ASSUME_NONNULL_BEGIN
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
 
-- (instancetype)initWithWebView:(FLTWKWebView*)webView;
-
 - (UIView*)view;
 @end
 

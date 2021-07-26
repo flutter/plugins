@@ -68,12 +68,6 @@
   FLTWKProgressionDelegate* _progressionDelegate;
 }
 
-- (instancetype)initWithWebView:(FLTWKWebView*)webView {
-  self = [super init];
-  _webView = webView;
-  return self;
-}
-
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
