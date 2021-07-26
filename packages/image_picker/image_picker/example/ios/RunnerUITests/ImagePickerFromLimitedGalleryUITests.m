@@ -33,7 +33,7 @@ const int kLimitedElementWaitingTime = 30;
                                             os_log_error(OS_LOG_DEFAULT, "%@",
                                                          weakSelf.app.debugDescription);
                                             XCTFail(@"Failed due to not able to find "
-                                                    @"selectPhotos butt   on with %@ seconds",
+                                                    @"selectPhotos button with %@ seconds",
                                                     @(kLimitedElementWaitingTime));
                                           }
                                           [limitedPhotoPermission tap];
