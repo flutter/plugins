@@ -80,7 +80,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void testPostUrl_should_call_webView_postUrl_with_correct_url() {
+  public void postUrl_should_call_webView_postUrl_with_correct_url() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
     MethodCall call = buildMethodCall(POST_URL, URL, postData);
@@ -95,7 +95,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void testPostUrl_should_call_webView_postUrl_with_correct_http_body() {
+  public void postUrl_should_call_webView_postUrl_with_correct_http_body() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
     MethodCall call = buildMethodCall(POST_URL, URL, postData);
@@ -110,7 +110,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void testPostUrl_should_call_result_success_with_null() {
+  public void postUrl_should_call_result_success_with_null() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
     MethodCall call = buildMethodCall(POST_URL, URL, postData);
