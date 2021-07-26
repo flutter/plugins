@@ -47,6 +47,7 @@ const int kLimitedElementWaitingTime = 30;
 }
 
 - (void)testSelectingFromGallery {
+  // Test the `Select Photos` button which is available after iOS 14.
   if (@available(iOS 14, *)) {
     [self launchPickerAndSelect];
   } else {
