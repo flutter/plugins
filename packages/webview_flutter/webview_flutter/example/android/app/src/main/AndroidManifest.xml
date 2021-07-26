@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.flutter.plugins.webviewflutterexample">
+
   <application
+    android:usesCleartextTraffic="true"
     android:icon="@mipmap/ic_launcher"
     android:label="webview_flutter_example">
     <meta-data
