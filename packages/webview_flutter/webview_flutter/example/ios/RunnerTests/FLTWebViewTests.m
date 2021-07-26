@@ -68,11 +68,30 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @end
 
+@interface MockFLTWebViewController : FLTWebViewController
+
+@end
+
+@implementation MockFLTWebViewController {
+  MockWKWebViewForPostUrl *mockFLTWKWebView;
+}
+
+- (FLTWKWebView *)createFLTWKWebViewWithFrame:(CGRect)frame
+                                configuration:(WKWebViewConfiguration *)configuration
+                           navigationDelegate:(FLTWKNavigationDelegate *)navigationDelegate {
+  mockFLTWKWebView = [MockWKWebViewForPostUrl new];
+  return mockFLTWKWebView;
+}
+
+- (MockWKWebViewForPostUrl *)getResultObject {
+  return mockFLTWKWebView;
+}
+
+@end
+
 @interface FLTWebViewTests : XCTestCase
 
 @property(strong, nonatomic) NSObject<FlutterBinaryMessenger> *mockBinaryMessenger;
-
-@property(readonly, nonatomic) MockWKWebViewForPostUrl *resultObject;
 
 @end
 
