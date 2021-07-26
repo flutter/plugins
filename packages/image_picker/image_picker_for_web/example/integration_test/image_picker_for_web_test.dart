@@ -11,9 +11,16 @@ import 'package:image_picker_for_web/image_picker_for_web.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
-final String expectedStringContents = "Hello, world!";
+final String expectedStringContents = 'Hello, world!';
+final String otherStringContents = 'Hello again, world!';
 final Uint8List bytes = utf8.encode(expectedStringContents) as Uint8List;
-final html.File textFile = html.File([bytes], "hello.txt");
+final Uint8List otherBytes = utf8.encode(otherStringContents) as Uint8List;
+final Map<String, dynamic> options = {
+  'type': 'text/plain',
+  'lastModified': DateTime.utc(2017, 12, 13).millisecondsSinceEpoch,
+};
+final html.File textFile = html.File([bytes], 'hello.txt', options);
+final html.File secondTextFile = html.File([otherBytes], 'secondFile.txt');
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +37,7 @@ void main() {
 
     final overrides = ImagePickerPluginTestOverrides()
       ..createInputElement = ((_, __) => mockInput)
-      ..getFileFromInput = ((_) => textFile);
+      ..getMultipleFilesFromInput = ((_) => [textFile]);
 
     final plugin = ImagePickerPlugin(overrides: overrides);
 
@@ -51,20 +58,58 @@ void main() {
 
     final overrides = ImagePickerPluginTestOverrides()
       ..createInputElement = ((_, __) => mockInput)
-      ..getFileFromInput = ((_) => textFile);
+      ..getMultipleFilesFromInput = ((_) => [textFile]);
 
     final plugin = ImagePickerPlugin(overrides: overrides);
 
     // Init the pick file dialog...
-    final file = plugin.getFile();
+    final image = plugin.getImage(source: ImageSource.camera);
 
     // Mock the browser behavior of selecting a file...
     mockInput.dispatchEvent(html.Event('change'));
 
     // Now the file should be available
-    expect(file, completes);
+    expect(image, completes);
+
     // And readable
-    expect((await file).readAsBytes(), completion(isNotEmpty));
+    final XFile file = await image;
+    expect(file.readAsBytes(), completion(isNotEmpty));
+    expect(file.name, textFile.name);
+    expect(file.length(), completion(textFile.size));
+    expect(file.mimeType, textFile.type);
+    expect(
+        file.lastModified(),
+        completion(
+          DateTime.fromMillisecondsSinceEpoch(textFile.lastModified!),
+        ));
+  });
+
+  testWidgets('Can select multiple files', (WidgetTester tester) async {
+    final mockInput = html.FileUploadInputElement();
+
+    final overrides = ImagePickerPluginTestOverrides()
+      ..createInputElement = ((_, __) => mockInput)
+      ..getMultipleFilesFromInput = ((_) => [textFile, secondTextFile]);
+
+    final plugin = ImagePickerPlugin(overrides: overrides);
+
+    // Init the pick file dialog...
+    final files = plugin.getMultiImage();
+
+    // Mock the browser behavior of selecting a file...
+    mockInput.dispatchEvent(html.Event('change'));
+
+    // Now the file should be available
+    expect(files, completes);
+
+    // And readable
+    expect((await files).first.readAsBytes(), completion(isNotEmpty));
+
+    // Peek into the second file...
+    final XFile secondFile = (await files).elementAt(1);
+    expect(secondFile.readAsBytes(), completion(isNotEmpty));
+    expect(secondFile.name, secondTextFile.name);
+    expect(secondFile.length(), completion(secondTextFile.size));
   });
 
   // There's no good way of detecting when the user has "aborted" the selection.
@@ -94,6 +139,7 @@ void main() {
 
       expect(input.attributes, containsPair('accept', 'any'));
       expect(input.attributes, isNot(contains('capture')));
+      expect(input.attributes, isNot(contains('multiple')));
     });
 
     testWidgets('accept: any, capture: something', (WidgetTester tester) async {
@@ -101,6 +147,27 @@ void main() {
 
       expect(input.attributes, containsPair('accept', 'any'));
       expect(input.attributes, containsPair('capture', 'something'));
+      expect(input.attributes, isNot(contains('multiple')));
+    });
+
+    testWidgets('accept: any, capture: null, multi: true',
+        (WidgetTester tester) async {
+      html.Element input =
+          plugin.createInputElement('any', null, multiple: true);
+
+      expect(input.attributes, containsPair('accept', 'any'));
+      expect(input.attributes, isNot(contains('capture')));
+      expect(input.attributes, contains('multiple'));
+    });
+
+    testWidgets('accept: any, capture: something, multi: true',
+        (WidgetTester tester) async {
+      html.Element input =
+          plugin.createInputElement('any', 'something', multiple: true);
+
+      expect(input.attributes, containsPair('accept', 'any'));
+      expect(input.attributes, containsPair('capture', 'something'));
+      expect(input.attributes, contains('multiple'));
     });
   });
 }
