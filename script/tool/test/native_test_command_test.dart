@@ -376,7 +376,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['testDebugUnitTest', '--info'],
+              const <String>['testDebugUnitTest'],
               androidFolder.path,
             ),
           ]),
@@ -406,7 +406,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['testDebugUnitTest', '--info'],
+              const <String>['testDebugUnitTest'],
               androidFolder.path,
             ),
           ]),
@@ -812,7 +812,7 @@ void main() {
             orderedEquals(<ProcessCall>[
               ProcessCall(
                   androidFolder.childFile('gradlew').path,
-                  const <String>['testDebugUnitTest', '--info'],
+                  const <String>['testDebugUnitTest'],
                   androidFolder.path),
               ProcessCall(
                   'xcrun',

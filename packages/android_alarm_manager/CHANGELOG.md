@@ -1,3 +1,7 @@
+## NEXT
+
+* Remove support for the V1 Android embedding.
+
 ## 2.0.2
 
 * Update README to point to Plus Plugins version.
