@@ -436,7 +436,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['app:connectedAndroidTest', '--info'],
+              const <String>['app:connectedAndroidTest'],
               androidFolder.path,
             ),
           ]),
@@ -467,12 +467,12 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['testDebugUnitTest', '--info'],
+              const <String>['testDebugUnitTest'],
               androidFolder.path,
             ),
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['app:connectedAndroidTest', '--info'],
+              const <String>['app:connectedAndroidTest'],
               androidFolder.path,
             ),
           ]),
@@ -504,7 +504,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['app:connectedAndroidTest', '--info'],
+              const <String>['app:connectedAndroidTest'],
               androidFolder.path,
             ),
           ]),
@@ -536,7 +536,7 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['testDebugUnitTest', '--info'],
+              const <String>['testDebugUnitTest'],
               androidFolder.path,
             ),
           ]),
@@ -981,10 +981,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  androidFolder.childFile('gradlew').path,
-                  const <String>['testDebugUnitTest'],
-                  androidFolder.path),
+              ProcessCall(androidFolder.childFile('gradlew').path,
+                  const <String>['testDebugUnitTest'], androidFolder.path),
               ProcessCall(
                   'xcrun',
                   const <String>[
