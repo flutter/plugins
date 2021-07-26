@@ -103,6 +103,7 @@ void main() {
     expect(content.contains('flutter_test_header'), isTrue);
   }, skip: Platform.isAndroid);
 
+  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('JavaScriptChannel', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -149,7 +150,7 @@ void main() {
     // https://github.com/flutter/flutter/issues/66318
     await controller.evaluateJavascript('Echo.postMessage("hello");1;');
     expect(messagesReceived, equals(<String>['hello']));
-  });
+  }, skip: Platform.isAndroid);
 
   testWidgets('resize webview', (WidgetTester tester) async {
     final String resizeTest = '''
