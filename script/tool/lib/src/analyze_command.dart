@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:file/file.dart';
 import 'package:platform/platform.dart';
+import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -23,7 +24,10 @@ class AnalyzeCommand extends PackageLoopingCommand {
   }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addMultiOption(_customAnalysisFlag,
         help:
-            'Directories (comma separated) that are allowed to have their own analysis options.',
+            'Directories (comma separated) that are allowed to have their own '
+            'analysis options.\n\n'
+            'Alternately, a list of one or more YAML files that contain a list '
+            'of allowed directories.',
         defaultsTo: <String>[]);
     argParser.addOption(_analysisSdk,
         valueHelp: 'dart-sdk',
@@ -36,6 +40,8 @@ class AnalyzeCommand extends PackageLoopingCommand {
   static const String _analysisSdk = 'analysis-sdk';
 
   late String _dartBinaryPath;
+
+  Set<String> _allowedCustomAnalysisDirectories = const <String>{};
 
   @override
   final String name = 'analyze';
@@ -56,7 +62,7 @@ class AnalyzeCommand extends PackageLoopingCommand {
         continue;
       }
 
-      final bool allowed = (getStringListArg(_customAnalysisFlag)).any(
+      final bool allowed = _allowedCustomAnalysisDirectories.any(
           (String directory) =>
               directory.isNotEmpty &&
               path.isWithin(
@@ -106,6 +112,17 @@ class AnalyzeCommand extends PackageLoopingCommand {
       printError('Unable to get dependencies.');
       throw ToolExit(_exitPackagesGetFailed);
     }
+
+    _allowedCustomAnalysisDirectories =
+        getStringListArg(_customAnalysisFlag).expand<String>((String item) {
+      if (item.endsWith('.yaml')) {
+        final File file = packagesDir.fileSystem.file(item);
+        return (loadYaml(file.readAsStringSync()) as YamlList)
+            .toList()
+            .cast<String>();
+      }
+      return <String>[item];
+    }).toSet();
 
     // Use the Dart SDK override if one was passed in.
     final String? dartSdk = argResults![_analysisSdk] as String?;

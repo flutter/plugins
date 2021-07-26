@@ -7,11 +7,13 @@ import 'dart:html' as html;
 import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:stream_transform/stream_transform.dart';
 
 /// The web implementation of [CameraPlatform].
 ///
@@ -31,10 +33,27 @@ class CameraPlugin extends CameraPlatform {
 
   final CameraSettings _cameraSettings;
 
+  /// The cameras managed by the [CameraPlugin].
+  @visibleForTesting
+  final cameras = <int, Camera>{};
+  var _textureCounter = 1;
+
   /// Metadata associated with each camera description.
   /// Populated in [availableCameras].
   @visibleForTesting
   final camerasMetadata = <CameraDescription, CameraMetadata>{};
+
+  /// The controller used to broadcast different camera events.
+  ///
+  /// It is `broadcast` as multiple controllers may subscribe
+  /// to different stream views of this controller.
+  @visibleForTesting
+  final cameraEventStreamController = StreamController<CameraEvent>.broadcast();
+
+  /// Returns a stream of camera events for the given [cameraId].
+  Stream<CameraEvent> _cameraEvents(int cameraId) =>
+      cameraEventStreamController.stream
+          .where((event) => event.cameraId == cameraId);
 
   /// The current browser window used to access media devices.
   @visibleForTesting
@@ -130,21 +149,84 @@ class CameraPlugin extends CameraPlatform {
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
-  }) {
-    throw UnimplementedError('createCamera() is not implemented.');
+  }) async {
+    if (!camerasMetadata.containsKey(cameraDescription)) {
+      throw CameraException(
+        CameraErrorCodes.missingMetadata,
+        'Missing camera metadata. Make sure to call `availableCameras` before creating a camera.',
+      );
+    }
+
+    final textureId = _textureCounter++;
+
+    final cameraMetadata = camerasMetadata[cameraDescription]!;
+
+    final cameraType = cameraMetadata.facingMode != null
+        ? _cameraSettings.mapFacingModeToCameraType(cameraMetadata.facingMode!)
+        : null;
+
+    // Use the highest resolution possible
+    // if the resolution preset is not specified.
+    final videoSize = _cameraSettings
+        .mapResolutionPresetToSize(resolutionPreset ?? ResolutionPreset.max);
+
+    // Create a camera with the given audio and video constraints.
+    // Sensor orientation is currently not supported.
+    final camera = Camera(
+      textureId: textureId,
+      window: window,
+      options: CameraOptions(
+        audio: AudioConstraints(enabled: enableAudio),
+        video: VideoConstraints(
+          facingMode:
+              cameraType != null ? FacingModeConstraint(cameraType) : null,
+          width: VideoSizeConstraint(
+            ideal: videoSize.width.toInt(),
+          ),
+          height: VideoSizeConstraint(
+            ideal: videoSize.height.toInt(),
+          ),
+          deviceId: cameraMetadata.deviceId,
+        ),
+      ),
+    );
+
+    cameras[textureId] = camera;
+
+    return textureId;
   }
 
   @override
   Future<void> initializeCamera(
     int cameraId, {
+    // The image format group is currently not supported.
     ImageFormatGroup imageFormatGroup = ImageFormatGroup.unknown,
-  }) {
-    throw UnimplementedError('initializeCamera() is not implemented.');
+  }) async {
+    final camera = getCamera(cameraId);
+
+    await camera.initialize();
+    await camera.play();
+
+    final cameraSize = await camera.getVideoSize();
+
+    cameraEventStreamController.add(
+      CameraInitializedEvent(
+        cameraId,
+        cameraSize.width,
+        cameraSize.height,
+        // TODO(camera_web): Add support for exposure mode and point (https://github.com/flutter/flutter/issues/86857).
+        ExposureMode.auto,
+        false,
+        // TODO(camera_web): Add support for focus mode and point (https://github.com/flutter/flutter/issues/86858).
+        FocusMode.auto,
+        false,
+      ),
+    );
   }
 
   @override
   Stream<CameraInitializedEvent> onCameraInitialized(int cameraId) {
-    throw UnimplementedError('onCameraInitialized() is not implemented.');
+    return _cameraEvents(cameraId).whereType<CameraInitializedEvent>();
   }
 
   @override
@@ -298,5 +380,22 @@ class CameraPlugin extends CameraPlatform {
     );
 
     return mediaDevices.getUserMedia(cameraOptions.toJson());
+  }
+
+  /// Returns a camera for the given [cameraId].
+  ///
+  /// Throws a [CameraException] if the camera does not exist.
+  @visibleForTesting
+  Camera getCamera(int cameraId) {
+    final camera = cameras[cameraId];
+
+    if (camera == null) {
+      throw CameraException(
+        CameraErrorCodes.notFound,
+        'No camera found for the given camera id $cameraId.',
+      );
+    }
+
+    return camera;
   }
 }
