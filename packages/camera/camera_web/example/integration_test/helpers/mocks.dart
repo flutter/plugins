@@ -7,6 +7,7 @@ import 'dart:ui';
 
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
+import 'package:cross_file/cross_file.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockWindow extends Mock implements Window {}
@@ -20,6 +21,8 @@ class MockCameraSettings extends Mock implements CameraSettings {}
 class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
 class MockCamera extends Mock implements Camera {}
+
+class MockXFile extends Mock implements XFile {}
 
 /// A fake [MediaStream] that returns the provided [_videoTracks].
 class FakeMediaStream extends Fake implements MediaStream {
