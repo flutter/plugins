@@ -204,6 +204,12 @@
   }
 }
 
+/**
+ * Applies nil on the FlutterResult if the postRequest is successfully completed.
+ *
+ * @param call the method call with arguments.
+ * @param result the FlutterResult.
+ */
 - (void)onPostUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
   if (![self postRequest:[call arguments]]) {
     result([FlutterError
@@ -473,6 +479,13 @@
   return true;
 }
 
+/**
+ * Extracts request data from the arguments.
+ *
+ * @param request the arguments of the method call.
+ *
+ * @return bool the result of postUrl method.
+ */
 - (bool)postRequest:(NSDictionary<NSString*, id>*)request {
   if (!request) {
     return false;
@@ -488,6 +501,15 @@
   return false;
 }
 
+/**
+ * Sends post request by FLTWKWebView's loadRequest method with
+ * the POST method and encoded HTTP body.
+ *
+ * @param url the request URL.
+ * @param postData the encoded data for HTTP body.
+ *
+ * @return bool the true if the method completed successfully.
+ */
 - (bool)postUrl:(NSString*)url withBody:(FlutterStandardTypedData*)postData {
   NSURL* nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
