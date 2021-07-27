@@ -8,7 +8,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -232,14 +231,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 ? Container()
                 : SizedBox(
                     child: (localVideoController == null)
-                        ? (
-                            // The captured image on Web contains a network-accessible URL
-                            // pointing to a location within the browser. It may be displayed
-                            // either with Image.network or Image.memory after loading the image
-                            // bytes to memory.
-                            kIsWeb
-                                ? Image.network(imageFile!.path)
-                                : Image.file(File(imageFile!.path)))
+                        ? Image.file(File(imageFile!.path))
                         : Container(
                             child: Center(
                               child: AspectRatio(
