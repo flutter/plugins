@@ -1,6 +1,7 @@
-## NEXT
+## 2.0.1
 
 * Add native unit tests.
+* Updated installation instructions in README.
 
 ## 2.0.0
 

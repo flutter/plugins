@@ -1,22 +1,11 @@
-# shared_preferences_linux
+# shared\_preferences\_linux
 
 The Linux implementation of [`shared_preferences`][1].
 
 ## Usage
 
-### Import the package
+This package is [endorsed][2], which means you can simply use `shared_preferences`
+normally. This package will be automatically included in your app when you do.
 
-This package is an unendorsed Linux implementation of `shared_preferences`.
-
-In order to use this now, you'll need to depend on `shared_preferences_linux`.
-When this package is endorsed it will be automatically used by the `shared_preferences` package and you can switch to that API.
-
-```yaml
-...
-dependencies:
-  ...
-  shared_preferences_linux: ^0.0.1
-  ...
-```
-
-[1]: ../
+[1]: https://pub.dev/packages/shared_preferences
+[2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
