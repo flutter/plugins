@@ -1,35 +1,15 @@
-# in_app_purchase_ios
+# in\_app\_purchase\_ios
 
 The iOS implementation of [`in_app_purchase`][1].
 
 ## Usage
 
-### Import the package
-
-This package has been endorsed, meaning that you only need to add `in_app_purchase`
-as a dependency in your `pubspec.yaml`. It will be automatically included in your app
-when you depend on `package:in_app_purchase`.
-
-This is what the above means to your `pubspec.yaml`:
-
-```yaml
-...
-dependencies:
-  ...
-  in_app_purchase: ^0.6.0
-  ...
+This package has been [endorsed][2], meaning that you only need to add `in_app_purchase`
+as a dependency in your `pubspec.yaml`. This package will be automatically included in your app
+when you do.
 ```
 
-If you wish to use the iOS package only, you can add  `in_app_purchase_ios` as a
-dependency:
-
-```yaml
-...
-dependencies:
-  ...
-  in_app_purchase_ios: ^1.0.0
-  ...
-```
+If you wish to use the iOS package only, you can [add  `in_app_purchase_ios` directly][3].
 
 ## Contributing
 
@@ -46,3 +26,5 @@ If you would like to contribute to the plugin, check out our
 
 
 [1]: ../in_app_purchase/in_app_purchase
+[2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
+[3]: https://pub.dev/packages/in_app_purchase_ios/install
