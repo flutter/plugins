@@ -492,13 +492,12 @@
   }
 
   NSString* url = request[@"url"];
-  if ([url isKindOfClass:[NSString class]]) {
-    id postData = request[@"postData"];
-    if ([postData isKindOfClass:[FlutterStandardTypedData class]]) {
-      return [self postUrl:url withBody:postData];
-    }
+  id postData = request[@"postData"];
+  if (![url isKindOfClass:[NSString class]] &&
+      ![postData isKindOfClass:[FlutterStandardTypedData class]]) {
+    return false;
   }
-  return false;
+  return [self postUrl:url withBody:postData];
 }
 
 /**
