@@ -367,8 +367,9 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> dispose(int cameraId) {
-    throw UnimplementedError('dispose() is not implemented.');
+  Future<void> dispose(int cameraId) async {
+    getCamera(cameraId).dispose();
+    cameras.remove(cameraId);
   }
 
   /// Returns a media video stream for the device with the given [deviceId].
