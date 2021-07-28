@@ -684,11 +684,54 @@ void main() {
       );
     });
 
-    testWidgets('dispose throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.dispose(cameraId),
-        throwsUnimplementedError,
-      );
+    group('dispose', () {
+      testWidgets(
+          'throws CameraException '
+          'with notFound error '
+          'if the camera does not exist', (tester) async {
+        expect(
+          () => CameraPlatform.instance.dispose(cameraId),
+          throwsA(
+            isA<CameraException>().having(
+              (e) => e.code,
+              'code',
+              CameraErrorCodes.notFound,
+            ),
+          ),
+        );
+      });
+
+      testWidgets('disposes the correct camera', (tester) async {
+        const firstCameraId = 0;
+        const secondCameraId = 1;
+
+        final firstCamera = MockCamera();
+        final secondCamera = MockCamera();
+
+        when(firstCamera.dispose).thenAnswer((_) => Future.value());
+        when(secondCamera.dispose).thenAnswer((_) => Future.value());
+
+        // Save cameras in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras.addAll({
+          firstCameraId: firstCamera,
+          secondCameraId: secondCamera,
+        });
+
+        // Dispose the first camera.
+        await CameraPlatform.instance.dispose(firstCameraId);
+
+        // The first camera should be disposed.
+        verify(firstCamera.dispose).called(1);
+        verifyNever(secondCamera.dispose);
+
+        // The first camera should be removed from the camera plugin.
+        expect(
+          (CameraPlatform.instance as CameraPlugin).cameras,
+          equals({
+            secondCameraId: secondCamera,
+          }),
+        );
+      });
     });
 
     group('getCamera', () {
