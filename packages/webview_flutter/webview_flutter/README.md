@@ -23,7 +23,7 @@ Here are some points to consider when choosing between the two:
 
 * *Hybrid composition* mode has a built-in keyboard support while *Virtual displays* mode has multiple
 [keyboard issues](https://github.com/flutter/flutter/issues?q=is%3Aopen+label%3Avd-only+label%3A%22p%3A+webview-keyboard%22)
-* *Hybrid composition* mode only requires Android SKD 19+ while *Virtual displays* mode requires Android SDK 20+
+* *Hybrid composition* mode requires Android SKD 19+ while *Virtual displays* mode requires Android SDK 20+
 * *Hybrid composition* mode has [perfomence limitations](https://flutter.dev/docs/development/platform-integration/platform-views#performance) when working on Android versions perior to Android 10 while *Virtual displays* is performent on all supported Android versions 
 
 |                             | Hybrid composition  | Virtual displays |
