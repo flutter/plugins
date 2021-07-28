@@ -9,6 +9,7 @@ import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
+import 'package:yaml/yaml.dart';
 
 import 'core.dart';
 import 'git_version_finder.dart';
@@ -48,7 +49,9 @@ abstract class PluginCommand extends Command<void> {
     argParser.addMultiOption(
       _excludeArg,
       abbr: 'e',
-      help: 'Exclude packages from this command.',
+      help: 'A list of packages to exclude from from this command.\n\n'
+          'Alternately, a list of one or more YAML files that contain a list '
+          'of packages to exclude.',
       defaultsTo: <String>[],
     );
     argParser.addFlag(_runOnChangedPackagesArg,
@@ -214,8 +217,18 @@ abstract class PluginCommand extends Command<void> {
   ///    of packages in the flutter/packages repository.
   Stream<Directory> _getAllPlugins() async* {
     Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
+
     final Set<String> excludedPlugins =
-        Set<String>.from(getStringListArg(_excludeArg));
+        getStringListArg(_excludeArg).expand<String>((String item) {
+      if (item.endsWith('.yaml')) {
+        final File file = packagesDir.fileSystem.file(item);
+        return (loadYaml(file.readAsStringSync()) as YamlList)
+            .toList()
+            .cast<String>();
+      }
+      return <String>[item];
+    }).toSet();
+
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
     if (plugins.isEmpty &&
         runOnChangedPackages &&

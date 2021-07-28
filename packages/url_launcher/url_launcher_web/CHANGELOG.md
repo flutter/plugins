@@ -1,3 +1,7 @@
+## 2.0.2
+
+- Updated installation instructions in README.
+
 # 2.0.1
 
 - Change sizing code of `Link` widget's `HtmlElementView` so it works well when slotted.

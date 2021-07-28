@@ -400,6 +400,22 @@ class MethodChannelCamera extends CameraPlatform {
   }
 
   @override
+  Future<void> pausePreview(int cameraId) async {
+    await _channel.invokeMethod<double>(
+      'pausePreview',
+      <String, dynamic>{'cameraId': cameraId},
+    );
+  }
+
+  @override
+  Future<void> resumePreview(int cameraId) async {
+    await _channel.invokeMethod<double>(
+      'resumePreview',
+      <String, dynamic>{'cameraId': cameraId},
+    );
+  }
+
+  @override
   Widget buildPreview(int cameraId) {
     return Texture(textureId: cameraId);
   }
