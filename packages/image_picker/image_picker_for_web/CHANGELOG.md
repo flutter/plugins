@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Updated installation instructions in README.
+
 # 2.1.1
 
 * Implemented `getMultiImage`.

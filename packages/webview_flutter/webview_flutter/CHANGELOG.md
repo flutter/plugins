@@ -2,6 +2,10 @@
 
 * Improved the documentation on using the different Android Platform View modes.
 
+## 2.0.11
+
+* Remove references to the Android V1 embedding.
+
 ## 2.0.10
 
 * Fix keyboard issues link in the README.
