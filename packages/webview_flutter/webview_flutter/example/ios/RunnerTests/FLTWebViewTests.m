@@ -222,10 +222,6 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
       [[mockController getResultObject].receivedResult.URL.absoluteString isEqualToString:url]);
 }
 
-// implemetation sinifinda gereksiz methodalari kaldir.
-// implementation class ta method commentlerini yaz
-// Pr pushla ve mauritten feedback iste.s
-
 - (void)testCanInitFLTWebViewController {
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
