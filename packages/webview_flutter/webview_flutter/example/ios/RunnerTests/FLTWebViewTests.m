@@ -12,9 +12,9 @@
 static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @interface FLTWebViewController (Test)
-- (bool)postUrl:(NSString *)url withBody:(FlutterStandardTypedData *)postData;
+- (NSURLRequest *)buildNSURLRequest:(NSString *)method
+                          arguments:(NSDictionary<NSString *, id> *)arguments;
 - (void)onPostUrl:(FlutterMethodCall *)call result:(FlutterResult)result;
-- (bool)postRequest:(NSDictionary<NSString *, id> *)request;
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
@@ -22,49 +22,11 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @end
 
-@interface MockFLTWebViewControllerForOnPostUrl : FLTWebViewController
-- (instancetype)initWithPostRequest:(BOOL)postRequestResult;
-@end
-
-@implementation MockFLTWebViewControllerForOnPostUrl {
-  bool _postRequestResult;
-}
-
-- (instancetype)initWithPostRequest:(bool)postRequestResult {
-  _postRequestResult = postRequestResult;
-  return self;
-}
-
-- (bool)postRequest:(NSDictionary<NSString *, id> *)request {
-  return _postRequestResult;
-}
-
-@end
-
-@interface MockFLTWebViewControllerForPostRequest : FLTWebViewController
-- (instancetype)initWithPostUrl:(BOOL)postUrlResult;
-@end
-
-@implementation MockFLTWebViewControllerForPostRequest {
-  bool _postUrlResult;
-}
-
-- (instancetype)initWithPostUrl:(bool)postUrlResult {
-  _postUrlResult = postUrlResult;
-  return self;
-}
-
-- (bool)postUrl:(NSString *)url withBody:(FlutterStandardTypedData *)postData {
-  return _postUrlResult;
-}
-
-@end
-
-@interface MockWKWebViewForPostUrl : FLTWKWebView
+@interface MockFLTWKWebView : FLTWKWebView
 @property(nonatomic, nullable) NSMutableURLRequest *receivedResult;
 @end
 
-@implementation MockWKWebViewForPostUrl
+@implementation MockFLTWKWebView
 
 - (WKNavigation *)loadRequest:(NSMutableURLRequest *)request {
   _receivedResult = request;
@@ -78,18 +40,38 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 @end
 
 @implementation MockFLTWebViewController {
-  MockWKWebViewForPostUrl *mockFLTWKWebView;
+  MockFLTWKWebView *mockFLTWKWebView;
 }
 
 - (FLTWKWebView *)createFLTWKWebViewWithFrame:(CGRect)frame
                                 configuration:(WKWebViewConfiguration *)configuration
                            navigationDelegate:(FLTWKNavigationDelegate *)navigationDelegate {
-  mockFLTWKWebView = [MockWKWebViewForPostUrl new];
+  mockFLTWKWebView = [MockFLTWKWebView new];
   return mockFLTWKWebView;
 }
 
-- (MockWKWebViewForPostUrl *)getResultObject {
+- (MockFLTWKWebView *)getResultObject {
   return mockFLTWKWebView;
+}
+
+@end
+
+@interface MockFLTWebViewControllerForOnPostUrl : FLTWebViewController
+- (instancetype)initWithBuildNSURLRequest:(NSURLRequest *)buildNSURLRequestResult;
+@end
+
+@implementation MockFLTWebViewControllerForOnPostUrl {
+  NSURLRequest *_buildNSURLRequestResult;
+}
+
+- (instancetype)initWithBuildNSURLRequest:(NSURLRequest *)buildNSURLRequestResult {
+  _buildNSURLRequestResult = buildNSURLRequestResult;
+  return self;
+}
+
+- (NSURLRequest *)buildNSURLRequest:(NSString *)method
+                          arguments:(NSDictionary<NSString *, id> *)arguments {
+  return _buildNSURLRequestResult;
 }
 
 @end
@@ -107,53 +89,79 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   self.mockBinaryMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
 }
 
-- (void)testPostUrl_should_return_false_when_url_is_nil {
-  // Initialise data
-  NSString *url = nil;
-  NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
-  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-  FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
+- (void)testbuildNSURLRequest_should_return_nil_when_arguments_is_nil {
+  id arguments = nil;
 
   MockFLTWebViewController *mockController =
       [[MockFLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
                                        viewIdentifier:1
                                             arguments:nil
                                       binaryMessenger:self.mockBinaryMessenger];
-  // Run test
-  bool result = [mockController postUrl:url withBody:postData];
 
-  XCTAssertFalse(result);
+  id result = [mockController buildNSURLRequest:@"POST" arguments:arguments];
+
+  XCTAssertNil(result);
 }
 
-- (void)testPostUrl_should_return_true_when_url_is_not_nil {
-  // Initialise data
+- (void)testbuildNSURLRequest_should_return_nil_when_url_is_not_NSString {
+  NSError *url = [NSError new];
+  NSDictionary<NSString *, id> *arguments = @{@"url" : url};
+
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  id result = [controller buildNSURLRequest:@"POST" arguments:arguments];
+
+  XCTAssertNil(result);
+}
+
+- (void)testbuildNSURLRequest_should_return_nil_when_url_is_not_valid {
+  NSString *url = @"#<>%";
+  NSDictionary<NSString *, id> *arguments = @{@"url" : url};
+
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  id result = [controller buildNSURLRequest:@"POST" arguments:arguments];
+
+  XCTAssertNil(result);
+}
+
+- (void)testbuildNSURLRequest_should_return_NSURLRequest_when_arguments_are_valid {
   NSString *url = @"http://example.com";
   NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
   NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
   FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
 
-  MockFLTWebViewController *mockController =
-      [[MockFLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
-                                       viewIdentifier:1
-                                            arguments:nil
-                                      binaryMessenger:self.mockBinaryMessenger];
-  // Run test
-  bool result = [mockController postUrl:url withBody:postData];
-  NSString *decodedHTTPBody =
-      [[NSString alloc] initWithData:[mockController getResultObject].receivedResult.HTTPBody
-                            encoding:NSUTF8StringEncoding];
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"postUrl"
+                                        arguments:@{@"url" : url, @"postData" : postData}];
 
-  XCTAssertTrue(result);
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  NSURLRequest *result = [controller buildNSURLRequest:@"POST" arguments:[call arguments]];
+  NSString *decodedHTTPBody = [[NSString alloc] initWithData:result.HTTPBody
+                                                    encoding:NSUTF8StringEncoding];
+
+  XCTAssertNotNil(result);
   XCTAssertTrue([decodedHTTPBody isEqualToString:str]);
-  XCTAssertTrue(
-      [[mockController getResultObject].receivedResult.HTTPMethod isEqualToString:@"POST"]);
-  XCTAssertTrue(
-      [[mockController getResultObject].receivedResult.URL.absoluteString isEqualToString:url]);
+  XCTAssertTrue([result.HTTPMethod isEqualToString:@"POST"]);
+  XCTAssertTrue([result.URL.absoluteString isEqualToString:url]);
 }
 
-- (void)testOnPostUrl_should_call_result_flutter_error_when_postRequest_return_false {
+- (void)testOnPostUrl_should_call_result_flutter_error_when_NSURLRequest_is_nil {
   MockFLTWebViewControllerForOnPostUrl *mockController =
-      [[MockFLTWebViewControllerForOnPostUrl alloc] initWithPostRequest:false];
+      [[MockFLTWebViewControllerForOnPostUrl alloc] initWithBuildNSURLRequest:nil];
 
   __block FlutterError *result = nil;
 
@@ -165,9 +173,13 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertEqualObjects(result.code, @"postUrl_failed");
 }
 
-- (void)testOnPostUrl_should_call_result_nil_when_postRequest_return_true {
+- (void)testOnPostUrl_should_call_result_nil_when_NSURLRequest_is_not_nil {
+  NSString *url = @"http://example.com";
+  NSURL *nsUrl = [NSURL URLWithString:url];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:nsUrl];
+
   MockFLTWebViewControllerForOnPostUrl *mockController =
-      [[MockFLTWebViewControllerForOnPostUrl alloc] initWithPostRequest:true];
+      [[MockFLTWebViewControllerForOnPostUrl alloc] initWithBuildNSURLRequest:request];
 
   __block id result = @"test";
 
@@ -179,88 +191,40 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertEqual(result, nil);
 }
 
-- (void)testPostRequest_should_return_false_when_request_is_nil {
+- (void)testOnPostUrl_should_call_webview_loadRequest_when_NSURLRequest_is_not_nil {
+  NSString *url = @"http://example.com";
+  NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
+  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
+  FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
+
+  FlutterMethodCall *call =
+      [FlutterMethodCall methodCallWithMethodName:@"postUrl"
+                                        arguments:@{@"url" : url, @"postData" : postData}];
+
   MockFLTWebViewController *mockController =
       [[MockFLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
                                        viewIdentifier:1
                                             arguments:nil
                                       binaryMessenger:self.mockBinaryMessenger];
 
-  bool result = [mockController postRequest:nil];
+  [mockController onPostUrl:call
+                     result:^(id _Nullable r){
+                     }];
 
-  XCTAssertFalse(result);
+  NSString *decodedHTTPBody =
+      [[NSString alloc] initWithData:[mockController getResultObject].receivedResult.HTTPBody
+                            encoding:NSUTF8StringEncoding];
+
+  XCTAssertTrue([decodedHTTPBody isEqualToString:str]);
+  XCTAssertTrue(
+      [[mockController getResultObject].receivedResult.HTTPMethod isEqualToString:@"POST"]);
+  XCTAssertTrue(
+      [[mockController getResultObject].receivedResult.URL.absoluteString isEqualToString:url]);
 }
 
-- (void)testPostRequest_should_return_false_when_postUrl_return_false {
-  NSString *url = @"http://example.com";
-  NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
-  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-  FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
-
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"postUrl"
-                                        arguments:@{@"url" : url, @"postData" : postData}];
-
-  MockFLTWebViewControllerForPostRequest *mockController =
-      [[MockFLTWebViewControllerForPostRequest alloc] initWithPostUrl:false];
-
-  bool result = [mockController postRequest:[call arguments]];
-
-  XCTAssertFalse(result);
-}
-
-- (void)testPostRequest_should_return_true_when_postUrl_return_true {
-  NSString *url = @"http://example.com";
-  NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
-  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-  FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
-
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"postUrl"
-                                        arguments:@{@"url" : url, @"postData" : postData}];
-
-  MockFLTWebViewControllerForPostRequest *mockController =
-      [[MockFLTWebViewControllerForPostRequest alloc] initWithPostUrl:true];
-
-  bool result = [mockController postRequest:[call arguments]];
-
-  XCTAssertTrue(result);
-}
-
-- (void)testPostRequest_should_return_false_when_url_is_not_NSString {
-  NSError *url = [NSError new];
-  NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
-  NSData *data = [str dataUsingEncoding:NSUTF8StringEncoding];
-  FlutterStandardTypedData *postData = [FlutterStandardTypedData typedDataWithBytes:data];
-
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"postUrl"
-                                        arguments:@{@"url" : url, @"postData" : postData}];
-
-  MockFLTWebViewControllerForPostRequest *mockController =
-      [[MockFLTWebViewControllerForPostRequest alloc] initWithPostUrl:true];
-
-  bool result = [mockController postRequest:[call arguments]];
-
-  XCTAssertFalse(result);
-}
-
-- (void)testPostRequest_should_return_false_when_postData_is_not_FlutterStandardTypedData {
-  NSString *url = @"http://example.com";
-  NSString *str = [NSString stringWithFormat:@"name=%@&pass=%@", @"john", @"123"];
-  NSData *postData = [str dataUsingEncoding:NSUTF8StringEncoding];
-
-  FlutterMethodCall *call =
-      [FlutterMethodCall methodCallWithMethodName:@"postUrl"
-                                        arguments:@{@"url" : url, @"postData" : postData}];
-
-  MockFLTWebViewControllerForPostRequest *mockController =
-      [[MockFLTWebViewControllerForPostRequest alloc] initWithPostUrl:true];
-
-  bool result = [mockController postRequest:[call arguments]];
-
-  XCTAssertFalse(result);
-}
+// implemetation sinifinda gereksiz methodalari kaldir.
+// implementation class ta method commentlerini yaz
+// Pr pushla ve mauritten feedback iste.s
 
 - (void)testCanInitFLTWebViewController {
   FLTWebViewController *controller =
