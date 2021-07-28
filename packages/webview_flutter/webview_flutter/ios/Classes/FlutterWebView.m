@@ -205,7 +205,8 @@
 }
 
 /**
- * Applies nil on the FlutterResult if the postRequest is successfully completed.
+ * Applies nil on the FlutterResult and calls WKWebView's loadRequest
+ * method with NSURLRequest if the request is retrieved successfully.
  *
  * @param call the method call with arguments.
  * @param result the FlutterResult.
@@ -481,6 +482,14 @@
   return true;
 }
 
+/**
+ * Parses the arguments and converts them into an NSURLRequest object.
+ *
+ * @param method the HTTP method.
+ * @param arguments the method call arguments.
+ *
+ * @return NSURLRequest object.
+ */
 - (NSURLRequest*)buildNSURLRequest:(NSString*)method
                          arguments:(NSDictionary<NSString*, id>*)arguments {
   if (!arguments) {
