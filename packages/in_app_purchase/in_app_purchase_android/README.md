@@ -7,7 +7,6 @@ The Android implementation of [`in_app_purchase`][1].
 This package has been [endorsed][2], meaning that you only need to add `in_app_purchase`
 as a dependency in your `pubspec.yaml`. This package will be automatically included in your app
 when you do.
-```
 
 If you wish to use the Android package only, you can [add  `in_app_purchase_android` directly][3].
 
