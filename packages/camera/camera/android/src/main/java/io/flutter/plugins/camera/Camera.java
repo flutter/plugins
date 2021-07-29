@@ -90,7 +90,9 @@ interface ErrorCallback {
  * preferred on some devices. If we do add support for this in the future, we should allow it to be
  * enabled from dart.
  */
-class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
+class Camera
+    implements CameraCaptureCallback.CameraCaptureStateListener,
+        ImageReader.OnImageAvailableListener {
   private static final String TAG = "Camera";
 
   private static final HashMap<String, Integer> supportedImageFormats;
@@ -119,35 +121,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
   private final CameraCaptureCallback cameraCaptureCallback;
   /** A {@link Handler} for running tasks in the background. */
   private Handler backgroundHandler;
-  /**
-   * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
-   * still image is ready to be saved.
-   */
-  private final ImageReader.OnImageAvailableListener onImageAvailableListener =
-      new ImageReader.OnImageAvailableListener() {
-        @Override
-        public void onImageAvailable(ImageReader reader) {
-          Log.i(TAG, "onImageAvailable");
 
-          backgroundHandler.post(
-              new ImageSaver(
-                  // Use acquireNextImage since image reader is only for one image.
-                  reader.acquireNextImage(),
-                  captureFile,
-                  new ImageSaver.Callback() {
-                    @Override
-                    public void onComplete(String absolutePath) {
-                      dartMessenger.finish(flutterResult, absolutePath);
-                    }
-
-                    @Override
-                    public void onError(String errorCode, String errorMessage) {
-                      dartMessenger.error(flutterResult, errorCode, errorMessage, null);
-                    }
-                  }));
-          cameraCaptureCallback.setCameraState(CameraState.STATE_PREVIEW);
-        }
-      };
   /** An additional thread for running tasks that shouldn't block the UI. */
   private HandlerThread backgroundHandlerThread;
 
@@ -188,32 +162,9 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     this.applicationContext = activity.getApplicationContext();
     this.cameraProperties = cameraProperties;
     this.cameraFeatureFactory = cameraFeatureFactory;
-
-    // Set up camera features.
-    this.cameraFeatures = new CameraFeatures();
-    this.cameraFeatures.setAutoFocus(
-        cameraFeatureFactory.createAutoFocusFeature(cameraProperties, false));
-    this.cameraFeatures.setExposureLock(
-        cameraFeatureFactory.createExposureLockFeature(cameraProperties));
-    this.cameraFeatures.setExposureOffset(
-        cameraFeatureFactory.createExposureOffsetFeature(cameraProperties));
-    SensorOrientationFeature sensorOrientationFeature =
-        cameraFeatureFactory.createSensorOrientationFeature(
-            cameraProperties, activity, dartMessenger);
-    this.cameraFeatures.setSensorOrientation(sensorOrientationFeature);
-    this.cameraFeatures.setExposurePoint(
-        cameraFeatureFactory.createExposurePointFeature(
-            cameraProperties, sensorOrientationFeature));
-    this.cameraFeatures.setFlash(cameraFeatureFactory.createFlashFeature(cameraProperties));
-    this.cameraFeatures.setFocusPoint(
-        cameraFeatureFactory.createFocusPointFeature(cameraProperties, sensorOrientationFeature));
-    this.cameraFeatures.setFpsRange(cameraFeatureFactory.createFpsRangeFeature(cameraProperties));
-    this.cameraFeatures.setNoiseReduction(
-        cameraFeatureFactory.createNoiseReductionFeature(cameraProperties));
-    this.cameraFeatures.setResolution(
-        cameraFeatureFactory.createResolutionFeature(
-            cameraProperties, resolutionPreset, cameraProperties.getCameraName()));
-    this.cameraFeatures.setZoomLevel(cameraFeatureFactory.createZoomLevelFeature(cameraProperties));
+    this.cameraFeatures =
+        CameraFeatures.init(
+            cameraFeatureFactory, cameraProperties, activity, dartMessenger, resolutionPreset);
 
     // Create capture callback.
     captureTimeouts = new CaptureTimeoutsWrapper(3000, 3000);
@@ -515,7 +466,7 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
     }
 
     // Listen for picture being taken.
-    pictureImageReader.setOnImageAvailableListener(onImageAvailableListener, backgroundHandler);
+    pictureImageReader.setOnImageAvailableListener(this, backgroundHandler);
 
     final AutoFocusFeature autoFocusFeature = cameraFeatures.getAutoFocus();
     final boolean isAutoFocusSupported = autoFocusFeature.checkIsSupported();
@@ -1027,6 +978,33 @@ class Camera implements CameraCaptureCallback.CameraCaptureStateListener {
             imageStreamReader.setOnImageAvailableListener(null, backgroundHandler);
           }
         });
+  }
+
+  /**
+   * This a callback object for the {@link ImageReader}. "onImageAvailable" will be called when a
+   * still image is ready to be saved.
+   */
+  @Override
+  public void onImageAvailable(ImageReader reader) {
+    Log.i(TAG, "onImageAvailable");
+
+    backgroundHandler.post(
+        new ImageSaver(
+            // Use acquireNextImage since image reader is only for one image.
+            reader.acquireNextImage(),
+            captureFile,
+            new ImageSaver.Callback() {
+              @Override
+              public void onComplete(String absolutePath) {
+                dartMessenger.finish(flutterResult, absolutePath);
+              }
+
+              @Override
+              public void onError(String errorCode, String errorMessage) {
+                dartMessenger.error(flutterResult, errorCode, errorMessage, null);
+              }
+            }));
+    cameraCaptureCallback.setCameraState(CameraState.STATE_PREVIEW);
   }
 
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
