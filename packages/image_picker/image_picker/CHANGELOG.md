@@ -1,3 +1,7 @@
+## NEXT
+
+* Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
+
 ## 0.8.2
 
 * Added new methods that return `package:cross_file` `XFile` instances. [Docs](https://pub.dev/documentation/cross_file/latest/index.html).

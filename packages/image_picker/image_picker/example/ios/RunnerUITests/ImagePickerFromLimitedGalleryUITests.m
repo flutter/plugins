@@ -25,31 +25,18 @@ const int kLimitedElementWaitingTime = 30;
   __weak typeof(self) weakSelf = self;
   [self addUIInterruptionMonitorWithDescription:@"Permission popups"
                                         handler:^BOOL(XCUIElement* _Nonnull interruptingElement) {
-                                          if (@available(iOS 14, *)) {
-                                            XCUIElement* limitedPhotoPermission =
-                                                [interruptingElement.buttons elementBoundByIndex:0];
-                                            if (![limitedPhotoPermission
-                                                    waitForExistenceWithTimeout:
-                                                        kLimitedElementWaitingTime]) {
-                                              os_log_error(OS_LOG_DEFAULT, "%@",
-                                                           weakSelf.app.debugDescription);
-                                              XCTFail(@"Failed due to not able to find "
-                                                      @"selectPhotos butt   on with %@ seconds",
-                                                      @(kLimitedElementWaitingTime));
-                                            }
-                                            [limitedPhotoPermission tap];
-                                          } else {
-                                            XCUIElement* ok = interruptingElement.buttons[@"OK"];
-                                            if (![ok waitForExistenceWithTimeout:
-                                                         kLimitedElementWaitingTime]) {
-                                              os_log_error(OS_LOG_DEFAULT, "%@",
-                                                           weakSelf.app.debugDescription);
-                                              XCTFail(@"Failed due to not able to find ok button "
-                                                      @"with %@ seconds",
-                                                      @(kLimitedElementWaitingTime));
-                                            }
-                                            [ok tap];
+                                          XCUIElement* limitedPhotoPermission =
+                                              [interruptingElement.buttons elementBoundByIndex:0];
+                                          if (![limitedPhotoPermission
+                                                  waitForExistenceWithTimeout:
+                                                      kLimitedElementWaitingTime]) {
+                                            os_log_error(OS_LOG_DEFAULT, "%@",
+                                                         weakSelf.app.debugDescription);
+                                            XCTFail(@"Failed due to not able to find "
+                                                    @"selectPhotos button with %@ seconds",
+                                                    @(kLimitedElementWaitingTime));
                                           }
+                                          [limitedPhotoPermission tap];
                                           return YES;
                                         }];
 }
@@ -60,7 +47,12 @@ const int kLimitedElementWaitingTime = 30;
 }
 
 - (void)testSelectingFromGallery {
-  [self launchPickerAndSelect];
+  // Test the `Select Photos` button which is available after iOS 14.
+  if (@available(iOS 14, *)) {
+    [self launchPickerAndSelect];
+  } else {
+    return;
+  }
 }
 
 - (void)launchPickerAndSelect {
