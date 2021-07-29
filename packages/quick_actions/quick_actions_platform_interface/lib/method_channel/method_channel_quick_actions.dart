@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart' show visibleForTesting;
+import 'package:pedantic/pedantic.dart';
 import 'package:quick_actions_platform_interface/types/types.dart';
 
 import '../platform_interface/quick_actions_platform.dart';
@@ -24,7 +25,7 @@ class MethodChannelQuickActions extends QuickActionsPlatform {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
-    channel.invokeMethod<String?>('initialize');
+    unawaited(channel.invokeMethod<String?>('initialize'));
     final String? action =
         await channel.invokeMethod<String?>('getLaunchAction');
     if (action != null) {
