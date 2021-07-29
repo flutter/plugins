@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="io.flutter.plugins.quickactionsexample">
-    <!-- Flutter needs it to communicate with the running application
+    <!-- Flutter needs internet permission to communicate with the running application
          to allow setting breakpoints, to provide hot reload, etc.
     -->
     <uses-permission android:name="android.permission.INTERNET"/>

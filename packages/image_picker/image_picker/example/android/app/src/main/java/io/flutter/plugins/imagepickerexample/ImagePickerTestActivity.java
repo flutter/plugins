@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 
-// Extends FlutterActivity to make the FlutterEngine accessible for testing.
+// Makes the FlutterEngine accessible for testing.
 public class ImagePickerTestActivity extends FlutterActivity {
   public FlutterEngine engine;
 
