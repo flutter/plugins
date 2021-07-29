@@ -24,6 +24,7 @@ class MethodChannelQuickActions extends QuickActionsPlatform {
       assert(call.method == 'launch');
       handler(call.arguments);
     });
+    channel.invokeMethod<String?>('initialize');
     final String? action =
         await channel.invokeMethod<String?>('getLaunchAction');
     if (action != null) {
