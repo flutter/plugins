@@ -28,7 +28,7 @@ void main() {
     });
 
     group('#initialize', () {
-      test('passes getLaunchAction on launch method', () {
+      test('passes initialize and getLaunchAction on launch method', () {
         quickActions.initialize((type) {
           'launch';
         });
@@ -36,6 +36,7 @@ void main() {
         expect(
           log,
           <Matcher>[
+            isMethodCall('initialize', arguments: null),
             isMethodCall('getLaunchAction', arguments: null),
           ],
         );
@@ -48,6 +49,7 @@ void main() {
         expect(
           log,
           <Matcher>[
+            isMethodCall('initialize', arguments: null),
             isMethodCall('getLaunchAction', arguments: null),
           ],
         );
@@ -69,6 +71,7 @@ void main() {
         expect(
           log,
           <Matcher>[
+            isMethodCall('initialize', arguments: null),
             isMethodCall('getLaunchAction', arguments: null),
             isMethodCall('setShortcutItems', arguments: [
               {
@@ -119,6 +122,7 @@ void main() {
         expect(
           log,
           <Matcher>[
+            isMethodCall('initialize', arguments: null),
             isMethodCall('getLaunchAction', arguments: null),
             isMethodCall('clearShortcutItems', arguments: null),
           ],
