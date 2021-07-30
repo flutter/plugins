@@ -40,6 +40,9 @@ class FakeIOSPlatform {
       Map<String, dynamic> productWrapperMap =
           buildProductMap(dummyProductWrapper);
       productWrapperMap['productIdentifier'] = validID;
+      if (validID == '456') {
+        productWrapperMap['priceLocale'] = buildLocaleMap(noSymbolLocale);
+      }
       validProducts[validID] = SKProductWrapper.fromJson(productWrapperMap);
     }
 

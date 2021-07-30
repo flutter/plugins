@@ -31,9 +31,24 @@ android {
     lintOptions {
         disable 'InvalidPackage'
     }
+
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
 }
 
 dependencies {
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     implementation 'com.google.guava:guava:20.0'
+    testImplementation 'junit:junit:4.12'
+    testImplementation 'org.mockito:mockito-inline:3.9.0'
 }
