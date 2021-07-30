@@ -133,14 +133,14 @@ class FlutterWebViewClient {
         return true;
     }
 
-    private void onPageStarted(WebView view, String url) {
+    void onPageStarted(String url) {
         currentHostUrl = url;
         Map<String, Object> args = new HashMap<>();
         args.put("url", url);
         methodChannel.invokeMethod("onPageStarted", args);
     }
 
-    private void onPageFinished(WebView view, String url) {
+    void onPageFinished(String url) {
         Map<String, Object> args = new HashMap<>();
         args.put("url", url);
         methodChannel.invokeMethod("onPageFinished", args);
@@ -218,12 +218,12 @@ class FlutterWebViewClient {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                FlutterWebViewClient.this.onPageStarted(view, url);
+                FlutterWebViewClient.this.onPageStarted(url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                FlutterWebViewClient.this.onPageFinished(view, url);
+                FlutterWebViewClient.this.onPageFinished(url);
             }
 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -271,12 +271,12 @@ class FlutterWebViewClient {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                FlutterWebViewClient.this.onPageStarted(view, url);
+                FlutterWebViewClient.this.onPageStarted(url);
             }
 
             @Override
             public void onPageFinished(WebView view, String url) {
-                FlutterWebViewClient.this.onPageFinished(view, url);
+                FlutterWebViewClient.this.onPageFinished(url);
             }
 
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)

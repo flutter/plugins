@@ -114,6 +114,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       webView = webViewManager.webViewForId(tabId);
     }
 
+    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
+    methodChannel.setMethodCallHandler(this);
+    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
+
     if (webView == null) {
         Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
         webView =
@@ -127,6 +131,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         String tabId = (String) params.get("tabId");
         webViewManager.cacheWebView(webView, tabId);
       }
+    } else if (params.containsKey("initialUrl")) {
+        // WebView was cached so report the onPageFinished event
+        String url = (String) params.get("initialUrl");
+        flutterWebViewClient.onPageFinished();
     }
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
@@ -143,8 +151,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       webView.setWebChromeClient(new FlutterWebChromeClient());
     }
 
-    methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    methodChannel.setMethodCallHandler(this);
+    
 
     if (params.containsKey("blockingRules") && !ContentBlocker.INSTANCE.isReady()) {
       Map<String, Map<String, Object>> rules = (Map<String, Map<String, Object>>) params.get("blockingRules");
@@ -155,7 +162,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       ContentBlocker.INSTANCE.setupContentBlocking(rules, whiteListing);
     }
 
-    flutterWebViewClient = new FlutterWebViewClient(methodChannel);
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
     if (settings != null) applySettings(settings);
 
