@@ -5,4 +5,5 @@
 export 'camera_error_code.dart';
 export 'camera_metadata.dart';
 export 'camera_options.dart';
+export 'camera_web_exception.dart';
 export 'media_device_kind.dart';
