@@ -7,6 +7,7 @@ import 'dart:ui';
 
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/types/types.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -21,6 +22,8 @@ class MockCameraSettings extends Mock implements CameraSettings {}
 class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
 class MockCamera extends Mock implements Camera {}
+
+class MockCameraOptions extends Mock implements CameraOptions {}
 
 class MockXFile extends Mock implements XFile {}
 
