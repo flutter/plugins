@@ -100,7 +100,7 @@ task:
       script:
         - flutter config --enable-linux-desktop
         - ./script/build_all_plugins_app.sh linux
-    - name: build-linux+drive-examples
+    - name: linux-build+platform-tests
       env:
         matrix:
           CHANNEL: "master"
@@ -127,7 +127,7 @@ task:
     memory: 12G
   matrix:
     ### Android tasks ###
-    - name: build-apks+android-unit+firebase-test-lab
+    - name: android-build+platform-tests
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
@@ -175,7 +175,7 @@ task:
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
     ### Web tasks ###
-    - name: build-web+drive-examples
+    - name: web-build+platform-tests
       env:
         matrix:
           CHANNEL: "master"
@@ -208,7 +208,7 @@ task:
           CHANNEL: "stable"
       script:
         - ./script/build_all_plugins_app.sh ios --no-codesign
-    - name: build-ipas+drive-examples
+    - name: ios-build+platform-tests
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
@@ -243,7 +243,7 @@ task:
       script:
         - flutter config --enable-macos-desktop
         - ./script/build_all_plugins_app.sh macos
-    - name: build-macos+drive-examples
+    - name: macos-build+platform-tests
       env:
         matrix:
           CHANNEL: "master"
