@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -18,6 +19,8 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('CameraSettings', () {
+    const cameraId = 0;
+
     late Window window;
     late Navigator navigator;
     late MediaDevices mediaDevices;
@@ -34,9 +37,314 @@ void main() {
       settings = CameraSettings()..window = window;
     });
 
+    group('getMediaStreamForOptions', () {
+      testWidgets(
+          'calls MediaDevices.getUserMedia '
+          'with provided options', (tester) async {
+        when(() => mediaDevices.getUserMedia(any()))
+            .thenAnswer((_) async => FakeMediaStream([]));
+
+        final options = CameraOptions(
+          video: VideoConstraints(
+            facingMode: FacingModeConstraint.exact(CameraType.user),
+            width: VideoSizeConstraint(ideal: 200),
+          ),
+        );
+
+        await settings.getMediaStreamForOptions(options);
+
+        verify(
+          () => mediaDevices.getUserMedia(options.toJson()),
+        ).called(1);
+      });
+
+      testWidgets(
+          'throws PlatformException '
+          'with notSupported error '
+          'when there are no media devices', (tester) async {
+        when(() => navigator.mediaDevices).thenReturn(null);
+
+        expect(
+          () => settings.getMediaStreamForOptions(CameraOptions()),
+          throwsA(
+            isA<PlatformException>().having(
+              (e) => e.code,
+              'code',
+              CameraErrorCode.notSupported.toString(),
+            ),
+          ),
+        );
+      });
+
+      group('throws CameraWebException', () {
+        testWidgets(
+            'with notFound error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with NotFoundError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('NotFoundError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.notFound),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with notFound error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with DevicesNotFoundError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('DevicesNotFoundError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.notFound),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with notReadable error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with NotReadableError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('NotReadableError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.notReadable),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with notReadable error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with TrackStartError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('TrackStartError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.notReadable),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with overconstrained error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with OverconstrainedError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('OverconstrainedError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having(
+                      (e) => e.code, 'code', CameraErrorCode.overconstrained),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with overconstrained error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with ConstraintNotSatisfiedError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('ConstraintNotSatisfiedError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having(
+                      (e) => e.code, 'code', CameraErrorCode.overconstrained),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with permissionDenied error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with NotAllowedError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('NotAllowedError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having(
+                      (e) => e.code, 'code', CameraErrorCode.permissionDenied),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with permissionDenied error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with PermissionDeniedError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('PermissionDeniedError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having(
+                      (e) => e.code, 'code', CameraErrorCode.permissionDenied),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with type error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with TypeError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('TypeError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.type),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with abort error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with AbortError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('AbortError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.abort),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with security error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with SecurityError', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('SecurityError'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.security),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with unknown error '
+            'when MediaDevices.getUserMedia throws DomException '
+            'with an unknown error', (tester) async {
+          when(() => mediaDevices.getUserMedia(any()))
+              .thenThrow(FakeDomException('Unknown'));
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.unknown),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with unknown error '
+            'when MediaDevices.getUserMedia throws an unknown exception',
+            (tester) async {
+          when(() => mediaDevices.getUserMedia(any())).thenThrow(Exception());
+
+          expect(
+            () => settings.getMediaStreamForOptions(
+              CameraOptions(),
+              cameraId: cameraId,
+            ),
+            throwsA(
+              isA<CameraWebException>()
+                  .having((e) => e.cameraId, 'cameraId', cameraId)
+                  .having((e) => e.code, 'code', CameraErrorCode.unknown),
+            ),
+          );
+        });
+      });
+    });
+
     group('getFacingModeForVideoTrack', () {
       testWidgets(
-          'throws CameraException '
+          'throws PlatformException '
           'with notSupported error '
           'when there are no media devices', (tester) async {
         when(() => navigator.mediaDevices).thenReturn(null);
@@ -44,10 +352,10 @@ void main() {
         expect(
           () => settings.getFacingModeForVideoTrack(MockMediaStreamTrack()),
           throwsA(
-            isA<CameraException>().having(
+            isA<PlatformException>().having(
               (e) => e.code,
               'code',
-              CameraErrorCodes.notSupported,
+              CameraErrorCode.notSupported.toString(),
             ),
           ),
         );
@@ -145,7 +453,7 @@ void main() {
         });
 
         testWidgets(
-            'throws CameraException '
+            'throws PlatformException '
             'with unknown error '
             'when getting the video track capabilities '
             'throws an unknown error', (tester) async {
@@ -157,10 +465,10 @@ void main() {
           expect(
             () => settings.getFacingModeForVideoTrack(videoTrack),
             throwsA(
-              isA<CameraException>().having(
+              isA<PlatformException>().having(
                 (e) => e.code,
                 'code',
-                CameraErrorCodes.unknown,
+                CameraErrorCode.unknown.toString(),
               ),
             ),
           );
