@@ -46,10 +46,6 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     ShortcutManager shortcutManager =
         (ShortcutManager) context.getSystemService(Context.SHORTCUT_SERVICE);
     switch (call.method) {
-      case "initialize":
-        // This is to signify that Dart is ready.
-        QuickActionsPlugin.isInitialized = true;
-        break;
       case "setShortcutItems":
         List<Map<String, String>> serializedShortcuts = call.arguments();
         List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);

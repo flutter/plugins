@@ -18,7 +18,6 @@ import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 /** QuickActionsPlugin */
 public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewIntentListener {
   private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
-  protected static boolean isInitialized = false;
 
   private MethodChannel channel;
   private MethodCallHandlerImpl handler;
@@ -48,9 +47,7 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     handler.setActivity(binding.getActivity());
     binding.addOnNewIntentListener(this);
-    if (isInitialized) {
-      onNewIntent(binding.getActivity().getIntent());
-    }
+    onNewIntent(binding.getActivity().getIntent());
   }
 
   @Override
@@ -71,7 +68,9 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
 
   @Override
   public boolean onNewIntent(Intent intent) {
-    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) return false;
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+      return false;
+    }
     if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
       channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
     }
