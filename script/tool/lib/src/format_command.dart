@@ -244,9 +244,12 @@ class FormatCommand extends PluginCommand {
 
   /// Returns true if [command] can be run successfully.
   Future<bool> _hasDependency(String command) async {
+    // Some versions of Java accept both -version and --version, but some only
+    // accept -version.
+    final String versionFlag = command == 'java' ? '-version' : '--version';
     try {
       final io.ProcessResult result =
-          await processRunner.run(command, <String>['--version']);
+          await processRunner.run(command, <String>[versionFlag]);
       if (result.exitCode != 0) {
         return false;
       }
