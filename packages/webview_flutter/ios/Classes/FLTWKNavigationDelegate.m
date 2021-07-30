@@ -16,10 +16,18 @@
   return self;
 }
 
+- (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString {
+    [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : urlString}];
+}
+
+- (void)onPageFinishedWithUrl:(NSString * _Nonnull)urlString {
+    [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : urlString}];
+}
+
 #pragma mark - WKNavigationDelegate conformance
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-  [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : webView.URL.absoluteString}];
+    [self onPageStartedWithUrl:webView.URL.absoluteString];
 }
 
 - (void)webView:(WKWebView *)webView
@@ -63,7 +71,7 @@
 }
 
 - (void)webView:(WKWebView *)webView didFinishNavigation:(WKNavigation *)navigation {
-  [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : webView.URL.absoluteString}];
+    [self onPageFinishedWithUrl:webView.URL.absoluteString];
 }
 
 + (id)errorCodeToString:(NSUInteger)code {
