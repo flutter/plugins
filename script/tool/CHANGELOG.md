@@ -21,6 +21,7 @@
     `--no-integration`.
 - **Breaking change**: Replaced `java-test` with Android unit test support for
   the new `native-test` command.
+- Added a new `android-lint` command to lint Android plugin native code.
 
 ## 0.4.1
 
