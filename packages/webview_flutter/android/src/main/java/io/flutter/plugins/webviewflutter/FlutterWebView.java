@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Color;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -134,6 +135,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     platformThreadHandler = new Handler(context.getMainLooper());
 
     if (shouldLoad) {
+      // allow app cache
+      webView.getSettings().setAppCacheEnabled(true);
+
+      // use transparent bg
+      webView.setBackgroundColor(Color.TRANSPARENT);
+
       // Allow local storage.
       webView.getSettings().setDomStorageEnabled(true);
       webView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
@@ -439,51 +446,40 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void takeScreenshot(Result result){
     final Result fResult = result;
-    View view = getView();
-
-    float scale = view.getContext().getResources().getDisplayMetrics().density;
-    int height = (int) (webView.getContentHeight() * scale);
-
-    Bitmap b = Bitmap.createBitmap(view.getWidth(),
-                  height, Bitmap.Config.ARGB_8888);
-    Canvas c = new Canvas(b);
-    view.draw(c);
-    int scrollY = webView.getScrollY();
-    int measuredHeight = webView.getMeasuredHeight();
-    int bitmapHeight = b.getHeight();
-
-    int scrollOffset = (scrollY + measuredHeight > bitmapHeight)
-                  ? (bitmapHeight - measuredHeight) : scrollY;
+    final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
     
-     if (scrollOffset < 0) {
-          scrollOffset = 0;
+    webView.setDrawingCacheEnabled(true);
+    // copy to a new bitmap, otherwise the bitmap will be
+    // destroyed when the drawing cache is destroyed
+    // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
+    final Bitmap cacheBitmap = webView.getDrawingCache();
+    final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
+
+    webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
+
+    if (b == null) {
+      // treat an empty bitmap as a successful empty screenshot result
+      fResult.success(new byte[0]);
+    } else {
+      // run the compress function in a secondary thread
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          ByteArrayOutputStream stream = new ByteArrayOutputStream();
+          b.compress(Bitmap.CompressFormat.PNG, 80, stream);
+          final byte[] imageByteArray = stream.toByteArray();
+          // make sure to return the result in the main thread
+          new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+              fResult.success(imageByteArray);
+            }
+          });
+
+          b.recycle();
+        }
+      }).start();
     }
-
-    int rectX = 0;
-    int rectY = scrollOffset;
-    int rectWidth = b.getWidth();
-    int rectHeight = measuredHeight;
-
-    final Bitmap resized = Bitmap.createBitmap(b, rectX, rectY, rectWidth, rectHeight);
-
-    // run the compress function in a secondary thread
-    new Thread(new Runnable() {
-    @Override
-    public void run() {
-      ByteArrayOutputStream stream = new ByteArrayOutputStream();
-      resized.compress(Bitmap.CompressFormat.PNG, 80, stream);
-      final byte[] imageByteArray = stream.toByteArray();
-
-      // make sure to return the result in the main thread
-      new Handler(Looper.getMainLooper()).post(new Runnable() {
-              @Override
-              public void run() {
-                 fResult.success(imageByteArray);
-              }
-            });
-    }
-   }).start();
-
   }
 
   private void applySettings(Map<String, Object> settings) {
