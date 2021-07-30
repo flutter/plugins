@@ -133,14 +133,14 @@ class FlutterWebViewClient {
         return true;
     }
 
-    void onPageStarted(String url) {
+    public void onPageStarted(String url) {
         currentHostUrl = url;
         Map<String, Object> args = new HashMap<>();
         args.put("url", url);
         methodChannel.invokeMethod("onPageStarted", args);
     }
 
-    void onPageFinished(String url) {
+    public void onPageFinished(String url) {
         Map<String, Object> args = new HashMap<>();
         args.put("url", url);
         methodChannel.invokeMethod("onPageFinished", args);
