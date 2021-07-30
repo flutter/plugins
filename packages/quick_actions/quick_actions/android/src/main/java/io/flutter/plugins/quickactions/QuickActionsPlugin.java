@@ -68,9 +68,11 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
 
   @Override
   public boolean onNewIntent(Intent intent) {
+    // Do nothing for anything lower than API 25 as the functionality isn't supported.
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
       return false;
     }
+    // Notify the Dart side if the launch intent has the intent extra relevant to quick actions.
     if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
       channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
     }
