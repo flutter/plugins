@@ -146,6 +146,13 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/tool_runner.sh build-examples --apk
+      lint_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        - ./script/tool_runner.sh lint-android # must come after build-examples
       native_unit_test_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
