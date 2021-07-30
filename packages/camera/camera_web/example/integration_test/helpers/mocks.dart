@@ -58,7 +58,7 @@ class FakeMediaDeviceInfo extends Fake implements MediaDeviceInfo {
   String? get kind => _kind;
 }
 
-/// A fake [MediaError] that returns the provided error [_code].
+/// A fake [MediaError] that returns the provided error [_code] and [_message].
 class FakeMediaError extends Fake implements MediaError {
   FakeMediaError(
     this._code, [
@@ -75,14 +75,21 @@ class FakeMediaError extends Fake implements MediaError {
   String? get message => _message;
 }
 
-/// A fake [DomException] that returns the provided error [_name].
+/// A fake [DomException] that returns the provided error [_name] and [_message].
 class FakeDomException extends Fake implements DomException {
-  FakeDomException(this._name);
+  FakeDomException(
+    this._name, [
+    String? message,
+  ]) : _message = message;
 
   final String _name;
+  final String? _message;
 
   @override
   String get name => _name;
+
+  @override
+  String? get message => _message;
 }
 
 /// A fake [ElementStream] that listens to the provided [_stream] on [listen].
