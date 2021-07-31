@@ -319,7 +319,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
-    throw UnimplementedError('onVideoRecordedEvent() is not implemented.');
+    return getCamera(cameraId).onVideoRecordedEventStream;
   }
 
   @override
