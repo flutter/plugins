@@ -720,35 +720,223 @@ void main() {
       );
     });
 
-    testWidgets('startVideoRecording throws UnimplementedError',
-        (tester) async {
-      expect(
-        () => CameraPlatform.instance.startVideoRecording(cameraId),
-        throwsUnimplementedError,
-      );
+    group('startVideoRecording', () {
+      testWidgets('starts Video Recording', (tester) async {
+        final camera = MockCamera();
+
+        when(camera.startVideoRecording)
+            .thenAnswer((_) => Future.value());
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.startVideoRecording(cameraId);
+
+        verify(camera.startVideoRecording).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+                'if the camera does not exist', (tester) async {
+          expect(
+                () => CameraPlatform.instance.startVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when startVideoRecording throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.INVALID_STATE);
+
+          when(camera.startVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+                () => CameraPlatform.instance.startVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('stopVideoRecording throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.stopVideoRecording(cameraId),
-        throwsUnimplementedError,
-      );
+    group('stopVideoRecording', () {
+      testWidgets('stops Video Recording', (tester) async {
+        final camera = MockCamera();
+        final capturedVideo = MockXFile();
+
+        when(camera.stopVideoRecording)
+            .thenAnswer((_) => Future.value(capturedVideo));
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        final video = await CameraPlatform.instance.stopVideoRecording(cameraId);
+
+        verify(camera.stopVideoRecording).called(1);
+
+        expect(video, capturedVideo);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+                'if the camera does not exist', (tester) async {
+          expect(
+                () => CameraPlatform.instance.stopVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when stopVideoRecording throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.INVALID_STATE);
+
+          when(camera.stopVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+                () => CameraPlatform.instance.stopVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('pauseVideoRecording throws UnimplementedError',
-        (tester) async {
-      expect(
-        () => CameraPlatform.instance.pauseVideoRecording(cameraId),
-        throwsUnimplementedError,
-      );
+    group('pauseVideoRecording', () {
+      testWidgets('pauses Video Recording', (tester) async {
+        final camera = MockCamera();
+
+        when(camera.pauseVideoRecording)
+            .thenAnswer((_) => Future.value());
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.pauseVideoRecording(cameraId);
+
+        verify(camera.pauseVideoRecording).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+                'if the camera does not exist', (tester) async {
+          expect(
+                () => CameraPlatform.instance.pauseVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when pauseVideoRecording throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.INVALID_STATE);
+
+          when(camera.pauseVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+                () => CameraPlatform.instance.pauseVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('resumeVideoRecording throws UnimplementedError',
-        (tester) async {
-      expect(
-        () => CameraPlatform.instance.resumeVideoRecording(cameraId),
-        throwsUnimplementedError,
-      );
+    group('resumeVideoRecording', () {
+      testWidgets('resumes Video Recording', (tester) async {
+        final camera = MockCamera();
+
+        when(camera.resumeVideoRecording)
+            .thenAnswer((_) => Future.value());
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.resumeVideoRecording(cameraId);
+
+        verify(camera.resumeVideoRecording).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+                'if the camera does not exist', (tester) async {
+          expect(
+                () => CameraPlatform.instance.resumeVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when resumeVideoRecording throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.INVALID_STATE);
+
+          when(camera.resumeVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+                () => CameraPlatform.instance.resumeVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                    (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
     testWidgets('setFlashMode throws UnimplementedError', (tester) async {
@@ -1205,12 +1393,25 @@ void main() {
         });
       });
 
-      testWidgets('onVideoRecordedEvent throws UnimplementedError',
+      testWidgets('onVideoRecordedEvent emits VideoRecordedEvent',
           (tester) async {
-        expect(
-          () => CameraPlatform.instance.onVideoRecordedEvent(cameraId),
-          throwsUnimplementedError,
-        );
+            final camera = MockCamera();
+            final capturedVideo = MockXFile();
+            final stream = Stream.value(VideoRecordedEvent(cameraId, capturedVideo, Duration.zero));
+            when(() => camera.onVideoRecordedEventStream)
+                .thenAnswer((_) => stream);
+
+            // Save the camera in the camera plugin.
+            (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+            final streamQueue = StreamQueue(CameraPlatform.instance.onVideoRecordedEvent(cameraId));
+
+            expect(
+              await streamQueue.next,
+              equals(
+                VideoRecordedEvent(cameraId, capturedVideo, Duration.zero),
+              ),
+            );
       });
 
       testWidgets('onDeviceOrientationChanged throws UnimplementedError',
