@@ -178,10 +178,11 @@ class Camera {
   html.MediaRecorder? _mediaRecorder;
   final StreamController<VideoRecordedEvent> _videoRecorderController = StreamController();
 
+  /// Returns a Stream that emits when a video Recodring with a defined maxVideoDuration was created
   Stream<VideoRecordedEvent> get onVideoRecordedEventStream => _videoRecorderController.stream;
-  
+
+  /// Starts a new Video Recording using [html.MediaRecorder]
   Future<void> startVideoRecording({Duration? maxVideoDuration}) async {
-    _mediaRecorder?.stop();
     _mediaRecorder ??= html.MediaRecorder(
         videoElement.captureStream(), {'mimeType': 'video/webm'});
 
@@ -198,14 +199,17 @@ class Camera {
     }
   }
 
+  /// Pauses the current video Recording
   Future<void> pauseVideoRecording() async {
     _mediaRecorder?.pause();
   }
 
+  /// Resumes a video Recording
   Future<void> resumeVideoRecording() async {
     _mediaRecorder?.resume();
   }
 
+  /// Stops the video Recording and will return the video as a webm video
   Future<XFile> stopVideoRecording() async {
     final availableData = Completer<XFile>();
     _mediaRecorder!.addEventListener('dataavailable', (event) {
