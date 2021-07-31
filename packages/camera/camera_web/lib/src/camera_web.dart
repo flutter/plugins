@@ -359,7 +359,8 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
     try {
-      return getCamera(cameraId).startVideoRecording(maxVideoDuration: maxVideoDuration);
+      return getCamera(cameraId)
+          .startVideoRecording(maxVideoDuration: maxVideoDuration);
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
     }
