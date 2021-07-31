@@ -1,6 +1,8 @@
-## NEXT
+## 2.0.12
 
 * Improved the documentation on using the different Android Platform View modes.
+* Fix `NullPointerException` on Android from a race condition when changing focus. This only effects
+WebView when it is created without Hybrid Composition.
 
 ## 2.0.11
 
