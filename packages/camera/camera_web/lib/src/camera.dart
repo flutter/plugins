@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html' as html;
 import 'dart:ui';
 
@@ -155,6 +156,8 @@ class Camera {
     /// Stop the camera stream.
     stop();
 
+    _videoRecorderController.close();
+
     /// Reset the [videoElement] to its initial state.
     videoElement
       ..srcObject = null
@@ -170,5 +173,47 @@ class Camera {
       ..height = '100%'
       ..objectFit = 'cover'
       ..transform = 'scaleX(-1)';
+  }
+
+  html.MediaRecorder? _mediaRecorder;
+  final StreamController<VideoRecordedEvent> _videoRecorderController = StreamController();
+
+  Stream<VideoRecordedEvent> get onVideoRecordedEventStream => _videoRecorderController.stream;
+  
+  Future<void> startVideoRecording({Duration? maxVideoDuration}) async {
+    _mediaRecorder?.stop();
+    _mediaRecorder ??= html.MediaRecorder(
+        videoElement.captureStream(), {'mimeType': 'video/webm'});
+
+    if(maxVideoDuration != null) {
+      _mediaRecorder!.addEventListener('dataavailable', (event) {
+        final blob = (event as html.BlobEvent).data;
+        final file = XFile(html.Url.createObjectUrl(blob));
+        _videoRecorderController.add(VideoRecordedEvent(this.textureId, file, maxVideoDuration));
+        _mediaRecorder!.stop();
+      });
+      _mediaRecorder!.start(maxVideoDuration.inMilliseconds);
+    } else {
+      _mediaRecorder!.start();
+    }
+  }
+
+  Future<void> pauseVideoRecording() async {
+    _mediaRecorder?.pause();
+  }
+
+  Future<void> resumeVideoRecording() async {
+    _mediaRecorder?.resume();
+  }
+
+  Future<XFile> stopVideoRecording() async {
+    final availableData = Completer<XFile>();
+    _mediaRecorder!.addEventListener('dataavailable', (event) {
+      final blob = (event as html.BlobEvent).data;
+      availableData.complete(XFile(html.Url.createObjectUrl(blob)));
+    });
+    _mediaRecorder?.stop();
+
+    return availableData.future;
   }
 }

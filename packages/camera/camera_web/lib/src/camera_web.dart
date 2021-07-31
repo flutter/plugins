@@ -358,22 +358,38 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
-    throw UnimplementedError('startVideoRecording() is not implemented.');
+    try {
+      return getCamera(cameraId).startVideoRecording(maxVideoDuration: maxVideoDuration);
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
   Future<XFile> stopVideoRecording(int cameraId) {
-    throw UnimplementedError('stopVideoRecording() is not implemented.');
+    try {
+      return getCamera(cameraId).stopVideoRecording();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
   Future<void> pauseVideoRecording(int cameraId) {
-    throw UnimplementedError('pauseVideoRecording() is not implemented.');
+    try {
+      return getCamera(cameraId).pauseVideoRecording();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
   Future<void> resumeVideoRecording(int cameraId) {
-    throw UnimplementedError('resumeVideoRecording() is not implemented.');
+    try {
+      return getCamera(cameraId).resumeVideoRecording();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
