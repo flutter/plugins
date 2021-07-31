@@ -182,7 +182,11 @@ class Camera {
   Stream<VideoRecordedEvent> get onVideoRecordedEventStream => _videoRecorderController.stream;
 
   /// Starts a new Video Recording using [html.MediaRecorder]
+  /// /// Throws a [html.DomException.INVALID_STATE] if there already is an active Recording
   Future<void> startVideoRecording({Duration? maxVideoDuration}) async {
+    if(_mediaRecorder != null && _mediaRecorder!.state != 'inactive') {
+      throw html.DomException.INVALID_STATE;
+    }
     _mediaRecorder ??= html.MediaRecorder(
         videoElement.captureStream(), {'mimeType': 'video/webm'});
 
@@ -200,17 +204,29 @@ class Camera {
   }
 
   /// Pauses the current video Recording
+  /// Throws a [html.DomException.INVALID_STATE] if there is no active Recording
   Future<void> pauseVideoRecording() async {
+    if(_mediaRecorder == null || _mediaRecorder!.state == 'inactive') {
+      throw html.DomException.INVALID_STATE;
+    }
     _mediaRecorder?.pause();
   }
 
   /// Resumes a video Recording
+  /// Throws a [html.DomException.INVALID_STATE] if there is no active Recording
   Future<void> resumeVideoRecording() async {
+    if(_mediaRecorder == null || _mediaRecorder!.state == 'inactive') {
+      throw html.DomException.INVALID_STATE;
+    }
     _mediaRecorder?.resume();
   }
 
   /// Stops the video Recording and will return the video as a webm video
+  /// Throws a [html.DomException.INVALID_STATE] if there is no active Recording
   Future<XFile> stopVideoRecording() async {
+    if(_mediaRecorder == null || _mediaRecorder!.state == 'inactive') {
+      throw html.DomException.INVALID_STATE;
+    }
     final availableData = Completer<XFile>();
     _mediaRecorder!.addEventListener('dataavailable', (event) {
       final blob = (event as html.BlobEvent).data;
