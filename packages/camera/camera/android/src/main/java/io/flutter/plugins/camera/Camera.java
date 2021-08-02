@@ -506,44 +506,49 @@ class Camera
     Log.i(TAG, "captureStillPicture");
     cameraCaptureCallback.setCameraState(CameraState.STATE_CAPTURING);
 
+    if (cameraDevice == null) {
+      return;
+    }
+    // This is the CaptureRequest.Builder that is used to take a picture.
+    CaptureRequest.Builder stillBuilder;
     try {
-      if (cameraDevice == null) {
-        return;
-      }
-      // This is the CaptureRequest.Builder that is used to take a picture.
-      final CaptureRequest.Builder stillBuilder =
-          cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
-      stillBuilder.addTarget(pictureImageReader.getSurface());
+      stillBuilder = cameraDevice.createCaptureRequest(CameraDevice.TEMPLATE_STILL_CAPTURE);
+    } catch (CameraAccessException e) {
+      dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
+      return;
+    }
+    stillBuilder.addTarget(pictureImageReader.getSurface());
 
-      // Zoom.
-      stillBuilder.set(
-          CaptureRequest.SCALER_CROP_REGION,
-          previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
+    // Zoom.
+    stillBuilder.set(
+        CaptureRequest.SCALER_CROP_REGION,
+        previewRequestBuilder.get(CaptureRequest.SCALER_CROP_REGION));
 
-      // Have all features update the builder.
-      updateBuilderSettings(stillBuilder);
+    // Have all features update the builder.
+    updateBuilderSettings(stillBuilder);
 
-      // Orientation.
-      final PlatformChannel.DeviceOrientation lockedOrientation =
-          ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
-              .getLockedCaptureOrientation();
-      stillBuilder.set(
-          CaptureRequest.JPEG_ORIENTATION,
-          lockedOrientation == null
-              ? getDeviceOrientationManager().getPhotoOrientation()
-              : getDeviceOrientationManager().getPhotoOrientation(lockedOrientation));
+    // Orientation.
+    final PlatformChannel.DeviceOrientation lockedOrientation =
+        ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
+            .getLockedCaptureOrientation();
+    stillBuilder.set(
+        CaptureRequest.JPEG_ORIENTATION,
+        lockedOrientation == null
+            ? getDeviceOrientationManager().getPhotoOrientation()
+            : getDeviceOrientationManager().getPhotoOrientation(lockedOrientation));
 
-      CameraCaptureSession.CaptureCallback captureCallback =
-          new CameraCaptureSession.CaptureCallback() {
-            @Override
-            public void onCaptureCompleted(
-                @NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request,
-                @NonNull TotalCaptureResult result) {
-              unlockAutoFocus();
-            }
-          };
+    CameraCaptureSession.CaptureCallback captureCallback =
+        new CameraCaptureSession.CaptureCallback() {
+          @Override
+          public void onCaptureCompleted(
+              @NonNull CameraCaptureSession session,
+              @NonNull CaptureRequest request,
+              @NonNull TotalCaptureResult result) {
+            unlockAutoFocus();
+          }
+        };
 
+    try {
       captureSession.stopRepeating();
       captureSession.abortCaptures();
       Log.i(TAG, "sending capture request");
