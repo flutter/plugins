@@ -561,23 +561,27 @@ class Camera
   /** Starts a background thread and its {@link Handler}. TODO: call when activity resumed */
   private void startBackgroundThread() {
     backgroundHandlerThread = new HandlerThread("CameraBackground");
-    backgroundHandlerThread.start();
+    try {
+      backgroundHandlerThread.start();
+    } catch (IllegalThreadStateException e) {
+      // Ignore exception in case the thread has already started.
+    }
     backgroundHandler = new Handler(backgroundHandlerThread.getLooper());
   }
 
   /** Stops the background thread and its {@link Handler}. TODO: call when activity paused */
   private void stopBackgroundThread() {
-    try {
-      if (backgroundHandlerThread != null) {
-        backgroundHandlerThread.quitSafely();
+    if (backgroundHandlerThread != null) {
+      backgroundHandlerThread.quitSafely();
+      try {
         backgroundHandlerThread.join();
-        backgroundHandlerThread = null;
       }
-
-      backgroundHandler = null;
-    } catch (InterruptedException e) {
-      dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
+      catch(InterruptedException e){
+        dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
+      }
     }
+    backgroundHandlerThread = null;
+    backgroundHandler = null;
   }
 
   /** Start capturing a picture, doing autofocus first. */
@@ -598,9 +602,7 @@ class Camera
     try {
       captureSession.capture(previewRequestBuilder.build(), null, backgroundHandler);
     } catch (CameraAccessException e) {
-      Log.i(TAG, "Error unlocking focus: " + e.getMessage());
       dartMessenger.sendCameraErrorEvent(e.getMessage());
-      return;
     }
   }
 
@@ -623,7 +625,6 @@ class Camera
 
       captureSession.capture(previewRequestBuilder.build(), null, backgroundHandler);
     } catch (CameraAccessException e) {
-      Log.i(TAG, "Error unlocking focus: " + e.getMessage());
       dartMessenger.sendCameraErrorEvent(e.getMessage());
       return;
     }
