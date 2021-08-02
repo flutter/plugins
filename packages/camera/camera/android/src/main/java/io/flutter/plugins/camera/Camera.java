@@ -575,8 +575,7 @@ class Camera
       backgroundHandlerThread.quitSafely();
       try {
         backgroundHandlerThread.join();
-      }
-      catch(InterruptedException e){
+      } catch (InterruptedException e) {
         dartMessenger.error(flutterResult, "cameraAccess", e.getMessage(), null);
       }
     }
