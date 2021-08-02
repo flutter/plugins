@@ -8,7 +8,9 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -16,6 +18,8 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
 import android.media.CamcorderProfile;
+import android.media.MediaRecorder;
+import android.os.Build;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
@@ -36,7 +40,9 @@ import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationManager;
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
+import io.flutter.plugins.camera.utils.TestUtils;
 import io.flutter.view.TextureRegistry;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -70,6 +76,11 @@ public class CameraTest {
             mockCameraProperties,
             resolutionPreset,
             enableAudio);
+  }
+
+  @After
+  public void after() {
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 0);
   }
 
   @Test
@@ -289,6 +300,127 @@ public class CameraTest {
 
     verify(mockZoomLevelFeature, times(1)).setValue(zoomLevel);
     verify(mockZoomLevelFeature, times(1)).updateBuilder(null);
+  }
+
+  @Test
+  public void pauseVideoRecording_Should_send_null_result_when_not_recording() {
+    TestUtils.setPrivateField(camera, "recordingVideo", false);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.pauseVideoRecording(mockResult);
+
+    verify(mockResult, times(1)).success(null);
+    verify(mockResult, never()).error(any(), any(), any());
+  }
+
+  @Test
+  public void pauseVideoRecording_Should_call_pause_when_recording_and_on_API_N() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 24);
+
+    camera.pauseVideoRecording(mockResult);
+
+    verify(mockMediaRecorder, times(1)).pause();
+    verify(mockResult, times(1)).success(null);
+    verify(mockResult, never()).error(any(), any(), any());
+  }
+
+  @Test
+  public void
+      pauseVideoRecording_Should_send_videoRecordingFailed_error_when_version_code_smaller_then_N() {
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 23);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.pauseVideoRecording(mockResult);
+
+    verify(mockResult, times(1))
+        .error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+    verify(mockResult, never()).success(any());
+  }
+
+  @Test
+  public void
+      pauseVideoRecording_Should_send_videoRecordingFailed_error_when_media_recorder_pause_throws_IllegalStateException() {
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 24);
+
+    IllegalStateException expectedException = new IllegalStateException("Test error message");
+
+    doThrow(expectedException).when(mockMediaRecorder).pause();
+
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.pauseVideoRecording(mockResult);
+
+    verify(mockResult, times(1)).error("videoRecordingFailed", "Test error message", null);
+    verify(mockResult, never()).success(any());
+  }
+
+  @Test
+  public void resumeVideoRecording_Should_send_null_result_when_not_recording() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    TestUtils.setPrivateField(camera, "recordingVideo", false);
+
+    camera.resumeVideoRecording(mockResult);
+
+    verify(mockResult, times(1)).success(null);
+    verify(mockResult, never()).error(any(), any(), any());
+  }
+
+  @Test
+  public void resumeVideoRecording_Should_call_pause_when_recording_and_on_API_N() {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 24);
+
+    camera.resumeVideoRecording(mockResult);
+
+    verify(mockMediaRecorder, times(1)).resume();
+    verify(mockResult, times(1)).success(null);
+    verify(mockResult, never()).error(any(), any(), any());
+  }
+
+  @Test
+  public void
+      resumeVideoRecording_Should_send_videoRecordingFailed_error_when_version_code_smaller_then_N() {
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 23);
+
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.resumeVideoRecording(mockResult);
+
+    verify(mockResult, times(1))
+        .error("videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
+    verify(mockResult, never()).success(any());
+  }
+
+  @Test
+  public void
+      resumeVideoRecording_Should_send_videoRecordingFailed_error_when_media_recorder_pause_throws_IllegalStateException() {
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
+    TestUtils.setPrivateField(camera, "recordingVideo", true);
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 24);
+
+    IllegalStateException expectedException = new IllegalStateException("Test error message");
+
+    doThrow(expectedException).when(mockMediaRecorder).resume();
+
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.resumeVideoRecording(mockResult);
+
+    verify(mockResult, times(1)).error("videoRecordingFailed", "Test error message", null);
+    verify(mockResult, never()).success(any());
   }
 
   private static class TestCameraFeatureFactory implements CameraFeatureFactory {
