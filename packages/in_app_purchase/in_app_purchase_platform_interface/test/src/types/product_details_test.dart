@@ -16,6 +16,7 @@ void main() {
           description: 'description',
           price: '13.37',
           currencyCode: 'USD',
+          currencySymbol: r'$',
           rawPrice: 13.37);
 
       expect(productDetails.id, 'id');
@@ -23,6 +24,7 @@ void main() {
       expect(productDetails.description, 'description');
       expect(productDetails.rawPrice, 13.37);
       expect(productDetails.currencyCode, 'USD');
+      expect(productDetails.currencySymbol, r'$');
     });
   });
 }

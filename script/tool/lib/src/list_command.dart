@@ -2,17 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
+import 'package:platform/platform.dart';
 
-import 'common.dart';
+import 'common/plugin_command.dart';
 
 /// A command to list different types of repository content.
 class ListCommand extends PluginCommand {
   /// Creates an instance of the list command, whose behavior depends on the
   /// 'type' argument it provides.
-  ListCommand(Directory packagesDir) : super(packagesDir) {
+  ListCommand(
+    Directory packagesDir, {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, platform: platform) {
     argParser.addOption(
       _type,
       defaultsTo: _plugin,

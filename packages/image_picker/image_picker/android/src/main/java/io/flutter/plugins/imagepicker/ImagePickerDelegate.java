@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.imagepicker;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,12 +15,14 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.FileProvider;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.PluginRegistry;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -40,7 +43,19 @@ enum CameraDevice {
  * means that the chooseImageFromGallery() or takeImageWithCamera() method was called at least
  * twice. In this case, stop executing and finish with an error.
  *
- * <p>2. Launch the gallery or camera for picking the image, depending on whether
+ * <p>2. Check that a required runtime permission has been granted. The takeImageWithCamera() method
+ * checks that {@link Manifest.permission#CAMERA} has been granted.
+ *
+ * <p>The permission check can end up in two different outcomes:
+ *
+ * <p>A) If the permission has already been granted, continue with picking the image from gallery or
+ * camera.
+ *
+ * <p>B) If the permission hasn't already been granted, ask for the permission from the user. If the
+ * user grants the permission, proceed with step #3. If the user denies the permission, stop doing
+ * anything else and finish with a null result.
+ *
+ * <p>3. Launch the gallery or camera for picking the image, depending on whether
  * chooseImageFromGallery() or takeImageWithCamera() was called.
  *
  * <p>This can end up in three different outcomes:
@@ -55,11 +70,16 @@ enum CameraDevice {
  *
  * <p>C) User cancels picking an image. Finish with null result.
  */
-public class ImagePickerDelegate implements PluginRegistry.ActivityResultListener {
+public class ImagePickerDelegate
+    implements PluginRegistry.ActivityResultListener,
+        PluginRegistry.RequestPermissionsResultListener {
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY = 2342;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA = 2343;
+  @VisibleForTesting static final int REQUEST_CAMERA_IMAGE_PERMISSION = 2345;
+  @VisibleForTesting static final int REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY = 2346;
   @VisibleForTesting static final int REQUEST_CODE_CHOOSE_VIDEO_FROM_GALLERY = 2352;
   @VisibleForTesting static final int REQUEST_CODE_TAKE_VIDEO_WITH_CAMERA = 2353;
+  @VisibleForTesting static final int REQUEST_CAMERA_VIDEO_PERMISSION = 2355;
 
   @VisibleForTesting final String fileProviderName;
 
@@ -67,10 +87,19 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
   @VisibleForTesting final File externalFilesDirectory;
   private final ImageResizer imageResizer;
   private final ImagePickerCache cache;
+  private final PermissionManager permissionManager;
   private final IntentResolver intentResolver;
   private final FileUriResolver fileUriResolver;
   private final FileUtils fileUtils;
   private CameraDevice cameraDevice;
+
+  interface PermissionManager {
+    boolean isPermissionGranted(String permissionName);
+
+    void askForPermission(String permissionName, int requestCode);
+
+    boolean needRequestCameraPermission();
+  }
 
   interface IntentResolver {
     boolean resolveActivity(Intent intent);
@@ -102,6 +131,23 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
         null,
         null,
         cache,
+        new PermissionManager() {
+          @Override
+          public boolean isPermissionGranted(String permissionName) {
+            return ActivityCompat.checkSelfPermission(activity, permissionName)
+                == PackageManager.PERMISSION_GRANTED;
+          }
+
+          @Override
+          public void askForPermission(String permissionName, int requestCode) {
+            ActivityCompat.requestPermissions(activity, new String[] {permissionName}, requestCode);
+          }
+
+          @Override
+          public boolean needRequestCameraPermission() {
+            return ImagePickerUtils.needRequestCameraPermission(activity);
+          }
+        },
         new IntentResolver() {
           @Override
           public boolean resolveActivity(Intent intent) {
@@ -143,6 +189,7 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
       final MethodChannel.Result result,
       final MethodCall methodCall,
       final ImagePickerCache cache,
+      final PermissionManager permissionManager,
       final IntentResolver intentResolver,
       final FileUriResolver fileUriResolver,
       final FileUtils fileUtils) {
@@ -152,6 +199,7 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
     this.fileProviderName = activity.getPackageName() + ".flutter.image_provider";
     this.pendingResult = result;
     this.methodCall = methodCall;
+    this.permissionManager = permissionManager;
     this.intentResolver = intentResolver;
     this.fileUriResolver = fileUriResolver;
     this.fileUtils = fileUtils;
@@ -223,6 +271,13 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
       return;
     }
 
+    if (needRequestCameraPermission()
+        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_VIDEO_PERMISSION);
+      return;
+    }
+
     launchTakeVideoWithCameraIntent();
   }
 
@@ -262,11 +317,30 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
     launchPickImageFromGalleryIntent();
   }
 
+  public void chooseMultiImageFromGallery(MethodCall methodCall, MethodChannel.Result result) {
+    if (!setPendingMethodCallAndResult(methodCall, result)) {
+      finishWithAlreadyActiveError(result);
+      return;
+    }
+
+    launchMultiPickImageFromGalleryIntent();
+  }
+
   private void launchPickImageFromGalleryIntent() {
     Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
     pickImageIntent.setType("image/*");
 
     activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+  }
+
+  private void launchMultiPickImageFromGalleryIntent() {
+    Intent pickImageIntent = new Intent(Intent.ACTION_GET_CONTENT);
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR2) {
+      pickImageIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+    }
+    pickImageIntent.setType("image/*");
+
+    activity.startActivityForResult(pickImageIntent, REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY);
   }
 
   public void takeImageWithCamera(MethodCall methodCall, MethodChannel.Result result) {
@@ -275,7 +349,20 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
       return;
     }
 
+    if (needRequestCameraPermission()
+        && !permissionManager.isPermissionGranted(Manifest.permission.CAMERA)) {
+      permissionManager.askForPermission(
+          Manifest.permission.CAMERA, REQUEST_CAMERA_IMAGE_PERMISSION);
+      return;
+    }
     launchTakeImageWithCameraIntent();
+  }
+
+  private boolean needRequestCameraPermission() {
+    if (permissionManager == null) {
+      return false;
+    }
+    return permissionManager.needRequestCameraPermission();
   }
 
   private void launchTakeImageWithCameraIntent() {
@@ -314,6 +401,7 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
     File image;
 
     try {
+      externalFilesDirectory.mkdirs();
       image = File.createTempFile(filename, suffix, externalFilesDirectory);
     } catch (IOException e) {
       throw new RuntimeException(e);
@@ -336,10 +424,46 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
   }
 
   @Override
+  public boolean onRequestPermissionsResult(
+      int requestCode, String[] permissions, int[] grantResults) {
+    boolean permissionGranted =
+        grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED;
+
+    switch (requestCode) {
+      case REQUEST_CAMERA_IMAGE_PERMISSION:
+        if (permissionGranted) {
+          launchTakeImageWithCameraIntent();
+        }
+        break;
+      case REQUEST_CAMERA_VIDEO_PERMISSION:
+        if (permissionGranted) {
+          launchTakeVideoWithCameraIntent();
+        }
+        break;
+      default:
+        return false;
+    }
+
+    if (!permissionGranted) {
+      switch (requestCode) {
+        case REQUEST_CAMERA_IMAGE_PERMISSION:
+        case REQUEST_CAMERA_VIDEO_PERMISSION:
+          finishWithError("camera_access_denied", "The user did not allow camera access.");
+          break;
+      }
+    }
+
+    return true;
+  }
+
+  @Override
   public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
     switch (requestCode) {
       case REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY:
         handleChooseImageResult(resultCode, data);
+        break;
+      case REQUEST_CODE_CHOOSE_MULTI_IMAGE_FROM_GALLERY:
+        handleChooseMultiImageResult(resultCode, data);
         break;
       case REQUEST_CODE_TAKE_IMAGE_WITH_CAMERA:
         handleCaptureImageResult(resultCode);
@@ -361,6 +485,24 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
     if (resultCode == Activity.RESULT_OK && data != null) {
       String path = fileUtils.getPathFromUri(activity, data.getData());
       handleImageResult(path, false);
+      return;
+    }
+
+    // User cancelled choosing a picture.
+    finishWithSuccess(null);
+  }
+
+  private void handleChooseMultiImageResult(int resultCode, Intent intent) {
+    if (resultCode == Activity.RESULT_OK && intent != null) {
+      ArrayList<String> paths = new ArrayList<>();
+      if (intent.getClipData() != null) {
+        for (int i = 0; i < intent.getClipData().getItemCount(); i++) {
+          paths.add(fileUtils.getPathFromUri(activity, intent.getClipData().getItemAt(i).getUri()));
+        }
+      } else {
+        paths.add(fileUtils.getPathFromUri(activity, intent.getData()));
+      }
+      handleMultiImageResult(paths, false);
       return;
     }
 
@@ -417,24 +559,43 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
     finishWithSuccess(null);
   }
 
+  private void handleMultiImageResult(
+      ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
+    if (methodCall != null) {
+      for (int i = 0; i < paths.size(); i++) {
+        String finalImagePath = getResizedImagePath(paths.get(i));
+
+        //delete original file if scaled
+        if (finalImagePath != null
+            && !finalImagePath.equals(paths.get(i))
+            && shouldDeleteOriginalIfScaled) {
+          new File(paths.get(i)).delete();
+        }
+        paths.set(i, finalImagePath);
+      }
+      finishWithListSuccess(paths);
+    }
+  }
+
   private void handleImageResult(String path, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
-      Double maxWidth = methodCall.argument("maxWidth");
-      Double maxHeight = methodCall.argument("maxHeight");
-      Integer imageQuality = methodCall.argument("imageQuality");
-
-      String finalImagePath =
-          imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
-
-      finishWithSuccess(finalImagePath);
-
+      String finalImagePath = getResizedImagePath(path);
       //delete original file if scaled
       if (finalImagePath != null && !finalImagePath.equals(path) && shouldDeleteOriginalIfScaled) {
         new File(path).delete();
       }
+      finishWithSuccess(finalImagePath);
     } else {
       finishWithSuccess(path);
     }
+  }
+
+  private String getResizedImagePath(String path) {
+    Double maxWidth = methodCall.argument("maxWidth");
+    Double maxHeight = methodCall.argument("maxHeight");
+    Integer imageQuality = methodCall.argument("imageQuality");
+
+    return imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
   }
 
   private void handleVideoResult(String path) {
@@ -462,6 +623,17 @@ public class ImagePickerDelegate implements PluginRegistry.ActivityResultListene
       return;
     }
     pendingResult.success(imagePath);
+    clearMethodCallAndResult();
+  }
+
+  private void finishWithListSuccess(ArrayList<String> imagePaths) {
+    if (pendingResult == null) {
+      for (String imagePath : imagePaths) {
+        cache.saveResult(imagePath, null, null);
+      }
+      return;
+    }
+    pendingResult.success(imagePaths);
     clearMethodCallAndResult();
   }
 

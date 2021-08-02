@@ -21,6 +21,7 @@ dependencies:
   flutter_plugin_android_lifecycle: ^2.0.1
 
 dev_dependencies:
+  espresso: ^0.1.0+2
   flutter_driver:
     sdk: flutter
   integration_test:

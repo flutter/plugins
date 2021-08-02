@@ -2,27 +2,32 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:git/git.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import 'common.dart';
+import 'common/package_looping_command.dart';
+import 'common/process_runner.dart';
 
 /// A command to enforce pubspec conventions across the repository.
 ///
 /// This both ensures that repo best practices for which optional fields are
 /// used are followed, and that the structure is consistent to make edits
 /// across multiple pubspec files easier.
-class PubspecCheckCommand extends PluginCommand {
+class PubspecCheckCommand extends PackageLoopingCommand {
   /// Creates an instance of the version check command.
   PubspecCheckCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(
+          packagesDir,
+          processRunner: processRunner,
+          platform: platform,
+          gitDir: gitDir,
+        );
 
   // Section order for plugins. Because the 'flutter' section is critical
   // information for plugins, and usually small, it goes near the top unlike in
@@ -52,36 +57,26 @@ class PubspecCheckCommand extends PluginCommand {
       'Checks that pubspecs follow repository conventions.';
 
   @override
-  Future<void> run() async {
-    final List<String> failingPackages = <String>[];
-    await for (final Directory package in getPackages()) {
-      final String relativePackagePath =
-          p.relative(package.path, from: packagesDir.path);
-      print('Checking $relativePackagePath...');
-      final File pubspec = package.childFile('pubspec.yaml');
-      final bool passesCheck = !pubspec.existsSync() ||
-          await _checkPubspec(pubspec, packageName: package.basename);
-      if (!passesCheck) {
-        failingPackages.add(relativePackagePath);
-      }
-    }
+  bool get hasLongOutput => false;
 
-    if (failingPackages.isNotEmpty) {
-      print('The following packages have pubspec issues:');
-      for (final String package in failingPackages) {
-        print('  $package');
-      }
-      throw ToolExit(1);
-    }
+  @override
+  bool get includeSubpackages => true;
 
-    print('\nNo pubspec issues found!');
+  @override
+  Future<PackageResult> runForPackage(Directory package) async {
+    final File pubspec = package.childFile('pubspec.yaml');
+    final bool passesCheck = !pubspec.existsSync() ||
+        await _checkPubspec(pubspec, packageName: package.basename);
+    if (!passesCheck) {
+      return PackageResult.fail();
+    }
+    return PackageResult.success();
   }
 
   Future<bool> _checkPubspec(
     File pubspecFile, {
     required String packageName,
   }) async {
-    const String indentation = '  ';
     final String contents = pubspecFile.readAsStringSync();
     final Pubspec? pubspec = _tryParsePubspec(contents);
     if (pubspec == null) {

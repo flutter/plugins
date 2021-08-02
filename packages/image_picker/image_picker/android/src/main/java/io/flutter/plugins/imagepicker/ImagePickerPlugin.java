@@ -91,6 +91,7 @@ public class ImagePickerPlugin
   }
 
   static final String METHOD_CALL_IMAGE = "pickImage";
+  static final String METHOD_CALL_MULTI_IMAGE = "pickMultiImage";
   static final String METHOD_CALL_VIDEO = "pickVideo";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
   private static final int CAMERA_DEVICE_FRONT = 1;
@@ -192,9 +193,11 @@ public class ImagePickerPlugin
       // V1 embedding setup for activity listeners.
       application.registerActivityLifecycleCallbacks(observer);
       registrar.addActivityResultListener(delegate);
+      registrar.addRequestPermissionsResultListener(delegate);
     } else {
       // V2 embedding setup for activity listeners.
       activityBinding.addActivityResultListener(delegate);
+      activityBinding.addRequestPermissionsResultListener(delegate);
       lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(activityBinding);
       lifecycle.addObserver(observer);
     }
@@ -202,6 +205,7 @@ public class ImagePickerPlugin
 
   private void tearDown() {
     activityBinding.removeActivityResultListener(delegate);
+    activityBinding.removeRequestPermissionsResultListener(delegate);
     activityBinding = null;
     lifecycle.removeObserver(observer);
     lifecycle = null;
@@ -298,6 +302,9 @@ public class ImagePickerPlugin
           default:
             throw new IllegalArgumentException("Invalid image source: " + imageSource);
         }
+        break;
+      case METHOD_CALL_MULTI_IMAGE:
+        delegate.chooseMultiImageFromGallery(call, result);
         break;
       case METHOD_CALL_VIDEO:
         imageSource = call.argument("source");

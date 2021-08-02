@@ -34,6 +34,16 @@
   XCTAssertEqual(newImage.size.height, 2);
 }
 
+- (void)testScaledImage_ShouldBeCorrectRotation {
+  UIImage *image = [UIImage imageWithData:ImagePickerTestImages.JPGTestData];
+  UIImage *newImage = [FLTImagePickerImageUtil scaledImage:image
+                                                  maxWidth:@3
+                                                 maxHeight:@2
+                                       isMetadataAvailable:YES];
+
+  XCTAssertEqual(newImage.imageOrientation, UIImageOrientationUp);
+}
+
 - (void)testScaledGIFImage_ShouldBeScaled {
   // gif image that frame size is 3 and the duration is 1 second.
   GIFInfo *info = [FLTImagePickerImageUtil scaledGIFImage:ImagePickerTestImages.GIFTestData

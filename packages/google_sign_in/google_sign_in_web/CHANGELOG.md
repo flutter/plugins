@@ -1,3 +1,7 @@
+## 0.10.0+1
+
+* Updated installation instructions in README.
+
 ## 0.10.0
 
 * Migrate to null-safety.
