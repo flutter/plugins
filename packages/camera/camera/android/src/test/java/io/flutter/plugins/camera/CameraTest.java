@@ -329,19 +329,22 @@ public class CameraTest {
   }
 
   @Test
-  public void pauseVideoRecording_Should_send_videoRecordingFailed_error_when_version_code_smaller_then_N() {
+  public void
+      pauseVideoRecording_Should_send_videoRecordingFailed_error_when_version_code_smaller_then_N() {
     TestUtils.setPrivateField(camera, "recordingVideo", true);
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 23);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
 
     camera.pauseVideoRecording(mockResult);
 
-    verify(mockResult, times(1)).error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
+    verify(mockResult, times(1))
+        .error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
     verify(mockResult, never()).success(any());
   }
 
   @Test
-  public void pauseVideoRecording_Should_send_videoRecordingFailed_error_when_media_recorder_pause_throws_IllegalStateException() {
+  public void
+      pauseVideoRecording_Should_send_videoRecordingFailed_error_when_media_recorder_pause_throws_IllegalStateException() {
     MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
     TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
     TestUtils.setPrivateField(camera, "recordingVideo", true);
@@ -386,7 +389,8 @@ public class CameraTest {
   }
 
   @Test
-  public void resumeVideoRecording_Should_send_videoRecordingFailed_error_when_version_code_smaller_then_N() {
+  public void
+      resumeVideoRecording_Should_send_videoRecordingFailed_error_when_version_code_smaller_then_N() {
     TestUtils.setPrivateField(camera, "recordingVideo", true);
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 23);
 
@@ -394,12 +398,14 @@ public class CameraTest {
 
     camera.resumeVideoRecording(mockResult);
 
-    verify(mockResult, times(1)).error("videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
+    verify(mockResult, times(1))
+        .error("videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
     verify(mockResult, never()).success(any());
   }
 
   @Test
-  public void resumeVideoRecording_Should_send_videoRecordingFailed_error_when_media_recorder_pause_throws_IllegalStateException() {
+  public void
+      resumeVideoRecording_Should_send_videoRecordingFailed_error_when_media_recorder_pause_throws_IllegalStateException() {
     MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
     TestUtils.setPrivateField(camera, "mediaRecorder", mockMediaRecorder);
     TestUtils.setPrivateField(camera, "recordingVideo", true);
