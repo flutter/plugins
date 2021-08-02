@@ -634,7 +634,7 @@ class Camera
             dartMessenger.error(flutterResult, errorCode, errorMessage, null));
   }
 
-  public void startVideoRecording(Result result) {
+  public void startVideoRecording(@NonNull Result result) {
     final File outputDir = applicationContext.getCacheDir();
     try {
       captureFile = File.createTempFile("REC", ".mp4", outputDir);
@@ -642,19 +642,23 @@ class Camera
       result.error("cannotCreateFile", e.getMessage(), null);
       return;
     }
-
     try {
       prepareMediaRecorder(captureFile.getAbsolutePath());
-
-      // Re-create autofocus feature so it's using video focus mode now.
-      cameraFeatures.setAutoFocus(
-          cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
-      recordingVideo = true;
-
+    } catch (IOException e) {
+      recordingVideo = false;
+      captureFile = null;
+      result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
+    }
+    // Re-create autofocus feature so it's using video focus mode now.
+    cameraFeatures.setAutoFocus(
+        cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
+    recordingVideo = true;
+    try {
       createCaptureSession(
           CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
       result.success(null);
-    } catch (CameraAccessException | IOException e) {
+    } catch (CameraAccessException e) {
       recordingVideo = false;
       captureFile = null;
       result.error("videoRecordingFailed", e.getMessage(), null);
@@ -666,27 +670,25 @@ class Camera
       result.success(null);
       return;
     }
-
+    // Re-create autofocus feature so it's using continuous capture focus mode now.
+    cameraFeatures.setAutoFocus(
+        cameraFeatureFactory.createAutoFocusFeature(cameraProperties, false));
+    recordingVideo = false;
     try {
-      // Re-create autofocus feature so it's using continuous capture focus mode now.
-      cameraFeatures.setAutoFocus(
-          cameraFeatureFactory.createAutoFocusFeature(cameraProperties, false));
-      recordingVideo = false;
-
-      try {
-        captureSession.abortCaptures();
-        mediaRecorder.stop();
-      } catch (CameraAccessException | IllegalStateException e) {
-        // Ignore exceptions and try to continue (changes are camera session already aborted capture).
-      }
-
-      mediaRecorder.reset();
+      captureSession.abortCaptures();
+      mediaRecorder.stop();
+    } catch (CameraAccessException | IllegalStateException e) {
+      // Ignore exceptions and try to continue (changes are camera session already aborted capture).
+    }
+    mediaRecorder.reset();
+    try {
       startPreview();
-      result.success(captureFile.getAbsolutePath());
-      captureFile = null;
     } catch (CameraAccessException | IllegalStateException e) {
       result.error("videoRecordingFailed", e.getMessage(), null);
+      return;
     }
+    result.success(captureFile.getAbsolutePath());
+    captureFile = null;
   }
 
   public void pauseVideoRecording(@NonNull final Result result) {
@@ -738,7 +740,7 @@ class Camera
    * @param result Flutter result.
    * @param newMode new mode.
    */
-  public void setFlashMode(@NonNull final Result result, FlashMode newMode) {
+  public void setFlashMode(@NonNull final Result result, @NonNull FlashMode newMode) {
     // Save the new flash mode setting.
     final FlashFeature flashFeature = cameraFeatures.getFlash();
     flashFeature.setValue(newMode);
@@ -755,7 +757,7 @@ class Camera
    * @param result Flutter result.
    * @param newMode new mode.
    */
-  public void setExposureMode(@NonNull final Result result, ExposureMode newMode) {
+  public void setExposureMode(@NonNull final Result result, @NonNull ExposureMode newMode) {
     final ExposureLockFeature exposureLockFeature = cameraFeatures.getExposureLock();
     exposureLockFeature.setValue(newMode);
     exposureLockFeature.updateBuilder(previewRequestBuilder);
@@ -772,7 +774,7 @@ class Camera
    * @param result Flutter result.
    * @param point The exposure point.
    */
-  public void setExposurePoint(@NonNull final Result result, Point point) {
+  public void setExposurePoint(@NonNull final Result result, @Nullable Point point) {
     final ExposurePointFeature exposurePointFeature = cameraFeatures.getExposurePoint();
     exposurePointFeature.setValue(point);
     exposurePointFeature.updateBuilder(previewRequestBuilder);
@@ -804,7 +806,7 @@ class Camera
    * @param result Flutter result.
    * @param newMode New mode.
    */
-  public void setFocusMode(final Result result, FocusMode newMode) {
+  public void setFocusMode(final Result result, @NonNull FocusMode newMode) {
     final AutoFocusFeature autoFocusFeature = cameraFeatures.getAutoFocus();
     autoFocusFeature.setValue(newMode);
     autoFocusFeature.updateBuilder(previewRequestBuilder);
@@ -849,7 +851,7 @@ class Camera
    * @param result Flutter result.
    * @param point the new coordinates.
    */
-  public void setFocusPoint(@NonNull final Result result, Point point) {
+  public void setFocusPoint(@NonNull final Result result, @Nullable Point point) {
     final FocusPointFeature focusPointFeature = cameraFeatures.getFocusPoint();
     focusPointFeature.setValue(point);
     focusPointFeature.updateBuilder(previewRequestBuilder);
