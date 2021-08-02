@@ -76,20 +76,6 @@ interface ErrorCallback {
   void onError(String errorCode, String errorMessage);
 }
 
-/**
- * Note: at this time we do not implement zero shutter lag (ZSL) capture. This is a potential
- * improvement we can use in the future. The idea is in a TEMPLATE_ZERO_SHUTTER_LAG capture session,
- * the system maintains a ring buffer of images from the preview. It must be in full auto mode
- * (flash, ae, focus, etc). When the user captures an image, it simply picks one out of the ring
- * buffer, thus capturing an image with zero shutter lag.
- *
- * <p>This is a potential improvement for the future. A good example is the AOSP camera here:
- * https://android.googlesce.com/platform/packages/apps/Camera2/+/9c94ab3/src/com/android/camera/one/v2/OneCameraZslImpl.java
- *
- * <p>But one note- they mention sometimes ZSL captures can be very low quality so it might not be
- * preferred on some devices. If we do add support for this in the future, we should allow it to be
- * enabled from dart.
- */
 class Camera
     implements CameraCaptureCallback.CameraCaptureStateListener,
         ImageReader.OnImageAvailableListener {
