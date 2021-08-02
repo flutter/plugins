@@ -1,0 +1,34 @@
+name: webview_flutter_android
+description: A Flutter plugin that provides a WebView widget on Android.
+repository: https://github.com/flutter/plugins/tree/master/packages/webview_flutter/webview_flutter_android
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+webview%22
+version: 0.0.1
+
+# TODO (mvanbeusekom): Remove this line when final version of webview_flutter_platform_interface is published
+publish_to: none
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
+
+flutter:
+  plugin:
+    platforms:
+      android:
+        package: io.flutter.plugins.webviewflutter
+        pluginClass: WebViewFlutterPlugin
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # TODO (mvanbeusekom): Replace with pub.dev version once published
+  webview_flutter_platform_interface:
+    path: ../webview_flutter_platform_interface
+
+dev_dependencies:
+  flutter_driver:
+    sdk: flutter
+  flutter_test:
+    sdk: flutter
+  pedantic: ^1.10.0
