@@ -461,7 +461,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
-    required TextDirection textDirection,
+    TextDirection textDirection = TextDirection.ltr,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},

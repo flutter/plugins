@@ -359,7 +359,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
 
   /// Returns a widget displaying the map view.
   ///
-  /// This method is similar to [buildView], but requires a parameter for
+  /// This method is similar to [buildView], but contains a parameter for
   /// platforms that require a text direction.
   ///
   /// Default behavior passes all parameters except `textDirection` to
@@ -368,7 +368,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
-    required TextDirection textDirection,
+    TextDirection textDirection = TextDirection.ltr,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
