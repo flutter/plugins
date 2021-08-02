@@ -25,7 +25,7 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     # can sometimes be in a state where it has diverged from upstream (!).
     - git reset --hard @{u}
     # Run doctor to allow auditing of what version of Flutter the run is using.
-    - flutter doctor
+    - flutter doctor -v
   << : *TOOL_SETUP_TEMPLATE
 
 macos_template: &MACOS_TEMPLATE
