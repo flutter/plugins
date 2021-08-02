@@ -1,4 +1,4 @@
-## 5.1.0
+## 5.0.7
 
 * Mark iOS arm64 simulators as unsupported.
 
