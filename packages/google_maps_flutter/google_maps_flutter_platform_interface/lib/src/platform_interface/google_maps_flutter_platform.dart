@@ -359,9 +359,10 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
 
   /// Returns a widget displaying the map view.
   ///
-  /// This method includes a parameter for platforms that require a text
-  /// direction. For example, this should be used when using hybrid composition
-  /// on Android.
+  /// This method is similar to [buildView], but requires a parameter for
+  /// platforms that require a text direction.
+  ///
+  /// Default behavior passes the parameters to [buildView].
   Widget buildViewWithTextDirection(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
@@ -375,8 +376,17 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
-    throw UnimplementedError(
-      'buildViewWithTextDirection() has not been implemented.',
+    return buildView(
+      creationId,
+      onPlatformViewCreated,
+      initialCameraPosition: initialCameraPosition,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      tileOverlays: tileOverlays,
+      gestureRecognizers: gestureRecognizers,
+      mapOptions: mapOptions,
     );
   }
 }
