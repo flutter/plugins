@@ -51,7 +51,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       'iOS',
       pluginPlatform: kPlatformIos,
       flutterBuildType: 'ios',
-      extraBuildFlags: <String>['--no-codesign', '-v'],
+      extraBuildFlags: <String>['--no-codesign'],
     ),
     kPlatformLinux: const _PlatformDetails(
       'Linux',
