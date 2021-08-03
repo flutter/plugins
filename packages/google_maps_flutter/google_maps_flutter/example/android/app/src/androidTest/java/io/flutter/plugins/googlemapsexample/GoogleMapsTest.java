@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import androidx.test.core.app.ActivityScenario;
 import io.flutter.plugins.googlemaps.GoogleMapsPlugin;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class GoogleMapsTest {
