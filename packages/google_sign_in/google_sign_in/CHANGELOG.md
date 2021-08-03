@@ -1,3 +1,7 @@
+## 5.0.7
+
+* Mark iOS arm64 simulators as unsupported.
+
 ## 5.0.6
 
 * Remove references to the Android V1 embedding.
