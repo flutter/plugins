@@ -1,6 +1,7 @@
-## NEXT
+## 0.8.3
 
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
+* Improved handling of bad image data when applying metadata changes on iOS.
 
 ## 0.8.2
 
@@ -53,8 +54,8 @@ see: [#84634](https://github.com/flutter/flutter/issues/84634).
 ## 0.8.0
 
 * BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,
-to comply with new Google Play storage requirements. This means developers are responsible for moving 
-the image or video to a different location in case more permanent storage is required. Other applications 
+to comply with new Google Play storage requirements. This means developers are responsible for moving
+the image or video to a different location in case more permanent storage is required. Other applications
 will no longer be able to access images or videos captured unless they are moved to a publicly accessible location.
 * Updated Mockito to fix Android tests.
 
