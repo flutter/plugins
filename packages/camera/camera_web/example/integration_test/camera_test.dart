@@ -5,10 +5,9 @@
 import 'dart:html';
 import 'dart:ui';
 
-import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/types/camera_error_codes.dart';
-import 'package:camera_web/src/types/camera_options.dart';
+import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/types/types.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -19,27 +18,54 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Camera', () {
-    late Window window;
-    late Navigator navigator;
     late MediaStream mediaStream;
-    late MediaDevices mediaDevices;
+    late CameraSettings cameraSettings;
 
     setUp(() {
-      window = MockWindow();
-      navigator = MockNavigator();
-      mediaDevices = MockMediaDevices();
+      cameraSettings = MockCameraSettings();
 
       final videoElement = getVideoElementWithBlankStream(Size(10, 10));
       mediaStream = videoElement.captureStream();
 
-      when(() => window.navigator).thenReturn(navigator);
-      when(() => navigator.mediaDevices).thenReturn(mediaDevices);
       when(
-        () => mediaDevices.getUserMedia(any()),
-      ).thenAnswer((_) async => mediaStream);
+        () => cameraSettings.getMediaStreamForOptions(
+          any(),
+          cameraId: any(named: 'cameraId'),
+        ),
+      ).thenAnswer((_) => Future.value(mediaStream));
+    });
+
+    setUpAll(() {
+      registerFallbackValue<CameraOptions>(MockCameraOptions());
     });
 
     group('initialize', () {
+      testWidgets(
+          'calls CameraSettings.getMediaStreamForOptions '
+          'with provided options', (tester) async {
+        final options = CameraOptions(
+          video: VideoConstraints(
+            facingMode: FacingModeConstraint.exact(CameraType.user),
+            width: VideoSizeConstraint(ideal: 200),
+          ),
+        );
+
+        final camera = Camera(
+          textureId: 1,
+          options: options,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+
+        verify(
+          () => cameraSettings.getMediaStreamForOptions(
+            options,
+            cameraId: 1,
+          ),
+        ).called(1);
+      });
+
       testWidgets(
           'creates a video element '
           'with correct properties', (tester) async {
@@ -50,7 +76,7 @@ void main() {
           options: CameraOptions(
             audio: audioConstraints,
           ),
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -75,7 +101,7 @@ void main() {
           'with correct properties', (tester) async {
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -85,311 +111,24 @@ void main() {
         expect(camera.divElement.children, contains(camera.videoElement));
       });
 
-      testWidgets('calls getUserMedia with provided options', (tester) async {
-        final options = CameraOptions(
-          video: VideoConstraints(
-            facingMode: FacingModeConstraint.exact(CameraType.user),
-            width: VideoSizeConstraint(ideal: 200),
-          ),
-        );
+      testWidgets(
+          'throws an exception '
+          'when CameraSettings.getMediaStreamForOptions throws',
+          (tester) async {
+        final exception = Exception('A media stream exception occured.');
 
-        final optionsJson = await options.toJson();
+        when(() => cameraSettings.getMediaStreamForOptions(any(),
+            cameraId: any(named: 'cameraId'))).thenThrow(exception);
 
         final camera = Camera(
           textureId: 1,
-          options: options,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
-        await camera.initialize();
-
-        verify(() => mediaDevices.getUserMedia(optionsJson)).called(1);
-      });
-
-      group('throws CameraException', () {
-        testWidgets(
-            'with notSupported error '
-            'when there are no media devices', (tester) async {
-          when(() => navigator.mediaDevices).thenReturn(null);
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.notSupported,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with notFound error '
-            'when getUserMedia throws DomException '
-            'with NotFoundError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('NotFoundError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.notFound,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with notFound error '
-            'when getUserMedia throws DomException '
-            'with DevicesNotFoundError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('DevicesNotFoundError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.notFound,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with notReadable error '
-            'when getUserMedia throws DomException '
-            'with NotReadableError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('NotReadableError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.notReadable,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with notReadable error '
-            'when getUserMedia throws DomException '
-            'with TrackStartError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('TrackStartError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.notReadable,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with overconstrained error '
-            'when getUserMedia throws DomException '
-            'with OverconstrainedError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('OverconstrainedError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.overconstrained,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with overconstrained error '
-            'when getUserMedia throws DomException '
-            'with ConstraintNotSatisfiedError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('ConstraintNotSatisfiedError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.overconstrained,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with permissionDenied error '
-            'when getUserMedia throws DomException '
-            'with NotAllowedError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('NotAllowedError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.permissionDenied,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with permissionDenied error '
-            'when getUserMedia throws DomException '
-            'with PermissionDeniedError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('PermissionDeniedError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.permissionDenied,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with type error '
-            'when getUserMedia throws DomException '
-            'with TypeError', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('TypeError'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.type,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with unknown error '
-            'when getUserMedia throws DomException '
-            'with an unknown error', (tester) async {
-          when(() => mediaDevices.getUserMedia(any()))
-              .thenThrow(FakeDomException('Unknown'));
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.unknown,
-              ),
-            ),
-          );
-        });
-
-        testWidgets(
-            'with unknown error '
-            'when getUserMedia throws an unknown exception', (tester) async {
-          when(() => mediaDevices.getUserMedia(any())).thenThrow(Exception());
-
-          final camera = Camera(
-            textureId: 1,
-            window: window,
-          );
-
-          expect(
-            camera.initialize,
-            throwsA(
-              isA<CameraException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCodes.unknown,
-              ),
-            ),
-          );
-        });
+        expect(
+          camera.initialize,
+          throwsA(exception),
+        );
       });
     });
 
@@ -399,34 +138,53 @@ void main() {
 
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
 
-        camera.videoElement.onPlay.listen((event) => startedPlaying = true);
+        final cameraPlaySubscription =
+            camera.videoElement.onPlay.listen((event) => startedPlaying = true);
 
         await camera.play();
 
         expect(startedPlaying, isTrue);
+
+        await cameraPlaySubscription.cancel();
       });
 
       testWidgets(
-          'assigns media stream to the video element\'s source '
+          'assigns a media stream '
+          'from CameraSettings.getMediaStreamForOptions '
+          'to the video element\'s source '
           'if it does not exist', (tester) async {
+        final options = CameraOptions(
+          video: VideoConstraints(
+            width: VideoSizeConstraint(ideal: 100),
+          ),
+        );
+
         final camera = Camera(
           textureId: 1,
-          window: window,
+          options: options,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
 
         /// Remove the video element's source
         /// by stopping the camera.
-        // ignore: cascade_invocations
         camera.stop();
 
         await camera.play();
+
+        // Should be called twice: for initialize and play.
+        verify(
+          () => cameraSettings.getMediaStreamForOptions(
+            options,
+            cameraId: 1,
+          ),
+        ).called(2);
 
         expect(camera.videoElement.srcObject, mediaStream);
       });
@@ -436,7 +194,7 @@ void main() {
       testWidgets('resets the video element\'s source', (tester) async {
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -452,7 +210,7 @@ void main() {
       testWidgets('returns a captured picture', (tester) async {
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -475,7 +233,7 @@ void main() {
 
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -495,7 +253,7 @@ void main() {
 
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -513,7 +271,7 @@ void main() {
 
         final camera = Camera(
           textureId: textureId,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();
@@ -529,7 +287,7 @@ void main() {
       testWidgets('resets the video element\'s source', (tester) async {
         final camera = Camera(
           textureId: 1,
-          window: window,
+          cameraSettings: cameraSettings,
         );
 
         await camera.initialize();

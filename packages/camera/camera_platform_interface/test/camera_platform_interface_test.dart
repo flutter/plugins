@@ -408,6 +408,32 @@ void main() {
         throwsUnimplementedError,
       );
     });
+
+    test(
+        'Default implementation of pausePreview() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.pausePreview(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of resumePreview() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.resumePreview(1),
+        throwsUnimplementedError,
+      );
+    });
   });
 }
 

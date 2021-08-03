@@ -1,3 +1,7 @@
+# 0.8.1+1
+
+- Updated installation instructions in README.
+
 # 0.8.1
 
 - Return a non-null value from `getSavePath` for consistency with

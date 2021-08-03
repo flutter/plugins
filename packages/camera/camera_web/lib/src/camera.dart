@@ -4,17 +4,20 @@
 
 import 'dart:html' as html;
 import 'dart:ui';
-import 'shims/dart_ui.dart' as ui;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_web/src/types/camera_error_codes.dart';
-import 'package:camera_web/src/types/camera_options.dart';
+import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/types/types.dart';
+
+import 'shims/dart_ui.dart' as ui;
 
 String _getViewType(int cameraId) => 'plugins.flutter.io/camera_$cameraId';
 
-/// A camera initialized from the media devices in the current [window].
-/// The obtained camera is constrained by the [options] used when
-/// querying the media input in [_getMediaStream].
+/// A camera initialized from the media devices in the current window.
+/// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
+///
+/// The obtained camera stream is constrained by [options] and fetched
+/// with [CameraSettings.getMediaStreamForOptions].
 ///
 /// The camera stream is displayed in the [videoElement] wrapped in the
 /// [divElement] to avoid overriding the custom styles applied to
@@ -22,28 +25,25 @@ String _getViewType(int cameraId) => 'plugins.flutter.io/camera_$cameraId';
 /// See: https://github.com/flutter/flutter/issues/79519
 ///
 /// The camera can be played/stopped by calling [play]/[stop]
-/// or may capture a picture by [takePicture].
+/// or may capture a picture by calling [takePicture].
 ///
 /// The [textureId] is used to register a camera view with the id
-/// returned by [_getViewType].
+/// defined by [_getViewType].
 class Camera {
   /// Creates a new instance of [Camera]
   /// with the given [textureId] and optional
   /// [options] and [window].
   Camera({
     required this.textureId,
+    required CameraSettings cameraSettings,
     this.options = const CameraOptions(),
-    html.Window? window,
-  }) : window = window ?? html.window;
+  }) : _cameraSettings = cameraSettings;
 
   /// The texture id used to register the camera view.
   final int textureId;
 
   /// The camera options used to initialize a camera, empty by default.
   final CameraOptions options;
-
-  /// The current browser window used to access device cameras.
-  final html.Window window;
 
   /// The video element that displays the camera stream.
   /// Initialized in [initialize].
@@ -54,16 +54,16 @@ class Camera {
   /// Initialized in [initialize].
   late html.DivElement divElement;
 
+  /// The camera settings used to get the media stream for the camera.
+  final CameraSettings _cameraSettings;
+
   /// Initializes the camera stream displayed in the [videoElement].
   /// Registers the camera view with [textureId] under [_getViewType] type.
   Future<void> initialize() async {
-    final isSupported = window.navigator.mediaDevices?.getUserMedia != null;
-    if (!isSupported) {
-      throw CameraException(
-        CameraErrorCodes.notSupported,
-        'The camera is not supported on this device.',
-      );
-    }
+    final stream = await _cameraSettings.getMediaStreamForOptions(
+      options,
+      cameraId: textureId,
+    );
 
     videoElement = html.VideoElement();
     _applyDefaultVideoStyles(videoElement);
@@ -77,7 +77,6 @@ class Camera {
       (_) => divElement,
     );
 
-    final stream = await _getMediaStream();
     videoElement
       ..autoplay = false
       ..muted = !options.audio.enabled
@@ -85,64 +84,15 @@ class Camera {
       ..setAttribute('playsinline', '');
   }
 
-  Future<html.MediaStream> _getMediaStream() async {
-    try {
-      final constraints = await options.toJson();
-      return await window.navigator.mediaDevices!.getUserMedia(constraints);
-    } on html.DomException catch (e) {
-      switch (e.name) {
-        case 'NotFoundError':
-        case 'DevicesNotFoundError':
-          throw CameraException(
-            CameraErrorCodes.notFound,
-            'No camera found for the given camera options.',
-          );
-        case 'NotReadableError':
-        case 'TrackStartError':
-          throw CameraException(
-            CameraErrorCodes.notReadable,
-            'The camera is not readable due to a hardware error '
-            'that prevented access to the device.',
-          );
-        case 'OverconstrainedError':
-        case 'ConstraintNotSatisfiedError':
-          throw CameraException(
-            CameraErrorCodes.overconstrained,
-            'The camera options are impossible to satisfy.',
-          );
-        case 'NotAllowedError':
-        case 'PermissionDeniedError':
-          throw CameraException(
-            CameraErrorCodes.permissionDenied,
-            'The camera cannot be used or the permission '
-            'to access the camera is not granted.',
-          );
-        case 'TypeError':
-          throw CameraException(
-            CameraErrorCodes.type,
-            'The camera options are incorrect or attempted'
-            'to access the media input from an insecure context.',
-          );
-        default:
-          throw CameraException(
-            CameraErrorCodes.unknown,
-            'An unknown error occured when initializing the camera.',
-          );
-      }
-    } catch (_) {
-      throw CameraException(
-        CameraErrorCodes.unknown,
-        'An unknown error occured when initializing the camera.',
-      );
-    }
-  }
-
   /// Starts the camera stream.
   ///
   /// Initializes the camera source if the camera was previously stopped.
   Future<void> play() async {
     if (videoElement.srcObject == null) {
-      final stream = await _getMediaStream();
+      final stream = await _cameraSettings.getMediaStreamForOptions(
+        options,
+        cameraId: textureId,
+      );
       videoElement.srcObject = stream;
     }
     await videoElement.play();

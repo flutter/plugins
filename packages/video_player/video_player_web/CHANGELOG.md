@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Updated installation instructions in README.
+
 ## 2.0.1
 
 * Fix videos not playing in Safari/Chrome on iOS by setting autoplay to false

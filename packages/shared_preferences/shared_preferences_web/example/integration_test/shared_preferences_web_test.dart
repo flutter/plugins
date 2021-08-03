@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@TestOn('chrome')
 import 'dart:convert' show json;
 import 'dart:html' as html;
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
 import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_web/shared_preferences_web.dart';
@@ -20,12 +20,14 @@ const Map<String, dynamic> kTestValues = <String, dynamic>{
 };
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('SharedPreferencesPlugin', () {
     setUp(() {
       html.window.localStorage.clear();
     });
 
-    test('registers itself', () {
+    testWidgets('registers itself', (WidgetTester tester) async {
       SharedPreferencesStorePlatform.instance =
           MethodChannelSharedPreferencesStore();
       expect(SharedPreferencesStorePlatform.instance,
@@ -35,7 +37,7 @@ void main() {
           isA<SharedPreferencesPlugin>());
     });
 
-    test('getAll', () async {
+    testWidgets('getAll', (WidgetTester tester) async {
       final SharedPreferencesPlugin store = SharedPreferencesPlugin();
       expect(await store.getAll(), isEmpty);
 
@@ -46,7 +48,7 @@ void main() {
       expect(allData['flutter.testKey'], 'test value');
     });
 
-    test('remove', () async {
+    testWidgets('remove', (WidgetTester tester) async {
       final SharedPreferencesPlugin store = SharedPreferencesPlugin();
       html.window.localStorage['flutter.testKey'] = '"test value"';
       expect(html.window.localStorage['flutter.testKey'], isNotNull);
@@ -58,7 +60,7 @@ void main() {
       );
     });
 
-    test('setValue', () async {
+    testWidgets('setValue', (WidgetTester tester) async {
       final SharedPreferencesPlugin store = SharedPreferencesPlugin();
       for (String key in kTestValues.keys) {
         final dynamic value = kTestValues[key];
@@ -79,7 +81,7 @@ void main() {
       );
     });
 
-    test('clear', () async {
+    testWidgets('clear', (WidgetTester tester) async {
       final SharedPreferencesPlugin store = SharedPreferencesPlugin();
       html.window.localStorage['flutter.testKey1'] = '"test value"';
       html.window.localStorage['flutter.testKey2'] = '42';
