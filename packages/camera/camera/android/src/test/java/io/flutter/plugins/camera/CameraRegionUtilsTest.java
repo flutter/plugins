@@ -277,7 +277,7 @@ public class CameraRegionUtilsTest {
     setUpTestMeteringRectangleFactory();
     try {
       MeteringRectangle r;
-      // Center
+      // Center.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries,
@@ -286,7 +286,7 @@ public class CameraRegionUtilsTest {
               PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(45, 45, 10, 10, 1).equals(r));
 
-      // Top left
+      // Top left.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries,
@@ -295,7 +295,7 @@ public class CameraRegionUtilsTest {
               PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 0, 10, 10, 1).equals(r));
 
-      // Bottom right
+      // Bottom right.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries,
@@ -304,7 +304,7 @@ public class CameraRegionUtilsTest {
               PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 89, 10, 10, 1).equals(r));
 
-      // Top left
+      // Top left.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries,
@@ -313,7 +313,7 @@ public class CameraRegionUtilsTest {
               PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 89, 10, 10, 1).equals(r));
 
-      // Top right
+      // Top right.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries,
@@ -332,22 +332,22 @@ public class CameraRegionUtilsTest {
     setUpTestMeteringRectangleFactory();
     try {
       MeteringRectangle r;
-      // PORTRAIT_UP
+      // PORTRAIT_UP.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(89, 0, 10, 10, 1).equals(r));
-      // PORTRAIT_DOWN
+      // PORTRAIT_DOWN.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.PORTRAIT_DOWN);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 89, 10, 10, 1).equals(r));
-      // PORTRAIT_UP
+      // PORTRAIT_UP.
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT);
       assertTrue(CameraRegionUtils.MeteringRectangleFactory.create(0, 0, 10, 10, 1).equals(r));
-      // LANDSCAPE_LEFT (no rotation)
+      // LANDSCAPE_LEFT (no rotation).
       r =
           CameraRegionUtils.convertPointToMeteringRectangle(
               this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
