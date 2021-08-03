@@ -187,9 +187,9 @@ void main() {
     });
 
     test('excludes subpackages when main package is excluded', () async {
-      createFakePlugin('a_plugin', packagesDir,
+      final Directory excluded = createFakePlugin('a_plugin', packagesDir,
           examples: <String>['example1', 'example2']);
-      final Directory package = createFakePackage('a_package', packagesDir);
+      final Directory included = createFakePackage('a_package', packagesDir);
 
       final TestPackageLoopingCommand command =
           createTestCommand(includeSubpackages: true);
@@ -198,9 +198,14 @@ void main() {
       expect(
           command.checkedPackages,
           unorderedEquals(<String>[
-            package.path,
-            package.childDirectory('example').path,
+            included.path,
+            included.childDirectory('example').path,
           ]));
+      expect(command.checkedPackages, isNot(contains(excluded.path)));
+      expect(command.checkedPackages,
+          isNot(contains(excluded.childDirectory('example1').path)));
+      expect(command.checkedPackages,
+          isNot(contains(excluded.childDirectory('example2').path)));
     });
   });
 

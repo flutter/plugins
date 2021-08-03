@@ -15,7 +15,7 @@ import 'core.dart';
 import 'git_version_finder.dart';
 import 'process_runner.dart';
 
-/// An entry in pacakge enumeration for APIs that need to include extra
+/// An entry in package enumeration for APIs that need to include extra
 /// data about the entry.
 class PackageEnumerationEntry {
   /// Creates a new entry for the given package directory.
@@ -191,7 +191,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   /// Returns the set of plugins to exclude based on the `--exclude` argument.
-  Set<String> _getExcludedPackages() {
+  Set<String> _getExcludedPackageName() {
     final Set<String> excludedPackages = _excludedPackages ??
         getStringListArg(_excludeArg).expand<String>((String item) {
           if (item.endsWith('.yaml')) {
@@ -265,7 +265,7 @@ abstract class PluginCommand extends Command<void> {
   Stream<PackageEnumerationEntry> _getAllPackages() async* {
     Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
 
-    final Set<String> excludedPlugins = _getExcludedPackages();
+    final Set<String> excludedPluginNames = _getExcludedPackageName();
 
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
     if (plugins.isEmpty &&
@@ -288,7 +288,7 @@ abstract class PluginCommand extends Command<void> {
         if (_isDartPackage(entity)) {
           if (plugins.isEmpty || plugins.contains(p.basename(entity.path))) {
             yield PackageEnumerationEntry(entity as Directory,
-                excluded: excludedPlugins.contains(entity.basename));
+                excluded: excludedPluginNames.contains(entity.basename));
           }
         } else if (entity is Directory) {
           // Look for Dart packages under this top-level directory.
@@ -306,9 +306,9 @@ abstract class PluginCommand extends Command<void> {
                   plugins.contains(relativePath) ||
                   plugins.contains(basenamePath)) {
                 yield PackageEnumerationEntry(subdir as Directory,
-                    excluded: excludedPlugins.contains(basenamePath) ||
-                        excludedPlugins.contains(packageName) ||
-                        excludedPlugins.contains(relativePath));
+                    excluded: excludedPluginNames.contains(basenamePath) ||
+                        excludedPluginNames.contains(packageName) ||
+                        excludedPluginNames.contains(relativePath));
               }
             }
           }
