@@ -1,4 +1,4 @@
-## NEXT
+## 0.8.2+1
 
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
 * Fix using Camera as image source on Android 11+
