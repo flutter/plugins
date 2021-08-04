@@ -12,6 +12,7 @@ class ProductDetails {
     required this.price,
     required this.rawPrice,
     required this.currencyCode,
+    this.currencySymbol = '',
   });
 
   /// The identifier of the product.
@@ -42,4 +43,9 @@ class ProductDetails {
   /// The currency code for the price of the product.
   /// Based on the price specified in the App Store Connect or Sku in Google Play console based on the platform.
   final String currencyCode;
+
+  /// The currency symbol for the locale, e.g. $ for US locale.
+  ///
+  /// When the currency symbol cannot be determined, the ISO 4217 currency code is returned.
+  final String currencySymbol;
 }

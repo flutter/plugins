@@ -6,12 +6,14 @@ import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
+
+const int _exitGcloudAuthFailed = 2;
 
 /// A command to run tests via Firebase test lab.
 class FirebaseTestLabCommand extends PackageLoopingCommand {
@@ -19,7 +21,8 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   FirebaseTestLabCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, processRunner: processRunner) {
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       'project',
       defaultsTo: 'flutter-infra',
@@ -27,8 +30,9 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     );
     final String? homeDir = io.Platform.environment['HOME'];
     argParser.addOption('service-key',
-        defaultsTo:
-            homeDir == null ? null : p.join(homeDir, 'gcloud-service-key.json'),
+        defaultsTo: homeDir == null
+            ? null
+            : path.join(homeDir, 'gcloud-service-key.json'),
         help: 'The path to the service key for gcloud authentication.\n'
             r'If not provided, \$HOME/gcloud-service-key.json will be '
             r'assumed if $HOME is set.');
@@ -72,82 +76,85 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
 
   static const String _gradleWrapper = 'gradlew';
 
-  Completer<void>? _firebaseProjectConfigured;
+  bool _firebaseProjectConfigured = false;
 
   Future<void> _configureFirebaseProject() async {
-    if (_firebaseProjectConfigured != null) {
-      return _firebaseProjectConfigured!.future;
+    if (_firebaseProjectConfigured) {
+      return;
     }
-    _firebaseProjectConfigured = Completer<void>();
 
     final String serviceKey = getStringArg('service-key');
     if (serviceKey.isEmpty) {
       print('No --service-key provided; skipping gcloud authorization');
     } else {
-      await processRunner.run(
+      final io.ProcessResult result = await processRunner.run(
         'gcloud',
         <String>[
           'auth',
           'activate-service-account',
           '--key-file=$serviceKey',
         ],
-        exitOnError: true,
         logOnError: true,
       );
+      if (result.exitCode != 0) {
+        printError('Unable to activate gcloud account.');
+        throw ToolExit(_exitGcloudAuthFailed);
+      }
       final int exitCode = await processRunner.runAndStream('gcloud', <String>[
         'config',
         'set',
         'project',
         getStringArg('project'),
       ]);
+      print('');
       if (exitCode == 0) {
-        print('\nFirebase project configured.');
-        return;
+        print('Firebase project configured.');
       } else {
-        print(
-            '\nWarning: gcloud config set returned a non-zero exit code. Continuing anyway.');
+        logWarning(
+            'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
-    _firebaseProjectConfigured!.complete(null);
+    _firebaseProjectConfigured = true;
   }
 
   @override
-  Future<List<String>> runForPackage(Directory package) async {
-    if (!package
-        .childDirectory('example')
-        .childDirectory('android')
+  Future<PackageResult> runForPackage(Directory package) async {
+    final Directory exampleDirectory = package.childDirectory('example');
+    final Directory androidDirectory =
+        exampleDirectory.childDirectory('android');
+    if (!androidDirectory.existsSync()) {
+      return PackageResult.skip(
+          '${getPackageDescription(exampleDirectory)} does not support Android.');
+    }
+
+    if (!androidDirectory
         .childDirectory('app')
         .childDirectory('src')
         .childDirectory('androidTest')
         .existsSync()) {
-      printSkip('No example with androidTest directory');
-      return PackageLoopingCommand.success;
+      printError('No androidTest directory found.');
+      return PackageResult.fail(
+          <String>['No tests ran (use --exclude if this is intentional).']);
     }
-
-    final List<String> errors = <String>[];
-
-    final Directory exampleDirectory = package.childDirectory('example');
-    final Directory androidDirectory =
-        exampleDirectory.childDirectory('android');
 
     // Ensures that gradle wrapper exists
     if (!await _ensureGradleWrapperExists(androidDirectory)) {
-      errors.add('Unable to build example apk');
-      return errors;
+      return PackageResult.fail(<String>['Unable to build example apk']);
     }
 
     await _configureFirebaseProject();
 
     if (!await _runGradle(androidDirectory, 'app:assembleAndroidTest')) {
-      errors.add('Unable to assemble androidTest');
-      return errors;
+      return PackageResult.fail(<String>['Unable to assemble androidTest']);
     }
+
+    final List<String> errors = <String>[];
 
     // Used within the loop to ensure a unique GCS output location for each
     // test file's run.
     int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
-      final String testName = p.relative(test.path, from: package.path);
+      final String testName = getRelativePosixPath(test, from: package);
       print('Testing $testName...');
       if (!await _runGradle(androidDirectory, 'app:assembleDebug',
           testFile: test)) {
@@ -171,7 +178,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         '--test',
         'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
         '--timeout',
-        '5m',
+        '7m',
         '--results-bucket=${getStringArg('results-bucket')}',
         '--results-dir=$resultsDir',
       ];
@@ -186,7 +193,15 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         errors.add('$testName failed tests');
       }
     }
-    return errors;
+
+    if (errors.isEmpty && resultsCounter == 0) {
+      printError('No integration tests were run.');
+      errors.add('No tests ran (use --exclude if this is intentional).');
+    }
+
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
   }
 
   /// Checks that 'gradlew' exists in [androidDirectory], and if not runs a
@@ -198,7 +213,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       print('Running flutter build apk...');
       final String experiment = getStringArg(kEnableExperiment);
       final int exitCode = await processRunner.runAndStream(
-          'flutter',
+          flutterCommand,
           <String>[
             'build',
             'apk',
@@ -231,7 +246,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         : null;
 
     final int exitCode = await processRunner.runAndStream(
-        p.join(directory.path, _gradleWrapper),
+        directory.childFile(_gradleWrapper).path,
         <String>[
           target,
           '-Pverbose=true',

@@ -1030,6 +1030,31 @@ NSString *const errorMethod = @"error";
   [captureDevice unlockForConfiguration];
 }
 
+- (CGPoint)getCGPointForCoordsWithOrientation:(UIDeviceOrientation)orientation
+                                            x:(double)x
+                                            y:(double)y {
+  double oldX = x, oldY = y;
+  switch (orientation) {
+    case UIDeviceOrientationPortrait:  // 90 ccw
+      y = 1 - oldX;
+      x = oldY;
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:  // 90 cw
+      x = 1 - oldY;
+      y = oldX;
+      break;
+    case UIDeviceOrientationLandscapeRight:  // 180
+      x = 1 - x;
+      y = 1 - y;
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+    default:
+      // No rotation required
+      break;
+  }
+  return CGPointMake(x, y);
+}
+
 - (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
   if (!_captureDevice.isExposurePointOfInterestSupported) {
     result([FlutterError errorWithCode:@"setExposurePointFailed"
@@ -1037,8 +1062,11 @@ NSString *const errorMethod = @"error";
                                details:nil]);
     return;
   }
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setExposurePointOfInterest:CGPointMake(y, 1 - x)];
+  [_captureDevice setExposurePointOfInterest:[self getCGPointForCoordsWithOrientation:orientation
+                                                                                    x:x
+                                                                                    y:y]];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
@@ -1052,11 +1080,16 @@ NSString *const errorMethod = @"error";
                                details:nil]);
     return;
   }
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setFocusPointOfInterest:CGPointMake(y, 1 - x)];
+
+  [_captureDevice setFocusPointOfInterest:[self getCGPointForCoordsWithOrientation:orientation
+                                                                                 x:x
+                                                                                 y:y]];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto focus
   [self applyFocusMode];
+
   result(nil);
 }
 

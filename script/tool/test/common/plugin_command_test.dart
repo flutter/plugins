@@ -12,24 +12,28 @@ import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:git/git.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import '../mocks.dart';
 import '../util.dart';
 import 'plugin_command_test.mocks.dart';
 
 @GenerateMocks(<Type>[GitDir])
 void main() {
   late RecordingProcessRunner processRunner;
+  late SamplePluginCommand command;
   late CommandRunner<void> runner;
   late FileSystem fileSystem;
+  late MockPlatform mockPlatform;
   late Directory packagesDir;
   late Directory thirdPartyPackagesDir;
-  late List<String> plugins;
   late List<List<String>?> gitDirCommands;
   late String gitDiffResponse;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
+    mockPlatform = MockPlatform();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     thirdPartyPackagesDir = packagesDir.parent
         .childDirectory('third_party')
@@ -49,24 +53,40 @@ void main() {
       return Future<ProcessResult>.value(mockProcessResult);
     });
     processRunner = RecordingProcessRunner();
-    plugins = <String>[];
-    final SamplePluginCommand samplePluginCommand = SamplePluginCommand(
-      plugins,
+    command = SamplePluginCommand(
       packagesDir,
       processRunner: processRunner,
+      platform: mockPlatform,
       gitDir: gitDir,
     );
     runner =
         CommandRunner<void>('common_command', 'Test for common functionality');
-    runner.addCommand(samplePluginCommand);
+    runner.addCommand(command);
   });
 
   group('plugin iteration', () {
     test('all plugins from file system', () async {
       final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>['sample']);
-      expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+      await runCapturingPrint(runner, <String>['sample']);
+      expect(command.plugins,
+          unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('includes both plugins and packages', () async {
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      final Directory package3 = createFakePackage('package3', packagesDir);
+      final Directory package4 = createFakePackage('package4', packagesDir);
+      await runCapturingPrint(runner, <String>['sample']);
+      expect(
+          command.plugins,
+          unorderedEquals(<String>[
+            plugin1.path,
+            plugin2.path,
+            package3.path,
+            package4.path,
+          ]));
     });
 
     test('all plugins includes third_party/packages', () async {
@@ -74,60 +94,108 @@ void main() {
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
       final Directory plugin3 =
           createFakePlugin('plugin3', thirdPartyPackagesDir);
-      await runner.run(<String>['sample']);
-      expect(plugins,
+      await runCapturingPrint(runner, <String>['sample']);
+      expect(command.plugins,
           unorderedEquals(<String>[plugin1.path, plugin2.path, plugin3.path]));
     });
 
-    test('exclude plugins when plugins flag is specified', () async {
-      createFakePlugin('plugin1', packagesDir);
-      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(
-          <String>['sample', '--plugins=plugin1,plugin2', '--exclude=plugin1']);
-      expect(plugins, unorderedEquals(<String>[plugin2.path]));
+    test('--packages limits packages', () async {
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
+      createFakePackage('package3', packagesDir);
+      final Directory package4 = createFakePackage('package4', packagesDir);
+      await runCapturingPrint(
+          runner, <String>['sample', '--packages=plugin1,package4']);
+      expect(
+          command.plugins,
+          unorderedEquals(<String>[
+            plugin1.path,
+            package4.path,
+          ]));
     });
 
-    test('exclude plugins when plugins flag isn\'t specified', () async {
+    test('--plugins acts as an alias to --packages', () async {
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
+      createFakePackage('package3', packagesDir);
+      final Directory package4 = createFakePackage('package4', packagesDir);
+      await runCapturingPrint(
+          runner, <String>['sample', '--plugins=plugin1,package4']);
+      expect(
+          command.plugins,
+          unorderedEquals(<String>[
+            plugin1.path,
+            package4.path,
+          ]));
+    });
+
+    test('exclude packages when packages flag is specified', () async {
+      createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      await runCapturingPrint(runner, <String>[
+        'sample',
+        '--packages=plugin1,plugin2',
+        '--exclude=plugin1'
+      ]);
+      expect(command.plugins, unorderedEquals(<String>[plugin2.path]));
+    });
+
+    test('exclude packages when packages flag isn\'t specified', () async {
       createFakePlugin('plugin1', packagesDir);
       createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>['sample', '--exclude=plugin1,plugin2']);
-      expect(plugins, unorderedEquals(<String>[]));
+      await runCapturingPrint(
+          runner, <String>['sample', '--exclude=plugin1,plugin2']);
+      expect(command.plugins, unorderedEquals(<String>[]));
     });
 
-    test('exclude federated plugins when plugins flag is specified', () async {
+    test('exclude federated plugins when packages flag is specified', () async {
       createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>[
+      await runCapturingPrint(runner, <String>[
         'sample',
-        '--plugins=federated/plugin1,plugin2',
+        '--packages=federated/plugin1,plugin2',
         '--exclude=federated/plugin1'
       ]);
-      expect(plugins, unorderedEquals(<String>[plugin2.path]));
+      expect(command.plugins, unorderedEquals(<String>[plugin2.path]));
     });
 
-    test('exclude entire federated plugins when plugins flag is specified',
+    test('exclude entire federated plugins when packages flag is specified',
         () async {
       createFakePlugin('plugin1', packagesDir.childDirectory('federated'));
       final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-      await runner.run(<String>[
+      await runCapturingPrint(runner, <String>[
         'sample',
-        '--plugins=federated/plugin1,plugin2',
+        '--packages=federated/plugin1,plugin2',
         '--exclude=federated'
       ]);
-      expect(plugins, unorderedEquals(<String>[plugin2.path]));
+      expect(command.plugins, unorderedEquals(<String>[plugin2.path]));
+    });
+
+    test('exclude accepts config files', () async {
+      createFakePlugin('plugin1', packagesDir);
+      final File configFile = packagesDir.childFile('exclude.yaml');
+      configFile.writeAsStringSync('- plugin1');
+
+      await runCapturingPrint(runner, <String>[
+        'sample',
+        '--packages=plugin1',
+        '--exclude=${configFile.path}'
+      ]);
+      expect(command.plugins, unorderedEquals(<String>[]));
     });
 
     group('test run-on-changed-packages', () {
       test('all plugins should be tested if there are no changes.', () async {
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test(
@@ -136,13 +204,14 @@ void main() {
         gitDiffResponse = 'AUTHORS';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('all plugins should be tested if .cirrus.yml changes.', () async {
@@ -152,13 +221,14 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('all plugins should be tested if .ci.yaml changes', () async {
@@ -168,13 +238,14 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('all plugins should be tested if anything in .ci/ changes',
@@ -185,13 +256,14 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('all plugins should be tested if anything in script changes.',
@@ -202,13 +274,14 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('all plugins should be tested if the root analysis options change.',
@@ -219,13 +292,14 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('all plugins should be tested if formatting options change.',
@@ -236,26 +310,27 @@ packages/plugin1/CHANGELOG
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('Only changed plugin should be tested.', () async {
         gitDiffResponse = 'packages/plugin1/plugin1.dart';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path]));
+        expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
 
       test('multiple files in one plugin should also test the plugin',
@@ -266,13 +341,13 @@ packages/plugin1/ios/plugin1.m
 ''';
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path]));
+        expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
 
       test('multiple plugins changed should test all the changed plugins',
@@ -284,13 +359,14 @@ packages/plugin2/ios/plugin2.m
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test(
@@ -305,16 +381,41 @@ packages/plugin1/plugin1_web/plugin1_web.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path]));
+        expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
 
-      test('--plugins flag overrides the behavior of --run-on-changed-packages',
+      test(
+          'changing one plugin in a federated group should include all plugins in the group',
+          () async {
+        gitDiffResponse = '''
+packages/plugin1/plugin1/plugin1.dart
+''';
+        final Directory plugin1 =
+            createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
+        final Directory plugin2 = createFakePlugin('plugin1_platform_interface',
+            packagesDir.childDirectory('plugin1'));
+        final Directory plugin3 = createFakePlugin(
+            'plugin1_web', packagesDir.childDirectory('plugin1'));
+        await runCapturingPrint(runner, <String>[
+          'sample',
+          '--base-sha=master',
+          '--run-on-changed-packages'
+        ]);
+
+        expect(
+            command.plugins,
+            unorderedEquals(
+                <String>[plugin1.path, plugin2.path, plugin3.path]));
+      });
+
+      test(
+          '--packages flag overrides the behavior of --run-on-changed-packages',
           () async {
         gitDiffResponse = '''
 packages/plugin1/plugin1.dart
@@ -325,14 +426,15 @@ packages/plugin3/plugin3.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
-          '--plugins=plugin1,plugin2',
+          '--packages=plugin1,plugin2',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path, plugin2.path]));
+        expect(command.plugins,
+            unorderedEquals(<String>[plugin1.path, plugin2.path]));
       });
 
       test('--exclude flag works with --run-on-changed-packages', () async {
@@ -345,28 +447,170 @@ packages/plugin3/plugin3.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runner.run(<String>[
+        await runCapturingPrint(runner, <String>[
           'sample',
           '--exclude=plugin2,plugin3',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
 
-        expect(plugins, unorderedEquals(<String>[plugin1.path]));
+        expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
+    });
+  });
+
+  group('sharding', () {
+    test('distributes evenly when evenly divisible', () async {
+      final List<List<Directory>> expectedShards = <List<Directory>>[
+        <Directory>[
+          createFakePackage('package1', packagesDir),
+          createFakePackage('package2', packagesDir),
+          createFakePackage('package3', packagesDir),
+        ],
+        <Directory>[
+          createFakePackage('package4', packagesDir),
+          createFakePackage('package5', packagesDir),
+          createFakePackage('package6', packagesDir),
+        ],
+        <Directory>[
+          createFakePackage('package7', packagesDir),
+          createFakePackage('package8', packagesDir),
+          createFakePackage('package9', packagesDir),
+        ],
+      ];
+
+      for (int i = 0; i < expectedShards.length; ++i) {
+        final SamplePluginCommand localCommand = SamplePluginCommand(
+          packagesDir,
+          processRunner: processRunner,
+          platform: mockPlatform,
+          gitDir: MockGitDir(),
+        );
+        final CommandRunner<void> localRunner =
+            CommandRunner<void>('common_command', 'Shard testing');
+        localRunner.addCommand(localCommand);
+
+        await runCapturingPrint(localRunner, <String>[
+          'sample',
+          '--shardIndex=$i',
+          '--shardCount=3',
+        ]);
+        expect(
+            localCommand.plugins,
+            unorderedEquals(expectedShards[i]
+                .map((Directory package) => package.path)
+                .toList()));
+      }
+    });
+
+    test('distributes as evenly as possible when not evenly divisible',
+        () async {
+      final List<List<Directory>> expectedShards = <List<Directory>>[
+        <Directory>[
+          createFakePackage('package1', packagesDir),
+          createFakePackage('package2', packagesDir),
+          createFakePackage('package3', packagesDir),
+        ],
+        <Directory>[
+          createFakePackage('package4', packagesDir),
+          createFakePackage('package5', packagesDir),
+          createFakePackage('package6', packagesDir),
+        ],
+        <Directory>[
+          createFakePackage('package7', packagesDir),
+          createFakePackage('package8', packagesDir),
+        ],
+      ];
+
+      for (int i = 0; i < expectedShards.length; ++i) {
+        final SamplePluginCommand localCommand = SamplePluginCommand(
+          packagesDir,
+          processRunner: processRunner,
+          platform: mockPlatform,
+          gitDir: MockGitDir(),
+        );
+        final CommandRunner<void> localRunner =
+            CommandRunner<void>('common_command', 'Shard testing');
+        localRunner.addCommand(localCommand);
+
+        await runCapturingPrint(localRunner, <String>[
+          'sample',
+          '--shardIndex=$i',
+          '--shardCount=3',
+        ]);
+        expect(
+            localCommand.plugins,
+            unorderedEquals(expectedShards[i]
+                .map((Directory package) => package.path)
+                .toList()));
+      }
+    });
+
+    // In CI (which is the use case for sharding) we often want to run muliple
+    // commands on the same set of packages, but the exclusion lists for those
+    // commands may be different. In those cases we still want all the commands
+    // to operate on a consistent set of plugins.
+    //
+    // E.g., some commands require running build-examples in a previous step;
+    // excluding some plugins from the later step shouldn't change what's tested
+    // in each shard, as it may no longer align with what was built.
+    test('counts excluded plugins when sharding', () async {
+      final List<List<Directory>> expectedShards = <List<Directory>>[
+        <Directory>[
+          createFakePackage('package1', packagesDir),
+          createFakePackage('package2', packagesDir),
+          createFakePackage('package3', packagesDir),
+        ],
+        <Directory>[
+          createFakePackage('package4', packagesDir),
+          createFakePackage('package5', packagesDir),
+          createFakePackage('package6', packagesDir),
+        ],
+        <Directory>[
+          createFakePackage('package7', packagesDir),
+        ],
+      ];
+      // These would be in the last shard, but are excluded.
+      createFakePackage('package8', packagesDir);
+      createFakePackage('package9', packagesDir);
+
+      for (int i = 0; i < expectedShards.length; ++i) {
+        final SamplePluginCommand localCommand = SamplePluginCommand(
+          packagesDir,
+          processRunner: processRunner,
+          platform: mockPlatform,
+          gitDir: MockGitDir(),
+        );
+        final CommandRunner<void> localRunner =
+            CommandRunner<void>('common_command', 'Shard testing');
+        localRunner.addCommand(localCommand);
+
+        await runCapturingPrint(localRunner, <String>[
+          'sample',
+          '--shardIndex=$i',
+          '--shardCount=3',
+          '--exclude=package8,package9',
+        ]);
+        expect(
+            localCommand.plugins,
+            unorderedEquals(expectedShards[i]
+                .map((Directory package) => package.path)
+                .toList()));
+      }
     });
   });
 }
 
 class SamplePluginCommand extends PluginCommand {
   SamplePluginCommand(
-    this._plugins,
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
+    Platform platform = const LocalPlatform(),
     GitDir? gitDir,
-  }) : super(packagesDir, processRunner: processRunner, gitDir: gitDir);
+  }) : super(packagesDir,
+            processRunner: processRunner, platform: platform, gitDir: gitDir);
 
-  final List<String> _plugins;
+  final List<String> plugins = <String>[];
 
   @override
   final String name = 'sample';
@@ -376,8 +620,8 @@ class SamplePluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    await for (final Directory package in getPlugins()) {
-      _plugins.add(package.path);
+    await for (final PackageEnumerationEntry package in getTargetPackages()) {
+      plugins.add(package.directory.path);
     }
   }
 }
