@@ -22,7 +22,7 @@ import 'package:meta/meta.dart';
 ///
 ///   static UrlLauncherPlatform _instance = MethodChannelUrlLauncher();
 ///
-///   static const Object _token = Object();
+///   static final Object _token = Object();
 ///
 ///   static UrlLauncherPlatform get instance => _instance;
 ///
@@ -40,7 +40,7 @@ import 'package:meta/meta.dart';
 /// to include the [MockPlatformInterfaceMixin] for the verification to be temporarily disabled. See
 /// [MockPlatformInterfaceMixin] for a sample of using Mockito to mock a platform interface.
 abstract class PlatformInterface {
-  /// Pass a private, class-specific `const Object()` as the `token`.
+  /// Pass a private, class-specific `Object()` as the `token`.
   PlatformInterface({required Object token}) : _instanceToken = token;
 
   final Object? _instanceToken;
@@ -83,7 +83,7 @@ abstract class PlatformInterface {
 ///
 /// This class is intended for use in tests only.
 ///
-/// Sample usage (assuming UrlLauncherPlatform extends [PlatformInterface]:
+/// Sample usage (assuming `UrlLauncherPlatform` extends [PlatformInterface]):
 ///
 /// ```dart
 /// class UrlLauncherPlatformMock extends Mock

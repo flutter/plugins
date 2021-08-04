@@ -1,3 +1,7 @@
+## 2.0.2
+
+* Updated documentation.
+
 ## 2.0.1
 
 * Fix `federated flutter plugins` link in the README.md.
