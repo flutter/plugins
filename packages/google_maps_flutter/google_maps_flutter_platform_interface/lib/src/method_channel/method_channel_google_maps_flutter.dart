@@ -470,17 +470,18 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
+    final Map<String, dynamic> creationParams = <String, dynamic>{
+      'initialCameraPosition': initialCameraPosition.toMap(),
+      'options': mapOptions,
+      'markersToAdd': serializeMarkerSet(markers),
+      'polygonsToAdd': serializePolygonSet(polygons),
+      'polylinesToAdd': serializePolylineSet(polylines),
+      'circlesToAdd': serializeCircleSet(circles),
+      'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+    };
+
     if (defaultTargetPlatform == TargetPlatform.android &&
         useAndroidViewSurface) {
-      final Map<String, dynamic> creationParams = <String, dynamic>{
-        'initialCameraPosition': initialCameraPosition.toMap(),
-        'options': mapOptions,
-        'markersToAdd': serializeMarkerSet(markers),
-        'polygonsToAdd': serializePolygonSet(polygons),
-        'polylinesToAdd': serializePolylineSet(polylines),
-        'circlesToAdd': serializeCircleSet(circles),
-        'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
-      };
       return PlatformViewLink(
         viewType: 'plugins.flutter.io/google_maps',
         surfaceFactory: (
@@ -515,44 +516,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
           return controller;
         },
       );
-    }
-    return buildView(
-      creationId,
-      onPlatformViewCreated,
-      initialCameraPosition: initialCameraPosition,
-      markers: markers,
-      polygons: polygons,
-      polylines: polylines,
-      circles: circles,
-      tileOverlays: tileOverlays,
-      gestureRecognizers: gestureRecognizers,
-      mapOptions: mapOptions,
-    );
-  }
-
-  @override
-  Widget buildView(
-    int creationId,
-    PlatformViewCreatedCallback onPlatformViewCreated, {
-    required CameraPosition initialCameraPosition,
-    Set<Marker> markers = const <Marker>{},
-    Set<Polygon> polygons = const <Polygon>{},
-    Set<Polyline> polylines = const <Polyline>{},
-    Set<Circle> circles = const <Circle>{},
-    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-    Map<String, dynamic> mapOptions = const <String, dynamic>{},
-  }) {
-    final Map<String, dynamic> creationParams = <String, dynamic>{
-      'initialCameraPosition': initialCameraPosition.toMap(),
-      'options': mapOptions,
-      'markersToAdd': serializeMarkerSet(markers),
-      'polygonsToAdd': serializePolygonSet(polygons),
-      'polylinesToAdd': serializePolylineSet(polylines),
-      'circlesToAdd': serializeCircleSet(circles),
-      'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
-    };
-    if (defaultTargetPlatform == TargetPlatform.android) {
+    } else if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
         viewType: 'plugins.flutter.io/google_maps',
         onPlatformViewCreated: onPlatformViewCreated,
@@ -569,7 +533,35 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         creationParamsCodec: const StandardMessageCodec(),
       );
     }
+
     return Text(
         '$defaultTargetPlatform is not yet supported by the maps plugin');
+  }
+
+  @override
+  Widget buildView(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    return buildViewWithTextDirection(
+      creationId,
+      onPlatformViewCreated,
+      initialCameraPosition: initialCameraPosition,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      tileOverlays: tileOverlays,
+      gestureRecognizers: gestureRecognizers,
+      mapOptions: mapOptions,
+    );
   }
 }
