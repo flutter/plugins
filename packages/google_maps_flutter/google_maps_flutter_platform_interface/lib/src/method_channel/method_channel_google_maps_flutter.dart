@@ -516,7 +516,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         },
       );
     }
-    return super.buildView(
+    return buildView(
       creationId,
       onPlatformViewCreated,
       initialCameraPosition: initialCameraPosition,

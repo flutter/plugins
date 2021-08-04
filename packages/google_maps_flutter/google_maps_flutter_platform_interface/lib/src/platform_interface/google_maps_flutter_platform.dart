@@ -363,7 +363,9 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
   /// platforms that require a text direction.
   ///
   /// Default behavior passes all parameters except `textDirection` to
-  /// [buildView].
+  /// [buildView]. This is for backward compatibility with existing
+  /// implementations. Platforms that use the text direction should override
+  /// this as the primary implementation, and delegate to it from buildView.
   Widget buildViewWithTextDirection(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {

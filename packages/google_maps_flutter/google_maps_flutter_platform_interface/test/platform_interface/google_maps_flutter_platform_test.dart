@@ -40,7 +40,7 @@ void main() {
     });
 
     test(
-      'default implementation buildViewWithTextDirection does not throw an exception',
+      'default implementation of `buildViewWithTextDirection` delegates to `buildView`',
       () {
         final GoogleMapsFlutterPlatform platform =
             BuildViewGoogleMapsFlutterPlatform();
