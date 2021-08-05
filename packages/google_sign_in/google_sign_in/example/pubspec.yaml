@@ -19,6 +19,7 @@ dependencies:
   http: ^0.13.0
 
 dev_dependencies:
+  espresso: ^0.1.0+2
   pedantic: ^1.10.0
   integration_test:
     sdk: flutter

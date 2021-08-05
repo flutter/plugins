@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html';
 import 'dart:ui';
 
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/types/types.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -21,6 +23,10 @@ class MockCameraSettings extends Mock implements CameraSettings {}
 class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
 class MockCamera extends Mock implements Camera {}
+
+class MockCameraOptions extends Mock implements CameraOptions {}
+
+class MockVideoElement extends Mock implements VideoElement {}
 
 class MockXFile extends Mock implements XFile {}
 
@@ -52,14 +58,57 @@ class FakeMediaDeviceInfo extends Fake implements MediaDeviceInfo {
   String? get kind => _kind;
 }
 
-/// A fake [DomException] that returns the provided error [_name].
+/// A fake [MediaError] that returns the provided error [_code] and [_message].
+class FakeMediaError extends Fake implements MediaError {
+  FakeMediaError(
+    this._code, [
+    String message = '',
+  ]) : _message = message;
+
+  final int _code;
+  final String _message;
+
+  @override
+  int get code => _code;
+
+  @override
+  String? get message => _message;
+}
+
+/// A fake [DomException] that returns the provided error [_name] and [_message].
 class FakeDomException extends Fake implements DomException {
-  FakeDomException(this._name);
+  FakeDomException(
+    this._name, [
+    String? message,
+  ]) : _message = message;
 
   final String _name;
+  final String? _message;
 
   @override
   String get name => _name;
+
+  @override
+  String? get message => _message;
+}
+
+/// A fake [ElementStream] that listens to the provided [_stream] on [listen].
+class FakeElementStream<T extends Event> extends Fake
+    implements ElementStream<T> {
+  FakeElementStream(this._stream);
+
+  final Stream<T> _stream;
+
+  @override
+  StreamSubscription<T> listen(void onData(T event)?,
+      {Function? onError, void onDone()?, bool? cancelOnError}) {
+    return _stream.listen(
+      onData,
+      onError: onError,
+      onDone: onDone,
+      cancelOnError: cancelOnError,
+    );
+  }
 }
 
 /// Returns a video element with a blank stream of size [videoSize].
