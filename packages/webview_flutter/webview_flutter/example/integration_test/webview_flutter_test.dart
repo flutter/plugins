@@ -1155,7 +1155,9 @@ void main() {
       );
 
       expect(errorCompleter.future, doesNotComplete);
-      await Future.delayed(Duration(seconds: 5));
+      // Since an error can occur after the main page is finish loading, this
+      // waits to guarantee that an error never occurs.
+      await Future.delayed(Duration(seconds: 2));
     });
 
     testWidgets(
@@ -1193,7 +1195,9 @@ void main() {
         );
 
         expect(errorCompleter.future, doesNotComplete);
-        await Future.delayed(Duration(seconds: 5));
+        // Since an error can occur after the main page is finish loading, this
+        // waits to guarantee that an error never occurs.
+        await Future.delayed(Duration(seconds: 2));
       },
     );
 
