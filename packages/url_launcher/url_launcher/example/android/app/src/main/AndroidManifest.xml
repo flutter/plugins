@@ -1,23 +1,27 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.flutter.plugins.urllauncherexample">
 
-  <!-- io.flutter.app.FlutterApplication is an android.app.Application that
-       calls FlutterMain.startInitialization(this); in its onCreate method.
-       In most cases you can leave this as-is, but you if you want to provide
-       additional functionality it is fine to subclass or reimplement
-       FlutterApplication and put your custom class here. -->
+  <!-- The INTERNET permission is required for development. Specifically,
+       flutter needs it to communicate with the running application
+       to allow setting breakpoints, to provide hot reload, etc.
+  -->
+  <uses-permission android:name="android.permission.INTERNET"/>
+
+  <!-- Provide required visibility configuration for API level 30 and above -->
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.VIEW" />
+      <data android:scheme="https" />
+    </intent>
+    <intent>
+      <action android:name="android.intent.action.DIAL" />
+      <data android:scheme="tel" />
+    </intent>
+  </queries>
+
   <application
     android:icon="@mipmap/ic_launcher"
-    android:label="url_launcher_example"
-    android:name="io.flutter.app.FlutterApplication">
-    <activity
-      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:hardwareAccelerated="true"
-      android:exported="true"
-      android:name="io.flutter.plugins.urllauncherexample.EmbeddingV1Activity"
-      android:theme="@android:style/Theme.Black.NoTitleBar"
-      android:windowSoftInputMode="adjustResize">
-    </activity>
+    android:label="url_launcher_example">
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
@@ -32,9 +36,4 @@
     <meta-data android:name="flutterEmbedding" android:value="2"/>
   </application>
 
-  <!-- The INTERNET permission is required for development. Specifically,
-       flutter needs it to communicate with the running application
-       to allow setting breakpoints, to provide hot reload, etc.
-  -->
-  <uses-permission android:name="android.permission.INTERNET"/>
 </manifest>

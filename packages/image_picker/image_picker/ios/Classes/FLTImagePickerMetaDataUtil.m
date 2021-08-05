@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -49,16 +49,27 @@ const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault = FLTImagePickerMIME
   return metadata;
 }
 
-+ (NSData *)updateMetaData:(NSDictionary *)metaData toImage:(NSData *)imageData {
-  NSMutableData *mutableData = [NSMutableData data];
-  CGImageSourceRef cgImage = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
-  CGImageDestinationRef destination = CGImageDestinationCreateWithData(
-      (__bridge CFMutableDataRef)mutableData, CGImageSourceGetType(cgImage), 1, nil);
-  CGImageDestinationAddImageFromSource(destination, cgImage, 0, (__bridge CFDictionaryRef)metaData);
++ (NSData *)imageFromImage:(NSData *)imageData withMetaData:(NSDictionary *)metadata {
+  NSMutableData *targetData = [NSMutableData data];
+  CGImageSourceRef source = CGImageSourceCreateWithData((__bridge CFDataRef)imageData, NULL);
+  if (source == NULL) {
+    return nil;
+  }
+  CGImageDestinationRef destination = NULL;
+  CFStringRef sourceType = CGImageSourceGetType(source);
+  if (sourceType != NULL) {
+    destination =
+        CGImageDestinationCreateWithData((__bridge CFMutableDataRef)targetData, sourceType, 1, nil);
+  }
+  if (destination == NULL) {
+    CFRelease(source);
+    return nil;
+  }
+  CGImageDestinationAddImageFromSource(destination, source, 0, (__bridge CFDictionaryRef)metadata);
   CGImageDestinationFinalize(destination);
-  CFRelease(cgImage);
+  CFRelease(source);
   CFRelease(destination);
-  return mutableData;
+  return targetData;
 }
 
 + (NSData *)convertImage:(UIImage *)image

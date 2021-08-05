@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,7 +20,7 @@ external set gapiOnloadCallback(Function callback);
 /// This is only exposed for testing. It shouldn't be accessed by users of the
 /// plugin as it could break at any point.
 @visibleForTesting
-const String kGapiOnloadCallbackFunctionName = "gapiOnloadCallback";
+const String kGapiOnloadCallbackFunctionName = 'gapiOnloadCallback';
 String _addOnloadToScript(String url) => url.startsWith('data:')
     ? url
     : '$url?onload=$kGapiOnloadCallbackFunctionName';

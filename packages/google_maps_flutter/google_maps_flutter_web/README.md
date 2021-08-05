@@ -6,13 +6,8 @@ This is an implementation of the [google_maps_flutter](https://pub.dev/packages/
 
 ### Depend on the package
 
-This package is not an endorsed implementation of the google_maps_flutter plugin yet, so you'll need to modify the `pubspec.yaml` file of your app to depend on this package:
-
-```yaml
-dependencies:
-  google_maps_flutter: ^0.5.28
-  google_maps_flutter_web: ^0.1.0
-```
+This package is not an endorsed implementation of the google_maps_flutter plugin yet, so you'll need to 
+[add it explicitly](https://pub.dev/packages/google_maps_flutter_web/install).
 
 ### Modify web/index.html
 
@@ -49,3 +44,5 @@ There's no "My Location" widget in web ([tracking issue](https://github.com/flut
 There's no `defaultMarkerWithHue` in web. If you need colored pins/markers, you may need to use your own asset images.
 
 Indoor and building layers are still not available on the web. Traffic is.
+
+Only Android supports "[Lite Mode](https://developers.google.com/maps/documentation/android-sdk/lite)", so the `liteModeEnabled` constructor argument can't be set to `true` on web apps.

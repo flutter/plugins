@@ -1,3 +1,15 @@
+## 0.10.0+1
+
+* Updated installation instructions in README.
+
+## 0.10.0
+
+* Migrate to null-safety.
+
+## 0.9.2+1
+
+* Update Flutter SDK constraint.
+
 ## 0.9.2
 
 * Throw PlatformExceptions from where the GMaps SDK may throw exceptions: `init()` and `signIn()`.

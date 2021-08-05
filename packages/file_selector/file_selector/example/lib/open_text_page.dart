@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +12,11 @@ class OpenTextPage extends StatelessWidget {
       label: 'text',
       extensions: ['txt', 'json'],
     );
-    final XFile file = await openFile(acceptedTypeGroups: [typeGroup]);
+    final XFile? file = await openFile(acceptedTypeGroups: [typeGroup]);
+    if (file == null) {
+      // Operation was canceled by the user.
+      return;
+    }
     final String fileName = file.name;
     final String fileContent = await file.readAsString();
 
@@ -28,9 +36,11 @@ class OpenTextPage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            RaisedButton(
-              color: Colors.blue,
-              textColor: Colors.white,
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: Text('Press to open a text file (json, txt)'),
               onPressed: () => _openTextFile(context),
             ),
@@ -62,7 +72,7 @@ class TextDisplay extends StatelessWidget {
         ),
       ),
       actions: [
-        FlatButton(
+        TextButton(
           child: const Text('Close'),
           onPressed: () => Navigator.pop(context),
         ),

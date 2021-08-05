@@ -89,11 +89,11 @@ BEGIN
     BEGIN
         BLOCK "040904e4"
         BEGIN
-            VALUE "CompanyName", "io.flutter.plugins" "\0"
+            VALUE "CompanyName", "Flutter Dev" "\0"
             VALUE "FileDescription", "A new Flutter project." "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
             VALUE "InternalName", "example" "\0"
-            VALUE "LegalCopyright", "Copyright (C) 2020 io.flutter.plugins. All rights reserved." "\0"
+            VALUE "LegalCopyright", "Copyright (C) 2020 The Flutter Authors. All rights reserved." "\0"
             VALUE "OriginalFilename", "example.exe" "\0"
             VALUE "ProductName", "example" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"

@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -30,7 +30,8 @@
 
 + (UIImage *)scaledImage:(UIImage *)image
                 maxWidth:(NSNumber *)maxWidth
-               maxHeight:(NSNumber *)maxHeight {
+               maxHeight:(NSNumber *)maxHeight
+     isMetadataAvailable:(BOOL)isMetadataAvailable {
   double originalWidth = image.size.width;
   double originalHeight = image.size.height;
 
@@ -67,6 +68,19 @@
         height = downscaledHeight;
       }
     }
+  }
+
+  if (!isMetadataAvailable) {
+    UIImage *imageToScale = [UIImage imageWithCGImage:image.CGImage
+                                                scale:1
+                                          orientation:image.imageOrientation];
+
+    UIGraphicsBeginImageContextWithOptions(CGSizeMake(width, height), NO, 1.0);
+    [imageToScale drawInRect:CGRectMake(0, 0, width, height)];
+
+    UIImage *scaledImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return scaledImage;
   }
 
   // Scaling the image always rotate itself based on the current imageOrientation of the original
@@ -130,7 +144,7 @@
     }
 
     UIImage *image = [UIImage imageWithCGImage:imageRef scale:1.0 orientation:UIImageOrientationUp];
-    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight];
+    image = [self scaledImage:image maxWidth:maxWidth maxHeight:maxHeight isMetadataAvailable:YES];
 
     [images addObject:image];
 

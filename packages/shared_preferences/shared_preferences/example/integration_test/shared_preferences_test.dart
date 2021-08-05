@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,7 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferences preferences;
+    late SharedPreferences preferences;
 
     setUp(() async {
       preferences = await SharedPreferences.getInstance();
@@ -84,6 +88,19 @@ void main() {
       expect(preferences.getInt('int'), null);
       expect(preferences.getDouble('double'), null);
       expect(preferences.getStringList('List'), null);
+    });
+
+    testWidgets('simultaneous writes', (WidgetTester _) async {
+      final List<Future<bool>> writes = <Future<bool>>[];
+      final int writeCount = 100;
+      for (int i = 1; i <= writeCount; i++) {
+        writes.add(preferences.setInt('int', i));
+      }
+      List<bool> result = await Future.wait(writes, eagerError: true);
+      // All writes should succeed.
+      expect(result.where((element) => !element), isEmpty);
+      // The last write should win.
+      expect(preferences.getInt('int'), writeCount);
     });
   });
 }

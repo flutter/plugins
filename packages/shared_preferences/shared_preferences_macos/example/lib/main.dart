@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,22 +24,28 @@ class MyApp extends StatelessWidget {
 }
 
 class SharedPreferencesDemo extends StatefulWidget {
-  SharedPreferencesDemo({Key key}) : super(key: key);
+  SharedPreferencesDemo({Key? key}) : super(key: key);
 
   @override
   SharedPreferencesDemoState createState() => SharedPreferencesDemoState();
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
-  Future<int> _counter;
+  SharedPreferencesStorePlatform _prefs =
+      SharedPreferencesStorePlatform.instance;
+  late Future<int> _counter;
+
+  // Includes the prefix because this is using the platform interface directly,
+  // but the prefix (which the native code assumes is present) is added by the
+  // app-facing package.
+  static const String _prefKey = 'flutter.counter';
 
   Future<void> _incrementCounter() async {
-    final SharedPreferences prefs = await _prefs;
-    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    final Map<String, Object> values = await _prefs.getAll();
+    final int counter = ((values[_prefKey] as int?) ?? 0) + 1;
 
     setState(() {
-      _counter = prefs.setInt("counter", counter).then((bool success) {
+      _counter = _prefs.setValue('Int', _prefKey, counter).then((bool success) {
         return counter;
       });
     });
@@ -48,8 +54,8 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   @override
   void initState() {
     super.initState();
-    _counter = _prefs.then((SharedPreferences prefs) {
-      return (prefs.getInt('counter') ?? 0);
+    _counter = _prefs.getAll().then((Map<String, Object> values) {
+      return (values[_prefKey] as int?) ?? 0;
     });
   }
 

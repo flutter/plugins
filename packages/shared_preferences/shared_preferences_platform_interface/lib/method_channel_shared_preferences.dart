@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -18,39 +18,32 @@ const MethodChannel _kChannel =
 class MethodChannelSharedPreferencesStore
     extends SharedPreferencesStorePlatform {
   @override
-  Future<bool> remove(String key) {
-    return _invokeBoolMethod('remove', <String, dynamic>{
-      'key': key,
-    });
+  Future<bool> remove(String key) async {
+    return (await _kChannel.invokeMethod<bool>(
+      'remove',
+      <String, dynamic>{'key': key},
+    ))!;
   }
 
   @override
-  Future<bool> setValue(String valueType, String key, Object value) {
-    return _invokeBoolMethod('set$valueType', <String, dynamic>{
-      'key': key,
-      'value': value,
-    });
-  }
-
-  Future<bool> _invokeBoolMethod(String method, Map<String, dynamic> params) {
-    return _kChannel
-        .invokeMethod<bool>(method, params)
-        // TODO(yjbanov): I copied this from the original
-        //                shared_preferences.dart implementation, but I
-        //                actually do not know why it's necessary to pipe the
-        //                result through an identity function.
-        //
-        //                Source: https://github.com/flutter/plugins/blob/3a87296a40a2624d200917d58f036baa9fb18df8/packages/shared_preferences/lib/shared_preferences.dart#L134
-        .then<bool>((dynamic result) => result);
+  Future<bool> setValue(String valueType, String key, Object value) async {
+    return (await _kChannel.invokeMethod<bool>(
+      'set$valueType',
+      <String, dynamic>{'key': key, 'value': value},
+    ))!;
   }
 
   @override
-  Future<bool> clear() {
-    return _kChannel.invokeMethod<bool>('clear');
+  Future<bool> clear() async {
+    return (await _kChannel.invokeMethod<bool>('clear'))!;
   }
 
   @override
-  Future<Map<String, Object>> getAll() {
-    return _kChannel.invokeMapMethod<String, Object>('getAll');
+  Future<Map<String, Object>> getAll() async {
+    final Map<String, Object>? preferences =
+        await _kChannel.invokeMapMethod<String, Object>('getAll');
+
+    if (preferences == null) return <String, Object>{};
+    return preferences;
   }
 }

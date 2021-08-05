@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -45,7 +45,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> updateMapOptions(
     Map<String, dynamic> optionsUpdate, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).updateRawOptions(optionsUpdate);
   }
@@ -54,7 +54,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> updateMarkers(
     MarkerUpdates markerUpdates, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).updateMarkers(markerUpdates);
   }
@@ -63,7 +63,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> updatePolygons(
     PolygonUpdates polygonUpdates, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).updatePolygons(polygonUpdates);
   }
@@ -72,7 +72,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> updatePolylines(
     PolylineUpdates polylineUpdates, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).updatePolylines(polylineUpdates);
   }
@@ -81,16 +81,32 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> updateCircles(
     CircleUpdates circleUpdates, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).updateCircles(circleUpdates);
+  }
+
+  @override
+  Future<void> updateTileOverlays({
+    required Set<TileOverlay> newTileOverlays,
+    required int mapId,
+  }) async {
+    return; // Noop for now!
+  }
+
+  @override
+  Future<void> clearTileCache(
+    TileOverlayId tileOverlayId, {
+    required int mapId,
+  }) async {
+    return; // Noop for now!
   }
 
   /// Applies the given `cameraUpdate` to the current viewport (with animation).
   @override
   Future<void> animateCamera(
     CameraUpdate cameraUpdate, {
-    @required int mapId,
+    required int mapId,
   }) async {
     return moveCamera(cameraUpdate, mapId: mapId);
   }
@@ -99,7 +115,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> moveCamera(
     CameraUpdate cameraUpdate, {
-    @required int mapId,
+    required int mapId,
   }) async {
     return _map(mapId).moveCamera(cameraUpdate);
   }
@@ -112,8 +128,8 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   /// pass full styles.
   @override
   Future<void> setMapStyle(
-    String mapStyle, {
-    @required int mapId,
+    String? mapStyle, {
+    required int mapId,
   }) async {
     _map(mapId).updateRawOptions({
       'styles': _mapStyles(mapStyle),
@@ -123,7 +139,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   /// Returns the bounds of the current viewport.
   @override
   Future<LatLngBounds> getVisibleRegion({
-    @required int mapId,
+    required int mapId,
   }) {
     return _map(mapId).getVisibleRegion();
   }
@@ -132,7 +148,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<ScreenCoordinate> getScreenCoordinate(
     LatLng latLng, {
-    @required int mapId,
+    required int mapId,
   }) {
     return _map(mapId).getScreenCoordinate(latLng);
   }
@@ -141,7 +157,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<LatLng> getLatLng(
     ScreenCoordinate screenCoordinate, {
-    @required int mapId,
+    required int mapId,
   }) {
     return _map(mapId).getLatLng(screenCoordinate);
   }
@@ -154,7 +170,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> showMarkerInfoWindow(
     MarkerId markerId, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).showInfoWindow(markerId);
   }
@@ -167,7 +183,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<void> hideMarkerInfoWindow(
     MarkerId markerId, {
-    @required int mapId,
+    required int mapId,
   }) async {
     _map(mapId).hideInfoWindow(markerId);
   }
@@ -180,7 +196,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   @override
   Future<bool> isMarkerInfoWindowShown(
     MarkerId markerId, {
-    @required int mapId,
+    required int mapId,
   }) async {
     return _map(mapId).isInfoWindowShown(markerId);
   }
@@ -188,7 +204,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   /// Returns the zoom level of the `mapId`.
   @override
   Future<double> getZoomLevel({
-    @required int mapId,
+    required int mapId,
   }) {
     return _map(mapId).getZoomLevel();
   }
@@ -197,95 +213,107 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   // into the plugin
 
   @override
-  Stream<CameraMoveStartedEvent> onCameraMoveStarted({@required int mapId}) {
+  Stream<CameraMoveStartedEvent> onCameraMoveStarted({required int mapId}) {
     return _events(mapId).whereType<CameraMoveStartedEvent>();
   }
 
   @override
-  Stream<CameraMoveEvent> onCameraMove({@required int mapId}) {
+  Stream<CameraMoveEvent> onCameraMove({required int mapId}) {
     return _events(mapId).whereType<CameraMoveEvent>();
   }
 
   @override
-  Stream<CameraIdleEvent> onCameraIdle({@required int mapId}) {
+  Stream<CameraIdleEvent> onCameraIdle({required int mapId}) {
     return _events(mapId).whereType<CameraIdleEvent>();
   }
 
   @override
-  Stream<MarkerTapEvent> onMarkerTap({@required int mapId}) {
+  Stream<MarkerTapEvent> onMarkerTap({required int mapId}) {
     return _events(mapId).whereType<MarkerTapEvent>();
   }
 
   @override
-  Stream<InfoWindowTapEvent> onInfoWindowTap({@required int mapId}) {
+  Stream<InfoWindowTapEvent> onInfoWindowTap({required int mapId}) {
     return _events(mapId).whereType<InfoWindowTapEvent>();
   }
 
   @override
-  Stream<MarkerDragEndEvent> onMarkerDragEnd({@required int mapId}) {
+  Stream<MarkerDragEndEvent> onMarkerDragEnd({required int mapId}) {
     return _events(mapId).whereType<MarkerDragEndEvent>();
   }
 
   @override
-  Stream<PolylineTapEvent> onPolylineTap({@required int mapId}) {
+  Stream<PolylineTapEvent> onPolylineTap({required int mapId}) {
     return _events(mapId).whereType<PolylineTapEvent>();
   }
 
   @override
-  Stream<PolygonTapEvent> onPolygonTap({@required int mapId}) {
+  Stream<PolygonTapEvent> onPolygonTap({required int mapId}) {
     return _events(mapId).whereType<PolygonTapEvent>();
   }
 
   @override
-  Stream<CircleTapEvent> onCircleTap({@required int mapId}) {
+  Stream<CircleTapEvent> onCircleTap({required int mapId}) {
     return _events(mapId).whereType<CircleTapEvent>();
   }
 
   @override
-  Stream<MapTapEvent> onTap({@required int mapId}) {
+  Stream<MapTapEvent> onTap({required int mapId}) {
     return _events(mapId).whereType<MapTapEvent>();
   }
 
   @override
-  Stream<MapLongPressEvent> onLongPress({@required int mapId}) {
+  Stream<MapLongPressEvent> onLongPress({required int mapId}) {
     return _events(mapId).whereType<MapLongPressEvent>();
   }
 
   /// Disposes of the current map. It can't be used afterwards!
   @override
-  void dispose({@required int mapId}) {
-    _map(mapId)?.dispose();
+  void dispose({required int mapId}) {
+    _map(mapId).dispose();
     _mapById.remove(mapId);
   }
 
   @override
   Widget buildView(
-      Map<String, dynamic> creationParams,
-      Set<Factory<OneSequenceGestureRecognizer>> gestureRecognizers,
-      PlatformViewCreatedCallback onPlatformViewCreated) {
-    int mapId = creationParams.remove('_webOnlyMapCreationId');
-
-    assert(mapId != null,
-        'buildView needs a `_webOnlyMapCreationId` in its creationParams to prevent widget reloads in web.');
-
-    // Bail fast if we've already rendered this mapId...
-    if (_mapById[mapId]?.widget != null) {
-      return _mapById[mapId].widget;
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
+        const <Factory<OneSequenceGestureRecognizer>>{},
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    // Bail fast if we've already rendered this map ID...
+    if (_mapById[creationId]?.widget != null) {
+      return _mapById[creationId].widget;
     }
 
     final StreamController<MapEvent> controller =
         StreamController<MapEvent>.broadcast();
 
     final mapController = GoogleMapController(
-      mapId: mapId,
+      initialCameraPosition: initialCameraPosition,
+      mapId: creationId,
       streamController: controller,
-      rawOptions: creationParams,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      mapOptions: mapOptions,
     );
 
-    _mapById[mapId] = mapController;
+    _mapById[creationId] = mapController;
 
-    onPlatformViewCreated.call(mapId);
+    onPlatformViewCreated.call(creationId);
 
-    return mapController.widget;
+    assert(mapController.widget != null,
+        'The widget of a GoogleMapController cannot be null before calling dispose on it.');
+
+    return mapController.widget!;
   }
 }
