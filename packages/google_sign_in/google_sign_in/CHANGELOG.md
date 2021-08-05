@@ -1,6 +1,10 @@
-## 5.0.7
+## 5.0.8
 
 * Re-use server auth code obtained on login.
+
+## 5.0.7
+
+* Mark iOS arm64 simulators as unsupported.
 
 ## 5.0.6
 

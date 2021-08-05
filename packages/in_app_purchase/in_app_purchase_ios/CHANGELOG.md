@@ -1,3 +1,7 @@
+# 0.1.3+1
+
+- Updated installation instructions in README.
+
 ## 0.1.3
 
 * Add price symbol to platform interface object ProductDetail.

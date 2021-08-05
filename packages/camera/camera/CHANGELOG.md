@@ -1,3 +1,7 @@
+## 0.8.1+7
+
+* Fix device orientation sometimes not affecting the camera preview orientation.
+
 ## 0.8.1+6
 
 * Remove references to the Android V1 embedding.
