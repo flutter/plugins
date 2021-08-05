@@ -1,3 +1,67 @@
+## NEXT
+
+- `--exclude` and `--custom-analysis` now accept paths to YAML files that
+  contain lists of packages to exclude, in addition to just package names,
+  so that exclude lists can be maintained separately from scripts and CI
+  configuration.
+- Added an `xctest` flag to select specific test targets, to allow running only
+  unit tests or integration tests.
+- **Breaking change**: Split Xcode analysis out of `xctest` and into a new
+  `xcode-analyze` command.
+- Fixed a bug that caused `firebase-test-lab` to hang if it tried to run more
+  than one plugin's tests in a single run.
+- **Breaking change**: If `firebase-test-lab` is run on a package that supports
+  Android, but for which no tests are run, it now fails instead of skipping.
+  This matches `drive-examples`, as this command is what is used for driving
+  Android Flutter integration tests on CI.
+- **Breaking change**: Replaced `xctest` with a new `native-test` command that
+  will eventually be able to run native unit and integration tests for all
+  platforms.
+  - Adds the ability to disable test types via `--no-unit` or
+    `--no-integration`.
+- **Breaking change**: Replaced `java-test` with Android unit test support for
+  the new `native-test` command.
+- Commands that print a run summary at the end now track and log exclusions
+  similarly to skips for easier auditing.
+
+## 0.4.1
+
+- Improved `license-check` output.
+- Use `java -version` rather than `java --version`, for compatibility with more
+  versions of Java.
+
+## 0.4.0
+
+- Modified the output format of many commands
+- **Breaking change**: `firebase-test-lab` no longer supports `*_e2e.dart`
+  files, only `integration_test/*_test.dart`.
+- Add a summary to the end of successful command runs for commands using the
+  new output format.
+- Fixed some cases where a failure in a command for a single package would
+  immediately abort the test.
+- Deprecated `--plugins` in favor of new `--packages`. `--plugins` continues to
+  work for now, but will be removed in the future.
+- Make `drive-examples` device detection robust against Flutter tool banners.
+- `format` is now supported on Windows.
+
+## 0.3.0
+
+- Add a --build-id flag to `firebase-test-lab` instead of hard-coding the use of
+  `CIRRUS_BUILD_ID`. `CIRRUS_BUILD_ID` is the default value for that flag, for backward
+  compatibility.
+- `xctest` now supports running macOS tests in addition to iOS
+  - **Breaking change**: it now requires an `--ios` and/or `--macos` flag.
+- **Breaking change**: `build-examples` for iOS now uses `--ios` rather than
+  `--ipa`.
+- The tooling now runs in strong null-safe mode.
+- `publish plugins` check against pub.dev to determine if a release should happen.
+- Modified the output format of many commands
+- Removed `podspec`'s `--skip` in favor of `--ignore` using the new structure.
+
+## 0.2.0
+
+- Remove `xctest`'s `--skip`, which is redundant with `--ignore`.
+
 ## 0.1.4
 
 - Add a `pubspec-check` command

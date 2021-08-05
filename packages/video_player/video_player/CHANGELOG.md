@@ -1,10 +1,36 @@
-## NEXT
+## 2.1.13
 
-* Add iOS unit and UI integration test targets.
+* iOS: Update texture on `seekTo`.
+
+## 2.1.12
+
+* Update the video url in the readme code sample
+
+## 2.1.11
+
+* Remove references to the Android V1 embedding.
+
+## 2.1.10
+
+* Ensure video pauses correctly when it finishes.
+
+## 2.1.9
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
+## 2.1.8
+
+* Refactor `FLTCMTimeToMillis` to support indefinite streams. Fixes [#48670](https://github.com/flutter/flutter/issues/48670).
+
+## 2.1.7
+
+* Update exoplayer to 2.14.1, removing dependency on Bintray.
 
 ## 2.1.6
 
-* iOS: Update texture on `seekTo`.
+* Remove obsolete pre-1.0 warning from README.
+* Add iOS unit and UI integration test targets.
 
 ## 2.1.5
 

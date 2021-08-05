@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
-
-import 'dart:async';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
@@ -12,25 +9,25 @@ import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
 
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
-    this.pluginsRoot,
-  }) : super(packagesDir, fileSystem) {
-    pluginsRoot ??= fileSystem.currentDirectory;
-    appDirectory = pluginsRoot.childDirectory('all_plugins');
+    Directory packagesDir, {
+    Directory? pluginsRoot,
+  })  : pluginsRoot = pluginsRoot ?? packagesDir.fileSystem.currentDirectory,
+        super(packagesDir) {
+    appDirectory = this.pluginsRoot.childDirectory('all_plugins');
   }
 
   /// The root directory of the plugin repository.
   Directory pluginsRoot;
 
   /// The location of the synthesized app project.
-  Directory appDirectory;
+  late Directory appDirectory;
 
   @override
   String get description =>
@@ -55,7 +52,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
   Future<int> _createApp() async {
     final io.ProcessResult result = io.Process.runSync(
-      'flutter',
+      flutterCommand,
       <String>[
         'create',
         '--template=app',
@@ -159,14 +156,14 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (final Directory package in getPlugins()) {
-      final String pluginName = package.path.split('/').last;
-      final File pubspecFile =
-          fileSystem.file(p.join(package.path, 'pubspec.yaml'));
+    await for (final PackageEnumerationEntry package in getTargetPackages()) {
+      final Directory pluginDirectory = package.directory;
+      final String pluginName = pluginDirectory.basename;
+      final File pubspecFile = pluginDirectory.childFile('pubspec.yaml');
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {
-        pathDependencies[pluginName] = PathDependency(package.path);
+        pathDependencies[pluginName] = PathDependency(pluginDirectory.path);
       }
     }
     return pathDependencies;
@@ -177,10 +174,11 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 ### Generated file. Do not edit. Run `pub global run flutter_plugin_tools gen-pubspec` to update.
 name: ${pubspec.name}
 description: ${pubspec.description}
+publish_to: none
 
 version: ${pubspec.version}
 
-environment:${_pubspecMapString(pubspec.environment)}
+environment:${_pubspecMapString(pubspec.environment!)}
 
 dependencies:${_pubspecMapString(pubspec.dependencies)}
 
@@ -202,7 +200,21 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
         buffer.write('  ${entry.key}: \n    sdk: ${dep.sdk}');
       } else if (entry.value is PathDependency) {
         final PathDependency dep = entry.value as PathDependency;
-        buffer.write('  ${entry.key}: \n    path: ${dep.path}');
+        String depPath = dep.path;
+        if (path.style == p.Style.windows) {
+          // Posix-style path separators are preferred in pubspec.yaml (and
+          // using a consistent format makes unit testing simpler), so convert.
+          final List<String> components = path.split(depPath);
+          final String firstComponent = components.first;
+          // path.split leaves a \ on drive components that isn't necessary,
+          // and confuses pub, so remove it.
+          if (firstComponent.endsWith(r':\')) {
+            components[0] =
+                firstComponent.substring(0, firstComponent.length - 1);
+          }
+          depPath = p.posix.joinAll(components);
+        }
+        buffer.write('  ${entry.key}: \n    path: $depPath');
       } else {
         throw UnimplementedError(
           'Not available for type: ${entry.value.runtimeType}',

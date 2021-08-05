@@ -994,20 +994,65 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)applyFocusMode {
-  [_captureDevice lockForConfiguration:nil];
-  switch (_focusMode) {
+  [self applyFocusMode:_focusMode onDevice:_captureDevice];
+}
+
+/**
+ * Applies FocusMode on the AVCaptureDevice.
+ *
+ * If the @c focusMode is set to FocusModeAuto the AVCaptureDevice is configured to use
+ * AVCaptureFocusModeContinuousModeAutoFocus when supported, otherwise it is set to
+ * AVCaptureFocusModeAutoFocus. If neither AVCaptureFocusModeContinuousModeAutoFocus nor
+ * AVCaptureFocusModeAutoFocus are supported focus mode will not be set.
+ * If @c focusMode is set to FocusModeLocked the AVCaptureDevice is configured to use
+ * AVCaptureFocusModeAutoFocus. If AVCaptureFocusModeAutoFocus is not supported focus mode will not
+ * be set.
+ *
+ * @param focusMode The focus mode that should be applied to the @captureDevice instance.
+ * @param captureDevice The AVCaptureDevice to which the @focusMode will be applied.
+ */
+- (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice {
+  [captureDevice lockForConfiguration:nil];
+  switch (focusMode) {
     case FocusModeLocked:
-      [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      }
       break;
     case FocusModeAuto:
-      if ([_captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
-        [_captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-      } else {
-        [_captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
+      if ([captureDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+      } else if ([captureDevice isFocusModeSupported:AVCaptureFocusModeAutoFocus]) {
+        [captureDevice setFocusMode:AVCaptureFocusModeAutoFocus];
       }
       break;
   }
-  [_captureDevice unlockForConfiguration];
+  [captureDevice unlockForConfiguration];
+}
+
+- (CGPoint)getCGPointForCoordsWithOrientation:(UIDeviceOrientation)orientation
+                                            x:(double)x
+                                            y:(double)y {
+  double oldX = x, oldY = y;
+  switch (orientation) {
+    case UIDeviceOrientationPortrait:  // 90 ccw
+      y = 1 - oldX;
+      x = oldY;
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:  // 90 cw
+      x = 1 - oldY;
+      y = oldX;
+      break;
+    case UIDeviceOrientationLandscapeRight:  // 180
+      x = 1 - x;
+      y = 1 - y;
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+    default:
+      // No rotation required
+      break;
+  }
+  return CGPointMake(x, y);
 }
 
 - (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
@@ -1017,8 +1062,11 @@ NSString *const errorMethod = @"error";
                                details:nil]);
     return;
   }
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setExposurePointOfInterest:CGPointMake(y, 1 - x)];
+  [_captureDevice setExposurePointOfInterest:[self getCGPointForCoordsWithOrientation:orientation
+                                                                                    x:x
+                                                                                    y:y]];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
@@ -1032,11 +1080,16 @@ NSString *const errorMethod = @"error";
                                details:nil]);
     return;
   }
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setFocusPointOfInterest:CGPointMake(y, 1 - x)];
+
+  [_captureDevice setFocusPointOfInterest:[self getCGPointForCoordsWithOrientation:orientation
+                                                                                 x:x
+                                                                                 y:y]];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto focus
   [self applyFocusMode];
+
   result(nil);
 }
 
@@ -1271,6 +1324,11 @@ NSString *const errorMethod = @"error";
 - (void)orientationChanged:(NSNotification *)note {
   UIDevice *device = note.object;
   UIDeviceOrientation orientation = device.orientation;
+
+  if (orientation == UIDeviceOrientationFaceUp || orientation == UIDeviceOrientationFaceDown) {
+    // Do not change when oriented flat.
+    return;
+  }
 
   if (_camera) {
     [_camera setDeviceOrientation:orientation];

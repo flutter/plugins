@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart=2.9
+import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
+import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/lint_podspecs_command.dart';
-import 'package:mockito/mockito.dart';
-import 'package:path/path.dart' as p;
-import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
 import 'mocks.dart';
@@ -17,157 +16,251 @@ import 'util.dart';
 
 void main() {
   group('$LintPodspecsCommand', () {
-    CommandRunner<void> runner;
-    MockPlatform mockPlatform;
-    final RecordingProcessRunner processRunner = RecordingProcessRunner();
-    List<String> printedMessages;
+    FileSystem fileSystem;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late MockPlatform mockPlatform;
+    late RecordingProcessRunner processRunner;
 
     setUp(() {
-      initializeFakePackages();
+      fileSystem = MemoryFileSystem(style: FileSystemStyle.posix);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
 
-      printedMessages = <String>[];
-      mockPlatform = MockPlatform();
-      when(mockPlatform.isMacOS).thenReturn(true);
+      mockPlatform = MockPlatform(isMacOS: true);
+      processRunner = RecordingProcessRunner();
       final LintPodspecsCommand command = LintPodspecsCommand(
-        mockPackagesDir,
-        mockFileSystem,
+        packagesDir,
         processRunner: processRunner,
         platform: mockPlatform,
-        print: (Object message) => printedMessages.add(message.toString()),
       );
 
       runner =
           CommandRunner<void>('podspec_test', 'Test for $LintPodspecsCommand');
       runner.addCommand(command);
-      final MockProcess mockLintProcess = MockProcess();
-      mockLintProcess.exitCodeCompleter.complete(0);
-      processRunner.processToReturn = mockLintProcess;
-      processRunner.recordedCalls.clear();
-    });
-
-    tearDown(() {
-      cleanupPackages();
     });
 
     test('only runs on macOS', () async {
-      createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['plugin1.podspec'],
-      ]);
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+      mockPlatform.isMacOS = false;
 
-      when(mockPlatform.isMacOS).thenReturn(false);
-      await runner.run(<String>['podspecs']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
 
       expect(
         processRunner.recordedCalls,
         equals(<ProcessCall>[]),
       );
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[contains('only supported on macOS')],
+          ));
     });
 
     test('runs pod lib lint on a podspec', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['ios', 'plugin1.podspec'],
-        <String>['bogus.dart'], // Ignore non-podspecs.
-      ]);
+      final Directory plugin1Dir = createFakePlugin(
+        'plugin1',
+        packagesDir,
+        extraFiles: <String>[
+          'ios/plugin1.podspec',
+          'bogus.dart', // Ignore non-podspecs.
+        ],
+      );
 
+      processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
+        MockProcess.succeeding(),
+        MockProcess.succeeding(),
+      ];
       processRunner.resultStdout = 'Foo';
       processRunner.resultStderr = 'Bar';
 
-      await runner.run(<String>['podspecs']);
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspecs']);
 
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
+                plugin1Dir
+                    .childDirectory('ios')
+                    .childFile('plugin1.podspec')
+                    .path,
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--use-libraries'
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'ios', 'plugin1.podspec'),
+                plugin1Dir
+                    .childDirectory('ios')
+                    .childFile('plugin1.podspec')
+                    .path,
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
         ]),
       );
 
-      expect(printedMessages, contains('Linting plugin1.podspec'));
-      expect(printedMessages, contains('Foo'));
-      expect(printedMessages, contains('Bar'));
-    });
-
-    test('skips podspecs with known issues', () async {
-      createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['plugin1.podspec']
-      ]);
-      createFakePlugin('plugin2', withExtraFiles: <List<String>>[
-        <String>['plugin2.podspec']
-      ]);
-
-      await runner
-          .run(<String>['podspecs', '--skip=plugin1', '--skip=plugin2']);
-
-      expect(
-        processRunner.recordedCalls,
-        orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
-        ]),
-      );
+      expect(output, contains('Linting plugin1.podspec'));
+      expect(output, contains('Foo'));
+      expect(output, contains('Bar'));
     });
 
     test('allow warnings for podspecs with known warnings', () async {
-      final Directory plugin1Dir =
-          createFakePlugin('plugin1', withExtraFiles: <List<String>>[
-        <String>['plugin1.podspec'],
-      ]);
+      final Directory plugin1Dir = createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
 
-      await runner.run(<String>['podspecs', '--ignore-warnings=plugin1']);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs', '--ignore-warnings=plugin1']);
 
       expect(
         processRunner.recordedCalls,
         orderedEquals(<ProcessCall>[
-          ProcessCall('which', const <String>['pod'], mockPackagesDir.path),
+          ProcessCall('which', const <String>['pod'], packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'plugin1.podspec'),
+                plugin1Dir.childFile('plugin1.podspec').path,
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--allow-warnings',
                 '--use-libraries'
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
           ProcessCall(
               'pod',
               <String>[
                 'lib',
                 'lint',
-                p.join(plugin1Dir.path, 'plugin1.podspec'),
+                plugin1Dir.childFile('plugin1.podspec').path,
                 '--configuration=Debug',
                 '--skip-tests',
+                '--use-modular-headers',
                 '--allow-warnings',
               ],
-              mockPackagesDir.path),
+              packagesDir.path),
         ]),
       );
 
-      expect(printedMessages, contains('Linting plugin1.podspec'));
+      expect(output, contains('Linting plugin1.podspec'));
+    });
+
+    test('fails if pod is missing', () async {
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+
+      // Simulate failure from `which pod`.
+      processRunner.mockProcessesForExecutable['which'] = <io.Process>[
+        MockProcess.failing(),
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('Unable to find "pod". Make sure it is in your path.'),
+            ],
+          ));
+    });
+
+    test('fails if linting as a framework fails', () async {
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+
+      // Simulate failure from `pod`.
+      processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
+        MockProcess.failing(),
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('The following packages had errors:'),
+              contains('plugin1:\n'
+                  '    plugin1.podspec')
+            ],
+          ));
+    });
+
+    test('fails if linting as a static library fails', () async {
+      createFakePlugin('plugin1', packagesDir,
+          extraFiles: <String>['plugin1.podspec']);
+
+      // Simulate failure from the second call to `pod`.
+      processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
+        MockProcess.succeeding(),
+        MockProcess.failing(),
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['podspecs'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains('The following packages had errors:'),
+              contains('plugin1:\n'
+                  '    plugin1.podspec')
+            ],
+          ));
+    });
+
+    test('skips when there are no podspecs', () async {
+      createFakePlugin('plugin1', packagesDir);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['podspecs']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[contains('SKIPPING: No podspecs.')],
+          ));
     });
   });
 }
-
-class MockPlatform extends Mock implements Platform {}

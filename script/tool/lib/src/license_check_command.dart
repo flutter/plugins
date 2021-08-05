@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-
 import 'package:file/file.dart';
 import 'package:path/path.dart' as p;
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/plugin_command.dart';
 
 const Set<String> _codeFileExtensions = <String>{
   '.c',
@@ -97,14 +96,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /// Validates that code files have copyright and license blocks.
 class LicenseCheckCommand extends PluginCommand {
   /// Creates a new license check command for [packagesDir].
-  LicenseCheckCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
-    Print print = print,
-  })  : _print = print,
-        super(packagesDir, fileSystem);
-
-  final Print _print;
+  LicenseCheckCommand(Directory packagesDir) : super(packagesDir);
 
   @override
   final String name = 'license-check';
@@ -115,21 +107,65 @@ class LicenseCheckCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final Iterable<File> codeFiles = (await _getAllFiles()).where((File file) =>
+    final Iterable<File> allFiles = await _getAllFiles();
+
+    final Iterable<File> codeFiles = allFiles.where((File file) =>
         _codeFileExtensions.contains(p.extension(file.path)) &&
         !_shouldIgnoreFile(file));
-    final Iterable<File> firstPartyLicenseFiles = (await _getAllFiles()).where(
-        (File file) =>
-            p.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
+    final Iterable<File> firstPartyLicenseFiles = allFiles.where((File file) =>
+        path.basename(file.basename) == 'LICENSE' && !_isThirdParty(file));
 
-    final bool copyrightCheckSucceeded = await _checkCodeLicenses(codeFiles);
-    _print('\n=======================================\n');
-    final bool licenseCheckSucceeded =
+    final List<File> licenseFileFailures =
         await _checkLicenseFiles(firstPartyLicenseFiles);
+    final Map<_LicenseFailureType, List<File>> codeFileFailures =
+        await _checkCodeLicenses(codeFiles);
 
-    if (!copyrightCheckSucceeded || !licenseCheckSucceeded) {
+    bool passed = true;
+
+    print('\n=======================================\n');
+
+    if (licenseFileFailures.isNotEmpty) {
+      passed = false;
+      printError(
+          'The following LICENSE files do not follow the expected format:');
+      for (final File file in licenseFileFailures) {
+        printError('  ${file.path}');
+      }
+      printError('Please ensure that they use the exact format used in this '
+          'repository".\n');
+    }
+
+    if (codeFileFailures[_LicenseFailureType.incorrectFirstParty]!.isNotEmpty) {
+      passed = false;
+      printError('The license block for these files is missing or incorrect:');
+      for (final File file
+          in codeFileFailures[_LicenseFailureType.incorrectFirstParty]!) {
+        printError('  ${file.path}');
+      }
+      printError(
+          'If this third-party code, move it to a "third_party/" directory, '
+          'otherwise ensure that you are using the exact copyright and license '
+          'text used by all first-party files in this repository.\n');
+    }
+
+    if (codeFileFailures[_LicenseFailureType.unknownThirdParty]!.isNotEmpty) {
+      passed = false;
+      printError(
+          'No recognized license was found for the following third-party files:');
+      for (final File file
+          in codeFileFailures[_LicenseFailureType.unknownThirdParty]!) {
+        printError('  ${file.path}');
+      }
+      print('Please check that they have a license at the top of the file. '
+          'If they do, the license check needs to be updated to recognize '
+          'the new third-party license block.\n');
+    }
+
+    if (!passed) {
       throw ToolExit(1);
     }
+
+    printSuccess('All files passed validation!');
   }
 
   // Creates the expected copyright+license block for first-party code.
@@ -143,9 +179,10 @@ class LicenseCheckCommand extends PluginCommand {
         '${comment}found in the LICENSE file.$suffix\n';
   }
 
-  // Checks all license blocks for [codeFiles], returning false if any of them
-  // fail validation.
-  Future<bool> _checkCodeLicenses(Iterable<File> codeFiles) async {
+  /// Checks all license blocks for [codeFiles], returning any that fail
+  /// validation.
+  Future<Map<_LicenseFailureType, List<File>>> _checkCodeLicenses(
+      Iterable<File> codeFiles) async {
     final List<File> incorrectFirstPartyFiles = <File>[];
     final List<File> unrecognizedThirdPartyFiles = <File>[];
 
@@ -159,7 +196,7 @@ class LicenseCheckCommand extends PluginCommand {
     };
 
     for (final File file in codeFiles) {
-      _print('Checking ${file.path}');
+      print('Checking ${file.path}');
       final String content = await file.readAsString();
 
       final String firstParyLicense =
@@ -179,7 +216,6 @@ class LicenseCheckCommand extends PluginCommand {
         }
       }
     }
-    _print('\n');
 
     // Sort by path for more usable output.
     final int Function(File, File) pathCompare =
@@ -187,62 +223,24 @@ class LicenseCheckCommand extends PluginCommand {
     incorrectFirstPartyFiles.sort(pathCompare);
     unrecognizedThirdPartyFiles.sort(pathCompare);
 
-    if (incorrectFirstPartyFiles.isNotEmpty) {
-      _print('The license block for these files is missing or incorrect:');
-      for (final File file in incorrectFirstPartyFiles) {
-        _print('  ${file.path}');
-      }
-      _print('If this third-party code, move it to a "third_party/" directory, '
-          'otherwise ensure that you are using the exact copyright and license '
-          'text used by all first-party files in this repository.\n');
-    }
-
-    if (unrecognizedThirdPartyFiles.isNotEmpty) {
-      _print(
-          'No recognized license was found for the following third-party files:');
-      for (final File file in unrecognizedThirdPartyFiles) {
-        _print('  ${file.path}');
-      }
-      _print('Please check that they have a license at the top of the file. '
-          'If they do, the license check needs to be updated to recognize '
-          'the new third-party license block.\n');
-    }
-
-    final bool succeeded =
-        incorrectFirstPartyFiles.isEmpty && unrecognizedThirdPartyFiles.isEmpty;
-    if (succeeded) {
-      _print('All source files passed validation!');
-    }
-    return succeeded;
+    return <_LicenseFailureType, List<File>>{
+      _LicenseFailureType.incorrectFirstParty: incorrectFirstPartyFiles,
+      _LicenseFailureType.unknownThirdParty: unrecognizedThirdPartyFiles,
+    };
   }
 
-  // Checks all provide LICENSE files, returning false if any of them
-  // fail validation.
-  Future<bool> _checkLicenseFiles(Iterable<File> files) async {
+  /// Checks all provided LICENSE [files], returning any that fail validation.
+  Future<List<File>> _checkLicenseFiles(Iterable<File> files) async {
     final List<File> incorrectLicenseFiles = <File>[];
 
     for (final File file in files) {
-      _print('Checking ${file.path}');
+      print('Checking ${file.path}');
       if (!file.readAsStringSync().contains(_fullBsdLicenseText)) {
         incorrectLicenseFiles.add(file);
       }
     }
-    _print('\n');
 
-    if (incorrectLicenseFiles.isNotEmpty) {
-      _print('The following LICENSE files do not follow the expected format:');
-      for (final File file in incorrectLicenseFiles) {
-        _print('  ${file.path}');
-      }
-      _print(
-          'Please ensure that they use the exact format used in this repository".\n');
-    }
-
-    final bool succeeded = incorrectLicenseFiles.isEmpty;
-    if (succeeded) {
-      _print('All LICENSE files passed validation!');
-    }
-    return succeeded;
+    return incorrectLicenseFiles;
   }
 
   bool _shouldIgnoreFile(File file) {
@@ -254,7 +252,7 @@ class LicenseCheckCommand extends PluginCommand {
   }
 
   bool _isThirdParty(File file) {
-    return p.split(file.path).contains('third_party');
+    return path.split(file.path).contains('third_party');
   }
 
   Future<List<File>> _getAllFiles() => packagesDir.parent
@@ -263,3 +261,5 @@ class LicenseCheckCommand extends PluginCommand {
       .map((FileSystemEntity file) => file as File)
       .toList();
 }
+
+enum _LicenseFailureType { incorrectFirstParty, unknownThirdParty }

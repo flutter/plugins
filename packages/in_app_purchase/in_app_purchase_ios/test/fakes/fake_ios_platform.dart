@@ -29,6 +29,7 @@ class FakeIOSPlatform {
   PlatformException? queryProductException;
   PlatformException? restoreException;
   SKError? testRestoredError;
+  bool queueIsActive = false;
 
   void reset() {
     transactions = [];
@@ -39,6 +40,9 @@ class FakeIOSPlatform {
       Map<String, dynamic> productWrapperMap =
           buildProductMap(dummyProductWrapper);
       productWrapperMap['productIdentifier'] = validID;
+      if (validID == '456') {
+        productWrapperMap['priceLocale'] = buildLocaleMap(noSymbolLocale);
+      }
       validProducts[validID] = SKProductWrapper.fromJson(productWrapperMap);
     }
 
@@ -66,6 +70,7 @@ class FakeIOSPlatform {
     queryProductException = null;
     restoreException = null;
     testRestoredError = null;
+    queueIsActive = false;
   }
 
   SKPaymentTransactionWrapper createPendingTransaction(String id) {
@@ -175,6 +180,12 @@ class FakeIOSPlatform {
         finishedTransactions.add(createPurchasedTransaction(
             call.arguments["productIdentifier"],
             call.arguments["transactionIdentifier"]));
+        break;
+      case '-[SKPaymentQueue startObservingTransactionQueue]':
+        queueIsActive = true;
+        break;
+      case '-[SKPaymentQueue stopObservingTransactionQueue]':
+        queueIsActive = false;
         break;
     }
     return Future<void>.sync(() {});

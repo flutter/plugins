@@ -108,6 +108,7 @@ void main() {
       expect(response.productDetails.first.description,
           dummySkuDetails.description);
       expect(response.productDetails.first.price, dummySkuDetails.price);
+      expect(response.productDetails.first.currencySymbol, r'$');
     });
 
     test('should get the correct notFoundIDs', () async {

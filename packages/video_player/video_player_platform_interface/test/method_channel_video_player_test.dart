@@ -232,13 +232,16 @@ void main() {
     });
 
     test('videoEventsFor', () async {
-      ServicesBinding.instance?.defaultBinaryMessenger.setMockMessageHandler(
+      _ambiguate(ServicesBinding.instance)
+          ?.defaultBinaryMessenger
+          .setMockMessageHandler(
         "flutter.io/videoPlayer/videoEvents123",
         (ByteData? message) async {
           final MethodCall methodCall =
               const StandardMethodCodec().decodeMethodCall(message);
           if (methodCall.method == 'listen') {
-            await ServicesBinding.instance?.defaultBinaryMessenger
+            await _ambiguate(ServicesBinding.instance)
+                ?.defaultBinaryMessenger
                 .handlePlatformMessage(
                     "flutter.io/videoPlayer/videoEvents123",
                     const StandardMethodCodec()
@@ -250,7 +253,8 @@ void main() {
                     }),
                     (ByteData? data) {});
 
-            await ServicesBinding.instance?.defaultBinaryMessenger
+            await _ambiguate(ServicesBinding.instance)
+                ?.defaultBinaryMessenger
                 .handlePlatformMessage(
                     "flutter.io/videoPlayer/videoEvents123",
                     const StandardMethodCodec()
@@ -259,7 +263,8 @@ void main() {
                     }),
                     (ByteData? data) {});
 
-            await ServicesBinding.instance?.defaultBinaryMessenger
+            await _ambiguate(ServicesBinding.instance)
+                ?.defaultBinaryMessenger
                 .handlePlatformMessage(
                     "flutter.io/videoPlayer/videoEvents123",
                     const StandardMethodCodec()
@@ -272,7 +277,8 @@ void main() {
                     }),
                     (ByteData? data) {});
 
-            await ServicesBinding.instance?.defaultBinaryMessenger
+            await _ambiguate(ServicesBinding.instance)
+                ?.defaultBinaryMessenger
                 .handlePlatformMessage(
                     "flutter.io/videoPlayer/videoEvents123",
                     const StandardMethodCodec()
@@ -281,7 +287,8 @@ void main() {
                     }),
                     (ByteData? data) {});
 
-            await ServicesBinding.instance?.defaultBinaryMessenger
+            await _ambiguate(ServicesBinding.instance)
+                ?.defaultBinaryMessenger
                 .handlePlatformMessage(
                     "flutter.io/videoPlayer/videoEvents123",
                     const StandardMethodCodec()
@@ -325,3 +332,10 @@ void main() {
     });
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

@@ -1,3 +1,28 @@
+## 1.0.7
+
+* Remove references to the Android V1 embedding.
+
+## 1.0.6
+
+* Added import flutter foundation dependency in README.md to be able to use `defaultTargetPlatform`.
+
+## 1.0.5
+
+* Add explanation for casting `ProductDetails` and `PurchaseDetails` to platform specific implementations in the readme.
+
+## 1.0.4
+
+* Fix `Restoring previous purchases` link in the README.md.
+
+## 1.0.3
+
+* Added a "Restore purchases" button to conform to Apple's StoreKit guidelines on [restoring products](https://developer.apple.com/documentation/storekit/in-app_purchase/restoring_purchased_products?language=objc);
+* Corrected an error in a example snippet displayed in the README.md.
+
+## 1.0.2
+
+* Fix ignoring "autoConsume" param in "InAppPurchase.instance.buyConsumable".
+
 ## 1.0.1
 
 * Migrate maven repository from jcenter to mavenCentral.

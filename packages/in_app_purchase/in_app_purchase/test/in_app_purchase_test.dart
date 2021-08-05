@@ -87,15 +87,33 @@ void main() {
     });
 
     test('buyConsumable', () async {
+      final purchaseParam = PurchaseParam(productDetails: productDetails);
       final bool result = await inAppPurchase.buyConsumable(
-        purchaseParam: PurchaseParam(
-          productDetails: productDetails,
-        ),
+        purchaseParam: purchaseParam,
       );
 
       expect(result, true);
       expect(fakePlatform.log, <Matcher>[
-        isMethodCall('buyConsumable', arguments: null),
+        isMethodCall('buyConsumable', arguments: {
+          "purchaseParam": purchaseParam,
+          "autoConsume": true,
+        }),
+      ]);
+    });
+
+    test('buyConsumable with autoConsume=false', () async {
+      final purchaseParam = PurchaseParam(productDetails: productDetails);
+      final bool result = await inAppPurchase.buyConsumable(
+        purchaseParam: purchaseParam,
+        autoConsume: false,
+      );
+
+      expect(result, true);
+      expect(fakePlatform.log, <Matcher>[
+        isMethodCall('buyConsumable', arguments: {
+          "purchaseParam": purchaseParam,
+          "autoConsume": false,
+        }),
       ]);
     });
 
@@ -152,7 +170,10 @@ class MockInAppPurchasePlatform extends Fake
     required PurchaseParam purchaseParam,
     bool autoConsume = true,
   }) {
-    log.add(MethodCall('buyConsumable'));
+    log.add(MethodCall('buyConsumable', {
+      "purchaseParam": purchaseParam,
+      "autoConsume": autoConsume,
+    }));
     return Future.value(true);
   }
 

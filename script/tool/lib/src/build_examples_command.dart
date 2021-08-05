@@ -3,34 +3,77 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 
-import 'common.dart';
+import 'common/core.dart';
+import 'common/package_looping_command.dart';
+import 'common/plugin_utils.dart';
+import 'common/process_runner.dart';
+
+/// Key for APK.
+const String _platformFlagApk = 'apk';
+
+const int _exitNoPlatformFlags = 2;
 
 /// A command to build the example applications for packages.
-class BuildExamplesCommand extends PluginCommand {
+class BuildExamplesCommand extends PackageLoopingCommand {
   /// Creates an instance of the build command.
   BuildExamplesCommand(
-    Directory packagesDir,
-    FileSystem fileSystem, {
+    Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-  }) : super(packagesDir, fileSystem, processRunner: processRunner) {
-    argParser.addFlag(kLinux, defaultsTo: false);
-    argParser.addFlag(kMacos, defaultsTo: false);
-    argParser.addFlag(kWeb, defaultsTo: false);
-    argParser.addFlag(kWindows, defaultsTo: false);
-    argParser.addFlag(kIpa, defaultsTo: io.Platform.isMacOS);
-    argParser.addFlag(kApk);
+    Platform platform = const LocalPlatform(),
+  }) : super(packagesDir, processRunner: processRunner, platform: platform) {
+    argParser.addFlag(kPlatformLinux);
+    argParser.addFlag(kPlatformMacos);
+    argParser.addFlag(kPlatformWeb);
+    argParser.addFlag(kPlatformWindows);
+    argParser.addFlag(kPlatformIos);
+    argParser.addFlag(_platformFlagApk);
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
       help: 'Enables the given Dart SDK experiments.',
     );
   }
+
+  // Maps the switch this command uses to identify a platform to information
+  // about it.
+  static final Map<String, _PlatformDetails> _platforms =
+      <String, _PlatformDetails>{
+    _platformFlagApk: const _PlatformDetails(
+      'Android',
+      pluginPlatform: kPlatformAndroid,
+      flutterBuildType: 'apk',
+    ),
+    kPlatformIos: const _PlatformDetails(
+      'iOS',
+      pluginPlatform: kPlatformIos,
+      flutterBuildType: 'ios',
+      extraBuildFlags: <String>['--no-codesign'],
+    ),
+    kPlatformLinux: const _PlatformDetails(
+      'Linux',
+      pluginPlatform: kPlatformLinux,
+      flutterBuildType: 'linux',
+    ),
+    kPlatformMacos: const _PlatformDetails(
+      'macOS',
+      pluginPlatform: kPlatformMacos,
+      flutterBuildType: 'macos',
+    ),
+    kPlatformWeb: const _PlatformDetails(
+      'web',
+      pluginPlatform: kPlatformWeb,
+      flutterBuildType: 'web',
+    ),
+    kPlatformWindows: const _PlatformDetails(
+      'Windows',
+      pluginPlatform: kPlatformWindows,
+      flutterBuildType: 'windows',
+    ),
+  };
 
   @override
   final String name = 'build-examples';
@@ -41,164 +84,110 @@ class BuildExamplesCommand extends PluginCommand {
       'This command requires "flutter" to be in your path.';
 
   @override
-  Future<void> run() async {
-    final List<String> platformSwitches = <String>[
-      kApk,
-      kIpa,
-      kLinux,
-      kMacos,
-      kWeb,
-      kWindows,
-    ];
-    if (!platformSwitches.any((String platform) => getBoolArg(platform))) {
-      print(
-          'None of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
-          'were specified, so not building anything.');
-      return;
+  Future<void> initializeRun() async {
+    final List<String> platformFlags = _platforms.keys.toList();
+    platformFlags.sort();
+    if (!platformFlags.any((String platform) => getBoolArg(platform))) {
+      printError(
+          'None of ${platformFlags.map((String platform) => '--$platform').join(', ')} '
+          'were specified. At least one platform must be provided.');
+      throw ToolExit(_exitNoPlatformFlags);
     }
-    final String flutterCommand =
-        const LocalPlatform().isWindows ? 'flutter.bat' : 'flutter';
+  }
 
+  @override
+  Future<PackageResult> runForPackage(Directory package) async {
+    final List<String> errors = <String>[];
+
+    final Iterable<_PlatformDetails> requestedPlatforms = _platforms.entries
+        .where(
+            (MapEntry<String, _PlatformDetails> entry) => getBoolArg(entry.key))
+        .map((MapEntry<String, _PlatformDetails> entry) => entry.value);
+    final Set<_PlatformDetails> buildPlatforms = <_PlatformDetails>{};
+    final Set<_PlatformDetails> unsupportedPlatforms = <_PlatformDetails>{};
+    for (final _PlatformDetails platform in requestedPlatforms) {
+      if (pluginSupportsPlatform(platform.pluginPlatform, package)) {
+        buildPlatforms.add(platform);
+      } else {
+        unsupportedPlatforms.add(platform);
+      }
+    }
+    if (buildPlatforms.isEmpty) {
+      final String unsupported = requestedPlatforms.length == 1
+          ? '${requestedPlatforms.first.label} is not supported'
+          : 'None of [${requestedPlatforms.map((_PlatformDetails p) => p.label).join(',')}] are supported';
+      return PackageResult.skip('$unsupported by this plugin');
+    }
+    print('Building for: '
+        '${buildPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
+    if (unsupportedPlatforms.isNotEmpty) {
+      print('Skipping unsupported platform(s): '
+          '${unsupportedPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
+    }
+    print('');
+
+    for (final Directory example in getExamplesForPlugin(package)) {
+      final String packageName =
+          getRelativePosixPath(example, from: packagesDir);
+
+      for (final _PlatformDetails platform in buildPlatforms) {
+        String buildPlatform = platform.label;
+        if (platform.label.toLowerCase() != platform.flutterBuildType) {
+          buildPlatform += ' (${platform.flutterBuildType})';
+        }
+        print('\nBUILDING $packageName for $buildPlatform');
+        if (!await _buildExample(example, platform.flutterBuildType,
+            extraBuildFlags: platform.extraBuildFlags)) {
+          errors.add('$packageName (${platform.label})');
+        }
+      }
+    }
+
+    return errors.isEmpty
+        ? PackageResult.success()
+        : PackageResult.fail(errors);
+  }
+
+  Future<bool> _buildExample(
+    Directory example,
+    String flutterBuildType, {
+    List<String> extraBuildFlags = const <String>[],
+  }) async {
     final String enableExperiment = getStringArg(kEnableExperiment);
 
-    final List<String> failingPackages = <String>[];
-    await for (final Directory plugin in getPlugins()) {
-      for (final Directory example in getExamplesForPlugin(plugin)) {
-        final String packageName =
-            p.relative(example.path, from: packagesDir.path);
-
-        if (getBoolArg(kLinux)) {
-          print('\nBUILDING Linux for $packageName');
-          if (isLinuxPlugin(plugin, fileSystem)) {
-            final int buildExitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  kLinux,
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example);
-            if (buildExitCode != 0) {
-              failingPackages.add('$packageName (linux)');
-            }
-          } else {
-            print('Linux is not supported by this plugin');
-          }
-        }
-
-        if (getBoolArg(kMacos)) {
-          print('\nBUILDING macOS for $packageName');
-          if (isMacOsPlugin(plugin, fileSystem)) {
-            final int exitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  kMacos,
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example);
-            if (exitCode != 0) {
-              failingPackages.add('$packageName (macos)');
-            }
-          } else {
-            print('macOS is not supported by this plugin');
-          }
-        }
-
-        if (getBoolArg(kWeb)) {
-          print('\nBUILDING web for $packageName');
-          if (isWebPlugin(plugin, fileSystem)) {
-            final int buildExitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  kWeb,
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example);
-            if (buildExitCode != 0) {
-              failingPackages.add('$packageName (web)');
-            }
-          } else {
-            print('Web is not supported by this plugin');
-          }
-        }
-
-        if (getBoolArg(kWindows)) {
-          print('\nBUILDING Windows for $packageName');
-          if (isWindowsPlugin(plugin, fileSystem)) {
-            final int buildExitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  kWindows,
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example);
-            if (buildExitCode != 0) {
-              failingPackages.add('$packageName (windows)');
-            }
-          } else {
-            print('Windows is not supported by this plugin');
-          }
-        }
-
-        if (getBoolArg(kIpa)) {
-          print('\nBUILDING IPA for $packageName');
-          if (isIosPlugin(plugin, fileSystem)) {
-            final int exitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  'ios',
-                  '--no-codesign',
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example);
-            if (exitCode != 0) {
-              failingPackages.add('$packageName (ipa)');
-            }
-          } else {
-            print('iOS is not supported by this plugin');
-          }
-        }
-
-        if (getBoolArg(kApk)) {
-          print('\nBUILDING APK for $packageName');
-          if (isAndroidPlugin(plugin, fileSystem)) {
-            final int exitCode = await processRunner.runAndStream(
-                flutterCommand,
-                <String>[
-                  'build',
-                  'apk',
-                  if (enableExperiment.isNotEmpty)
-                    '--enable-experiment=$enableExperiment',
-                ],
-                workingDir: example);
-            if (exitCode != 0) {
-              failingPackages.add('$packageName (apk)');
-            }
-          } else {
-            print('Android is not supported by this plugin');
-          }
-        }
-      }
-    }
-    print('\n\n');
-
-    if (failingPackages.isNotEmpty) {
-      print('The following build are failing (see above for details):');
-      for (final String package in failingPackages) {
-        print(' * $package');
-      }
-      throw ToolExit(1);
-    }
-
-    print('All builds successful!');
+    final int exitCode = await processRunner.runAndStream(
+      flutterCommand,
+      <String>[
+        'build',
+        flutterBuildType,
+        ...extraBuildFlags,
+        if (enableExperiment.isNotEmpty)
+          '--enable-experiment=$enableExperiment',
+      ],
+      workingDir: example,
+    );
+    return exitCode == 0;
   }
+}
+
+/// A collection of information related to a specific platform.
+class _PlatformDetails {
+  const _PlatformDetails(
+    this.label, {
+    required this.pluginPlatform,
+    required this.flutterBuildType,
+    this.extraBuildFlags = const <String>[],
+  });
+
+  /// The name to use in output.
+  final String label;
+
+  /// The key in a pubspec's platform: entry.
+  final String pluginPlatform;
+
+  /// The `flutter build` build type.
+  final String flutterBuildType;
+
+  /// Any extra flags to pass to `flutter build`.
+  final List<String> extraBuildFlags;
 }

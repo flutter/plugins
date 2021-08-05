@@ -11,11 +11,6 @@
 #error Code Requires ARC.
 #endif
 
-int64_t FLTCMTimeToMillis(CMTime time) {
-  if (time.timescale == 0) return 0;
-  return time.value * 1000 / time.timescale;
-}
-
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
 @property(nonatomic, weak, readonly) NSObject<FlutterTextureRegistry>* registry;
@@ -105,6 +100,16 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       _eventSink(@{@"event" : @"completed"});
     }
   }
+}
+
+const int64_t TIME_UNSET = -9223372036854775807;
+
+static inline int64_t FLTCMTimeToMillis(CMTime time) {
+  // When CMTIME_IS_INDEFINITE return a value that matches TIME_UNSET from ExoPlayer2 on Android.
+  // Fixes https://github.com/flutter/flutter/issues/48670
+  if (CMTIME_IS_INDEFINITE(time)) return TIME_UNSET;
+  if (time.timescale == 0) return 0;
+  return time.value * 1000 / time.timescale;
 }
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {

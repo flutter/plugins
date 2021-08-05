@@ -1,3 +1,15 @@
+## 0.3.0+3
+
+* Update the `README.md` usage instructions to not be tied to explicit package versions.
+
+## 0.3.0+2
+
+* Document `liteModeEnabled` is not available on the web. [#83737](https://github.com/flutter/flutter/issues/83737).
+
+## 0.3.0+1
+
+* Change sizing code of `GoogleMap` widget's `HtmlElementView` so it works well when slotted.
+
 ## 0.3.0
 
 * Migrate package to null-safety.

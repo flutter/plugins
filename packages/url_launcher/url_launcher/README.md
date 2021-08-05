@@ -10,10 +10,10 @@ To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml fil
 
 ## Installation
 
-### iOS 
+### iOS
 Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
 
-Example:  
+Example:
 ```
 <key>LSApplicationQueriesSchemes</key>
 <array>
@@ -49,6 +49,37 @@ void _launchURL() async =>
     await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 ```
 
+### Android
+
+Starting from API 30 Android requires package visibility configuration in your
+`AndroidManifest.xml` otherwise `canLaunch` will return `false`. A `<queries>`
+element must be added to your manifest as a child of the root element.
+
+The snippet below shows an example for an application that uses `https`, `tel`,
+and `mailto` URLs with `url_launcher`. See
+[the Android documentation](https://developer.android.com/training/package-visibility/use-cases)
+for examples of other queries.
+
+``` xml
+<queries>
+  <!-- If your app opens https URLs -->
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="https" />
+  </intent>
+  <!-- If your app makes calls -->
+  <intent>
+    <action android:name="android.intent.action.DIAL" />
+    <data android:scheme="tel" />
+  </intent>
+  <!-- If your app emails -->
+  <intent>
+    <action android:name="android.intent.action.SEND" />
+    <data android:mimeType="*/*" />
+  </intent>
+</queries>
+```
+
 ## Supported URL schemes
 
 The [`launch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/launch.html) method
@@ -73,24 +104,34 @@ apps installed, so can't open `tel:` or `mailto:` links.
 
 ### Encoding URLs
 
-URLs must be properly encoded, especially when including spaces or other special characters. This can be done using the [`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html):
+URLs must be properly encoded, especially when including spaces or other special
+characters. This can be done using the
+[`Uri` class](https://api.dart.dev/stable/2.7.1/dart-core/Uri-class.html).
+For example:
 ```dart
-import 'dart:core';
-import 'package:url_launcher/url_launcher.dart';
+String? encodeQueryParameters(Map<String, String> params) {
+  return params.entries
+      .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .join('&');
+}
 
-final Uri _emailLaunchUri = Uri(
+final Uri emailLaunchUri = Uri(
   scheme: 'mailto',
   path: 'smith@example.com',
-  queryParameters: {
+  query: encodeQueryParameters(<String, String>{
     'subject': 'Example Subject & Symbols are allowed!'
-  }
+  }),
 );
 
-// ...
-
-// mailto:smith@example.com?subject=Example+Subject+%26+Symbols+are+allowed%21
-launch(_emailLaunchUri.toString());
+launch(emailLaunchUri.toString());
 ```
+
+**Warning**: For any scheme other than `http` or `https`, you should use the
+`query` parameter and the `encodeQueryParameters` function shown above rather
+than `Uri`'s `queryParameters` constructor argument, due to
+[a bug](https://github.com/dart-lang/sdk/issues/43838) in the way `Uri`
+encodes query parameters. Using `queryParameters` will result in spaces being
+converted to `+` in many cases.
 
 ## Handling missing URL receivers
 
