@@ -8,18 +8,27 @@ NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
 
 @implementation FLTWKProgressionDelegate {
   FlutterMethodChannel *_methodChannel;
+  NSInteger _updateScreenshotPercentageThreshold;
+  NSInteger _lastUpdateProgress;
 }
 
 - (instancetype)initWithWebView:(WKWebView *)webView channel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
     _methodChannel = channel;
+    _updateScreenshotPercentageThreshold = 10;
+    _lastUpdateProgress = 0;
+      
     [webView addObserver:self
               forKeyPath:FLTWKEstimatedProgressKeyPath
                  options:NSKeyValueObservingOptionNew
                  context:nil];
   }
   return self;
+}
+
+- (void)updateScreenshot {
+    [_screenshotDelegate takeScreenshot];
 }
 
 - (void)stopObservingProgress:(WKWebView *)webView {
@@ -36,6 +45,15 @@ NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
     int newValueAsInt = [newValue floatValue] * 100;  // Anywhere between 0 and 100
     [_methodChannel invokeMethod:@"onProgress"
                        arguments:@{@"progress" : [NSNumber numberWithInt:newValueAsInt]}];
+      
+      if(_lastUpdateProgress > newValueAsInt) {
+          _lastUpdateProgress = 0;
+      }
+      NSInteger diff = newValueAsInt - _lastUpdateProgress;
+      if (diff > _updateScreenshotPercentageThreshold) {
+          _lastUpdateProgress = newValueAsInt;
+          [self updateScreenshot];
+      }
   }
 }
 

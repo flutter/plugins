@@ -4,10 +4,11 @@
 
 #import <Flutter/Flutter.h>
 #import <WebKit/WebKit.h>
+#import "FLTWKScreenshotDelegate.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FLTWebViewController : NSObject <FlutterPlatformView, WKUIDelegate>
+@interface FLTWebViewController : NSObject <FlutterPlatformView, WKUIDelegate, UIScrollViewDelegate, FLTWKScreenshotDelegate>
 
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId

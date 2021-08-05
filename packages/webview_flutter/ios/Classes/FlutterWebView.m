@@ -7,6 +7,7 @@
 #import "FLTWKProgressionDelegate.h"
 #import "JavaScriptChannelHandler.h"
 #import "WebViewManager.h"
+#import "NSObject+Debounce.h"
 #if __has_include("webview_flutter-Swift.h")
 #import <webview_flutter-Swift.h>
 #else
@@ -75,6 +76,8 @@
   FLTWKNavigationDelegate* _navigationDelegate;
   NSObject<FlutterPluginRegistrar>* _registrar;
   FLTWKProgressionDelegate* _progressionDelegate;
+  NSData* _lastScreenshootData;
+  NSTimeInterval _updateScreenshotThreshold;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -83,6 +86,7 @@
               registrar:(nonnull NSObject<FlutterPluginRegistrar>*)registrar {
   if (self = [super init]) {
     _viewId = viewId;
+      _updateScreenshotThreshold = 0.5;
 
     _registrar = registrar;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
@@ -135,6 +139,7 @@
       
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
+    _webView.scrollView.delegate = self;
     __weak __typeof__(self) weakSelf = self;
     [_channel setMethodCallHandler:^(FlutterMethodCall* call, FlutterResult result) {
       [weakSelf onMethodCall:call result:result];
@@ -175,6 +180,7 @@
 
 - (void)dealloc {
   if (_progressionDelegate != nil) {
+    _progressionDelegate.screenshotDelegate = nil;
     [_progressionDelegate stopObservingProgress:_webView];
   }
 }
@@ -224,6 +230,8 @@
     [self getScrollY:call result:result];
   } else if ([[call method] isEqualToString:@"takeScreenshot"]) {
     [self takeScreenshot:call result:result];
+  } else if ([[call method] isEqualToString:@"getLastScreenshot"]) {
+    [self getLastScreenshot:call result:result];
   } else if ([[call method] isEqualToString:@"refreshWhiteListing"]) {
     [self onRefreshWhiteListing:call result:result];
   } else {
@@ -412,12 +420,28 @@
   result([NSNumber numberWithInt:offsetY]);
 }
 
-- (void)takeScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result{
+- (void)takeScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result {
   [_webView takeSnapshotWithConfiguration:nil 
         completionHandler:^(UIImage *snapshotImage, NSError *error){
         NSData *imageData = UIImagePNGRepresentation(snapshotImage);
         result(imageData);
   }];
+}
+
+- (void)updateScreenshotData {
+    [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
+        if (snapshotImage) {
+            self->_lastScreenshootData = UIImagePNGRepresentation(snapshotImage);
+        }
+    }];
+}
+
+- (void)updateScreenshotDataDebounce {
+    [self debounce:@selector(updateScreenshotData) delay:_updateScreenshotThreshold];
+}
+
+- (void)getLastScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result {
+    result(_lastScreenshootData);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
@@ -436,6 +460,7 @@
       if (hasProgressTracking) {
         _progressionDelegate = [[FLTWKProgressionDelegate alloc] initWithWebView:_webView
                                                                          channel:_channel];
+        _progressionDelegate.screenshotDelegate = self;
       }
     } else if ([key isEqualToString:@"debuggingEnabled"]) {
       // no-op debugging is always enabled on iOS.
@@ -612,6 +637,18 @@
   }
 
   return nil;
+}
+
+#pragma mark UIScrollViewDelegate
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [self updateScreenshotDataDebounce];
+}
+
+#pragma mark FLTWKScreenshotDelegate
+
+- (void)takeScreenshot {
+    [self updateScreenshotDataDebounce];
 }
 
 @end
