@@ -9,6 +9,7 @@ import 'dart:ui';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import 'shims/dart_ui.dart' as ui;
@@ -177,6 +178,11 @@ class Camera {
   }
 
   html.MediaRecorder? _mediaRecorder;
+
+  /// Returns [_mediaRecorder] for testing
+  @visibleForTesting
+  html.MediaRecorder? get mediaRecorder => _mediaRecorder;
+
   final StreamController<VideoRecordedEvent> _videoRecorderController =
       StreamController();
   Completer<XFile>? _videoAvailableCompleter;

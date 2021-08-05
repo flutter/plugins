@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -295,6 +296,171 @@ void main() {
         camera.dispose();
 
         expect(camera.videoElement.srcObject, isNull);
+      });
+    });
+
+    group('startVideoRecording', () {
+      testWidgets('starts a video recording', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+
+        await camera.startVideoRecording();
+
+        expect('recording', camera.mediaRecorder!.state);
+      });
+
+      testWidgets(
+          'starts a video recording with a given maxDuration '
+          'emits a VideoRecordedEvent', (tester) async {
+        // TODO(abausg) There seems to be an issue with removing the listener and stopping the recorder
+        /*final maxDuration = Duration(milliseconds: 30);
+
+          final camera = Camera(
+            textureId: 1,
+            cameraSettings: cameraSettings,
+          );
+
+          await camera.initialize();
+          await camera.play();
+
+          final eventExpectation = expectLater(camera.onVideoRecordedEvent.map((event) => event.maxVideoDuration), emits(maxDuration));
+          await camera.startVideoRecording(maxVideoDuration: maxDuration);
+
+          await eventExpectation;
+          expect('inactive', camera.mediaRecorder!.state);*/
+      });
+
+      testWidgets(
+          'throws PlatformException '
+          'when maxVideoDuration is 0 milliseconds or less', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+        expect(
+            () => camera.startVideoRecording(maxVideoDuration: Duration.zero),
+            throwsA(predicate<PlatformException>(
+                (ex) => ex.code == CameraErrorCode.notSupported.toString())));
+      });
+    });
+
+    group('pauseVideoRecording', () {
+      testWidgets('pauses a video recording', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+        await camera.startVideoRecording();
+
+        await camera.pauseVideoRecording();
+
+        expect('paused', camera.mediaRecorder!.state);
+      });
+
+      testWidgets(
+          'throws a PlatformException '
+          'if no recording was started', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+
+        expect(
+            camera.pauseVideoRecording,
+            throwsA(predicate<PlatformException>((ex) =>
+                ex.code ==
+                CameraErrorCode.mediaRecordingNotStarted.toString())));
+      });
+    });
+
+    group('resumeVideoRecording', () {
+      testWidgets('resumes a video recording', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+
+        await camera.startVideoRecording();
+
+        await camera.pauseVideoRecording();
+
+        await camera.resumeVideoRecording();
+
+        expect('recording', camera.mediaRecorder!.state);
+      });
+
+      testWidgets(
+          'throws a PlatformException '
+          'if no recording was started', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+
+        expect(
+            camera.resumeVideoRecording,
+            throwsA(predicate<PlatformException>((ex) =>
+                ex.code ==
+                CameraErrorCode.mediaRecordingNotStarted.toString())));
+      });
+    });
+
+    group('stopVideoRecording', () {
+      testWidgets('stops a video recording and returns a File', (tester) async {
+        // TODO(abausg) There seems to be an issue with removing the listener and stopping the recorder
+        /*final camera = Camera(
+            textureId: 1,
+            cameraSettings: cameraSettings,
+          );
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          final videoFile = await camera.stopVideoRecording();
+
+          expect(videoFile, isNotNull);
+
+          expect(camera.mediaRecorder, isNull);*/
+      });
+
+      testWidgets(
+          'throws a PlatformException '
+          'if no recording was started', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+        await camera.play();
+
+        expect(
+            camera.stopVideoRecording,
+            throwsA(predicate<PlatformException>((ex) =>
+                ex.code ==
+                CameraErrorCode.mediaRecordingNotStarted.toString())));
       });
     });
   });
