@@ -1068,11 +1068,11 @@ void main() {
         await streamQueue.cancel();
       });
 
-      testWidgets('onCameraResolutionChanged throws UnimplementedError',
+      testWidgets('onCameraResolutionChanged emits an empty stream',
           (tester) async {
         expect(
-          () => CameraPlatform.instance.onCameraResolutionChanged(cameraId),
-          throwsUnimplementedError,
+          CameraPlatform.instance.onCameraResolutionChanged(cameraId),
+          emits(isEmpty),
         );
       });
 
