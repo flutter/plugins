@@ -1401,7 +1401,7 @@ void main() {
         final capturedVideo = MockXFile();
         final stream = Stream.value(
             VideoRecordedEvent(cameraId, capturedVideo, Duration.zero));
-        when(() => camera.onVideoRecordedEventStream).thenAnswer((_) => stream);
+        when(() => camera.onVideoRecordedEvent).thenAnswer((_) => stream);
 
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;

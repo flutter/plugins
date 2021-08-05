@@ -179,8 +179,8 @@ class Camera {
   final StreamController<VideoRecordedEvent> _videoRecorderController =
       StreamController();
 
-  /// Returns a Stream that emits when a video Recodring with a defined maxVideoDuration was created
-  Stream<VideoRecordedEvent> get onVideoRecordedEventStream =>
+  /// Returns a Stream that emits when a video recording with a defined maxVideoDuration was created.
+  Stream<VideoRecordedEvent> get onVideoRecordedEvent =>
       _videoRecorderController.stream;
 
   /// Starts a new Video Recording using [html.MediaRecorder]

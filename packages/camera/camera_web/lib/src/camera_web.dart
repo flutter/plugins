@@ -319,7 +319,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
-    return getCamera(cameraId).onVideoRecordedEventStream;
+    return getCamera(cameraId).onVideoRecordedEvent;
   }
 
   @override
