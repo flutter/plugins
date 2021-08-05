@@ -302,9 +302,14 @@ class CameraPlugin extends CameraPlatform {
     return _cameraEvents(cameraId).whereType<CameraInitializedEvent>();
   }
 
+  /// Emits an empty stream as there is no event corresponding to a change
+  /// in the camera resolution on the web.
+  ///
+  /// In order to change the camera resolution a new camera with appropriate
+  /// [CameraOptions.video] constraints has to be created and initialized.
   @override
   Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
-    throw UnimplementedError('onCameraResolutionChanged() is not implemented.');
+    return const Stream.empty();
   }
 
   @override
