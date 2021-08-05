@@ -49,7 +49,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-
 public class CameraTest {
   private CameraProperties mockCameraProperties;
   private CameraFeatureFactory mockCameraFeatureFactory;
