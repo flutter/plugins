@@ -19,7 +19,8 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() {
-    return Future<String?>.value('/tmp');
+    final Map<String, String> env = Platform.environment;
+    return Future<String?>.value(env['TMPDIR'] ?? '/tmp');
   }
 
   @override
