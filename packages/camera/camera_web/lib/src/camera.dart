@@ -187,6 +187,12 @@ class Camera {
 
   /// Starts a new Video Recording using [html.MediaRecorder]
   Future<void> startVideoRecording({Duration? maxVideoDuration}) async {
+    if (maxVideoDuration != null && maxVideoDuration.inMilliseconds <= 0) {
+      throw PlatformException(
+          code: CameraErrorCode.notSupported.toString(),
+          message: 'maxVideoRecording must be greater than 0 milliseconds');
+    }
+
     _mediaRecorder ??= html.MediaRecorder(
         videoElement.captureStream(), {'mimeType': _videoMimeType});
     _videoAvailableCompleter = Completer<XFile>();
@@ -213,7 +219,7 @@ class Camera {
   /// Pauses the current video recording
   Future<void> pauseVideoRecording() async {
     if (_mediaRecorder == null) {
-      throw html.DomException.INVALID_STATE;
+      throw _mediaRecordingNotStartedException;
     }
     _mediaRecorder?.pause();
   }
@@ -221,7 +227,7 @@ class Camera {
   /// Resumes a video recording
   Future<void> resumeVideoRecording() async {
     if (_mediaRecorder == null) {
-      throw html.DomException.INVALID_STATE;
+      throw _mediaRecordingNotStartedException;
     }
     _mediaRecorder?.resume();
   }
@@ -229,7 +235,7 @@ class Camera {
   /// Stops the video recording and will return the video file.
   Future<XFile> stopVideoRecording() async {
     if (_mediaRecorder == null || _videoAvailableCompleter == null) {
-      throw html.DomException.INVALID_STATE;
+      throw _mediaRecordingNotStartedException;
     }
     _mediaRecorder?.stop();
 
@@ -242,7 +248,10 @@ class Camera {
   }
 
   String get _videoMimeType {
-    const types = ['video/mp4', 'video/webm',];
+    const types = [
+      'video/mp4',
+      'video/webm',
+    ];
 
     return types.firstWhere((type) => html.MediaRecorder.isTypeSupported(type),
         orElse: () {
@@ -251,4 +260,9 @@ class Camera {
           message: 'The Browser does not support a valid video type');
     });
   }
+
+  PlatformException get _mediaRecordingNotStartedException => PlatformException(
+      code: CameraErrorCode.mediaRecordingNotStarted.toString(),
+      message:
+          'The MediaRecorder is null. Hinting that the recording was not started. Make sure you call `startVideoRecording` first');
 }

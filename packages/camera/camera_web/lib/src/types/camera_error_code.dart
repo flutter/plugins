@@ -48,6 +48,10 @@ class CameraErrorCode {
   static const CameraErrorCode missingMetadata =
       CameraErrorCode._('cameraMissingMetadata');
 
+  /// The media recording was not started.
+  static const CameraErrorCode mediaRecordingNotStarted =
+      CameraErrorCode._('cameraMediaRecordingNotStarted');
+
   /// An unknown camera error.
   static const CameraErrorCode unknown = CameraErrorCode._('cameraUnknown');
 
