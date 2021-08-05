@@ -356,6 +356,12 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView takeScreenshot is not implemented on the current platform");
   }
+
+  /// Return a last made screenshot of the content in the webview.
+  Future<Uint8List?> getLastScreenshot() {
+    throw UnimplementedError(
+        "WebView getLastScreenshot is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.

@@ -177,6 +177,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<Uint8List?> takeScreenshot() =>
       _channel.invokeMethod<Uint8List>("takeScreenshot");
 
+  @override
+  Future<Uint8List?> getLastScreenshot() =>
+      _channel.invokeMethod<Uint8List>("getLastScreenshot");
+
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
