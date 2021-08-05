@@ -116,6 +116,8 @@
         _webView = [webViewManager webViewForId:tabId];
     }
     
+    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
+
     BOOL shouldLoad = NO;
     if (!_webView) {
         _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
@@ -125,9 +127,12 @@
             NSString *tabId = args[@"tabId"];
             [webViewManager cacheWebView:_webView forId:tabId];
         }
+    } else if (args[@"initialUrl"]) {
+        // WebView was cached so report the onPageFinished event
+        NSString* initialUrl = args[@"initialUrl"];
+        [_navigationDelegate onPageFinishedWithUrl:initialUrl];
     }
       
-    _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     __weak __typeof__(self) weakSelf = self;

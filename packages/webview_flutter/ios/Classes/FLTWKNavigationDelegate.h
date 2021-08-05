@@ -11,6 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithChannel:(FlutterMethodChannel*)channel;
 
+- (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString;
+- (void)onPageFinishedWithUrl:(NSString * _Nonnull)urlString;
+
 /**
  * Whether to delegate navigation decisions over the method channel.
  */
