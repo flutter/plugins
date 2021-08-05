@@ -1139,6 +1139,7 @@ void main() {
         (WidgetTester tester) async {
       final Completer<WebResourceError> errorCompleter =
           Completer<WebResourceError>();
+      final Completer<void> pageFinishCompleter = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -1150,14 +1151,13 @@ void main() {
             onWebResourceError: (WebResourceError error) {
               errorCompleter.complete(error);
             },
+            onPageFinished: (_) => pageFinishCompleter.complete(),
           ),
         ),
       );
 
       expect(errorCompleter.future, doesNotComplete);
-      // Since an error can occur after the main page is finish loading, this
-      // waits to guarantee that an error never occurs.
-      await Future.delayed(Duration(seconds: 2));
+      await pageFinishCompleter.future;
     });
 
     testWidgets(
@@ -1179,6 +1179,7 @@ void main() {
 
         final Completer<WebResourceError> errorCompleter =
             Completer<WebResourceError>();
+        final Completer<void> pageFinishCompleter = Completer<void>();
 
         await tester.pumpWidget(
           Directionality(
@@ -1190,14 +1191,13 @@ void main() {
               onWebResourceError: (WebResourceError error) {
                 errorCompleter.complete(error);
               },
+              onPageFinished: (_) => pageFinishCompleter.complete(),
             ),
           ),
         );
 
         expect(errorCompleter.future, doesNotComplete);
-        // Since an error can occur after the main page is finish loading, this
-        // waits to guarantee that an error never occurs.
-        await Future.delayed(Duration(seconds: 2));
+        await pageFinishCompleter.future;
       },
     );
 
