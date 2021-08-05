@@ -9,6 +9,7 @@ import 'dart:ui';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
+import 'package:flutter/services.dart';
 
 import 'shims/dart_ui.dart' as ui;
 
@@ -178,65 +179,76 @@ class Camera {
   html.MediaRecorder? _mediaRecorder;
   final StreamController<VideoRecordedEvent> _videoRecorderController =
       StreamController();
+  Completer<XFile>? _videoAvailableCompleter;
 
   /// Returns a Stream that emits when a video recording with a defined maxVideoDuration was created.
   Stream<VideoRecordedEvent> get onVideoRecordedEvent =>
       _videoRecorderController.stream;
 
   /// Starts a new Video Recording using [html.MediaRecorder]
-  /// /// Throws a [html.DomException.INVALID_STATE] if there already is an active Recording
   Future<void> startVideoRecording({Duration? maxVideoDuration}) async {
-    if (_mediaRecorder != null && _mediaRecorder!.state != 'inactive') {
-      throw html.DomException.INVALID_STATE;
-    }
     _mediaRecorder ??= html.MediaRecorder(
-        videoElement.captureStream(), {'mimeType': 'video/webm'});
+        videoElement.captureStream(), {'mimeType': _videoMimeType});
+    _videoAvailableCompleter = Completer<XFile>();
 
-    if (maxVideoDuration != null) {
-      _mediaRecorder!.addEventListener('dataavailable', (event) {
-        final blob = (event as html.BlobEvent).data;
-        final file = XFile(html.Url.createObjectUrl(blob));
-        _videoRecorderController
-            .add(VideoRecordedEvent(this.textureId, file, maxVideoDuration));
-        _mediaRecorder!.stop();
-      });
-      _mediaRecorder!.start(maxVideoDuration.inMilliseconds);
-    } else {
-      _mediaRecorder!.start();
-    }
+    _mediaRecorder!.addEventListener(
+        'dataavailable', (event) => _onDataAvailable(event, maxVideoDuration));
+    _mediaRecorder!.start(maxVideoDuration?.inMilliseconds);
   }
 
-  /// Pauses the current video Recording
-  /// Throws a [html.DomException.INVALID_STATE] if there is no active Recording
+  dynamic _onDataAvailable(html.Event event, [Duration? maxVideoDuration]) {
+    final blob = (event as html.BlobEvent).data;
+    final file = _createVideoFile(blob);
+    _videoRecorderController
+        .add(VideoRecordedEvent(this.textureId, file, maxVideoDuration));
+    _videoAvailableCompleter?.complete(file);
+    // Remove Listener before stopping the Recorder
+    _mediaRecorder!.removeEventListener('dataavailable', _onDataAvailable);
+    // Stopping the MediaRecorder to only receive dataavailible event once
+    _mediaRecorder!.stop();
+
+    _mediaRecorder = null;
+  }
+
+  /// Pauses the current video recording
   Future<void> pauseVideoRecording() async {
-    if (_mediaRecorder == null || _mediaRecorder!.state == 'inactive') {
+    if (_mediaRecorder == null) {
       throw html.DomException.INVALID_STATE;
     }
     _mediaRecorder?.pause();
   }
 
-  /// Resumes a video Recording
-  /// Throws a [html.DomException.INVALID_STATE] if there is no active Recording
+  /// Resumes a video recording
   Future<void> resumeVideoRecording() async {
-    if (_mediaRecorder == null || _mediaRecorder!.state == 'inactive') {
+    if (_mediaRecorder == null) {
       throw html.DomException.INVALID_STATE;
     }
     _mediaRecorder?.resume();
   }
 
-  /// Stops the video Recording and will return the video as a webm video
-  /// Throws a [html.DomException.INVALID_STATE] if there is no active Recording
+  /// Stops the video recording and will return the video file.
   Future<XFile> stopVideoRecording() async {
-    if (_mediaRecorder == null || _mediaRecorder!.state == 'inactive') {
+    if (_mediaRecorder == null || _videoAvailableCompleter == null) {
       throw html.DomException.INVALID_STATE;
     }
-    final availableData = Completer<XFile>();
-    _mediaRecorder!.addEventListener('dataavailable', (event) {
-      final blob = (event as html.BlobEvent).data;
-      availableData.complete(XFile(html.Url.createObjectUrl(blob)));
-    });
     _mediaRecorder?.stop();
 
-    return availableData.future;
+    return _videoAvailableCompleter!.future;
+  }
+
+  XFile _createVideoFile(html.Blob? data) {
+    return XFile(html.Url.createObjectUrl(data),
+        mimeType: _videoMimeType, name: data.hashCode.toString());
+  }
+
+  String get _videoMimeType {
+    const types = ['video/mp4', 'video/webm',];
+
+    return types.firstWhere((type) => html.MediaRecorder.isTypeSupported(type),
+        orElse: () {
+      throw PlatformException(
+          code: CameraErrorCode.notSupported.toString(),
+          message: 'The Browser does not support a valid video type');
+    });
   }
 }
