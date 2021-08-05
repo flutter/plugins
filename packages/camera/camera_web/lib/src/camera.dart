@@ -194,7 +194,7 @@ class Camera {
     }
 
     _mediaRecorder ??= html.MediaRecorder(
-        videoElement.captureStream(), {'mimeType': _videoMimeType});
+        videoElement.srcObject!, {'mimeType': _videoMimeType});
     _videoAvailableCompleter = Completer<XFile>();
 
     _mediaRecorder!.addEventListener(
