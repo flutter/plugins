@@ -17,6 +17,9 @@ import static org.mockito.Mockito.when;
 
 import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCaptureSession;
+import android.hardware.camera2.CameraMetadata;
+import android.hardware.camera2.CaptureRequest;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
@@ -46,17 +49,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+
 public class CameraTest {
   private CameraProperties mockCameraProperties;
   private CameraFeatureFactory mockCameraFeatureFactory;
   private DartMessenger mockDartMessenger;
   private Camera camera;
+  private CameraCaptureSession mockCaptureSession;
+  private CaptureRequest.Builder mockPreviewRequestBuilder;
 
   @Before
   public void before() {
     mockCameraProperties = mock(CameraProperties.class);
     mockCameraFeatureFactory = new TestCameraFeatureFactory();
     mockDartMessenger = mock(DartMessenger.class);
+    mockCaptureSession = mock(CameraCaptureSession.class);
+    mockPreviewRequestBuilder = mock(CaptureRequest.Builder.class);
 
     final Activity mockActivity = mock(Activity.class);
     final TextureRegistry.SurfaceTextureEntry mockFlutterTexture =
@@ -76,6 +84,9 @@ public class CameraTest {
             mockCameraProperties,
             resolutionPreset,
             enableAudio);
+
+    TestUtils.setPrivateField(camera, "captureSession", mockCaptureSession);
+    TestUtils.setPrivateField(camera, "previewRequestBuilder", mockPreviewRequestBuilder);
   }
 
   @After
@@ -235,7 +246,24 @@ public class CameraTest {
     camera.setExposureMode(mockResult, exposureMode);
 
     verify(mockExposureLockFeature, times(1)).setValue(exposureMode);
-    verify(mockExposureLockFeature, times(1)).updateBuilder(null);
+    verify(mockExposureLockFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setExposureMode_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    ExposureMode exposureMode = ExposureMode.locked;
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setExposureMode(mockResult, exposureMode);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1))
+        .error("setExposureModeFailed", "Could not set exposure mode.", null);
   }
 
   @Test
@@ -250,7 +278,24 @@ public class CameraTest {
     camera.setExposurePoint(mockResult, point);
 
     verify(mockExposurePointFeature, times(1)).setValue(point);
-    verify(mockExposurePointFeature, times(1)).updateBuilder(null);
+    verify(mockExposurePointFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setExposurePoint_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    Point point = new Point(42d, 42d);
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setExposurePoint(mockResult, point);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1))
+        .error("setExposurePointFailed", "Could not set exposure point.", null);
   }
 
   @Test
@@ -263,7 +308,23 @@ public class CameraTest {
     camera.setFlashMode(mockResult, flashMode);
 
     verify(mockFlashFeature, times(1)).setValue(flashMode);
-    verify(mockFlashFeature, times(1)).updateBuilder(null);
+    verify(mockFlashFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setFlashMode_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    FlashMode flashMode = FlashMode.always;
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setFlashMode(mockResult, flashMode);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1)).error("setFlashModeFailed", "Could not set flash mode.", null);
   }
 
   @Test
@@ -281,7 +342,26 @@ public class CameraTest {
     camera.setFocusPoint(mockResult, point);
 
     verify(mockFocusPointFeature, times(1)).setValue(point);
-    verify(mockFocusPointFeature, times(1)).updateBuilder(null);
+    verify(mockFocusPointFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setFocusPoint_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    AutoFocusFeature mockAutoFocusFeature =
+        mockCameraFeatureFactory.createAutoFocusFeature(mockCameraProperties, false);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    Point point = new Point(42d, 42d);
+    when(mockAutoFocusFeature.getValue()).thenReturn(FocusMode.auto);
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setFocusPoint(mockResult, point);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1)).error("setFocusPointFailed", "Could not set focus point.", null);
   }
 
   @Test
@@ -299,7 +379,29 @@ public class CameraTest {
     camera.setZoomLevel(mockResult, zoomLevel);
 
     verify(mockZoomLevelFeature, times(1)).setValue(zoomLevel);
-    verify(mockZoomLevelFeature, times(1)).updateBuilder(null);
+    verify(mockZoomLevelFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setZoomLevel_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    ZoomLevelFeature mockZoomLevelFeature =
+        mockCameraFeatureFactory.createZoomLevelFeature(mockCameraProperties);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    float zoomLevel = 1.0f;
+
+    when(mockZoomLevelFeature.getValue()).thenReturn(zoomLevel);
+    when(mockZoomLevelFeature.getMinimumZoomLevel()).thenReturn(0f);
+    when(mockZoomLevelFeature.getMaximumZoomLevel()).thenReturn(2f);
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setZoomLevel(mockResult, zoomLevel);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1)).error("setZoomLevelFailed", "Could not set zoom level.", null);
   }
 
   @Test
@@ -421,6 +523,116 @@ public class CameraTest {
 
     verify(mockResult, times(1)).error("videoRecordingFailed", "Test error message", null);
     verify(mockResult, never()).success(any());
+  }
+
+  @Test
+  public void setFocusMode_Should_update_auto_focus_feature_and_update_builder() {
+    AutoFocusFeature mockAutoFocusFeature =
+        mockCameraFeatureFactory.createAutoFocusFeature(mockCameraProperties, false);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.setFocusMode(mockResult, FocusMode.auto);
+
+    verify(mockAutoFocusFeature, times(1)).setValue(FocusMode.auto);
+    verify(mockAutoFocusFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setFocusMode_Should_unlock_auto_focus_for_auto_mode() {
+    camera.setFocusMode(mock(MethodChannel.Result.class), FocusMode.auto);
+    verify(mockPreviewRequestBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+    verify(mockPreviewRequestBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+  }
+
+  @Test
+  public void setFocusMode_Should_skip_unlockAutoFocus_when_null_captureSession() {
+    TestUtils.setPrivateField(camera, "captureSession", null);
+    camera.setFocusMode(mock(MethodChannel.Result.class), FocusMode.auto);
+    verify(mockPreviewRequestBuilder, never())
+        .set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
+    verify(mockPreviewRequestBuilder, never())
+        .set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+  }
+
+  @Test
+  public void setFocusMode_Should_send_error_event_on_unlockAutoFocus_CameraAccessException()
+      throws CameraAccessException {
+    when(mockCaptureSession.capture(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+    camera.setFocusMode(mock(MethodChannel.Result.class), FocusMode.auto);
+    verify(mockDartMessenger, times(1)).sendCameraErrorEvent(any());
+  }
+
+  @Test
+  public void setFocusMode_Should_lock_auto_focus_for_locked_mode() throws CameraAccessException {
+    camera.setFocusMode(mock(MethodChannel.Result.class), FocusMode.locked);
+    verify(mockPreviewRequestBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_START);
+    verify(mockCaptureSession, times(1)).capture(any(), any(), any());
+    verify(mockCaptureSession, times(1)).setRepeatingRequest(any(), any(), any());
+  }
+
+  @Test
+  public void setFocusMode_Should_skip_lockAutoFocus_when_null_captureSession() {
+    TestUtils.setPrivateField(camera, "captureSession", null);
+    camera.setFocusMode(mock(MethodChannel.Result.class), FocusMode.locked);
+    verify(mockPreviewRequestBuilder, never())
+        .set(CaptureRequest.CONTROL_AF_TRIGGER, CaptureRequest.CONTROL_AF_TRIGGER_START);
+  }
+
+  @Test
+  public void setFocusMode_Should_send_error_event_on_lockAutoFocus_CameraAccessException()
+      throws CameraAccessException {
+    when(mockCaptureSession.capture(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+    camera.setFocusMode(mock(MethodChannel.Result.class), FocusMode.locked);
+    verify(mockDartMessenger, times(1)).sendCameraErrorEvent(any());
+  }
+
+  @Test
+  public void setFocusMode_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setFocusMode(mockResult, FocusMode.locked);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1))
+        .error("setFocusModeFailed", "Error setting focus mode: null", null);
+  }
+
+  @Test
+  public void setExposureOffset_Should_update_exposure_offset_feature_and_update_builder() {
+    ExposureOffsetFeature mockExposureOffsetFeature =
+        mockCameraFeatureFactory.createExposureOffsetFeature(mockCameraProperties);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.setExposureOffset(mockResult, 1.0);
+
+    verify(mockExposureOffsetFeature, times(1)).setValue(1.0);
+    verify(mockExposureOffsetFeature, times(1)).updateBuilder(any());
+    verify(mockResult, never()).error(any(), any(), any());
+    verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setExposureOffset_Should_call_error_on_result_on_CameraAccessException()
+      throws CameraAccessException {
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    when(mockCaptureSession.setRepeatingRequest(any(), any(), any()))
+        .thenThrow(new CameraAccessException(0, ""));
+
+    camera.setExposureOffset(mockResult, 1.0);
+
+    verify(mockResult, never()).success(any());
+    verify(mockResult, times(1))
+        .error("setExposureOffsetFailed", "Could not set exposure offset.", null);
   }
 
   private static class TestCameraFeatureFactory implements CameraFeatureFactory {

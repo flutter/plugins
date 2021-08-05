@@ -431,7 +431,7 @@ class Camera
         onSuccessCallback.run();
       }
 
-    } catch (CameraAccessException | IllegalStateException | IllegalArgumentException e) {
+    } catch (CameraAccessException e) {
       onErrorCallback.onError("cameraAccess", e.getMessage());
     }
   }
@@ -604,6 +604,10 @@ class Camera
 
   private void lockAutoFocus() {
     Log.i(TAG, "lockAutoFocus");
+    if (captureSession == null) {
+      Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+      return;
+    }
 
     // Trigger AF to start.
     previewRequestBuilder.set(
@@ -619,11 +623,11 @@ class Camera
   /** Cancel and reset auto focus state and refresh the preview session. */
   private void unlockAutoFocus() {
     Log.i(TAG, "unlockAutoFocus");
+    if (captureSession == null) {
+      Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+      return;
+    }
     try {
-      if (captureSession == null) {
-        Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
-        return;
-      }
       // Cancel existing AF state.
       previewRequestBuilder.set(
           CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_CANCEL);
@@ -830,6 +834,10 @@ class Camera
       case locked:
         // Perform a single focus trigger.
         lockAutoFocus();
+        if (captureSession == null) {
+          Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+          return;
+        }
 
         // Set AF state to idle again.
         previewRequestBuilder.set(
@@ -842,9 +850,9 @@ class Camera
           if (result != null) {
             result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
           }
+          return;
         }
         break;
-
       case auto:
         // Cancel current AF trigger and set AF to idle again.
         unlockAutoFocus();
@@ -888,7 +896,8 @@ class Camera
 
     refreshPreviewCaptureSession(
         () -> result.success(null),
-        (code, message) -> result.error("setFocusModeFailed", "Could not set focus mode.", null));
+        (code, message) ->
+            result.error("setExposureOffsetFailed", "Could not set exposure offset.", null));
   }
 
   public float getMaxZoomLevel() {
