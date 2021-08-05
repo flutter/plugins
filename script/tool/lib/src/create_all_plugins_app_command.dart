@@ -156,13 +156,14 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (final Directory package in getPlugins()) {
-      final String pluginName = package.basename;
-      final File pubspecFile = package.childFile('pubspec.yaml');
+    await for (final PackageEnumerationEntry package in getTargetPackages()) {
+      final Directory pluginDirectory = package.directory;
+      final String pluginName = pluginDirectory.basename;
+      final File pubspecFile = pluginDirectory.childFile('pubspec.yaml');
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {
-        pathDependencies[pluginName] = PathDependency(package.path);
+        pathDependencies[pluginName] = PathDependency(pluginDirectory.path);
       }
     }
     return pathDependencies;

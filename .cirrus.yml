@@ -20,8 +20,12 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     - git fetch origin
     # Switch to the requested branch.
-    - flutter channel $CHANNEL
-    - flutter upgrade
+    - git checkout $CHANNEL
+    # Reset to upstream branch, rather than using pull, since the base image
+    # can sometimes be in a state where it has diverged from upstream (!).
+    - git reset --hard @{u}
+    # Run doctor to allow auditing of what version of Flutter the run is using.
+    - flutter doctor -v
   << : *TOOL_SETUP_TEMPLATE
 
 macos_template: &MACOS_TEMPLATE
