@@ -1,5 +1,9 @@
 ## 0.8.3
 
+* Fixed README Example.
+
+## 0.8.3
+
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
 * Improved handling of bad image data when applying metadata changes on iOS.
 
