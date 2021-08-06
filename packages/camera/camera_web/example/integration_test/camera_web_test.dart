@@ -1443,12 +1443,87 @@ void main() {
         );
       });
 
-      testWidgets('onDeviceOrientationChanged throws UnimplementedError',
-          (tester) async {
-        expect(
-          () => CameraPlatform.instance.onDeviceOrientationChanged(),
-          throwsUnimplementedError,
-        );
+      group('onDeviceOrientationChanged', () {
+        group('emits an empty stream', () {
+          testWidgets('when screen is not supported', (tester) async {
+            when(() => window.screen).thenReturn(null);
+
+            expect(
+              CameraPlatform.instance.onDeviceOrientationChanged(),
+              emits(isEmpty),
+            );
+          });
+
+          testWidgets('when screen orientation is not supported',
+              (tester) async {
+            when(() => screen.orientation).thenReturn(null);
+
+            expect(
+              CameraPlatform.instance.onDeviceOrientationChanged(),
+              emits(isEmpty),
+            );
+          });
+        });
+
+        testWidgets(
+            'emits a DeviceOrientationChangedEvent '
+            'when the screen orientation is changed', (tester) async {
+          when(
+            () => cameraSettings.mapOrientationTypeToDeviceOrientation(
+              OrientationType.landscapePrimary,
+            ),
+          ).thenReturn(DeviceOrientation.landscapeLeft);
+
+          when(
+            () => cameraSettings.mapOrientationTypeToDeviceOrientation(
+              OrientationType.portraitSecondary,
+            ),
+          ).thenReturn(DeviceOrientation.portraitDown);
+
+          final eventStreamController = StreamController<Event>();
+
+          when(() => screenOrientation.onChange)
+              .thenAnswer((_) => eventStreamController.stream);
+
+          final Stream<DeviceOrientationChangedEvent> eventStream =
+              CameraPlatform.instance.onDeviceOrientationChanged();
+
+          final streamQueue = StreamQueue(eventStream);
+
+          // Change the screen orientation to landscapePrimary and
+          // emit an event on the screenOrientation.onChange stream.
+          when(() => screenOrientation.type)
+              .thenReturn(OrientationType.landscapePrimary);
+
+          eventStreamController.add(Event('orientationChanged'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              DeviceOrientationChangedEvent(
+                DeviceOrientation.landscapeLeft,
+              ),
+            ),
+          );
+
+          // Change the screen orientation to portraitSecondary and
+          // emit an event on the screenOrientation.onChange stream.
+          when(() => screenOrientation.type)
+              .thenReturn(OrientationType.portraitSecondary);
+
+          eventStreamController.add(Event('orientationChanged'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              DeviceOrientationChangedEvent(
+                DeviceOrientation.portraitDown,
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
       });
     });
   });
