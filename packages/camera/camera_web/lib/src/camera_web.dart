@@ -352,7 +352,8 @@ class CameraPlugin extends CameraPlatform {
         final orientationType = _cameraSettings
             .mapDeviceOrientationToOrientationType(deviceOrientation);
 
-        // Full-screen mode is required to modify the device orientation.
+        // Full-screen mode may be required to modify the device orientation.
+        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
         documentElement.requestFullscreen();
         await orientation.lock(orientationType.toString());
       } else {
@@ -373,7 +374,8 @@ class CameraPlugin extends CameraPlatform {
       final documentElement = window?.document.documentElement;
 
       if (orientation != null && documentElement != null) {
-        // Full-screen mode is required to modify the device orientation.
+        // Full-screen mode may be required to modify the device orientation.
+        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
         documentElement.requestFullscreen();
         orientation.unlock();
       } else {
