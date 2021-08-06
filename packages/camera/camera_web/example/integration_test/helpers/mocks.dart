@@ -14,6 +14,14 @@ import 'package:mocktail/mocktail.dart';
 
 class MockWindow extends Mock implements Window {}
 
+class MockScreen extends Mock implements Screen {}
+
+class MockScreenOrientation extends Mock implements ScreenOrientation {}
+
+class MockDocument extends Mock implements Document {}
+
+class MockElement extends Mock implements Element {}
+
 class MockNavigator extends Mock implements Navigator {}
 
 class MockMediaDevices extends Mock implements MediaDevices {}
