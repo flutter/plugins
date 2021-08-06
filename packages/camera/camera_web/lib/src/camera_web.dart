@@ -332,9 +332,28 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> lockCaptureOrientation(
     int cameraId,
-    DeviceOrientation orientation,
-  ) {
-    throw UnimplementedError('lockCaptureOrientation() is not implemented.');
+    DeviceOrientation deviceOrientation,
+  ) async {
+    try {
+      final orientation = window?.screen?.orientation;
+      final documentElement = window?.document.documentElement;
+
+      if (orientation != null && documentElement != null) {
+        final orientationType = _cameraSettings
+            .mapDeviceOrientationToOrientationType(deviceOrientation);
+
+        // Full-screen mode is required to modify the device orientation.
+        documentElement.requestFullscreen();
+        await orientation.lock(orientationType.toString());
+      } else {
+        throw PlatformException(
+          code: CameraErrorCode.orientationNotSupported.toString(),
+          message: 'Orientation is not supported in the current browser.',
+        );
+      }
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
