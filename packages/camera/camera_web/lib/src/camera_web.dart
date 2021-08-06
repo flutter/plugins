@@ -357,8 +357,24 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> unlockCaptureOrientation(int cameraId) {
-    throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
+  Future<void> unlockCaptureOrientation(int cameraId) async {
+    try {
+      final orientation = window?.screen?.orientation;
+      final documentElement = window?.document.documentElement;
+
+      if (orientation != null && documentElement != null) {
+        // Full-screen mode is required to modify the device orientation.
+        documentElement.requestFullscreen();
+        orientation.unlock();
+      } else {
+        throw PlatformException(
+          code: CameraErrorCode.orientationNotSupported.toString(),
+          message: 'Orientation is not supported in the current browser.',
+        );
+      }
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
