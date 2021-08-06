@@ -324,9 +324,19 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    throw UnimplementedError(
-      'onDeviceOrientationChanged() is not implemented.',
-    );
+    final orientation = window?.screen?.orientation;
+
+    if (orientation != null) {
+      return orientation.onChange.map(
+        (html.Event _) {
+          final deviceOrientation = _cameraSettings
+              .mapOrientationTypeToDeviceOrientation(orientation.type!);
+          return DeviceOrientationChangedEvent(deviceOrientation);
+        },
+      );
+    } else {
+      return const Stream.empty();
+    }
   }
 
   @override
