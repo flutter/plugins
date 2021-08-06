@@ -1,3 +1,7 @@
+## 0.8.3+1
+
+* Fixed README Example.
+
 ## 0.8.3
 
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
