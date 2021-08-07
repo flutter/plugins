@@ -13,20 +13,23 @@
 @implementation VideoPlayerTests
 
 - (void)testPlugin {
-  FLTVideoPlayerPlugin* plugin = [[FLTVideoPlayerPlugin alloc] init];
+  FLTVideoPlayerPlugin *plugin = [[FLTVideoPlayerPlugin alloc] init];
   XCTAssertNotNil(plugin);
 }
 
 - (void)testSeekToInvokesTextureFrameAvailableOnTextureRegistry {
   NSObject<FlutterTextureRegistry> *mockTextureRegistry =
-  OCMProtocolMock(@protocol(FlutterTextureRegistry));
-  NSObject<FlutterPluginRegistry> *registry = (NSObject<FlutterPluginRegistry>*) [[UIApplication sharedApplication] delegate];
-  NSObject<FlutterPluginRegistrar> *registrar = [registry registrarForPlugin: @"TEST_FLTVideoPlayerPlugin"];
+      OCMProtocolMock(@protocol(FlutterTextureRegistry));
+  NSObject<FlutterPluginRegistry> *registry =
+      (NSObject<FlutterPluginRegistry> *)[[UIApplication sharedApplication] delegate];
+  NSObject<FlutterPluginRegistrar> *registrar =
+      [registry registrarForPlugin:@"TEST_FLTVideoPlayerPlugin"];
   NSObject<FlutterPluginRegistrar> *partialRegistrar = OCMPartialMock(registrar);
   OCMStub([partialRegistrar textures]).andReturn(mockTextureRegistry);
   [FLTVideoPlayerPlugin registerWithRegistrar:partialRegistrar];
   FLTVideoPlayerPlugin<FLTVideoPlayerApi> *videoPlayerPlugin =
-  (FLTVideoPlayerPlugin<FLTVideoPlayerApi>*)[registry valuePublishedByPlugin:@"TEST_FLTVideoPlayerPlugin"];
+      (FLTVideoPlayerPlugin<FLTVideoPlayerApi> *)[registry
+          valuePublishedByPlugin:@"TEST_FLTVideoPlayerPlugin"];
   FLTPositionMessage *message = [[FLTPositionMessage alloc] init];
   message.textureId = @101;
   message.position = @0;
