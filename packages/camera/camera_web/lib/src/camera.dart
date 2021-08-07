@@ -187,6 +187,9 @@ class Camera {
       StreamController();
   Completer<XFile>? _videoAvailableCompleter;
 
+  /// Stored dataavailable Listener to be able to remove it once the recording is done
+  void Function(html.Event)? _videoDataAvailableListener;
+
   /// Returns a Stream that emits when a video recording with a defined maxVideoDuration was created.
   Stream<VideoRecordedEvent> get onVideoRecordedEvent =>
       _videoRecorderController.stream;
@@ -203,9 +206,19 @@ class Camera {
         videoElement.srcObject!, {'mimeType': _videoMimeType});
     _videoAvailableCompleter = Completer<XFile>();
 
-    _mediaRecorder!.addEventListener(
-        'dataavailable', (event) => _onDataAvailable(event, maxVideoDuration));
-    _mediaRecorder!.start(maxVideoDuration?.inMilliseconds);
+    _videoDataAvailableListener = (event) {
+      _onDataAvailable(event, maxVideoDuration);
+    };
+
+    _mediaRecorder!
+        .addEventListener('dataavailable', _videoDataAvailableListener);
+
+    if (maxVideoDuration != null) {
+      _mediaRecorder!.start(maxVideoDuration.inMilliseconds);
+    } else {
+      // Don't add the null duration as that will fire a `dataavailable` event directly
+      _mediaRecorder!.start();
+    }
   }
 
   dynamic _onDataAvailable(html.Event event, [Duration? maxVideoDuration]) {
@@ -215,11 +228,16 @@ class Camera {
         .add(VideoRecordedEvent(this.textureId, file, maxVideoDuration));
     _videoAvailableCompleter?.complete(file);
     // Remove Listener before stopping the Recorder
-    _mediaRecorder!.removeEventListener('dataavailable', _onDataAvailable);
-    // Stopping the MediaRecorder to only receive dataavailible event once
-    _mediaRecorder!.stop();
+    _mediaRecorder!
+        .removeEventListener('dataavailable', _videoDataAvailableListener);
+
+    // Stopping the MediaRecorder if the video has a maxVideoDuration and the recording was not stopped manually
+    if (maxVideoDuration != null && _mediaRecorder!.state == 'recording') {
+      _mediaRecorder!.stop();
+    }
 
     _mediaRecorder = null;
+    _videoDataAvailableListener = null;
   }
 
   /// Pauses the current video recording

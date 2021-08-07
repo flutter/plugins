@@ -426,23 +426,25 @@ void main() {
     });
 
     group('stopVideoRecording', () {
-      testWidgets('stops a video recording and returns a File', (tester) async {
-        // TODO(abausg) There seems to be an issue with removing the listener and stopping the recorder
-        /*final camera = Camera(
-            textureId: 1,
-            cameraSettings: cameraSettings,
-          );
+      testWidgets(
+          'stops a video recording '
+          'returns a File'
+          'and emits a videorecordedevent', (tester) async {
+        final camera = Camera(
+          textureId: 1,
+          cameraSettings: cameraSettings,
+        );
 
-          await camera.initialize();
-          await camera.play();
+        await camera.initialize();
+        await camera.play();
 
-          await camera.startVideoRecording();
+        await camera.startVideoRecording();
+        final recordedEvent = camera.onVideoRecordedEvent.first;
+        final videoFile = await camera.stopVideoRecording();
 
-          final videoFile = await camera.stopVideoRecording();
-
-          expect(videoFile, isNotNull);
-
-          expect(camera.mediaRecorder, isNull);*/
+        expect(videoFile, isNotNull);
+        expect(await recordedEvent, isNotNull);
+        expect(camera.mediaRecorder, isNull);
       });
 
       testWidgets(
