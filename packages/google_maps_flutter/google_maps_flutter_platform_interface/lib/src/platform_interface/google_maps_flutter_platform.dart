@@ -370,7 +370,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
-    TextDirection textDirection = TextDirection.ltr,
+    required TextDirection textDirection,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},

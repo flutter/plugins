@@ -461,7 +461,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
     required CameraPosition initialCameraPosition,
-    TextDirection textDirection = TextDirection.ltr,
+    required TextDirection textDirection,
     Set<Marker> markers = const <Marker>{},
     Set<Polygon> polygons = const <Polygon>{},
     Set<Polyline> polylines = const <Polyline>{},
@@ -480,50 +480,51 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
     };
 
-    if (defaultTargetPlatform == TargetPlatform.android &&
-        useAndroidViewSurface) {
-      return PlatformViewLink(
-        viewType: 'plugins.flutter.io/google_maps',
-        surfaceFactory: (
-          BuildContext context,
-          PlatformViewController controller,
-        ) {
-          return AndroidViewSurface(
-            controller: controller as AndroidViewController,
-            gestureRecognizers: gestureRecognizers ??
-                const <Factory<OneSequenceGestureRecognizer>>{},
-            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-          );
-        },
-        onCreatePlatformView: (PlatformViewCreationParams params) {
-          final SurfaceAndroidViewController controller =
-              PlatformViewsService.initSurfaceAndroidView(
-            id: params.id,
-            viewType: 'plugins.flutter.io/google_maps',
-            layoutDirection: textDirection,
-            creationParams: creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
-            onFocus: () => params.onFocusChanged(true),
-          );
-          controller.addOnPlatformViewCreatedListener(
-            params.onPlatformViewCreated,
-          );
-          controller.addOnPlatformViewCreatedListener(
-            onPlatformViewCreated,
-          );
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      if (useAndroidViewSurface) {
+        return PlatformViewLink(
+          viewType: 'plugins.flutter.io/google_maps',
+          surfaceFactory: (
+            BuildContext context,
+            PlatformViewController controller,
+          ) {
+            return AndroidViewSurface(
+              controller: controller as AndroidViewController,
+              gestureRecognizers: gestureRecognizers ??
+                  const <Factory<OneSequenceGestureRecognizer>>{},
+              hitTestBehavior: PlatformViewHitTestBehavior.opaque,
+            );
+          },
+          onCreatePlatformView: (PlatformViewCreationParams params) {
+            final SurfaceAndroidViewController controller =
+                PlatformViewsService.initSurfaceAndroidView(
+              id: params.id,
+              viewType: 'plugins.flutter.io/google_maps',
+              layoutDirection: textDirection,
+              creationParams: creationParams,
+              creationParamsCodec: const StandardMessageCodec(),
+              onFocus: () => params.onFocusChanged(true),
+            );
+            controller.addOnPlatformViewCreatedListener(
+              params.onPlatformViewCreated,
+            );
+            controller.addOnPlatformViewCreatedListener(
+              onPlatformViewCreated,
+            );
 
-          controller.create();
-          return controller;
-        },
-      );
-    } else if (defaultTargetPlatform == TargetPlatform.android) {
-      return AndroidView(
-        viewType: 'plugins.flutter.io/google_maps',
-        onPlatformViewCreated: onPlatformViewCreated,
-        gestureRecognizers: gestureRecognizers,
-        creationParams: creationParams,
-        creationParamsCodec: const StandardMessageCodec(),
-      );
+            controller.create();
+            return controller;
+          },
+        );
+      } else {
+        return AndroidView(
+          viewType: 'plugins.flutter.io/google_maps',
+          onPlatformViewCreated: onPlatformViewCreated,
+          gestureRecognizers: gestureRecognizers,
+          creationParams: creationParams,
+          creationParamsCodec: const StandardMessageCodec(),
+        );
+      }
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       return UiKitView(
         viewType: 'plugins.flutter.io/google_maps',
@@ -555,6 +556,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       creationId,
       onPlatformViewCreated,
       initialCameraPosition: initialCameraPosition,
+      textDirection: TextDirection.ltr,
       markers: markers,
       polygons: polygons,
       polylines: polylines,
