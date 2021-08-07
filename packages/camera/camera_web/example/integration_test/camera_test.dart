@@ -317,8 +317,9 @@ void main() {
       testWidgets(
           'starts a video recording with a given maxDuration '
           'emits a VideoRecordedEvent', (tester) async {
-        // TODO(abausg) There seems to be an issue with removing the listener and stopping the recorder
-        /*final maxDuration = Duration(milliseconds: 30);
+        // TODO: MediaRecorder with a Timeslice does not seem to call the dataavailable Listener in a Test
+        /*
+          final maxDuration = Duration(milliseconds: 3000);
 
           final camera = Camera(
             textureId: 1,
@@ -328,11 +329,13 @@ void main() {
           await camera.initialize();
           await camera.play();
 
-          final eventExpectation = expectLater(camera.onVideoRecordedEvent.map((event) => event.maxVideoDuration), emits(maxDuration));
+          final recordedEvent = camera.onVideoRecordedEvent.first;
           await camera.startVideoRecording(maxVideoDuration: maxDuration);
 
-          await eventExpectation;
-          expect('inactive', camera.mediaRecorder!.state);*/
+          final event = await recordedEvent;
+          expect(event, isNotNull);
+          expect(event.maxVideoDuration, maxDuration);
+         */
       });
 
       testWidgets(
