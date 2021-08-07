@@ -329,22 +329,69 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    throw UnimplementedError(
-      'onDeviceOrientationChanged() is not implemented.',
-    );
+    final orientation = window?.screen?.orientation;
+
+    if (orientation != null) {
+      return orientation.onChange.map(
+        (html.Event _) {
+          final deviceOrientation = _cameraSettings
+              .mapOrientationTypeToDeviceOrientation(orientation.type!);
+          return DeviceOrientationChangedEvent(deviceOrientation);
+        },
+      );
+    } else {
+      return const Stream.empty();
+    }
   }
 
   @override
   Future<void> lockCaptureOrientation(
     int cameraId,
-    DeviceOrientation orientation,
-  ) {
-    throw UnimplementedError('lockCaptureOrientation() is not implemented.');
+    DeviceOrientation deviceOrientation,
+  ) async {
+    try {
+      final orientation = window?.screen?.orientation;
+      final documentElement = window?.document.documentElement;
+
+      if (orientation != null && documentElement != null) {
+        final orientationType = _cameraSettings
+            .mapDeviceOrientationToOrientationType(deviceOrientation);
+
+        // Full-screen mode may be required to modify the device orientation.
+        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
+        documentElement.requestFullscreen();
+        await orientation.lock(orientationType.toString());
+      } else {
+        throw PlatformException(
+          code: CameraErrorCode.orientationNotSupported.toString(),
+          message: 'Orientation is not supported in the current browser.',
+        );
+      }
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
-  Future<void> unlockCaptureOrientation(int cameraId) {
-    throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
+  Future<void> unlockCaptureOrientation(int cameraId) async {
+    try {
+      final orientation = window?.screen?.orientation;
+      final documentElement = window?.document.documentElement;
+
+      if (orientation != null && documentElement != null) {
+        // Full-screen mode may be required to modify the device orientation.
+        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
+        documentElement.requestFullscreen();
+        orientation.unlock();
+      } else {
+        throw PlatformException(
+          code: CameraErrorCode.orientationNotSupported.toString(),
+          message: 'Orientation is not supported in the current browser.',
+        );
+      }
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override

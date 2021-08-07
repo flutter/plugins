@@ -607,6 +607,120 @@ void main() {
         );
       });
     });
+
+    group('mapDeviceOrientationToOrientationType', () {
+      testWidgets(
+          'returns portraitPrimary '
+          'when the device orientation is portraitUp', (tester) async {
+        expect(
+          settings.mapDeviceOrientationToOrientationType(
+            DeviceOrientation.portraitUp,
+          ),
+          equals(OrientationType.portraitPrimary),
+        );
+      });
+
+      testWidgets(
+          'returns landscapePrimary '
+          'when the device orientation is landscapeLeft', (tester) async {
+        expect(
+          settings.mapDeviceOrientationToOrientationType(
+            DeviceOrientation.landscapeLeft,
+          ),
+          equals(OrientationType.landscapePrimary),
+        );
+      });
+
+      testWidgets(
+          'returns portraitSecondary '
+          'when the device orientation is portraitDown', (tester) async {
+        expect(
+          settings.mapDeviceOrientationToOrientationType(
+            DeviceOrientation.portraitDown,
+          ),
+          equals(OrientationType.portraitSecondary),
+        );
+      });
+
+      testWidgets(
+          'returns landscapeSecondary '
+          'when the device orientation is landscapeRight', (tester) async {
+        expect(
+          settings.mapDeviceOrientationToOrientationType(
+            DeviceOrientation.landscapeRight,
+          ),
+          equals(OrientationType.landscapeSecondary),
+        );
+      });
+    });
+
+    group('mapOrientationTypeToDeviceOrientation', () {
+      testWidgets(
+          'returns portraitUp '
+          'when the orientation type is portraitPrimary', (tester) async {
+        expect(
+          settings.mapOrientationTypeToDeviceOrientation(
+            OrientationType.portraitPrimary,
+          ),
+          equals(DeviceOrientation.portraitUp),
+        );
+      });
+
+      testWidgets(
+          'returns landscapeLeft '
+          'when the orientation type is landscapePrimary', (tester) async {
+        expect(
+          settings.mapOrientationTypeToDeviceOrientation(
+            OrientationType.landscapePrimary,
+          ),
+          equals(DeviceOrientation.landscapeLeft),
+        );
+      });
+
+      testWidgets(
+          'returns portraitDown '
+          'when the orientation type is portraitSecondary', (tester) async {
+        expect(
+          settings.mapOrientationTypeToDeviceOrientation(
+            OrientationType.portraitSecondary,
+          ),
+          equals(DeviceOrientation.portraitDown),
+        );
+      });
+
+      testWidgets(
+          'returns portraitDown '
+          'when the orientation type is portraitSecondary', (tester) async {
+        expect(
+          settings.mapOrientationTypeToDeviceOrientation(
+            OrientationType.portraitSecondary,
+          ),
+          equals(DeviceOrientation.portraitDown),
+        );
+      });
+
+      testWidgets(
+          'returns landscapeRight '
+          'when the orientation type is landscapeSecondary', (tester) async {
+        expect(
+          settings.mapOrientationTypeToDeviceOrientation(
+            OrientationType.landscapeSecondary,
+          ),
+          equals(DeviceOrientation.landscapeRight),
+        );
+      });
+
+      testWidgets(
+          'returns portraitUp '
+          'for an unknown orientation type', (tester) async {
+        expect(
+          settings.mapOrientationTypeToDeviceOrientation(
+            'unknown',
+          ),
+          equals(DeviceOrientation.portraitUp),
+        );
+      });
+    });
   });
 }
 
