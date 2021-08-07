@@ -75,6 +75,13 @@ void main() {
         );
       });
 
+      test('orientationNotSupported', () {
+        expect(
+          CameraErrorCode.orientationNotSupported.toString(),
+          equals('orientationNotSupported'),
+        );
+      });
+
       test('unknown', () {
         expect(
           CameraErrorCode.unknown.toString(),

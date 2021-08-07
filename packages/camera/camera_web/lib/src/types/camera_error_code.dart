@@ -48,6 +48,10 @@ class CameraErrorCode {
   static const CameraErrorCode missingMetadata =
       CameraErrorCode._('cameraMissingMetadata');
 
+  /// The camera orientation is not supported.
+  static const CameraErrorCode orientationNotSupported =
+      CameraErrorCode._('orientationNotSupported');
+
   /// An unknown camera error.
   static const CameraErrorCode unknown = CameraErrorCode._('cameraUnknown');
 
