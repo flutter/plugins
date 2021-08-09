@@ -191,7 +191,7 @@ class Camera {
       throw CameraWebException(
         textureId,
         CameraErrorCode.torchModeNotSupported,
-        'Torch mode is not supported in the current browser.',
+        'The torch mode is not supported in the current browser.',
       );
     }
 
@@ -209,13 +209,24 @@ class Camera {
     if (videoTracks.isNotEmpty) {
       final defaultVideoTrack = videoTracks.first;
 
-      defaultVideoTrack.applyConstraints({
-        "advanced": [
-          {
-            _torchModeKey: enabled,
-          }
-        ]
-      });
+      final bool canEnableTorchMode =
+          defaultVideoTrack.getCapabilities()[_torchModeKey] ?? false;
+
+      if (canEnableTorchMode) {
+        defaultVideoTrack.applyConstraints({
+          "advanced": [
+            {
+              _torchModeKey: enabled,
+            }
+          ]
+        });
+      } else {
+        throw CameraWebException(
+          textureId,
+          CameraErrorCode.torchModeNotSupported,
+          'The torch mode is not supported by the current camera.',
+        );
+      }
     } else {
       throw CameraWebException(
         textureId,
