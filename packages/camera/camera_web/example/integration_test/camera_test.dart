@@ -263,6 +263,10 @@ void main() {
 
           when(() => videoTracks.first.applyConstraints(any()))
               .thenAnswer((_) async => {});
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'torch': true,
+          });
         });
 
         testWidgets('if the flash mode is auto', (tester) async {
@@ -390,10 +394,16 @@ void main() {
 
         when(() => videoTracks.first.applyConstraints(any()))
             .thenAnswer((_) async => {});
+
+        when(videoTracks.first.getCapabilities).thenReturn({});
       });
 
       testWidgets('sets the camera flash mode', (tester) async {
         when(mediaDevices.getSupportedConstraints).thenReturn({
+          'torch': true,
+        });
+
+        when(videoTracks.first.getCapabilities).thenReturn({
           'torch': true,
         });
 
@@ -421,6 +431,10 @@ void main() {
           'torch': true,
         });
 
+        when(videoTracks.first.getCapabilities).thenReturn({
+          'torch': true,
+        });
+
         final camera = Camera(
           textureId: textureId,
           cameraSettings: cameraSettings,
@@ -445,6 +459,10 @@ void main() {
           'disables the torch mode '
           'if the flash mode is not torch', (tester) async {
         when(mediaDevices.getSupportedConstraints).thenReturn({
+          'torch': true,
+        });
+
+        when(videoTracks.first.getCapabilities).thenReturn({
           'torch': true,
         });
 
@@ -501,8 +519,50 @@ void main() {
 
         testWidgets(
             'with torchModeNotSupported error '
-            'when the torch mode is not supported', (tester) async {
+            'when the torch mode is not supported '
+            'in the browser', (tester) async {
           when(mediaDevices.getSupportedConstraints).thenReturn({
+            'torch': false,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'torch': true,
+          });
+
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )
+            ..window = window
+            ..stream = videoStream;
+
+          expect(
+            () => camera.setFlashMode(FlashMode.always),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.torchModeNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with torchModeNotSupported error '
+            'when the torch mode is not supported '
+            'by the camera', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'torch': true,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
             'torch': false,
           });
 
@@ -535,6 +595,10 @@ void main() {
             'with notStarted error '
             'when the camera stream has not been initialized', (tester) async {
           when(mediaDevices.getSupportedConstraints).thenReturn({
+            'torch': true,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
             'torch': true,
           });
 
