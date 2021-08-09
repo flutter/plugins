@@ -82,6 +82,20 @@ void main() {
         );
       });
 
+      test('torchModeNotSupported', () {
+        expect(
+          CameraErrorCode.torchModeNotSupported.toString(),
+          equals('torchModeNotSupported'),
+        );
+      });
+
+      test('notStarted', () {
+        expect(
+          CameraErrorCode.notStarted.toString(),
+          equals('notStarted'),
+        );
+      });
+
       test('unknown', () {
         expect(
           CameraErrorCode.unknown.toString(),
