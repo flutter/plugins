@@ -80,10 +80,14 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void postUrl_should_call_webView_postUrl_with_correct_url() {
+  public void loadUrl_should_call_webView_postUrl_with_correct_url() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
-    MethodCall call = buildMethodCall(POST_URL, URL, postData);
+    request.put("method", "post");
+    request.put("headers", null);
+    request.put("body", postData);
+
+    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
 
     ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
 
@@ -95,14 +99,18 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void postUrl_should_call_webView_postUrl_with_correct_http_body() {
+  public void loadUrl_should_call_webView_postUrl_with_correct_http_body() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
-    MethodCall call = buildMethodCall(POST_URL, URL, postData);
+    request.put("method", "post");
+    request.put("headers", null);
+    request.put("body", postData);
+
+    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
 
     ArgumentCaptor<byte[]> valueCapture = ArgumentCaptor.forClass(byte[].class);
 
-    doNothing().when(mockWebView).postUrl(isA(String.class), valueCapture.capture());
+    doNothing().when(mockWebView).postUrl(ArgumentMatchers.<String>any(), valueCapture.capture());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -110,10 +118,14 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void postUrl_should_call_result_success_with_null() {
+  public void loadUrl_should_call_result_success_with_null() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
-    MethodCall call = buildMethodCall(POST_URL, URL, postData);
+    request.put("method", "post");
+    request.put("headers", null);
+    request.put("body", postData);
+
+    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
 
     ArgumentCaptor<Null> valueCapture = ArgumentCaptor.forClass(Null.class);
 
@@ -131,10 +143,14 @@ public class FlutterWebViewTest {
     return params;
   }
 
-  private MethodCall buildMethodCall(String method, final String url, final byte[] postData) {
+  private MethodCall buildMethodCall(
+      final String method, final String url, final Map<String, Object> request) {
+    if (url == null && request == null) {
+      return new MethodCall(method, null);
+    }
     final Map<String, Object> arguments = new HashMap<>();
     arguments.put("url", url);
-    arguments.put("postData", postData);
+    arguments.put("request", request);
 
     return new MethodCall(method, arguments);
   }
