@@ -1,3 +1,7 @@
+## 0.8.3+2
+
+* Fix using Camera as image source on Android 11+
+
 ## 0.8.3+1
 
 * Fixed README Example.
@@ -26,6 +30,7 @@
 * Fix image picker causing a crash when the cache directory is deleted.
 
 ## 0.8.1+2
+
 * Update the example app to support the multi-image feature.
 
 ## 0.8.1+1
