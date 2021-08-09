@@ -92,7 +92,7 @@ void main() {
       test('notStarted', () {
         expect(
           CameraErrorCode.notStarted.toString(),
-          equals('notStarted'),
+          equals('cameraNotStarted'),
         );
       });
 
