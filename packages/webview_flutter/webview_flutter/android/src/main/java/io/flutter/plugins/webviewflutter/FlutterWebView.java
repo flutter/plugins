@@ -182,6 +182,22 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     return webViewBuilder.build();
   }
 
+  /**
+   * Creates a {@link CustomHttpPostRequest}.
+   *
+   * <p><strong>Important:</strong> This method is visible for testing purposes only and should
+   * never be called from outside this class.
+   *
+   * @param executor a {@link Executor} to run network request on background thread.
+   * @param resultHandler a {@link Handler} to communicate back with main thread.
+   * @return The new {@link CustomHttpPostRequest} object.
+   */
+  @VisibleForTesting
+  static CustomHttpPostRequest createCustomHttpPostRequest(
+      Executor executor, Handler resultHandler) {
+    return new CustomHttpPostRequest(executor, resultHandler);
+  }
+
   @Override
   public View getView() {
     return webView;
