@@ -12,6 +12,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 
+import 'src/types/webview_request.dart';
 import 'platform_interface.dart';
 import 'src/webview_android.dart';
 import 'src/webview_cupertino.dart';
@@ -635,37 +636,29 @@ class WebViewController {
 
   /// Loads the specified URL.
   ///
-  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
-  /// be added as key value pairs of HTTP headers for the request.
+  /// If [WebViewRequest] object is not null and the URL is a HTTP URL
+  /// then the following rules apply:
+  ///
+  /// - [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in the [WebViewLoadMethod].
+  ///
+  /// - If [WebViewRequest.headers] is not null, the key value pairs in
+  /// [WebViewRequest.headers] will be added as key value pairs of HTTP headers
+  /// for the request.
+  ///
+  /// - If [WebViewRequest.body] is not null, it will be added as HTTP body
+  /// for the request.
   ///
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
   Future<void> loadUrl(
     String url, {
-    Map<String, String>? headers,
+    WebViewRequest? request,
   }) async {
     assert(url != null);
     _validateUrlString(url);
-    return _webViewPlatformController.loadUrl(url, headers);
-  }
-
-  /// Loads the URL with postData using "POST" method.
-  ///
-  /// If `url` is not a network URL, it will be loaded with `loadUrl` instead,
-  /// ignoring the `postData` param on Android.
-  ///
-  /// `url` and `postData` must not be null.
-  ///
-  /// Throws an ArgumentError if `url` is not a valid URL string.
-  Future<void> postUrl(
-    String url,
-    Uint8List postData,
-  ) async {
-    assert(url != null);
-    assert(postData != null);
-    _validateUrlString(url);
-    return _webViewPlatformController.postUrl(url, postData);
+    return _webViewPlatformController.loadUrl(url, request);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
