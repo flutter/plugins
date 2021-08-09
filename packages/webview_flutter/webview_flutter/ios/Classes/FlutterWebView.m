@@ -449,43 +449,9 @@
   }
 }
 
-- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
-  if (!request) {
-    return false;
-  }
-
-  NSString* url = request[@"url"];
-  if ([url isKindOfClass:[NSString class]]) {
-    id headers = request[@"headers"];
-    if ([headers isKindOfClass:[NSDictionary class]]) {
-      return [self loadUrl:url withHeaders:headers];
-    } else {
-      return [self loadUrl:url];
-    }
-  }
-
-  return false;
-}
-
-- (bool)loadUrl:(NSString*)url {
-  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
-}
-
-- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
-  NSURL* nsUrl = [NSURL URLWithString:url];
-  if (!nsUrl) {
-    return false;
-  }
-  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-  [request setAllHTTPHeaderFields:headers];
-  [_webView loadRequest:request];
-  return true;
-}
-
 /**
  * Parses the arguments and converts them into an NSURLRequest object.
  *
- * @param method the HTTP method.
  * @param arguments the method call arguments.
  *
  * @return NSURLRequest object.
