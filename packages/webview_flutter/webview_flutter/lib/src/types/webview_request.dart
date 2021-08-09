@@ -1,0 +1,49 @@
+import 'dart:typed_data';
+
+/// Defines the supported HTTP methods for loading a page in the [WebView].
+enum WebViewLoadMethod {
+  /// HTTP GET method.
+  get,
+
+  /// HTTP POST method.
+  post,
+}
+
+/// Extension methods on the [WebViewLoadMethod] enum.
+extension WebViewLoadMethodExtensions on WebViewLoadMethod {
+  /// Converts [WebViewLoadMethod] to [String] format.
+  String serialize() {
+    switch (this) {
+      case WebViewLoadMethod.get:
+        return 'get';
+      case WebViewLoadMethod.post:
+        return 'post';
+    }
+  }
+}
+
+/// Defines the parameters that can be used to load a page in the [WebView].
+class WebViewRequest {
+  /// Creates the [WebViewRequest].
+  WebViewRequest({
+    required this.method,
+    this.headers,
+    this.body,
+  });
+
+  /// HTTP method used to load the page.
+  final WebViewLoadMethod method;
+
+  /// HTTP headers for the request.
+  final Map<String, String>? headers;
+
+  /// HTTP body for the request.
+  final Uint8List? body;
+
+  /// Serializes the [WebViewRequest] to JSON.
+  Map<String, dynamic> toJson() => {
+        'method': this.method.serialize(),
+        'headers': this.headers,
+        'body': this.body,
+      };
+}
