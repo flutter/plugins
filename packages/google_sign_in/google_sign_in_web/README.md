@@ -1,4 +1,4 @@
-# google_sign_in_web
+# google\_sign\_in\_web
 
 The web implementation of [google_sign_in](https://pub.dev/google_sign_in/google_sign_in)
 
@@ -6,18 +6,9 @@ The web implementation of [google_sign_in](https://pub.dev/google_sign_in/google
 
 ### Import the package
 
-This package is the endorsed implementation of `google_sign_in` for the web platform since version `4.1.0`, so it gets automatically added to your dependencies by depending on `google_sign_in: ^4.1.0`.
-
-No modifications to your pubspec.yaml should be required in a recent enough version of Flutter (`>=1.12.13+hotfix.4`):
-
-```yaml
-...
-dependencies:
-  ...
-  google_sign_in: ^4.1.0
-  ...
-...
-```
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin),
+which means you can simply use `google_sign_in`
+normally. This package will be automatically included in your app when you do.
 
 ### Web integration
 

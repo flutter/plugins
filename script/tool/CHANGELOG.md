@@ -21,6 +21,8 @@
     `--no-integration`.
 - **Breaking change**: Replaced `java-test` with Android unit test support for
   the new `native-test` command.
+- Commands that print a run summary at the end now track and log exclusions
+  similarly to skips for easier auditing.
 
 ## 0.4.1
 
