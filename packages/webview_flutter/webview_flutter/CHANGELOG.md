@@ -1,6 +1,10 @@
 ## 3.0.0
 
-* Add postUrl to use POST request and accept POST data.
+* BREAKING CHANGE : 
+    * Update the `loadUrl` method to unify all supported HTTP methods for loading a page with URL 
+    that are defines in `WebViewLoadMethod`.
+    * Add the `WebViewRequest` class to define parameters that can be used to load a page 
+    in `WebView`.
 * Improved the documentation on using the different Android Platform View modes.
 
 ## 2.0.11
