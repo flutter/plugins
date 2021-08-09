@@ -11,6 +11,7 @@ import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
+import 'package:webview_flutter/src/types/webview_request.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef void VoidCallback();
@@ -110,7 +111,7 @@ void main() {
     expect(await controller!.currentUrl(), isNull);
   });
 
-  testWidgets('Headers in loadUrl', (WidgetTester tester) async {
+  testWidgets('WebViewRequest object in loadUrl', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -125,7 +126,9 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'CACHE-CONTROL': 'ABC'
     };
-    await controller!.loadUrl('https://flutter.io', headers: headers);
+    final WebViewRequest request =
+        WebViewRequest(method: WebViewLoadMethod.get, headers: headers);
+    await controller!.loadUrl('https://flutter.io', request: request);
     expect(await controller!.currentUrl(), equals('https://flutter.io'));
   });
 
@@ -894,11 +897,12 @@ void main() {
       final Map<String, String> headers = <String, String>{
         'header': 'value',
       };
-
-      await controller.loadUrl('https://google.com', headers: headers);
+      final WebViewRequest request =
+          WebViewRequest(method: WebViewLoadMethod.get, headers: headers);
+      await controller.loadUrl('https://google.com', request: request);
 
       expect(platform.lastUrlLoaded, 'https://google.com');
-      expect(platform.lastRequestHeaders, headers);
+      expect(platform.lastRequest, request);
     });
   });
   testWidgets('Set UserAgent', (WidgetTester tester) async {
@@ -1200,13 +1204,13 @@ class MyWebViewPlatformController extends WebViewPlatformController {
   Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
   String? lastUrlLoaded;
-  Map<String, String>? lastRequestHeaders;
+  WebViewRequest? lastRequest;
 
   @override
-  Future<void> loadUrl(String url, Map<String, String>? headers) async {
+  Future<void> loadUrl(String url, WebViewRequest? request) async {
     equals(1, 1);
     lastUrlLoaded = url;
-    lastRequestHeaders = headers;
+    lastRequest = request;
   }
 }
 
