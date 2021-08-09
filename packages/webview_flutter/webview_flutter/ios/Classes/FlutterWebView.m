@@ -490,14 +490,13 @@
  *
  * @return NSURLRequest object.
  */
-- (NSURLRequest*)buildNSURLRequest:(NSString*)method
-                         arguments:(NSDictionary<NSString*, id>*)arguments {
+- (NSURLRequest*)buildNSURLRequest:(NSDictionary<NSString*, id>*)arguments {
   if (!arguments) {
     return nil;
   }
 
   NSString* url = arguments[@"url"];
-  if (![url isKindOfClass:[NSString class]]) {
+  if (!url) {
     return nil;
   }
 
@@ -507,15 +506,24 @@
   }
 
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-  [request setHTTPMethod:method];
 
-  id postData = arguments[@"postData"];
-  if ([postData isKindOfClass:[FlutterStandardTypedData class]]) {
-    [request setHTTPBody:[postData data]];
+  id requestParameters = arguments[@"request"];
+  if (!(requestParameters && [requestParameters isKindOfClass:[NSDictionary class]])) {
+    return request;
   }
 
-  id headers = arguments[@"headers"];
-  if ([headers isKindOfClass:[NSDictionary class]]) {
+  NSString* httpMethod = requestParameters[@"method"];
+  if (httpMethod) {
+    [request setHTTPMethod:httpMethod];
+  }
+
+  id httpBody = requestParameters[@"body"];
+  if (httpBody && [httpBody isKindOfClass:[FlutterStandardTypedData class]]) {
+    [request setHTTPBody:[httpBody data]];
+  }
+
+  id headers = requestParameters[@"headers"];
+  if (headers && [headers isKindOfClass:[NSDictionary class]]) {
     [request setAllHTTPHeaderFields:headers];
   }
 
