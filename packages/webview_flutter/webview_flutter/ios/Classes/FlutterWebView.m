@@ -109,8 +109,10 @@
     // https://github.com/flutter/flutter/issues/36228
 
     NSString* initialUrl = args[@"initialUrl"];
+
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+      NSURLRequest* request = [self buildNSURLRequest:@{@"url" : initialUrl}];
+      [_webView loadRequest:request];
     }
   }
   return self;
@@ -147,8 +149,6 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
-  } else if ([[call method] isEqualToString:@"postUrl"]) {
-    [self onPostUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -193,29 +193,21 @@
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
-- (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if (![self loadRequest:[call arguments]]) {
-    result([FlutterError
-        errorWithCode:@"loadUrl_failed"
-              message:@"Failed parsing the URL"
-              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
-  } else {
-    result(nil);
-  }
-}
-
 /**
- * Applies nil on the FlutterResult and calls WKWebView's loadRequest
- * method with NSURLRequest if the request is retrieved successfully.
+ * Loads the web content referenced by the specified URL request object.
+ *
+ * After retrieves NSURLRequest object successfully loads a page from a local
+ * or network-based URL and applies nil on FlutterResult. Otherwise, applies FlutterError
+ * with the error details.
  *
  * @param call the method call with arguments.
  * @param result the FlutterResult.
  */
-- (void)onPostUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSURLRequest* request = [self buildNSURLRequest:@"POST" arguments:[call arguments]];
+- (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSURLRequest* request = [self buildNSURLRequest:[call arguments]];
   if (!request) {
     result([FlutterError
-        errorWithCode:@"postUrl_failed"
+        errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
