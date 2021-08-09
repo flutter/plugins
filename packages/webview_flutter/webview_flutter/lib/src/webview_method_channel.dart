@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
+import '../src/types/webview_request.dart';
 
 import '../platform_interface.dart';
 
@@ -76,22 +77,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<void> loadUrl(
     String url,
-    Map<String, String>? headers,
+    WebViewRequest? request,
   ) async {
     assert(url != null);
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
-      'headers': headers,
-    });
-  }
-
-  @override
-  Future<void> postUrl(String url, Uint8List postData) async {
-    assert(url != null);
-    assert(postData != null);
-    return _channel.invokeMethod<void>('postUrl', <String, dynamic>{
-      'url': url,
-      'postData': postData,
+      'request': request?.toJson(),
     });
   }
 
