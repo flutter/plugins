@@ -338,7 +338,7 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('dispose() has not been implemented.');
   }
 
-  /// Returns a widget displaying the map view
+  /// Returns a widget displaying the map view.
   Widget buildView(
     int creationId,
     PlatformViewCreatedCallback onPlatformViewCreated, {
@@ -355,5 +355,41 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
   }) {
     throw UnimplementedError('buildView() has not been implemented.');
+  }
+
+  /// Returns a widget displaying the map view.
+  ///
+  /// This method is similar to [buildView], but contains a parameter for
+  /// platforms that require a text direction.
+  ///
+  /// Default behavior passes all parameters except `textDirection` to
+  /// [buildView]. This is for backward compatibility with existing
+  /// implementations. Platforms that use the text direction should override
+  /// this as the primary implementation, and delegate to it from buildView.
+  Widget buildViewWithTextDirection(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    required TextDirection textDirection,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    return buildView(
+      creationId,
+      onPlatformViewCreated,
+      initialCameraPosition: initialCameraPosition,
+      markers: markers,
+      polygons: polygons,
+      polylines: polylines,
+      circles: circles,
+      tileOverlays: tileOverlays,
+      gestureRecognizers: gestureRecognizers,
+      mapOptions: mapOptions,
+    );
   }
 }
