@@ -18,14 +18,17 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.os.HandlerCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
 
@@ -34,6 +37,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private final Handler mainThreadHandler;
+  private final ExecutorService executorService;
+  private final CustomHttpPostRequest customHttpPostRequest;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -101,6 +107,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
+
+    executorService = Executors.newFixedThreadPool(4);
+
+    mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
+
+    customHttpPostRequest = createCustomHttpPostRequest(executorService, mainThreadHandler);
 
     this.methodChannel = methodChannel;
     this.methodChannel.setMethodCallHandler(this);
