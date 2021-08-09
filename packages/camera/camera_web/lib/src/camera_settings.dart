@@ -230,4 +230,38 @@ class CameraSettings {
         return Size(320, 240);
     }
   }
+
+  /// Maps the given [deviceOrientation] to [OrientationType].
+  String mapDeviceOrientationToOrientationType(
+    DeviceOrientation deviceOrientation,
+  ) {
+    switch (deviceOrientation) {
+      case DeviceOrientation.portraitUp:
+        return OrientationType.portraitPrimary;
+      case DeviceOrientation.landscapeLeft:
+        return OrientationType.landscapePrimary;
+      case DeviceOrientation.portraitDown:
+        return OrientationType.portraitSecondary;
+      case DeviceOrientation.landscapeRight:
+        return OrientationType.landscapeSecondary;
+    }
+  }
+
+  /// Maps the given [orientationType] to [DeviceOrientation].
+  DeviceOrientation mapOrientationTypeToDeviceOrientation(
+    String orientationType,
+  ) {
+    switch (orientationType) {
+      case OrientationType.portraitPrimary:
+        return DeviceOrientation.portraitUp;
+      case OrientationType.landscapePrimary:
+        return DeviceOrientation.landscapeLeft;
+      case OrientationType.portraitSecondary:
+        return DeviceOrientation.portraitDown;
+      case OrientationType.landscapeSecondary:
+        return DeviceOrientation.landscapeRight;
+      default:
+        return DeviceOrientation.portraitUp;
+    }
+  }
 }

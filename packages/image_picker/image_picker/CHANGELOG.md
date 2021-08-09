@@ -1,6 +1,10 @@
-## 0.8.3+1
+## 0.8.3+2
 
 * Fix using Camera as image source on Android 11+
+
+## 0.8.3+1
+
+* Fixed README Example.
 
 ## 0.8.3
 

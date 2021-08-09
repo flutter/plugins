@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
+import 'package:flutter/foundation.dart';
 
 import 'shims/dart_ui.dart' as ui;
 
@@ -39,6 +40,10 @@ class Camera {
     this.options = const CameraOptions(),
   }) : _cameraSettings = cameraSettings;
 
+  // A torch mode constraint name.
+  // See: https://w3c.github.io/mediacapture-image/#dom-mediatracksupportedconstraints-torch
+  static const _torchModeKey = "torch";
+
   /// The texture id used to register the camera view.
   final int textureId;
 
@@ -47,20 +52,32 @@ class Camera {
 
   /// The video element that displays the camera stream.
   /// Initialized in [initialize].
-  late html.VideoElement videoElement;
+  late final html.VideoElement videoElement;
 
   /// The wrapping element for the [videoElement] to avoid overriding
   /// the custom styles applied in [_applyDefaultVideoStyles].
   /// Initialized in [initialize].
-  late html.DivElement divElement;
+  late final html.DivElement divElement;
+
+  /// The camera stream displayed in the [videoElement].
+  /// Initialized in [initialize] and [play], reset in [stop].
+  html.MediaStream? stream;
+
+  /// The camera flash mode.
+  @visibleForTesting
+  FlashMode? flashMode;
 
   /// The camera settings used to get the media stream for the camera.
   final CameraSettings _cameraSettings;
 
+  /// The current browser window used to access media devices.
+  @visibleForTesting
+  html.Window? window = html.window;
+
   /// Initializes the camera stream displayed in the [videoElement].
   /// Registers the camera view with [textureId] under [_getViewType] type.
   Future<void> initialize() async {
-    final stream = await _cameraSettings.getMediaStreamForOptions(
+    stream = await _cameraSettings.getMediaStreamForOptions(
       options,
       cameraId: textureId,
     );
@@ -89,7 +106,7 @@ class Camera {
   /// Initializes the camera source if the camera was previously stopped.
   Future<void> play() async {
     if (videoElement.srcObject == null) {
-      final stream = await _cameraSettings.getMediaStreamForOptions(
+      stream = await _cameraSettings.getMediaStreamForOptions(
         options,
         cameraId: textureId,
       );
@@ -107,18 +124,36 @@ class Camera {
       }
     }
     videoElement.srcObject = null;
+    stream = null;
   }
 
   /// Captures a picture and returns the saved file in a JPEG format.
+  ///
+  /// Enables the device flash when taking a picture if the flash mode
+  /// is either [FlashMode.auto] or [FlashMode.always].
   Future<XFile> takePicture() async {
+    final shouldEnableTorchMode =
+        flashMode == FlashMode.auto || flashMode == FlashMode.always;
+
+    if (shouldEnableTorchMode) {
+      _setTorchMode(enabled: true);
+    }
+
     final videoWidth = videoElement.videoWidth;
     final videoHeight = videoElement.videoHeight;
     final canvas = html.CanvasElement(width: videoWidth, height: videoHeight);
+
     canvas.context2D
       ..translate(videoWidth, 0)
       ..scale(-1, 1)
       ..drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
+
     final blob = await canvas.toBlob('image/jpeg');
+
+    if (shouldEnableTorchMode) {
+      _setTorchMode(enabled: false);
+    }
+
     return XFile(html.Url.createObjectUrl(blob));
   }
 
@@ -143,6 +178,61 @@ class Camera {
       return Size(width, height);
     } else {
       return Size.zero;
+    }
+  }
+
+  /// Sets the camera flash mode to [mode].
+  void setFlashMode(FlashMode mode) {
+    final mediaDevices = window?.navigator.mediaDevices;
+    final supportedConstraints = mediaDevices?.getSupportedConstraints();
+    final torchModeSupported = supportedConstraints?[_torchModeKey] ?? false;
+
+    if (!torchModeSupported) {
+      throw CameraWebException(
+        textureId,
+        CameraErrorCode.torchModeNotSupported,
+        'The torch mode is not supported in the current browser.',
+      );
+    }
+
+    // Save the updated flash mode to be used later when taking a picture.
+    flashMode = mode;
+
+    // Enable the torch mode only if the flash mode is torch.
+    _setTorchMode(enabled: mode == FlashMode.torch);
+  }
+
+  /// Sets the camera torch mode constraint to [enabled].
+  void _setTorchMode({required bool enabled}) {
+    final videoTracks = stream?.getVideoTracks() ?? [];
+
+    if (videoTracks.isNotEmpty) {
+      final defaultVideoTrack = videoTracks.first;
+
+      final bool canEnableTorchMode =
+          defaultVideoTrack.getCapabilities()[_torchModeKey] ?? false;
+
+      if (canEnableTorchMode) {
+        defaultVideoTrack.applyConstraints({
+          "advanced": [
+            {
+              _torchModeKey: enabled,
+            }
+          ]
+        });
+      } else {
+        throw CameraWebException(
+          textureId,
+          CameraErrorCode.torchModeNotSupported,
+          'The torch mode is not supported by the current camera.',
+        );
+      }
+    } else {
+      throw CameraWebException(
+        textureId,
+        CameraErrorCode.notStarted,
+        'The camera has not been initialized or started.',
+      );
     }
   }
 

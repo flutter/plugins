@@ -5,6 +5,7 @@
 import 'dart:html';
 import 'dart:ui';
 
+import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
@@ -18,10 +19,23 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('Camera', () {
+    const textureId = 1;
+
+    late Window window;
+    late Navigator navigator;
+    late MediaDevices mediaDevices;
+
     late MediaStream mediaStream;
     late CameraSettings cameraSettings;
 
     setUp(() {
+      window = MockWindow();
+      navigator = MockNavigator();
+      mediaDevices = MockMediaDevices();
+
+      when(() => window.navigator).thenReturn(navigator);
+      when(() => navigator.mediaDevices).thenReturn(mediaDevices);
+
       cameraSettings = MockCameraSettings();
 
       final videoElement = getVideoElementWithBlankStream(Size(10, 10));
@@ -51,7 +65,7 @@ void main() {
         );
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           options: options,
           cameraSettings: cameraSettings,
         );
@@ -61,7 +75,7 @@ void main() {
         verify(
           () => cameraSettings.getMediaStreamForOptions(
             options,
-            cameraId: 1,
+            cameraId: textureId,
           ),
         ).called(1);
       });
@@ -72,7 +86,7 @@ void main() {
         const audioConstraints = AudioConstraints(enabled: true);
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           options: CameraOptions(
             audio: audioConstraints,
           ),
@@ -100,7 +114,7 @@ void main() {
           'creates a wrapping div element '
           'with correct properties', (tester) async {
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -109,6 +123,17 @@ void main() {
         expect(camera.divElement, isNotNull);
         expect(camera.divElement.style.objectFit, equals('cover'));
         expect(camera.divElement.children, contains(camera.videoElement));
+      });
+
+      testWidgets('initializes the camera stream', (tester) async {
+        final camera = Camera(
+          textureId: textureId,
+          cameraSettings: cameraSettings,
+        );
+
+        await camera.initialize();
+
+        expect(camera.stream, mediaStream);
       });
 
       testWidgets(
@@ -121,7 +146,7 @@ void main() {
             cameraId: any(named: 'cameraId'))).thenThrow(exception);
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -137,7 +162,7 @@ void main() {
         var startedPlaying = false;
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -154,9 +179,8 @@ void main() {
       });
 
       testWidgets(
-          'assigns a media stream '
+          'initializes the camera stream '
           'from CameraSettings.getMediaStreamForOptions '
-          'to the video element\'s source '
           'if it does not exist', (tester) async {
         final options = CameraOptions(
           video: VideoConstraints(
@@ -165,7 +189,7 @@ void main() {
         );
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           options: options,
           cameraSettings: cameraSettings,
         );
@@ -182,18 +206,19 @@ void main() {
         verify(
           () => cameraSettings.getMediaStreamForOptions(
             options,
-            cameraId: 1,
+            cameraId: textureId,
           ),
         ).called(2);
 
         expect(camera.videoElement.srcObject, mediaStream);
+        expect(camera.stream, mediaStream);
       });
     });
 
     group('stop', () {
-      testWidgets('resets the video element\'s source', (tester) async {
+      testWidgets('resets the camera stream', (tester) async {
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -203,13 +228,14 @@ void main() {
         camera.stop();
 
         expect(camera.videoElement.srcObject, isNull);
+        expect(camera.stream, isNull);
       });
     });
 
     group('takePicture', () {
       testWidgets('returns a captured picture', (tester) async {
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -219,6 +245,99 @@ void main() {
         final pictureFile = await camera.takePicture();
 
         expect(pictureFile, isNotNull);
+      });
+
+      group(
+          'enables the torch mode '
+          'when taking a picture', () {
+        late List<MediaStreamTrack> videoTracks;
+        late MediaStream videoStream;
+        late VideoElement videoElement;
+
+        setUp(() {
+          videoTracks = [MockMediaStreamTrack(), MockMediaStreamTrack()];
+          videoStream = FakeMediaStream(videoTracks);
+
+          videoElement = getVideoElementWithBlankStream(Size(100, 100))
+            ..muted = true;
+
+          when(() => videoTracks.first.applyConstraints(any()))
+              .thenAnswer((_) async => {});
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'torch': true,
+          });
+        });
+
+        testWidgets('if the flash mode is auto', (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )
+            ..window = window
+            ..stream = videoStream
+            ..videoElement = videoElement
+            ..flashMode = FlashMode.auto;
+
+          await camera.play();
+
+          final _ = await camera.takePicture();
+
+          verify(
+            () => videoTracks.first.applyConstraints({
+              "advanced": [
+                {
+                  "torch": true,
+                }
+              ]
+            }),
+          ).called(1);
+
+          verify(
+            () => videoTracks.first.applyConstraints({
+              "advanced": [
+                {
+                  "torch": false,
+                }
+              ]
+            }),
+          ).called(1);
+        });
+
+        testWidgets('if the flash mode is always', (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )
+            ..window = window
+            ..stream = videoStream
+            ..videoElement = videoElement
+            ..flashMode = FlashMode.always;
+
+          await camera.play();
+
+          final _ = await camera.takePicture();
+
+          verify(
+            () => videoTracks.first.applyConstraints({
+              "advanced": [
+                {
+                  "torch": true,
+                }
+              ]
+            }),
+          ).called(1);
+
+          verify(
+            () => videoTracks.first.applyConstraints({
+              "advanced": [
+                {
+                  "torch": false,
+                }
+              ]
+            }),
+          ).called(1);
+        });
       });
     });
 
@@ -232,7 +351,7 @@ void main() {
         mediaStream = videoElement.captureStream();
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -252,7 +371,7 @@ void main() {
         mediaStream = videoElement.captureStream();
 
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 
@@ -265,10 +384,251 @@ void main() {
       });
     });
 
+    group('setFlashMode', () {
+      late List<MediaStreamTrack> videoTracks;
+      late MediaStream videoStream;
+
+      setUp(() {
+        videoTracks = [MockMediaStreamTrack(), MockMediaStreamTrack()];
+        videoStream = FakeMediaStream(videoTracks);
+
+        when(() => videoTracks.first.applyConstraints(any()))
+            .thenAnswer((_) async => {});
+
+        when(videoTracks.first.getCapabilities).thenReturn({});
+      });
+
+      testWidgets('sets the camera flash mode', (tester) async {
+        when(mediaDevices.getSupportedConstraints).thenReturn({
+          'torch': true,
+        });
+
+        when(videoTracks.first.getCapabilities).thenReturn({
+          'torch': true,
+        });
+
+        final camera = Camera(
+          textureId: textureId,
+          cameraSettings: cameraSettings,
+        )
+          ..window = window
+          ..stream = videoStream;
+
+        const flashMode = FlashMode.always;
+
+        camera.setFlashMode(flashMode);
+
+        expect(
+          camera.flashMode,
+          equals(flashMode),
+        );
+      });
+
+      testWidgets(
+          'enables the torch mode '
+          'if the flash mode is torch', (tester) async {
+        when(mediaDevices.getSupportedConstraints).thenReturn({
+          'torch': true,
+        });
+
+        when(videoTracks.first.getCapabilities).thenReturn({
+          'torch': true,
+        });
+
+        final camera = Camera(
+          textureId: textureId,
+          cameraSettings: cameraSettings,
+        )
+          ..window = window
+          ..stream = videoStream;
+
+        camera.setFlashMode(FlashMode.torch);
+
+        verify(
+          () => videoTracks.first.applyConstraints({
+            "advanced": [
+              {
+                "torch": true,
+              }
+            ]
+          }),
+        ).called(1);
+      });
+
+      testWidgets(
+          'disables the torch mode '
+          'if the flash mode is not torch', (tester) async {
+        when(mediaDevices.getSupportedConstraints).thenReturn({
+          'torch': true,
+        });
+
+        when(videoTracks.first.getCapabilities).thenReturn({
+          'torch': true,
+        });
+
+        final camera = Camera(
+          textureId: textureId,
+          cameraSettings: cameraSettings,
+        )
+          ..window = window
+          ..stream = videoStream;
+
+        camera.setFlashMode(FlashMode.auto);
+
+        verify(
+          () => videoTracks.first.applyConstraints({
+            "advanced": [
+              {
+                "torch": false,
+              }
+            ]
+          }),
+        ).called(1);
+      });
+
+      group('throws CameraWebException', () {
+        testWidgets(
+            'with torchModeNotSupported error '
+            'when there are no media devices', (tester) async {
+          when(() => navigator.mediaDevices).thenReturn(null);
+
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )
+            ..window = window
+            ..stream = videoStream;
+
+          expect(
+            () => camera.setFlashMode(FlashMode.always),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.torchModeNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with torchModeNotSupported error '
+            'when the torch mode is not supported '
+            'in the browser', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'torch': false,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'torch': true,
+          });
+
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )
+            ..window = window
+            ..stream = videoStream;
+
+          expect(
+            () => camera.setFlashMode(FlashMode.always),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.torchModeNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with torchModeNotSupported error '
+            'when the torch mode is not supported '
+            'by the camera', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'torch': true,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'torch': false,
+          });
+
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )
+            ..window = window
+            ..stream = videoStream;
+
+          expect(
+            () => camera.setFlashMode(FlashMode.always),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.torchModeNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with notStarted error '
+            'when the camera stream has not been initialized', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'torch': true,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'torch': true,
+          });
+
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          )..window = window;
+
+          expect(
+            () => camera.setFlashMode(FlashMode.always),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.notStarted,
+                  ),
+            ),
+          );
+        });
+      });
+    });
+
     group('getViewType', () {
       testWidgets('returns a correct view type', (tester) async {
-        const textureId = 1;
-
         final camera = Camera(
           textureId: textureId,
           cameraSettings: cameraSettings,
@@ -286,7 +646,7 @@ void main() {
     group('dispose', () {
       testWidgets('resets the video element\'s source', (tester) async {
         final camera = Camera(
-          textureId: 1,
+          textureId: textureId,
           cameraSettings: cameraSettings,
         );
 

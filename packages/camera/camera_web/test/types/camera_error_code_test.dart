@@ -75,6 +75,27 @@ void main() {
         );
       });
 
+      test('orientationNotSupported', () {
+        expect(
+          CameraErrorCode.orientationNotSupported.toString(),
+          equals('orientationNotSupported'),
+        );
+      });
+
+      test('torchModeNotSupported', () {
+        expect(
+          CameraErrorCode.torchModeNotSupported.toString(),
+          equals('torchModeNotSupported'),
+        );
+      });
+
+      test('notStarted', () {
+        expect(
+          CameraErrorCode.notStarted.toString(),
+          equals('cameraNotStarted'),
+        );
+      });
+
       test('unknown', () {
         expect(
           CameraErrorCode.unknown.toString(),
