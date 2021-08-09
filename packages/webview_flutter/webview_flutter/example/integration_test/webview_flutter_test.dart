@@ -14,6 +14,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter/src/types/webview_request.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -59,7 +60,7 @@ void main() {
     expect(currentUrl, 'https://www.google.com/');
   });
 
-  testWidgets('loadUrl with headers', (WidgetTester tester) async {
+  testWidgets('loadUrl with request', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     final StreamController<String> pageStarts = StreamController<String>();
@@ -87,8 +88,11 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'test_header': 'flutter_test_header'
     };
+    final WebViewRequest request =
+        WebViewRequest(method: WebViewLoadMethod.get, headers: headers);
+
     await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
-        headers: headers);
+        request: request);
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 
