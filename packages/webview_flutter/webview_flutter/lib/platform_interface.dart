@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
+import 'src/types/webview_request.dart';
 
 import 'webview_flutter.dart';
 
@@ -174,34 +175,28 @@ abstract class WebViewPlatformController {
 
   /// Loads the specified URL.
   ///
-  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
-  /// be added as key value pairs of HTTP headers for the request.
+  /// If [WebViewRequest] object is not null and the URL is a HTTP URL
+  /// then the following rules apply:
+  ///
+  /// - [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in the [WebViewLoadMethod].
+  ///
+  /// - If [WebViewRequest.headers] is not null, the key value pairs in
+  /// [WebViewRequest.headers] will be added as key value pairs of HTTP headers
+  /// for the request.
+  ///
+  /// - If [WebViewRequest.body] is not null, it will be added as HTTP body
+  /// for the request.
   ///
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
   Future<void> loadUrl(
     String url,
-    Map<String, String>? headers,
+    WebViewRequest? request,
   ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
-  }
-
-  /// Loads the URL with postData using "POST" method.
-  ///
-  /// If `url` is not a network URL, it will be loaded with `loadUrl` instead,
-  /// ignoring the `postData` param on Android.
-  ///
-  /// `url` and `postData` must not be null.
-  ///
-  /// Throws an ArgumentError if `url` is not a valid URL string.
-  Future<void> postUrl(
-    String url,
-    Uint8List postData,
-  ) {
-    throw UnimplementedError(
-        "WebView postUrl is not implemented on the current platform");
   }
 
   /// Updates the webview settings.
