@@ -9,6 +9,7 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.webkit.WebChromeClient;
@@ -257,9 +258,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
-      case "postUrl":
-        postUrl(methodCall, result);
-        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -313,24 +311,64 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  @SuppressWarnings("unchecked")
-  private void loadUrl(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
-    String url = (String) request.get("url");
-    Map<String, String> headers = (Map<String, String>) request.get("headers");
-    if (headers == null) {
-      headers = Collections.emptyMap();
+  private void loadUrl(MethodCall methodCall, final Result result) {
+    final WebViewRequest webViewRequest = buildWebViewRequest(methodCall);
+    if (webViewRequest == null) {
+      result.error("missing_args", "Missing arguments", null);
+    } else {
+      switch (webViewRequest.getMethod()) {
+        case GET:
+          webView.loadUrl(webViewRequest.getUrl(), webViewRequest.getHeaders());
+          break;
+        case POST:
+          if (webViewRequest.getHeaders().isEmpty()) {
+            webView.postUrl(webViewRequest.getUrl(), webViewRequest.getBody());
+          } else {
+            // Workaround to accept headers with the post request.
+            customHttpPostRequest.makePostRequest(
+                webViewRequest,
+                new CustomRequestCallback() {
+                  @Override
+                  public void onComplete(String content) {
+                    if (!webView.isAttachedToWindow()) {
+                      result.error(
+                          "webview_destroyed",
+                          "Could not complete the post request because the webview is destroyed",
+                          null);
+                    } else {
+                      webView.loadDataWithBaseURL(
+                          webViewRequest.getUrl(), content, "text/html", "UTF-8", null);
+                    }
+                  }
+
+                  @Override
+                  public void onError(Exception error) {
+                    result.error("request_failed", "HttpURLConnection is failed", null);
+                  }
+                });
+          }
+          break;
+        default:
+          result.error("unsupported_method", "Unsupported method call", null);
+      }
+      result.success(null);
     }
-    webView.loadUrl(url, headers);
-    result.success(null);
   }
 
-  private void postUrl(MethodCall methodCall, Result result) {
+  @SuppressWarnings("unchecked")
+  private WebViewRequest buildWebViewRequest(MethodCall methodCall) {
     Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    if (request == null) {
+      return null;
+    }
+
     String url = (String) request.get("url");
-    byte[] postData = (byte[]) request.get("postData");
-    webView.postUrl(url, postData);
-    result.success(null);
+    if (url == null) {
+      return null;
+    }
+
+    Map<String, Object> requestObject = (Map<String, Object>) request.get("request");
+    return WebViewRequest.fromMap(requestObject, url);
   }
 
   private void canGoBack(Result result) {
