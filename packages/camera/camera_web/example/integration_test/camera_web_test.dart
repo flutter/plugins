@@ -78,6 +78,7 @@ void main() {
     setUpAll(() {
       registerFallbackValue<MediaStreamTrack>(MockMediaStreamTrack());
       registerFallbackValue<CameraOptions>(MockCameraOptions());
+      registerFallbackValue<FlashMode>(FlashMode.off);
     });
 
     testWidgets('CameraPlugin is the live instance', (tester) async {
@@ -981,14 +982,79 @@ void main() {
       );
     });
 
-    testWidgets('setFlashMode throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.setFlashMode(
-          cameraId,
-          FlashMode.auto,
-        ),
-        throwsUnimplementedError,
-      );
+    group('setFlashMode', () {
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () => CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.always,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setFlashMode throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(() => camera.setFlashMode(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.always,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setFlashMode throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(() => camera.setFlashMode(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.torch,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
     testWidgets('setExposureMode throws UnimplementedError', (tester) async {
@@ -1345,7 +1411,7 @@ void main() {
 
         testWidgets(
             'emits a CameraErrorEvent '
-            'on video error '
+            'on initialize video error '
             'with a message', (tester) async {
           final Stream<CameraErrorEvent> eventStream =
               CameraPlatform.instance.onCameraError(cameraId);
@@ -1380,7 +1446,7 @@ void main() {
 
         testWidgets(
             'emits a CameraErrorEvent '
-            'on video error '
+            'on initialize video error '
             'with no message', (tester) async {
           final Stream<CameraErrorEvent> eventStream =
               CameraPlatform.instance.onCameraError(cameraId);
@@ -1411,7 +1477,7 @@ void main() {
 
         testWidgets(
             'emits a CameraErrorEvent '
-            'on abort error', (tester) async {
+            'on initialize abort error', (tester) async {
           final Stream<CameraErrorEvent> eventStream =
               CameraPlatform.instance.onCameraError(cameraId);
 
@@ -1427,6 +1493,45 @@ void main() {
               CameraErrorEvent(
                 cameraId,
                 'Error code: ${CameraErrorCode.abort}, error message: The video element\'s source has not fully loaded.',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on setFlashMode error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(() => camera.setFlashMode(any())).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.always,
+            ),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
               ),
             ),
           );

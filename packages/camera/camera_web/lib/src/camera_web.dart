@@ -429,8 +429,15 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> setFlashMode(int cameraId, FlashMode mode) {
-    throw UnimplementedError('setFlashMode() is not implemented.');
+  Future<void> setFlashMode(int cameraId, FlashMode mode) async {
+    try {
+      getCamera(cameraId).setFlashMode(mode);
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
