@@ -24,7 +24,7 @@ platform_properties:
       os: Windows
 
 targets:
-  - name: Windows Plugins
+  - name: Windows Plugins master channel
     recipe: plugins/plugins
     timeout: 30
     properties:
