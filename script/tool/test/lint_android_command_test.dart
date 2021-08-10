@@ -58,7 +58,7 @@ void main() {
         orderedEquals(<ProcessCall>[
           ProcessCall(
             androidDir.childFile('gradlew').path,
-            const <String>['lintDebug'],
+            const <String>['plugin1:lintDebug'],
             androidDir.path,
           ),
         ]),
@@ -129,7 +129,29 @@ void main() {
       expect(
           output,
           containsAllInOrder(
-            <Matcher>[contains('SKIPPING: Plugin does not support Android.')],
+            <Matcher>[
+              contains(
+                  'SKIPPING: Plugin does not have an Android implemenatation.')
+            ],
+          ));
+    });
+
+    test('skips non-inline plugins', () async {
+      createFakePlugin('plugin1', packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.federated
+          });
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['lint-android']);
+
+      expect(
+          output,
+          containsAllInOrder(
+            <Matcher>[
+              contains(
+                  'SKIPPING: Plugin does not have an Android implemenatation.')
+            ],
           ));
     });
   });
