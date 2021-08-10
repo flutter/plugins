@@ -6,10 +6,9 @@ import 'package:file/file.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:platform/platform.dart';
 
+import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
-
-const String _gradleWrapper = 'gradlew';
 
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
@@ -35,21 +34,20 @@ class LintAndroidCommand extends PackageLoopingCommand {
       return PackageResult.skip('Plugin does not support Android.');
     }
 
-    final Directory androidDirectory =
-        package.childDirectory('example').childDirectory('android');
-    if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
+    final Directory exampleDirectory = package.childDirectory('example');
+    final GradleProject project = GradleProject(exampleDirectory,
+        processRunner: processRunner, platform: platform);
+
+    if (!project.isConfigured()) {
       return PackageResult.fail(<String>['Build example before linting']);
     }
 
+    // Only lint one build mode to avoid extra work.
+    //
     // TODO(stuartmorgan): Consider adding an XML parser to read and summarize
     // all results. Currently, only the first three errors will be shown, and
     // the rest are only in an XML file that won't be accessible for CI runs.
-    final int exitCode = await processRunner.runAndStream(
-        androidDirectory.childFile(_gradleWrapper).path,
-        <String>[
-          'lintDebug', // Only lint one build mode to avoid extra work.
-        ],
-        workingDir: androidDirectory);
+    final int exitCode = await project.runCommand('lintDebug');
 
     return exitCode == 0 ? PackageResult.success() : PackageResult.fail();
   }

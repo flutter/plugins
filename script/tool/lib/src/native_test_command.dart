@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
 import 'common/core.dart';
+import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
@@ -46,8 +47,6 @@ class NativeTestCommand extends PackageLoopingCommand {
     argParser.addFlag(_integrationTestFlag,
         help: 'Runs native integration (UI) tests', defaultsTo: true);
   }
-
-  static const String _gradleWrapper = 'gradlew';
 
   // The device destination flags for iOS tests.
   List<String> _iosDestinationFlags = <String>[];
@@ -210,9 +209,12 @@ this command.
       final String exampleName = getPackageDescription(example);
       _printRunningExampleTestsMessage(example, 'Android');
 
-      final Directory androidDirectory = example.childDirectory('android');
-      final File gradleFile = androidDirectory.childFile(_gradleWrapper);
-      if (!gradleFile.existsSync()) {
+      final GradleProject project = GradleProject(
+        example,
+        processRunner: processRunner,
+        platform: platform,
+      );
+      if (!project.isConfigured()) {
         printError('ERROR: Run "flutter build apk" on $exampleName, or run '
             'this tool\'s "build-examples --apk" command, '
             'before executing tests.');
@@ -221,9 +223,7 @@ this command.
         continue;
       }
 
-      final int exitCode = await processRunner.runAndStream(
-          gradleFile.path, <String>['testDebugUnitTest'],
-          workingDir: androidDirectory);
+      final int exitCode = await project.runCommand('testDebugUnitTest');
       if (exitCode != 0) {
         printError('$exampleName tests failed.');
         failed = true;
