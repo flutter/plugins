@@ -627,6 +627,180 @@ void main() {
       });
     });
 
+    group('zoomLevel', () {
+      group('getMaxZoomLevel', () {
+        testWidgets(
+            'returns maximum '
+            'from CameraSettings.getZoomLevelCapabilityForCamera',
+            (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          );
+
+          final zoomLevelCapability = ZoomLevelCapability(
+            minimum: 50.0,
+            maximum: 100.0,
+            videoTrack: MockMediaStreamTrack(),
+          );
+
+          when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+              .thenReturn(zoomLevelCapability);
+
+          final maximumZoomLevel = camera.getMaxZoomLevel();
+
+          verify(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+              .called(1);
+
+          expect(
+            maximumZoomLevel,
+            equals(zoomLevelCapability.maximum),
+          );
+        });
+      });
+
+      group('getMinZoomLevel', () {
+        testWidgets(
+            'returns minimum '
+            'from CameraSettings.getZoomLevelCapabilityForCamera',
+            (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          );
+
+          final zoomLevelCapability = ZoomLevelCapability(
+            minimum: 50.0,
+            maximum: 100.0,
+            videoTrack: MockMediaStreamTrack(),
+          );
+
+          when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+              .thenReturn(zoomLevelCapability);
+
+          final minimumZoomLevel = camera.getMinZoomLevel();
+
+          verify(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+              .called(1);
+
+          expect(
+            minimumZoomLevel,
+            equals(zoomLevelCapability.minimum),
+          );
+        });
+      });
+
+      group('setZoomLevel', () {
+        testWidgets(
+            'applies zoom on the video track '
+            'from CameraSettings.getZoomLevelCapabilityForCamera',
+            (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraSettings: cameraSettings,
+          );
+
+          final videoTrack = MockMediaStreamTrack();
+
+          final zoomLevelCapability = ZoomLevelCapability(
+            minimum: 50.0,
+            maximum: 100.0,
+            videoTrack: videoTrack,
+          );
+
+          when(() => videoTrack.applyConstraints(any()))
+              .thenAnswer((_) async {});
+
+          when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+              .thenReturn(zoomLevelCapability);
+
+          const zoom = 75.0;
+
+          camera.setZoomLevel(zoom);
+
+          verify(
+            () => videoTrack.applyConstraints({
+              "advanced": [
+                {
+                  ZoomLevelCapability.constraintName: zoom,
+                }
+              ]
+            }),
+          ).called(1);
+        });
+
+        group('throws CameraWebException', () {
+          testWidgets(
+              'with zoomLevelInvalid error '
+              'when the provided zoom level is below minimum', (tester) async {
+            final camera = Camera(
+              textureId: textureId,
+              cameraSettings: cameraSettings,
+            );
+
+            final zoomLevelCapability = ZoomLevelCapability(
+              minimum: 50.0,
+              maximum: 100.0,
+              videoTrack: MockMediaStreamTrack(),
+            );
+
+            when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+                .thenReturn(zoomLevelCapability);
+
+            expect(
+                () => camera.setZoomLevel(45.0),
+                throwsA(
+                  isA<CameraWebException>()
+                      .having(
+                        (e) => e.cameraId,
+                        'cameraId',
+                        textureId,
+                      )
+                      .having(
+                        (e) => e.code,
+                        'code',
+                        CameraErrorCode.zoomLevelInvalid,
+                      ),
+                ));
+          });
+
+          testWidgets(
+              'with zoomLevelInvalid error '
+              'when the provided zoom level is below minimum', (tester) async {
+            final camera = Camera(
+              textureId: textureId,
+              cameraSettings: cameraSettings,
+            );
+
+            final zoomLevelCapability = ZoomLevelCapability(
+              minimum: 50.0,
+              maximum: 100.0,
+              videoTrack: MockMediaStreamTrack(),
+            );
+
+            when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+                .thenReturn(zoomLevelCapability);
+
+            expect(
+                () => camera.setZoomLevel(105.0),
+                throwsA(
+                  isA<CameraWebException>()
+                      .having(
+                        (e) => e.cameraId,
+                        'cameraId',
+                        textureId,
+                      )
+                      .having(
+                        (e) => e.code,
+                        'code',
+                        CameraErrorCode.zoomLevelInvalid,
+                      ),
+                ));
+          });
+        });
+      });
+    });
+
     group('getViewType', () {
       testWidgets('returns a correct view type', (tester) async {
         final camera = Camera(

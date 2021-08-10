@@ -30,4 +30,5 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  mocktail: ^0.1.4
   pedantic: ^1.11.1

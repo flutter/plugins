@@ -28,6 +28,10 @@ String _getViewType(int cameraId) => 'plugins.flutter.io/camera_$cameraId';
 /// The camera can be played/stopped by calling [play]/[stop]
 /// or may capture a picture by calling [takePicture].
 ///
+/// The camera zoom may be adjusted with [setZoomLevel]. The provided
+/// zoom level must be a value in the range of [getMinZoomLevel] to
+/// [getMaxZoomLevel].
+///
 /// The [textureId] is used to register a camera view with the id
 /// defined by [_getViewType].
 class Camera {
@@ -182,6 +186,9 @@ class Camera {
   }
 
   /// Sets the camera flash mode to [mode].
+  ///
+  /// Throws a [CameraWebException] if the torch mode is not supported
+  /// or the camera has not been initialized or started.
   void setFlashMode(FlashMode mode) {
     final mediaDevices = window?.navigator.mediaDevices;
     final supportedConstraints = mediaDevices?.getSupportedConstraints();
@@ -203,6 +210,9 @@ class Camera {
   }
 
   /// Sets the camera torch mode constraint to [enabled].
+  ///
+  /// Throws a [CameraWebException] if the torch mode is not supported
+  /// or the camera has not been initialized or started.
   void _setTorchMode({required bool enabled}) {
     final videoTracks = stream?.getVideoTracks() ?? [];
 
@@ -234,6 +244,46 @@ class Camera {
         'The camera has not been initialized or started.',
       );
     }
+  }
+
+  /// Returns the camera maximum zoom level.
+  ///
+  /// Throws a [CameraWebException] if the zoom level is not supported
+  /// or the camera has not been initialized or started.
+  double getMaxZoomLevel() =>
+      _cameraSettings.getZoomLevelCapabilityForCamera(this).maximum;
+
+  /// Returns the camera minimum zoom level.
+  ///
+  /// Throws a [CameraWebException] if the zoom level is not supported
+  /// or the camera has not been initialized or started.
+  double getMinZoomLevel() =>
+      _cameraSettings.getZoomLevelCapabilityForCamera(this).minimum;
+
+  /// Sets the camera zoom level to [zoom].
+  ///
+  /// Throws a [CameraWebException] if the zoom level is invalid,
+  /// not supported or the camera has not been initialized or started.
+  void setZoomLevel(double zoom) {
+    final zoomLevelCapability =
+        _cameraSettings.getZoomLevelCapabilityForCamera(this);
+
+    if (zoom < zoomLevelCapability.minimum ||
+        zoom > zoomLevelCapability.maximum) {
+      throw CameraWebException(
+        textureId,
+        CameraErrorCode.zoomLevelInvalid,
+        'The provided zoom level must be in the range of ${zoomLevelCapability.minimum} to ${zoomLevelCapability.maximum}.',
+      );
+    }
+
+    zoomLevelCapability.videoTrack.applyConstraints({
+      "advanced": [
+        {
+          ZoomLevelCapability.constraintName: zoom,
+        }
+      ]
+    });
   }
 
   /// Returns the registered view type of the camera.
