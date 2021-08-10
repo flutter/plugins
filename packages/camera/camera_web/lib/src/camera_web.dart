@@ -481,18 +481,41 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<double> getMaxZoomLevel(int cameraId) {
-    throw UnimplementedError('getMaxZoomLevel() is not implemented.');
+  Future<double> getMaxZoomLevel(int cameraId) async {
+    try {
+      return getCamera(cameraId).getMaxZoomLevel();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
-  Future<double> getMinZoomLevel(int cameraId) {
-    throw UnimplementedError('getMinZoomLevel() is not implemented.');
+  Future<double> getMinZoomLevel(int cameraId) async {
+    try {
+      return getCamera(cameraId).getMinZoomLevel();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
-  Future<void> setZoomLevel(int cameraId, double zoom) {
-    throw UnimplementedError('setZoomLevel() is not implemented.');
+  Future<void> setZoomLevel(int cameraId, double zoom) async {
+    try {
+      getCamera(cameraId).setZoomLevel(zoom);
+    } on html.DomException catch (e) {
+      throw CameraException(e.name, e.message);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw CameraException(e.code.toString(), e.description);
+    }
   }
 
   @override
