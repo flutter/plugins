@@ -4,8 +4,10 @@
 
 import 'dart:html' as html;
 import 'dart:ui';
+import 'dart:js_util' as js_util;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -103,6 +105,65 @@ class CameraSettings {
         cameraId,
         CameraErrorCode.unknown,
         'An unknown error occured when fetching the camera stream.',
+      );
+    }
+  }
+
+  /// Returns the zoom level capability for the given [camera].
+  ///
+  /// Throws a [CameraWebException] if the zoom level is not supported
+  /// or the camera has not been initialized or started.
+  ZoomLevelCapability getZoomLevelCapabilityForCamera(
+    Camera camera,
+  ) {
+    final mediaDevices = window?.navigator.mediaDevices;
+    final supportedConstraints = mediaDevices?.getSupportedConstraints();
+    final zoomLevelSupported =
+        supportedConstraints?[ZoomLevelCapability.constraintName] ?? false;
+
+    if (!zoomLevelSupported) {
+      throw CameraWebException(
+        camera.textureId,
+        CameraErrorCode.zoomLevelNotSupported,
+        'The zoom level is not supported in the current browser.',
+      );
+    }
+
+    final videoTracks = camera.stream?.getVideoTracks() ?? [];
+
+    if (videoTracks.isNotEmpty) {
+      final defaultVideoTrack = videoTracks.first;
+
+      /// The zoom level capability is represented by MediaSettingsRange.
+      /// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaSettingsRange
+      final zoomLevelCapability = defaultVideoTrack
+              .getCapabilities()[ZoomLevelCapability.constraintName] ??
+          {};
+
+      // The zoom level capability is a nested JS object, therefore
+      // we need to access its properties with the js_util library.
+      // See: https://api.dart.dev/stable/2.13.4/dart-js_util/getProperty.html
+      final minimumZoomLevel = js_util.getProperty(zoomLevelCapability, 'min');
+      final maximumZoomLevel = js_util.getProperty(zoomLevelCapability, 'max');
+
+      if (minimumZoomLevel != null && maximumZoomLevel != null) {
+        return ZoomLevelCapability(
+          minimum: minimumZoomLevel.toDouble(),
+          maximum: maximumZoomLevel.toDouble(),
+          videoTrack: defaultVideoTrack,
+        );
+      } else {
+        throw CameraWebException(
+          camera.textureId,
+          CameraErrorCode.zoomLevelNotSupported,
+          'The zoom level is not supported by the current camera.',
+        );
+      }
+    } else {
+      throw CameraWebException(
+        camera.textureId,
+        CameraErrorCode.notStarted,
+        'The camera has not been initialized or started.',
       );
     }
   }

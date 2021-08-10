@@ -89,6 +89,20 @@ void main() {
         );
       });
 
+      test('zoomLevelNotSupported', () {
+        expect(
+          CameraErrorCode.zoomLevelNotSupported.toString(),
+          equals('zoomLevelNotSupported'),
+        );
+      });
+
+      test('zoomLevelInvalid', () {
+        expect(
+          CameraErrorCode.zoomLevelInvalid.toString(),
+          equals('zoomLevelInvalid'),
+        );
+      });
+
       test('notStarted', () {
         expect(
           CameraErrorCode.notStarted.toString(),
