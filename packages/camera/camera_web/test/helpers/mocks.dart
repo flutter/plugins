@@ -5,6 +5,9 @@
 import 'dart:html';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
 /// A fake [MediaError] that returns the provided error [_code].
 class FakeMediaError extends Fake implements MediaError {

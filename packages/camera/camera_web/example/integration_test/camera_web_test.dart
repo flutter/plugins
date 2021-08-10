@@ -1131,28 +1131,302 @@ void main() {
       );
     });
 
-    testWidgets('getMaxZoomLevel throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.getMaxZoomLevel(cameraId),
-        throwsUnimplementedError,
-      );
+    group('getMaxZoomLevel', () {
+      testWidgets('calls getMaxZoomLevel on the camera', (tester) async {
+        final camera = MockCamera();
+        const maximumZoomLevel = 100.0;
+
+        when(camera.getMaxZoomLevel).thenReturn(maximumZoomLevel);
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(
+          await CameraPlatform.instance.getMaxZoomLevel(
+            cameraId,
+          ),
+          equals(maximumZoomLevel),
+        );
+
+        verify(camera.getMaxZoomLevel).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMaxZoomLevel throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.getMaxZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMaxZoomLevel throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.getMaxZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('getMinZoomLevel throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.getMinZoomLevel(cameraId),
-        throwsUnimplementedError,
-      );
+    group('getMinZoomLevel', () {
+      testWidgets('calls getMinZoomLevel on the camera', (tester) async {
+        final camera = MockCamera();
+        const minimumZoomLevel = 100.0;
+
+        when(camera.getMinZoomLevel).thenReturn(minimumZoomLevel);
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(
+          await CameraPlatform.instance.getMinZoomLevel(
+            cameraId,
+          ),
+          equals(minimumZoomLevel),
+        );
+
+        verify(camera.getMinZoomLevel).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMinZoomLevel throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.getMinZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMinZoomLevel throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.getMinZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('setZoomLevel throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.setZoomLevel(
-          cameraId,
-          1.0,
-        ),
-        throwsUnimplementedError,
-      );
+    group('setZoomLevel', () {
+      testWidgets('calls setZoomLevel on the camera', (tester) async {
+        final camera = MockCamera();
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        const zoom = 100.0;
+
+        await CameraPlatform.instance.setZoomLevel(cameraId, zoom);
+
+        verify(() => camera.setZoomLevel(zoom)).called(1);
+      });
+
+      group('throws CameraException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setZoomLevel throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setZoomLevel throws PlatformException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = PlatformException(
+            code: CameraErrorCode.notSupported.toString(),
+            message: 'message',
+          );
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setZoomLevel throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
     testWidgets(
@@ -1523,6 +1797,121 @@ void main() {
             ),
             throwsA(
               isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on getMaxZoomLevel error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.zoomLevelNotSupported,
+            'description',
+          );
+
+          when(camera.getMaxZoomLevel).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on getMinZoomLevel error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.zoomLevelNotSupported,
+            'description',
+          );
+
+          when(camera.getMinZoomLevel).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on setZoomLevel error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.zoomLevelNotSupported,
+            'description',
+          );
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>(),
             ),
           );
 

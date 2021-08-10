@@ -7,3 +7,4 @@ export 'camera_options.dart';
 export 'camera_web_exception.dart';
 export 'media_device_kind.dart';
 export 'orientation_type.dart';
+export 'zoom_level_capability.dart';

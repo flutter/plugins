@@ -4,8 +4,10 @@
 
 import 'dart:html';
 import 'dart:ui';
+import 'dart:js_util' as js_util;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_settings.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/services.dart';
@@ -336,6 +338,157 @@ void main() {
               isA<CameraWebException>()
                   .having((e) => e.cameraId, 'cameraId', cameraId)
                   .having((e) => e.code, 'code', CameraErrorCode.unknown),
+            ),
+          );
+        });
+      });
+    });
+
+    group('getZoomLevelCapabilityForCamera', () {
+      late Camera camera;
+      late List<MediaStreamTrack> videoTracks;
+
+      setUp(() {
+        camera = MockCamera();
+        videoTracks = [MockMediaStreamTrack(), MockMediaStreamTrack()];
+
+        when(() => camera.textureId).thenReturn(0);
+        when(() => camera.stream).thenReturn(FakeMediaStream(videoTracks));
+      });
+
+      testWidgets(
+          'returns the zoom level capability '
+          'based on the first video track', (tester) async {
+        when(mediaDevices.getSupportedConstraints).thenReturn({
+          'zoom': true,
+        });
+
+        when(videoTracks.first.getCapabilities).thenReturn({
+          'zoom': js_util.jsify({
+            'min': 100,
+            'max': 400,
+            'step': 2,
+          }),
+        });
+
+        final zoomLevelCapability =
+            settings.getZoomLevelCapabilityForCamera(camera);
+
+        expect(zoomLevelCapability.minimum, equals(100.0));
+        expect(zoomLevelCapability.maximum, equals(400.0));
+        expect(zoomLevelCapability.videoTrack, equals(videoTracks.first));
+      });
+
+      group('throws CameraWebException', () {
+        testWidgets(
+            'with zoomLevelNotSupported error '
+            'when there are no media devices', (tester) async {
+          when(() => navigator.mediaDevices).thenReturn(null);
+
+          expect(
+            () => settings.getZoomLevelCapabilityForCamera(camera),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    camera.textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.zoomLevelNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with zoomLevelNotSupported error '
+            'when the zoom level is not supported '
+            'in the browser', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'zoom': false,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({
+            'zoom': {
+              'min': 100,
+              'max': 400,
+              'step': 2,
+            },
+          });
+
+          expect(
+            () => settings.getZoomLevelCapabilityForCamera(camera),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    camera.textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.zoomLevelNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with zoomLevelNotSupported error '
+            'when the zoom level is not supported '
+            'by the camera', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'zoom': true,
+          });
+
+          when(videoTracks.first.getCapabilities).thenReturn({});
+
+          expect(
+            () => settings.getZoomLevelCapabilityForCamera(camera),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    camera.textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.zoomLevelNotSupported,
+                  ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with notStarted error '
+            'when the camera stream has not been initialized', (tester) async {
+          when(mediaDevices.getSupportedConstraints).thenReturn({
+            'zoom': true,
+          });
+
+          // Create a camera stream with no video tracks.
+          when(() => camera.stream).thenReturn(FakeMediaStream([]));
+
+          expect(
+            () => settings.getZoomLevelCapabilityForCamera(camera),
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    camera.textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.notStarted,
+                  ),
             ),
           );
         });
