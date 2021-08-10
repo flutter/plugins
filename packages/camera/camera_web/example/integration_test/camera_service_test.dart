@@ -6,7 +6,7 @@ import 'dart:html';
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -18,13 +18,13 @@ import 'helpers/helpers.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  group('CameraSettings', () {
+  group('CameraService', () {
     const cameraId = 0;
 
     late Window window;
     late Navigator navigator;
     late MediaDevices mediaDevices;
-    late CameraSettings settings;
+    late CameraService cameraService;
 
     setUp(() async {
       window = MockWindow();
@@ -34,7 +34,7 @@ void main() {
       when(() => window.navigator).thenReturn(navigator);
       when(() => navigator.mediaDevices).thenReturn(mediaDevices);
 
-      settings = CameraSettings()..window = window;
+      cameraService = CameraService()..window = window;
     });
 
     group('getMediaStreamForOptions', () {
@@ -51,7 +51,7 @@ void main() {
           ),
         );
 
-        await settings.getMediaStreamForOptions(options);
+        await cameraService.getMediaStreamForOptions(options);
 
         verify(
           () => mediaDevices.getUserMedia(options.toJson()),
@@ -65,7 +65,7 @@ void main() {
         when(() => navigator.mediaDevices).thenReturn(null);
 
         expect(
-          () => settings.getMediaStreamForOptions(CameraOptions()),
+          () => cameraService.getMediaStreamForOptions(CameraOptions()),
           throwsA(
             isA<PlatformException>().having(
               (e) => e.code,
@@ -85,7 +85,7 @@ void main() {
               .thenThrow(FakeDomException('NotFoundError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -105,7 +105,7 @@ void main() {
               .thenThrow(FakeDomException('DevicesNotFoundError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -125,7 +125,7 @@ void main() {
               .thenThrow(FakeDomException('NotReadableError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -145,7 +145,7 @@ void main() {
               .thenThrow(FakeDomException('TrackStartError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -165,7 +165,7 @@ void main() {
               .thenThrow(FakeDomException('OverconstrainedError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -186,7 +186,7 @@ void main() {
               .thenThrow(FakeDomException('ConstraintNotSatisfiedError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -207,7 +207,7 @@ void main() {
               .thenThrow(FakeDomException('NotAllowedError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -228,7 +228,7 @@ void main() {
               .thenThrow(FakeDomException('PermissionDeniedError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -249,7 +249,7 @@ void main() {
               .thenThrow(FakeDomException('TypeError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -269,7 +269,7 @@ void main() {
               .thenThrow(FakeDomException('AbortError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -289,7 +289,7 @@ void main() {
               .thenThrow(FakeDomException('SecurityError'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -309,7 +309,7 @@ void main() {
               .thenThrow(FakeDomException('Unknown'));
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -328,7 +328,7 @@ void main() {
           when(() => mediaDevices.getUserMedia(any())).thenThrow(Exception());
 
           expect(
-            () => settings.getMediaStreamForOptions(
+            () => cameraService.getMediaStreamForOptions(
               CameraOptions(),
               cameraId: cameraId,
             ),
@@ -350,7 +350,8 @@ void main() {
         when(() => navigator.mediaDevices).thenReturn(null);
 
         expect(
-          () => settings.getFacingModeForVideoTrack(MockMediaStreamTrack()),
+          () =>
+              cameraService.getFacingModeForVideoTrack(MockMediaStreamTrack()),
           throwsA(
             isA<PlatformException>().having(
               (e) => e.code,
@@ -369,7 +370,7 @@ void main() {
         });
 
         final facingMode =
-            settings.getFacingModeForVideoTrack(MockMediaStreamTrack());
+            cameraService.getFacingModeForVideoTrack(MockMediaStreamTrack());
 
         expect(
           facingMode,
@@ -391,7 +392,8 @@ void main() {
 
           when(videoTrack.getSettings).thenReturn({'facingMode': 'user'});
 
-          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
+          final facingMode =
+              cameraService.getFacingModeForVideoTrack(videoTrack);
 
           expect(
             facingMode,
@@ -410,7 +412,8 @@ void main() {
             'facingMode': ['environment', 'left']
           });
 
-          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
+          final facingMode =
+              cameraService.getFacingModeForVideoTrack(videoTrack);
 
           expect(
             facingMode,
@@ -427,7 +430,8 @@ void main() {
           when(videoTrack.getSettings).thenReturn({});
           when(videoTrack.getCapabilities).thenReturn({'facingMode': []});
 
-          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
+          final facingMode =
+              cameraService.getFacingModeForVideoTrack(videoTrack);
 
           expect(
             facingMode,
@@ -444,7 +448,8 @@ void main() {
           when(videoTrack.getSettings).thenReturn({});
           when(videoTrack.getCapabilities).thenThrow(JSNoSuchMethodError());
 
-          final facingMode = settings.getFacingModeForVideoTrack(videoTrack);
+          final facingMode =
+              cameraService.getFacingModeForVideoTrack(videoTrack);
 
           expect(
             facingMode,
@@ -463,7 +468,7 @@ void main() {
           when(videoTrack.getCapabilities).thenThrow(Exception('Unknown'));
 
           expect(
-            () => settings.getFacingModeForVideoTrack(videoTrack),
+            () => cameraService.getFacingModeForVideoTrack(videoTrack),
             throwsA(
               isA<PlatformException>().having(
                 (e) => e.code,
@@ -481,7 +486,7 @@ void main() {
           'returns front '
           'when the facing mode is user', (tester) async {
         expect(
-          settings.mapFacingModeToLensDirection('user'),
+          cameraService.mapFacingModeToLensDirection('user'),
           equals(CameraLensDirection.front),
         );
       });
@@ -490,7 +495,7 @@ void main() {
           'returns back '
           'when the facing mode is environment', (tester) async {
         expect(
-          settings.mapFacingModeToLensDirection('environment'),
+          cameraService.mapFacingModeToLensDirection('environment'),
           equals(CameraLensDirection.back),
         );
       });
@@ -499,7 +504,7 @@ void main() {
           'returns external '
           'when the facing mode is left', (tester) async {
         expect(
-          settings.mapFacingModeToLensDirection('left'),
+          cameraService.mapFacingModeToLensDirection('left'),
           equals(CameraLensDirection.external),
         );
       });
@@ -508,7 +513,7 @@ void main() {
           'returns external '
           'when the facing mode is right', (tester) async {
         expect(
-          settings.mapFacingModeToLensDirection('right'),
+          cameraService.mapFacingModeToLensDirection('right'),
           equals(CameraLensDirection.external),
         );
       });
@@ -519,7 +524,7 @@ void main() {
           'returns user '
           'when the facing mode is user', (tester) async {
         expect(
-          settings.mapFacingModeToCameraType('user'),
+          cameraService.mapFacingModeToCameraType('user'),
           equals(CameraType.user),
         );
       });
@@ -528,7 +533,7 @@ void main() {
           'returns environment '
           'when the facing mode is environment', (tester) async {
         expect(
-          settings.mapFacingModeToCameraType('environment'),
+          cameraService.mapFacingModeToCameraType('environment'),
           equals(CameraType.environment),
         );
       });
@@ -537,7 +542,7 @@ void main() {
           'returns user '
           'when the facing mode is left', (tester) async {
         expect(
-          settings.mapFacingModeToCameraType('left'),
+          cameraService.mapFacingModeToCameraType('left'),
           equals(CameraType.user),
         );
       });
@@ -546,7 +551,7 @@ void main() {
           'returns user '
           'when the facing mode is right', (tester) async {
         expect(
-          settings.mapFacingModeToCameraType('right'),
+          cameraService.mapFacingModeToCameraType('right'),
           equals(CameraType.user),
         );
       });
@@ -557,7 +562,7 @@ void main() {
           'returns 3840x2160 '
           'when the resolution preset is max', (tester) async {
         expect(
-          settings.mapResolutionPresetToSize(ResolutionPreset.max),
+          cameraService.mapResolutionPresetToSize(ResolutionPreset.max),
           equals(Size(3840, 2160)),
         );
       });
@@ -566,7 +571,7 @@ void main() {
           'returns 3840x2160 '
           'when the resolution preset is ultraHigh', (tester) async {
         expect(
-          settings.mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
+          cameraService.mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
           equals(Size(3840, 2160)),
         );
       });
@@ -575,7 +580,7 @@ void main() {
           'returns 1920x1080 '
           'when the resolution preset is veryHigh', (tester) async {
         expect(
-          settings.mapResolutionPresetToSize(ResolutionPreset.veryHigh),
+          cameraService.mapResolutionPresetToSize(ResolutionPreset.veryHigh),
           equals(Size(1920, 1080)),
         );
       });
@@ -584,7 +589,7 @@ void main() {
           'returns 1280x720 '
           'when the resolution preset is high', (tester) async {
         expect(
-          settings.mapResolutionPresetToSize(ResolutionPreset.high),
+          cameraService.mapResolutionPresetToSize(ResolutionPreset.high),
           equals(Size(1280, 720)),
         );
       });
@@ -593,7 +598,7 @@ void main() {
           'returns 720x480 '
           'when the resolution preset is medium', (tester) async {
         expect(
-          settings.mapResolutionPresetToSize(ResolutionPreset.medium),
+          cameraService.mapResolutionPresetToSize(ResolutionPreset.medium),
           equals(Size(720, 480)),
         );
       });
@@ -602,7 +607,7 @@ void main() {
           'returns 320x240 '
           'when the resolution preset is low', (tester) async {
         expect(
-          settings.mapResolutionPresetToSize(ResolutionPreset.low),
+          cameraService.mapResolutionPresetToSize(ResolutionPreset.low),
           equals(Size(320, 240)),
         );
       });
@@ -613,7 +618,7 @@ void main() {
           'returns portraitPrimary '
           'when the device orientation is portraitUp', (tester) async {
         expect(
-          settings.mapDeviceOrientationToOrientationType(
+          cameraService.mapDeviceOrientationToOrientationType(
             DeviceOrientation.portraitUp,
           ),
           equals(OrientationType.portraitPrimary),
@@ -624,7 +629,7 @@ void main() {
           'returns landscapePrimary '
           'when the device orientation is landscapeLeft', (tester) async {
         expect(
-          settings.mapDeviceOrientationToOrientationType(
+          cameraService.mapDeviceOrientationToOrientationType(
             DeviceOrientation.landscapeLeft,
           ),
           equals(OrientationType.landscapePrimary),
@@ -635,7 +640,7 @@ void main() {
           'returns portraitSecondary '
           'when the device orientation is portraitDown', (tester) async {
         expect(
-          settings.mapDeviceOrientationToOrientationType(
+          cameraService.mapDeviceOrientationToOrientationType(
             DeviceOrientation.portraitDown,
           ),
           equals(OrientationType.portraitSecondary),
@@ -646,7 +651,7 @@ void main() {
           'returns landscapeSecondary '
           'when the device orientation is landscapeRight', (tester) async {
         expect(
-          settings.mapDeviceOrientationToOrientationType(
+          cameraService.mapDeviceOrientationToOrientationType(
             DeviceOrientation.landscapeRight,
           ),
           equals(OrientationType.landscapeSecondary),
@@ -659,7 +664,7 @@ void main() {
           'returns portraitUp '
           'when the orientation type is portraitPrimary', (tester) async {
         expect(
-          settings.mapOrientationTypeToDeviceOrientation(
+          cameraService.mapOrientationTypeToDeviceOrientation(
             OrientationType.portraitPrimary,
           ),
           equals(DeviceOrientation.portraitUp),
@@ -670,7 +675,7 @@ void main() {
           'returns landscapeLeft '
           'when the orientation type is landscapePrimary', (tester) async {
         expect(
-          settings.mapOrientationTypeToDeviceOrientation(
+          cameraService.mapOrientationTypeToDeviceOrientation(
             OrientationType.landscapePrimary,
           ),
           equals(DeviceOrientation.landscapeLeft),
@@ -681,7 +686,7 @@ void main() {
           'returns portraitDown '
           'when the orientation type is portraitSecondary', (tester) async {
         expect(
-          settings.mapOrientationTypeToDeviceOrientation(
+          cameraService.mapOrientationTypeToDeviceOrientation(
             OrientationType.portraitSecondary,
           ),
           equals(DeviceOrientation.portraitDown),
@@ -692,7 +697,7 @@ void main() {
           'returns portraitDown '
           'when the orientation type is portraitSecondary', (tester) async {
         expect(
-          settings.mapOrientationTypeToDeviceOrientation(
+          cameraService.mapOrientationTypeToDeviceOrientation(
             OrientationType.portraitSecondary,
           ),
           equals(DeviceOrientation.portraitDown),
@@ -703,7 +708,7 @@ void main() {
           'returns landscapeRight '
           'when the orientation type is landscapeSecondary', (tester) async {
         expect(
-          settings.mapOrientationTypeToDeviceOrientation(
+          cameraService.mapOrientationTypeToDeviceOrientation(
             OrientationType.landscapeSecondary,
           ),
           equals(DeviceOrientation.landscapeRight),
@@ -714,7 +719,7 @@ void main() {
           'returns portraitUp '
           'for an unknown orientation type', (tester) async {
         expect(
-          settings.mapOrientationTypeToDeviceOrientation(
+          cameraService.mapOrientationTypeToDeviceOrientation(
             'unknown',
           ),
           equals(DeviceOrientation.portraitUp),
