@@ -1,3 +1,35 @@
+## 2.0.3
+
+- Replaced reference to `shared_preferences` plugin with the `url_launcher` in the README.
+
+## 2.0.2
+
+- Updated installation instructions in README.
+
+# 2.0.1
+
+- Change sizing code of `Link` widget's `HtmlElementView` so it works well when slotted.
+
+# 2.0.0
+
+- Migrate to null safety.
+
+# 0.1.5+3
+
+- Fix Link misalignment [issue](https://github.com/flutter/flutter/issues/70053).
+
+# 0.1.5+2
+
+- Update Flutter SDK constraint.
+
+# 0.1.5+1
+
+- Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
+
+# 0.1.5
+
+- Added the web implementation of the Link widget.
+
 # 0.1.4+2
 
 - Move `lib/third_party` to `lib/src/third_party`.
@@ -29,7 +61,7 @@
 
 # 0.1.2
 
-- Adds "tel" and "sms" support 
+- Adds "tel" and "sms" support
 
 # 0.1.1+6
 

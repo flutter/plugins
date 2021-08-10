@@ -1,9 +1,10 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async' show Future;
 import 'dart:typed_data' show Uint8List;
+import 'dart:ui' show Size;
 
 import 'package:flutter/material.dart'
     show ImageConfiguration, AssetImage, AssetBundleImageKey;
@@ -16,6 +17,18 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 /// image to place on the surface of the earth.
 class BitmapDescriptor {
   const BitmapDescriptor._(this._json);
+
+  static const String _defaultMarker = 'defaultMarker';
+  static const String _fromAsset = 'fromAsset';
+  static const String _fromAssetImage = 'fromAssetImage';
+  static const String _fromBytes = 'fromBytes';
+
+  static const Set<String> _validTypes = {
+    _defaultMarker,
+    _fromAsset,
+    _fromAssetImage,
+    _fromBytes,
+  };
 
   /// Convenience hue value representing red.
   static const double hueRed = 0.0;
@@ -49,28 +62,14 @@ class BitmapDescriptor {
 
   /// Creates a BitmapDescriptor that refers to the default marker image.
   static const BitmapDescriptor defaultMarker =
-      BitmapDescriptor._(<dynamic>['defaultMarker']);
+      BitmapDescriptor._(<Object>[_defaultMarker]);
 
   /// Creates a BitmapDescriptor that refers to a colorization of the default
   /// marker image. For convenience, there is a predefined set of hue values.
   /// See e.g. [hueYellow].
   static BitmapDescriptor defaultMarkerWithHue(double hue) {
     assert(0.0 <= hue && hue < 360.0);
-    return BitmapDescriptor._(<dynamic>['defaultMarker', hue]);
-  }
-
-  /// Creates a BitmapDescriptor using the name of a bitmap image in the assets
-  /// directory.
-  ///
-  /// Use [fromAssetImage]. This method does not respect the screen dpi when
-  /// picking an asset image.
-  @Deprecated("Use fromAssetImage instead")
-  static BitmapDescriptor fromAsset(String assetName, {String package}) {
-    if (package == null) {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName]);
-    } else {
-      return BitmapDescriptor._(<dynamic>['fromAsset', assetName, package]);
-    }
+    return BitmapDescriptor._(<Object>[_defaultMarker, hue]);
   }
 
   /// Creates a [BitmapDescriptor] from an asset image.
@@ -83,29 +82,31 @@ class BitmapDescriptor {
   static Future<BitmapDescriptor> fromAssetImage(
     ImageConfiguration configuration,
     String assetName, {
-    AssetBundle bundle,
-    String package,
+    AssetBundle? bundle,
+    String? package,
     bool mipmaps = true,
   }) async {
-    if (!mipmaps && configuration.devicePixelRatio != null) {
-      return BitmapDescriptor._(<dynamic>[
-        'fromAssetImage',
+    double? devicePixelRatio = configuration.devicePixelRatio;
+    if (!mipmaps && devicePixelRatio != null) {
+      return BitmapDescriptor._(<Object>[
+        _fromAssetImage,
         assetName,
-        configuration.devicePixelRatio,
+        devicePixelRatio,
       ]);
     }
     final AssetImage assetImage =
         AssetImage(assetName, package: package, bundle: bundle);
     final AssetBundleImageKey assetBundleImageKey =
         await assetImage.obtainKey(configuration);
-    return BitmapDescriptor._(<dynamic>[
-      'fromAssetImage',
+    final Size? size = configuration.size;
+    return BitmapDescriptor._(<Object>[
+      _fromAssetImage,
       assetBundleImageKey.name,
       assetBundleImageKey.scale,
-      if (kIsWeb && configuration?.size != null)
+      if (kIsWeb && size != null)
         [
-          configuration.size.width,
-          configuration.size.height,
+          size.width,
+          size.height,
         ],
     ]);
   }
@@ -113,11 +114,56 @@ class BitmapDescriptor {
   /// Creates a BitmapDescriptor using an array of bytes that must be encoded
   /// as PNG.
   static BitmapDescriptor fromBytes(Uint8List byteData) {
-    return BitmapDescriptor._(<dynamic>['fromBytes', byteData]);
+    return BitmapDescriptor._(<Object>[_fromBytes, byteData]);
   }
 
-  final dynamic _json;
+  /// The inverse of .toJson.
+  // This is needed in Web to re-hydrate BitmapDescriptors that have been
+  // transformed to JSON for transport.
+  // TODO(https://github.com/flutter/flutter/issues/70330): Clean this up.
+  BitmapDescriptor.fromJson(Object json) : _json = json {
+    assert(_json is List<dynamic>);
+    final jsonList = json as List<dynamic>;
+    assert(_validTypes.contains(jsonList[0]));
+    switch (jsonList[0]) {
+      case _defaultMarker:
+        assert(jsonList.length <= 2);
+        if (jsonList.length == 2) {
+          assert(jsonList[1] is num);
+          assert(0 <= jsonList[1] && jsonList[1] < 360);
+        }
+        break;
+      case _fromBytes:
+        assert(jsonList.length == 2);
+        assert(jsonList[1] != null && jsonList[1] is List<int>);
+        assert((jsonList[1] as List).isNotEmpty);
+        break;
+      case _fromAsset:
+        assert(jsonList.length <= 3);
+        assert(jsonList[1] != null && jsonList[1] is String);
+        assert((jsonList[1] as String).isNotEmpty);
+        if (jsonList.length == 3) {
+          assert(jsonList[2] != null && jsonList[2] is String);
+          assert((jsonList[2] as String).isNotEmpty);
+        }
+        break;
+      case _fromAssetImage:
+        assert(jsonList.length <= 4);
+        assert(jsonList[1] != null && jsonList[1] is String);
+        assert((jsonList[1] as String).isNotEmpty);
+        assert(jsonList[2] != null && jsonList[2] is double);
+        if (jsonList.length == 4) {
+          assert(jsonList[3] != null && jsonList[3] is List);
+          assert((jsonList[3] as List).length == 2);
+        }
+        break;
+      default:
+        break;
+    }
+  }
+
+  final Object _json;
 
   /// Convert the object to a Json format.
-  dynamic toJson() => _json;
+  Object toJson() => _json;
 }

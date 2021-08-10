@@ -25,7 +25,7 @@ apply plugin: 'com.android.application'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
 
     lintOptions {
         disable 'InvalidPackage'
@@ -35,6 +35,7 @@ android {
         applicationId "io.flutter.plugins.googlesigninexample"
         minSdkVersion 16
         targetSdkVersion 28
+        multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -60,5 +61,7 @@ flutter {
 dependencies {
     implementation 'com.google.android.gms:play-services-auth:16.0.1'
     testImplementation'junit:junit:4.12'
-    testImplementation 'org.mockito:mockito-core:2.17.0'
+    androidTestImplementation 'androidx.test:runner:1.2.0'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    api 'androidx.test:core:1.2.0'
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -31,9 +31,9 @@ class _MapClickBody extends StatefulWidget {
 class _MapClickBodyState extends State<_MapClickBody> {
   _MapClickBodyState();
 
-  GoogleMapController mapController;
-  LatLng _lastTap;
-  LatLng _lastLongPress;
+  GoogleMapController? mapController;
+  LatLng? _lastTap;
+  LatLng? _lastLongPress;
 
   @override
   Widget build(BuildContext context) {

@@ -1,0 +1,6 @@
+# Currently missing: https://github.com/flutter/flutter/issues/81695
+- in_app_purchase_ios
+# Currently missing: https://github.com/flutter/flutter/issues/82208
+- ios_platform_images
+# Hangs on CI. Deprecated, so there is no plan to fix it.
+- sensors

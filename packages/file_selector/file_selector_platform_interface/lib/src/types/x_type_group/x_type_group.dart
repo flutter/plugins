@@ -1,37 +1,35 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 /// A set of allowed XTypes
 class XTypeGroup {
   /// Creates a new group with the given label and file extensions.
+  ///
+  /// A group with none of the type options provided indicates that any type is
+  /// allowed.
   XTypeGroup({
     this.label,
-    this.extensions,
+    List<String>? extensions,
     this.mimeTypes,
     this.macUTIs,
     this.webWildCards,
-  }) : assert(
-            !((extensions == null || extensions.isEmpty) &&
-                (mimeTypes == null || mimeTypes.isEmpty) &&
-                (macUTIs == null || macUTIs.isEmpty) &&
-                (webWildCards == null || webWildCards.isEmpty)),
-            "At least one type must be provided for an XTypeGroup.");
+  }) : this.extensions = _removeLeadingDots(extensions);
 
   /// The 'name' or reference to this group of types
-  final String label;
+  final String? label;
 
   /// The extensions for this group
-  final List<String> extensions;
+  final List<String>? extensions;
 
   /// The MIME types for this group
-  final List<String> mimeTypes;
+  final List<String>? mimeTypes;
 
   /// The UTIs for this group
-  final List<String> macUTIs;
+  final List<String>? macUTIs;
 
   /// The web wild cards for this group (ex: image/*, video/*)
-  final List<String> webWildCards;
+  final List<String>? webWildCards;
 
   /// Converts this object into a JSON formatted object
   Map<String, dynamic> toJSON() {
@@ -43,4 +41,7 @@ class XTypeGroup {
       'webWildCards': webWildCards,
     };
   }
+
+  static List<String>? _removeLeadingDots(List<String>? exts) =>
+      exts?.map((ext) => ext.startsWith('.') ? ext.substring(1) : ext).toList();
 }

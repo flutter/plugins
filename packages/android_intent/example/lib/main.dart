@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -59,12 +59,12 @@ class MyHomePage extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: <Widget>[
-            RaisedButton(
+            ElevatedButton(
               child: const Text(
                   'Tap here to set an alarm\non weekdays at 9:30pm.'),
               onPressed: _createAlarm,
             ),
-            RaisedButton(
+            ElevatedButton(
                 child: const Text('Tap here to test explicit intents.'),
                 onPressed: () => _openExplicitIntentsView(context)),
           ],
@@ -166,40 +166,40 @@ class ExplicitIntentsWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                     'Tap here to display panorama\nimagery in Google Street View.'),
                 onPressed: _openGoogleMapsStreetView,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text('Tap here to display\na map in Google Maps.'),
                 onPressed: _displayMapInGoogleMaps,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                     'Tap here to launch turn-by-turn\nnavigation in Google Maps.'),
                 onPressed: _launchTurnByTurnNavigationInGoogleMaps,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text('Tap here to open link in Google Chrome.'),
                 onPressed: _openLinkInGoogleChrome,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text('Tap here to start activity in new task.'),
                 onPressed: _startActivityInNewTask,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                     'Tap here to test explicit intent fallback to implicit.'),
                 onPressed: _testExplicitIntentFallback,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                   'Tap here to open Location Settings Configuration',
                 ),
                 onPressed: _openLocationSettingsConfiguration,
               ),
-              RaisedButton(
+              ElevatedButton(
                 child: const Text(
                   'Tap here to open Application Details',
                 ),

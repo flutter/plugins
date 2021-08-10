@@ -1,11 +1,11 @@
-# image_picker_for_web
+# image\_picker\_for\_web
 
 A web implementation of [`image_picker`][1].
 
-## Browser Support
+## Limitations on the web platform
 
 Since Web Browsers don't offer direct access to their users' file system,
-this plugin provides a `PickedFile` abstraction to make access access uniform
+this plugin provides a `PickedFile` abstraction to make access uniform
 across platforms.
 
 The web version of the plugin puts network-accessible URIs as the `path`
@@ -42,23 +42,19 @@ In order to "take a photo", some mobile browsers offer a [`capture` attribute](h
 Each browser may implement `capture` any way they please, so it may (or may not) make a
 difference in your users' experience.
 
+### pickImage()
+The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported on the web.
+
+### pickVideo()
+The argument `maxDuration` is not supported on the web.
+
 ## Usage
 
 ### Import the package
 
-This package is an unendorsed web platform implementation of `image_picker`.
-
-In order to use this, you'll need to depend in `image_picker: ^0.6.7` (which was the first version of the plugin that allowed federation), and `image_picker_for_web: ^0.1.0`.
-
-```yaml
-...
-dependencies:
-  ...
-  image_picker: ^0.6.7
-  image_picker_for_web: ^0.1.0
-  ...
-...
-```
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin),
+which means you can simply use `image_picker`
+normally. This package will be automatically included in your app when you do.
 
 ### Use the plugin
 
