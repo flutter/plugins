@@ -1,3 +1,7 @@
+## NEXT
+
+* Updated Android lint settings.
+
 ## 5.0.6
 
 * Remove references to the Android V1 embedding.

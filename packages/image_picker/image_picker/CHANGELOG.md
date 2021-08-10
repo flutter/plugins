@@ -1,6 +1,7 @@
 ## NEXT
 
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
+* Updated Android lint settings.
 
 ## 0.8.2
 

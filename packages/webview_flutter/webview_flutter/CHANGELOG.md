@@ -1,6 +1,7 @@
 ## NEXT
 
 * Improved the documentation on using the different Android Platform View modes.
+* Updated Android lint settings.
 
 ## 2.0.11
 
