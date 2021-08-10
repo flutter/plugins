@@ -1,12 +1,11 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_platform_interface/src/method_channel/method_channel_camera.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -24,11 +23,6 @@ void main() {
 
     test('Can be extended', () {
       CameraPlatform.instance = ExtendsCameraPlatform();
-    });
-
-    test('Can be mocked with `implements`', () {
-      final mock = MockCameraPlatform();
-      CameraPlatform.instance = mock;
     });
 
     test(
@@ -117,7 +111,8 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.lockCaptureOrientation(1, null),
+        () => cameraPlatform.lockCaptureOrientation(
+            1, DeviceOrientation.portraitUp),
         throwsUnimplementedError,
       );
     });
@@ -155,7 +150,14 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.createCamera(null, null),
+        () => cameraPlatform.createCamera(
+          CameraDescription(
+            name: 'back',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0,
+          ),
+          ResolutionPreset.high,
+        ),
         throwsUnimplementedError,
       );
     });
@@ -168,7 +170,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.initializeCamera(null),
+        () => cameraPlatform.initializeCamera(1),
         throwsUnimplementedError,
       );
     });
@@ -220,7 +222,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.setFlashMode(1, null),
+        () => cameraPlatform.setFlashMode(1, FlashMode.auto),
         throwsUnimplementedError,
       );
     });
@@ -233,7 +235,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.setExposureMode(1, null),
+        () => cameraPlatform.setExposureMode(1, ExposureMode.auto),
         throwsUnimplementedError,
       );
     });
@@ -298,7 +300,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.setExposureOffset(1, null),
+        () => cameraPlatform.setExposureOffset(1, 2.0),
         throwsUnimplementedError,
       );
     });
@@ -311,7 +313,7 @@ void main() {
 
       // Act & Assert
       expect(
-        () => cameraPlatform.setFocusMode(1, null),
+        () => cameraPlatform.setFocusMode(1, FocusMode.auto),
         throwsUnimplementedError,
       );
     });
@@ -406,6 +408,32 @@ void main() {
         throwsUnimplementedError,
       );
     });
+
+    test(
+        'Default implementation of pausePreview() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.pausePreview(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of resumePreview() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.resumePreview(1),
+        throwsUnimplementedError,
+      );
+    });
   });
 }
 
@@ -413,12 +441,5 @@ class ImplementsCameraPlatform implements CameraPlatform {
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
-
-class MockCameraPlatform extends Mock
-    with
-        // ignore: prefer_mixin
-        MockPlatformInterfaceMixin
-    implements
-        CameraPlatform {}
 
 class ExtendsCameraPlatform extends CameraPlatform {}

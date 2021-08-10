@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,8 +11,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
 import android.hardware.SensorManager;
-import android.os.Build.VERSION;
-import android.os.Build.VERSION_CODES;
 import android.provider.Settings;
 import android.view.Display;
 import android.view.OrientationEventListener;
@@ -57,6 +55,12 @@ class DeviceOrientationManager {
 
   public int getMediaOrientation(PlatformChannel.DeviceOrientation orientation) {
     int angle = 0;
+
+    // Fallback to device orientation when the orientation value is null
+    if (orientation == null) {
+      orientation = getUIOrientation();
+    }
+
     switch (orientation) {
       case PORTRAIT_UP:
         angle = 0;
@@ -191,11 +195,6 @@ class DeviceOrientationManager {
 
   @SuppressWarnings("deprecation")
   private Display getDisplay() {
-    if (VERSION.SDK_INT >= VERSION_CODES.R) {
-      return activity.getDisplay();
-    } else {
-      return ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE))
-          .getDefaultDisplay();
-    }
+    return ((WindowManager) activity.getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -37,7 +37,10 @@ void main() {
 
         // Act
         final cameraId = await camera.createCamera(
-          CameraDescription(name: 'Test'),
+          CameraDescription(
+              name: 'Test',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 0),
           ResolutionPreset.high,
         );
 
@@ -48,7 +51,7 @@ void main() {
             arguments: {
               'cameraName': 'Test',
               'resolutionPreset': 'high',
-              'enableAudio': null
+              'enableAudio': false
             },
           ),
         ]);
@@ -70,7 +73,11 @@ void main() {
         // Act
         expect(
           () => camera.createCamera(
-            CameraDescription(name: 'Test'),
+            CameraDescription(
+              name: 'Test',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 0,
+            ),
             ResolutionPreset.high,
           ),
           throwsA(
@@ -97,7 +104,11 @@ void main() {
         // Act
         expect(
           () => camera.createCamera(
-            CameraDescription(name: 'Test'),
+            CameraDescription(
+              name: 'Test',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 0,
+            ),
             ResolutionPreset.high,
           ),
           throwsA(
@@ -122,7 +133,11 @@ void main() {
             });
         final camera = MethodChannelCamera();
         final cameraId = await camera.createCamera(
-          CameraDescription(name: 'Test'),
+          CameraDescription(
+            name: 'Test',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0,
+          ),
           ResolutionPreset.high,
         );
 
@@ -165,7 +180,11 @@ void main() {
 
         final camera = MethodChannelCamera();
         final cameraId = await camera.createCamera(
-          CameraDescription(name: 'Test'),
+          CameraDescription(
+            name: 'Test',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0,
+          ),
           ResolutionPreset.high,
         );
         Future<void> initializeFuture = camera.initializeCamera(cameraId);
@@ -197,8 +216,8 @@ void main() {
     });
 
     group('Event Tests', () {
-      MethodChannelCamera camera;
-      int cameraId;
+      late MethodChannelCamera camera;
+      late int cameraId;
       setUp(() async {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
@@ -209,7 +228,11 @@ void main() {
         );
         camera = MethodChannelCamera();
         cameraId = await camera.createCamera(
-          CameraDescription(name: 'Test'),
+          CameraDescription(
+            name: 'Test',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0,
+          ),
           ResolutionPreset.high,
         );
         Future<void> initializeFuture = camera.initializeCamera(cameraId);
@@ -352,8 +375,9 @@ void main() {
     });
 
     group('Function Tests', () {
-      MethodChannelCamera camera;
-      int cameraId;
+      late MethodChannelCamera camera;
+      late int cameraId;
+
       setUp(() async {
         MethodChannelMock(
           channelName: 'plugins.flutter.io/camera',
@@ -364,7 +388,11 @@ void main() {
         );
         camera = MethodChannelCamera();
         cameraId = await camera.createCamera(
-          CameraDescription(name: 'Test'),
+          CameraDescription(
+            name: 'Test',
+            lensDirection: CameraLensDirection.back,
+            sensorOrientation: 0,
+          ),
           ResolutionPreset.high,
         );
         Future<void> initializeFuture = camera.initializeCamera(cameraId);
@@ -893,6 +921,38 @@ void main() {
         expect(channel.log, <Matcher>[
           isMethodCall('unlockCaptureOrientation',
               arguments: {'cameraId': cameraId}),
+        ]);
+      });
+
+      test('Should pause the camera preview', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'pausePreview': null},
+        );
+
+        // Act
+        await camera.pausePreview(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('pausePreview', arguments: {'cameraId': cameraId}),
+        ]);
+      });
+
+      test('Should resume the camera preview', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'resumePreview': null},
+        );
+
+        // Act
+        await camera.resumePreview(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('resumePreview', arguments: {'cameraId': cameraId}),
         ]);
       });
     });

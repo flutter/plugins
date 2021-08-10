@@ -1,14 +1,14 @@
-// Copyright 2017, the Chromium project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences_windows/shared_preferences_windows.dart';
-import 'package:e2e/e2e.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
-  E2EWidgetsFlutterBinding.ensureInitialized();
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('SharedPreferencesWindows', () {
     const Map<String, dynamic> kTestValues = <String, dynamic>{
@@ -27,7 +27,7 @@ void main() {
       'flutter.List': <String>['baz', 'quox'],
     };
 
-    SharedPreferencesWindows preferences;
+    late SharedPreferencesWindows preferences;
 
     setUp(() async {
       preferences = SharedPreferencesWindows.instance;

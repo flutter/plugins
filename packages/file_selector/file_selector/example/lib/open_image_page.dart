@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:file_selector/file_selector.dart';
@@ -11,6 +15,10 @@ class OpenImagePage extends StatelessWidget {
       extensions: ['jpg', 'png'],
     );
     final List<XFile> files = await openFiles(acceptedTypeGroups: [typeGroup]);
+    if (files.isEmpty) {
+      // Operation was canceled by the user.
+      return;
+    }
     final XFile file = files[0];
     final String fileName = file.name;
     final String filePath = file.path;

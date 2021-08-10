@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,9 +24,11 @@ void main() {
         flashMode: FlashMode.auto,
         exposureMode: ExposureMode.auto,
         exposurePointSupported: true,
+        focusMode: FocusMode.auto,
         deviceOrientation: DeviceOrientation.portraitUp,
         lockedCaptureOrientation: DeviceOrientation.portraitUp,
         recordingOrientation: DeviceOrientation.portraitUp,
+        focusPointSupported: true,
       );
 
       expect(cameraValue, isA<CameraValue>());
@@ -58,8 +60,9 @@ void main() {
       expect(cameraValue.isTakingPicture, isFalse);
       expect(cameraValue.isStreamingImages, isFalse);
       expect(cameraValue.flashMode, FlashMode.auto);
-      expect(cameraValue.exposureMode, null);
+      expect(cameraValue.exposureMode, ExposureMode.auto);
       expect(cameraValue.exposurePointSupported, false);
+      expect(cameraValue.focusMode, FocusMode.auto);
       expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
       expect(cameraValue.lockedCaptureOrientation, null);
       expect(cameraValue.recordingOrientation, null);
@@ -78,7 +81,8 @@ void main() {
       expect(cameraValue.isTakingPicture, isFalse);
       expect(cameraValue.isStreamingImages, isFalse);
       expect(cameraValue.flashMode, FlashMode.auto);
-      expect(cameraValue.exposureMode, null);
+      expect(cameraValue.focusMode, FocusMode.auto);
+      expect(cameraValue.exposureMode, ExposureMode.auto);
       expect(cameraValue.exposurePointSupported, false);
       expect(cameraValue.deviceOrientation, DeviceOrientation.portraitUp);
       expect(cameraValue.lockedCaptureOrientation, null);

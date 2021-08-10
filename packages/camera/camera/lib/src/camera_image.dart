@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class Plane {
   /// The distance between adjacent pixel samples on Android, in bytes.
   ///
   /// Will be `null` on iOS.
-  final int bytesPerPixel;
+  final int? bytesPerPixel;
 
   /// The row stride for this color plane, in bytes.
   final int bytesPerRow;
@@ -34,12 +34,12 @@ class Plane {
   /// Height of the pixel buffer on iOS.
   ///
   /// Will be `null` on Android
-  final int height;
+  final int? height;
 
   /// Width of the pixel buffer on iOS.
   ///
   /// Will be `null` on Android.
-  final int width;
+  final int? width;
 }
 
 /// Describes how pixels are represented in an image.

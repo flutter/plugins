@@ -1,14 +1,16 @@
-## 0.1.0-nullsafety.2
+## 2.0.2
 
-* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Replaced reference to `shared_preferences` plugin with the `url_launcher` in the README.
 
-## 0.1.0-nullsafety.1
+## 2.0.1
 
-* Bump Dart SDK to support null safety.
+* Updated installation instructions in README.
 
-## 0.1.0-nullsafety
+## 2.0.0
 
 * Migrate to null-safety.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Set `implementation` in pubspec.yaml
 
 ## 0.0.2+1
 

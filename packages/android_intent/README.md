@@ -1,22 +1,30 @@
 # Android Intent Plugin for Flutter
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`android_intent_plus`](https://pub.dev/packages/android_intent_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 This plugin allows Flutter apps to launch arbitrary intents when the platform
 is Android. If the plugin is invoked on iOS, it will crash your app. In checked
 mode, we assert that the platform should be Android.
 
 
-**Please set your constraint to `android_intent: '>=0.3.y+x <2.0.0'`**
-
-## Backward compatible 1.0.0 version is coming
-The plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.3.y+z`.
-Please use `android_intent: '>=0.3.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
-For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-
 Use it by specifying action, category, data and extra arguments for the intent.
 It does not support returning the result of the launched activity. Sample usage:
 
 ```dart
-if (platform.isAndroid) {
+if (Platform.isAndroid) {
   AndroidIntent intent = AndroidIntent(
       action: 'action_view',
       data: 'https://play.google.com/store/apps/details?'
@@ -40,7 +48,7 @@ for it in the plugin and use an action constant to refer to it. For instance:
 `'action_application_details_settings'` translates to `android.settings.ACTION_APPLICATION_DETAILS_SETTINGS`
 
 ```dart
-if (platform.isAndroid) {
+if (Platform.isAndroid) {
   final AndroidIntent intent = AndroidIntent(
     action: 'action_application_details_settings',
     data: 'package:com.example.app', // replace com.example.app with your applicationId

@@ -1,14 +1,20 @@
-## 2.0.0-nullsafety.2
+## NEXT
 
-* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Remove references to the V1 Android embedding.
 
-## 2.0.0-nullsafety.1
+## 2.0.2
 
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update README to point to Plus Plugins version.
 
-## 2.0.0-nullsafety
+##  2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
 
 * Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
 
 ## 0.3.7+8
 

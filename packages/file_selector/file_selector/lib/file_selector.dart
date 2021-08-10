@@ -1,4 +1,4 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,10 +10,10 @@ export 'package:file_selector_platform_interface/file_selector_platform_interfac
     show XFile, XTypeGroup;
 
 /// Open file dialog for loading files and return a file path
-Future<XFile> openFile({
-  List<XTypeGroup> acceptedTypeGroups,
-  String initialDirectory,
-  String confirmButtonText,
+Future<XFile?> openFile({
+  List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
+  String? initialDirectory,
+  String? confirmButtonText,
 }) {
   return FileSelectorPlatform.instance.openFile(
       acceptedTypeGroups: acceptedTypeGroups,
@@ -23,9 +23,9 @@ Future<XFile> openFile({
 
 /// Open file dialog for loading files and return a list of file paths
 Future<List<XFile>> openFiles({
-  List<XTypeGroup> acceptedTypeGroups,
-  String initialDirectory,
-  String confirmButtonText,
+  List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
+  String? initialDirectory,
+  String? confirmButtonText,
 }) {
   return FileSelectorPlatform.instance.openFiles(
       acceptedTypeGroups: acceptedTypeGroups,
@@ -34,11 +34,11 @@ Future<List<XFile>> openFiles({
 }
 
 /// Saves File to user's file system
-Future<String> getSavePath({
-  List<XTypeGroup> acceptedTypeGroups,
-  String initialDirectory,
-  String suggestedName,
-  String confirmButtonText,
+Future<String?> getSavePath({
+  List<XTypeGroup> acceptedTypeGroups = const <XTypeGroup>[],
+  String? initialDirectory,
+  String? suggestedName,
+  String? confirmButtonText,
 }) async {
   return FileSelectorPlatform.instance.getSavePath(
       acceptedTypeGroups: acceptedTypeGroups,
@@ -48,9 +48,9 @@ Future<String> getSavePath({
 }
 
 /// Gets a directory path from a user's file system
-Future<String> getDirectoryPath({
-  String initialDirectory,
-  String confirmButtonText,
+Future<String?> getDirectoryPath({
+  String? initialDirectory,
+  String? confirmButtonText,
 }) async {
   return FileSelectorPlatform.instance.getDirectoryPath(
       initialDirectory: initialDirectory, confirmButtonText: confirmButtonText);

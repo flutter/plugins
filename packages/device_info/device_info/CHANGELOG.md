@@ -1,14 +1,19 @@
-## 2.0.0-nullsafety.2
+## NEXT
 
-* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Remove references to the Android V1 embedding.
 
-## 2.0.0-nullsafety.1
+## 2.0.2
 
-* Bump Dart SDK to support null safety.
+* Update README to point to Plus Plugins version.
 
-## 2.0.0-nullsafety
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
 
 * Migrate to null safety.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
 
 ## 1.0.1
 

@@ -1,13 +1,12 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:typed_data';
 
 import 'package:flutter/services.dart';
-import 'package:flutter_test/flutter_test.dart' show TestWidgetsFlutterBinding;
+import 'package:flutter_test/flutter_test.dart';
 import 'package:sensors/sensors.dart';
-import 'package:test/test.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -52,16 +51,19 @@ void main() {
 void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
   const StandardMethodCodec standardMethod = StandardMethodCodec();
 
-  void _emitEvent(ByteData event) {
-    ServicesBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
-      channelName,
-      event,
-      (ByteData reply) {},
-    );
+  void _emitEvent(ByteData? event) {
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+          channelName,
+          event,
+          (ByteData? reply) {},
+        );
   }
 
-  ServicesBinding.instance.defaultBinaryMessenger
-      .setMockMessageHandler(channelName, (ByteData message) async {
+  _ambiguate(ServicesBinding.instance)!
+      .defaultBinaryMessenger
+      .setMockMessageHandler(channelName, (ByteData? message) async {
     final MethodCall methodCall = standardMethod.decodeMethodCall(message);
     if (methodCall.method == 'listen') {
       _emitEvent(standardMethod.encodeSuccessEnvelope(sensorData));
@@ -74,3 +76,10 @@ void _initializeFakeSensorChannel(String channelName, List<double> sensorData) {
     }
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;
