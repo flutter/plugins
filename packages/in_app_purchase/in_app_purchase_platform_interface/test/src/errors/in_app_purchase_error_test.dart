@@ -13,7 +13,8 @@ void main() {
       source: 'dummy_source',
     );
 
-    expect(exceptionNoDetails.toString(), 'IAPError(code: error_code, source: dummy_source, message: dummy_message, details: null)');
+    expect(exceptionNoDetails.toString(),
+        'IAPError(code: error_code, source: dummy_source, message: dummy_message, details: null)');
 
     final IAPError exceptionWithDetails = IAPError(
       code: 'error_code',
@@ -22,6 +23,7 @@ void main() {
       details: 'dummy_details',
     );
 
-    expect(exceptionWithDetails.toString(), 'IAPError(code: error_code, source: dummy_source, message: dummy_message, details: dummy_details)');
+    expect(exceptionWithDetails.toString(),
+        'IAPError(code: error_code, source: dummy_source, message: dummy_message, details: dummy_details)');
   });
 }
