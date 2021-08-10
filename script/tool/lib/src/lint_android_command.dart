@@ -45,8 +45,8 @@ class LintAndroidCommand extends PackageLoopingCommand {
     // Only lint one build mode to avoid extra work.
     //
     // TODO(stuartmorgan): Consider adding an XML parser to read and summarize
-    // all results. Currently, only the first three errors will be shown, and
-    // the rest are only in an XML file that won't be accessible for CI runs.
+    // all results. Currently, only the first three errors will be shown inline,
+    // and the rest have to be checked via the CI-uploaded artifact.
     final int exitCode = await project.runCommand('lintDebug');
 
     return exitCode == 0 ? PackageResult.success() : PackageResult.fail();
