@@ -7,7 +7,15 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  PathProviderLinux.registerWith();
+
+  late Map<String, String> environment;
+
+  setUp(() {
+    environment = <String, String>{};
+    PathProviderLinux.privateRegisterWith(
+      environment: environment,
+    );
+  });
 
   test('registered instance', () {
     expect(PathProviderPlatform.instance, isA<PathProviderLinux>());
@@ -16,6 +24,12 @@ void main() {
   test('getTemporaryPath', () async {
     final PathProviderPlatform plugin = PathProviderPlatform.instance;
     expect(await plugin.getTemporaryPath(), '/tmp');
+
+    environment['TMPDIR'] = '';
+    expect(await plugin.getTemporaryPath(), '/tmp');
+
+    environment['TMPDIR'] = '/run/user/0/tmp';
+    expect(await plugin.getTemporaryPath(), '/run/user/0/tmp');
   });
 
   test('getApplicationSupportPath', () async {
