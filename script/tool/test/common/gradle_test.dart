@@ -5,7 +5,6 @@
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
-import 'package:file/local.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/gradle.dart';
 import 'package:test/test.dart';
@@ -171,7 +170,6 @@ void main() {
           <io.Process>[
         MockProcess.failing(),
       ];
-      final Directory directory = const LocalFileSystem().currentDirectory;
 
       final int exitCode = await project.runCommand('foo');
 
