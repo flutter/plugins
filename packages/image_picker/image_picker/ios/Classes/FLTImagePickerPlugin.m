@@ -18,7 +18,8 @@
 
 @interface FLTImagePickerPlugin () <UINavigationControllerDelegate,
                                     UIImagePickerControllerDelegate,
-                                    PHPickerViewControllerDelegate>
+                                    PHPickerViewControllerDelegate,
+                                    UIAdaptivePresentationControllerDelegate>
 
 @property(copy, nonatomic) FlutterResult result;
 
@@ -92,6 +93,7 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
 
   _pickerViewController = [[PHPickerViewController alloc] initWithConfiguration:config];
   _pickerViewController.delegate = self;
+  _pickerViewController.presentationController.delegate = self;
 
   self.maxImagesAllowed = maxImagesAllowed;
 
@@ -371,6 +373,16 @@ typedef NS_ENUM(NSInteger, ImagePickerClassType) { UIImagePickerClassType, PHPic
     imageQuality = @([imageQuality floatValue] / 100);
   }
   return imageQuality;
+}
+
+- (void)presentationControllerDidDismiss:(UIPresentationController *)presentationController {
+  dispatch_queue_t backgroundQueue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+  dispatch_async(backgroundQueue, ^{
+    self.result(nil);
+    self.result = nil;
+    self->_arguments = nil;
+  });
 }
 
 - (void)picker:(PHPickerViewController *)picker
