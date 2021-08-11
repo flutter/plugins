@@ -630,7 +630,7 @@ void main() {
       group('getMaxZoomLevel', () {
         testWidgets(
             'returns maximum '
-            'from CameraSettings.getZoomLevelCapabilityForCamera',
+            'from CameraService.getZoomLevelCapabilityForCamera',
             (tester) async {
           final camera = Camera(
             textureId: textureId,
@@ -661,7 +661,7 @@ void main() {
       group('getMinZoomLevel', () {
         testWidgets(
             'returns minimum '
-            'from CameraSettings.getZoomLevelCapabilityForCamera',
+            'from CameraService.getZoomLevelCapabilityForCamera',
             (tester) async {
           final camera = Camera(
             textureId: textureId,
@@ -692,7 +692,7 @@ void main() {
       group('setZoomLevel', () {
         testWidgets(
             'applies zoom on the video track '
-            'from CameraSettings.getZoomLevelCapabilityForCamera',
+            'from CameraService.getZoomLevelCapabilityForCamera',
             (tester) async {
           final camera = Camera(
             textureId: textureId,
