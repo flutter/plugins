@@ -2,7 +2,7 @@
 
 * Updated Android lint settings.
 
-# 0.1.4+3
+## 0.1.4+3
 
 - Updated installation instructions in README.
 
