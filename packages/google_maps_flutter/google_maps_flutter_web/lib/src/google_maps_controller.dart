@@ -292,14 +292,8 @@ class GoogleMapController {
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
     assert(_googleMap != null,
         'Cannot get the screen coordinates with a null map.');
-    assert(_googleMap!.projection != null,
-        'Cannot compute screen coordinate with a null map or projection.');
 
-    final point =
-        _googleMap!.projection!.fromLatLngToPoint!(_latLngToGmLatLng(latLng))!;
-
-    assert(point.x != null && point.y != null,
-        'The x and y of a ScreenCoordinate cannot be null.');
+    final point = _latLngToPixel(_googleMap!, _latLngToGmLatLng(latLng));
 
     return ScreenCoordinate(x: point.x!.toInt(), y: point.y!.toInt());
   }

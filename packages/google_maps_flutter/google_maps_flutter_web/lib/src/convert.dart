@@ -416,6 +416,7 @@ void _applyCameraUpdate(gmaps.GMap map, CameraUpdate update) {
 }
 
 // original JS by: Byron Singh (https://stackoverflow.com/a/30541162)
+// (This is the reverse of [_latLngToPixel])
 gmaps.LatLng _pixelToLatLng(gmaps.GMap map, int x, int y) {
   final bounds = map.bounds;
   final projection = map.projection;
@@ -440,4 +441,34 @@ gmaps.LatLng _pixelToLatLng(gmaps.GMap map, int x, int y) {
       gmaps.Point((x / scale) + bottomLeft.x!, (y / scale) + topRight.y!);
 
   return projection.fromPointToLatLng!(point)!;
+}
+
+// original JS by: Krasimir (https://krasimirtsonev.com/blog/article/google-maps-api-v3-convert-latlng-object-to-actual-pixels-point-object)
+// (This is the reverse of [_pixelToLatLng])
+gmaps.Point _latLngToPixel(gmaps.GMap map, gmaps.LatLng coords) {
+  final zoom = map.zoom;
+  final bounds = map.bounds;
+  final projection = map.projection;
+
+  assert(
+      bounds != null, 'Map Bounds required to compute screen x/y of LatLng.');
+  assert(projection != null,
+      'Map Projection required to compute screen x/y of LatLng.');
+  assert(zoom != null,
+      'Current map zoom level required to compute screen x/y of LatLng.');
+
+  final ne = bounds!.northEast;
+  final sw = bounds.southWest;
+
+  final topRight = projection!.fromLatLngToPoint!(ne)!;
+  final bottomLeft = projection.fromLatLngToPoint!(sw)!;
+
+  final scale = 1 << (zoom!.toInt()); // 2 ^ zoom
+
+  final worldPoint = projection.fromLatLngToPoint!(coords)!;
+
+  return gmaps.Point(
+    ((worldPoint.x! - bottomLeft.x!) * scale).toInt(),
+    ((worldPoint.y! - topRight.y!) * scale).toInt(),
+  );
 }
