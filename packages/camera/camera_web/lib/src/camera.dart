@@ -251,14 +251,14 @@ class Camera {
   /// Throws a [CameraWebException] if the zoom level is not supported
   /// or the camera has not been initialized or started.
   double getMaxZoomLevel() =>
-      _cameraSettings.getZoomLevelCapabilityForCamera(this).maximum;
+      _cameraService.getZoomLevelCapabilityForCamera(this).maximum;
 
   /// Returns the camera minimum zoom level.
   ///
   /// Throws a [CameraWebException] if the zoom level is not supported
   /// or the camera has not been initialized or started.
   double getMinZoomLevel() =>
-      _cameraSettings.getZoomLevelCapabilityForCamera(this).minimum;
+      _cameraService.getZoomLevelCapabilityForCamera(this).minimum;
 
   /// Sets the camera zoom level to [zoom].
   ///
@@ -266,7 +266,7 @@ class Camera {
   /// not supported or the camera has not been initialized or started.
   void setZoomLevel(double zoom) {
     final zoomLevelCapability =
-        _cameraSettings.getZoomLevelCapabilityForCamera(this);
+        _cameraService.getZoomLevelCapabilityForCamera(this);
 
     if (zoom < zoomLevelCapability.minimum ||
         zoom > zoomLevelCapability.maximum) {

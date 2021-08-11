@@ -634,7 +634,7 @@ void main() {
             (tester) async {
           final camera = Camera(
             textureId: textureId,
-            cameraSettings: cameraSettings,
+            cameraService: cameraService,
           );
 
           final zoomLevelCapability = ZoomLevelCapability(
@@ -643,12 +643,12 @@ void main() {
             videoTrack: MockMediaStreamTrack(),
           );
 
-          when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+          when(() => cameraService.getZoomLevelCapabilityForCamera(camera))
               .thenReturn(zoomLevelCapability);
 
           final maximumZoomLevel = camera.getMaxZoomLevel();
 
-          verify(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+          verify(() => cameraService.getZoomLevelCapabilityForCamera(camera))
               .called(1);
 
           expect(
@@ -665,7 +665,7 @@ void main() {
             (tester) async {
           final camera = Camera(
             textureId: textureId,
-            cameraSettings: cameraSettings,
+            cameraService: cameraService,
           );
 
           final zoomLevelCapability = ZoomLevelCapability(
@@ -674,12 +674,12 @@ void main() {
             videoTrack: MockMediaStreamTrack(),
           );
 
-          when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+          when(() => cameraService.getZoomLevelCapabilityForCamera(camera))
               .thenReturn(zoomLevelCapability);
 
           final minimumZoomLevel = camera.getMinZoomLevel();
 
-          verify(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+          verify(() => cameraService.getZoomLevelCapabilityForCamera(camera))
               .called(1);
 
           expect(
@@ -696,7 +696,7 @@ void main() {
             (tester) async {
           final camera = Camera(
             textureId: textureId,
-            cameraSettings: cameraSettings,
+            cameraService: cameraService,
           );
 
           final videoTrack = MockMediaStreamTrack();
@@ -710,7 +710,7 @@ void main() {
           when(() => videoTrack.applyConstraints(any()))
               .thenAnswer((_) async {});
 
-          when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+          when(() => cameraService.getZoomLevelCapabilityForCamera(camera))
               .thenReturn(zoomLevelCapability);
 
           const zoom = 75.0;
@@ -734,7 +734,7 @@ void main() {
               'when the provided zoom level is below minimum', (tester) async {
             final camera = Camera(
               textureId: textureId,
-              cameraSettings: cameraSettings,
+              cameraService: cameraService,
             );
 
             final zoomLevelCapability = ZoomLevelCapability(
@@ -743,7 +743,7 @@ void main() {
               videoTrack: MockMediaStreamTrack(),
             );
 
-            when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+            when(() => cameraService.getZoomLevelCapabilityForCamera(camera))
                 .thenReturn(zoomLevelCapability);
 
             expect(
@@ -768,7 +768,7 @@ void main() {
               'when the provided zoom level is below minimum', (tester) async {
             final camera = Camera(
               textureId: textureId,
-              cameraSettings: cameraSettings,
+              cameraService: cameraService,
             );
 
             final zoomLevelCapability = ZoomLevelCapability(
@@ -777,7 +777,7 @@ void main() {
               videoTrack: MockMediaStreamTrack(),
             );
 
-            when(() => cameraSettings.getZoomLevelCapabilityForCamera(camera))
+            when(() => cameraService.getZoomLevelCapabilityForCamera(camera))
                 .thenReturn(zoomLevelCapability);
 
             expect(
