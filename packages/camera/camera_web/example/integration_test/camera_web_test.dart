@@ -789,16 +789,6 @@ void main() {
         ).thenReturn(OrientationType.portraitPrimary);
       });
 
-      testWidgets(
-          'requests full-screen mode '
-          'on documentElement', (tester) async {
-        await CameraPlatform.instance.unlockCaptureOrientation(
-          cameraId,
-        );
-
-        verify(documentElement.requestFullscreen).called(1);
-      });
-
       testWidgets('unlocks the capture orientation', (tester) async {
         await CameraPlatform.instance.unlockCaptureOrientation(
           cameraId,
