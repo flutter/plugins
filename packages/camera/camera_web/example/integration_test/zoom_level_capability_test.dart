@@ -4,12 +4,15 @@
 
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
-import '../helpers/helpers.dart';
+import 'helpers/helpers.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('ZoomLevelCapability', () {
-    test('sets all properties', () {
+    testWidgets('sets all properties', (tester) async {
       const minimum = 100.0;
       const maximum = 400.0;
       final videoTrack = MockMediaStreamTrack();
@@ -25,7 +28,7 @@ void main() {
       expect(capability.videoTrack, equals(videoTrack));
     });
 
-    test('supports value equality', () {
+    testWidgets('supports value equality', (tester) async {
       final videoTrack = MockMediaStreamTrack();
 
       expect(

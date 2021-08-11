@@ -4,10 +4,13 @@
 
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('CameraOptions', () {
-    test('serializes correctly', () {
+    testWidgets('serializes correctly', (tester) async {
       final cameraOptions = CameraOptions(
         audio: AudioConstraints(enabled: true),
         video: VideoConstraints(
@@ -24,7 +27,7 @@ void main() {
       );
     });
 
-    test('supports value equality', () {
+    testWidgets('supports value equality', (tester) async {
       expect(
         CameraOptions(
           audio: AudioConstraints(enabled: false),
@@ -51,14 +54,14 @@ void main() {
   });
 
   group('AudioConstraints', () {
-    test('serializes correctly', () {
+    testWidgets('serializes correctly', (tester) async {
       expect(
         AudioConstraints(enabled: true).toJson(),
         equals(true),
       );
     });
 
-    test('supports value equality', () {
+    testWidgets('supports value equality', (tester) async {
       expect(
         AudioConstraints(enabled: true),
         equals(AudioConstraints(enabled: true)),
@@ -67,7 +70,7 @@ void main() {
   });
 
   group('VideoConstraints', () {
-    test('serializes correctly', () {
+    testWidgets('serializes correctly', (tester) async {
       final videoConstraints = VideoConstraints(
         facingMode: FacingModeConstraint.exact(CameraType.user),
         width: VideoSizeConstraint(ideal: 100, maximum: 100),
@@ -88,7 +91,7 @@ void main() {
       );
     });
 
-    test('supports value equality', () {
+    testWidgets('supports value equality', (tester) async {
       expect(
         VideoConstraints(
           facingMode: FacingModeConstraint.exact(CameraType.environment),
@@ -110,25 +113,25 @@ void main() {
 
   group('FacingModeConstraint', () {
     group('ideal', () {
-      test(
+      testWidgets(
           'serializes correctly '
-          'for environment camera type', () {
+          'for environment camera type', (tester) async {
         expect(
           FacingModeConstraint(CameraType.environment).toJson(),
           equals({'ideal': 'environment'}),
         );
       });
 
-      test(
+      testWidgets(
           'serializes correctly '
-          'for user camera type', () {
+          'for user camera type', (tester) async {
         expect(
           FacingModeConstraint(CameraType.user).toJson(),
           equals({'ideal': 'user'}),
         );
       });
 
-      test('supports value equality', () {
+      testWidgets('supports value equality', (tester) async {
         expect(
           FacingModeConstraint(CameraType.user),
           equals(FacingModeConstraint(CameraType.user)),
@@ -137,25 +140,25 @@ void main() {
     });
 
     group('exact', () {
-      test(
+      testWidgets(
           'serializes correctly '
-          'for environment camera type', () {
+          'for environment camera type', (tester) async {
         expect(
           FacingModeConstraint.exact(CameraType.environment).toJson(),
           equals({'exact': 'environment'}),
         );
       });
 
-      test(
+      testWidgets(
           'serializes correctly '
-          'for user camera type', () {
+          'for user camera type', (tester) async {
         expect(
           FacingModeConstraint.exact(CameraType.user).toJson(),
           equals({'exact': 'user'}),
         );
       });
 
-      test('supports value equality', () {
+      testWidgets('supports value equality', (tester) async {
         expect(
           FacingModeConstraint.exact(CameraType.environment),
           equals(FacingModeConstraint.exact(CameraType.environment)),
@@ -165,7 +168,7 @@ void main() {
   });
 
   group('VideoSizeConstraint ', () {
-    test('serializes correctly', () {
+    testWidgets('serializes correctly', (tester) async {
       expect(
         VideoSizeConstraint(
           minimum: 200,
@@ -180,7 +183,7 @@ void main() {
       );
     });
 
-    test('supports value equality', () {
+    testWidgets('supports value equality', (tester) async {
       expect(
         VideoSizeConstraint(
           minimum: 100,
