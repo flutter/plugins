@@ -20,10 +20,6 @@ source "$SCRIPT_DIR/common.sh"
 
 (cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude script/configs/exclude_all_plugins_app.yaml)
 
-function error() {
-  echo "$@" 1>&2
-}
-
 failures=0
 
 BUILD_MODES=("debug" "release")
