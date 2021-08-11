@@ -6,7 +6,7 @@ import 'dart:html' as html;
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 
@@ -18,7 +18,7 @@ String _getViewType(int cameraId) => 'plugins.flutter.io/camera_$cameraId';
 /// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices
 ///
 /// The obtained camera stream is constrained by [options] and fetched
-/// with [CameraSettings.getMediaStreamForOptions].
+/// with [CameraService.getMediaStreamForOptions].
 ///
 /// The camera stream is displayed in the [videoElement] wrapped in the
 /// [divElement] to avoid overriding the custom styles applied to
@@ -40,9 +40,9 @@ class Camera {
   /// [options] and [window].
   Camera({
     required this.textureId,
-    required CameraSettings cameraSettings,
+    required CameraService cameraService,
     this.options = const CameraOptions(),
-  }) : _cameraSettings = cameraSettings;
+  }) : _cameraService = cameraService;
 
   // A torch mode constraint name.
   // See: https://w3c.github.io/mediacapture-image/#dom-mediatracksupportedconstraints-torch
@@ -71,8 +71,8 @@ class Camera {
   @visibleForTesting
   FlashMode? flashMode;
 
-  /// The camera settings used to get the media stream for the camera.
-  final CameraSettings _cameraSettings;
+  /// The camera service used to get the media stream for the camera.
+  final CameraService _cameraService;
 
   /// The current browser window used to access media devices.
   @visibleForTesting
@@ -81,7 +81,7 @@ class Camera {
   /// Initializes the camera stream displayed in the [videoElement].
   /// Registers the camera view with [textureId] under [_getViewType] type.
   Future<void> initialize() async {
-    stream = await _cameraSettings.getMediaStreamForOptions(
+    stream = await _cameraService.getMediaStreamForOptions(
       options,
       cameraId: textureId,
     );
@@ -110,7 +110,7 @@ class Camera {
   /// Initializes the camera source if the camera was previously stopped.
   Future<void> play() async {
     if (videoElement.srcObject == null) {
-      stream = await _cameraSettings.getMediaStreamForOptions(
+      stream = await _cameraService.getMediaStreamForOptions(
         options,
         cameraId: textureId,
       );
@@ -251,14 +251,14 @@ class Camera {
   /// Throws a [CameraWebException] if the zoom level is not supported
   /// or the camera has not been initialized or started.
   double getMaxZoomLevel() =>
-      _cameraSettings.getZoomLevelCapabilityForCamera(this).maximum;
+      _cameraService.getZoomLevelCapabilityForCamera(this).maximum;
 
   /// Returns the camera minimum zoom level.
   ///
   /// Throws a [CameraWebException] if the zoom level is not supported
   /// or the camera has not been initialized or started.
   double getMinZoomLevel() =>
-      _cameraSettings.getZoomLevelCapabilityForCamera(this).minimum;
+      _cameraService.getZoomLevelCapabilityForCamera(this).minimum;
 
   /// Sets the camera zoom level to [zoom].
   ///
@@ -266,7 +266,7 @@ class Camera {
   /// not supported or the camera has not been initialized or started.
   void setZoomLevel(double zoom) {
     final zoomLevelCapability =
-        _cameraSettings.getZoomLevelCapabilityForCamera(this);
+        _cameraService.getZoomLevelCapabilityForCamera(this);
 
     if (zoom < zoomLevelCapability.minimum ||
         zoom > zoomLevelCapability.maximum) {
