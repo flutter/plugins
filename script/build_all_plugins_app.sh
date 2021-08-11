@@ -18,24 +18,7 @@ readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
 source "$SCRIPT_DIR/common.sh"
 
-# This list should be kept as short as possible, and things should remain here
-# only as long as necessary, since in general the goal is for all of the latest
-# versions of plugins to be mutually compatible.
-#
-# An example use case for this list would be to temporarily add plugins while
-# updating multiple plugins for a breaking change in a common dependency in
-# cases where using a relaxed version constraint isn't possible.
-readonly EXCLUDED_PLUGINS_LIST=(
-  "plugin_platform_interface" # This should never be a direct app dependency.
-)
-# Comma-separated string of the list above
-readonly EXCLUDED=$(IFS=, ; echo "${EXCLUDED_PLUGINS_LIST[*]}")
-
-ALL_EXCLUDED=($EXCLUDED)
-
-echo "Excluding the following plugins: $ALL_EXCLUDED"
-
-(cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude $ALL_EXCLUDED)
+(cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude script/configs/exclude_all_plugins_app.yaml)
 
 function error() {
   echo "$@" 1>&2

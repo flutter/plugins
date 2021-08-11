@@ -48,6 +48,15 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       throw ToolExit(exitCode);
     }
 
+    final Set<String> excluded = getExcludedPackageNames();
+    if (excluded.isNotEmpty) {
+      print('Exluding the following plugins from the combined build:');
+      for (final String plugin in excluded) {
+        print('  $plugin');
+      }
+      print('');
+    }
+
     await Future.wait(<Future<void>>[
       _genPubspecWithAllPlugins(),
       _updateAppGradle(),

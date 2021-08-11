@@ -97,5 +97,22 @@ void main() {
       expect(command.appDirectory.path,
           customOutputDir.childDirectory('all_plugins').path);
     });
+
+    test('logs exclusions', () async {
+      createFakePlugin('plugina', packagesDir);
+      createFakePlugin('pluginb', packagesDir);
+      createFakePlugin('pluginc', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['all-plugins-app', '--exclude=pluginb,pluginc']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            'Exluding the following plugins from the combined build:',
+            '  pluginb',
+            '  pluginc',
+          ]));
+    });
   });
 }
