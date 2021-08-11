@@ -1,3 +1,7 @@
+## 2.1.13
+
+* Removed dependency on the `flutter_test` package.
+
 ## 2.1.12
 
 * Update the video url in the readme code sample
