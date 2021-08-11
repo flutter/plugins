@@ -133,8 +133,8 @@ class Camera {
 
   /// Captures a picture and returns the saved file in a JPEG format.
   ///
-  /// Enables the device flash when taking a picture if the flash mode
-  /// is either [FlashMode.auto] or [FlashMode.always].
+  /// Enables the camera flash (torch mode) for a period of taking a picture
+  /// if the flash mode is either [FlashMode.auto] or [FlashMode.always].
   Future<XFile> takePicture() async {
     final shouldEnableTorchMode =
         flashMode == FlashMode.auto || flashMode == FlashMode.always;
@@ -185,7 +185,14 @@ class Camera {
     }
   }
 
-  /// Sets the camera flash mode to [mode].
+  /// Sets the camera flash mode to [mode] by modifying the camera
+  /// torch mode constraint.
+  ///
+  /// The torch mode is enabled for [FlashMode.torch] and
+  /// disabled for [FlashMode.off].
+  ///
+  /// For [FlashMode.auto] and [FlashMode.always] the torch mode is enabled
+  /// only for a period of taking a picture in [takePicture].
   ///
   /// Throws a [CameraWebException] if the torch mode is not supported
   /// or the camera has not been initialized or started.
