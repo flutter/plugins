@@ -36,7 +36,6 @@ targets:
 
   - name: Windows Plugins stable channel
     recipe: plugins/plugins
-    presubmit: false
     timeout: 30
     properties:
       channel: stable
