@@ -56,6 +56,14 @@ class CameraErrorCode {
   static const CameraErrorCode torchModeNotSupported =
       CameraErrorCode._('torchModeNotSupported');
 
+  /// The camera zoom level is not supported.
+  static const CameraErrorCode zoomLevelNotSupported =
+      CameraErrorCode._('zoomLevelNotSupported');
+
+  /// The camera zoom level is invalid.
+  static const CameraErrorCode zoomLevelInvalid =
+      CameraErrorCode._('zoomLevelInvalid');
+
   /// The camera has not been initialized or started.
   static const CameraErrorCode notStarted =
       CameraErrorCode._('cameraNotStarted');

@@ -369,8 +369,7 @@ class WebView extends StatefulWidget {
 
   /// Invoked when a web resource has failed to load.
   ///
-  /// This can be called for any resource (iframe, image, etc.), not just for
-  /// the main page.
+  /// This callback is only called for the main page.
   final WebResourceErrorCallback? onWebResourceError;
 
   /// Controls whether WebView debugging is enabled.
