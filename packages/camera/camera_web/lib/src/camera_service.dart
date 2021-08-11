@@ -12,9 +12,9 @@ import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// A utility to fetch, map camera settings and
+/// A service to fetch, map camera settings and
 /// obtain the camera stream.
-class CameraSettings {
+class CameraService {
   // A facing mode constraint name.
   static const _facingModeKey = "facingMode";
 

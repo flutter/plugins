@@ -6,111 +6,114 @@ import 'dart:html';
 
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
-import '../helpers/helpers.dart';
+import 'helpers/helpers.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('CameraErrorCode', () {
     group('toString returns a correct type for', () {
-      test('notSupported', () {
+      testWidgets('notSupported', (tester) async {
         expect(
           CameraErrorCode.notSupported.toString(),
           equals('cameraNotSupported'),
         );
       });
 
-      test('notFound', () {
+      testWidgets('notFound', (tester) async {
         expect(
           CameraErrorCode.notFound.toString(),
           equals('cameraNotFound'),
         );
       });
 
-      test('notReadable', () {
+      testWidgets('notReadable', (tester) async {
         expect(
           CameraErrorCode.notReadable.toString(),
           equals('cameraNotReadable'),
         );
       });
 
-      test('overconstrained', () {
+      testWidgets('overconstrained', (tester) async {
         expect(
           CameraErrorCode.overconstrained.toString(),
           equals('cameraOverconstrained'),
         );
       });
 
-      test('permissionDenied', () {
+      testWidgets('permissionDenied', (tester) async {
         expect(
           CameraErrorCode.permissionDenied.toString(),
           equals('cameraPermission'),
         );
       });
 
-      test('type', () {
+      testWidgets('type', (tester) async {
         expect(
           CameraErrorCode.type.toString(),
           equals('cameraType'),
         );
       });
 
-      test('abort', () {
+      testWidgets('abort', (tester) async {
         expect(
           CameraErrorCode.abort.toString(),
           equals('cameraAbort'),
         );
       });
 
-      test('security', () {
+      testWidgets('security', (tester) async {
         expect(
           CameraErrorCode.security.toString(),
           equals('cameraSecurity'),
         );
       });
 
-      test('missingMetadata', () {
+      testWidgets('missingMetadata', (tester) async {
         expect(
           CameraErrorCode.missingMetadata.toString(),
           equals('cameraMissingMetadata'),
         );
       });
 
-      test('orientationNotSupported', () {
+      testWidgets('orientationNotSupported', (tester) async {
         expect(
           CameraErrorCode.orientationNotSupported.toString(),
           equals('orientationNotSupported'),
         );
       });
 
-      test('torchModeNotSupported', () {
+      testWidgets('torchModeNotSupported', (tester) async {
         expect(
           CameraErrorCode.torchModeNotSupported.toString(),
           equals('torchModeNotSupported'),
         );
       });
 
-      test('zoomLevelNotSupported', () {
+      testWidgets('zoomLevelNotSupported', (tester) async {
         expect(
           CameraErrorCode.zoomLevelNotSupported.toString(),
           equals('zoomLevelNotSupported'),
         );
       });
 
-      test('zoomLevelInvalid', () {
+      testWidgets('zoomLevelInvalid', (tester) async {
         expect(
           CameraErrorCode.zoomLevelInvalid.toString(),
           equals('zoomLevelInvalid'),
         );
       });
 
-      test('notStarted', () {
+      testWidgets('notStarted', (tester) async {
         expect(
           CameraErrorCode.notStarted.toString(),
           equals('cameraNotStarted'),
         );
       });
 
-      test('unknown', () {
+      testWidgets('unknown', (tester) async {
         expect(
           CameraErrorCode.unknown.toString(),
           equals('cameraUnknown'),
@@ -118,7 +121,7 @@ void main() {
       });
 
       group('fromMediaError', () {
-        test('with aborted error code', () {
+        testWidgets('with aborted error code', (tester) async {
           expect(
             CameraErrorCode.fromMediaError(
               FakeMediaError(MediaError.MEDIA_ERR_ABORTED),
@@ -127,7 +130,7 @@ void main() {
           );
         });
 
-        test('with network error code', () {
+        testWidgets('with network error code', (tester) async {
           expect(
             CameraErrorCode.fromMediaError(
               FakeMediaError(MediaError.MEDIA_ERR_NETWORK),
@@ -136,7 +139,7 @@ void main() {
           );
         });
 
-        test('with decode error code', () {
+        testWidgets('with decode error code', (tester) async {
           expect(
             CameraErrorCode.fromMediaError(
               FakeMediaError(MediaError.MEDIA_ERR_DECODE),
@@ -145,7 +148,7 @@ void main() {
           );
         });
 
-        test('with source not supported error code', () {
+        testWidgets('with source not supported error code', (tester) async {
           expect(
             CameraErrorCode.fromMediaError(
               FakeMediaError(MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED),
@@ -154,7 +157,7 @@ void main() {
           );
         });
 
-        test('with unknown error code', () {
+        testWidgets('with unknown error code', (tester) async {
           expect(
             CameraErrorCode.fromMediaError(
               FakeMediaError(5),
