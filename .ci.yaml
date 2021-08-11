@@ -8,9 +8,39 @@
 enabled_branches:
   - master
 
+platform_properties:
+  windows:
+    properties:
+      caches: >-
+        [
+          {"name": "vsbuild", "path": "vsbuild"},
+          {"name": "pub_cache", "path": ".pub-cache"}
+        ]
+      dependencies: >
+        [
+          {"dependency": "certs"}
+        ]
+      device_type: none
+      os: Windows
+
 targets:
-  - name: Windows Plugins
-    builder: Windows Plugins
-    postsubmit: false
+  - name: Windows Plugins master channel
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      dependencies: >
+        [
+          {"dependency": "vs_build"}
+        ]
     scheduler: luci
 
+  - name: Windows Plugins stable channel
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      channel: stable
+      dependencies: >
+        [
+          {"dependency": "vs_build"}
+        ]
+    scheduler: luci
