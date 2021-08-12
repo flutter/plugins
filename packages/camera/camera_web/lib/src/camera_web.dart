@@ -396,6 +396,9 @@ class CameraPlugin extends CameraPlatform {
       return getCamera(cameraId).takePicture();
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
     }
   }
 
