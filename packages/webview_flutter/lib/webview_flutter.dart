@@ -902,6 +902,11 @@ class WebViewController {
   Future<Uint8List?> takeScreenshot() {
     return _webViewPlatformController.takeScreenshot();
   }
+
+  /// Return a last made screenshot of the content in the webview.
+  Future<Uint8List?> getLastScreenshot() {
+    return _webViewPlatformController.getLastScreenshot();
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.

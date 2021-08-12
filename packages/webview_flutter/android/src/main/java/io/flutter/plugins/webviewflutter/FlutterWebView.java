@@ -13,6 +13,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.Looper;
 import android.view.View;
+import android.view.ViewTreeObserver;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
@@ -43,9 +44,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
+  private byte[] lastScreenshotByteArray = new byte[0];
+  private int updateScreenshotAfterScrollThreshold = 500;
+  private Runnable updateAfterScrollRunnable;
+
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
+
+    private final int updateScreenshotPercentageThreshold = 10;
+    private int lastUpdateProgress = 0;
+
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
@@ -86,6 +96,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     @Override
     public void onProgressChanged(WebView view, int progress) {
       flutterWebViewClient.onLoadingProgress(progress);
+      if(progress == 0){
+        lastScreenshotByteArray = new byte[0];
+      }
+      if(lastUpdateProgress > progress){
+        lastUpdateProgress = 0;
+      }
+      final int diff = progress - lastUpdateProgress;
+      if (diff > updateScreenshotPercentageThreshold) {
+        lastUpdateProgress = progress;
+        updateScreenshot();
+      }
     }
   }
 
@@ -118,7 +139,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
     methodChannel.setMethodCallHandler(this);
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
-
     if (webView == null) {
         Boolean usesHybridComposition = (Boolean) params.get("usesHybridComposition");
         webView =
@@ -156,9 +176,20 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
       webView.getSettings().setSupportMultipleWindows(true);
       webView.setWebChromeClient(new FlutterWebChromeClient());
+      webView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
+        @Override
+        public void onScrollChanged() {
+          mainThreadHandler.removeCallbacks(updateAfterScrollRunnable);
+          updateAfterScrollRunnable = new Runnable() {
+            @Override
+            public void run() {
+              updateScreenshot();
+            }
+          };
+          mainThreadHandler.postDelayed(updateAfterScrollRunnable, updateScreenshotAfterScrollThreshold);
+        }
+      });
     }
-
-    
 
     if (params.containsKey("blockingRules") && !ContentBlocker.INSTANCE.isReady()) {
       Map<String, Map<String, Object>> rules = (Map<String, Map<String, Object>>) params.get("blockingRules");
@@ -308,6 +339,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "takeScreenshot":
         takeScreenshot(result);
         break;
+      case "getLastScreenshot":
+        getLastScreenshot(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -324,7 +358,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     webView.loadUrl(url, headers);
     result.success(null);
   }
-  
+
   private void loadAssetHtmlFile(MethodCall methodCall, Result result) {
     String url = (String) methodCall.arguments;
     webView.loadUrl("file:///android_asset/flutter_assets/" + url);
@@ -450,42 +484,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getScrollY());
   }
 
+  private void getLastScreenshot(Result result){
+    result.success(lastScreenshotByteArray);
+  }
+
   private void takeScreenshot(Result result){
     final Result fResult = result;
-    final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
-    
-    webView.setDrawingCacheEnabled(true);
-    // copy to a new bitmap, otherwise the bitmap will be
-    // destroyed when the drawing cache is destroyed
-    // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
-    final Bitmap cacheBitmap = webView.getDrawingCache();
-    final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
-
-    webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
-
-    if (b == null) {
-      // treat an empty bitmap as a successful empty screenshot result
-      fResult.success(new byte[0]);
-    } else {
-      // run the compress function in a secondary thread
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          b.compress(Bitmap.CompressFormat.PNG, 80, stream);
-          final byte[] imageByteArray = stream.toByteArray();
-          // make sure to return the result in the main thread
-          new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-              fResult.success(imageByteArray);
-            }
-          });
-
-          b.recycle();
-        }
-      }).start();
-    }
+    makeScreenshot(new OnScreenshotReadyCallback() {
+      @java.lang.Override
+      public void onScreenshotReady(byte[] screenshot) {
+        fResult.success(screenshot);
+      }
+    });
   }
 
   private void applySettings(Map<String, Object> settings) {
@@ -561,6 +571,60 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void dispose() {
     methodChannel.setMethodCallHandler(null);
+    if (webView instanceof InputAwareWebView) {
+      ((InputAwareWebView) webView).dispose();
+    }
+    webView.destroy();
     webView = null;
   }
+
+  private void updateScreenshot(){
+    makeScreenshot(new OnScreenshotReadyCallback() {
+        @java.lang.Override
+        public void onScreenshotReady(byte[] screenshot) {
+            lastScreenshotByteArray = screenshot;
+        }
+    });
+  }
+
+  private void makeScreenshot(final OnScreenshotReadyCallback readyCallback){
+      if(webView == null){
+          return;
+      }
+      final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
+
+      webView.setDrawingCacheEnabled(true);
+      // copy to a new bitmap, otherwise the bitmap will be
+      // destroyed when the drawing cache is destroyed
+      // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
+      final Bitmap cacheBitmap = webView.getDrawingCache();
+      final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
+
+      webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
+
+      if (b != null) {
+          // run the compress function in a secondary thread
+          new Thread(new Runnable() {
+              @Override
+              public void run() {
+                  ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                  b.compress(Bitmap.CompressFormat.PNG, 80, stream);
+                  final byte[] imageByteArray = stream.toByteArray();
+                  // make sure to return the result in the main thread
+                  mainThreadHandler.post(new Runnable() {
+                      @Override
+                      public void run() {
+                          readyCallback.onScreenshotReady(imageByteArray);
+                      }
+                  });
+
+                  b.recycle();
+              }
+          }).start();
+      }
+  }
+}
+
+interface OnScreenshotReadyCallback{
+  void onScreenshotReady(byte[] screenshot);
 }
