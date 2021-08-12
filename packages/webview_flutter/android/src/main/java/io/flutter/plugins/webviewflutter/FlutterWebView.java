@@ -45,7 +45,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
   private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
-  private byte[] lastScreenshootByteArray = new byte[0];
+  private byte[] lastScreenshotByteArray = new byte[0];
   private int updateScreenshotAfterScrollThreshold = 500;
   private Runnable updateAfterScrollRunnable;
 
@@ -97,7 +97,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     public void onProgressChanged(WebView view, int progress) {
       flutterWebViewClient.onLoadingProgress(progress);
       if(progress == 0){
-        lastScreenshootByteArray = new byte[0];
+        lastScreenshotByteArray = new byte[0];
       }
       if(lastUpdateProgress > progress){
         lastUpdateProgress = 0;
@@ -485,14 +485,15 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void getLastScreenshot(Result result){
-    result.success(lastScreenshootByteArray);
+    result.success(lastScreenshotByteArray);
   }
 
   private void takeScreenshot(Result result){
+    final Result fResult = result;
     makeScreenshot(new OnScreenshotReadyCallback() {
       @java.lang.Override
       public void onScreenshotReady(byte[] screenshot) {
-        result.success(screenshot);
+        fResult.success(screenshot);
       }
     });
   }
@@ -581,7 +582,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     makeScreenshot(new OnScreenshotReadyCallback() {
         @java.lang.Override
         public void onScreenshotReady(byte[] screenshot) {
-            lastScreenshootByteArray = screenshot;
+            lastScreenshotByteArray = screenshot;
         }
     });
   }
