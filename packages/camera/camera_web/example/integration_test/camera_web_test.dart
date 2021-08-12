@@ -998,6 +998,21 @@ void main() {
     });
 
     group('setFlashMode', () {
+      testWidgets('calls setFlashMode on the camera', (tester) async {
+        final camera = MockCamera();
+        const flashMode = FlashMode.always;
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.setFlashMode(
+          cameraId,
+          flashMode,
+        );
+
+        verify(() => camera.setFlashMode(flashMode)).called(1);
+      });
+
       group('throws PlatformException', () {
         testWidgets(
             'with notFound error '
