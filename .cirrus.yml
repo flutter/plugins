@@ -29,8 +29,12 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
   << : *TOOL_SETUP_TEMPLATE
 
 build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
+  create_all_plugins_app_script:
+    - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
   build_all_plugins_script:
     - ./script/build_all_plugins_app.sh $BUILD_ALL_ARGS
+  always:
+    cleanup_script: rm -rf ./all_plugins
 
 macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for

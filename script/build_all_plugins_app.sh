@@ -16,9 +16,9 @@ readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" > /dev/null && pwd)"
 
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-source "$SCRIPT_DIR/common.sh"
-
-(cd "$REPO_DIR" && plugin_tools all-plugins-app --exclude script/configs/exclude_all_plugins_app.yaml)
+function error() {
+  echo "$@" 1>&2
+}
 
 failures=0
 
@@ -42,5 +42,4 @@ for version in "${BUILD_MODES[@]}"; do
   fi
 done
 
-rm -rf $REPO_DIR/all_plugins/
 exit $failures
