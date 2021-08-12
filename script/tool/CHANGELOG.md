@@ -1,3 +1,7 @@
+## NEXT
+
+- Added Android native integration test support to `native-test`.
+
 ## 0.5.0
 
 - `--exclude` and `--custom-analysis` now accept paths to YAML files that
@@ -21,7 +25,8 @@
     `--no-integration`.
 - **Breaking change**: Replaced `java-test` with Android unit test support for
   the new `native-test` command.
-- Added Android native integration test support to `native-test`.
+- Commands that print a run summary at the end now track and log exclusions
+  similarly to skips for easier auditing.
 
 ## 0.4.1
 

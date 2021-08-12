@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:file/file.dart';
+import 'package:flutter_plugin_tools/src/common/plugin_command.dart';
 import 'package:platform/platform.dart';
 import 'package:yaml/yaml.dart';
 
@@ -84,7 +85,10 @@ class AnalyzeCommand extends PackageLoopingCommand {
   /// Ensures that the dependent packages have been fetched for all packages
   /// (including their sub-packages) that will be analyzed.
   Future<bool> _runPackagesGetOnTargetPackages() async {
-    final List<Directory> packageDirectories = await getPackages().toList();
+    final List<Directory> packageDirectories =
+        await getTargetPackagesAndSubpackages()
+            .map((PackageEnumerationEntry package) => package.directory)
+            .toList();
     final Set<String> packagePaths =
         packageDirectories.map((Directory dir) => dir.path).toSet();
     packageDirectories.removeWhere((Directory directory) {

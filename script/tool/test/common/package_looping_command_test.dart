@@ -185,6 +185,28 @@ void main() {
             package.childDirectory('example').path,
           ]));
     });
+
+    test('excludes subpackages when main package is excluded', () async {
+      final Directory excluded = createFakePlugin('a_plugin', packagesDir,
+          examples: <String>['example1', 'example2']);
+      final Directory included = createFakePackage('a_package', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(includeSubpackages: true);
+      await runCommand(command, arguments: <String>['--exclude=a_plugin']);
+
+      expect(
+          command.checkedPackages,
+          unorderedEquals(<String>[
+            included.path,
+            included.childDirectory('example').path,
+          ]));
+      expect(command.checkedPackages, isNot(contains(excluded.path)));
+      expect(command.checkedPackages,
+          isNot(contains(excluded.childDirectory('example1').path)));
+      expect(command.checkedPackages,
+          isNot(contains(excluded.childDirectory('example2').path)));
+    });
   });
 
   group('output', () {
@@ -376,6 +398,23 @@ void main() {
           ]));
     });
 
+    test('logs exclusions', () async {
+      createFakePackage('package_a', packagesDir);
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--exclude=package_b']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startHeadingColor}Running for package_a...$_endColor',
+            '${_startSkipColor}Not running for package_b; excluded$_endColor',
+          ]));
+    });
+
     test('logs warnings', () async {
       final Directory warnPackage = createFakePackage('package_a', packagesDir);
       warnPackage
@@ -435,6 +474,24 @@ void main() {
       expect(output, isNot(contains(contains('package a - ran'))));
     });
 
+    test('counts exclusions as skips in run summary', () async {
+      createFakePackage('package_a', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--exclude=package_a']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '------------------------------------------------------------',
+            'Skipped 1 package(s)',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+    });
+
     test('prints long-form run summary for long-output commands', () async {
       final Directory warnPackage1 =
           createFakePackage('package_a', packagesDir);
@@ -473,6 +530,25 @@ void main() {
             '',
             'Ran for 4 package(s) (2 with warnings)',
             'Skipped 2 package(s) (1 with warnings)',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+    });
+
+    test('prints exclusions as skips in long-form run summary', () async {
+      createFakePackage('package_a', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: true);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--exclude=package_a']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '  package_a - ${_startSkipColor}excluded$_endColor',
+            '',
+            'Skipped 1 package(s)',
             '\n',
             '${_startSuccessColor}No issues found!$_endColor',
           ]));

@@ -4,12 +4,16 @@
 
 import 'dart:html' as html;
 import 'dart:ui';
+import 'dart:js_util' as js_util;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
-/// A utility to fetch and map camera settings.
+/// A utility to fetch, map camera settings and
+/// obtain the camera stream.
 class CameraSettings {
   // A facing mode constraint name.
   static const _facingModeKey = "facingMode";
@@ -17,6 +21,152 @@ class CameraSettings {
   /// The current browser window used to access media devices.
   @visibleForTesting
   html.Window? window = html.window;
+
+  /// Returns a media stream associated with the camera device
+  /// with [cameraId] and constrained by [options].
+  Future<html.MediaStream> getMediaStreamForOptions(
+    CameraOptions options, {
+    int cameraId = 0,
+  }) async {
+    final mediaDevices = window?.navigator.mediaDevices;
+
+    // Throw a not supported exception if the current browser window
+    // does not support any media devices.
+    if (mediaDevices == null) {
+      throw PlatformException(
+        code: CameraErrorCode.notSupported.toString(),
+        message: 'The camera is not supported on this device.',
+      );
+    }
+
+    try {
+      final constraints = await options.toJson();
+      return await mediaDevices.getUserMedia(constraints);
+    } on html.DomException catch (e) {
+      switch (e.name) {
+        case 'NotFoundError':
+        case 'DevicesNotFoundError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.notFound,
+            'No camera found for the given camera options.',
+          );
+        case 'NotReadableError':
+        case 'TrackStartError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.notReadable,
+            'The camera is not readable due to a hardware error '
+            'that prevented access to the device.',
+          );
+        case 'OverconstrainedError':
+        case 'ConstraintNotSatisfiedError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.overconstrained,
+            'The camera options are impossible to satisfy.',
+          );
+        case 'NotAllowedError':
+        case 'PermissionDeniedError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.permissionDenied,
+            'The camera cannot be used or the permission '
+            'to access the camera is not granted.',
+          );
+        case 'TypeError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.type,
+            'The camera options are incorrect or attempted'
+            'to access the media input from an insecure context.',
+          );
+        case 'AbortError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.abort,
+            'Some problem occurred that prevented the camera from being used.',
+          );
+        case 'SecurityError':
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.security,
+            'The user media support is disabled in the current browser.',
+          );
+        default:
+          throw CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'An unknown error occured when fetching the camera stream.',
+          );
+      }
+    } catch (_) {
+      throw CameraWebException(
+        cameraId,
+        CameraErrorCode.unknown,
+        'An unknown error occured when fetching the camera stream.',
+      );
+    }
+  }
+
+  /// Returns the zoom level capability for the given [camera].
+  ///
+  /// Throws a [CameraWebException] if the zoom level is not supported
+  /// or the camera has not been initialized or started.
+  ZoomLevelCapability getZoomLevelCapabilityForCamera(
+    Camera camera,
+  ) {
+    final mediaDevices = window?.navigator.mediaDevices;
+    final supportedConstraints = mediaDevices?.getSupportedConstraints();
+    final zoomLevelSupported =
+        supportedConstraints?[ZoomLevelCapability.constraintName] ?? false;
+
+    if (!zoomLevelSupported) {
+      throw CameraWebException(
+        camera.textureId,
+        CameraErrorCode.zoomLevelNotSupported,
+        'The zoom level is not supported in the current browser.',
+      );
+    }
+
+    final videoTracks = camera.stream?.getVideoTracks() ?? [];
+
+    if (videoTracks.isNotEmpty) {
+      final defaultVideoTrack = videoTracks.first;
+
+      /// The zoom level capability is represented by MediaSettingsRange.
+      /// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaSettingsRange
+      final zoomLevelCapability = defaultVideoTrack
+              .getCapabilities()[ZoomLevelCapability.constraintName] ??
+          {};
+
+      // The zoom level capability is a nested JS object, therefore
+      // we need to access its properties with the js_util library.
+      // See: https://api.dart.dev/stable/2.13.4/dart-js_util/getProperty.html
+      final minimumZoomLevel = js_util.getProperty(zoomLevelCapability, 'min');
+      final maximumZoomLevel = js_util.getProperty(zoomLevelCapability, 'max');
+
+      if (minimumZoomLevel != null && maximumZoomLevel != null) {
+        return ZoomLevelCapability(
+          minimum: minimumZoomLevel.toDouble(),
+          maximum: maximumZoomLevel.toDouble(),
+          videoTrack: defaultVideoTrack,
+        );
+      } else {
+        throw CameraWebException(
+          camera.textureId,
+          CameraErrorCode.zoomLevelNotSupported,
+          'The zoom level is not supported by the current camera.',
+        );
+      }
+    } else {
+      throw CameraWebException(
+        camera.textureId,
+        CameraErrorCode.notStarted,
+        'The camera has not been initialized or started.',
+      );
+    }
+  }
 
   /// Returns a facing mode of the [videoTrack]
   /// (null if the facing mode is not available).
@@ -26,9 +176,9 @@ class CameraSettings {
     // Throw a not supported exception if the current browser window
     // does not support any media devices.
     if (mediaDevices == null) {
-      throw CameraException(
-        CameraErrorCodes.notSupported,
-        'The camera is not supported on this device.',
+      throw PlatformException(
+        code: CameraErrorCode.notSupported.toString(),
+        message: 'The camera is not supported on this device.',
       );
     }
 
@@ -79,9 +229,10 @@ class CameraSettings {
             // Return null if getting capabilities is currently not supported.
             return null;
           default:
-            throw CameraException(
-              CameraErrorCodes.unknown,
-              'An unknown error occured when getting the video track capabilities.',
+            throw PlatformException(
+              code: CameraErrorCode.unknown.toString(),
+              message:
+                  'An unknown error occured when getting the video track capabilities.',
             );
         }
       }
@@ -138,6 +289,40 @@ class CameraSettings {
       case ResolutionPreset.low:
       default:
         return Size(320, 240);
+    }
+  }
+
+  /// Maps the given [deviceOrientation] to [OrientationType].
+  String mapDeviceOrientationToOrientationType(
+    DeviceOrientation deviceOrientation,
+  ) {
+    switch (deviceOrientation) {
+      case DeviceOrientation.portraitUp:
+        return OrientationType.portraitPrimary;
+      case DeviceOrientation.landscapeLeft:
+        return OrientationType.landscapePrimary;
+      case DeviceOrientation.portraitDown:
+        return OrientationType.portraitSecondary;
+      case DeviceOrientation.landscapeRight:
+        return OrientationType.landscapeSecondary;
+    }
+  }
+
+  /// Maps the given [orientationType] to [DeviceOrientation].
+  DeviceOrientation mapOrientationTypeToDeviceOrientation(
+    String orientationType,
+  ) {
+    switch (orientationType) {
+      case OrientationType.portraitPrimary:
+        return DeviceOrientation.portraitUp;
+      case OrientationType.landscapePrimary:
+        return DeviceOrientation.landscapeLeft;
+      case OrientationType.portraitSecondary:
+        return DeviceOrientation.portraitDown;
+      case OrientationType.landscapeSecondary:
+        return DeviceOrientation.landscapeRight;
+      default:
+        return DeviceOrientation.portraitUp;
     }
   }
 }

@@ -1,3 +1,7 @@
+# 0.1.4+3
+
+- Updated installation instructions in README.
+
 ## 0.1.4+2
 
 * Added price currency symbol to SkuDetailsWrapper.
