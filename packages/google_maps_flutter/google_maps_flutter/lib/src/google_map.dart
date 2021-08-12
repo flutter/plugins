@@ -101,11 +101,11 @@ class GoogleMap extends StatefulWidget {
   /// Type of map tiles to be rendered.
   final MapType mapType;
 
-  /// {@template flutter.widgets.AndroidView.layoutDirection}
+  /// {@macro template_name}
   /// The text direction to use for the embedded view.
   ///
-  /// If this is null, the ambient [Directionality] is used instead.
-  /// {@endtemplate}
+  /// If this is null, the ambient [Directionality] is used instead. If there is
+  /// no ambient [Directionality], [TextDirection.ltr] is used.
   final TextDirection? textDirection;
 
   /// Preferred bounds for the camera zoom level.
@@ -261,7 +261,9 @@ class _GoogleMapState extends State<GoogleMap> {
     return GoogleMapsFlutterPlatform.instance.buildViewWithTextDirection(
       _mapId,
       onPlatformViewCreated,
-      textDirection: widget.textDirection ?? Directionality.of(context),
+      textDirection: widget.textDirection ??
+          Directionality.maybeOf(context) ??
+          TextDirection.ltr,
       initialCameraPosition: widget.initialCameraPosition,
       markers: widget.markers,
       polygons: widget.polygons,
