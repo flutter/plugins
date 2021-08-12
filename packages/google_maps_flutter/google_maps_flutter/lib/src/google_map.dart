@@ -258,25 +258,10 @@ class _GoogleMapState extends State<GoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    final GoogleMapsFlutterPlatform platform =
-        GoogleMapsFlutterPlatform.instance;
-    if (platform is MethodChannelGoogleMapsFlutter) {
-      return platform.buildViewWithTextDirection(
-        _mapId,
-        onPlatformViewCreated,
-        textDirection: widget.textDirection ?? Directionality.of(context),
-        initialCameraPosition: widget.initialCameraPosition,
-        markers: widget.markers,
-        polygons: widget.polygons,
-        polylines: widget.polylines,
-        circles: widget.circles,
-        gestureRecognizers: widget.gestureRecognizers,
-        mapOptions: _googleMapOptions.toMap(),
-      );
-    }
-    return platform.buildView(
+    return GoogleMapsFlutterPlatform.instance.buildViewWithTextDirection(
       _mapId,
       onPlatformViewCreated,
+      textDirection: widget.textDirection ?? Directionality.of(context),
       initialCameraPosition: widget.initialCameraPosition,
       markers: widget.markers,
       polygons: widget.polygons,
