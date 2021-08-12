@@ -71,6 +71,7 @@ The web implementation of [`camera`][camera] is missing the following features:
 - Camera closing events
 - Camera sensor orientation
 - Camera image format group
+- Camera image streaming
 
 <!-- Links -->
 [camera]: https://pub.dev/packages/camera
