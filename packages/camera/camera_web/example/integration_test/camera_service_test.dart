@@ -9,6 +9,7 @@ import 'dart:js_util' as js_util;
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_service.dart';
+import 'package:camera_web/src/shims/dart_js_util.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -27,14 +28,24 @@ void main() {
     late Navigator navigator;
     late MediaDevices mediaDevices;
     late CameraService cameraService;
+    late JsUtil jsUtil;
 
     setUp(() async {
       window = MockWindow();
       navigator = MockNavigator();
       mediaDevices = MockMediaDevices();
+      jsUtil = MockJsUtil();
 
       when(() => window.navigator).thenReturn(navigator);
       when(() => navigator.mediaDevices).thenReturn(mediaDevices);
+
+      // Mock JsUtil to return the real getProperty from dart:js_util.
+      when(() => jsUtil.getProperty(any(), any())).thenAnswer(
+        (invocation) => js_util.getProperty(
+          invocation.positionalArguments[0],
+          invocation.positionalArguments[1],
+        ),
+      );
 
       cameraService = CameraService()..window = window;
     });
@@ -354,6 +365,8 @@ void main() {
 
         when(() => camera.textureId).thenReturn(0);
         when(() => camera.stream).thenReturn(FakeMediaStream(videoTracks));
+
+        cameraService.jsUtil = jsUtil;
       });
 
       testWidgets(
@@ -496,6 +509,10 @@ void main() {
     });
 
     group('getFacingModeForVideoTrack', () {
+      setUp(() {
+        cameraService.jsUtil = jsUtil;
+      });
+
       testWidgets(
           'throws PlatformException '
           'with notSupported error '
@@ -525,14 +542,18 @@ void main() {
         final facingMode =
             cameraService.getFacingModeForVideoTrack(MockMediaStreamTrack());
 
-        expect(
-          facingMode,
-          equals(null),
-        );
+        expect(facingMode, isNull);
       });
 
       group('when the facing mode is supported', () {
+        late MediaStreamTrack videoTrack;
+
         setUp(() {
+          videoTrack = MockMediaStreamTrack();
+
+          when(() => jsUtil.hasProperty(videoTrack, 'getCapabilities'))
+              .thenReturn(true);
+
           when(mediaDevices.getSupportedConstraints).thenReturn({
             'facingMode': true,
           });
@@ -541,95 +562,58 @@ void main() {
         testWidgets(
             'returns an appropriate facing mode '
             'based on the video track settings', (tester) async {
-          final videoTrack = MockMediaStreamTrack();
-
           when(videoTrack.getSettings).thenReturn({'facingMode': 'user'});
 
           final facingMode =
               cameraService.getFacingModeForVideoTrack(videoTrack);
 
-          expect(
-            facingMode,
-            equals('user'),
-          );
+          expect(facingMode, equals('user'));
         });
 
         testWidgets(
             'returns an appropriate facing mode '
             'based on the video track capabilities '
             'when the facing mode setting is empty', (tester) async {
-          final videoTrack = MockMediaStreamTrack();
-
           when(videoTrack.getSettings).thenReturn({});
           when(videoTrack.getCapabilities).thenReturn({
             'facingMode': ['environment', 'left']
           });
 
+          when(() => jsUtil.hasProperty(videoTrack, 'getCapabilities'))
+              .thenReturn(true);
+
           final facingMode =
               cameraService.getFacingModeForVideoTrack(videoTrack);
 
-          expect(
-            facingMode,
-            equals('environment'),
-          );
+          expect(facingMode, equals('environment'));
         });
 
         testWidgets(
             'returns null '
             'when the facing mode setting '
             'and capabilities are empty', (tester) async {
-          final videoTrack = MockMediaStreamTrack();
-
           when(videoTrack.getSettings).thenReturn({});
           when(videoTrack.getCapabilities).thenReturn({'facingMode': []});
 
           final facingMode =
               cameraService.getFacingModeForVideoTrack(videoTrack);
 
-          expect(
-            facingMode,
-            equals(null),
-          );
+          expect(facingMode, isNull);
         });
 
         testWidgets(
             'returns null '
             'when the facing mode setting is empty and '
             'the video track capabilities are not supported', (tester) async {
-          final videoTrack = MockMediaStreamTrack();
-
           when(videoTrack.getSettings).thenReturn({});
-          when(videoTrack.getCapabilities).thenThrow(JSNoSuchMethodError());
+
+          when(() => jsUtil.hasProperty(videoTrack, 'getCapabilities'))
+              .thenReturn(false);
 
           final facingMode =
               cameraService.getFacingModeForVideoTrack(videoTrack);
 
-          expect(
-            facingMode,
-            equals(null),
-          );
-        });
-
-        testWidgets(
-            'throws PlatformException '
-            'with unknown error '
-            'when getting the video track capabilities '
-            'throws an unknown error', (tester) async {
-          final videoTrack = MockMediaStreamTrack();
-
-          when(videoTrack.getSettings).thenReturn({});
-          when(videoTrack.getCapabilities).thenThrow(Exception('Unknown'));
-
-          expect(
-            () => cameraService.getFacingModeForVideoTrack(videoTrack),
-            throwsA(
-              isA<PlatformException>().having(
-                (e) => e.code,
-                'code',
-                CameraErrorCode.unknown.toString(),
-              ),
-            ),
-          );
+          expect(facingMode, isNull);
         });
       });
     });
