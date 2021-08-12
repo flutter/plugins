@@ -211,7 +211,9 @@ class CameraService {
       // MediaTrackCapabilities:
       // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
 
-      // Getting the video track capabilities is not supported on Firefox.
+      // Check if getting the video track capabilities is supported.
+      //
+      // The method may not be supported on Firefox.
       // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/getCapabilities#browser_compatibility
       if (!jsUtil.hasProperty(videoTrack, 'getCapabilities')) {
         // Return null if the video track capabilites are not supported.
