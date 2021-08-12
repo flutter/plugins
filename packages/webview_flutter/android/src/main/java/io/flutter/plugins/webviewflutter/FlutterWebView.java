@@ -489,41 +489,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void takeScreenshot(Result result){
-    final Result fResult = result;
-    final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
-
-    webView.setDrawingCacheEnabled(true);
-    // copy to a new bitmap, otherwise the bitmap will be
-    // destroyed when the drawing cache is destroyed
-    // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
-    final Bitmap cacheBitmap = webView.getDrawingCache();
-    final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
-
-    webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
-
-    if (b == null) {
-      // treat an empty bitmap as a successful empty screenshot result
-      fResult.success(new byte[0]);
-    } else {
-      // run the compress function in a secondary thread
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          b.compress(Bitmap.CompressFormat.PNG, 80, stream);
-          final byte[] imageByteArray = stream.toByteArray();
-          // make sure to return the result in the main thread
-          mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-              fResult.success(imageByteArray);
-            }
-          });
-
-          b.recycle();
-        }
-      }).start();
-    }
+    makeScreenshot(new OnScreenshotReadyCallback() {
+      @java.lang.Override
+      public void onScreenshotReady(byte[] screenshot) {
+        result.success(screenshot);
+      }
+    });
   }
 
   private void applySettings(Map<String, Object> settings) {
@@ -607,39 +578,52 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void updateScreenshot(){
-    if(webView == null){
-      return;
-    }
-    final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
-
-    webView.setDrawingCacheEnabled(true);
-    // copy to a new bitmap, otherwise the bitmap will be
-    // destroyed when the drawing cache is destroyed
-    // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
-    final Bitmap cacheBitmap = webView.getDrawingCache();
-    final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
-
-    webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
-
-    if (b != null) {
-      // run the compress function in a secondary thread
-      new Thread(new Runnable() {
-        @Override
-        public void run() {
-          ByteArrayOutputStream stream = new ByteArrayOutputStream();
-          b.compress(Bitmap.CompressFormat.PNG, 80, stream);
-          final byte[] imageByteArray = stream.toByteArray();
-          // make sure to return the result in the main thread
-          mainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-              lastScreenshootByteArray = imageByteArray;
-            }
-          });
-
-          b.recycle();
+    makeScreenshot(new OnScreenshotReadyCallback() {
+        @java.lang.Override
+        public void onScreenshotReady(byte[] screenshot) {
+            lastScreenshootByteArray = screenshot;
         }
-      }).start();
-    }
+    });
   }
+
+  private void makeScreenshot(final OnScreenshotReadyCallback readyCallback){
+      if(webView == null){
+          return;
+      }
+      final boolean isDrawingCacheEnabled = webView.isDrawingCacheEnabled();
+
+      webView.setDrawingCacheEnabled(true);
+      // copy to a new bitmap, otherwise the bitmap will be
+      // destroyed when the drawing cache is destroyed
+      // webView.getDrawingCache can return null if drawing cache is disabled or if the size is 0
+      final Bitmap cacheBitmap = webView.getDrawingCache();
+      final Bitmap b = (cacheBitmap != null) ? cacheBitmap.copy(Bitmap.Config.RGB_565, false) : null;
+
+      webView.setDrawingCacheEnabled(isDrawingCacheEnabled);
+
+      if (b != null) {
+          // run the compress function in a secondary thread
+          new Thread(new Runnable() {
+              @Override
+              public void run() {
+                  ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                  b.compress(Bitmap.CompressFormat.PNG, 80, stream);
+                  final byte[] imageByteArray = stream.toByteArray();
+                  // make sure to return the result in the main thread
+                  mainThreadHandler.post(new Runnable() {
+                      @Override
+                      public void run() {
+                          readyCallback.onScreenshotReady(imageByteArray);
+                      }
+                  });
+
+                  b.recycle();
+              }
+          }).start();
+      }
+  }
+}
+
+interface OnScreenshotReadyCallback{
+  void onScreenshotReady(byte[] screenshot);
 }
