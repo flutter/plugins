@@ -929,6 +929,32 @@ void main() {
             ),
           );
         });
+
+        testWidgets('when takePicture throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.takePicture).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
       });
     });
 
@@ -1756,6 +1782,42 @@ void main() {
               CameraErrorEvent(
                 cameraId,
                 'Error code: ${CameraErrorCode.abort}, error message: The video element\'s source has not fully loaded.',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on takePicture error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.takePicture).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
               ),
             ),
           );
