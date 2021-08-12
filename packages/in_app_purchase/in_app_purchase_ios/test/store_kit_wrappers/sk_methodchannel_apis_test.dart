@@ -23,6 +23,7 @@ void main() {
   tearDown(() {
     fakeIOSPlatform.testReturnNull = false;
     fakeIOSPlatform.queueIsActive = null;
+    fakeIOSPlatform.getReceiptFailTest = false;
   });
 
   group('sk_request_maker', () {
@@ -45,6 +46,10 @@ void main() {
       expect(
         productResponseWrapper.products.first.priceLocale.currencyCode,
         'USD',
+      );
+      expect(
+        productResponseWrapper.products.first.priceLocale.countryCode,
+        'US',
       );
       expect(
         productResponseWrapper.invalidProductIdentifiers,
@@ -73,6 +78,12 @@ void main() {
       expect(fakeIOSPlatform.refreshReceipt, receiptCountBefore + 1);
       expect(fakeIOSPlatform.refreshReceiptParam,
           <String, dynamic>{"isExpired": true});
+    });
+
+    test('should get null receipt if any exceptions are raised', () async {
+      fakeIOSPlatform.getReceiptFailTest = true;
+      expect(() async => SKReceiptManager.retrieveReceiptData(),
+          throwsA(TypeMatcher<PlatformException>()));
     });
   });
 
@@ -145,6 +156,20 @@ void main() {
       await SKPaymentQueueWrapper().stopObservingTransactionQueue();
       expect(fakeIOSPlatform.queueIsActive, false);
     });
+
+    test('setDelegate should call methodChannel', () async {
+      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, false);
+      await SKPaymentQueueWrapper().setDelegate(TestPaymentQueueDelegate());
+      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, true);
+      await SKPaymentQueueWrapper().setDelegate(null);
+      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, false);
+    });
+
+    test('showPriceConsentIfNeeded should call methodChannel', () async {
+      expect(fakeIOSPlatform.showPriceConsentIfNeeded, false);
+      await SKPaymentQueueWrapper().showPriceConsentIfNeeded();
+      expect(fakeIOSPlatform.showPriceConsentIfNeeded, true);
+    });
   });
 
   group('Code Redemption Sheet', () {
@@ -166,6 +191,9 @@ class FakeIOSPlatform {
   bool getProductRequestFailTest = false;
   bool testReturnNull = false;
 
+  // get receipt request
+  bool getReceiptFailTest = false;
+
   // refresh receipt request
   int refreshReceipt = 0;
   late Map<String, dynamic> refreshReceiptParam;
@@ -177,6 +205,12 @@ class FakeIOSPlatform {
 
   // present Code Redemption
   bool presentCodeRedemption = false;
+
+  // show price consent sheet
+  bool showPriceConsentIfNeeded = false;
+
+  // indicate if the payment queue delegate is registered
+  bool isPaymentQueueDelegateRegistered = false;
 
   // Listen to purchase updates
   bool? queueIsActive;
@@ -201,6 +235,9 @@ class FakeIOSPlatform {
         return Future<void>.sync(() {});
       // receipt manager
       case '-[InAppPurchasePlugin retrieveReceiptData:result:]':
+        if (getReceiptFailTest) {
+          throw ("some arbitrary error");
+        }
         return Future<String>.value('receipt data');
       // payment queue
       case '-[SKPaymentQueue canMakePayments:]':
@@ -230,10 +267,21 @@ class FakeIOSPlatform {
       case '-[SKPaymentQueue stopObservingTransactionQueue]':
         queueIsActive = false;
         return Future<void>.sync(() {});
+      case '-[SKPaymentQueue registerDelegate]':
+        isPaymentQueueDelegateRegistered = true;
+        return Future<void>.sync(() {});
+      case '-[SKPaymentQueue removeDelegate]':
+        isPaymentQueueDelegateRegistered = false;
+        return Future<void>.sync(() {});
+      case '-[SKPaymentQueue showPriceConsentIfNeeded]':
+        showPriceConsentIfNeeded = true;
+        return Future<void>.sync(() {});
     }
     return Future.error('method not mocked');
   }
 }
+
+class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {}
 
 class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
   void updatedTransactions(

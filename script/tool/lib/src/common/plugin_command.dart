@@ -8,10 +8,25 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
+import 'package:yaml/yaml.dart';
 
 import 'core.dart';
 import 'git_version_finder.dart';
 import 'process_runner.dart';
+
+/// An entry in package enumeration for APIs that need to include extra
+/// data about the entry.
+class PackageEnumerationEntry {
+  /// Creates a new entry for the given package directory.
+  PackageEnumerationEntry(this.directory, {required this.excluded});
+
+  /// The package's location.
+  final Directory directory;
+
+  /// Whether or not this package was excluded by the command invocation.
+  final bool excluded;
+}
 
 /// Interface definition for all commands in this tool.
 // TODO(stuartmorgan): Move most of this logic to PackageLoopingCommand.
@@ -20,14 +35,16 @@ abstract class PluginCommand extends Command<void> {
   PluginCommand(
     this.packagesDir, {
     this.processRunner = const ProcessRunner(),
-    this.gitDir,
-  }) {
+    this.platform = const LocalPlatform(),
+    GitDir? gitDir,
+  }) : _gitDir = gitDir {
     argParser.addMultiOption(
-      _pluginsArg,
+      _packagesArg,
       splitCommas: true,
       help:
-          'Specifies which plugins the command should run on (before sharding).',
-      valueHelp: 'plugin1,plugin2,...',
+          'Specifies which packages the command should run on (before sharding).\n',
+      valueHelp: 'package1,package2,...',
+      aliases: <String>[_pluginsArg],
     );
     argParser.addOption(
       _shardIndexArg,
@@ -45,12 +62,14 @@ abstract class PluginCommand extends Command<void> {
     argParser.addMultiOption(
       _excludeArg,
       abbr: 'e',
-      help: 'Exclude packages from this command.',
+      help: 'A list of packages to exclude from from this command.\n\n'
+          'Alternately, a list of one or more YAML files that contain a list '
+          'of packages to exclude.',
       defaultsTo: <String>[],
     );
     argParser.addFlag(_runOnChangedPackagesArg,
         help: 'Run the command on changed packages/plugins.\n'
-            'If the $_pluginsArg is specified, this flag is ignored.\n'
+            'If the $_packagesArg is specified, this flag is ignored.\n'
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
@@ -62,6 +81,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   static const String _pluginsArg = 'plugins';
+  static const String _packagesArg = 'packages';
   static const String _shardIndexArg = 'shardIndex';
   static const String _shardCountArg = 'shardCount';
   static const String _excludeArg = 'exclude';
@@ -76,13 +96,28 @@ abstract class PluginCommand extends Command<void> {
   /// This can be overridden for testing.
   final ProcessRunner processRunner;
 
-  /// The git directory to use. By default it uses the parent directory.
+  /// The current platform.
+  ///
+  /// This can be overridden for testing.
+  final Platform platform;
+
+  /// The git directory to use. If unset, [gitDir] populates it from the
+  /// packages directory's enclosing repository.
   ///
   /// This can be mocked for testing.
-  final GitDir? gitDir;
+  GitDir? _gitDir;
 
   int? _shardIndex;
   int? _shardCount;
+
+  // Cached set of explicitly excluded packages.
+  Set<String>? _excludedPackages;
+
+  /// A context that matches the default for [platform].
+  p.Context get path => platform.isWindows ? p.windows : p.posix;
+
+  /// The command to use when running `flutter`.
+  String get flutterCommand => platform.isWindows ? 'flutter.bat' : 'flutter';
 
   /// The shard of the overall command execution that this instance should run.
   int get shardIndex {
@@ -98,6 +133,26 @@ abstract class PluginCommand extends Command<void> {
       _checkSharding();
     }
     return _shardCount!;
+  }
+
+  /// Returns the [GitDir] containing [packagesDir].
+  Future<GitDir> get gitDir async {
+    GitDir? gitDir = _gitDir;
+    if (gitDir != null) {
+      return gitDir;
+    }
+
+    // Ensure there are no symlinks in the path, as it can break
+    // GitDir's allowSubdirectory:true.
+    final String packagesPath = packagesDir.resolveSymbolicLinksSync();
+    if (!await GitDir.isGitDir(packagesPath)) {
+      printError('$packagesPath is not a valid Git repository.');
+      throw ToolExit(2);
+    }
+    gitDir =
+        await GitDir.fromExisting(packagesDir.path, allowSubdirectory: true);
+    _gitDir = gitDir;
+    return gitDir;
   }
 
   /// Convenience accessor for boolean arguments.
@@ -135,51 +190,83 @@ abstract class PluginCommand extends Command<void> {
     _shardCount = shardCount;
   }
 
-  /// Returns the root Dart package folders of the plugins involved in this
-  /// command execution.
-  // TODO(stuartmorgan): Rename/restructure this, _getAllPlugins, and
-  // getPackages, as the current naming is very confusing.
-  Stream<Directory> getPlugins() async* {
+  /// Returns the set of plugins to exclude based on the `--exclude` argument.
+  Set<String> _getExcludedPackageName() {
+    final Set<String> excludedPackages = _excludedPackages ??
+        getStringListArg(_excludeArg).expand<String>((String item) {
+          if (item.endsWith('.yaml')) {
+            final File file = packagesDir.fileSystem.file(item);
+            return (loadYaml(file.readAsStringSync()) as YamlList)
+                .toList()
+                .cast<String>();
+          }
+          return <String>[item];
+        }).toSet();
+    // Cache for future calls.
+    _excludedPackages = excludedPackages;
+    return excludedPackages;
+  }
+
+  /// Returns the root diretories of the packages involved in this command
+  /// execution.
+  ///
+  /// Depending on the command arguments, this may be a user-specified set of
+  /// packages, the set of packages that should be run for a given diff, or all
+  /// packages.
+  ///
+  /// By default, packages excluded via --exclude will not be in the stream, but
+  /// they can be included by passing false for [filterExcluded].
+  Stream<PackageEnumerationEntry> getTargetPackages(
+      {bool filterExcluded = true}) async* {
     // To avoid assuming consistency of `Directory.list` across command
     // invocations, we collect and sort the plugin folders before sharding.
     // This is considered an implementation detail which is why the API still
     // uses streams.
-    final List<Directory> allPlugins = await _getAllPlugins().toList();
-    allPlugins.sort((Directory d1, Directory d2) => d1.path.compareTo(d2.path));
-    // Sharding 10 elements into 3 shards should yield shard sizes 4, 4, 2.
-    // Sharding  9 elements into 3 shards should yield shard sizes 3, 3, 3.
-    // Sharding  2 elements into 3 shards should yield shard sizes 1, 1, 0.
+    final List<PackageEnumerationEntry> allPlugins =
+        await _getAllPackages().toList();
+    allPlugins.sort((PackageEnumerationEntry p1, PackageEnumerationEntry p2) =>
+        p1.directory.path.compareTo(p2.directory.path));
     final int shardSize = allPlugins.length ~/ shardCount +
         (allPlugins.length % shardCount == 0 ? 0 : 1);
     final int start = min(shardIndex * shardSize, allPlugins.length);
     final int end = min(start + shardSize, allPlugins.length);
 
-    for (final Directory plugin in allPlugins.sublist(start, end)) {
-      yield plugin;
+    for (final PackageEnumerationEntry plugin
+        in allPlugins.sublist(start, end)) {
+      if (!(filterExcluded && plugin.excluded)) {
+        yield plugin;
+      }
     }
   }
 
-  /// Returns the root Dart package folders of the plugins involved in this
-  /// command execution, assuming there is only one shard.
+  /// Returns the root Dart package folders of the packages involved in this
+  /// command execution, assuming there is only one shard. Depending on the
+  /// command arguments, this may be a user-specified set of packages, the
+  /// set of packages that should be run for a given diff, or all packages.
   ///
-  /// Plugin packages can exist in the following places relative to the packages
+  /// This will return packages that have been excluded by the --exclude
+  /// parameter, annotated in the entry as excluded.
+  ///
+  /// Packages can exist in the following places relative to the packages
   /// directory:
   ///
   /// 1. As a Dart package in a directory which is a direct child of the
-  ///    packages directory. This is a plugin where all of the implementations
-  ///    exist in a single Dart package.
+  ///    packages directory. This is a non-plugin package, or a non-federated
+  ///    plugin.
   /// 2. Several plugin packages may live in a directory which is a direct
   ///    child of the packages directory. This directory groups several Dart
-  ///    packages which implement a single plugin. This directory contains a
-  ///    "client library" package, which declares the API for the plugin, as
-  ///    well as one or more platform-specific implementations.
+  ///    packages which implement a single plugin. This directory contains an
+  ///    "app-facing" package which declares the API for the plugin, a
+  ///    platform interface package which declares the API for implementations,
+  ///    and one or more platform-specific implementation packages.
   /// 3./4. Either of the above, but in a third_party/packages/ directory that
   ///    is a sibling of the packages directory. This is used for a small number
   ///    of packages in the flutter/packages repository.
-  Stream<Directory> _getAllPlugins() async* {
-    Set<String> plugins = Set<String>.from(getStringListArg(_pluginsArg));
-    final Set<String> excludedPlugins =
-        Set<String>.from(getStringListArg(_excludeArg));
+  Stream<PackageEnumerationEntry> _getAllPackages() async* {
+    Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
+
+    final Set<String> excludedPluginNames = _getExcludedPackageName();
+
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
     if (plugins.isEmpty &&
         runOnChangedPackages &&
@@ -199,9 +286,9 @@ abstract class PluginCommand extends Command<void> {
           in dir.list(followLinks: false)) {
         // A top-level Dart package is a plugin package.
         if (_isDartPackage(entity)) {
-          if (!excludedPlugins.contains(entity.basename) &&
-              (plugins.isEmpty || plugins.contains(p.basename(entity.path)))) {
-            yield entity as Directory;
+          if (plugins.isEmpty || plugins.contains(p.basename(entity.path))) {
+            yield PackageEnumerationEntry(entity as Directory,
+                excluded: excludedPluginNames.contains(entity.basename));
           }
         } else if (entity is Directory) {
           // Look for Dart packages under this top-level directory.
@@ -212,16 +299,16 @@ abstract class PluginCommand extends Command<void> {
               // plugins under 'my_plugin'. Also match if the exact plugin is
               // passed.
               final String relativePath =
-                  p.relative(subdir.path, from: dir.path);
-              final String packageName = p.basename(subdir.path);
-              final String basenamePath = p.basename(entity.path);
-              if (!excludedPlugins.contains(basenamePath) &&
-                  !excludedPlugins.contains(packageName) &&
-                  !excludedPlugins.contains(relativePath) &&
-                  (plugins.isEmpty ||
-                      plugins.contains(relativePath) ||
-                      plugins.contains(basenamePath))) {
-                yield subdir as Directory;
+                  path.relative(subdir.path, from: dir.path);
+              final String packageName = path.basename(subdir.path);
+              final String basenamePath = path.basename(entity.path);
+              if (plugins.isEmpty ||
+                  plugins.contains(relativePath) ||
+                  plugins.contains(basenamePath)) {
+                yield PackageEnumerationEntry(subdir as Directory,
+                    excluded: excludedPluginNames.contains(basenamePath) ||
+                        excludedPluginNames.contains(packageName) ||
+                        excludedPluginNames.contains(relativePath));
               }
             }
           }
@@ -230,30 +317,39 @@ abstract class PluginCommand extends Command<void> {
     }
   }
 
-  /// Returns the example Dart package folders of the plugins involved in this
-  /// command execution.
-  Stream<Directory> getExamples() =>
-      getPlugins().expand<Directory>(getExamplesForPlugin);
-
-  /// Returns all Dart package folders (typically, plugin + example) of the
-  /// plugins involved in this command execution.
-  Stream<Directory> getPackages() async* {
-    await for (final Directory plugin in getPlugins()) {
+  /// Returns all Dart package folders (typically, base package + example) of
+  /// the packages involved in this command execution.
+  ///
+  /// By default, packages excluded via --exclude will not be in the stream, but
+  /// they can be included by passing false for [filterExcluded].
+  Stream<PackageEnumerationEntry> getTargetPackagesAndSubpackages(
+      {bool filterExcluded = true}) async* {
+    await for (final PackageEnumerationEntry plugin
+        in getTargetPackages(filterExcluded: filterExcluded)) {
       yield plugin;
-      yield* plugin
+      yield* plugin.directory
           .list(recursive: true, followLinks: false)
           .where(_isDartPackage)
-          .cast<Directory>();
+          .map((FileSystemEntity directory) => PackageEnumerationEntry(
+              directory as Directory, // _isDartPackage guarantees this works.
+              excluded: plugin.excluded));
     }
   }
 
   /// Returns the files contained, recursively, within the plugins
   /// involved in this command execution.
   Stream<File> getFiles() {
-    return getPlugins().asyncExpand<File>((Directory folder) => folder
+    return getTargetPackages()
+        .map((PackageEnumerationEntry entry) => entry.directory)
+        .asyncExpand<File>((Directory folder) => getFilesForPackage(folder));
+  }
+
+  /// Returns the files contained, recursively, within [package].
+  Stream<File> getFilesForPackage(Directory package) {
+    return package
         .list(recursive: true, followLinks: false)
         .where((FileSystemEntity entity) => entity is File)
-        .cast<File>());
+        .cast<File>();
   }
 
   /// Returns whether the specified entity is a directory containing a
@@ -285,22 +381,10 @@ abstract class PluginCommand extends Command<void> {
   ///
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
-    final String rootDir = packagesDir.parent.absolute.path;
     final String baseSha = getStringArg(_kBaseSha);
 
-    GitDir? baseGitDir = gitDir;
-    if (baseGitDir == null) {
-      if (!await GitDir.isGitDir(rootDir)) {
-        printError(
-          '$rootDir is not a valid Git repository.',
-        );
-        throw ToolExit(2);
-      }
-      baseGitDir = await GitDir.fromExisting(rootDir);
-    }
-
     final GitVersionFinder gitVersionFinder =
-        GitVersionFinder(baseGitDir, baseSha);
+        GitVersionFinder(await gitDir, baseSha);
     return gitVersionFinder;
   }
 

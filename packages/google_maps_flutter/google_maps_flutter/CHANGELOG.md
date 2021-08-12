@@ -3,6 +3,17 @@
 * Add iOS unit and UI integration test targets.
 * Provide access to Hybrid Composition on Android through the `GoogleMap` widget.
 
+## 2.0.8
+
+* Mark iOS arm64 simulators as unsupported.
+
+## 2.0.7
+
+* Add iOS unit and UI integration test targets.
+* Exclude arm64 simulators in example app.
+* Remove references to the Android V1 embedding.
+>>>>>>> 4383bb15d91384efb22dbe409c3fd58e4552267c
+
 ## 2.0.6
 
 * Migrate maven repo from jcenter to mavenCentral.

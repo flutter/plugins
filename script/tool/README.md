@@ -58,31 +58,45 @@ Note that the `plugins` argument, despite the name, applies to any package.
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart format --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart format --packages plugin_name
 ```
 
 ### Run the Dart Static Analyzer
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart analyze --packages plugin_name
 ```
 
 ### Run Dart Unit Tests
 
 ```sh
 cd <repository root>
-dart run ./script/tool/bin/flutter_plugin_tools.dart test --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart test --packages plugin_name
 ```
 
-### Run XCTests
+### Run Dart Integration Tests
 
 ```sh
 cd <repository root>
-# For iOS:
-dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --ios --plugins plugin_name
-# For macOS:
-dart run ./script/tool/bin/flutter_plugin_tools.dart xctest --macos --plugins plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart build-examples --packages plugin_name
+dart run ./script/tool/bin/flutter_plugin_tools.dart drive-examples --packages plugin_name
+```
+
+### Run Native Tests
+
+`native-test` takes one or more platform flags to run tests for. By default it
+runs both unit tests and (on platforms that support it) integration tests, but
+`--no-unit` or `--no-integration` can be used to run just one type.
+
+Examples:
+
+```sh
+cd <repository root>
+# Run just unit tests for iOS and Android:
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --android --no-integration --packages plugin_name
+# Run all tests for macOS:
+dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --macos --packages plugin_name
 ```
 
 ### Publish a Release
