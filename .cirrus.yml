@@ -31,8 +31,16 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
 build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   create_all_plugins_app_script:
     - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
-  build_all_plugins_script:
-    - ./script/build_all_plugins_app.sh $BUILD_ALL_ARGS
+  build_all_plugins_debug_script:
+    - cd all_plugins
+    - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
+    -   echo "Skipping; web does not support debug builds"
+    - else
+    -   flutter build $BUILD_ALL_ARGS --debug
+    - fi
+  build_all_plugins_release_script:
+    - cd all_plugins
+    - flutter build $BUILD_ALL_ARGS --release
   always:
     cleanup_script: rm -rf ./all_plugins
 
