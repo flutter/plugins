@@ -378,9 +378,6 @@ class CameraPlugin extends CameraPlatform {
       final documentElement = window?.document.documentElement;
 
       if (orientation != null && documentElement != null) {
-        // Full-screen mode may be required to modify the device orientation.
-        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
-        documentElement.requestFullscreen();
         orientation.unlock();
       } else {
         throw PlatformException(
