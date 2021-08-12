@@ -4,10 +4,10 @@
 
 import 'dart:html' as html;
 import 'dart:ui';
-import 'dart:js_util' as js_util;
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
+import 'package:camera_web/src/shims/dart_js_util.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
@@ -21,6 +21,10 @@ class CameraService {
   /// The current browser window used to access media devices.
   @visibleForTesting
   html.Window? window = html.window;
+
+  /// The utility to manipulate JavaScript interop objects.
+  @visibleForTesting
+  JsUtil jsUtil = JsUtil();
 
   /// Returns a media stream associated with the camera device
   /// with [cameraId] and constrained by [options].
@@ -143,8 +147,8 @@ class CameraService {
       // The zoom level capability is a nested JS object, therefore
       // we need to access its properties with the js_util library.
       // See: https://api.dart.dev/stable/2.13.4/dart-js_util/getProperty.html
-      final minimumZoomLevel = js_util.getProperty(zoomLevelCapability, 'min');
-      final maximumZoomLevel = js_util.getProperty(zoomLevelCapability, 'max');
+      final minimumZoomLevel = jsUtil.getProperty(zoomLevelCapability, 'min');
+      final maximumZoomLevel = jsUtil.getProperty(zoomLevelCapability, 'max');
 
       if (minimumZoomLevel != null && maximumZoomLevel != null) {
         return ZoomLevelCapability(
@@ -201,40 +205,34 @@ class CameraService {
     final facingMode = videoTrackSettings[_facingModeKey];
 
     if (facingMode == null) {
-      try {
-        // If the facing mode does not exist in the video track settings,
-        // check for the facing mode in the video track capabilities.
-        //
-        // MediaTrackCapabilities:
-        // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
-        //
-        // This may throw a not supported error on Firefox.
-        final videoTrackCapabilities = videoTrack.getCapabilities();
+      // If the facing mode does not exist in the video track settings,
+      // check for the facing mode in the video track capabilities.
+      //
+      // MediaTrackCapabilities:
+      // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
 
-        // A list of facing mode capabilities as
-        // the camera may support multiple facing modes.
-        final facingModeCapabilities =
-            List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
+      // Check if getting the video track capabilities is supported.
+      //
+      // The method may not be supported on Firefox.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/getCapabilities#browser_compatibility
+      if (!jsUtil.hasProperty(videoTrack, 'getCapabilities')) {
+        // Return null if the video track capabilites are not supported.
+        return null;
+      }
 
-        if (facingModeCapabilities.isNotEmpty) {
-          final facingModeCapability = facingModeCapabilities.first;
-          return facingModeCapability;
-        } else {
-          // Return null if there are no facing mode capabilities.
-          return null;
-        }
-      } catch (e) {
-        switch (e.runtimeType.toString()) {
-          case 'JSNoSuchMethodError':
-            // Return null if getting capabilities is currently not supported.
-            return null;
-          default:
-            throw PlatformException(
-              code: CameraErrorCode.unknown.toString(),
-              message:
-                  'An unknown error occured when getting the video track capabilities.',
-            );
-        }
+      final videoTrackCapabilities = videoTrack.getCapabilities();
+
+      // A list of facing mode capabilities as
+      // the camera may support multiple facing modes.
+      final facingModeCapabilities =
+          List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
+
+      if (facingModeCapabilities.isNotEmpty) {
+        final facingModeCapability = facingModeCapabilities.first;
+        return facingModeCapability;
+      } else {
+        // Return null if there are no facing mode capabilities.
+        return null;
       }
     }
 
