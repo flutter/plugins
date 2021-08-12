@@ -323,7 +323,7 @@ public class ImagePickerDelegate
     pickImageIntent.setType("image/*");
 
     activity.startActivityForResult(
-      Intent.createChooser(pickImageIntent, ""), REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
+        Intent.createChooser(pickImageIntent, ""), REQUEST_CODE_CHOOSE_IMAGE_FROM_GALLERY);
   }
 
   private void launchMultiPickImageFromGalleryIntent() {
