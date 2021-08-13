@@ -1,6 +1,6 @@
 ## 2.1.13
 
-* Removed video player is not functional on iOS simulator warning.
+* Removed obsolete warning about not working in iOS simulators from README.
 
 ## 2.1.12
 
