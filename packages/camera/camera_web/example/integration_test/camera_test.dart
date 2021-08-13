@@ -214,6 +214,24 @@ void main() {
       });
     });
 
+    group('pause', () {
+      testWidgets('pauses the camera stream', (tester) async {
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+        await camera.play();
+
+        expect(camera.videoElement.paused, isFalse);
+
+        camera.pause();
+
+        expect(camera.videoElement.paused, isTrue);
+      });
+    });
+
     group('stop', () {
       testWidgets('resets the camera stream', (tester) async {
         final camera = Camera(
