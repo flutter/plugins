@@ -16,6 +16,10 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
+const String _androidIntegrationTestFilter =
+    '-Pandroid.testInstrumentationRunnerArguments.'
+    'notAnnotation=io.flutter.plugins.DartIntegrationTest';
+
 final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   'runtimes': <Map<String, dynamic>>[
     <String, dynamic>{
@@ -436,10 +440,40 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['app:connectedAndroidTest'],
+              const <String>[
+                'app:connectedAndroidTest',
+                _androidIntegrationTestFilter,
+              ],
               androidFolder.path,
             ),
           ]),
+        );
+      });
+
+      test(
+          'ignores Java integration test files associated with integration_test',
+          () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/java/io/flutter/plugins/DartIntegrationTest.java',
+            'example/android/app/src/androidTest/java/io/flutter/plugins/plugin/FlutterActivityTest.java',
+            'example/android/app/src/androidTest/java/io/flutter/plugins/plugin/MainActivityTest.java',
+          ],
+        );
+
+        await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        // Nothing should run since those files are all
+        // integration_test-specific.
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[]),
         );
       });
 
@@ -472,7 +506,10 @@ void main() {
             ),
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['app:connectedAndroidTest'],
+              const <String>[
+                'app:connectedAndroidTest',
+                _androidIntegrationTestFilter,
+              ],
               androidFolder.path,
             ),
           ]),
@@ -504,7 +541,10 @@ void main() {
           orderedEquals(<ProcessCall>[
             ProcessCall(
               androidFolder.childFile('gradlew').path,
-              const <String>['app:connectedAndroidTest'],
+              const <String>[
+                'app:connectedAndroidTest',
+                _androidIntegrationTestFilter,
+              ],
               androidFolder.path,
             ),
           ]),

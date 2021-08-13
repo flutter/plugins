@@ -187,13 +187,36 @@ this command.
               .existsSync();
     }
 
-    bool exampleHasIntegrationTests(Directory example) {
-      return example
+    bool exampleHasNativeIntegrationTests(Directory example) {
+      final Directory integrationTestDirectory = example
           .childDirectory('android')
           .childDirectory('app')
           .childDirectory('src')
-          .childDirectory('androidTest')
-          .existsSync();
+          .childDirectory('androidTest');
+      // There are two types of integration tests that can be in the androidTest
+      // directory:
+      // - FlutterTestRunner.class tests, which bridge to Dart integration tests
+      // - Purely native tests
+      // Only the latter is supported by this command; the former will hang if
+      // run here because they will wait for a Dart call that will never come.
+      //
+      // This repository uses a convention of putting the former in a
+      // *ActivityTest.java file, so ignore that file when checking for tests.
+      // Also ignore DartIntegrationTest.java, which defines the annotation used
+      // below for filtering the former out when running tests.
+      //
+      // If those are the only files, then there are no tests to run here.
+      return integrationTestDirectory.existsSync() &&
+          integrationTestDirectory
+              .listSync(recursive: true)
+              .any((FileSystemEntity entity) {
+            if (entity is! File) {
+              return false;
+            }
+            final String basename = entity.basename;
+            return !basename.endsWith('ActivityTest.java') &&
+                basename != 'DartIntegrationTest.java';
+          });
     }
 
     final Iterable<Directory> examples = getExamplesForPlugin(plugin);
@@ -203,7 +226,8 @@ this command.
     bool hasMissingBuild = false;
     for (final Directory example in examples) {
       final bool hasUnitTests = exampleHasUnitTests(example);
-      final bool hasIntegrationTests = exampleHasIntegrationTests(example);
+      final bool hasIntegrationTests =
+          exampleHasNativeIntegrationTests(example);
 
       if (mode.unit && !hasUnitTests) {
         _printNoExampleTestsMessage(example, 'Android unit');
@@ -245,9 +269,20 @@ this command.
       }
 
       if (runIntegrationTests) {
+        // FlutterTestRunner-based tests will hang forever if run in a normal
+        // app build, since they wait for a Dart call from integration_test that
+        // will never come. Those tests have an extra annotation to allow
+        // filtering them out.
+        const String filter =
+            'notAnnotation=io.flutter.plugins.DartIntegrationTest';
+
         print('Running integration tests...');
         final int exitCode = await processRunner.runAndStream(
-            gradleFile.path, <String>['app:connectedAndroidTest'],
+            gradleFile.path,
+            <String>[
+              'app:connectedAndroidTest',
+              '-Pandroid.testInstrumentationRunnerArguments.$filter',
+            ],
             workingDir: androidDirectory);
         if (exitCode != 0) {
           printError('$exampleName integration tests failed.');
