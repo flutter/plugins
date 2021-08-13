@@ -8,6 +8,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 
@@ -231,7 +232,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                 ? Container()
                 : SizedBox(
                     child: (localVideoController == null)
-                        ? Image.file(File(imageFile!.path))
+                        ? (
+                            // The captured image on the web contains a network-accessible URL
+                            // pointing to a location within the browser. It may be displayed
+                            // either with Image.network or Image.memory after loading the image
+                            // bytes to memory.
+                            kIsWeb
+                                ? Image.network(imageFile!.path)
+                                : Image.file(File(imageFile!.path)))
                         : Container(
                             child: Center(
                               child: AspectRatio(
@@ -267,17 +275,24 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               color: Colors.blue,
               onPressed: controller != null ? onFlashModeButtonPressed : null,
             ),
-            IconButton(
-              icon: Icon(Icons.exposure),
-              color: Colors.blue,
-              onPressed:
-                  controller != null ? onExposureModeButtonPressed : null,
-            ),
-            IconButton(
-              icon: Icon(Icons.filter_center_focus),
-              color: Colors.blue,
-              onPressed: controller != null ? onFocusModeButtonPressed : null,
-            ),
+            // The exposure and focus mode are currently not supported on the web.
+            ...(!kIsWeb
+                ? [
+                    IconButton(
+                      icon: Icon(Icons.exposure),
+                      color: Colors.blue,
+                      onPressed: controller != null
+                          ? onExposureModeButtonPressed
+                          : null,
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.filter_center_focus),
+                      color: Colors.blue,
+                      onPressed:
+                          controller != null ? onFocusModeButtonPressed : null,
+                    )
+                  ]
+                : []),
             IconButton(
               icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
               color: Colors.blue,
@@ -499,38 +514,43 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ? onTakePictureButtonPressed
               : null,
         ),
-        IconButton(
-          icon: const Icon(Icons.videocam),
-          color: Colors.blue,
-          onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  !cameraController.value.isRecordingVideo
-              ? onVideoRecordButtonPressed
-              : null,
-        ),
-        IconButton(
-          icon: cameraController != null &&
-                  cameraController.value.isRecordingPaused
-              ? Icon(Icons.play_arrow)
-              : Icon(Icons.pause),
-          color: Colors.blue,
-          onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  cameraController.value.isRecordingVideo
-              ? (cameraController.value.isRecordingPaused)
-                  ? onResumeButtonPressed
-                  : onPauseButtonPressed
-              : null,
-        ),
-        IconButton(
-          icon: const Icon(Icons.stop),
-          color: Colors.red,
-          onPressed: cameraController != null &&
-                  cameraController.value.isInitialized &&
-                  cameraController.value.isRecordingVideo
-              ? onStopButtonPressed
-              : null,
-        )
+        // Video recording is currently not supported on the web.
+        ...(!kIsWeb
+            ? [
+                IconButton(
+                  icon: const Icon(Icons.videocam),
+                  color: Colors.blue,
+                  onPressed: cameraController != null &&
+                          cameraController.value.isInitialized &&
+                          !cameraController.value.isRecordingVideo
+                      ? onVideoRecordButtonPressed
+                      : null,
+                ),
+                IconButton(
+                  icon: cameraController != null &&
+                          cameraController.value.isRecordingPaused
+                      ? Icon(Icons.play_arrow)
+                      : Icon(Icons.pause),
+                  color: Colors.blue,
+                  onPressed: cameraController != null &&
+                          cameraController.value.isInitialized &&
+                          cameraController.value.isRecordingVideo
+                      ? (cameraController.value.isRecordingPaused)
+                          ? onResumeButtonPressed
+                          : onPauseButtonPressed
+                      : null,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.stop),
+                  color: Colors.red,
+                  onPressed: cameraController != null &&
+                          cameraController.value.isInitialized &&
+                          cameraController.value.isRecordingVideo
+                      ? onStopButtonPressed
+                      : null,
+                )
+              ]
+            : []),
       ],
     );
   }
@@ -621,12 +641,17 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     try {
       await cameraController.initialize();
       await Future.wait([
-        cameraController
-            .getMinExposureOffset()
-            .then((value) => _minAvailableExposureOffset = value),
-        cameraController
-            .getMaxExposureOffset()
-            .then((value) => _maxAvailableExposureOffset = value),
+        // The exposure mode is currently not supported on the web.
+        ...(!kIsWeb
+            ? [
+                cameraController
+                    .getMinExposureOffset()
+                    .then((value) => _minAvailableExposureOffset = value),
+                cameraController
+                    .getMaxExposureOffset()
+                    .then((value) => _maxAvailableExposureOffset = value)
+              ]
+            : []),
         cameraController
             .getMaxZoomLevel()
             .then((value) => _maxAvailableZoom = value),
@@ -696,16 +721,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onCaptureOrientationLockButtonPressed() async {
-    if (controller != null) {
-      final CameraController cameraController = controller!;
-      if (cameraController.value.isCaptureOrientationLocked) {
-        await cameraController.unlockCaptureOrientation();
-        showInSnackBar('Capture orientation unlocked');
-      } else {
-        await cameraController.lockCaptureOrientation();
-        showInSnackBar(
-            'Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}');
+    try {
+      if (controller != null) {
+        final CameraController cameraController = controller!;
+        if (cameraController.value.isCaptureOrientationLocked) {
+          await cameraController.unlockCaptureOrientation();
+          showInSnackBar('Capture orientation unlocked');
+        } else {
+          await cameraController.lockCaptureOrientation();
+          showInSnackBar(
+              'Capture orientation locked to ${cameraController.value.lockedCaptureOrientation.toString().split('.').last}');
+        }
       }
+    } on CameraException catch (e) {
+      _showCameraException(e);
     }
   }
 
