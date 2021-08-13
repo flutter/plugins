@@ -119,6 +119,11 @@ class Camera {
     await videoElement.play();
   }
 
+  /// Pauses the camera stream on the current frame.
+  void pause() async {
+    videoElement.pause();
+  }
+
   /// Stops the camera stream and resets the camera source.
   void stop() {
     final tracks = videoElement.srcObject?.getTracks();
