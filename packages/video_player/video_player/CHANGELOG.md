@@ -1,3 +1,7 @@
+## 2.1.12+1
+
+* Removed video player is not functional on iOS simulator warning.
+
 ## 2.1.12
 
 * Update the video url in the readme code sample
