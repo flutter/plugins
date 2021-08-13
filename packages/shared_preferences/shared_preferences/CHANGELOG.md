@@ -1,4 +1,4 @@
-## NEXT
+## 2.0.7
 
 * Add iOS unit test target.
 * Fix string clash with double entries on Android
