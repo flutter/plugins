@@ -1,4 +1,4 @@
-## 2.1.12+1
+## 2.1.13
 
 * Removed video player is not functional on iOS simulator warning.
 
