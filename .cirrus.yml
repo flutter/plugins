@@ -41,8 +41,6 @@ build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   build_all_plugins_release_script:
     - cd all_plugins
     - flutter build $BUILD_ALL_ARGS --release
-  always:
-    cleanup_script: rm -rf ./all_plugins
 
 macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for
