@@ -518,6 +518,27 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
+  Future<void> pausePreview(int cameraId) async {
+    try {
+      getCamera(cameraId).pause();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
+  }
+
+  @override
+  Future<void> resumePreview(int cameraId) async {
+    try {
+      await getCamera(cameraId).play();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
+  }
+
+  @override
   Widget buildPreview(int cameraId) {
     return HtmlElementView(
       viewType: getCamera(cameraId).getViewType(),
