@@ -421,7 +421,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.flutter.plugins.cameraExample.camera-exampleTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.flutter.plugins.cameraExample.camera-exampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
@@ -445,7 +445,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "io.flutter.plugins.cameraExample.camera-exampleTests";
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.flutter.plugins.cameraExample.camera-exampleTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Runner.app/Runner";
@@ -574,7 +574,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.cameraExample;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.cameraExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -595,7 +595,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Flutter",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = io.flutter.plugins.cameraExample;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.flutter.plugins.cameraExample;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

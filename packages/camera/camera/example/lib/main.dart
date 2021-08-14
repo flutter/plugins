@@ -68,7 +68,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -98,7 +98,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
@@ -594,16 +594,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
-    if (controller != null) {
-      await controller!.dispose();
-    }
+    final previousCameraController = controller;
+
     final CameraController cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
+
     controller = cameraController;
+
+    if (mounted) {
+      setState(() {});
+    }
 
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
@@ -637,6 +641,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (mounted) {
       setState(() {});
     }
+
+    await previousCameraController?.dispose();
   }
 
   void onTakePictureButtonPressed() {
@@ -951,3 +957,10 @@ Future<void> main() async {
   }
   runApp(CameraApp());
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;
