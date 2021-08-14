@@ -1,3 +1,7 @@
+## 2.1.13
+
+* Removed obsolete warning about not working in iOS simulators from README.
+
 ## 2.1.12
 
 * Update the video url in the readme code sample
