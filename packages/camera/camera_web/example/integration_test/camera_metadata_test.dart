@@ -4,10 +4,13 @@
 
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('CameraMetadata', () {
-    test('supports value equality', () {
+    testWidgets('supports value equality', (tester) async {
       expect(
         CameraMetadata(
           deviceId: 'deviceId',
