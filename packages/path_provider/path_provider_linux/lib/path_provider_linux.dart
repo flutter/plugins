@@ -31,9 +31,9 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() {
-    final String? tmpdir = _environment['TMPDIR'];
+    final String environmentTmpDir = _environment['TMPDIR'] ?? '';
     return Future<String?>.value(
-      tmpdir == null || tmpdir.isEmpty ? '/tmp' : tmpdir,
+      environmentTmpDir.isEmpty ? '/tmp' : environmentTmpDir,
     );
   }
 
