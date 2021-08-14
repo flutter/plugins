@@ -7,22 +7,18 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-
-  late Map<String, String> environment;
-
-  setUp(() {
-    environment = <String, String>{};
-    PathProviderLinux.privateRegisterWith(
-      environment: environment,
-    );
-  });
+  PathProviderLinux.registerWith();
 
   test('registered instance', () {
     expect(PathProviderPlatform.instance, isA<PathProviderLinux>());
   });
 
   test('getTemporaryPath', () async {
-    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+    final Map<String, String> environment = <String, String>{};
+
+    final PathProviderPlatform plugin = PathProviderLinux.private(
+      environment: environment,
+    );
     expect(await plugin.getTemporaryPath(), '/tmp');
 
     environment['TMPDIR'] = '';

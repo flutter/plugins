@@ -29,17 +29,6 @@ class PathProviderLinux extends PathProviderPlatform {
     PathProviderPlatform.instance = PathProviderLinux();
   }
 
-  /// Registers this class as the default instance of [PathProviderPlatform]
-  /// with the given [environment]
-  @visibleForTesting
-  static void privateRegisterWith({
-    required Map<String, String> environment,
-  }) {
-    PathProviderPlatform.instance = PathProviderLinux.private(
-      environment: environment,
-    );
-  }
-
   @override
   Future<String?> getTemporaryPath() {
     final String? tmpdir = _environment['TMPDIR'];
