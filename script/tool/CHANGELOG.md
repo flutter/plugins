@@ -23,6 +23,7 @@
   the new `native-test` command.
 - Commands that print a run summary at the end now track and log exclusions
   similarly to skips for easier auditing.
+- Pubspec validation now checks for `implements` in implementation packages.
 
 ## 0.4.1
 
