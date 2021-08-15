@@ -4,17 +4,17 @@
 
 package io.flutter.plugins.quickactions;
 
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import org.junit.Test;
-import java.nio.ByteBuffer;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.StandardMethodCodec;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.nio.ByteBuffer;
+import org.junit.Test;
 
 public class QuickActionsTest {
   private static class TestBinaryMessenger implements BinaryMessenger {
@@ -26,9 +26,13 @@ public class QuickActionsTest {
     }
 
     @Override
-    public void send(@NonNull String channel, @Nullable ByteBuffer message, @Nullable final BinaryReply callback) {
+    public void send(
+        @NonNull String channel,
+        @Nullable ByteBuffer message,
+        @Nullable final BinaryReply callback) {
       if (channel.equals("plugins.flutter.io/quick_actions")) {
-        lastMethodCall = StandardMethodCodec.INSTANCE.decodeMethodCall((ByteBuffer) message.position(0));
+        lastMethodCall =
+            StandardMethodCodec.INSTANCE.decodeMethodCall((ByteBuffer) message.position(0));
       }
     }
 
