@@ -10,7 +10,7 @@ environment:
 
 flutter:
   plugin:
-    implements: connectivity_platform_interface
+    implements: connectivity_platform
     platforms:
       macos:
         pluginClass: ConnectivityPlugin
