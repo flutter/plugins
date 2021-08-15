@@ -1,3 +1,7 @@
+## 2.1.14
+
+* Removed dependency on the `flutter_test` package.
+
 ## 2.1.13
 
 * Removed obsolete warning about not working in iOS simulators from README.
