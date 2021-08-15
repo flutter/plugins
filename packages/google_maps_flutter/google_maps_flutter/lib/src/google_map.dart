@@ -101,7 +101,6 @@ class GoogleMap extends StatefulWidget {
   /// Type of map tiles to be rendered.
   final MapType mapType;
 
-  /// {@macro template_name}
   /// The text direction to use for the embedded view.
   ///
   /// If this is null, the ambient [Directionality] is used instead. If there is
