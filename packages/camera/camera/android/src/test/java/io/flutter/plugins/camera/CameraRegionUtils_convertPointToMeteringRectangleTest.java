@@ -76,8 +76,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
   }
 
   @Test
-  public void
-      convertPointToMeteringRectangle_should_return_valid_MeteringRectangle_for_center_coord() {
+  public void convertPointToMeteringRectangle_shouldReturnValidMeteringRectangleForCenterCoord() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 0.5, 0.5, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
@@ -85,8 +84,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
   }
 
   @Test
-  public void
-      convertPointToMeteringRectangle_should_return_valid_MeteringRectangle_for_top_left_coord() {
+  public void convertPointToMeteringRectangle_shouldReturnValidMeteringRectangleForTopLeftCoord() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 0, 0, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
@@ -94,8 +92,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
   }
 
   @Test
-  public void
-      convertPointToMeteringRectangle_should_return_valid_MeteringRectangle_for_top_right_coord() {
+  public void convertPointToMeteringRectangle_ShouldReturnValidMeteringRectangleForTopRightCoord() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 1, 0, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
@@ -104,7 +101,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
 
   @Test
   public void
-      convertPointToMeteringRectangle_should_return_valid_MeteringRectangle_for_bottom_left_coord() {
+      convertPointToMeteringRectangle_shouldReturnValidMeteringRectangleForBottomLeftCoord() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 0, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
@@ -113,7 +110,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
 
   @Test
   public void
-      convertPointToMeteringRectangle_should_return_valid_MeteringRectangle_for_bottom_right_coord() {
+      convertPointToMeteringRectangle_shouldReturnValidMeteringRectangleForBottomRightCoord() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
@@ -121,32 +118,32 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void convertPointToMeteringRectangle_should_throw_for_x_upper_bound() {
+  public void convertPointToMeteringRectangle_shouldThrowForXUpperBound() {
     CameraRegionUtils.convertPointToMeteringRectangle(
         this.mockCameraBoundaries, 1.5, 0, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
-  public void convertPointToMeteringRectangle_should_throw_for_x_lower_bound() {
+  public void convertPointToMeteringRectangle_shouldThrowForXLowerBound() {
     CameraRegionUtils.convertPointToMeteringRectangle(
         this.mockCameraBoundaries, -0.5, 0, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
-  public void convertPointToMeteringRectangle_should_throw_for_y_upper_bound() {
+  public void convertPointToMeteringRectangle_shouldThrowForYUpperBound() {
     CameraRegionUtils.convertPointToMeteringRectangle(
         this.mockCameraBoundaries, 0, 1.5, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test(expected = AssertionError.class)
-  public void convertPointToMeteringRectangle_should_throw_for_y_lower_bound() {
+  public void convertPointToMeteringRectangle_shouldThrowForYLowerBound() {
     CameraRegionUtils.convertPointToMeteringRectangle(
         this.mockCameraBoundaries, 0, -0.5, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
   }
 
   @Test()
   public void
-      convertPointToMeteringRectangle_should_rotate_metering_rectangle_according_to_ui_orientation_for_portrait_up() {
+      convertPointToMeteringRectangle_shouldRotateMeteringRectangleAccordingToUiOrientationForPortraitUp() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.PORTRAIT_UP);
@@ -155,7 +152,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
 
   @Test()
   public void
-      convertPointToMeteringRectangle_should_rotate_metering_rectangle_according_to_ui_orientation_for_portrait_down() {
+      convertPointToMeteringRectangle_shouldRotateMeteringRectangleAccordingToUiOrientationForPortraitDown() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.PORTRAIT_DOWN);
@@ -164,7 +161,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
 
   @Test()
   public void
-      convertPointToMeteringRectangle_should_rotate_metering_rectangle_according_to_ui_orientation_for_landscape_left() {
+      convertPointToMeteringRectangle_shouldRotateMeteringRectangleAccordingToUiOrientationForLandscapeLeft() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
@@ -173,7 +170,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
 
   @Test()
   public void
-      convertPointToMeteringRectangle_should_rotate_metering_rectangle_according_to_ui_orientation_for_landscape_right() {
+      convertPointToMeteringRectangle_shouldRotateMeteringRectangleAccordingToUiOrientationForLandscapeRight() {
     MeteringRectangle r =
         CameraRegionUtils.convertPointToMeteringRectangle(
             this.mockCameraBoundaries, 1, 1, PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT);
@@ -181,7 +178,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void convertPointToMeteringRectangle_should_throw_for_0_width_boundary() {
+  public void convertPointToMeteringRectangle_shouldThrowFor0WidthBoundary() {
     Size mockCameraBoundaries = mock(Size.class);
     when(mockCameraBoundaries.getWidth()).thenReturn(0);
     when(mockCameraBoundaries.getHeight()).thenReturn(50);
@@ -190,7 +187,7 @@ public class CameraRegionUtils_convertPointToMeteringRectangleTest {
   }
 
   @Test(expected = AssertionError.class)
-  public void convertPointToMeteringRectangle_should_throw_for_0_height_boundary() {
+  public void convertPointToMeteringRectangle_shouldThrowFor0HeightBoundary() {
     Size mockCameraBoundaries = mock(Size.class);
     when(mockCameraBoundaries.getWidth()).thenReturn(50);
     when(mockCameraBoundaries.getHeight()).thenReturn(0);

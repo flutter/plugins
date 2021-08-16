@@ -33,8 +33,7 @@ public class CameraRegionUtils_getCameraBoundariesTest {
   }
 
   @Test
-  public void
-      getCameraBoundaries_should_return_sensor_info_pixel_array_size_when_running_pre_android_p() {
+  public void getCameraBoundaries_shouldReturnSensorInfoPixelArraySizeWhenRunningPreAndroidP() {
     updateSdkVersion(Build.VERSION_CODES.O_MR1);
 
     try {
@@ -54,7 +53,7 @@ public class CameraRegionUtils_getCameraBoundariesTest {
 
   @Test
   public void
-      getCameraBoundaries_should_return_sensor_info_pixel_array_size_when_distortion_correction_is_null() {
+      getCameraBoundaries_shouldReturnSensorInfoPixelArraySizeWhenDistortionCorrectionIsNull() {
     updateSdkVersion(Build.VERSION_CODES.P);
 
     try {
@@ -76,7 +75,7 @@ public class CameraRegionUtils_getCameraBoundariesTest {
 
   @Test
   public void
-      getCameraBoundaries_should_return_sensor_info_pixel_array_size_when_distortion_correction_is_off() {
+      getCameraBoundaries_shouldReturnSensorInfoPixelArraySizeWhenDistortionCorrectionIsOff() {
     updateSdkVersion(Build.VERSION_CODES.P);
 
     try {
@@ -99,7 +98,7 @@ public class CameraRegionUtils_getCameraBoundariesTest {
 
   @Test
   public void
-      getCameraBoundaries_should_return_info_pre_correction_active_array_size_when_distortion_correction_mode_is_set_to_null() {
+      getCameraBoundaries_shouldReturnInfoPreCorrectionActiveArraySizeWhenDistortionCorrectionModeIsSetToNull() {
     updateSdkVersion(Build.VERSION_CODES.P);
 
     try {
@@ -146,7 +145,7 @@ public class CameraRegionUtils_getCameraBoundariesTest {
 
   @Test
   public void
-      getCameraBoundaries_should_return_info_pre_correction_active_array_size_when_distortion_correction_mode_is_set_to_off() {
+      getCameraBoundaries_shouldReturnInfoPreCorrectionActiveArraySizeWhenDistortionCorrectionModeIsSetToOff() {
     updateSdkVersion(Build.VERSION_CODES.P);
 
     try {
@@ -195,7 +194,7 @@ public class CameraRegionUtils_getCameraBoundariesTest {
 
   @Test
   public void
-      getCameraBoundaries_should_return_sensor_info_active_array_size_when_distortion_correction_mode_is_set() {
+      getCameraBoundaries_shouldReturnSensorInfoActiveArraySizeWhenDistortionCorrectionModeIsSet() {
     updateSdkVersion(Build.VERSION_CODES.P);
 
     try {
