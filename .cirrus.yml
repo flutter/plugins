@@ -28,6 +28,20 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - flutter doctor -v
   << : *TOOL_SETUP_TEMPLATE
 
+build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
+  create_all_plugins_app_script:
+    - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
+  build_all_plugins_debug_script:
+    - cd all_plugins
+    - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
+    -   echo "Skipping; web does not support debug builds"
+    - else
+    -   flutter build $BUILD_ALL_ARGS --debug
+    - fi
+  build_all_plugins_release_script:
+    - cd all_plugins
+    - flutter build $BUILD_ALL_ARGS --release
+
 macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for
   # PRs on macOS.
@@ -82,28 +96,29 @@ task:
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
+        BUILD_ALL_ARGS: "apk"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh apk
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Web tasks ###
     - name: build_all_plugins_web
       env:
+        BUILD_ALL_ARGS: "web"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh web
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Linux desktop tasks ###
     - name: build_all_plugins_linux
       env:
+        BUILD_ALL_ARGS: "linux"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
+      setup_script:
         - flutter config --enable-linux-desktop
-        - ./script/build_all_plugins_app.sh linux
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: build-linux+drive-examples
       env:
         matrix:
@@ -200,11 +215,11 @@ task:
     ### iOS tasks ###
     - name: build_all_plugins_ipa
       env:
+        BUILD_ALL_ARGS: "ios --no-codesign"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh ios --no-codesign
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: build-ipas+drive-examples
       env:
         PATH: $PATH:/usr/local/bin
@@ -234,12 +249,13 @@ task:
     ### macOS desktop tasks ###
     - name: build_all_plugins_macos
       env:
+        BUILD_ALL_ARGS: "macos"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
+      setup_script:
         - flutter config --enable-macos-desktop
-        - ./script/build_all_plugins_app.sh macos
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     - name: build-macos+drive-examples
       env:
         matrix:

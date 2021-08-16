@@ -191,7 +191,7 @@ abstract class PluginCommand extends Command<void> {
   }
 
   /// Returns the set of plugins to exclude based on the `--exclude` argument.
-  Set<String> _getExcludedPackageName() {
+  Set<String> getExcludedPackageNames() {
     final Set<String> excludedPackages = _excludedPackages ??
         getStringListArg(_excludeArg).expand<String>((String item) {
           if (item.endsWith('.yaml')) {
@@ -265,7 +265,7 @@ abstract class PluginCommand extends Command<void> {
   Stream<PackageEnumerationEntry> _getAllPackages() async* {
     Set<String> plugins = Set<String>.from(getStringListArg(_packagesArg));
 
-    final Set<String> excludedPluginNames = _getExcludedPackageName();
+    final Set<String> excludedPluginNames = getExcludedPackageNames();
 
     final bool runOnChangedPackages = getBoolArg(_runOnChangedPackagesArg);
     if (plugins.isEmpty &&
