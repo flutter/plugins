@@ -19,7 +19,7 @@ typedef enum {
 
 - (void)applyFocusMode;
 - (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice;
-- (void)setFocusPointWithResult:(FlutterResult)result x:(double)x y:(double)y;
+- (void)setFocusPointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y;
 @end
 
 @interface CameraFocusTests : XCTestCase
@@ -129,8 +129,7 @@ typedef enum {
 
   // Run test
   [_camera
-      setFocusPointWithResult:^void(id _Nullable result) {
-      }
+      setFocusPointWithResult:[[FLTThreadSafeFlutterResult alloc] initWithResult:^(id  _Nullable result) {}]
                             x:1
                             y:1];
 
