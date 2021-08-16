@@ -2,23 +2,11 @@
 
 The web implementation of [`video_player`][1].
 
-
 ## Usage
 
-This package is the endorsed implementation of `video_player` for the web platform since version `0.10.5`, so it gets automatically added to your application by depending on `video_player: ^0.10.5`.
-
-No further modifications to your `pubspec.yaml` should be required in a recent enough version of Flutter (`>=1.12.13+hotfix.4`):
-
-```yaml
-...
-dependencies:
-  ...
-  video_player: ^0.10.5
-  ...
-```
-
-Once you have the correct `video_player` dependency in your pubspec, you should
-be able to use `package:video_player` as normal, even from your web code.
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin),
+which means you can simply use `video_player`
+normally. This package will be automatically included in your app when you do.
 
 ## dart:io
 

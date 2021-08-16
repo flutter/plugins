@@ -1,6 +1,18 @@
-## 0.8.1+5
+## 0.8.1+8
 
 * Fix registerTexture and result being called on background thread on iOS. 
+
+## 0.8.1+7
+
+* Fix device orientation sometimes not affecting the camera preview orientation.
+
+## 0.8.1+6
+
+* Remove references to the Android V1 embedding.
+
+## 0.8.1+5
+
+* Make sure the `setFocusPoint` and `setExposurePoint` coordinates work correctly in all orientations on iOS (instead of only in portrait mode).
 
 ## 0.8.1+4
 

@@ -235,6 +235,16 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('setZoomLevel() is not implemented.');
   }
 
+  /// Pause the active preview on the current frame for the selected camera.
+  Future<void> pausePreview(int cameraId) {
+    throw UnimplementedError('pausePreview() is not implemented.');
+  }
+
+  /// Resume the paused preview for the selected camera.
+  Future<void> resumePreview(int cameraId) {
+    throw UnimplementedError('pausePreview() is not implemented.');
+  }
+
   /// Returns a widget showing a live camera preview.
   Widget buildPreview(int cameraId) {
     throw UnimplementedError('buildView() has not been implemented.');
