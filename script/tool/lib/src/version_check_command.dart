@@ -32,6 +32,21 @@ enum NextVersionType {
   RELEASE,
 }
 
+/// The state of a package's version relative to the comparison base.
+enum _CurrentVersionState {
+  /// The version is unchanged.
+  unchanged,
+
+  /// The version has changed, and the transition is valid.
+  validChange,
+
+  /// The version has changed, and the transition is invalid.
+  invalidChange,
+
+  /// There was an error determining the version state.
+  unknown,
+}
+
 /// Returns the set of allowed next versions, with their change type, for
 /// [version].
 ///
@@ -140,11 +155,26 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
     final List<String> errors = <String>[];
 
-    if (!await _hasValidVersionChange(package, pubspec: pubspec)) {
-      errors.add('Disallowed version change.');
+    bool versionChanged = false;
+    final _CurrentVersionState versionState =
+        await _getVersionState(package, pubspec: pubspec);
+    switch (versionState) {
+      case _CurrentVersionState.unchanged:
+        break;
+      case _CurrentVersionState.validChange:
+        versionChanged = true;
+        break;
+      case _CurrentVersionState.invalidChange:
+        versionChanged = true;
+        errors.add('Disallowed version change.');
+        break;
+      case _CurrentVersionState.unknown:
+        errors.add('Unable to determine previous version.');
+        break;
     }
 
-    if (!(await _hasConsistentVersion(package, pubspec: pubspec))) {
+    if (!(await _hasConsistentVersion(package,
+        pubspec: pubspec, versionChanged: versionChanged))) {
       errors.add('pubspec.yaml and CHANGELOG.md have different versions');
     }
 
@@ -195,10 +225,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     return await gitVersionFinder.getPackageVersion(gitPath);
   }
 
-  /// Returns true if the version of [package] is either unchanged relative to
-  /// the comparison base (git or pub, depending on flags), or is a valid
-  /// version transition.
-  Future<bool> _hasValidVersionChange(
+  /// Returns the state of the verison of [package] relative to the comparison
+  /// base (git or pub, depending on flags).
+  Future<_CurrentVersionState> _getVersionState(
     Directory package, {
     required Pubspec pubspec,
   }) async {
@@ -208,7 +237,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (getBoolArg(_againstPubFlag)) {
       previousVersion = await _fetchPreviousVersionFromPub(pubspec.name);
       if (previousVersion == null) {
-        return false;
+        return _CurrentVersionState.unknown;
       }
       if (previousVersion != Version.none) {
         print(
@@ -225,12 +254,12 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
           '${getBoolArg(_againstPubFlag) ? 'on pub server' : 'at git base'}.');
       logWarning(
           '${indentation}If this plugin is not new, something has gone wrong.');
-      return true;
+      return _CurrentVersionState.validChange; // Assume new, thus valid.
     }
 
     if (previousVersion == currentVersion) {
       print('${indentation}No version change.');
-      return true;
+      return _CurrentVersionState.unchanged;
     }
 
     // Check for reverts when doing local validation.
@@ -241,9 +270,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       // to be a revert rather than a typo by checking that the transition
       // from the lower version to the new version would have been valid.
       if (possibleVersionsFromNewVersion.containsKey(previousVersion)) {
-        print('${indentation}New version is lower than previous version. '
+        logWarning('${indentation}New version is lower than previous version. '
             'This is assumed to be a revert.');
-        return true;
+        return _CurrentVersionState.validChange;
       }
     }
 
@@ -257,7 +286,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       printError('${indentation}Incorrectly updated version.\n'
           '${indentation}HEAD: $currentVersion, $source: $previousVersion.\n'
           '${indentation}Allowed versions: $allowedNextVersions');
-      return false;
+      return _CurrentVersionState.invalidChange;
     }
 
     final bool isPlatformInterface =
@@ -268,9 +297,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
         allowedNextVersions[currentVersion] == NextVersionType.BREAKING_MAJOR) {
       printError('${indentation}Breaking change detected.\n'
           '${indentation}Breaking changes to platform interfaces are strongly discouraged.\n');
-      return false;
+      return _CurrentVersionState.invalidChange;
     }
-    return true;
+    return _CurrentVersionState.validChange;
   }
 
   /// Returns whether or not the pubspec version and CHANGELOG version for
@@ -278,6 +307,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   Future<bool> _hasConsistentVersion(
     Directory package, {
     required Pubspec pubspec,
+    required bool versionChanged,
   }) async {
     // This method isn't called unless `version` is non-null.
     final Version fromPubspec = pubspec.version!;
@@ -296,10 +326,19 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     // Remove all leading mark down syntax from the version line.
     String? versionString = firstLineWithText?.split(' ').last;
 
+    final String badNextErrorMessage = '${indentation}When bumping the version '
+        'for release, the NEXT section should be incorporated into the new '
+        'version\'s release notes.';
+
     // Skip validation for the special NEXT version that's used to accumulate
     // changes that don't warrant publishing on their own.
     final bool hasNextSection = versionString == 'NEXT';
     if (hasNextSection) {
+      // NEXT should not be present in a commit that changes the version.
+      if (versionChanged) {
+        printError(badNextErrorMessage);
+        return false;
+      }
       print(
           '${indentation}Found NEXT; validating next version in the CHANGELOG.');
       // Ensure that the version in pubspec hasn't changed without updating
@@ -334,9 +373,7 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     if (!hasNextSection) {
       final RegExp nextRegex = RegExp(r'^#+\s*NEXT\s*$');
       if (lines.any((String line) => nextRegex.hasMatch(line))) {
-        printError('${indentation}When bumping the version for release, the '
-            'NEXT section should be incorporated into the new version\'s '
-            'release notes.');
+        printError(badNextErrorMessage);
         return false;
       }
     }

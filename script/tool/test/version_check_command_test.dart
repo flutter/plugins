@@ -373,6 +373,10 @@ void main() {
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
@@ -384,8 +388,7 @@ void main() {
       );
     });
 
-    test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
-        () async {
+    test('Fail if NEXT appears after a version', () async {
       const String version = '1.0.1';
       final Directory pluginDirectory =
           createFakePlugin('plugin', packagesDir, version: version);
@@ -419,17 +422,25 @@ void main() {
       );
     });
 
-    test('Fail if the version changes without replacing NEXT', () async {
+    test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
+        () async {
+      const String version = '1.0.1';
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, version: '1.0.1');
+          createFakePlugin('plugin', packagesDir, version: version);
 
       const String changelog = '''
 ## NEXT
-* Some changes that should be listed as part of 1.0.1.
+* Some changes that should have been folded in 1.0.1.
+## $version
+* Some changes.
 ## 1.0.0
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
       bool hasError = false;
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
@@ -444,8 +455,43 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('Found NEXT; validating next version in the CHANGELOG.'),
-          contains('Versions in CHANGELOG.md and pubspec.yaml do not match.'),
+          contains('When bumping the version for release, the NEXT section '
+              'should be incorporated into the new version\'s release notes.')
+        ]),
+      );
+    });
+
+    test('Fail if the version changes without replacing NEXT', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, version: '1.0.1');
+
+      const String changelog = '''
+## NEXT
+* Some changes that should be listed as part of 1.0.1.
+## 1.0.0
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      bool hasError = false;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('When bumping the version for release, the NEXT section '
+              'should be incorporated into the new version\'s release notes.')
         ]),
       );
     });

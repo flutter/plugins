@@ -23,6 +23,8 @@
   the new `native-test` command.
 - Commands that print a run summary at the end now track and log exclusions
   similarly to skips for easier auditing.
+- `version-check` now validates that `NEXT` is not present when changing
+  the version.
 
 ## 0.4.1
 
