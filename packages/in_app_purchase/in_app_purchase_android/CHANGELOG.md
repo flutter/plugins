@@ -1,6 +1,10 @@
-## 0.1.4+4
+## 0.1.4+5
 
 * Add `implements` to pubspec.
+
+# 0.1.4+4
+
+* Removed dependency on the `test` package.
 
 # 0.1.4+3
 
