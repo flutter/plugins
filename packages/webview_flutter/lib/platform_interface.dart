@@ -26,7 +26,7 @@ abstract class WebViewPlatformCallbacksHandler {
       {required String url, required bool isForMainFrame});
 
   /// Invoked by [WebViewPlatformController] when a page has started loading.
-  void onPageStarted(String url);
+  void onPageStarted(String url, bool isRedirect);
 
   /// Invoked by [WebViewPlatformController] when a page has finished loading.
   void onPageFinished(String url);

@@ -133,10 +133,11 @@ class FlutterWebViewClient {
         return true;
     }
 
-    public void onPageStarted(String url) {
+    public void onPageStarted(String url, boolean isRedirect) {
         currentHostUrl = url;
         Map<String, Object> args = new HashMap<>();
         args.put("url", url);
+        args.put("isRedirect", isRedirect);
         methodChannel.invokeMethod("onPageStarted", args);
     }
 
@@ -215,16 +216,27 @@ class FlutterWebViewClient {
     }
 
     private WebViewClient internalCreateWebViewClient() {
+        final Map<String, Boolean> map = new HashMap();
         return new WebViewClient() {
             @TargetApi(Build.VERSION_CODES.N)
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if(request.isRedirect()){
+                    map.put(request.getUrl().toString(), true);
+                }
                 return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
             }
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                FlutterWebViewClient.this.onPageStarted(url);
+                Boolean isRedirect = map.get(url);
+                if(isRedirect == null){
+                    isRedirect = false;
+                }
+                FlutterWebViewClient.this.onPageStarted(url, isRedirect);
+                if(isRedirect){
+                    map.remove(url);
+                }
             }
 
             @Override
@@ -232,11 +244,13 @@ class FlutterWebViewClient {
                 FlutterWebViewClient.this.onPageFinished(url);
             }
 
-            @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Nullable
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 WebResourceResponse response = FlutterWebViewClient.this.shouldInterceptRequest(view, request);
+                if(request.isRedirect()){
+                    map.put(request.getUrl().toString(), true);
+                }
                 return response == null ? super.shouldInterceptRequest(view, request) : response;
             }
 
@@ -264,9 +278,13 @@ class FlutterWebViewClient {
     }
 
     private WebViewClientCompat internalCreateWebViewClientCompat() {
+        final Map<String, Boolean> map = new HashMap();
         return new WebViewClientCompat() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                if(request.isRedirect()){
+                    map.put(request.getUrl().toString(), true);
+                }
                 return FlutterWebViewClient.this.shouldOverrideUrlLoading(view, request);
             }
 
@@ -277,7 +295,14 @@ class FlutterWebViewClient {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
-                FlutterWebViewClient.this.onPageStarted(url);
+                Boolean isRedirect = map.get(url);
+                if(isRedirect == null){
+                    isRedirect = false;
+                }
+                FlutterWebViewClient.this.onPageStarted(url, isRedirect);
+                if(isRedirect){
+                    map.remove(url);
+                }
             }
 
             @Override
@@ -290,6 +315,9 @@ class FlutterWebViewClient {
             @Override
             public WebResourceResponse shouldInterceptRequest(WebView view, WebResourceRequest request) {
                 WebResourceResponse response = FlutterWebViewClient.this.shouldInterceptRequest(view, request);
+                if(request.isRedirect()){
+                    map.put(request.getUrl().toString(), true);
+                }
                 return response == null ? super.shouldInterceptRequest(view, request) : response;
             }
 

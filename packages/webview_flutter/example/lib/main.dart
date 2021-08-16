@@ -100,7 +100,7 @@ class _WebViewExampleState extends State<WebViewExample> {
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
-          onPageStarted: (String url) {
+          onPageStarted: (String url, bool isRedirect) {
             print('Page started loading: $url');
           },
           onPageFinished: (String url) {

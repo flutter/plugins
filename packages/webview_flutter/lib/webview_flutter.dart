@@ -165,7 +165,7 @@ typedef FutureOr<NavigationDecision> NavigationDelegate(
     NavigationRequest navigation);
 
 /// Signature for when a [WebView] has started loading a page.
-typedef void PageStartedCallback(String url);
+typedef void PageStartedCallback(String url, bool isRedirect);
 
 /// Signature for when a [WebView] has finished loading a page.
 typedef void PageFinishedCallback(String url);
@@ -655,9 +655,9 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 
   @override
-  void onPageStarted(String url) {
+  void onPageStarted(String url, bool isRedirect) {
     if (_widget.onPageStarted != null) {
-      _widget.onPageStarted!(url);
+      _widget.onPageStarted!(url, isRedirect);
     }
   }
 
