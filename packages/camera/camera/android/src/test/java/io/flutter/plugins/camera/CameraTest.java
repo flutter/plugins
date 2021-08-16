@@ -236,7 +236,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setExposureMode_shouldUpdateExposureLockFeatureAndUpdateBuilder() {
+  public void setExposureMode_shouldUpdateExposureLockFeature() {
     ExposureLockFeature mockExposureLockFeature =
         mockCameraFeatureFactory.createExposureLockFeature(mockCameraProperties);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
@@ -245,9 +245,20 @@ public class CameraTest {
     camera.setExposureMode(mockResult, exposureMode);
 
     verify(mockExposureLockFeature, times(1)).setValue(exposureMode);
-    verify(mockExposureLockFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setExposureMode_shouldUpdateBuilder() {
+    ExposureLockFeature mockExposureLockFeature =
+        mockCameraFeatureFactory.createExposureLockFeature(mockCameraProperties);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    ExposureMode exposureMode = ExposureMode.locked;
+
+    camera.setExposureMode(mockResult, exposureMode);
+
+    verify(mockExposureLockFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -266,7 +277,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setExposurePoint_shouldUpdateExposurePointFeatureAndUpdateBuilder() {
+  public void setExposurePoint_shouldUpdateExposurePointFeature() {
     SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
     ExposurePointFeature mockExposurePointFeature =
         mockCameraFeatureFactory.createExposurePointFeature(
@@ -277,9 +288,22 @@ public class CameraTest {
     camera.setExposurePoint(mockResult, point);
 
     verify(mockExposurePointFeature, times(1)).setValue(point);
-    verify(mockExposurePointFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setExposurePoint_shouldUpdateBuilder() {
+    SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
+    ExposurePointFeature mockExposurePointFeature =
+        mockCameraFeatureFactory.createExposurePointFeature(
+            mockCameraProperties, mockSensorOrientationFeature);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    Point point = new Point(42d, 42d);
+
+    camera.setExposurePoint(mockResult, point);
+
+    verify(mockExposurePointFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -298,7 +322,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setFlashMode_shouldUpdateFlashFeatureAndUpdateBuilder() {
+  public void setFlashMode_shouldUpdateFlashFeature() {
     FlashFeature mockFlashFeature =
         mockCameraFeatureFactory.createFlashFeature(mockCameraProperties);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
@@ -307,9 +331,20 @@ public class CameraTest {
     camera.setFlashMode(mockResult, flashMode);
 
     verify(mockFlashFeature, times(1)).setValue(flashMode);
-    verify(mockFlashFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setFlashMode_shouldUpdateBuilder() {
+    FlashFeature mockFlashFeature =
+        mockCameraFeatureFactory.createFlashFeature(mockCameraProperties);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    FlashMode flashMode = FlashMode.always;
+
+    camera.setFlashMode(mockResult, flashMode);
+
+    verify(mockFlashFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -327,7 +362,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setFocusPoint_shouldUpdateFocusPointFeatureAndUpdateBuilder() {
+  public void setFocusPoint_shouldUpdateFocusPointFeature() {
     SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
     FocusPointFeature mockFocusPointFeature =
         mockCameraFeatureFactory.createFocusPointFeature(
@@ -341,9 +376,25 @@ public class CameraTest {
     camera.setFocusPoint(mockResult, point);
 
     verify(mockFocusPointFeature, times(1)).setValue(point);
-    verify(mockFocusPointFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setFocusPoint_shouldUpdateBuilder() {
+    SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
+    FocusPointFeature mockFocusPointFeature =
+        mockCameraFeatureFactory.createFocusPointFeature(
+            mockCameraProperties, mockSensorOrientationFeature);
+    AutoFocusFeature mockAutoFocusFeature =
+        mockCameraFeatureFactory.createAutoFocusFeature(mockCameraProperties, false);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    Point point = new Point(42d, 42d);
+    when(mockAutoFocusFeature.getValue()).thenReturn(FocusMode.auto);
+
+    camera.setFocusPoint(mockResult, point);
+
+    verify(mockFocusPointFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -364,8 +415,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setZoomLevel_shouldUpdateZoomLevelFeatureAndUpdateBuilder()
-      throws CameraAccessException {
+  public void setZoomLevel_shouldUpdateZoomLevelFeature() throws CameraAccessException {
     ZoomLevelFeature mockZoomLevelFeature =
         mockCameraFeatureFactory.createZoomLevelFeature(mockCameraProperties);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
@@ -378,9 +428,24 @@ public class CameraTest {
     camera.setZoomLevel(mockResult, zoomLevel);
 
     verify(mockZoomLevelFeature, times(1)).setValue(zoomLevel);
-    verify(mockZoomLevelFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setZoomLevel_shouldUpdateBuilder() throws CameraAccessException {
+    ZoomLevelFeature mockZoomLevelFeature =
+        mockCameraFeatureFactory.createZoomLevelFeature(mockCameraProperties);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+    float zoomLevel = 1.0f;
+
+    when(mockZoomLevelFeature.getValue()).thenReturn(zoomLevel);
+    when(mockZoomLevelFeature.getMinimumZoomLevel()).thenReturn(0f);
+    when(mockZoomLevelFeature.getMaximumZoomLevel()).thenReturn(2f);
+
+    camera.setZoomLevel(mockResult, zoomLevel);
+
+    verify(mockZoomLevelFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -524,7 +589,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setFocusMode_shouldUpdateAutoFocusFeatureAndUpdateBuilder() {
+  public void setFocusMode_shouldUpdateAutoFocusFeature() {
     AutoFocusFeature mockAutoFocusFeature =
         mockCameraFeatureFactory.createAutoFocusFeature(mockCameraProperties, false);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
@@ -532,9 +597,19 @@ public class CameraTest {
     camera.setFocusMode(mockResult, FocusMode.auto);
 
     verify(mockAutoFocusFeature, times(1)).setValue(FocusMode.auto);
-    verify(mockAutoFocusFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setFocusMode_shouldUpdateBuilder() {
+    AutoFocusFeature mockAutoFocusFeature =
+        mockCameraFeatureFactory.createAutoFocusFeature(mockCameraProperties, false);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.setFocusMode(mockResult, FocusMode.auto);
+
+    verify(mockAutoFocusFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -606,7 +681,7 @@ public class CameraTest {
   }
 
   @Test
-  public void setExposureOffset_shouldUpdateExposureOffsetFeatureAndUpdateBuilder() {
+  public void setExposureOffset_shouldUpdateExposureOffsetFeature() {
     ExposureOffsetFeature mockExposureOffsetFeature =
         mockCameraFeatureFactory.createExposureOffsetFeature(mockCameraProperties);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
@@ -614,9 +689,19 @@ public class CameraTest {
     camera.setExposureOffset(mockResult, 1.0);
 
     verify(mockExposureOffsetFeature, times(1)).setValue(1.0);
-    verify(mockExposureOffsetFeature, times(1)).updateBuilder(any());
     verify(mockResult, never()).error(any(), any(), any());
     verify(mockResult, times(1)).success(null);
+  }
+
+  @Test
+  public void setExposureOffset_shouldAndUpdateBuilder() {
+    ExposureOffsetFeature mockExposureOffsetFeature =
+        mockCameraFeatureFactory.createExposureOffsetFeature(mockCameraProperties);
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    camera.setExposureOffset(mockResult, 1.0);
+
+    verify(mockExposureOffsetFeature, times(1)).updateBuilder(any());
   }
 
   @Test
@@ -694,7 +779,7 @@ public class CameraTest {
     @Override
     public FocusPointFeature createFocusPointFeature(
         @NonNull CameraProperties cameraProperties,
-        @NonNull SensorOrientationFeature sensorOrientationFeature) {
+        @NonNull SensorOrientationFeature sensorOrienttionFeature) {
       return mockFocusPointFeature;
     }
 
