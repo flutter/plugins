@@ -52,7 +52,7 @@
   _camera = [[CameraPlugin alloc] init];
   _notificationCenter = [[NSNotificationCenter alloc] init];
 
-  // Setup mocks for initWithCameraName method
+  // Set up mocks for initWithCameraName method
   id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
   OCMStub([avCaptureDeviceInputMock deviceInputWithDevice:[OCMArg any] error:[OCMArg anyObjectRef]])
       .andReturn([AVCaptureInput alloc]);
@@ -65,13 +65,8 @@
       [[MockFLTThreadSafeFlutterResult alloc] initWithNotificationCenter:_notificationCenter];
 }
 
-- (void)tearDown {
-  // Put teardown code here. This method is called after the invocation of each test method in the
-  // class.
-}
-
 - (void)testCreate_ShouldCallResultOnMainThread {
-  // Setup method call
+  // Set up method call
   XCTNSNotificationExpectation *notificationExpectation =
       [[XCTNSNotificationExpectation alloc] initWithName:@"successWithData"
                                                   object:nil
@@ -81,7 +76,6 @@
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
 
-  // Call handleMethodCall
   [_camera handleMethodCallWithThreadSafeResult:call result:_resultObject];
 
   // Don't expect a result yet
