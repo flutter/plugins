@@ -155,11 +155,12 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
     final List<String> errors = <String>[];
 
-    bool versionChanged = false;
+    bool versionChanged;
     final _CurrentVersionState versionState =
         await _getVersionState(package, pubspec: pubspec);
     switch (versionState) {
       case _CurrentVersionState.unchanged:
+        versionChanged = false;
         break;
       case _CurrentVersionState.validChange:
         versionChanged = true;
@@ -169,12 +170,13 @@ class VersionCheckCommand extends PackageLoopingCommand {
         errors.add('Disallowed version change.');
         break;
       case _CurrentVersionState.unknown:
+        versionChanged = false;
         errors.add('Unable to determine previous version.');
         break;
     }
 
-    if (!(await _hasConsistentVersion(package,
-        pubspec: pubspec, versionChanged: versionChanged))) {
+    if (!(await _validateChangelogVersion(package,
+        pubspec: pubspec, pubspecVersionChanged: versionChanged))) {
       errors.add('pubspec.yaml and CHANGELOG.md have different versions');
     }
 
@@ -302,12 +304,15 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     return _CurrentVersionState.validChange;
   }
 
-  /// Returns whether or not the pubspec version and CHANGELOG version for
-  /// [plugin] match.
-  Future<bool> _hasConsistentVersion(
+  /// Checks whether or not [package]'s CHANGELOG's versioning is correct,
+  /// both that it matches [pubspec] and that NEXT is used correctly, printing
+  /// the results of its checks.
+  ///
+  /// Returns false if the CHANGELOG fails validation.
+  Future<bool> _validateChangelogVersion(
     Directory package, {
     required Pubspec pubspec,
-    required bool versionChanged,
+    required bool pubspecVersionChanged,
   }) async {
     // This method isn't called unless `version` is non-null.
     final Version fromPubspec = pubspec.version!;
@@ -335,7 +340,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final bool hasNextSection = versionString == 'NEXT';
     if (hasNextSection) {
       // NEXT should not be present in a commit that changes the version.
-      if (versionChanged) {
+      if (pubspecVersionChanged) {
         printError(badNextErrorMessage);
         return false;
       }
