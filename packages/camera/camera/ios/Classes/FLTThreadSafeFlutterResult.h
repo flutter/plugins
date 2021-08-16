@@ -5,42 +5,42 @@
 #import <Flutter/Flutter.h>
 
 /**
- Wrapper object that always delivers the result on the main thread.
+ * Wrapper for FlutterResult  that always delivers the result on the main thread.
  */
 @interface FLTThreadSafeFlutterResult : NSObject
 
 /**
- Initialize with a FlutterResult object.
- @param result The FlutterResult object that the result will be given to.
+ * Initializes with a FlutterResult object.
+ * @param result The FlutterResult object that the result will be given to.
  */
-- (id _Nonnull)initWithResult:(FlutterResult _Nonnull)result;
+- (nonnull id)initWithResult:(nonnull FlutterResult)result;
 
 /**
- Send a successful result without any data.
+ * Sends a successful result without any data.
  */
 - (void)success;
 
 /**
- Send a successful result with data.
- @param data Result data that is send to the Flutter Dart side.
+ * Sends a successful result with data.
+ * @param data Result data that is send to the Flutter Dart side.
  */
-- (void)successWithData:(id _Nonnull)data;
+- (void)successWithData:(nonnull id)data;
 
 /**
- Send an error as result
- @param error Error that will be send as FlutterError.
+ * Sends an NSError as result
+ * @param error Error that will be send as FlutterError.
  */
-- (void)error:(NSError* _Nonnull)error;
+- (void)error:(nonnull NSError*)error;
 
 /**
- Send a FlutterError as result.
+ * Sends a FlutterError as result.
  */
-- (void)errorWithCode:(NSString* _Nonnull)code
-              message:(NSString* _Nullable)message
-              details:(id _Nullable)details;
+- (void)errorWithCode:(nonnull NSString*)code
+              message:(nullable NSString*)message
+              details:(nullable id)details;
 
 /**
- Send FlutterMethodNotImplemented as result.
+ * Sends FlutterMethodNotImplemented as result.
  */
 - (void)notImplemented;
 @end
