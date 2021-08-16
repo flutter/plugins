@@ -29,7 +29,7 @@
 /**
  * Called when result is successful. Sends "successWithData" to the notification center.
  */
-- (void)successWithData:(id)data {
+- (void)sendSuccessWithData:(id)data {
   _receivedResult = data;
   [self->_notificationCenter postNotificationName:@"successWithData" object:nil];
 }

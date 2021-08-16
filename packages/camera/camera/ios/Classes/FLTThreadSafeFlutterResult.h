@@ -18,29 +18,29 @@
 /**
  * Sends a successful result without any data.
  */
-- (void)success;
+- (void)sendSuccess;
 
 /**
  * Sends a successful result with data.
  * @param data Result data that is send to the Flutter Dart side.
  */
-- (void)successWithData:(nonnull id)data;
+- (void)sendSuccessWithData:(nonnull id)data;
 
 /**
  * Sends an NSError as result
  * @param error Error that will be send as FlutterError.
  */
-- (void)error:(nonnull NSError*)error;
+- (void)sendError:(nonnull NSError*)error;
 
 /**
  * Sends a FlutterError as result.
  */
-- (void)errorWithCode:(nonnull NSString*)code
+- (void)sendErrorWithCode:(nonnull NSString*)code
               message:(nullable NSString*)message
               details:(nullable id)details;
 
 /**
  * Sends FlutterMethodNotImplemented as result.
  */
-- (void)notImplemented;
+- (void)sendNotImplemented;
 @end

@@ -21,28 +21,28 @@
   return self;
 }
 
-- (void)success {
+- (void)sendSuccess {
   [self send:nil];
 }
 
-- (void)successWithData:(id)data {
+- (void)sendSuccessWithData:(id)data {
   [self send:data];
 }
 
-- (void)error:(NSError*)error {
-  [self errorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
+- (void)sendError:(NSError*)error {
+  [self sendErrorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
               message:error.localizedDescription
               details:error.domain];
 }
 
-- (void)errorWithCode:(NSString*)code
+- (void)sendErrorWithCode:(NSString*)code
               message:(NSString* _Nullable)message
               details:(id _Nullable)details {
   FlutterError* flutterError = [FlutterError errorWithCode:code message:message details:details];
   [self send:flutterError];
 }
 
-- (void)notImplemented {
+- (void)sendNotImplemented {
   [self send:FlutterMethodNotImplemented];
 }
 

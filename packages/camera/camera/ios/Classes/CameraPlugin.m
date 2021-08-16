@@ -55,7 +55,7 @@
                                    error:(NSError *)error API_AVAILABLE(ios(10)) {
   selfReference = nil;
   if (error) {
-    [_result error:error];
+    [_result sendError:error];
     return;
   }
 
@@ -67,10 +67,10 @@
   bool success = [data writeToFile:_path atomically:YES];
 
   if (!success) {
-    [_result errorWithCode:@"IOError" message:@"Unable to write file" details:nil];
+    [_result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
     return;
   }
-  [_result successWithData:_path];
+  [_result sendSuccessWithData:_path];
 }
 
 - (void)captureOutput:(AVCapturePhotoOutput *)output
@@ -78,7 +78,7 @@
                        error:(NSError *)error API_AVAILABLE(ios(11.0)) {
   selfReference = nil;
   if (error) {
-    [_result error:error];
+    [_result sendError:error];
     return;
   }
 
@@ -86,10 +86,10 @@
 
   bool success = [photoData writeToFile:_path atomically:YES];
   if (!success) {
-    [_result errorWithCode:@"IOError" message:@"Unable to write file" details:nil];
+    [_result sendErrorWithCode:@"IOError" message:@"Unable to write file" details:nil];
     return;
   }
-  [_result successWithData:_path];
+  [_result sendSuccessWithData:_path];
 }
 @end
 
@@ -468,7 +468,7 @@ NSString *const errorMethod = @"error";
                                                     prefix:@"CAP_"
                                                      error:error];
   if (error) {
-    [result error:error];
+    [result sendError:error];
     return;
   }
 
@@ -813,11 +813,11 @@ NSString *const errorMethod = @"error";
                                                            prefix:@"REC_"
                                                             error:error];
     if (error) {
-      [result error:error];
+      [result sendError:error];
       return;
     }
     if (![self setupWriterForPath:_videoRecordingPath]) {
-      [result errorWithCode:@"IOError" message:@"Setup Writer Failed" details:nil];
+      [result sendErrorWithCode:@"IOError" message:@"Setup Writer Failed" details:nil];
       return;
     }
     _isRecording = YES;
@@ -826,9 +826,9 @@ NSString *const errorMethod = @"error";
     _audioTimeOffset = CMTimeMake(0, 1);
     _videoIsDisconnected = NO;
     _audioIsDisconnected = NO;
-    [result success];
+    [result sendSuccess];
   } else {
-    [result errorWithCode:@"Error" message:@"Video is already recording" details:nil];
+    [result sendErrorWithCode:@"Error" message:@"Video is already recording" details:nil];
   }
 }
 
@@ -840,10 +840,10 @@ NSString *const errorMethod = @"error";
       [_videoWriter finishWritingWithCompletionHandler:^{
         if (self->_videoWriter.status == AVAssetWriterStatusCompleted) {
           [self updateOrientation];
-          [result successWithData:self->_videoRecordingPath];
+          [result sendSuccessWithData:self->_videoRecordingPath];
           self->_videoRecordingPath = nil;
         } else {
-          [result errorWithCode:@"IOError"
+          [result sendErrorWithCode:@"IOError"
                         message:@"AVAssetWriter could not finish writing!"
                         details:nil];
         }
@@ -854,7 +854,7 @@ NSString *const errorMethod = @"error";
         [NSError errorWithDomain:NSCocoaErrorDomain
                             code:NSURLErrorResourceUnavailable
                         userInfo:@{NSLocalizedDescriptionKey : @"Video is not recording!"}];
-    [result error:error];
+    [result sendError:error];
   }
 }
 
@@ -862,12 +862,12 @@ NSString *const errorMethod = @"error";
   _isRecordingPaused = YES;
   _videoIsDisconnected = YES;
   _audioIsDisconnected = YES;
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)resumeVideoRecordingWithResult:(FLTThreadSafeFlutterResult *)result {
   _isRecordingPaused = NO;
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)lockCaptureOrientationWithResult:(FLTThreadSafeFlutterResult *)result
@@ -876,7 +876,7 @@ NSString *const errorMethod = @"error";
   @try {
     orientation = getUIDeviceOrientationForString(orientationStr);
   } @catch (NSError *e) {
-    [result error:e];
+    [result sendError:e];
     return;
   }
 
@@ -885,13 +885,13 @@ NSString *const errorMethod = @"error";
     [self updateOrientation];
   }
 
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)unlockCaptureOrientationWithResult:(FLTThreadSafeFlutterResult *)result {
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   [self updateOrientation];
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)setFlashModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
@@ -899,18 +899,18 @@ NSString *const errorMethod = @"error";
   @try {
     mode = getFlashModeForString(modeStr);
   } @catch (NSError *e) {
-    [result error:e];
+    [result sendError:e];
     return;
   }
   if (mode == FlashModeTorch) {
     if (!_captureDevice.hasTorch) {
-      [result errorWithCode:@"setFlashModeFailed"
+      [result sendErrorWithCode:@"setFlashModeFailed"
                     message:@"Device does not support torch mode"
                     details:nil];
       return;
     }
     if (!_captureDevice.isTorchAvailable) {
-      [result errorWithCode:@"setFlashModeFailed"
+      [result sendErrorWithCode:@"setFlashModeFailed"
                     message:@"Torch mode is currently not available"
                     details:nil];
       return;
@@ -922,7 +922,7 @@ NSString *const errorMethod = @"error";
     }
   } else {
     if (!_captureDevice.hasFlash) {
-      [result errorWithCode:@"setFlashModeFailed"
+      [result sendErrorWithCode:@"setFlashModeFailed"
                     message:@"Device does not have flash capabilities"
                     details:nil];
       return;
@@ -930,7 +930,7 @@ NSString *const errorMethod = @"error";
     AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(mode);
     if (![_capturePhotoOutput.supportedFlashModes
             containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
-      [result errorWithCode:@"setFlashModeFailed"
+      [result sendErrorWithCode:@"setFlashModeFailed"
                     message:@"Device does not support this specific flash mode"
                     details:nil];
       return;
@@ -942,7 +942,7 @@ NSString *const errorMethod = @"error";
     }
   }
   _flashMode = mode;
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)setExposureModeWithResult:(FLTThreadSafeFlutterResult *)result mode:(NSString *)modeStr {
@@ -950,12 +950,12 @@ NSString *const errorMethod = @"error";
   @try {
     mode = getExposureModeForString(modeStr);
   } @catch (NSError *e) {
-    [result error:e];
+    [result sendError:e];
     return;
   }
   _exposureMode = mode;
   [self applyExposureMode];
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)applyExposureMode {
@@ -980,12 +980,12 @@ NSString *const errorMethod = @"error";
   @try {
     mode = getFocusModeForString(modeStr);
   } @catch (NSError *e) {
-    [result error:e];
+    [result sendError:e];
     return;
   }
   _focusMode = mode;
   [self applyFocusMode];
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)applyFocusMode {
@@ -1052,7 +1052,7 @@ NSString *const errorMethod = @"error";
 
 - (void)setExposurePointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y {
   if (!_captureDevice.isExposurePointOfInterestSupported) {
-    [result errorWithCode:@"setExposurePointFailed"
+    [result sendErrorWithCode:@"setExposurePointFailed"
                   message:@"Device does not have exposure point capabilities"
                   details:nil];
     return;
@@ -1065,12 +1065,12 @@ NSString *const errorMethod = @"error";
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)setFocusPointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y {
   if (!_captureDevice.isFocusPointOfInterestSupported) {
-    [result errorWithCode:@"setFocusPointFailed"
+    [result sendErrorWithCode:@"setFocusPointFailed"
                   message:@"Device does not have focus point capabilities"
                   details:nil];
     return;
@@ -1084,14 +1084,14 @@ NSString *const errorMethod = @"error";
   [_captureDevice unlockForConfiguration];
   // Retrigger auto focus
   [self applyFocusMode];
-  [result success];
+  [result sendSuccess];
 }
 
 - (void)setExposureOffsetWithResult:(FLTThreadSafeFlutterResult *)result offset:(double)offset {
   [_captureDevice lockForConfiguration:nil];
   [_captureDevice setExposureTargetBias:offset completionHandler:nil];
   [_captureDevice unlockForConfiguration];
-  [result successWithData:@(offset)];
+  [result sendSuccessWithData:@(offset)];
 }
 
 - (void)startImageStreamWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger {
@@ -1122,12 +1122,12 @@ NSString *const errorMethod = @"error";
 - (void)getMaxZoomLevelWithResult:(FLTThreadSafeFlutterResult *)result {
   CGFloat maxZoomFactor = [self getMaxAvailableZoomFactor];
 
-  [result successWithData:[NSNumber numberWithFloat:maxZoomFactor]];
+  [result sendSuccessWithData:[NSNumber numberWithFloat:maxZoomFactor]];
 }
 
 - (void)getMinZoomLevelWithResult:(FLTThreadSafeFlutterResult *)result {
   CGFloat minZoomFactor = [self getMinAvailableZoomFactor];
-  [result successWithData:[NSNumber numberWithFloat:minZoomFactor]];
+  [result sendSuccessWithData:[NSNumber numberWithFloat:minZoomFactor]];
 }
 
 - (void)setZoomLevel:(CGFloat)zoom Result:(FLTThreadSafeFlutterResult *)result {
@@ -1139,19 +1139,19 @@ NSString *const errorMethod = @"error";
         stringWithFormat:@"Zoom level out of bounds (zoom level should be between %f and %f).",
                          minAvailableZoomFactor, maxAvailableZoomFactor];
 
-    [result errorWithCode:@"ZOOM_ERROR" message:errorMessage details:nil];
+    [result sendErrorWithCode:@"ZOOM_ERROR" message:errorMessage details:nil];
     return;
   }
 
   NSError *error = nil;
   if (![_captureDevice lockForConfiguration:&error]) {
-    [result error:error];
+    [result sendError:error];
     return;
   }
   _captureDevice.videoZoomFactor = zoom;
   [_captureDevice unlockForConfiguration];
 
-  [result success];
+  [result sendSuccess];
 }
 
 - (CGFloat)getMinAvailableZoomFactor {
@@ -1373,9 +1373,9 @@ NSString *const errorMethod = @"error";
           @"sensorOrientation" : @90,
         }];
       }
-      [result successWithData:reply];
+      [result sendSuccessWithData:reply];
     } else {
-      [result notImplemented];
+      [result sendNotImplemented];
     }
   } else if ([@"create" isEqualToString:call.method]) {
     NSString *cameraName = call.arguments[@"cameraName"];
@@ -1391,14 +1391,14 @@ NSString *const errorMethod = @"error";
                                                  error:&error];
       dispatch_async(dispatch_get_main_queue(), ^{
         if (error) {
-          [result error:error];
+          [result sendError:error];
         } else {
           if (self->_camera) {
             [self->_camera close];
           }
           int64_t textureId = [self->_registry registerTexture:cam];
           self->_camera = cam;
-          [result successWithData:@{
+          [result sendSuccessWithData:@{
             @"cameraId" : @(textureId),
           }];
         }
@@ -1406,10 +1406,10 @@ NSString *const errorMethod = @"error";
     });
   } else if ([@"startImageStream" isEqualToString:call.method]) {
     [_camera startImageStreamWithMessenger:_messenger];
-    [result success];
+    [result sendSuccess];
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
-    [result success];
+    [result sendSuccess];
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
@@ -1440,22 +1440,22 @@ NSString *const errorMethod = @"error";
       [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
       dispatch_async(_dispatchQueue, ^{
         [self->_camera start];
-        [result success];
+        [result sendSuccess];
       });
     } else if ([@"takePicture" isEqualToString:call.method]) {
       if (@available(iOS 10.0, *)) {
         [_camera captureToFile:result];
       } else {
-        [result notImplemented];
+        [result sendNotImplemented];
       }
     } else if ([@"dispose" isEqualToString:call.method]) {
       [_registry unregisterTexture:cameraId];
       [_camera close];
       _dispatchQueue = nil;
-      [result success];
+      [result sendSuccess];
     } else if ([@"prepareForVideoRecording" isEqualToString:call.method]) {
       [_camera setUpCaptureSessionForAudio];
-      [result success];
+      [result sendSuccess];
     } else if ([@"startVideoRecording" isEqualToString:call.method]) {
       [_camera startVideoRecordingWithResult:result];
     } else if ([@"stopVideoRecording" isEqualToString:call.method]) {
@@ -1485,11 +1485,11 @@ NSString *const errorMethod = @"error";
       }
       [_camera setExposurePointWithResult:result x:x y:y];
     } else if ([@"getMinExposureOffset" isEqualToString:call.method]) {
-      [result successWithData:@(_camera.captureDevice.minExposureTargetBias)];
+      [result sendSuccessWithData:@(_camera.captureDevice.minExposureTargetBias)];
     } else if ([@"getMaxExposureOffset" isEqualToString:call.method]) {
-      [result successWithData:@(_camera.captureDevice.maxExposureTargetBias)];
+      [result sendSuccessWithData:@(_camera.captureDevice.maxExposureTargetBias)];
     } else if ([@"getExposureOffsetStepSize" isEqualToString:call.method]) {
-      [result successWithData:@(0.0)];
+      [result sendSuccessWithData:@(0.0)];
     } else if ([@"setExposureOffset" isEqualToString:call.method]) {
       [_camera setExposureOffsetWithResult:result
                                     offset:((NSNumber *)call.arguments[@"offset"]).doubleValue];
@@ -1509,7 +1509,7 @@ NSString *const errorMethod = @"error";
       }
       [_camera setFocusPointWithResult:result x:x y:y];
     } else {
-      [result notImplemented];
+      [result sendNotImplemented];
     }
   }
 }
