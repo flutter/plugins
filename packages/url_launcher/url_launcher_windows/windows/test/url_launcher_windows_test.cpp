@@ -100,10 +100,8 @@ TEST(UrlLauncherPlugin, CanLaunchQueryFailure) {
 
   UrlLauncherPlugin plugin(std::move(system));
   plugin.HandleMethodCall(
-      flutter::MethodCall(
-          "canLaunch", CreateArgumentsWithUrl("https://some.url.com")
-
-              ),
+      flutter::MethodCall("canLaunch",
+                          CreateArgumentsWithUrl("https://some.url.com")),
       std::move(result));
 }
 
@@ -119,10 +117,8 @@ TEST(UrlLauncherPlugin, CanLaunchHandlesOpenFailure) {
 
   UrlLauncherPlugin plugin(std::move(system));
   plugin.HandleMethodCall(
-      flutter::MethodCall(
-          "canLaunch", CreateArgumentsWithUrl("https://some.url.com")
-
-              ),
+      flutter::MethodCall("canLaunch",
+                          CreateArgumentsWithUrl("https://some.url.com")),
       std::move(result));
 }
 
@@ -139,10 +135,8 @@ TEST(UrlLauncherPlugin, LaunchSuccess) {
 
   UrlLauncherPlugin plugin(std::move(system));
   plugin.HandleMethodCall(
-      flutter::MethodCall(
-          "launch", CreateArgumentsWithUrl("https://some.url.com")
-
-              ),
+      flutter::MethodCall("launch",
+                          CreateArgumentsWithUrl("https://some.url.com")),
       std::move(result));
 }
 
@@ -159,10 +153,8 @@ TEST(UrlLauncherPlugin, LaunchReportsFailure) {
 
   UrlLauncherPlugin plugin(std::move(system));
   plugin.HandleMethodCall(
-      flutter::MethodCall(
-          "launch", CreateArgumentsWithUrl("https://some.url.com")
-
-              ),
+      flutter::MethodCall("launch",
+                          CreateArgumentsWithUrl("https://some.url.com")),
       std::move(result));
 }
 
