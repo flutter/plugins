@@ -78,10 +78,8 @@ TEST(UrlLauncherPlugin, CanLaunchSuccessTrue) {
 
   UrlLauncherPlugin plugin(std::move(system));
   plugin.HandleMethodCall(
-      flutter::MethodCall(
-          "canLaunch", CreateArgumentsWithUrl("https://some.url.com")
-
-              ),
+      flutter::MethodCall("canLaunch",
+                          CreateArgumentsWithUrl("https://some.url.com")),
       std::move(result));
 }
 
