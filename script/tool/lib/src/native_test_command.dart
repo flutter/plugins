@@ -209,11 +209,9 @@ this command.
       return integrationTestDirectory.existsSync() &&
           integrationTestDirectory
               .listSync(recursive: true)
-              .any((FileSystemEntity entity) {
-            if (entity is! File) {
-              return false;
-            }
-            final String basename = entity.basename;
+              .whereType<File>()
+              .any((File file) {
+            final String basename = file.basename;
             return !basename.endsWith('ActivityTest.java') &&
                 basename != 'DartIntegrationTest.java';
           });
