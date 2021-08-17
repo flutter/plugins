@@ -77,6 +77,8 @@
   [_camera handleMethodCallWithThreadSafeResult:call result:_resultObject];
 
   // Don't expect a result yet
+  // The initWithCameraName method should do some heavy operations on a second thread. This verifies
+  // the dispatch is not removed.
   XCTAssertNil(_resultObject.receivedResult);
 
   [self waitForExpectations:[NSArray arrayWithObject:_resultObject.expectation] timeout:1];
