@@ -4,10 +4,13 @@
 
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   group('CameraWebException', () {
-    test('sets all properties', () {
+    testWidgets('sets all properties', (tester) async {
       final cameraId = 1;
       final code = CameraErrorCode.notFound;
       final description = 'The camera is not found.';
@@ -19,7 +22,7 @@ void main() {
       expect(exception.description, equals(description));
     });
 
-    test('toString includes all properties', () {
+    testWidgets('toString includes all properties', (tester) async {
       final cameraId = 2;
       final code = CameraErrorCode.notReadable;
       final description = 'The camera is not readable.';
