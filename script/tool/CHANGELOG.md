@@ -1,5 +1,9 @@
 ## NEXT
 
+- Added Android native integration test support to `native-test`.
+
+## 0.5.0
+
 - `--exclude` and `--custom-analysis` now accept paths to YAML files that
   contain lists of packages to exclude, in addition to just package names,
   so that exclude lists can be maintained separately from scripts and CI
