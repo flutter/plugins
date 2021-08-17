@@ -96,11 +96,6 @@ this command.
       throw ToolExit(exitInvalidArguments);
     }
 
-    if (getBoolArg(kPlatformAndroid) && getBoolArg(_integrationTestFlag)) {
-      logWarning('This command currently only supports unit tests for Android. '
-          'See https://github.com/flutter/flutter/issues/86490.');
-    }
-
     // iOS-specific run-level state.
     if (_requestedPlatforms.contains('ios')) {
       String destination = getStringArg(_iosDestinationFlag);
@@ -178,12 +173,8 @@ this command.
   }
 
   Future<_PlatformResult> _testAndroid(Directory plugin, _TestMode mode) async {
-    final List<Directory> examplesWithTests = <Directory>[];
-    for (final Directory example in getExamplesForPlugin(plugin)) {
-      if (!isFlutterPackage(example)) {
-        continue;
-      }
-      if (example
+    bool exampleHasUnitTests(Directory example) {
+      return example
               .childDirectory('android')
               .childDirectory('app')
               .childDirectory('src')
@@ -193,20 +184,62 @@ this command.
               .childDirectory('android')
               .childDirectory('src')
               .childDirectory('test')
-              .existsSync()) {
-        examplesWithTests.add(example);
-      } else {
-        _printNoExampleTestsMessage(example, 'Android');
-      }
+              .existsSync();
     }
 
-    if (examplesWithTests.isEmpty) {
-      return _PlatformResult(RunState.skipped);
+    bool exampleHasNativeIntegrationTests(Directory example) {
+      final Directory integrationTestDirectory = example
+          .childDirectory('android')
+          .childDirectory('app')
+          .childDirectory('src')
+          .childDirectory('androidTest');
+      // There are two types of integration tests that can be in the androidTest
+      // directory:
+      // - FlutterTestRunner.class tests, which bridge to Dart integration tests
+      // - Purely native tests
+      // Only the latter is supported by this command; the former will hang if
+      // run here because they will wait for a Dart call that will never come.
+      //
+      // This repository uses a convention of putting the former in a
+      // *ActivityTest.java file, so ignore that file when checking for tests.
+      // Also ignore DartIntegrationTest.java, which defines the annotation used
+      // below for filtering the former out when running tests.
+      //
+      // If those are the only files, then there are no tests to run here.
+      return integrationTestDirectory.existsSync() &&
+          integrationTestDirectory
+              .listSync(recursive: true)
+              .whereType<File>()
+              .any((File file) {
+            final String basename = file.basename;
+            return !basename.endsWith('ActivityTest.java') &&
+                basename != 'DartIntegrationTest.java';
+          });
     }
 
+    final Iterable<Directory> examples = getExamplesForPlugin(plugin);
+
+    bool ranTests = false;
     bool failed = false;
     bool hasMissingBuild = false;
-    for (final Directory example in examplesWithTests) {
+    for (final Directory example in examples) {
+      final bool hasUnitTests = exampleHasUnitTests(example);
+      final bool hasIntegrationTests =
+          exampleHasNativeIntegrationTests(example);
+
+      if (mode.unit && !hasUnitTests) {
+        _printNoExampleTestsMessage(example, 'Android unit');
+      }
+      if (mode.integration && !hasIntegrationTests) {
+        _printNoExampleTestsMessage(example, 'Android integration');
+      }
+
+      final bool runUnitTests = mode.unit && hasUnitTests;
+      final bool runIntegrationTests = mode.integration && hasIntegrationTests;
+      if (!runUnitTests && !runIntegrationTests) {
+        continue;
+      }
+
       final String exampleName = getPackageDescription(example);
       _printRunningExampleTestsMessage(example, 'Android');
 
@@ -221,17 +254,52 @@ this command.
         continue;
       }
 
-      final int exitCode = await processRunner.runAndStream(
-          gradleFile.path, <String>['testDebugUnitTest'],
-          workingDir: androidDirectory);
-      if (exitCode != 0) {
-        printError('$exampleName tests failed.');
-        failed = true;
+      if (runUnitTests) {
+        print('Running unit tests...');
+        final int exitCode = await processRunner.runAndStream(
+            gradleFile.path, <String>['testDebugUnitTest'],
+            workingDir: androidDirectory);
+        if (exitCode != 0) {
+          printError('$exampleName unit tests failed.');
+          failed = true;
+        }
+        ranTests = true;
+      }
+
+      if (runIntegrationTests) {
+        // FlutterTestRunner-based tests will hang forever if run in a normal
+        // app build, since they wait for a Dart call from integration_test that
+        // will never come. Those tests have an extra annotation to allow
+        // filtering them out.
+        const String filter =
+            'notAnnotation=io.flutter.plugins.DartIntegrationTest';
+
+        print('Running integration tests...');
+        final int exitCode = await processRunner.runAndStream(
+            gradleFile.path,
+            <String>[
+              'app:connectedAndroidTest',
+              '-Pandroid.testInstrumentationRunnerArguments.$filter',
+            ],
+            workingDir: androidDirectory);
+        if (exitCode != 0) {
+          printError('$exampleName integration tests failed.');
+          failed = true;
+        }
+        ranTests = true;
       }
     }
-    return _PlatformResult(failed ? RunState.failed : RunState.succeeded,
-        error:
-            hasMissingBuild ? 'Examples must be built before testing.' : null);
+
+    if (failed) {
+      return _PlatformResult(RunState.failed,
+          error: hasMissingBuild
+              ? 'Examples must be built before testing.'
+              : null);
+    }
+    if (!ranTests) {
+      return _PlatformResult(RunState.skipped);
+    }
+    return _PlatformResult(RunState.succeeded);
   }
 
   Future<_PlatformResult> _testIos(Directory plugin, _TestMode mode) {
