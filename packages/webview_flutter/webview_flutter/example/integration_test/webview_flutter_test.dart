@@ -1139,6 +1139,7 @@ void main() {
         (WidgetTester tester) async {
       final Completer<WebResourceError> errorCompleter =
           Completer<WebResourceError>();
+      final Completer<void> pageFinishCompleter = Completer<void>();
 
       await tester.pumpWidget(
         Directionality(
@@ -1150,12 +1151,55 @@ void main() {
             onWebResourceError: (WebResourceError error) {
               errorCompleter.complete(error);
             },
+            onPageFinished: (_) => pageFinishCompleter.complete(),
           ),
         ),
       );
 
       expect(errorCompleter.future, doesNotComplete);
+      await pageFinishCompleter.future;
     });
+
+    testWidgets(
+      'onWebResourceError only called for main frame',
+      (WidgetTester tester) async {
+        final String iframeTest = '''
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>WebResourceError test</title>
+        </head>
+        <body>
+          <iframe src="https://notawebsite..com"></iframe>
+        </body>
+        </html>
+       ''';
+        final String iframeTestBase64 =
+            base64Encode(const Utf8Encoder().convert(iframeTest));
+
+        final Completer<WebResourceError> errorCompleter =
+            Completer<WebResourceError>();
+        final Completer<void> pageFinishCompleter = Completer<void>();
+
+        await tester.pumpWidget(
+          Directionality(
+            textDirection: TextDirection.ltr,
+            child: WebView(
+              key: GlobalKey(),
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$iframeTestBase64',
+              onWebResourceError: (WebResourceError error) {
+                errorCompleter.complete(error);
+              },
+              onPageFinished: (_) => pageFinishCompleter.complete(),
+            ),
+          ),
+        );
+
+        expect(errorCompleter.future, doesNotComplete);
+        await pageFinishCompleter.future;
+      },
+    );
 
     testWidgets('can block requests', (WidgetTester tester) async {
       final Completer<WebViewController> controllerCompleter =

@@ -12,22 +12,27 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'common/core.dart';
 import 'common/plugin_command.dart';
 
+const String _outputDirectoryFlag = 'output-dir';
+
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {
   /// Creates an instance of the builder command.
   CreateAllPluginsAppCommand(
     Directory packagesDir, {
     Directory? pluginsRoot,
-  })  : pluginsRoot = pluginsRoot ?? packagesDir.fileSystem.currentDirectory,
-        super(packagesDir) {
-    appDirectory = this.pluginsRoot.childDirectory('all_plugins');
+  }) : super(packagesDir) {
+    final Directory defaultDir =
+        pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
+    argParser.addOption(_outputDirectoryFlag,
+        defaultsTo: defaultDir.path,
+        help: 'The path the directory to create the "all_plugins" project in.\n'
+            'Defaults to the repository root.');
   }
 
-  /// The root directory of the plugin repository.
-  Directory pluginsRoot;
-
   /// The location of the synthesized app project.
-  late Directory appDirectory;
+  Directory get appDirectory => packagesDir.fileSystem
+      .directory(getStringArg(_outputDirectoryFlag))
+      .childDirectory('all_plugins');
 
   @override
   String get description =>
@@ -41,6 +46,15 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final int exitCode = await _createApp();
     if (exitCode != 0) {
       throw ToolExit(exitCode);
+    }
+
+    final Set<String> excluded = getExcludedPackageNames();
+    if (excluded.isNotEmpty) {
+      print('Exluding the following plugins from the combined build:');
+      for (final String plugin in excluded) {
+        print('  $plugin');
+      }
+      print('');
     }
 
     await Future.wait(<Future<void>>[

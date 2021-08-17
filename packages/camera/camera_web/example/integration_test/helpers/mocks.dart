@@ -7,18 +7,27 @@ import 'dart:html';
 import 'dart:ui';
 
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
+import 'package:camera_web/src/shims/dart_js_util.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockWindow extends Mock implements Window {}
 
+class MockScreen extends Mock implements Screen {}
+
+class MockScreenOrientation extends Mock implements ScreenOrientation {}
+
+class MockDocument extends Mock implements Document {}
+
+class MockElement extends Mock implements Element {}
+
 class MockNavigator extends Mock implements Navigator {}
 
 class MockMediaDevices extends Mock implements MediaDevices {}
 
-class MockCameraSettings extends Mock implements CameraSettings {}
+class MockCameraService extends Mock implements CameraService {}
 
 class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
@@ -29,6 +38,8 @@ class MockCameraOptions extends Mock implements CameraOptions {}
 class MockVideoElement extends Mock implements VideoElement {}
 
 class MockXFile extends Mock implements XFile {}
+
+class MockJsUtil extends Mock implements JsUtil {}
 
 /// A fake [MediaStream] that returns the provided [_videoTracks].
 class FakeMediaStream extends Fake implements MediaStream {
