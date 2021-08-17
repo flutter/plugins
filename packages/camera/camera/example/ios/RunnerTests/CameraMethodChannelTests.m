@@ -11,8 +11,12 @@
 @property(readonly, nonatomic) FlutterResult flutterResult;
 @end
 
+/**
+ * Extends FLTThreadSafeFlutterResult to give tests the ability to wait on the result and
+ * read the received result.
+ */
 @interface MockFLTThreadSafeFlutterResult : FLTThreadSafeFlutterResult
-@property(readonly, nonatomic) NSNotificationCenter *notificationCenter;
+@property(readonly, nonatomic) XCTestExpectation *expectation;
 @property(nonatomic, nullable) id receivedResult;
 @end
 
@@ -20,18 +24,18 @@
 /**
  * Initializes with a notification center.
  */
-- (id)initWithNotificationCenter:(NSNotificationCenter *)notificationCenter {
+- (id)initWithExpectation:(XCTestExpectation *)expectation {
   self = [super init];
-  _notificationCenter = notificationCenter;
+  _expectation = expectation;
   return self;
 }
 
 /**
- * Called when result is successful. Sends "successWithData" to the notification center.
+ * Called when result is successful. Fulfills the expectation.
  */
 - (void)sendSuccessWithData:(id)data {
   _receivedResult = data;
-  [self->_notificationCenter postNotificationName:@"successWithData" object:nil];
+  [self->_expectation fulfill];
 }
 @end
 
@@ -43,14 +47,13 @@
 @interface CameraMethodChannelTests : XCTestCase
 @property(readonly, nonatomic) CameraPlugin *camera;
 @property(readonly, nonatomic) MockFLTThreadSafeFlutterResult *resultObject;
-@property(readonly, nonatomic) NSNotificationCenter *notificationCenter;
 @end
 
 @implementation CameraMethodChannelTests
 
 - (void)setUp {
   _camera = [[CameraPlugin alloc] init];
-  _notificationCenter = [[NSNotificationCenter alloc] init];
+  XCTestExpectation* expectation = [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 
   // Set up mocks for initWithCameraName method
   id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
@@ -62,16 +65,11 @@
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
   _resultObject =
-      [[MockFLTThreadSafeFlutterResult alloc] initWithNotificationCenter:_notificationCenter];
+      [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
 }
 
 - (void)testCreate_ShouldCallResultOnMainThread {
   // Set up method call
-  XCTNSNotificationExpectation *notificationExpectation =
-      [[XCTNSNotificationExpectation alloc] initWithName:@"successWithData"
-                                                  object:nil
-                                      notificationCenter:_notificationCenter];
-
   FlutterMethodCall *call = [FlutterMethodCall
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
@@ -81,7 +79,7 @@
   // Don't expect a result yet
   XCTAssertNil(_resultObject.receivedResult);
 
-  [self waitForExpectations:[NSArray arrayWithObject:notificationExpectation] timeout:1];
+  [self waitForExpectations:[NSArray arrayWithObject:_resultObject.expectation] timeout:1];
 
   // Expect a result after waiting for thread to switch
   XCTAssertNotNil(_resultObject.receivedResult);
