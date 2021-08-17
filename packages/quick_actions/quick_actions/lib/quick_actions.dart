@@ -16,7 +16,7 @@ class QuickActions {
 
   /// Initializes this plugin.
   ///
-  /// Call this once before any further interaction with the the plugin.
+  /// Call this once before any further interaction with the plugin.
   Future<void> initialize(QuickActionHandler handler) async =>
       QuickActionsPlatform.instance.initialize(handler);
 

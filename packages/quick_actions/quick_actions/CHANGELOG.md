@@ -1,3 +1,7 @@
+## 0.6.0+5
+
+* Support only calling initialize once.
+
 ## 0.6.0+4
 
 * Remove references to the Android V1 embedding.
