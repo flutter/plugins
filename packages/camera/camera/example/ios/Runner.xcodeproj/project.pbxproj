@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		033B94BE269C40A200B4DF97 /* CameraMethodChannelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 033B94BD269C40A200B4DF97 /* CameraMethodChannelTests.m */; };
 		03BB766B2665316900CE5A93 /* CameraFocusTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BB766A2665316900CE5A93 /* CameraFocusTests.m */; };
+		03F6F8B226CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 03F6F8B126CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m */; };
 		1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */ = {isa = PBXBuildFile; fileRef = 1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */; };
 		334733EA2668111C00DCC49E /* CameraOrientationTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 03BB767226653ABE00CE5A93 /* CameraOrientationTests.m */; };
 		3B3967161E833CAA004F5970 /* AppFrameworkInfo.plist in Resources */ = {isa = PBXBuildFile; fileRef = 3B3967151E833CAA004F5970 /* AppFrameworkInfo.plist */; };
@@ -50,6 +51,7 @@
 		03BB766A2665316900CE5A93 /* CameraFocusTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraFocusTests.m; sourceTree = "<group>"; };
 		03BB766C2665316900CE5A93 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		03BB767226653ABE00CE5A93 /* CameraOrientationTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CameraOrientationTests.m; sourceTree = "<group>"; };
+		03F6F8B126CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThreadSafeFlutterResultTests.m; sourceTree = "<group>"; };
 		1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeneratedPluginRegistrant.h; sourceTree = "<group>"; };
 		1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GeneratedPluginRegistrant.m; sourceTree = "<group>"; };
 		2A4F2DE74AE0C572296A00BF /* libPods-Runner.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Runner.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -99,6 +101,7 @@
 				03BB767226653ABE00CE5A93 /* CameraOrientationTests.m */,
 				03BB766C2665316900CE5A93 /* Info.plist */,
 				033B94BD269C40A200B4DF97 /* CameraMethodChannelTests.m */,
+				03F6F8B126CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -361,6 +364,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				03F6F8B226CBB4670024B8D3 /* ThreadSafeFlutterResultTests.m in Sources */,
 				033B94BE269C40A200B4DF97 /* CameraMethodChannelTests.m in Sources */,
 				03BB766B2665316900CE5A93 /* CameraFocusTests.m in Sources */,
 				334733EA2668111C00DCC49E /* CameraOrientationTests.m in Sources */,

@@ -844,8 +844,8 @@ NSString *const errorMethod = @"error";
           self->_videoRecordingPath = nil;
         } else {
           [result sendErrorWithCode:@"IOError"
-                        message:@"AVAssetWriter could not finish writing!"
-                        details:nil];
+                            message:@"AVAssetWriter could not finish writing!"
+                            details:nil];
         }
       }];
     }
@@ -905,14 +905,14 @@ NSString *const errorMethod = @"error";
   if (mode == FlashModeTorch) {
     if (!_captureDevice.hasTorch) {
       [result sendErrorWithCode:@"setFlashModeFailed"
-                    message:@"Device does not support torch mode"
-                    details:nil];
+                        message:@"Device does not support torch mode"
+                        details:nil];
       return;
     }
     if (!_captureDevice.isTorchAvailable) {
       [result sendErrorWithCode:@"setFlashModeFailed"
-                    message:@"Torch mode is currently not available"
-                    details:nil];
+                        message:@"Torch mode is currently not available"
+                        details:nil];
       return;
     }
     if (_captureDevice.torchMode != AVCaptureTorchModeOn) {
@@ -923,16 +923,16 @@ NSString *const errorMethod = @"error";
   } else {
     if (!_captureDevice.hasFlash) {
       [result sendErrorWithCode:@"setFlashModeFailed"
-                    message:@"Device does not have flash capabilities"
-                    details:nil];
+                        message:@"Device does not have flash capabilities"
+                        details:nil];
       return;
     }
     AVCaptureFlashMode avFlashMode = getAVCaptureFlashModeForFlashMode(mode);
     if (![_capturePhotoOutput.supportedFlashModes
             containsObject:[NSNumber numberWithInt:((int)avFlashMode)]]) {
       [result sendErrorWithCode:@"setFlashModeFailed"
-                    message:@"Device does not support this specific flash mode"
-                    details:nil];
+                        message:@"Device does not support this specific flash mode"
+                        details:nil];
       return;
     }
     if (_captureDevice.torchMode != AVCaptureTorchModeOff) {
@@ -1053,8 +1053,8 @@ NSString *const errorMethod = @"error";
 - (void)setExposurePointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y {
   if (!_captureDevice.isExposurePointOfInterestSupported) {
     [result sendErrorWithCode:@"setExposurePointFailed"
-                  message:@"Device does not have exposure point capabilities"
-                  details:nil];
+                      message:@"Device does not have exposure point capabilities"
+                      details:nil];
     return;
   }
   UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
@@ -1071,8 +1071,8 @@ NSString *const errorMethod = @"error";
 - (void)setFocusPointWithResult:(FLTThreadSafeFlutterResult *)result x:(double)x y:(double)y {
   if (!_captureDevice.isFocusPointOfInterestSupported) {
     [result sendErrorWithCode:@"setFocusPointFailed"
-                  message:@"Device does not have focus point capabilities"
-                  details:nil];
+                      message:@"Device does not have focus point capabilities"
+                      details:nil];
     return;
   }
   UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];

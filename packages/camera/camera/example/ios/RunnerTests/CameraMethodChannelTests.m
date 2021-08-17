@@ -53,7 +53,8 @@
 
 - (void)setUp {
   _camera = [[CameraPlugin alloc] init];
-  XCTestExpectation* expectation = [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  XCTestExpectation *expectation =
+      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 
   // Set up mocks for initWithCameraName method
   id avCaptureDeviceInputMock = OCMClassMock([AVCaptureDeviceInput class]);
@@ -64,8 +65,7 @@
   OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
-  _resultObject =
-      [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
+  _resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
 }
 
 - (void)testCreate_ShouldCallResultOnMainThread {

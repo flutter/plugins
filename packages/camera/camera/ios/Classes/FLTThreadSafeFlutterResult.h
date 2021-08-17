@@ -36,8 +36,8 @@
  * Sends a FlutterError as result.
  */
 - (void)sendErrorWithCode:(nonnull NSString*)code
-              message:(nullable NSString*)message
-              details:(nullable id)details;
+                  message:(nullable NSString*)message
+                  details:(nullable id)details;
 
 /**
  * Sends FlutterMethodNotImplemented as result.

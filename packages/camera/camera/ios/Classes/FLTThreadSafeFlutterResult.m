@@ -31,13 +31,13 @@
 
 - (void)sendError:(NSError*)error {
   [self sendErrorWithCode:[NSString stringWithFormat:@"Error %d", (int)error.code]
-              message:error.localizedDescription
-              details:error.domain];
+                  message:error.localizedDescription
+                  details:error.domain];
 }
 
 - (void)sendErrorWithCode:(NSString*)code
-              message:(NSString* _Nullable)message
-              details:(id _Nullable)details {
+                  message:(NSString* _Nullable)message
+                  details:(id _Nullable)details {
   FlutterError* flutterError = [FlutterError errorWithCode:code message:message details:details];
   [self send:flutterError];
 }
