@@ -61,7 +61,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
-    this.textDirection,
+    this.layoutDirection,
 
     /// If no padding is specified default padding will be 0.
     this.padding = const EdgeInsets.all(0),
@@ -101,11 +101,11 @@ class GoogleMap extends StatefulWidget {
   /// Type of map tiles to be rendered.
   final MapType mapType;
 
-  /// The text direction to use for the embedded view.
+  /// The layout direction to use for the embedded view.
   ///
   /// If this is null, the ambient [Directionality] is used instead. If there is
   /// no ambient [Directionality], [TextDirection.ltr] is used.
-  final TextDirection? textDirection;
+  final TextDirection? layoutDirection;
 
   /// Preferred bounds for the camera zoom level.
   ///
@@ -260,7 +260,7 @@ class _GoogleMapState extends State<GoogleMap> {
     return GoogleMapsFlutterPlatform.instance.buildViewWithTextDirection(
       _mapId,
       onPlatformViewCreated,
-      textDirection: widget.textDirection ??
+      textDirection: widget.layoutDirection ??
           Directionality.maybeOf(context) ??
           TextDirection.ltr,
       initialCameraPosition: widget.initialCameraPosition,
