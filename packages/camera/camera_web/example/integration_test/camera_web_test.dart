@@ -10,10 +10,10 @@ import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/camera_web.dart';
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
-import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -35,7 +35,7 @@ void main() {
     late Document document;
     late Element documentElement;
 
-    late CameraSettings cameraSettings;
+    late CameraService cameraService;
 
     setUp(() async {
       window = MockWindow();
@@ -59,10 +59,10 @@ void main() {
       when(() => document.documentElement).thenReturn(documentElement);
       when(() => window.document).thenReturn(document);
 
-      cameraSettings = MockCameraSettings();
+      cameraService = MockCameraService();
 
       when(
-        () => cameraSettings.getMediaStreamForOptions(
+        () => cameraService.getMediaStreamForOptions(
           any(),
           cameraId: any(named: 'cameraId'),
         ),
@@ -71,7 +71,7 @@ void main() {
       );
 
       CameraPlatform.instance = CameraPlugin(
-        cameraSettings: cameraSettings,
+        cameraService: cameraService,
       )..window = window;
     });
 
@@ -88,7 +88,7 @@ void main() {
     group('availableCameras', () {
       setUp(() {
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             any(),
           ),
         ).thenReturn(null);
@@ -102,7 +102,7 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verify(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               audio: AudioConstraints(enabled: true),
             ),
@@ -126,7 +126,7 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verify(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(
                 deviceId: videoDevice.deviceId,
@@ -153,7 +153,7 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verifyNever(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(
                 deviceId: videoDevice.deviceId,
@@ -177,7 +177,7 @@ void main() {
             FakeMediaStream([MockMediaStreamTrack(), MockMediaStreamTrack()]);
 
         when(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: videoDevice.deviceId),
             ),
@@ -191,7 +191,7 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verify(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             videoStream.getVideoTracks().first,
           ),
         ).called(1);
@@ -239,46 +239,46 @@ void main() {
           ]),
         );
 
-        // Mock camera settings to return the first video stream
+        // Mock camera service to return the first video stream
         // for the first video device.
         when(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: firstVideoDevice.deviceId),
             ),
           ),
         ).thenAnswer((_) => Future.value(firstVideoStream));
 
-        // Mock camera settings to return the second video stream
+        // Mock camera service to return the second video stream
         // for the second video device.
         when(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: secondVideoDevice.deviceId),
             ),
           ),
         ).thenAnswer((_) => Future.value(secondVideoStream));
 
-        // Mock camera settings to return a user facing mode
+        // Mock camera service to return a user facing mode
         // for the first video stream.
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             firstVideoStream.getVideoTracks().first,
           ),
         ).thenReturn('user');
 
-        when(() => cameraSettings.mapFacingModeToLensDirection('user'))
+        when(() => cameraService.mapFacingModeToLensDirection('user'))
             .thenReturn(CameraLensDirection.front);
 
-        // Mock camera settings to return an environment facing mode
+        // Mock camera service to return an environment facing mode
         // for the second video stream.
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             secondVideoStream.getVideoTracks().first,
           ),
         ).thenReturn('environment');
 
-        when(() => cameraSettings.mapFacingModeToLensDirection('environment'))
+        when(() => cameraService.mapFacingModeToLensDirection('environment'))
             .thenReturn(CameraLensDirection.back);
 
         final cameras = await CameraPlatform.instance.availableCameras();
@@ -318,7 +318,7 @@ void main() {
         );
 
         when(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: videoDevice.deviceId),
             ),
@@ -326,12 +326,12 @@ void main() {
         ).thenAnswer((_) => Future.value(videoStream));
 
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             videoStream.getVideoTracks().first,
           ),
         ).thenReturn('left');
 
-        when(() => cameraSettings.mapFacingModeToLensDirection('left'))
+        when(() => cameraService.mapFacingModeToLensDirection('left'))
             .thenReturn(CameraLensDirection.external);
 
         final camera = (await CameraPlatform.instance.availableCameras()).first;
@@ -384,7 +384,7 @@ void main() {
         });
 
         testWidgets(
-            'when CameraSettings.getMediaStreamForOptions '
+            'when CameraService.getMediaStreamForOptions '
             'throws CameraWebException', (tester) async {
           final exception = CameraWebException(
             cameraId,
@@ -392,7 +392,7 @@ void main() {
             'description',
           );
 
-          when(() => cameraSettings.getMediaStreamForOptions(any()))
+          when(() => cameraService.getMediaStreamForOptions(any()))
               .thenThrow(exception);
 
           expect(
@@ -408,14 +408,14 @@ void main() {
         });
 
         testWidgets(
-            'when CameraSettings.getMediaStreamForOptions '
+            'when CameraService.getMediaStreamForOptions '
             'throws PlatformException', (tester) async {
           final exception = PlatformException(
             code: CameraErrorCode.notSupported.toString(),
             message: 'message',
           );
 
-          when(() => cameraSettings.getMediaStreamForOptions(any()))
+          when(() => cameraService.getMediaStreamForOptions(any()))
               .thenThrow(exception);
 
           expect(
@@ -454,13 +454,13 @@ void main() {
               .camerasMetadata[cameraDescription] = cameraMetadata;
 
           when(
-            () => cameraSettings.mapFacingModeToCameraType('user'),
+            () => cameraService.mapFacingModeToCameraType('user'),
           ).thenReturn(CameraType.user);
         });
 
         testWidgets('with appropriate options', (tester) async {
           when(
-            () => cameraSettings
+            () => cameraService
                 .mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
           ).thenReturn(ultraHighResolutionSize);
 
@@ -503,8 +503,7 @@ void main() {
             'and enabled audio set to false '
             'when no options are specified', (tester) async {
           when(
-            () =>
-                cameraSettings.mapResolutionPresetToSize(ResolutionPreset.max),
+            () => cameraService.mapResolutionPresetToSize(ResolutionPreset.max),
           ).thenReturn(maxResolutionSize);
 
           final cameraId = await CameraPlatform.instance.createCamera(
@@ -657,7 +656,7 @@ void main() {
     group('lockCaptureOrientation', () {
       setUp(() {
         when(
-          () => cameraSettings.mapDeviceOrientationToOrientationType(any()),
+          () => cameraService.mapDeviceOrientationToOrientationType(any()),
         ).thenReturn(OrientationType.portraitPrimary);
       });
 
@@ -676,7 +675,7 @@ void main() {
           'locks the capture orientation '
           'based on the given device orientation', (tester) async {
         when(
-          () => cameraSettings.mapDeviceOrientationToOrientationType(
+          () => cameraService.mapDeviceOrientationToOrientationType(
             DeviceOrientation.landscapeRight,
           ),
         ).thenReturn(OrientationType.landscapeSecondary);
@@ -687,7 +686,7 @@ void main() {
         );
 
         verify(
-          () => cameraSettings.mapDeviceOrientationToOrientationType(
+          () => cameraService.mapDeviceOrientationToOrientationType(
             DeviceOrientation.landscapeRight,
           ),
         ).called(1);
@@ -785,18 +784,8 @@ void main() {
     group('unlockCaptureOrientation', () {
       setUp(() {
         when(
-          () => cameraSettings.mapDeviceOrientationToOrientationType(any()),
+          () => cameraService.mapDeviceOrientationToOrientationType(any()),
         ).thenReturn(OrientationType.portraitPrimary);
-      });
-
-      testWidgets(
-          'requests full-screen mode '
-          'on documentElement', (tester) async {
-        await CameraPlatform.instance.unlockCaptureOrientation(
-          cameraId,
-        );
-
-        verify(documentElement.requestFullscreen).called(1);
       });
 
       testWidgets('unlocks the capture orientation', (tester) async {
@@ -940,6 +929,32 @@ void main() {
             ),
           );
         });
+
+        testWidgets('when takePicture throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.takePicture).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
       });
     });
 
@@ -983,6 +998,21 @@ void main() {
     });
 
     group('setFlashMode', () {
+      testWidgets('calls setFlashMode on the camera', (tester) async {
+        final camera = MockCamera();
+        const flashMode = FlashMode.always;
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.setFlashMode(
+          cameraId,
+          flashMode,
+        );
+
+        verify(() => camera.setFlashMode(flashMode)).called(1);
+      });
+
       group('throws PlatformException', () {
         testWidgets(
             'with notFound error '
@@ -1429,12 +1459,141 @@ void main() {
       });
     });
 
+    group('pausePreview', () {
+      testWidgets('calls pause on the camera', (tester) async {
+        final camera = MockCamera();
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.pausePreview(cameraId);
+
+        verify(camera.pause).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.pausePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when pause throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.pause).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.pausePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
+    });
+
+    group('resumePreview', () {
+      testWidgets('calls play on the camera', (tester) async {
+        final camera = MockCamera();
+
+        when(camera.play).thenAnswer((_) async => {});
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.resumePreview(cameraId);
+
+        verify(camera.play).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when play throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when play throws CameraWebException', (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'description',
+          );
+
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
+    });
+
     testWidgets(
         'buildPreview returns an HtmlElementView '
         'with an appropriate view type', (tester) async {
       final camera = Camera(
         textureId: cameraId,
-        cameraSettings: cameraSettings,
+        cameraService: cameraService,
       );
 
       // Save the camera in the camera plugin.
@@ -1560,7 +1719,7 @@ void main() {
       testWidgets('returns the correct camera', (tester) async {
         final camera = Camera(
           textureId: cameraId,
-          cameraSettings: cameraSettings,
+          cameraService: cameraService,
         );
 
         // Save the camera in the camera plugin.
@@ -1599,7 +1758,7 @@ void main() {
         videoElement = getVideoElementWithBlankStream(videoSize);
 
         when(
-          () => cameraSettings.getMediaStreamForOptions(
+          () => cameraService.getMediaStreamForOptions(
             any(),
             cameraId: cameraId,
           ),
@@ -1607,7 +1766,7 @@ void main() {
 
         final camera = Camera(
           textureId: cameraId,
-          cameraSettings: cameraSettings,
+          cameraService: cameraService,
         );
 
         // Save the camera in the camera plugin.
@@ -1776,6 +1935,42 @@ void main() {
 
         testWidgets(
             'emits a CameraErrorEvent '
+            'on takePicture error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.takePicture).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
             'on setFlashMode error', (tester) async {
           final exception = CameraWebException(
             cameraId,
@@ -1927,6 +2122,42 @@ void main() {
 
           await streamQueue.cancel();
         });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on resumePreview error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'description',
+          );
+
+          when(camera.play).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
       });
 
       testWidgets('onVideoRecordedEvent throws UnimplementedError',
@@ -1963,13 +2194,13 @@ void main() {
             'emits a DeviceOrientationChangedEvent '
             'when the screen orientation is changed', (tester) async {
           when(
-            () => cameraSettings.mapOrientationTypeToDeviceOrientation(
+            () => cameraService.mapOrientationTypeToDeviceOrientation(
               OrientationType.landscapePrimary,
             ),
           ).thenReturn(DeviceOrientation.landscapeLeft);
 
           when(
-            () => cameraSettings.mapOrientationTypeToDeviceOrientation(
+            () => cameraService.mapOrientationTypeToDeviceOrientation(
               OrientationType.portraitSecondary,
             ),
           ).thenReturn(DeviceOrientation.portraitDown);

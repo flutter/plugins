@@ -1,5 +1,10 @@
 ## NEXT
 
+- Added Android native integration test support to `native-test`.
+- Added a new `android-lint` command to lint Android plugin native code.
+
+## 0.5.0
+
 - `--exclude` and `--custom-analysis` now accept paths to YAML files that
   contain lists of packages to exclude, in addition to just package names,
   so that exclude lists can be maintained separately from scripts and CI
@@ -23,7 +28,8 @@
   the new `native-test` command.
 - Commands that print a run summary at the end now track and log exclusions
   similarly to skips for easier auditing.
-- Added a new `android-lint` command to lint Android plugin native code.
+- `version-check` now validates that `NEXT` is not present when changing
+  the version.
 
 ## 0.4.1
 

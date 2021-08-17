@@ -16,6 +16,10 @@ import 'package:test/test.dart';
 import 'mocks.dart';
 import 'util.dart';
 
+const String _androidIntegrationTestFilter =
+    '-Pandroid.testInstrumentationRunnerArguments.'
+    'notAnnotation=io.flutter.plugins.DartIntegrationTest';
+
 final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
   'runtimes': <Map<String, dynamic>>[
     <String, dynamic>{
@@ -353,7 +357,7 @@ void main() {
     });
 
     group('Android', () {
-      test('runs Java tests in Android implementation folder', () async {
+      test('runs Java unit tests in Android implementation folder', () async {
         final Directory plugin = createFakePlugin(
           'plugin',
           packagesDir,
@@ -383,7 +387,7 @@ void main() {
         );
       });
 
-      test('runs Java tests in example folder', () async {
+      test('runs Java unit tests in example folder', () async {
         final Directory plugin = createFakePlugin(
           'plugin',
           packagesDir,
@@ -397,6 +401,172 @@ void main() {
         );
 
         await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        final Directory androidFolder =
+            plugin.childDirectory('example').childDirectory('android');
+
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>['testDebugUnitTest'],
+              androidFolder.path,
+            ),
+          ]),
+        );
+      });
+
+      test('runs Java integration tests', () async {
+        final Directory plugin = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+
+        await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        final Directory androidFolder =
+            plugin.childDirectory('example').childDirectory('android');
+
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>[
+                'app:connectedAndroidTest',
+                _androidIntegrationTestFilter,
+              ],
+              androidFolder.path,
+            ),
+          ]),
+        );
+      });
+
+      test(
+          'ignores Java integration test files associated with integration_test',
+          () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/java/io/flutter/plugins/DartIntegrationTest.java',
+            'example/android/app/src/androidTest/java/io/flutter/plugins/plugin/FlutterActivityTest.java',
+            'example/android/app/src/androidTest/java/io/flutter/plugins/plugin/MainActivityTest.java',
+          ],
+        );
+
+        await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        // Nothing should run since those files are all
+        // integration_test-specific.
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[]),
+        );
+      });
+
+      test('runs all tests when present', () async {
+        final Directory plugin = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'android/src/test/example_test.java',
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+
+        await runCapturingPrint(runner, <String>['native-test', '--android']);
+
+        final Directory androidFolder =
+            plugin.childDirectory('example').childDirectory('android');
+
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>['testDebugUnitTest'],
+              androidFolder.path,
+            ),
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>[
+                'app:connectedAndroidTest',
+                _androidIntegrationTestFilter,
+              ],
+              androidFolder.path,
+            ),
+          ]),
+        );
+      });
+
+      test('honors --no-unit', () async {
+        final Directory plugin = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'android/src/test/example_test.java',
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+
+        await runCapturingPrint(
+            runner, <String>['native-test', '--android', '--no-unit']);
+
+        final Directory androidFolder =
+            plugin.childDirectory('example').childDirectory('android');
+
+        expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+              androidFolder.childFile('gradlew').path,
+              const <String>[
+                'app:connectedAndroidTest',
+                _androidIntegrationTestFilter,
+              ],
+              androidFolder.path,
+            ),
+          ]),
+        );
+      });
+
+      test('honors --no-integration', () async {
+        final Directory plugin = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'android/src/test/example_test.java',
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+
+        await runCapturingPrint(
+            runner, <String>['native-test', '--android', '--no-integration']);
 
         final Directory androidFolder =
             plugin.childDirectory('example').childDirectory('android');
@@ -444,6 +614,46 @@ void main() {
         );
       });
 
+      test('logs missing test types', () async {
+        // No unit tests.
+        createFakePlugin(
+          'plugin1',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+        // No integration tests.
+        createFakePlugin(
+          'plugin2',
+          packagesDir,
+          platformSupport: <String, PlatformSupport>{
+            kPlatformAndroid: PlatformSupport.inline
+          },
+          extraFiles: <String>[
+            'android/src/test/example_test.java',
+            'example/android/gradlew',
+          ],
+        );
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android']);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('No Android unit tests found for plugin1/example'),
+              contains('Running integration tests...'),
+              contains(
+                  'No Android integration tests found for plugin2/example'),
+              contains('Running unit tests...'),
+            ]));
+      });
+
       test('fails when a test fails', () async {
         final Directory pluginDir = createFakePlugin(
           'plugin',
@@ -478,7 +688,7 @@ void main() {
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('plugin/example tests failed.'),
+            contains('plugin/example unit tests failed.'),
             contains('The following packages had errors:'),
             contains('plugin')
           ]),
@@ -518,7 +728,8 @@ void main() {
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('No Android tests found for plugin/example'),
+            contains('No Android unit tests found for plugin/example'),
+            contains('No Android integration tests found for plugin/example'),
             contains('SKIPPING: No tests found.'),
           ]),
         );
@@ -810,10 +1021,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  androidFolder.childFile('gradlew').path,
-                  const <String>['testDebugUnitTest'],
-                  androidFolder.path),
+              ProcessCall(androidFolder.childFile('gradlew').path,
+                  const <String>['testDebugUnitTest'], androidFolder.path),
               ProcessCall(
                   'xcrun',
                   const <String>[
@@ -1003,7 +1212,7 @@ void main() {
           output,
           containsAllInOrder(<Matcher>[
             contains('Running tests for Android...'),
-            contains('plugin/example tests failed.'),
+            contains('plugin/example unit tests failed.'),
             contains('Running tests for iOS...'),
             contains('Successfully ran iOS xctest for plugin/example'),
             contains('The following packages had errors:'),

@@ -21,7 +21,7 @@ flutter:
         fileName: camera_web.dart
 
 dependencies:
-  camera_platform_interface: ^2.0.1
+  camera_platform_interface: ^2.1.0
   flutter:
     sdk: flutter
   flutter_web_plugins:
@@ -30,5 +30,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  mocktail: ^0.1.4
   pedantic: ^1.11.1
