@@ -39,18 +39,23 @@ class ListCommand extends PluginCommand {
   Future<void> run() async {
     switch (getStringArg(_type)) {
       case _plugin:
-        await for (final Directory package in getPlugins()) {
-          print(package.path);
+        await for (final PackageEnumerationEntry package
+            in getTargetPackages()) {
+          print(package.directory.path);
         }
         break;
       case _example:
-        await for (final Directory package in getExamples()) {
+        final Stream<Directory> examples = getTargetPackages()
+            .map((PackageEnumerationEntry entry) => entry.directory)
+            .expand<Directory>(getExamplesForPlugin);
+        await for (final Directory package in examples) {
           print(package.path);
         }
         break;
       case _package:
-        await for (final Directory package in getPackages()) {
-          print(package.path);
+        await for (final PackageEnumerationEntry package
+            in getTargetPackagesAndSubpackages()) {
+          print(package.directory.path);
         }
         break;
       case _file:

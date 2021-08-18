@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Introduces interface methods for pausing and resuming the camera preview.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.
