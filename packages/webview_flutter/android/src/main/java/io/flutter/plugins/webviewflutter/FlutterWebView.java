@@ -46,7 +46,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final Handler platformThreadHandler;
   private final Handler mainThreadHandler = new Handler(Looper.getMainLooper());
   private byte[] lastScreenshotByteArray = new byte[0];
-  private int updateScreenshotAfterScrollThreshold = 500;
+  private int updateScreenshotAfterScrollThreshold = 300;
   private Runnable updateAfterScrollRunnable;
 
 
@@ -103,7 +103,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         lastUpdateProgress = 0;
       }
       final int diff = progress - lastUpdateProgress;
-      if (diff > updateScreenshotPercentageThreshold) {
+      if(progress == 100) {
+        updateScreenshotWithDelay();
+      } else if (diff > updateScreenshotPercentageThreshold) {
         lastUpdateProgress = progress;
         updateScreenshot();
       }
@@ -179,14 +181,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       webView.getViewTreeObserver().addOnScrollChangedListener(new ViewTreeObserver.OnScrollChangedListener() {
         @Override
         public void onScrollChanged() {
-          mainThreadHandler.removeCallbacks(updateAfterScrollRunnable);
-          updateAfterScrollRunnable = new Runnable() {
-            @Override
-            public void run() {
-              updateScreenshot();
-            }
-          };
-          mainThreadHandler.postDelayed(updateAfterScrollRunnable, updateScreenshotAfterScrollThreshold);
+          updateScreenshotWithDelay();
         }
       });
     }
@@ -494,6 +489,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       @java.lang.Override
       public void onScreenshotReady(byte[] screenshot) {
         fResult.success(screenshot);
+        lastScreenshotByteArray = screenshot;
       }
     });
   }
@@ -585,6 +581,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             lastScreenshotByteArray = screenshot;
         }
     });
+  }
+
+  private void updateScreenshotWithDelay(){
+    mainThreadHandler.removeCallbacks(updateAfterScrollRunnable);
+    updateAfterScrollRunnable = new Runnable() {
+      @Override
+      public void run() {
+        updateScreenshot();
+      }
+    };
+    mainThreadHandler.postDelayed(updateAfterScrollRunnable, updateScreenshotAfterScrollThreshold);
   }
 
   private void makeScreenshot(final OnScreenshotReadyCallback readyCallback){
