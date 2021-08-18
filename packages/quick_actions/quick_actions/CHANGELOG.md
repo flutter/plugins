@@ -1,3 +1,7 @@
+## NEXT
+
+* Updated Android lint settings.
+
 ## 0.6.0+5
 
 * Support only calling initialize once.
