@@ -16,6 +16,25 @@ enum PlatformSupport {
   federated,
 }
 
+/// Returns true if [package] is a Flutter plugin.
+bool isFlutterPlugin(Directory package) {
+  try {
+    final File pubspecFile = package.childFile('pubspec.yaml');
+    final YamlMap pubspecYaml =
+        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+    final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
+    if (flutterSection == null) {
+      return false;
+    }
+    final YamlMap? pluginSection = flutterSection['plugin'] as YamlMap?;
+    return pluginSection != null;
+  } on FileSystemException {
+    return false;
+  } on YamlException {
+    return false;
+  }
+}
+
 /// Returns whether the given directory contains a Flutter [platform] plugin.
 ///
 /// It checks this by looking for the following pattern in the pubspec:

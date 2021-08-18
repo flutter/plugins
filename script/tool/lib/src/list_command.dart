@@ -47,7 +47,7 @@ class ListCommand extends PluginCommand {
       case _example:
         final Stream<Directory> examples = getTargetPackages()
             .map((PackageEnumerationEntry entry) => entry.directory)
-            .expand<Directory>(getExamplesForPlugin);
+            .expand<Directory>(getExamplesForPackage);
         await for (final Directory package in examples) {
           print(package.path);
         }

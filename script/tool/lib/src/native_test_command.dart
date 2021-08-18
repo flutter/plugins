@@ -216,7 +216,7 @@ this command.
           });
     }
 
-    final Iterable<Directory> examples = getExamplesForPlugin(plugin);
+    final Iterable<Directory> examples = getExamplesForPackage(plugin);
 
     bool ranTests = false;
     bool failed = false;
@@ -330,7 +330,7 @@ this command.
 
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
-    for (final Directory example in getExamplesForPlugin(plugin)) {
+    for (final Directory example in getExamplesForPackage(plugin)) {
       final String exampleName = getPackageDescription(example);
 
       if (testTarget != null) {

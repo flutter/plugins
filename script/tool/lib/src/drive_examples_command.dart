@@ -146,7 +146,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     int examplesFound = 0;
     bool testsRan = false;
     final List<String> errors = <String>[];
-    for (final Directory example in getExamplesForPlugin(package)) {
+    for (final Directory example in getExamplesForPackage(package)) {
       ++examplesFound;
       final String exampleName =
           getRelativePosixPath(example, from: packagesDir);

@@ -83,7 +83,7 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
     List<String> extraFlags = const <String>[],
   }) async {
     bool passing = true;
-    for (final Directory example in getExamplesForPlugin(plugin)) {
+    for (final Directory example in getExamplesForPackage(plugin)) {
       // Running tests and static analyzer.
       final String examplePath =
           getRelativePosixPath(example, from: plugin.parent);

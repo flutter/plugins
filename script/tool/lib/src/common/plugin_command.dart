@@ -358,10 +358,10 @@ abstract class PluginCommand extends Command<void> {
     return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
-  /// Returns the example Dart packages contained in the specified plugin, or
-  /// an empty List, if the plugin has no examples.
-  Iterable<Directory> getExamplesForPlugin(Directory plugin) {
-    final Directory exampleFolder = plugin.childDirectory('example');
+  /// Returns the example Flutter packages contained in the specified package,
+  /// or an empty iterable if the package has no Flutter examples.
+  Iterable<Directory> getExamplesForPackage(Directory package) {
+    final Directory exampleFolder = package.childDirectory('example');
     if (!exampleFolder.existsSync()) {
       return <Directory>[];
     }
