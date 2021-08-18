@@ -1,6 +1,7 @@
 ## NEXT
 
 - Added Android native integration test support to `native-test`.
+- Added a new `android-lint` command to lint Android plugin native code.
 
 ## 0.5.0
 

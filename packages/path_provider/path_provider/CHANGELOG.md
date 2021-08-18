@@ -1,3 +1,7 @@
+## NEXT
+
+* Updated Android lint settings.
+
 ## 2.0.3
 
 * Add iOS unit test target.

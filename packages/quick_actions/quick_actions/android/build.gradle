@@ -30,6 +30,7 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        disable 'GradleDependency'
     }
 
     dependencies {
