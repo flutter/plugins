@@ -421,8 +421,8 @@ void main() {
         final Directory plugin = createFakePlugin(
           'plugin',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -456,8 +456,8 @@ void main() {
         createFakePlugin(
           'plugin',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -481,8 +481,8 @@ void main() {
         final Directory plugin = createFakePlugin(
           'plugin',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -520,8 +520,8 @@ void main() {
         final Directory plugin = createFakePlugin(
           'plugin',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -555,8 +555,8 @@ void main() {
         final Directory plugin = createFakePlugin(
           'plugin',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
@@ -619,8 +619,8 @@ void main() {
         createFakePlugin(
           'plugin1',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'example/android/gradlew',
@@ -631,8 +631,8 @@ void main() {
         createFakePlugin(
           'plugin2',
           packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           },
           extraFiles: <String>[
             'android/src/test/example_test.java',
