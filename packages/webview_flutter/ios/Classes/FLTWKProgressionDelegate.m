@@ -50,7 +50,7 @@ NSString *const FLTWKEstimatedProgressKeyPath = @"estimatedProgress";
           _lastUpdateProgress = 0;
       }
       NSInteger diff = newValueAsInt - _lastUpdateProgress;
-      if (diff > _updateScreenshotPercentageThreshold) {
+      if (diff > _updateScreenshotPercentageThreshold || newValueAsInt == 100) {
           _lastUpdateProgress = newValueAsInt;
           [self updateScreenshot];
       }

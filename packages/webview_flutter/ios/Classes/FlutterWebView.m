@@ -86,7 +86,7 @@
               registrar:(nonnull NSObject<FlutterPluginRegistrar>*)registrar {
   if (self = [super init]) {
     _viewId = viewId;
-      _updateScreenshotThreshold = 0.5;
+    _updateScreenshotThreshold = 0.3;
 
     _registrar = registrar;
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
@@ -114,12 +114,12 @@
         NSNumber *maxCachedTabs = args[@"maxCachedTabs"];
         [webViewManager updateMaxCachedTabs:maxCachedTabs];
     }
-      
+
     if ([args[@"tabId"] isKindOfClass:[NSString class]]) {
         NSString *tabId = args[@"tabId"];
         _webView = [webViewManager webViewForId:tabId];
     }
-    
+
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
 
     BOOL shouldLoad = NO;
@@ -136,7 +136,7 @@
         NSString* initialUrl = args[@"initialUrl"];
         [_navigationDelegate onPageFinishedWithUrl:initialUrl];
     }
-      
+
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;
     _webView.scrollView.delegate = self;
@@ -421,7 +421,7 @@
 }
 
 - (void)takeScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result {
-  [_webView takeSnapshotWithConfiguration:nil 
+  [_webView takeSnapshotWithConfiguration:nil
         completionHandler:^(UIImage *snapshotImage, NSError *error){
         NSData *imageData = UIImagePNGRepresentation(snapshotImage);
         result(imageData);
