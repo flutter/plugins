@@ -57,7 +57,7 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
 void main() {
   const String _kDestination = '--ios-destination';
 
-  group('test native_test_command', () {
+  group('test native_test_command on Posix', () {
     late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
@@ -164,7 +164,7 @@ void main() {
             output,
             containsAllInOrder(<Matcher>[
               contains('No implementation for iOS.'),
-              contains('SKIPPING: Not implemented for target platform(s).'),
+              contains('SKIPPING: Nothing to test for target platform(s).'),
             ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
@@ -181,7 +181,7 @@ void main() {
             output,
             containsAllInOrder(<Matcher>[
               contains('No implementation for iOS.'),
-              contains('SKIPPING: Not implemented for target platform(s).'),
+              contains('SKIPPING: Nothing to test for target platform(s).'),
             ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
@@ -291,7 +291,7 @@ void main() {
             output,
             containsAllInOrder(<Matcher>[
               contains('No implementation for macOS.'),
-              contains('SKIPPING: Not implemented for target platform(s).'),
+              contains('SKIPPING: Nothing to test for target platform(s).'),
             ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
@@ -309,7 +309,7 @@ void main() {
             output,
             containsAllInOrder(<Matcher>[
               contains('No implementation for macOS.'),
-              contains('SKIPPING: Not implemented for target platform(s).'),
+              contains('SKIPPING: Nothing to test for target platform(s).'),
             ]));
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
       });
@@ -707,7 +707,7 @@ void main() {
           output,
           containsAllInOrder(<Matcher>[
             contains('No implementation for Android.'),
-            contains('SKIPPING: Not implemented for target platform(s).'),
+            contains('SKIPPING: Nothing to test for target platform(s).'),
           ]),
         );
       });
@@ -1173,6 +1173,7 @@ void main() {
           '--android',
           '--ios',
           '--macos',
+          '--windows',
           _kDestination,
           'foo_destination',
         ]);
@@ -1183,7 +1184,38 @@ void main() {
               contains('No implementation for Android.'),
               contains('No implementation for iOS.'),
               contains('No implementation for macOS.'),
-              contains('SKIPPING: Not implemented for target platform(s).'),
+              contains('SKIPPING: Nothing to test for target platform(s).'),
+            ]));
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('skips Dart-only plugins', () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline,
+                hasDartCode: true, hasNativeCode: false),
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+                hasDartCode: true, hasNativeCode: false),
+          },
+        );
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--macos',
+          '--windows',
+          _kDestination,
+          'foo_destination',
+        ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('No native code for macOS.'),
+              contains('No native code for Windows.'),
+              contains('SKIPPING: Nothing to test for target platform(s).'),
             ]));
 
         expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -1292,6 +1324,131 @@ void main() {
                 '    iOS')
           ]),
         );
+      });
+    });
+  });
+
+  group('test native_test_command on Windows', () {
+    late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
+    late Directory packagesDir;
+    late CommandRunner<void> runner;
+    late RecordingProcessRunner processRunner;
+
+    setUp(() {
+      fileSystem = MemoryFileSystem(style: FileSystemStyle.windows);
+      mockPlatform = MockPlatform(isWindows: true);
+      packagesDir = createPackagesDirectory(fileSystem: fileSystem);
+      processRunner = RecordingProcessRunner();
+      final NativeTestCommand command = NativeTestCommand(packagesDir,
+          processRunner: processRunner, platform: mockPlatform);
+
+      runner = CommandRunner<void>(
+          'native_test_command', 'Test for native_test_command');
+      runner.addCommand(command);
+    });
+
+    group('Windows', () {
+      test('runs unit tests', () async {
+        const String testBinaryRelativePath =
+            'build/windows/foo/bar/plugin_test.exe';
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/$testBinaryRelativePath'
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+        });
+
+        final File testBinary = pluginDirectory
+            .childDirectory('example')
+            .childFile(testBinaryRelativePath.split('/').join(r'\'));
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--windows',
+          '--no-integration',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running plugin_test.exe...'),
+            contains('No issues found!'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(testBinary.path, const <String>[], null),
+            ]));
+      });
+
+      test('fails if there are no unit tests', () async {
+        createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+            });
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--windows',
+          '--no-integration',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No test binaries found.'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('fails if a unit test fails', () async {
+        const String testBinaryRelativePath =
+            'build/windows/foo/bar/plugin_test.exe';
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/$testBinaryRelativePath'
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+        });
+
+        final File testBinary = pluginDirectory
+            .childDirectory('example')
+            .childFile(testBinaryRelativePath.split('/').join(r'\'));
+
+        processRunner.mockProcessesForExecutable[testBinary.path] =
+            <io.Process>[MockProcess(exitCode: 1)];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--windows',
+          '--no-integration',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running plugin_test.exe...'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(testBinary.path, const <String>[], null),
+            ]));
       });
     });
   });

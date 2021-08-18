@@ -40,6 +40,7 @@ class NativeTestCommand extends PackageLoopingCommand {
     argParser.addFlag(kPlatformAndroid, help: 'Runs Android tests');
     argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
+    argParser.addFlag(kPlatformWindows, help: 'Runs Windows tests');
 
     // By default, both unit tests and integration tests are run, but provide
     // flags to disable one or the other.
@@ -80,6 +81,7 @@ this command.
       kPlatformAndroid: _PlatformDetails('Android', _testAndroid),
       kPlatformIos: _PlatformDetails('iOS', _testIos),
       kPlatformMacos: _PlatformDetails('macOS', _testMacOS),
+      kPlatformWindows: _PlatformDetails('Windows', _testWindows),
     };
     _requestedPlatforms = _platforms.keys
         .where((String platform) => getBoolArg(platform))
@@ -94,6 +96,11 @@ this command.
     if (!(getBoolArg(_unitTestFlag) || getBoolArg(_integrationTestFlag))) {
       printError('At least one test type must be enabled.');
       throw ToolExit(exitInvalidArguments);
+    }
+
+    if (getBoolArg(kPlatformWindows) && getBoolArg(_integrationTestFlag)) {
+      logWarning('This command currently only supports unit tests for Windows. '
+          'See https://github.com/flutter/flutter/issues/70233.');
     }
 
     // iOS-specific run-level state.
@@ -119,16 +126,20 @@ this command.
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final List<String> testPlatforms = <String>[];
     for (final String platform in _requestedPlatforms) {
-      if (pluginSupportsPlatform(platform, package,
+      if (!pluginSupportsPlatform(platform, package,
           requiredMode: PlatformSupport.inline)) {
-        testPlatforms.add(platform);
-      } else {
         print('No implementation for ${_platforms[platform]!.label}.');
+        continue;
       }
+      if (!pluginHasNativeCodeForPlatform(platform, package)) {
+        print('No native code for ${_platforms[platform]!.label}.');
+        continue;
+      }
+      testPlatforms.add(platform);
     }
 
     if (testPlatforms.isEmpty) {
-      return PackageResult.skip('Not implemented for target platform(s).');
+      return PackageResult.skip('Nothing to test for target platform(s).');
     }
 
     final _TestMode mode = _TestMode(
@@ -228,6 +239,8 @@ this command.
       final bool hasIntegrationTests =
           exampleHasNativeIntegrationTests(example);
 
+      // TODO(stuartmorgan): Make !hasUnitTests fatal. See
+      // https://github.com/flutter/flutter/issues/85469
       if (mode.unit && !hasUnitTests) {
         _printNoExampleTestsMessage(example, 'Android unit');
       }
@@ -335,6 +348,9 @@ this command.
     for (final RepositoryPackage example in plugin.getExamples()) {
       final String exampleName = example.displayName;
 
+      // TODO(stuartmorgan): Always check for RunnerTests, and make it fatal if
+      // no examples have it. See
+      // https://github.com/flutter/flutter/issues/85469
       if (testTarget != null) {
         final Directory project = example.directory
             .childDirectory(platform.toLowerCase())
@@ -385,6 +401,45 @@ this command.
       }
     }
     return _PlatformResult(overallResult);
+  }
+
+  Future<_PlatformResult> _testWindows(
+      RepositoryPackage plugin, _TestMode mode) async {
+    if (!pluginHasNativeCodeForPlatform(kPlatformWindows, plugin)) {
+      print('No native code.');
+      return _PlatformResult(RunState.skipped);
+    }
+
+    final List<File> testBinaries = <File>[];
+    for (final RepositoryPackage example in plugin.getExamples()) {
+      final Directory buildDir =
+          example.directory.childDirectory('build').childDirectory('windows');
+      if (!buildDir.existsSync()) {
+        continue;
+      }
+      testBinaries.addAll(buildDir
+          .listSync(recursive: true)
+          .whereType<File>()
+          .where((File file) =>
+              file.basename.endsWith('_test.exe') ||
+              file.basename.endsWith('_tests.exe')));
+    }
+
+    if (testBinaries.isEmpty) {
+      printError('No test binaries found. At least one *_test(s).exe should be '
+          'built by the example(s)');
+      return _PlatformResult(RunState.failed,
+          error: 'No Windows unit tests found');
+    }
+
+    bool passing = true;
+    for (final File test in testBinaries) {
+      print('Running ${test.basename}...');
+      final int exitCode =
+          await processRunner.runAndStream(test.path, <String>[]);
+      passing &= exitCode == 0;
+    }
+    return _PlatformResult(passing ? RunState.succeeded : RunState.failed);
   }
 
   /// Prints a standard format message indicating that [platform] tests for
