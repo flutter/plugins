@@ -63,7 +63,7 @@ void main() {
   }, skip: true);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
-  testWidgets('loadUrl with request', (WidgetTester tester) async {
+  testWidgets('loadUrl with headers', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     final StreamController<String> pageStarts = StreamController<String>();
@@ -91,11 +91,8 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'test_header': 'flutter_test_header'
     };
-    final WebViewRequest request =
-        WebViewRequest(method: WebViewLoadMethod.get, headers: headers);
-
     await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
-        request: request);
+        headers: headers);
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter-header-echo.herokuapp.com/');
 

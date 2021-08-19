@@ -111,7 +111,7 @@ void main() {
     expect(await controller!.currentUrl(), isNull);
   });
 
-  testWidgets('WebViewRequest object in loadUrl', (WidgetTester tester) async {
+  testWidgets('Headers in loadUrl', (WidgetTester tester) async {
     WebViewController? controller;
     await tester.pumpWidget(
       WebView(
@@ -126,9 +126,7 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'CACHE-CONTROL': 'ABC'
     };
-    final WebViewRequest request =
-        WebViewRequest(method: WebViewLoadMethod.get, headers: headers);
-    await controller!.loadUrl('https://flutter.io', request: request);
+    await controller!.loadUrl('https://flutter.io', headers: headers);
     expect(await controller!.currentUrl(), equals('https://flutter.io'));
   });
 
@@ -897,14 +895,13 @@ void main() {
       final Map<String, String> headers = <String, String>{
         'header': 'value',
       };
-      final WebViewRequest request =
-          WebViewRequest(method: WebViewLoadMethod.get, headers: headers);
-      await controller.loadUrl('https://google.com', request: request);
+      await controller.loadUrl('https://google.com', headers: headers);
 
       expect(platform.lastUrlLoaded, 'https://google.com');
-      expect(platform.lastRequest, request);
+      expect(platform.lastRequestHeaders, headers);
     });
   });
+
   testWidgets('Set UserAgent', (WidgetTester tester) async {
     await tester.pumpWidget(const WebView(
       initialUrl: 'https://youtube.com',
@@ -1204,13 +1201,13 @@ class MyWebViewPlatformController extends WebViewPlatformController {
   Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;
 
   String? lastUrlLoaded;
-  WebViewRequest? lastRequest;
+  Map<String, String>? lastRequestHeaders;
 
   @override
-  Future<void> loadUrl(String url, WebViewRequest? request) async {
+  Future<void> loadUrl(String url, Map<String, String>? headers) async {
     equals(1, 1);
     lastUrlLoaded = url;
-    lastRequest = request;
+    lastRequestHeaders = headers;
   }
 }
 
