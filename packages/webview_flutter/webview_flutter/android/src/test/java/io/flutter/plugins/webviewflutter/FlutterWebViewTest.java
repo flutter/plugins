@@ -37,7 +37,7 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 public class FlutterWebViewTest {
-  private static final String LOAD_URL = "loadUrl";
+  private static final String LOAD_REQUEST = "loadRequest";
   private static final String URL = "www.example.com";
   private byte[] postData;
   private Map<String, Object> request;
@@ -94,14 +94,15 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_webView_postUrl_with_correct_url() {
+  public void loadRequest_should_call_webView_postUrl_with_correct_url() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", null);
     request.put("body", postData);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
 
@@ -113,14 +114,15 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_webView_postUrl_with_correct_http_body() {
+  public void loadRequest_should_call_webView_postUrl_with_correct_http_body() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", null);
     request.put("body", postData);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     ArgumentCaptor<byte[]> valueCapture = ArgumentCaptor.forClass(byte[].class);
 
@@ -132,14 +134,15 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_result_success_with_null() {
+  public void loadRequest_should_call_result_success_with_null() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", null);
     request.put("body", postData);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     ArgumentCaptor<Null> valueCapture = ArgumentCaptor.forClass(Null.class);
 
@@ -151,10 +154,10 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_return_error_when_arguments_are_null() {
+  public void loadRequest_should_return_error_when_arguments_are_null() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
-    MethodCall call = buildMethodCall(LOAD_URL, null, null);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, null);
 
     ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
 
@@ -166,12 +169,13 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_return_error_when_unsupported_http_method_is_invoked() {
+  public void loadRequest_should_return_error_when_unsupported_http_method_is_invoked() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
+    request.put("url", URL);
     request.put("method", "delete");
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
 
@@ -183,15 +187,16 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_return_error_when_webview_is_null() {
+  public void loadRequest_should_return_error_when_webview_is_null() {
     FlutterWebView flutterWebView = initFlutterWebView();
     headers.put("Content-Type", "application/json");
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", headers);
     request.put("body", postData);
 
-    final MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    final MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     when(mockWebView.isAttachedToWindow()).thenReturn(false);
 
@@ -219,15 +224,16 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_return_error_when_exception_caught() {
+  public void loadRequest_should_return_error_when_exception_caught() {
     FlutterWebView flutterWebView = initFlutterWebView();
     headers.put("Content-Type", "application/json");
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", headers);
     request.put("body", postData);
 
-    final MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    final MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     when(mockWebView.isAttachedToWindow()).thenReturn(true);
 
@@ -255,13 +261,14 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_webView_loadUrl_with_correct_url() {
+  public void loadRequest_should_call_webView_loadUrl_with_correct_url() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
+    request.put("url", URL);
     request.put("method", "get");
     request.put("headers", null);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
 
@@ -275,14 +282,15 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_webView_loadUrl_with_correct_http_headers() {
+  public void loadRequest_should_call_webView_loadUrl_with_correct_http_headers() {
     FlutterWebView flutterWebView = initFlutterWebView();
     headers.put("Content-Type", "application/json");
 
+    request.put("url", URL);
     request.put("method", "get");
     request.put("headers", headers);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     ArgumentCaptor<Map<String, String>> valueCapture = ArgumentCaptor.forClass(Map.class);
 
@@ -294,16 +302,17 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_webView_loadDataWithBaseURL_with_correct_url() {
+  public void loadRequest_should_call_webView_loadDataWithBaseURL_with_correct_url() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
     headers.put("Content-Type", "application/json");
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", headers);
     request.put("body", postData);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     when(mockWebView.isAttachedToWindow()).thenReturn(true);
 
@@ -338,18 +347,19 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadUrl_should_call_webView_loadDataWithBaseURL_with_correct_http_response() {
+  public void loadRequest_should_call_webView_loadDataWithBaseURL_with_correct_http_response() {
     FlutterWebView flutterWebView = initFlutterWebView();
 
     final String content = "content";
 
     headers.put("Content-Type", "application/json");
 
+    request.put("url", URL);
     request.put("method", "post");
     request.put("headers", headers);
     request.put("body", postData);
 
-    MethodCall call = buildMethodCall(LOAD_URL, URL, request);
+    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
 
     when(mockWebView.isAttachedToWindow()).thenReturn(true);
 
@@ -390,13 +400,11 @@ public class FlutterWebViewTest {
     return params;
   }
 
-  private MethodCall buildMethodCall(
-      final String method, final String url, final Map<String, Object> request) {
-    if (url == null && request == null) {
+  private MethodCall buildMethodCall(final String method, final Map<String, Object> request) {
+    if (request == null) {
       return new MethodCall(method, null);
     }
     final Map<String, Object> arguments = new HashMap<>();
-    arguments.put("url", url);
     arguments.put("request", request);
 
     return new MethodCall(method, arguments);
