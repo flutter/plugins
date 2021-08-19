@@ -64,27 +64,24 @@ public class WebViewRequest {
    *
    * @param requestObject is the {@link io.flutter.plugin.common.MethodCall#arguments} to build
    *     WebViewRequest instance.
-   * @param url is a base url.
    */
   @SuppressWarnings("unchecked")
-  static WebViewRequest fromMap(Map<String, Object> requestObject, String url) {
-    if (requestObject == null) {
-      return new WebViewRequest(url, WebViewLoadMethod.GET, null, null);
+  static WebViewRequest fromMap(Map<String, Object> requestObject) {
+    String url = (String) requestObject.get("url");
+    if (url == null) {
+      return null;
     }
 
     Map<String, String> headers = (Map<String, String>) requestObject.get("headers");
     if (headers == null) {
       headers = Collections.emptyMap();
     }
-    String method = (String) requestObject.get("method");
-    WebViewLoadMethod invokedMethod;
-    if (method == null) {
-      invokedMethod = WebViewLoadMethod.GET;
-    } else {
-      invokedMethod = WebViewLoadMethod.deserialize(method);
-    }
+
+    WebViewLoadMethod invokedMethod =
+        WebViewLoadMethod.deserialize((String) requestObject.get("method"));
 
     byte[] httpBody = (byte[]) requestObject.get("body");
+
     return new WebViewRequest(url, invokedMethod, headers, httpBody);
   }
 
