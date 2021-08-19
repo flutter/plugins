@@ -844,3 +844,10 @@ void _validateUrlString(String url) {
     throw ArgumentError(e);
   }
 }
+
+// Throws an ArgumentError if `uri` has empty scheme.
+void _validateUri(Uri uri) {
+  if (uri.scheme.isEmpty) {
+    throw ArgumentError('Missing scheme in Uri: "${uri.toString()}"');
+  }
+}
