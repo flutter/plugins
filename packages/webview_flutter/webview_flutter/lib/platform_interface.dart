@@ -174,28 +174,42 @@ abstract class WebViewPlatformController {
 
   /// Loads the specified URL.
   ///
-  /// If [WebViewRequest] object is not null and the URL is a HTTP URL
-  /// then the following rules apply:
-  ///
-  /// - [WebViewRequest.method] must be one of the supported HTTP methods
-  /// in the [WebViewLoadMethod].
-  ///
-  /// - If [WebViewRequest.headers] is not null, the key value pairs in
-  /// [WebViewRequest.headers] will be added as key value pairs of HTTP headers
-  /// for the request.
-  ///
-  /// - If [WebViewRequest.body] is not null, it will be added as HTTP body
-  /// for the request.
+  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
+  /// be added as key value pairs of HTTP headers for the request.
   ///
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
   Future<void> loadUrl(
     String url,
-    WebViewRequest? request,
+    Map<String, String>? headers,
   ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
+  }
+
+  /// Loads the specified URL.
+  ///
+  /// [WebViewRequest] must not be null.
+  ///
+  /// [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in the [WebViewLoadMethod].
+  ///
+  /// If [WebViewRequest.headers] is not empty, the key value pairs in the
+  /// [WebViewRequest.headers] will be added as key value pairs of HTTP headers
+  /// for the request.
+  ///
+  /// If [WebViewRequest.body] is not null, it will be added as HTTP body
+  /// for the request.
+  ///
+  /// [WebViewRequest.uri] must not be null.
+  ///
+  /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
+  Future<void> loadRequest(
+    WebViewRequest request,
+  ) {
+    throw UnimplementedError(
+        "WebView loadRequest is not implemented on the current platform");
   }
 
   /// Updates the webview settings.
