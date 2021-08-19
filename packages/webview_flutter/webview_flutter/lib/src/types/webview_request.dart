@@ -30,22 +30,26 @@ extension WebViewLoadMethodExtensions on WebViewLoadMethod {
 class WebViewRequest {
   /// Creates the [WebViewRequest].
   WebViewRequest({
+    required this.uri,
     required this.method,
-    this.headers,
     this.body,
   });
+
+  /// HTTP URL for the request.
+  final Uri uri;
 
   /// HTTP method used to load the page.
   final WebViewLoadMethod method;
 
   /// HTTP headers for the request.
-  final Map<String, String>? headers;
+  final Map<String, String> headers = {};
 
   /// HTTP body for the request.
   final Uint8List? body;
 
   /// Serializes the [WebViewRequest] to JSON.
   Map<String, dynamic> toJson() => {
+        'url': this.uri.toString(),
         'method': this.method.serialize(),
         'headers': this.headers,
         'body': this.body,
