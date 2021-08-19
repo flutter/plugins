@@ -76,12 +76,20 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<void> loadUrl(
     String url,
-    WebViewRequest? request,
+    Map<String, String>? headers,
   ) async {
     assert(url != null);
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
-      'request': request?.toJson(),
+      'headers': headers,
+    });
+  }
+
+  @override
+  Future<void> loadRequest(WebViewRequest request) async {
+    assert(request != null);
+    return _channel.invokeMethod<void>('loadRequest', <String, dynamic>{
+      'request': request.toJson(),
     });
   }
 
