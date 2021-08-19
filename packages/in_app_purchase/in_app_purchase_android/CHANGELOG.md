@@ -1,3 +1,15 @@
+## NEXT
+
+* Updated Android lint settings.
+
+## 0.1.4+4
+
+* Removed dependency on the `test` package.
+
+## 0.1.4+3
+
+- Updated installation instructions in README.
+
 ## 0.1.4+2
 
 * Added price currency symbol to SkuDetailsWrapper.
