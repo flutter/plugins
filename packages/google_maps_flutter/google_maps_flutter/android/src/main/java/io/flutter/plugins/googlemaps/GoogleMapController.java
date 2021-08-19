@@ -508,7 +508,7 @@ final class GoogleMapController
   }
 
   private void setGoogleMapListener(@Nullable GoogleMapListener listener) {
-    if (disposed && googleMap == null) {
+    if (googleMap == null) {
       Log.v(TAG, "Controller was disposed before GoogleMap was ready.");
       return;
     }
