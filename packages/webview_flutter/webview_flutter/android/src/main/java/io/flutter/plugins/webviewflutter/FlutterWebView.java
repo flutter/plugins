@@ -25,6 +25,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executor;
@@ -258,6 +259,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "loadRequest":
+        loadRequest(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -311,7 +315,20 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void loadUrl(MethodCall methodCall, final Result result) {
+  @Deprecated
+  @SuppressWarnings("unchecked")
+  private void loadUrl(MethodCall methodCall, Result result) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    String url = (String) request.get("url");
+    Map<String, String> headers = (Map<String, String>) request.get("headers");
+    if (headers == null) {
+      headers = Collections.emptyMap();
+    }
+    webView.loadUrl(url, headers);
+    result.success(null);
+  }
+
+  private void loadRequest(MethodCall methodCall, final Result result) {
     final WebViewRequest webViewRequest = buildWebViewRequest(methodCall);
     if (webViewRequest == null) {
       result.error("missing_args", "Missing arguments", null);
@@ -349,7 +366,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           }
           break;
         default:
-          result.error("unsupported_method", "Unsupported method call", null);
+          result.error("unsupported_method", "Unsupported HTTP method call", null);
       }
       result.success(null);
     }
@@ -362,13 +379,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       return null;
     }
 
-    String url = (String) request.get("url");
-    if (url == null) {
+    Map<String, Object> requestObject = (Map<String, Object>) request.get("request");
+    if (requestObject == null) {
       return null;
     }
 
-    Map<String, Object> requestObject = (Map<String, Object>) request.get("request");
-    return WebViewRequest.fromMap(requestObject, url);
+    return WebViewRequest.fromMap(requestObject);
   }
 
   private void canGoBack(Result result) {
