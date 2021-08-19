@@ -30,8 +30,8 @@ interface CustomRequestCallback {
  * HTTP body. CustomHttpPostRequest is implemented to provide this feature since adding a header to
  * post requests is a feature that is likely to be wanted.
  *
- * <p>In the implementation, I used {@link HttpURLConnection} to create a post request with the HTTP
- * headers and the HTTP body.
+ * <p>In the implementation, {@link HttpURLConnection} is used to create a post request with the
+ * HTTP headers and the HTTP body.
  */
 public class CustomHttpPostRequest {
   private final Executor executor;
@@ -44,9 +44,10 @@ public class CustomHttpPostRequest {
 
   /**
    * Executes synchronous HTTP request method in the background thread since it creates {@link
-   * HttpURLConnection} and made the custom post request with headers. If the HTTP post request is
+   * HttpURLConnection} and makes the custom post request with headers. If the HTTP post request is
    * completed successfully then notifies with the HTTP response. Otherwise notifies with the error.
-   * See https://developer.android.com/guide/background/threading.
+   * See <a
+   * href="https://developer.android.com/guide/background/threading">https://developer.android.com/guide/background/threading</a>.
    *
    * @param request {@link WebViewRequest} instance to access its arguments.
    * @param callback method to invoke after HTTP request is completed.
