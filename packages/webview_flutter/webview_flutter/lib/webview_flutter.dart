@@ -635,29 +635,45 @@ class WebViewController {
 
   /// Loads the specified URL.
   ///
-  /// If [WebViewRequest] object is not null and the URL is a HTTP URL
-  /// then the following rules apply:
-  ///
-  /// - [WebViewRequest.method] must be one of the supported HTTP methods
-  /// in the [WebViewLoadMethod].
-  ///
-  /// - If [WebViewRequest.headers] is not null, the key value pairs in
-  /// [WebViewRequest.headers] will be added as key value pairs of HTTP headers
-  /// for the request.
-  ///
-  /// - If [WebViewRequest.body] is not null, it will be added as HTTP body
-  /// for the request.
+  /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
+  /// be added as key value pairs of HTTP headers for the request.
   ///
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
+  @Deprecated('Switch to using loadRequest instead')
   Future<void> loadUrl(
     String url, {
-    WebViewRequest? request,
+    Map<String, String>? headers,
   }) async {
     assert(url != null);
     _validateUrlString(url);
-    return _webViewPlatformController.loadUrl(url, request);
+    return _webViewPlatformController.loadUrl(url, headers);
+  }
+
+  /// Loads the specified URL.
+  ///
+  /// [WebViewRequest] must not be null.
+  ///
+  /// [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in the [WebViewLoadMethod].
+  ///
+  /// If [WebViewRequest.headers] is not empty, the key value pairs in the
+  /// [WebViewRequest.headers] will be added as key value pairs of HTTP headers
+  /// for the request.
+  ///
+  /// If [WebViewRequest.body] is not null, it will be added as HTTP body
+  /// for the request.
+  ///
+  /// [WebViewRequest.uri] must not be null.
+  ///
+  /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
+  Future<void> loadRequest({
+    required WebViewRequest request,
+  }) async {
+    assert(request != null);
+    _validateUri(request.uri);
+    return _webViewPlatformController.loadRequest(request);
   }
 
   /// Accessor to the current URL that the WebView is displaying.
