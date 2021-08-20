@@ -3,6 +3,7 @@
 - Added Android native integration test support to `native-test`.
 - Added a new `android-lint` command to lint Android plugin native code.
 - Pubspec validation now checks for `implements` in implementation packages.
+- Pubspec valitation now checks the full relative path of `repository` entries.
 
 ## 0.5.0
 

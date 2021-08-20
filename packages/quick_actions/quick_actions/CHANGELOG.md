@@ -1,6 +1,7 @@
-## NEXT
+## 0.6.0+6
 
 * Updated Android lint settings.
+* Fix repository link in pubspec.yaml.
 
 ## 0.6.0+5
 

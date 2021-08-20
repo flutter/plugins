@@ -98,7 +98,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
 
     if (pubspec.publishTo != 'none') {
       final List<String> repositoryErrors =
-          _checkForRepositoryLinkErrors(pubspec, packageName: package.basename);
+          _checkForRepositoryLinkErrors(pubspec, package: package);
       if (repositoryErrors.isNotEmpty) {
         for (final String error in repositoryErrors) {
           printError('$indentation$error');
@@ -154,14 +154,18 @@ class PubspecCheckCommand extends PackageLoopingCommand {
 
   List<String> _checkForRepositoryLinkErrors(
     Pubspec pubspec, {
-    required String packageName,
+    required Directory package,
   }) {
     final List<String> errorMessages = <String>[];
     if (pubspec.repository == null) {
       errorMessages.add('Missing "repository"');
-    } else if (!pubspec.repository!.path.endsWith(packageName)) {
-      errorMessages
-          .add('The "repository" link should end with the package name.');
+    } else {
+      final String relativePackagePath =
+          path.relative(package.path, from: packagesDir.parent.path);
+      if (!pubspec.repository!.path.endsWith(relativePackagePath)) {
+        errorMessages
+            .add('The "repository" link should end with the package path.');
+      }
     }
 
     if (pubspec.homepage != null) {
