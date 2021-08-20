@@ -64,7 +64,7 @@ void main() {
 
     test('retries gcloud set', () async {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
-        MockProcess.succeeding(), // auth
+        MockProcess(), // auth
         MockProcess.failing(), // config
       ];
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
@@ -245,10 +245,10 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
-        MockProcess.succeeding(), // auth
-        MockProcess.succeeding(), // config
+        MockProcess(), // auth
+        MockProcess(), // config
         MockProcess.failing(), // integration test #1
-        MockProcess.succeeding(), // integration test #2
+        MockProcess(), // integration test #2
       ];
 
       Error? commandError;
@@ -533,7 +533,7 @@ void main() {
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
-        MockProcess.succeeding(), // assembleAndroidTest
+        MockProcess(), // assembleAndroidTest
         MockProcess.failing(), // assembleDebug
       ];
 

@@ -75,11 +75,9 @@ void main() {
       );
 
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
-        MockProcess.succeeding(),
-        MockProcess.succeeding(),
+        MockProcess(stdout: 'Foo', stderr: 'Bar'),
+        MockProcess(),
       ];
-      processRunner.resultStdout = 'Foo';
-      processRunner.resultStderr = 'Bar';
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['podspecs']);
@@ -227,7 +225,7 @@ void main() {
 
       // Simulate failure from the second call to `pod`.
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
-        MockProcess.succeeding(),
+        MockProcess(),
         MockProcess.failing(),
       ];
 
