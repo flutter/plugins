@@ -7,6 +7,7 @@ import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
@@ -143,7 +144,7 @@ class PublishPluginCommand extends PluginCommand {
           .where((PackageEnumerationEntry entry) => !entry.excluded);
       await for (final PackageEnumerationEntry entry in packages) {
         successful &= await _publishAndTagPackage(
-          packageDir: entry.package.directory,
+          entry.package,
           remoteForTagPush: remote,
         );
       }
@@ -198,7 +199,7 @@ class PublishPluginCommand extends PluginCommand {
       }
       print('\n');
       if (await _publishAndTagPackage(
-        packageDir: pubspecFile.parent,
+        RepositoryPackage(pubspecFile.parent),
         remoteForTagPush: remoteForTagPush,
       )) {
         packagesReleased.add(pubspecFile.parent.basename);
@@ -220,20 +221,20 @@ class PublishPluginCommand extends PluginCommand {
   // Publish the package to pub with `pub publish`, then git tag the release
   // and push the tag to [remoteForTagPush].
   // Returns `true` if publishing and tagging are successful.
-  Future<bool> _publishAndTagPackage({
-    required Directory packageDir,
-    required _RemoteInfo remoteForTagPush,
+  Future<bool> _publishAndTagPackage(
+    RepositoryPackage package, {
+    _RemoteInfo? remoteForTagPush,
   }) async {
-    if (!await _publishPlugin(packageDir: packageDir)) {
+    if (!await _publishPlugin(package)) {
       return false;
     }
     if (!await _tagRelease(
-      packageDir: packageDir,
+      package,
       remoteForPush: remoteForTagPush,
     )) {
       return false;
     }
-    print('Released [${packageDir.basename}] successfully.');
+    print('Published ${package.directory.basename} successfully.');
     return true;
   }
 
@@ -297,12 +298,12 @@ Safe to ignore if the package is deleted in this commit.
   // Publish the plugin.
   //
   // Returns `true` if successful, `false` otherwise.
-  Future<bool> _publishPlugin({required Directory packageDir}) async {
-    final bool gitStatusOK = await _checkGitStatus(packageDir);
+  Future<bool> _publishPlugin(RepositoryPackage package) async {
+    final bool gitStatusOK = await _checkGitStatus(package);
     if (!gitStatusOK) {
       return false;
     }
-    final bool publishOK = await _publish(packageDir);
+    final bool publishOK = await _publish(package);
     if (!publishOK) {
       return false;
     }
@@ -314,11 +315,11 @@ Safe to ignore if the package is deleted in this commit.
   // is provided, push it to that remote.
   //
   // Return `true` if successful, `false` otherwise.
-  Future<bool> _tagRelease({
-    required Directory packageDir,
+  Future<bool> _tagRelease(
+    RepositoryPackage package, {
     _RemoteInfo? remoteForPush,
   }) async {
-    final String tag = _getTag(packageDir);
+    final String tag = _getTag(package);
     print('Tagging release $tag...');
     if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await (await gitDir).runCommand(
@@ -352,9 +353,14 @@ Safe to ignore if the package is deleted in this commit.
     }
   }
 
-  Future<bool> _checkGitStatus(Directory packageDir) async {
+  Future<bool> _checkGitStatus(RepositoryPackage package) async {
     final io.ProcessResult statusResult = await (await gitDir).runCommand(
-      <String>['status', '--porcelain', '--ignored', packageDir.absolute.path],
+      <String>[
+        'status',
+        '--porcelain',
+        '--ignored',
+        package.directory.absolute.path
+      ],
       throwOnError: false,
     );
     if (statusResult.exitCode != 0) {
@@ -382,10 +388,10 @@ Safe to ignore if the package is deleted in this commit.
     return getRemoteUrlResult.stdout as String?;
   }
 
-  Future<bool> _publish(Directory packageDir) async {
+  Future<bool> _publish(RepositoryPackage package) async {
     final List<String> publishFlags = getStringListArg(_pubFlagsOption);
-    print(
-        'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
+    print('Running `pub publish ${publishFlags.join(' ')}` in '
+        '${package.directory.absolute.path}...\n');
     if (getBoolArg(_dryRunFlag)) {
       return true;
     }
@@ -399,7 +405,7 @@ Safe to ignore if the package is deleted in this commit.
 
     final io.Process publish = await processRunner.start(
         flutterCommand, <String>['pub', 'publish'] + publishFlags,
-        workingDirectory: packageDir);
+        workingDirectory: package.directory);
     publish.stdout.transform(utf8.decoder).listen((String data) => print(data));
     publish.stderr.transform(utf8.decoder).listen((String data) => print(data));
     _stdinSubscription ??= _stdin
@@ -407,14 +413,14 @@ Safe to ignore if the package is deleted in this commit.
         .listen((String data) => publish.stdin.writeln(data));
     final int result = await publish.exitCode;
     if (result != 0) {
-      printError('Publish ${packageDir.basename} failed.');
+      printError('Publishing ${package.directory.basename} failed.');
       return false;
     }
     return true;
   }
 
-  String _getTag(Directory packageDir) {
-    final File pubspecFile = packageDir.childFile('pubspec.yaml');
+  String _getTag(RepositoryPackage package) {
+    final File pubspecFile = package.pubspecFile;
     final YamlMap pubspecYaml =
         loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
     final String name = pubspecYaml['name'] as String;
