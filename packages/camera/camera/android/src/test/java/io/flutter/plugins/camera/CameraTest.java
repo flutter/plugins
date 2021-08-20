@@ -24,6 +24,7 @@ import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
 import io.flutter.plugins.camera.features.Point;
@@ -716,6 +717,31 @@ public class CameraTest {
     verify(mockResult, never()).success(any());
     verify(mockResult, times(1))
         .error("setExposureOffsetFailed", "Could not set exposure offset.", null);
+  }
+
+  @Test
+  public void lockCaptureOrientation_shouldLockCaptureOrientation() {
+    final Activity mockActivity = mock(Activity.class);
+    SensorOrientationFeature mockSensorOrientationFeature =
+        mockCameraFeatureFactory.createSensorOrientationFeature(
+            mockCameraProperties, mockActivity, mockDartMessenger);
+
+    camera.lockCaptureOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_UP);
+
+    verify(mockSensorOrientationFeature, times(1))
+        .lockCaptureOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_UP);
+  }
+
+  @Test
+  public void unlockCaptureOrientation_shouldUnlockCaptureOrientation() {
+    final Activity mockActivity = mock(Activity.class);
+    SensorOrientationFeature mockSensorOrientationFeature =
+        mockCameraFeatureFactory.createSensorOrientationFeature(
+            mockCameraProperties, mockActivity, mockDartMessenger);
+
+    camera.unlockCaptureOrientation();
+
+    verify(mockSensorOrientationFeature, times(1)).unlockCaptureOrientation();
   }
 
   private static class TestCameraFeatureFactory implements CameraFeatureFactory {
