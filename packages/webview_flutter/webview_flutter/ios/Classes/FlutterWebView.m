@@ -477,8 +477,13 @@
   if (!arguments) {
     return nil;
   }
+    
+  id requestParameters = arguments[@"request"];
+  if (!(requestParameters && [requestParameters isKindOfClass:[NSDictionary class]])) {
+    return nil;
+  }
 
-  NSString* url = arguments[@"url"];
+  NSString* url = requestParameters[@"url"];
   if (!url) {
     return nil;
   }
@@ -489,11 +494,6 @@
   }
 
   NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-
-  id requestParameters = arguments[@"request"];
-  if (!(requestParameters && [requestParameters isKindOfClass:[NSDictionary class]])) {
-    return request;
-  }
 
   NSString* httpMethod = requestParameters[@"method"];
   if (httpMethod) {
