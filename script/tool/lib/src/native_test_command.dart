@@ -10,6 +10,7 @@ import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 import 'common/xcode.dart';
 
 const String _unitTestFlag = 'unit';
@@ -115,7 +116,7 @@ this command.
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final List<String> testPlatforms = <String>[];
     for (final String platform in _requestedPlatforms) {
       if (pluginSupportsPlatform(platform, package,
@@ -171,23 +172,24 @@ this command.
         : PackageResult.success();
   }
 
-  Future<_PlatformResult> _testAndroid(Directory plugin, _TestMode mode) async {
-    bool exampleHasUnitTests(Directory example) {
-      return example
+  Future<_PlatformResult> _testAndroid(
+      RepositoryPackage plugin, _TestMode mode) async {
+    bool exampleHasUnitTests(RepositoryPackage example) {
+      return example.directory
               .childDirectory('android')
               .childDirectory('app')
               .childDirectory('src')
               .childDirectory('test')
               .existsSync() ||
-          example.parent
+          example.directory.parent
               .childDirectory('android')
               .childDirectory('src')
               .childDirectory('test')
               .existsSync();
     }
 
-    bool exampleHasNativeIntegrationTests(Directory example) {
-      final Directory integrationTestDirectory = example
+    bool exampleHasNativeIntegrationTests(RepositoryPackage example) {
+      final Directory integrationTestDirectory = example.directory
           .childDirectory('android')
           .childDirectory('app')
           .childDirectory('src')
@@ -216,12 +218,12 @@ this command.
           });
     }
 
-    final Iterable<Directory> examples = getExamplesForPlugin(plugin);
+    final Iterable<RepositoryPackage> examples = plugin.getExamples();
 
     bool ranTests = false;
     bool failed = false;
     bool hasMissingBuild = false;
-    for (final Directory example in examples) {
+    for (final RepositoryPackage example in examples) {
       final bool hasUnitTests = exampleHasUnitTests(example);
       final bool hasIntegrationTests =
           exampleHasNativeIntegrationTests(example);
@@ -239,11 +241,11 @@ this command.
         continue;
       }
 
-      final String exampleName = getPackageDescription(example);
+      final String exampleName = example.displayName;
       _printRunningExampleTestsMessage(example, 'Android');
 
       final GradleProject project = GradleProject(
-        example,
+        example.directory,
         processRunner: processRunner,
         platform: platform,
       );
@@ -301,12 +303,12 @@ this command.
     return _PlatformResult(RunState.succeeded);
   }
 
-  Future<_PlatformResult> _testIos(Directory plugin, _TestMode mode) {
+  Future<_PlatformResult> _testIos(RepositoryPackage plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'iOS', mode,
         extraFlags: _iosDestinationFlags);
   }
 
-  Future<_PlatformResult> _testMacOS(Directory plugin, _TestMode mode) {
+  Future<_PlatformResult> _testMacOS(RepositoryPackage plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'macOS', mode);
   }
 
@@ -316,7 +318,7 @@ this command.
   /// The tests targets must be added to the Xcode project of the example app,
   /// usually at "example/{ios,macos}/Runner.xcworkspace".
   Future<_PlatformResult> _runXcodeTests(
-    Directory plugin,
+    RepositoryPackage plugin,
     String platform,
     _TestMode mode, {
     List<String> extraFlags = const <String>[],
@@ -330,11 +332,11 @@ this command.
 
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
-    for (final Directory example in getExamplesForPlugin(plugin)) {
-      final String exampleName = getPackageDescription(example);
+    for (final RepositoryPackage example in plugin.getExamples()) {
+      final String exampleName = example.displayName;
 
       if (testTarget != null) {
-        final Directory project = example
+        final Directory project = example.directory
             .childDirectory(platform.toLowerCase())
             .childDirectory('Runner.xcodeproj');
         final bool? hasTarget =
@@ -351,7 +353,7 @@ this command.
 
       _printRunningExampleTestsMessage(example, platform);
       final int exitCode = await _xcode.runXcodeBuild(
-        example,
+        example.directory,
         actions: <String>['test'],
         workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
         scheme: 'Runner',
@@ -387,20 +389,22 @@ this command.
 
   /// Prints a standard format message indicating that [platform] tests for
   /// [plugin]'s [example] are about to be run.
-  void _printRunningExampleTestsMessage(Directory example, String platform) {
-    print('Running $platform tests for ${getPackageDescription(example)}...');
+  void _printRunningExampleTestsMessage(
+      RepositoryPackage example, String platform) {
+    print('Running $platform tests for ${example.displayName}...');
   }
 
   /// Prints a standard format message indicating that no tests were found for
   /// [plugin]'s [example] for [platform].
-  void _printNoExampleTestsMessage(Directory example, String platform) {
-    print('No $platform tests found for ${getPackageDescription(example)}');
+  void _printNoExampleTestsMessage(RepositoryPackage example, String platform) {
+    print('No $platform tests found for ${example.displayName}');
   }
 }
 
 // The type for a function that takes a plugin directory and runs its native
 // tests for a specific platform.
-typedef _TestFunction = Future<_PlatformResult> Function(Directory, _TestMode);
+typedef _TestFunction = Future<_PlatformResult> Function(
+    RepositoryPackage, _TestMode);
 
 /// A collection of information related to a specific platform.
 class _PlatformDetails {

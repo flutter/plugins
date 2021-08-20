@@ -12,6 +12,7 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 const int _exitNoPlatformFlags = 2;
 const int _exitNoAvailableDevice = 3;
@@ -119,9 +120,9 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
-    if (package.basename.endsWith('_platform_interface') &&
-        !package.childDirectory('example').existsSync()) {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
+    if (package.directory.basename.endsWith('_platform_interface') &&
+        !package.getSingleExampleDeprecated().directory.existsSync()) {
       // Platform interface packages generally aren't intended to have
       // examples, and don't need integration tests, so skip rather than fail.
       return PackageResult.skip(
@@ -140,16 +141,16 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     // If there is no supported target platform, skip the plugin.
     if (deviceFlags.isEmpty) {
       return PackageResult.skip(
-          '${getPackageDescription(package)} does not support any requested platform.');
+          '${package.displayName} does not support any requested platform.');
     }
 
     int examplesFound = 0;
     bool testsRan = false;
     final List<String> errors = <String>[];
-    for (final Directory example in getExamplesForPlugin(package)) {
+    for (final RepositoryPackage example in package.getExamples()) {
       ++examplesFound;
       final String exampleName =
-          getRelativePosixPath(example, from: packagesDir);
+          getRelativePosixPath(example.directory, from: packagesDir);
 
       final List<File> drivers = await _getDrivers(example);
       if (drivers.isEmpty) {
@@ -173,7 +174,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
 
         if (testTargets.isEmpty) {
           final String driverRelativePath =
-              getRelativePosixPath(driver, from: package);
+              getRelativePosixPath(driver, from: package.directory);
           printError(
               'Found $driverRelativePath, but no integration_test/*_test.dart files.');
           errors.add('No test files for $driverRelativePath');
@@ -185,7 +186,8 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             example, driver, testTargets,
             deviceFlags: deviceFlags);
         for (final File failingTarget in failingTargets) {
-          errors.add(getRelativePosixPath(failingTarget, from: package));
+          errors.add(
+              getRelativePosixPath(failingTarget, from: package.directory));
         }
       }
     }
@@ -229,10 +231,10 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     return deviceIds;
   }
 
-  Future<List<File>> _getDrivers(Directory example) async {
+  Future<List<File>> _getDrivers(RepositoryPackage example) async {
     final List<File> drivers = <File>[];
 
-    final Directory driverDir = example.childDirectory('test_driver');
+    final Directory driverDir = example.directory.childDirectory('test_driver');
     if (driverDir.existsSync()) {
       await for (final FileSystemEntity driver in driverDir.list()) {
         if (driver is File && driver.basename.endsWith('_test.dart')) {
@@ -253,10 +255,10 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     return testFile.existsSync() ? testFile : null;
   }
 
-  Future<List<File>> _getIntegrationTests(Directory example) async {
+  Future<List<File>> _getIntegrationTests(RepositoryPackage example) async {
     final List<File> tests = <File>[];
     final Directory integrationTestDir =
-        example.childDirectory('integration_test');
+        example.directory.childDirectory('integration_test');
 
     if (integrationTestDir.existsSync()) {
       await for (final FileSystemEntity file in integrationTestDir.list()) {
@@ -278,7 +280,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
   ///   - `['-d', 'web-server', '--web-port=<port>', '--browser-name=<browser>]`
   ///     for web
   Future<List<File>> _driveTests(
-    Directory example,
+    RepositoryPackage example,
     File driver,
     List<File> targets, {
     required List<String> deviceFlags,
@@ -296,11 +298,11 @@ class DriveExamplesCommand extends PackageLoopingCommand {
             if (enableExperiment.isNotEmpty)
               '--enable-experiment=$enableExperiment',
             '--driver',
-            getRelativePosixPath(driver, from: example),
+            getRelativePosixPath(driver, from: example.directory),
             '--target',
-            getRelativePosixPath(target, from: example),
+            getRelativePosixPath(target, from: example.directory),
           ],
-          workingDir: example);
+          workingDir: example.directory);
       if (exitCode != 0) {
         failures.add(target);
       }

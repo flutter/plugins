@@ -49,10 +49,10 @@ void main() {
   /// Returns a modified version of a list of [relativePaths] that are relative
   /// to [package] to instead be relative to [packagesDir].
   List<String> _getPackagesDirRelativePaths(
-      Directory package, List<String> relativePaths) {
+      Directory packageDir, List<String> relativePaths) {
     final p.Context path = analyzeCommand.path;
     final String relativeBase =
-        path.relative(package.path, from: packagesDir.path);
+        path.relative(packageDir.path, from: packagesDir.path);
     return relativePaths
         .map((String relativePath) => path.join(relativeBase, relativePath))
         .toList();
