@@ -44,15 +44,19 @@ void main() {
     /// By default it will create a header that includes all of the expected
     /// values, elements can be changed via arguments to create incorrect
     /// entries.
+    ///
+    /// If [includeRepository] is true, by default the path in the link will
+    /// be "packages/[name]"; a different "packages"-relative path can be
+    /// provided with [repositoryPackagesDirRelativePath].
     String headerSection(
       String name, {
       bool isPlugin = false,
       bool includeRepository = true,
-      String? repositoryPackageRelativePath,
+      String? repositoryPackagesDirRelativePath,
       bool includeHomepage = false,
       bool includeIssueTracker = true,
     }) {
-      final String repositoryPath = repositoryPackageRelativePath ?? name;
+      final String repositoryPath = repositoryPackagesDirRelativePath ?? name;
       final String repoLink = 'https://github.com/flutter/'
           '${isPlugin ? 'plugins' : 'packages'}/tree/master/'
           'packages/$repositoryPath';
@@ -264,7 +268,7 @@ ${devDependenciesSection()}
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
-${headerSection('plugin', isPlugin: true, repositoryPackageRelativePath: 'different_plugin')}
+${headerSection('plugin', isPlugin: true, repositoryPackagesDirRelativePath: 'different_plugin')}
 ${environmentSection()}
 ${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
@@ -485,7 +489,7 @@ ${devDependenciesSection()}
 ${headerSection(
         'plugin_a_foo',
         isPlugin: true,
-        repositoryPackageRelativePath: 'plugin_a/plugin_a_foo',
+        repositoryPackagesDirRelativePath: 'plugin_a/plugin_a_foo',
       )}
 ${environmentSection()}
 ${flutterSection(isPlugin: true, implementedPackage: 'plugin_a')}
@@ -513,7 +517,7 @@ ${devDependenciesSection()}
 ${headerSection(
         'plugin_a',
         isPlugin: true,
-        repositoryPackageRelativePath: 'plugin_a/plugin_a',
+        repositoryPackagesDirRelativePath: 'plugin_a/plugin_a',
       )}
 ${environmentSection()}
 ${flutterSection(isPlugin: true)}
@@ -543,7 +547,8 @@ ${devDependenciesSection()}
 ${headerSection(
         'plugin_a_platform_interface',
         isPlugin: true,
-        repositoryPackageRelativePath: 'plugin_a/plugin_a_platform_interface',
+        repositoryPackagesDirRelativePath:
+            'plugin_a/plugin_a_platform_interface',
       )}
 ${environmentSection()}
 ${flutterSection(isPlugin: true)}
