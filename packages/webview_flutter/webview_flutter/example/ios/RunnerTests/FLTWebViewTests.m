@@ -13,7 +13,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @interface FLTWebViewController (Test)
 - (NSURLRequest *)buildNSURLRequest:(NSDictionary<NSString *, id> *)arguments;
-- (void)onLoadUrl:(FlutterMethodCall *)call result:(FlutterResult)result;
+- (void)onLoadRequest:(FlutterMethodCall *)call result:(FlutterResult)result;
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
@@ -160,7 +160,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
   __block FlutterError *result = nil;
 
-  [mockController onLoadUrl:nil
+  [mockController onLoadRequest:nil
                      result:^(id _Nullable r) {
                        result = r;
                      }];
@@ -178,7 +178,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
   __block id result = @"test";
 
-  [mockController onLoadUrl:nil
+  [mockController onLoadRequest:nil
                      result:^(id _Nullable r) {
                        result = r;
                      }];
@@ -204,7 +204,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
                                             arguments:nil
                                       binaryMessenger:self.mockBinaryMessenger];
 
-  [mockController onLoadUrl:call
+  [mockController onLoadRequest:call
                      result:^(id _Nullable r){
                      }];
 
