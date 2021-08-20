@@ -1351,7 +1351,7 @@ void main() {
     group('Windows', () {
       test('runs unit tests', () async {
         const String testBinaryRelativePath =
-            'build/windows/foo/bar/plugin_test.exe';
+            'build/windows/foo/Debug/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
@@ -1384,6 +1384,45 @@ void main() {
             ]));
       });
 
+      test('only runs debug unit tests', () async {
+        const String debugTestBinaryRelativePath =
+            'build/windows/foo/Debug/bar/plugin_test.exe';
+        const String releaseTestBinaryRelativePath =
+            'build/windows/foo/Release/bar/plugin_test.exe';
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/$debugTestBinaryRelativePath',
+          'example/$releaseTestBinaryRelativePath'
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+        });
+
+        final File debugTestBinary = pluginDirectory
+            .childDirectory('example')
+            .childFile(debugTestBinaryRelativePath.split('/').join(r'\'));
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--windows',
+          '--no-integration',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running plugin_test.exe...'),
+            contains('No issues found!'),
+          ]),
+        );
+
+        // Only the debug version should be run.
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(debugTestBinary.path, const <String>[], null),
+            ]));
+      });
+
       test('fails if there are no unit tests', () async {
         createFakePlugin('plugin', packagesDir,
             platformSupport: <String, PlatformDetails>{
@@ -1412,7 +1451,7 @@ void main() {
 
       test('fails if a unit test fails', () async {
         const String testBinaryRelativePath =
-            'build/windows/foo/bar/plugin_test.exe';
+            'build/windows/foo/Debug/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'

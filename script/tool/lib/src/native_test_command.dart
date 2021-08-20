@@ -405,31 +405,57 @@ this command.
 
   Future<_PlatformResult> _testWindows(
       RepositoryPackage plugin, _TestMode mode) async {
-    if (!pluginHasNativeCodeForPlatform(kPlatformWindows, plugin)) {
-      print('No native code.');
+    if (mode.integrationOnly) {
       return _PlatformResult(RunState.skipped);
     }
 
+    bool isTestBinary(File file) {
+      return file.basename.endsWith('_test.exe') ||
+          file.basename.endsWith('_tests.exe');
+    }
+
+    return _runGoogleTestTests(plugin,
+        buildDirectoryName: 'windows', isTestBinary: isTestBinary);
+  }
+
+  /// Finds every file in the [buildDirectoryName] subdirectory of [plugin]'s
+  /// build directory for which [isTestBinary] is true, and runs all of them,
+  /// returning the overall result.
+  ///
+  /// The binaries are assumed to be Google Test test binaries, thus returning
+  /// zero for success and non-zero for failure.
+  Future<_PlatformResult> _runGoogleTestTests(
+    RepositoryPackage plugin, {
+    required String buildDirectoryName,
+    required bool Function(File) isTestBinary,
+  }) async {
     final List<File> testBinaries = <File>[];
     for (final RepositoryPackage example in plugin.getExamples()) {
-      final Directory buildDir =
-          example.directory.childDirectory('build').childDirectory('windows');
+      final Directory buildDir = example.directory
+          .childDirectory('build')
+          .childDirectory(buildDirectoryName);
       if (!buildDir.existsSync()) {
         continue;
       }
       testBinaries.addAll(buildDir
           .listSync(recursive: true)
           .whereType<File>()
-          .where((File file) =>
-              file.basename.endsWith('_test.exe') ||
-              file.basename.endsWith('_tests.exe')));
+          .where(isTestBinary)
+          .where((File file) {
+        // Only run the debug build of the unit tests, to avoid running the
+        // same tests multiple times.
+        final List<String> components = path.split(file.path);
+        return components.contains('debug') || components.contains('Debug');
+      }));
     }
 
     if (testBinaries.isEmpty) {
-      printError('No test binaries found. At least one *_test(s).exe should be '
-          'built by the example(s)');
+      final String binaryExtension = platform.isWindows ? '.exe' : '';
+      printError(
+          'No test binaries found. At least one *_test(s)$binaryExtension '
+          'binary should be built by the example(s)');
       return _PlatformResult(RunState.failed,
-          error: 'No Windows unit tests found');
+          error: 'No $buildDirectoryName unit tests found');
     }
 
     bool passing = true;
