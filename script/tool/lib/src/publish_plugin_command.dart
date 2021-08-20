@@ -71,7 +71,7 @@ class PublishPluginCommand extends PluginCommand {
     argParser.addFlag(
       _allChangedFlag,
       help:
-          'Release all plugins that contains pubspec changes at the current commit compares to the base-sha.\n'
+          'Release all packages that contains pubspec changes at the current commit compares to the base-sha.\n'
           'The --packages option is ignored if this is on.',
       defaultsTo: false,
     );
@@ -108,7 +108,7 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   final String description =
-      'Attempts to publish the given plugin and tag its release on GitHub.\n'
+      'Attempts to publish the given packages and tag the release(s) on GitHub.\n'
       'If running this on CI, an environment variable named $_pubCredentialName must be set to a String that represents the pub credential JSON.\n'
       'WARNING: Do not check in the content of pub credential JSON, it should only come from secure sources.';
 
@@ -225,7 +225,7 @@ class PublishPluginCommand extends PluginCommand {
     RepositoryPackage package, {
     _RemoteInfo? remoteForTagPush,
   }) async {
-    if (!await _publishPlugin(package)) {
+    if (!await _publishPackage(package)) {
       return false;
     }
     if (!await _tagRelease(
@@ -295,10 +295,10 @@ Safe to ignore if the package is deleted in this commit.
     return _CheckNeedsReleaseResult.release;
   }
 
-  // Publish the plugin.
+  // Publish the package.
   //
   // Returns `true` if successful, `false` otherwise.
-  Future<bool> _publishPlugin(RepositoryPackage package) async {
+  Future<bool> _publishPackage(RepositoryPackage package) async {
     final bool gitStatusOK = await _checkGitStatus(package);
     if (!gitStatusOK) {
       return false;
@@ -311,7 +311,7 @@ Safe to ignore if the package is deleted in this commit.
     return true;
   }
 
-  // Tag the release with <plugin-name>-v<version>, and, if [remoteForTagPush]
+  // Tag the release with <package-name>-v<version>, and, if [remoteForTagPush]
   // is provided, push it to that remote.
   //
   // Return `true` if successful, `false` otherwise.
