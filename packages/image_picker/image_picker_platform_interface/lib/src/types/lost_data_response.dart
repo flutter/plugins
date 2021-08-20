@@ -59,8 +59,7 @@ class LostDataResponse {
 
   /// The list of files that were lost in a previous [getMultiImage] call due to MainActivity being destroyed.
   ///
-  /// When the [files] will be populated, the [file] will refer to the last item of the [files] list, in
-  /// order to remain backward compatibility.
+  /// When [files] is populated, [file] will refer to the last item in the [files] list.
   ///
   /// Can be null if [exception] exists.
   final List<XFile>? files;

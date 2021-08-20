@@ -937,7 +937,6 @@ void main() {
             'pathList': ['/example/path0', '/example/path1'],
           };
         });
-        // ignore: deprecated_member_use_from_same_package
         final LostDataResponse response = await picker.getLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file, isNotNull);

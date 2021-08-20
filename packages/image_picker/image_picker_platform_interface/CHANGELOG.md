@@ -1,8 +1,6 @@
 ## 2.3.0
 
-* Update cache system to save list of images and retrieve them when it is needed. On Android, 
-`List<XFile> files` property added to `LostDataResponse` in the case multiple picked images 
-were recovered.
+* Updated `LostDataResponse` to include a `files` property, in case more than one file was recovered.
 
 ## 2.2.0
 
