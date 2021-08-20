@@ -2,7 +2,7 @@ name: file_selector_web
 description: Web platform implementation of file_selector
 repository: https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_web
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
-version: 0.8.1+1
+version: 0.8.1+2
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -10,6 +10,7 @@ environment:
 
 flutter:
   plugin:
+    implements: file_selector
     platforms:
       web:
         pluginClass: FileSelectorWeb

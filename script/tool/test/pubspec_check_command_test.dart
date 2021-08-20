@@ -66,9 +66,13 @@ environment:
 ''';
     }
 
-    String flutterSection({bool isPlugin = false}) {
-      const String pluginEntry = '''
+    String flutterSection({
+      bool isPlugin = false,
+      String? implementedPackage,
+    }) {
+      final String pluginEntry = '''
   plugin:
+${implementedPackage == null ? '' : '    implements: $implementedPackage'}
     platforms:
 ''';
       return '''
@@ -177,12 +181,19 @@ ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Found a "homepage" entry; only "repository" should be used.'),
+        ]),
       );
     });
 
@@ -197,12 +208,18 @@ ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Missing "repository"'),
+        ]),
       );
     });
 
@@ -217,12 +234,19 @@ ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Found a "homepage" entry; only "repository" should be used.'),
+        ]),
       );
     });
 
@@ -237,12 +261,18 @@ ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('A package should have an "issue_tracker" link'),
+        ]),
       );
     });
 
@@ -257,12 +287,19 @@ ${devDependenciesSection()}
 ${environmentSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Major sections should follow standard repository ordering:'),
+        ]),
       );
     });
 
@@ -277,12 +314,19 @@ ${dependenciesSection()}
 ${devDependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Major sections should follow standard repository ordering:'),
+        ]),
       );
     });
 
@@ -297,12 +341,19 @@ ${devDependenciesSection()}
 ${dependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Major sections should follow standard repository ordering:'),
+        ]),
       );
     });
 
@@ -317,12 +368,150 @@ ${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ''');
 
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['pubspec-check']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Major sections should follow standard repository ordering:'),
+        ]),
+      );
+    });
+
+    test('fails when an implemenation package is missing "implements"',
+        () async {
+      final Directory pluginDirectory = createFakePlugin(
+          'plugin_a_foo', packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin_a_foo', isPlugin: true)}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Missing "implements: plugin_a" in "plugin" section.'),
+        ]),
+      );
+    });
+
+    test('fails when an implemenation package has the wrong "implements"',
+        () async {
+      final Directory pluginDirectory = createFakePlugin(
+          'plugin_a_foo', packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin_a_foo', isPlugin: true)}
+${environmentSection()}
+${flutterSection(isPlugin: true, implementedPackage: 'plugin_a_foo')}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Expecetd "implements: plugin_a"; '
+              'found "implements: plugin_a_foo".'),
+        ]),
+      );
+    });
+
+    test('passes for a correct implemenation package', () async {
+      final Directory pluginDirectory = createFakePlugin(
+          'plugin_a_foo', packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin_a_foo', isPlugin: true)}
+${environmentSection()}
+${flutterSection(isPlugin: true, implementedPackage: 'plugin_a')}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['pubspec-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin_a_foo...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('passes for an app-facing package without "implements"', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin_a', packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin_a', isPlugin: true)}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['pubspec-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin_a/plugin_a...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('passes for a platform interface package without "implements"',
+        () async {
+      final Directory pluginDirectory = createFakePlugin(
+          'plugin_a_platform_interface',
+          packagesDir.childDirectory('plugin_a'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin_a_platform_interface', isPlugin: true)}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['pubspec-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin_a_platform_interface...'),
+          contains('No issues found!'),
+        ]),
       );
     });
   });

@@ -1,3 +1,7 @@
+## 2.1.3
+
+* Add `implements` to pubspec.
+
 ## 2.1.2
 
 * Updated installation instructions in README.
