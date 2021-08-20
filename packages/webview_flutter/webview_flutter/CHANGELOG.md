@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updated Android lint settings.
+* Fix typos in the README.
 
 ## 2.0.12
 
