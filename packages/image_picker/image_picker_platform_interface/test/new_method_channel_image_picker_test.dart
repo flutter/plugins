@@ -929,20 +929,21 @@ void main() {
         expect(response.file!.path, '/example/path');
       });
 
-      test('getLostData get success response with pathList', () async {
+      test('getLostData should successfully retrieve multiple files', () async {
         picker.channel.setMockMethodCallHandler((MethodCall methodCall) async {
           return <String, dynamic>{
             'type': 'image',
-            'path': '/example/path',
-            'pathList': ['/example/path'],
+            'path': '/example/path1',
+            'pathList': ['/example/path0', '/example/path1'],
           };
         });
         // ignore: deprecated_member_use_from_same_package
         final LostDataResponse response = await picker.getLostData();
         expect(response.type, RetrieveType.image);
         expect(response.file, isNotNull);
-        expect(response.file!.path, '/example/path');
-        expect(response.files!.first.path, '/example/path');
+        expect(response.file!.path, '/example/path1');
+        expect(response.files!.first.path, '/example/path0');
+        expect(response.files!.length, 2);
       });
 
       test('getLostData get error response', () async {
