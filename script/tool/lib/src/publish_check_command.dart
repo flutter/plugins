@@ -221,7 +221,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
   Future<_PublishCheckResult> _checkPublishingStatus(
       {required String packageName, required Version? version}) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
-        await _pubVersionFinder.getPackageVersion(package: packageName);
+        await _pubVersionFinder.getPackageVersion(packageName: packageName);
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
         return pubVersionFinderResponse.versions.contains(version)

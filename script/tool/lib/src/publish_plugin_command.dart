@@ -140,9 +140,9 @@ class PublishPluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    final String package = getStringArg(_packageOption);
+    final String packageName = getStringArg(_packageOption);
     final bool publishAllChanged = getBoolArg(_allChangedFlag);
-    if (package.isEmpty && !publishAllChanged) {
+    if (packageName.isEmpty && !publishAllChanged) {
       _print(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
       throw ToolExit(1);
@@ -176,7 +176,7 @@ class PublishPluginCommand extends PluginCommand {
       );
     } else {
       successful = await _publishAndTagPackage(
-        packageDir: _getPackageDir(package),
+        packageDir: _getPackageDir(packageName),
         remoteForTagPush: remote,
       );
     }
@@ -202,7 +202,7 @@ class PublishPluginCommand extends PluginCommand {
         await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
     final List<String> existingTags = (existingTagsResult.stdout as String)
         .split('\n')
-          ..removeWhere((String element) => element.isEmpty);
+      ..removeWhere((String element) => element.isEmpty);
 
     final List<String> packagesReleased = <String>[];
     final List<String> packagesFailed = <String>[];
@@ -307,7 +307,7 @@ Safe to ignore if the package is deleted in this commit.
     // Check if the package named `packageName` with `version` has already published.
     final Version version = pubspec.version!;
     final PubVersionFinderResponse pubVersionFinderResponse =
-        await _pubVersionFinder.getPackageVersion(package: pubspec.name);
+        await _pubVersionFinder.getPackageVersion(packageName: pubspec.name);
     if (pubVersionFinderResponse.versions.contains(version)) {
       final String tagsForPackageWithSameVersion = existingTags.firstWhere(
           (String tag) =>
@@ -390,8 +390,8 @@ Safe to ignore if the package is deleted in this commit.
 
   // Returns the packageDirectory based on the package name.
   // Throws ToolExit if the `package` doesn't exist.
-  Directory _getPackageDir(String package) {
-    final Directory packageDir = packagesDir.childDirectory(package);
+  Directory _getPackageDir(String packageName) {
+    final Directory packageDir = packagesDir.childDirectory(packageName);
     if (!packageDir.existsSync()) {
       _print('${packageDir.absolute.path} does not exist.');
       throw ToolExit(1);

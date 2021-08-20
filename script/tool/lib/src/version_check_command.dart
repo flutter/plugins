@@ -197,7 +197,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
   /// the name from pubspec.yaml, not the on disk name if different.)
   Future<Version?> _fetchPreviousVersionFromPub(String packageName) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
-        await _pubVersionFinder.getPackageVersion(package: packageName);
+        await _pubVersionFinder.getPackageVersion(packageName: packageName);
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
         return pubVersionFinderResponse.versions.first;
