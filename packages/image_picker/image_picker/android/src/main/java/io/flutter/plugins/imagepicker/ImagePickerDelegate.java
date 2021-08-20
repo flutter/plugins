@@ -243,7 +243,7 @@ public class ImagePickerDelegate
         newPathList.add(imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
       }
       resultMap.put(cache.MAP_KEY_PATH_LIST, newPathList);
-      resultMap.put(cache.MAP_KEY_PATH, newPathList.get(0));
+      resultMap.put(cache.MAP_KEY_PATH, newPathList.get(newPathList.size() - 1));
     }
     if (resultMap.isEmpty()) {
       result.success(null);
