@@ -37,15 +37,29 @@ void main() {
       runner.addCommand(command);
     });
 
+    /// Returns the top section of a pubspec.yaml for a package named [name],
+    /// for either a flutter/packages or flutter/plugins package depending on
+    /// the values of [isPlugin].
+    ///
+    /// By default it will create a header that includes all of the expected
+    /// values, elements can be changed via arguments to create incorrect
+    /// entries.
+    ///
+    /// If [includeRepository] is true, by default the path in the link will
+    /// be "packages/[name]"; a different "packages"-relative path can be
+    /// provided with [repositoryPackagesDirRelativePath].
     String headerSection(
       String name, {
       bool isPlugin = false,
       bool includeRepository = true,
+      String? repositoryPackagesDirRelativePath,
       bool includeHomepage = false,
       bool includeIssueTracker = true,
     }) {
+      final String repositoryPath = repositoryPackagesDirRelativePath ?? name;
       final String repoLink = 'https://github.com/flutter/'
-          '${isPlugin ? 'plugins' : 'packages'}/tree/master/packages/$name';
+          '${isPlugin ? 'plugins' : 'packages'}/tree/master/'
+          'packages/$repositoryPath';
       final String issueTrackerLink =
           'https://github.com/flutter/flutter/issues?'
           'q=is%3Aissue+is%3Aopen+label%3A%22p%3A+$name%22';
@@ -250,6 +264,32 @@ ${devDependenciesSection()}
       );
     });
 
+    test('fails when repository is incorrect', () async {
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin', isPlugin: true, repositoryPackagesDirRelativePath: 'different_plugin')}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('The "repository" link should end with the package path.'),
+        ]),
+      );
+    });
+
     test('fails when issue tracker is missing', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
@@ -446,7 +486,11 @@ ${devDependenciesSection()}
           'plugin_a_foo', packagesDir.childDirectory('plugin_a'));
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
-${headerSection('plugin_a_foo', isPlugin: true)}
+${headerSection(
+        'plugin_a_foo',
+        isPlugin: true,
+        repositoryPackagesDirRelativePath: 'plugin_a/plugin_a_foo',
+      )}
 ${environmentSection()}
 ${flutterSection(isPlugin: true, implementedPackage: 'plugin_a')}
 ${dependenciesSection()}
@@ -470,7 +514,11 @@ ${devDependenciesSection()}
           createFakePlugin('plugin_a', packagesDir.childDirectory('plugin_a'));
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
-${headerSection('plugin_a', isPlugin: true)}
+${headerSection(
+        'plugin_a',
+        isPlugin: true,
+        repositoryPackagesDirRelativePath: 'plugin_a/plugin_a',
+      )}
 ${environmentSection()}
 ${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
@@ -496,7 +544,12 @@ ${devDependenciesSection()}
           packagesDir.childDirectory('plugin_a'));
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
-${headerSection('plugin_a_platform_interface', isPlugin: true)}
+${headerSection(
+        'plugin_a_platform_interface',
+        isPlugin: true,
+        repositoryPackagesDirRelativePath:
+            'plugin_a/plugin_a_platform_interface',
+      )}
 ${environmentSection()}
 ${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
