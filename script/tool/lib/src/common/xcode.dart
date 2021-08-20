@@ -15,7 +15,7 @@ const String _xcRunCommand = 'xcrun';
 
 /// A utility class for interacting with the installed version of Xcode.
 class Xcode {
-  /// Creates an instance that runs commends with the given [processRunner].
+  /// Creates an instance that runs commands with the given [processRunner].
   ///
   /// If [log] is true, commands run by this instance will long various status
   /// messages.
