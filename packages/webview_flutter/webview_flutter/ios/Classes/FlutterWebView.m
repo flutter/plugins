@@ -149,6 +149,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadRequest"]) {
+    [self onLoadRequest:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -208,6 +210,29 @@
   if (!request) {
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    [_webView loadRequest:request];
+    result(nil);
+  }
+}
+
+/**
+ * Loads the web content referenced by the specified URL request object.
+ *
+ * After retrieves NSURLRequest object successfully loads a page from a local
+ * or network-based URL and applies nil on FlutterResult. Otherwise, applies FlutterError
+ * with the error details.
+ *
+ * @param call the method call with arguments.
+ * @param result the FlutterResult.
+ */
+- (void)onLoadRequest:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSURLRequest* request = [self buildNSURLRequest:[call arguments]];
+  if (!request) {
+    result([FlutterError
+        errorWithCode:@"loadRequest_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
