@@ -97,7 +97,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   XCTAssertNil(result);
 }
 
-- (void)testbuildNSURLRequest_should_return_nil_when_url_is_nil {
+- (void)testbuildNSURLRequest_should_return_nil_when_request_is_nil {
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
                                    viewIdentifier:1
