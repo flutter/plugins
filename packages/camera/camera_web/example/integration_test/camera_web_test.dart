@@ -998,6 +998,21 @@ void main() {
     });
 
     group('setFlashMode', () {
+      testWidgets('calls setFlashMode on the camera', (tester) async {
+        final camera = MockCamera();
+        const flashMode = FlashMode.always;
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.setFlashMode(
+          cameraId,
+          flashMode,
+        );
+
+        verify(() => camera.setFlashMode(flashMode)).called(1);
+      });
+
       group('throws PlatformException', () {
         testWidgets(
             'with notFound error '
@@ -1434,6 +1449,135 @@ void main() {
             ),
             throwsA(
               isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
+    });
+
+    group('pausePreview', () {
+      testWidgets('calls pause on the camera', (tester) async {
+        final camera = MockCamera();
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.pausePreview(cameraId);
+
+        verify(camera.pause).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.pausePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when pause throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.pause).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.pausePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
+    });
+
+    group('resumePreview', () {
+      testWidgets('calls play on the camera', (tester) async {
+        final camera = MockCamera();
+
+        when(camera.play).thenAnswer((_) async => {});
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.resumePreview(cameraId);
+
+        verify(camera.play).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when play throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when play throws CameraWebException', (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'description',
+          );
+
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
                 (e) => e.code,
                 'code',
                 exception.code.toString(),
@@ -1963,6 +2107,42 @@ void main() {
             ),
             throwsA(
               isA<CameraException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on resumePreview error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'description',
+          );
+
+          when(camera.play).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>(),
             ),
           );
 
