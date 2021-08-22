@@ -2,6 +2,10 @@
 
 * iOS: Update texture on `seekTo`.
 
+## NEXT
+
+* Updated Android lint settings.
+
 ## 2.1.14
 
 * Removed dependency on the `flutter_test` package.

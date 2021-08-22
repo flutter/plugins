@@ -2,7 +2,7 @@ name: camera_web
 description: A Flutter plugin for getting information about and controlling the camera on Web.
 repository: https://github.com/flutter/plugins/tree/master/packages/camera/camera_web
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+camera%22
-version: 0.1.0
+version: 0.1.0+1
 
 # This plugin is under development and will be published 
 # when the first working web camera implementation is added.

@@ -28,4 +28,9 @@ class IAPError {
 
   /// Error details, possibly null.
   final dynamic details;
+
+  @override
+  String toString() {
+    return 'IAPError(code: $code, source: $source, message: $message, details: $details)';
+  }
 }
