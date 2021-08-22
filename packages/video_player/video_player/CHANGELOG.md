@@ -1,9 +1,6 @@
 ## 2.1.15
 
 * iOS: Update texture on `seekTo`.
-
-## NEXT
-
 * Updated Android lint settings.
 
 ## 2.1.14
