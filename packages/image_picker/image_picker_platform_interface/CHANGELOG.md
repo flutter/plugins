@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Updated `LostDataResponse` to include a `files` property, in case more than one file was recovered.
+
 ## 2.2.0
 
 * Added new methods that return `XFile` (from `package:cross_file`)

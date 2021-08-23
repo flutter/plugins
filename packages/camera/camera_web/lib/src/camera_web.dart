@@ -8,7 +8,7 @@ import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,18 +25,18 @@ const String _kDefaultErrorMessage =
 /// This class implements the `package:camera` functionality for the web.
 class CameraPlugin extends CameraPlatform {
   /// Creates a new instance of [CameraPlugin]
-  /// with the given [cameraSettings] utility.
-  CameraPlugin({required CameraSettings cameraSettings})
-      : _cameraSettings = cameraSettings;
+  /// with the given [cameraService].
+  CameraPlugin({required CameraService cameraService})
+      : _cameraService = cameraService;
 
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith(Registrar registrar) {
     CameraPlatform.instance = CameraPlugin(
-      cameraSettings: CameraSettings(),
+      cameraService: CameraService(),
     );
   }
 
-  final CameraSettings _cameraSettings;
+  final CameraService _cameraService;
 
   /// The cameras managed by the [CameraPlugin].
   @visibleForTesting
@@ -86,7 +86,7 @@ class CameraPlugin extends CameraPlatform {
       }
 
       // Request video and audio permissions.
-      await _cameraSettings.getMediaStreamForOptions(
+      await _cameraService.getMediaStreamForOptions(
         CameraOptions(
           audio: AudioConstraints(enabled: true),
         ),
@@ -121,13 +121,13 @@ class CameraPlugin extends CameraPlatform {
         if (videoTracks.isNotEmpty) {
           // Get the facing mode from the first available video track.
           final facingMode =
-              _cameraSettings.getFacingModeForVideoTrack(videoTracks.first);
+              _cameraService.getFacingModeForVideoTrack(videoTracks.first);
 
           // Get the lens direction based on the facing mode.
           // Fallback to the external lens direction
           // if the facing mode is not available.
           final lensDirection = facingMode != null
-              ? _cameraSettings.mapFacingModeToLensDirection(facingMode)
+              ? _cameraService.mapFacingModeToLensDirection(facingMode)
               : CameraLensDirection.external;
 
           // Create a camera description.
@@ -191,20 +191,19 @@ class CameraPlugin extends CameraPlatform {
       final cameraMetadata = camerasMetadata[cameraDescription]!;
 
       final cameraType = cameraMetadata.facingMode != null
-          ? _cameraSettings
-              .mapFacingModeToCameraType(cameraMetadata.facingMode!)
+          ? _cameraService.mapFacingModeToCameraType(cameraMetadata.facingMode!)
           : null;
 
       // Use the highest resolution possible
       // if the resolution preset is not specified.
-      final videoSize = _cameraSettings
+      final videoSize = _cameraService
           .mapResolutionPresetToSize(resolutionPreset ?? ResolutionPreset.max);
 
       // Create a camera with the given audio and video constraints.
       // Sensor orientation is currently not supported.
       final camera = Camera(
         textureId: textureId,
-        cameraSettings: _cameraSettings,
+        cameraService: _cameraService,
         options: CameraOptions(
           audio: AudioConstraints(enabled: enableAudio),
           video: VideoConstraints(
@@ -334,7 +333,7 @@ class CameraPlugin extends CameraPlatform {
     if (orientation != null) {
       return orientation.onChange.map(
         (html.Event _) {
-          final deviceOrientation = _cameraSettings
+          final deviceOrientation = _cameraService
               .mapOrientationTypeToDeviceOrientation(orientation.type!);
           return DeviceOrientationChangedEvent(deviceOrientation);
         },
@@ -354,7 +353,7 @@ class CameraPlugin extends CameraPlatform {
       final documentElement = window?.document.documentElement;
 
       if (orientation != null && documentElement != null) {
-        final orientationType = _cameraSettings
+        final orientationType = _cameraService
             .mapDeviceOrientationToOrientationType(deviceOrientation);
 
         // Full-screen mode may be required to modify the device orientation.
@@ -379,9 +378,6 @@ class CameraPlugin extends CameraPlatform {
       final documentElement = window?.document.documentElement;
 
       if (orientation != null && documentElement != null) {
-        // Full-screen mode may be required to modify the device orientation.
-        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
-        documentElement.requestFullscreen();
         orientation.unlock();
       } else {
         throw PlatformException(
@@ -400,6 +396,9 @@ class CameraPlugin extends CameraPlatform {
       return getCamera(cameraId).takePicture();
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
     }
   }
 
@@ -519,6 +518,27 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
+  Future<void> pausePreview(int cameraId) async {
+    try {
+      getCamera(cameraId).pause();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
+  }
+
+  @override
+  Future<void> resumePreview(int cameraId) async {
+    try {
+      await getCamera(cameraId).play();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
+  }
+
+  @override
   Widget buildPreview(int cameraId) {
     return HtmlElementView(
       viewType: getCamera(cameraId).getViewType(),
@@ -549,7 +569,7 @@ class CameraPlugin extends CameraPlatform {
       video: VideoConstraints(deviceId: deviceId),
     );
 
-    return _cameraSettings.getMediaStreamForOptions(cameraOptions);
+    return _cameraService.getMediaStreamForOptions(cameraOptions);
   }
 
   /// Returns a camera for the given [cameraId].
