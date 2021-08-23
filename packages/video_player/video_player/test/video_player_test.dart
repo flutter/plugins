@@ -155,9 +155,10 @@ void main() {
   testWidgets('rotation value is used', (WidgetTester tester) async {
     final FakeController controller = FakeController.value(
         VideoPlayerValue(duration: Duration.zero, rotation: math.pi));
+    controller.textureId = 1;
     await tester.pumpWidget(VideoPlayer(controller));
     Transform actualRotation =
-        find.byType(Transform).evaluate().single as Transform;
+        find.byType(Transform).evaluate().single.widget as Transform;
     expect(actualRotation.transform, equals(Matrix4.rotationZ(math.pi)));
   });
 
