@@ -3,20 +3,7 @@
 
   <application
     android:icon="@mipmap/ic_launcher"
-    android:label="camera_example"
-    android:name="io.flutter.app.FlutterApplication">
-    <activity
-      android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
-      android:hardwareAccelerated="true"
-      android:launchMode="singleTop"
-      android:exported="true"
-      android:name=".EmbeddingV1Activity"
-      android:theme="@style/LaunchTheme"
-      android:windowSoftInputMode="adjustResize">
-      <meta-data
-        android:name="io.flutter.app.android.SplashScreenUntilFirstFrame"
-        android:value="true"/>
-    </activity>
+    android:label="camera_example">
     <activity
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection"
       android:hardwareAccelerated="true"
