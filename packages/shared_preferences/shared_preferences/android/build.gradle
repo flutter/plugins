@@ -38,6 +38,8 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        disable 'GradleDependency'
+        baseline file("lint-baseline.xml")
     }
     dependencies {
         testImplementation 'junit:junit:4.12'

@@ -27,7 +27,11 @@ extern const FLTImagePickerMIMEType kFLTImagePickerMIMETypeDefault;
 
 + (NSDictionary *)getMetaDataFromImageData:(NSData *)imageData;
 
-+ (NSData *)updateMetaData:(NSDictionary *)metaData toImage:(NSData *)imageData;
+// Creates and returns data for a new image based on imageData, but with the
+// given metadata.
+//
+// If creating a new image fails, returns nil.
++ (nullable NSData *)imageFromImage:(NSData *)imageData withMetaData:(NSDictionary *)metadata;
 
 // Converting UIImage to a NSData with the type proveide.
 //

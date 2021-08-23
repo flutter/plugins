@@ -1,5 +1,12 @@
 ## NEXT
 
+- Added Android native integration test support to `native-test`.
+- Added a new `android-lint` command to lint Android plugin native code.
+- Pubspec validation now checks for `implements` in implementation packages.
+- Pubspec valitation now checks the full relative path of `repository` entries.
+
+## 0.5.0
+
 - `--exclude` and `--custom-analysis` now accept paths to YAML files that
   contain lists of packages to exclude, in addition to just package names,
   so that exclude lists can be maintained separately from scripts and CI
@@ -21,6 +28,10 @@
     `--no-integration`.
 - **Breaking change**: Replaced `java-test` with Android unit test support for
   the new `native-test` command.
+- Commands that print a run summary at the end now track and log exclusions
+  similarly to skips for easier auditing.
+- `version-check` now validates that `NEXT` is not present when changing
+  the version.
 
 ## 0.4.1
 

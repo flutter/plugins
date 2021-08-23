@@ -86,7 +86,11 @@
                                                 usingType:type
                                                   quality:imageQuality];
   if (metaData) {
-    data = [FLTImagePickerMetaDataUtil updateMetaData:metaData toImage:data];
+    NSData *updatedData = [FLTImagePickerMetaDataUtil imageFromImage:data withMetaData:metaData];
+    // If updating the metadata fails, just save the original.
+    if (updatedData) {
+      data = updatedData;
+    }
   }
 
   return [self createFile:data suffix:suffix];

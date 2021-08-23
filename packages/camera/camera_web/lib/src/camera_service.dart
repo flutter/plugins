@@ -6,19 +6,25 @@ import 'dart:html' as html;
 import 'dart:ui';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
+import 'package:camera_web/src/camera.dart';
+import 'package:camera_web/src/shims/dart_js_util.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
-/// A utility to fetch, map camera settings and
+/// A service to fetch, map camera settings and
 /// obtain the camera stream.
-class CameraSettings {
+class CameraService {
   // A facing mode constraint name.
   static const _facingModeKey = "facingMode";
 
   /// The current browser window used to access media devices.
   @visibleForTesting
   html.Window? window = html.window;
+
+  /// The utility to manipulate JavaScript interop objects.
+  @visibleForTesting
+  JsUtil jsUtil = JsUtil();
 
   /// Returns a media stream associated with the camera device
   /// with [cameraId] and constrained by [options].
@@ -107,6 +113,65 @@ class CameraSettings {
     }
   }
 
+  /// Returns the zoom level capability for the given [camera].
+  ///
+  /// Throws a [CameraWebException] if the zoom level is not supported
+  /// or the camera has not been initialized or started.
+  ZoomLevelCapability getZoomLevelCapabilityForCamera(
+    Camera camera,
+  ) {
+    final mediaDevices = window?.navigator.mediaDevices;
+    final supportedConstraints = mediaDevices?.getSupportedConstraints();
+    final zoomLevelSupported =
+        supportedConstraints?[ZoomLevelCapability.constraintName] ?? false;
+
+    if (!zoomLevelSupported) {
+      throw CameraWebException(
+        camera.textureId,
+        CameraErrorCode.zoomLevelNotSupported,
+        'The zoom level is not supported in the current browser.',
+      );
+    }
+
+    final videoTracks = camera.stream?.getVideoTracks() ?? [];
+
+    if (videoTracks.isNotEmpty) {
+      final defaultVideoTrack = videoTracks.first;
+
+      /// The zoom level capability is represented by MediaSettingsRange.
+      /// See: https://developer.mozilla.org/en-US/docs/Web/API/MediaSettingsRange
+      final zoomLevelCapability = defaultVideoTrack
+              .getCapabilities()[ZoomLevelCapability.constraintName] ??
+          {};
+
+      // The zoom level capability is a nested JS object, therefore
+      // we need to access its properties with the js_util library.
+      // See: https://api.dart.dev/stable/2.13.4/dart-js_util/getProperty.html
+      final minimumZoomLevel = jsUtil.getProperty(zoomLevelCapability, 'min');
+      final maximumZoomLevel = jsUtil.getProperty(zoomLevelCapability, 'max');
+
+      if (minimumZoomLevel != null && maximumZoomLevel != null) {
+        return ZoomLevelCapability(
+          minimum: minimumZoomLevel.toDouble(),
+          maximum: maximumZoomLevel.toDouble(),
+          videoTrack: defaultVideoTrack,
+        );
+      } else {
+        throw CameraWebException(
+          camera.textureId,
+          CameraErrorCode.zoomLevelNotSupported,
+          'The zoom level is not supported by the current camera.',
+        );
+      }
+    } else {
+      throw CameraWebException(
+        camera.textureId,
+        CameraErrorCode.notStarted,
+        'The camera has not been initialized or started.',
+      );
+    }
+  }
+
   /// Returns a facing mode of the [videoTrack]
   /// (null if the facing mode is not available).
   String? getFacingModeForVideoTrack(html.MediaStreamTrack videoTrack) {
@@ -140,40 +205,34 @@ class CameraSettings {
     final facingMode = videoTrackSettings[_facingModeKey];
 
     if (facingMode == null) {
-      try {
-        // If the facing mode does not exist in the video track settings,
-        // check for the facing mode in the video track capabilities.
-        //
-        // MediaTrackCapabilities:
-        // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
-        //
-        // This may throw a not supported error on Firefox.
-        final videoTrackCapabilities = videoTrack.getCapabilities();
+      // If the facing mode does not exist in the video track settings,
+      // check for the facing mode in the video track capabilities.
+      //
+      // MediaTrackCapabilities:
+      // https://www.w3.org/TR/mediacapture-streams/#dom-mediatrackcapabilities
 
-        // A list of facing mode capabilities as
-        // the camera may support multiple facing modes.
-        final facingModeCapabilities =
-            List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
+      // Check if getting the video track capabilities is supported.
+      //
+      // The method may not be supported on Firefox.
+      // See: https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/getCapabilities#browser_compatibility
+      if (!jsUtil.hasProperty(videoTrack, 'getCapabilities')) {
+        // Return null if the video track capabilites are not supported.
+        return null;
+      }
 
-        if (facingModeCapabilities.isNotEmpty) {
-          final facingModeCapability = facingModeCapabilities.first;
-          return facingModeCapability;
-        } else {
-          // Return null if there are no facing mode capabilities.
-          return null;
-        }
-      } catch (e) {
-        switch (e.runtimeType.toString()) {
-          case 'JSNoSuchMethodError':
-            // Return null if getting capabilities is currently not supported.
-            return null;
-          default:
-            throw PlatformException(
-              code: CameraErrorCode.unknown.toString(),
-              message:
-                  'An unknown error occured when getting the video track capabilities.',
-            );
-        }
+      final videoTrackCapabilities = videoTrack.getCapabilities();
+
+      // A list of facing mode capabilities as
+      // the camera may support multiple facing modes.
+      final facingModeCapabilities =
+          List<String>.from(videoTrackCapabilities[_facingModeKey] ?? []);
+
+      if (facingModeCapabilities.isNotEmpty) {
+        final facingModeCapability = facingModeCapabilities.first;
+        return facingModeCapability;
+      } else {
+        // Return null if there are no facing mode capabilities.
+        return null;
       }
     }
 
@@ -228,6 +287,40 @@ class CameraSettings {
       case ResolutionPreset.low:
       default:
         return Size(320, 240);
+    }
+  }
+
+  /// Maps the given [deviceOrientation] to [OrientationType].
+  String mapDeviceOrientationToOrientationType(
+    DeviceOrientation deviceOrientation,
+  ) {
+    switch (deviceOrientation) {
+      case DeviceOrientation.portraitUp:
+        return OrientationType.portraitPrimary;
+      case DeviceOrientation.landscapeLeft:
+        return OrientationType.landscapePrimary;
+      case DeviceOrientation.portraitDown:
+        return OrientationType.portraitSecondary;
+      case DeviceOrientation.landscapeRight:
+        return OrientationType.landscapeSecondary;
+    }
+  }
+
+  /// Maps the given [orientationType] to [DeviceOrientation].
+  DeviceOrientation mapOrientationTypeToDeviceOrientation(
+    String orientationType,
+  ) {
+    switch (orientationType) {
+      case OrientationType.portraitPrimary:
+        return DeviceOrientation.portraitUp;
+      case OrientationType.landscapePrimary:
+        return DeviceOrientation.landscapeLeft;
+      case OrientationType.portraitSecondary:
+        return DeviceOrientation.portraitDown;
+      case OrientationType.landscapeSecondary:
+        return DeviceOrientation.landscapeRight;
+      default:
+        return DeviceOrientation.portraitUp;
     }
   }
 }

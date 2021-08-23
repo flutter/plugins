@@ -13,10 +13,10 @@ import 'util.dart';
 void main() {
   group('$CreateAllPluginsAppCommand', () {
     late CommandRunner<void> runner;
-    FileSystem fileSystem;
+    late CreateAllPluginsAppCommand command;
+    late FileSystem fileSystem;
     late Directory testRoot;
     late Directory packagesDir;
-    late Directory appDir;
 
     setUp(() {
       // Since the core of this command is a call to 'flutter create', the test
@@ -26,11 +26,10 @@ void main() {
       testRoot = fileSystem.systemTempDirectory.createTempSync();
       packagesDir = testRoot.childDirectory('packages');
 
-      final CreateAllPluginsAppCommand command = CreateAllPluginsAppCommand(
+      command = CreateAllPluginsAppCommand(
         packagesDir,
         pluginsRoot: testRoot,
       );
-      appDir = command.appDirectory;
       runner = CommandRunner<void>(
           'create_all_test', 'Test for $CreateAllPluginsAppCommand');
       runner.addCommand(command);
@@ -47,7 +46,7 @@ void main() {
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
       final List<String> pubspec =
-          appDir.childFile('pubspec.yaml').readAsLinesSync();
+          command.appDirectory.childFile('pubspec.yaml').readAsLinesSync();
 
       expect(
           pubspec,
@@ -65,7 +64,7 @@ void main() {
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
       final List<String> pubspec =
-          appDir.childFile('pubspec.yaml').readAsLinesSync();
+          command.appDirectory.childFile('pubspec.yaml').readAsLinesSync();
 
       expect(
           pubspec,
@@ -82,9 +81,38 @@ void main() {
 
       await runCapturingPrint(runner, <String>['all-plugins-app']);
       final String pubspec =
-          appDir.childFile('pubspec.yaml').readAsStringSync();
+          command.appDirectory.childFile('pubspec.yaml').readAsStringSync();
 
       expect(pubspec, contains(RegExp('sdk:\\s*(?:["\']>=|[^])2\\.12\\.')));
+    });
+
+    test('handles --output-dir', () async {
+      createFakePlugin('plugina', packagesDir);
+
+      final Directory customOutputDir =
+          fileSystem.systemTempDirectory.createTempSync();
+      await runCapturingPrint(runner,
+          <String>['all-plugins-app', '--output-dir=${customOutputDir.path}']);
+
+      expect(command.appDirectory.path,
+          customOutputDir.childDirectory('all_plugins').path);
+    });
+
+    test('logs exclusions', () async {
+      createFakePlugin('plugina', packagesDir);
+      createFakePlugin('pluginb', packagesDir);
+      createFakePlugin('pluginc', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['all-plugins-app', '--exclude=pluginb,pluginc']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            'Exluding the following plugins from the combined build:',
+            '  pluginb',
+            '  pluginc',
+          ]));
     });
   });
 }
