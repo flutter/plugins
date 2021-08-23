@@ -1098,13 +1098,14 @@ class TestProcessRunner extends ProcessRunner {
         args[1] == 'publish');
     mockPublishArgs.addAll(args);
 
-    return MockProcess(
+    mockPublishProcess = MockProcess(
       exitCode: mockPublishCompleteCode,
       stdout: mockPublishStdout,
       stderr: mockPublishStderr,
       stdoutEncoding: utf8,
       stderrEncoding: utf8,
     );
+    return mockPublishProcess;
   }
 }
 
