@@ -570,7 +570,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).dispose();
     }
-    webView.destroy();
     webView = null;
   }
 
