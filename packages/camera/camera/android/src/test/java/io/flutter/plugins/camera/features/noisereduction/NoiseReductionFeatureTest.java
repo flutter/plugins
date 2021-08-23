@@ -37,7 +37,7 @@ public class NoiseReductionFeatureTest {
   }
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
 
@@ -45,7 +45,7 @@ public class NoiseReductionFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_fast_if_not_set() {
+  public void getValue_shouldReturnFastIfNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
 
@@ -53,7 +53,7 @@ public class NoiseReductionFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_the_set_value() {
+  public void getValue_shouldEchoTheSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
     NoiseReductionMode expectedValue = NoiseReductionMode.fast;
@@ -65,7 +65,7 @@ public class NoiseReductionFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_available_noise_reduction_modes_is_null() {
+  public void checkIsSupported_shouldReturnFalseWhenAvailableNoiseReductionModesIsNull() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
 
@@ -76,7 +76,7 @@ public class NoiseReductionFeatureTest {
 
   @Test
   public void
-      checkIsSupported_should_return_false_when_available_noise_reduction_modes_returns_an_empty_array() {
+      checkIsSupported_shouldReturnFalseWhenAvailableNoiseReductionModesReturnsAnEmptyArray() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
 
@@ -87,7 +87,7 @@ public class NoiseReductionFeatureTest {
 
   @Test
   public void
-      checkIsSupported_should_return_true_when_available_noise_reduction_modes_returns_at_least_one_item() {
+      checkIsSupported_shouldReturnTrueWhenAvailableNoiseReductionModesReturnsAtLeastOneItem() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
 
@@ -97,7 +97,7 @@ public class NoiseReductionFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_return_when_checkIsSupported_is_false() {
+  public void updateBuilder_shouldReturnWhenCheckIsSupportedIsFalse() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     NoiseReductionFeature noiseReductionFeature = new NoiseReductionFeature(mockCameraProperties);
@@ -110,29 +110,28 @@ public class NoiseReductionFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_noise_reduction_mode_off_when_off() {
+  public void updateBuilder_shouldSetNoiseReductionModeOffWhenOff() {
     testUpdateBuilderWith(NoiseReductionMode.off, CaptureRequest.NOISE_REDUCTION_MODE_OFF);
   }
 
   @Test
-  public void updateBuilder_should_set_noise_reduction_mode_fast_when_fast() {
+  public void updateBuilder_shouldSetNoiseReductionModeFastWhenFast() {
     testUpdateBuilderWith(NoiseReductionMode.fast, CaptureRequest.NOISE_REDUCTION_MODE_FAST);
   }
 
   @Test
-  public void updateBuilder_should_set_noise_reduction_mode_high_quality_when_high_quality() {
+  public void updateBuilder_shouldSetNoiseReductionModeHighQualityWhenHighQuality() {
     testUpdateBuilderWith(
         NoiseReductionMode.highQuality, CaptureRequest.NOISE_REDUCTION_MODE_HIGH_QUALITY);
   }
 
   @Test
-  public void updateBuilder_should_set_noise_reduction_mode_minimal_when_minimal() {
+  public void updateBuilder_shouldSetNoiseReductionModeMinimalWhenMinimal() {
     testUpdateBuilderWith(NoiseReductionMode.minimal, CaptureRequest.NOISE_REDUCTION_MODE_MINIMAL);
   }
 
   @Test
-  public void
-      updateBuilder_should_set_noise_reduction_mode_zero_shutter_lag_when_zero_shutter_lag() {
+  public void updateBuilder_shouldSetNoiseReductionModeZeroShutterLagWhenZeroShutterLag() {
     testUpdateBuilderWith(
         NoiseReductionMode.zeroShutterLag, CaptureRequest.NOISE_REDUCTION_MODE_ZERO_SHUTTER_LAG);
   }

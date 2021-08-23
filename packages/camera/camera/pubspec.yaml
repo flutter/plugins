@@ -4,7 +4,7 @@ description: A Flutter plugin for getting information about and controlling the
   and streaming image buffers to dart.
 repository: https://github.com/flutter/plugins/tree/master/packages/camera/camera
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+camera%22
-version: 0.8.1+7
+version: 0.9.0
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   pedantic: ^1.10.0
   quiver: ^3.0.0
+  flutter_plugin_android_lifecycle: ^2.0.2
 
 dev_dependencies:
   flutter_test:
