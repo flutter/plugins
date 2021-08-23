@@ -1,5 +1,8 @@
-## NEXT
+## 0.9.0
 
+* Complete rewrite of Android plugin to fix many capture, focus, flash, orientation and exposure issues.
+* Fixed crash when opening front-facing cameras on some legacy android devices like Sony XZ.
+* Android Flash mode works with full precapture sequence.
 * Updated Android lint settings.
 
 ## 0.8.1+7
