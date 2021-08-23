@@ -4,7 +4,6 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -153,13 +152,15 @@ void main() {
   });
 
   testWidgets('rotation value is used', (WidgetTester tester) async {
+    final double expectedRotation = 3.14;
     final FakeController controller = FakeController.value(
-        VideoPlayerValue(duration: Duration.zero, rotation: math.pi));
+        VideoPlayerValue(duration: Duration.zero, rotation: expectedRotation));
     controller.textureId = 1;
     await tester.pumpWidget(VideoPlayer(controller));
     Transform actualRotation =
         find.byType(Transform).evaluate().single.widget as Transform;
-    expect(actualRotation.transform, equals(Matrix4.rotationZ(math.pi)));
+    expect(
+        actualRotation.transform, equals(Matrix4.rotationZ(expectedRotation)));
   });
 
   group('ClosedCaption widget', () {
