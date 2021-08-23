@@ -123,16 +123,19 @@ void main() {
 
     test('fails immediately if the remote doesn\'t exist', () async {
       Error? commandError;
-      await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        testPluginName
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--package', testPluginName],
+          errorHandler: (Error e) {
         commandError = e;
       });
 
       expect(commandError, isA<ToolExit>());
-      expect(processRunner.results.last.stderr, contains('No such remote'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                'Unable to find URL for remote upstream; cannot push tags'),
+          ]));
     });
 
     test("doesn't validate the remote if it's not pushing tags", () async {
@@ -1108,7 +1111,6 @@ void main() {
 }
 
 class TestProcessRunner extends ProcessRunner {
-  final List<io.ProcessResult> results = <io.ProcessResult>[];
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
   final List<String> mockPublishArgs = <String>[];
@@ -1137,7 +1139,6 @@ class TestProcessRunner extends ProcessRunner {
 
     final io.ProcessResult result = io.Process.runSync(executable, args,
         workingDirectory: workingDir?.path);
-    results.add(result);
     if (result.exitCode != 0) {
       throw ToolExit(result.exitCode);
     }
