@@ -38,6 +38,48 @@ class UnknownMapObjectIdError extends Error {
   }
 }
 
+/// Android specific settings for [GoogleMap].
+class AndroidGoogleMapsFlutter {
+  /// Whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
+  ///
+  /// This implementation uses hybrid composition to render the Google Maps
+  /// Widget on Android. This comes at the cost of some performance on Android
+  /// versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
+  /// information.
+  ///
+  /// Defaults to false.
+  static bool get useAndroidViewSurface {
+    assert(
+      GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter,
+      'This feature is only supported when `GoogleMapsFlutterPlatform.instance` '
+      'is a `MethodChannelGoogleMapsFlutter`. The default implementation for Android.',
+    );
+    return (GoogleMapsFlutterPlatform.instance
+            as MethodChannelGoogleMapsFlutter)
+        .useAndroidViewSurface;
+  }
+
+  /// Set whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
+  ///
+  /// This implementation uses hybrid composition to render the Google Maps
+  /// Widget on Android. This comes at the cost of some performance on Android
+  /// versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
+  /// information.
+  ///
+  /// Defaults to false.
+  static set useAndroidViewSurface(bool useAndroidViewSurface) {
+    assert(
+      GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter,
+      'This feature is only supported when `GoogleMapsFlutterPlatform.instance` '
+      'is a `MethodChannelGoogleMapsFlutter`. The default implementation for Android.',
+    );
+    (GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter)
+        .useAndroidViewSurface = useAndroidViewSurface;
+  }
+}
+
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.

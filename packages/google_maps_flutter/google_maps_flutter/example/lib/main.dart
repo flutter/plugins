@@ -69,9 +69,7 @@ class MapsDemo extends StatelessWidget {
 
 void main() {
   if (defaultTargetPlatform == TargetPlatform.android) {
-    final MethodChannelGoogleMapsFlutter platform =
-        GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter;
-    platform.useAndroidViewSurface = true;
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
   }
   runApp(MaterialApp(home: MapsDemo()));
 }
