@@ -55,8 +55,9 @@ void main() {
         .thenAnswer((Invocation invocation) {
       final List<String> arguments =
           invocation.positionalArguments[0]! as List<String>;
-      // Attach the first argument to the command to make targeting the mock
-      // results easier.
+      // Route git calls through the process runner, to make mock output
+      // consistent with outer processes. Attach the first argument to the
+      // command to make targeting the mock results easier.
       final String gitCommand = arguments.removeAt(0);
       return processRunner.run('git-$gitCommand', arguments);
     });
@@ -369,8 +370,8 @@ void main() {
           ]));
       expect(
           processRunner.recordedCalls,
-          isNot(contains(
-              const ProcessCall('git-tag', <String>['foo-v0.0.1'], null))));
+          isNot(contains(const ProcessCall(
+              'git-tag', <String>['$testPluginName-v0.0.1'], null))));
     });
   });
 
@@ -1089,6 +1090,8 @@ void main() {
   });
 }
 
+/// An extension of [RecordingProcessRunner] that stores 'flutter pub publish'
+/// calls so that their input streams can be checked in tests.
 class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
@@ -1098,7 +1101,6 @@ class TestProcessRunner extends RecordingProcessRunner {
       {Directory? workingDirectory}) async {
     final io.Process process =
         await super.start(executable, args, workingDirectory: workingDirectory);
-    // Route through super to get the logging.
     if (executable == getFlutterCommand(const LocalPlatform()) &&
         args.isNotEmpty &&
         args[0] == 'pub' &&
@@ -1111,17 +1113,11 @@ class TestProcessRunner extends RecordingProcessRunner {
 
 class MockStdin extends Mock implements io.Stdin {
   List<List<int>> mockUserInputs = <List<int>>[];
-  late StreamController<List<int>> _controller;
+  final StreamController<List<int>> _controller = StreamController<List<int>>();
   String? readLineOutput;
 
   @override
   Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
-    // In the test context, only one `PublishPluginCommand` object is created for a single test case.
-    // However, sometimes, we need to run multiple commands in a single test case.
-    // In such situation, this `MockStdin`'s StreamController might be listened to more than once, which is not allowed.
-    //
-    // Create a new controller every time so this Stdin could be listened to multiple times.
-    _controller = StreamController<List<int>>();
     mockUserInputs.forEach(_addUserInputsToSteam);
     return _controller.stream.transform(streamTransformer);
   }
