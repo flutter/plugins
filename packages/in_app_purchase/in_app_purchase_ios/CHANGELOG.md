@@ -1,3 +1,15 @@
+## 0.1.3+3
+
+* Add `implements` to pubspec.
+
+# 0.1.3+2
+
+* Removed dependency on the `test` package.
+
+# 0.1.3+1
+
+- Updated installation instructions in README.
+
 ## 0.1.3
 
 * Add price symbol to platform interface object ProductDetail.

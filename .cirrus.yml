@@ -20,9 +20,27 @@ flutter_upgrade_template: &FLUTTER_UPGRADE_TEMPLATE
     - git config remote.origin.fetch "+refs/heads/*:refs/remotes/origin/*"
     - git fetch origin
     # Switch to the requested branch.
-    - flutter channel $CHANNEL
-    - flutter upgrade
+    - git checkout $CHANNEL
+    # Reset to upstream branch, rather than using pull, since the base image
+    # can sometimes be in a state where it has diverged from upstream (!).
+    - git reset --hard @{u}
+    # Run doctor to allow auditing of what version of Flutter the run is using.
+    - flutter doctor -v
   << : *TOOL_SETUP_TEMPLATE
+
+build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
+  create_all_plugins_app_script:
+    - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
+  build_all_plugins_debug_script:
+    - cd all_plugins
+    - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
+    -   echo "Skipping; web does not support debug builds"
+    - else
+    -   flutter build $BUILD_ALL_ARGS --debug
+    - fi
+  build_all_plugins_release_script:
+    - cd all_plugins
+    - flutter build $BUILD_ALL_ARGS --release
 
 macos_template: &MACOS_TEMPLATE
   # Only one macOS task can run in parallel without credits, so use them for
@@ -72,33 +90,36 @@ task:
         - cd script/tool
         - dart analyze --fatal-infos
       script:
-        - ./script/tool_runner.sh analyze
+        # DO NOT change the custom-analysis argument here without changing the Dart repo.
+        # See the comment in script/configs/custom_analysis.yaml for details.
+        - ./script/tool_runner.sh analyze --custom-analysis=script/configs/custom_analysis.yaml
     ### Android tasks ###
     - name: build_all_plugins_apk
       env:
+        BUILD_ALL_ARGS: "apk"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh apk
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Web tasks ###
     - name: build_all_plugins_web
       env:
+        BUILD_ALL_ARGS: "web"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh web
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Linux desktop tasks ###
     - name: build_all_plugins_linux
       env:
+        BUILD_ALL_ARGS: "linux"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
+      setup_script:
         - flutter config --enable-linux-desktop
-        - ./script/build_all_plugins_app.sh linux
-    - name: build-linux+drive-examples
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    - name: linux-build+platform-tests
       env:
         matrix:
           CHANNEL: "master"
@@ -125,7 +146,7 @@ task:
     memory: 12G
   matrix:
     ### Android tasks ###
-    - name: build-apks+java-test+firebase-test-lab
+    - name: android-build+platform-tests
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
@@ -144,13 +165,22 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/tool_runner.sh build-examples --apk
-      java_test_script:
+      lint_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
-        - ./script/tool_runner.sh java-test  # must come after apk build
+        - ./script/tool_runner.sh lint-android # must come after build-examples
+      native_unit_test_script:
+        # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
+        # might include non-ASCII characters which makes Gradle crash.
+        # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
+        - export CIRRUS_CHANGE_MESSAGE=""
+        - export CIRRUS_COMMIT_MESSAGE=""
+        # Native integration tests are handled by firebase-test-lab below, so
+        # only run unit tests.
+        - ./script/tool_runner.sh native-test --android --no-integration  # must come after apk build
       firebase_test_lab_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -159,16 +189,19 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26
+        -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
+      # Upload the full lint results to Cirrus to display in the results UI.
+      always:
+        android-lint_artifacts:
+          path: "**/reports/lint-results-debug.xml"
+          type: text/xml
+          format: android-lint
     ### Web tasks ###
-    - name: build-web+drive-examples
+    - name: web-build+platform-tests
       env:
-        # Currently missing; see https://github.com/flutter/flutter/issues/81982
-        # and https://github.com/flutter/flutter/issues/82211
-        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "file_selector,shared_preferences_web"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -181,7 +214,7 @@ task:
       build_script:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
-        - ./script/tool_runner.sh drive-examples --web --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
+        - ./script/tool_runner.sh drive-examples --web --exclude=script/configs/exclude_integration_web.yaml
 
 # macOS tasks.
 task:
@@ -195,18 +228,14 @@ task:
     ### iOS tasks ###
     - name: build_all_plugins_ipa
       env:
+        BUILD_ALL_ARGS: "ios --no-codesign"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
-        - ./script/build_all_plugins_app.sh ios --no-codesign
-    - name: build-ipas+drive-examples
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    - name: ios-build+platform-tests
       env:
         PATH: $PATH:/usr/local/bin
-        # in_app_purchase_ios is currently missing tests; see https://github.com/flutter/flutter/issues/81695
-        # ios_platform_images is currently missing tests; see https://github.com/flutter/flutter/issues/82208
-        # sensor hangs on CI.
-        PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS: "in_app_purchase_ios,ios_platform_images,sensors"
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
           PLUGIN_SHARDING: "--shardIndex 1 --shardCount 4"
@@ -221,27 +250,27 @@ task:
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
       build_script:
         - ./script/tool_runner.sh build-examples --ios
-      xctest_script:
-        - ./script/tool_runner.sh xctest --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
+      xcode_analyze_script:
+        - ./script/tool_runner.sh xcode-analyze --ios
+      native_test_script:
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
-        # So we run `drive-examples` after `xctest`, changing the order will result ci failure.
-        - ./script/tool_runner.sh drive-examples --ios --exclude $PLUGINS_TO_EXCLUDE_INTEGRATION_TESTS
+        # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
+        - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
     - name: build_all_plugins_macos
       env:
+        BUILD_ALL_ARGS: "macos"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      script:
+      setup_script:
         - flutter config --enable-macos-desktop
-        - ./script/build_all_plugins_app.sh macos
-    - name: build-macos+drive-examples
+      << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
+    - name: macos-build+platform-tests
       env:
-        # conncectivity_macos is deprecated, so is not getting unit test backfill.
-        # package_info is deprecated, so is not getting unit test backfill.
-        PLUGINS_TO_EXCLUDE_MACOS_XCTESTS: "connectivity_macos,package_info"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
@@ -249,7 +278,9 @@ task:
       build_script:
         - flutter config --enable-macos-desktop
         - ./script/tool_runner.sh build-examples --macos
-      xctest_script:
-        - ./script/tool_runner.sh xctest --macos --exclude $PLUGINS_TO_EXCLUDE_MACOS_XCTESTS
+      xcode_analyze_script:
+        - ./script/tool_runner.sh xcode-analyze --macos
+      native_test_script:
+        - ./script/tool_runner.sh native-test --macos --exclude=script/configs/exclude_native_macos.yaml
       drive_script:
         - ./script/tool_runner.sh drive-examples --macos

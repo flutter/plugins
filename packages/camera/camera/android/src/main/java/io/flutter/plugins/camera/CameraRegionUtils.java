@@ -77,21 +77,21 @@ public final class CameraRegionUtils {
     assert (boundaries.getWidth() > 0 && boundaries.getHeight() > 0);
     assert (x >= 0 && x <= 1);
     assert (y >= 0 && y <= 1);
-    // Rotate the coordinates to match the device orientation
+    // Rotate the coordinates to match the device orientation.
     double oldX = x, oldY = y;
     switch (orientation) {
-      case PORTRAIT_UP: // 90 ccw
+      case PORTRAIT_UP: // 90 ccw.
         y = 1 - oldX;
         x = oldY;
         break;
-      case PORTRAIT_DOWN: // 90 cw
+      case PORTRAIT_DOWN: // 90 cw.
         x = 1 - oldY;
         y = oldX;
         break;
       case LANDSCAPE_LEFT:
-        // No rotation required
+        // No rotation required.
         break;
-      case LANDSCAPE_RIGHT: // 180
+      case LANDSCAPE_RIGHT: // 180.
         x = 1 - x;
         y = 1 - y;
         break;
@@ -120,7 +120,6 @@ public final class CameraRegionUtils {
     if (targetY > maxTargetY) {
       targetY = maxTargetY;
     }
-
     // Build the metering rectangle.
     return MeteringRectangleFactory.create(targetX, targetY, targetWidth, targetHeight, 1);
   }
@@ -152,7 +151,7 @@ public final class CameraRegionUtils {
      * @param width width >= 0.
      * @param height height >= 0.
      * @param meteringWeight weight between {@value MeteringRectangle#METERING_WEIGHT_MIN} and
-     *     {@value MeteringRectangle#METERING_WEIGHT_MAX} inclusively
+     *     {@value MeteringRectangle#METERING_WEIGHT_MAX} inclusively.
      * @return new instance of the {@link MeteringRectangle} class.
      * @throws IllegalArgumentException if any of the parameters were negative.
      */

@@ -128,7 +128,8 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('pickVideo() has not been implemented.');
   }
 
-  /// Retrieve the lost [PickedFile] file when [pickImage] or [pickVideo] failed because the MainActivity is destroyed. (Android only)
+  /// Retrieves any previously picked file, that was lost due to the MainActivity being destroyed.
+  /// In case multiple files were lost, only the last file will be recovered. (Android only).
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is always alive.
   /// Call this method to retrieve the lost data and process the data according to your APP's business logic.
@@ -233,8 +234,7 @@ abstract class ImagePickerPlatform extends PlatformInterface {
     throw UnimplementedError('getVideo() has not been implemented.');
   }
 
-  /// Retrieve the lost [XFile] file when [getImage], [getMultiImage] or [getVideo] failed because the MainActivity is
-  /// destroyed. (Android only)
+  /// Retrieves any previously picked files, that were lost due to the MainActivity being destroyed. (Android only)
   ///
   /// Image or video can be lost if the MainActivity is destroyed. And there is no guarantee that the MainActivity is
   /// always alive. Call this method to retrieve the lost data and process the data according to your APP's business logic.

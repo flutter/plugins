@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
+import 'package:flutter/services.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
@@ -34,6 +38,23 @@ void main() {
     test('Can be extended', () {
       GoogleMapsFlutterPlatform.instance = ExtendsGoogleMapsFlutterPlatform();
     });
+
+    test(
+      'default implementation of `buildViewWithTextDirection` delegates to `buildView`',
+      () {
+        final GoogleMapsFlutterPlatform platform =
+            BuildViewGoogleMapsFlutterPlatform();
+        expect(
+          platform.buildViewWithTextDirection(
+            0,
+            (_) {},
+            initialCameraPosition: CameraPosition(target: LatLng(0.0, 0.0)),
+            textDirection: TextDirection.ltr,
+          ),
+          isA<Text>(),
+        );
+      },
+    );
   });
 }
 
@@ -45,3 +66,22 @@ class ImplementsGoogleMapsFlutterPlatform extends Mock
     implements GoogleMapsFlutterPlatform {}
 
 class ExtendsGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {}
+
+class BuildViewGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
+  @override
+  Widget buildView(
+    int creationId,
+    PlatformViewCreatedCallback onPlatformViewCreated, {
+    required CameraPosition initialCameraPosition,
+    Set<Marker> markers = const <Marker>{},
+    Set<Polygon> polygons = const <Polygon>{},
+    Set<Polyline> polylines = const <Polyline>{},
+    Set<Circle> circles = const <Circle>{},
+    Set<TileOverlay> tileOverlays = const <TileOverlay>{},
+    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers =
+        const <Factory<OneSequenceGestureRecognizer>>{},
+    Map<String, dynamic> mapOptions = const <String, dynamic>{},
+  }) {
+    return const Text('');
+  }
+}

@@ -1,3 +1,11 @@
+## 1.0.8
+
+* Fix repository link in pubspec.yaml.
+
+## 1.0.7
+
+* Remove references to the Android V1 embedding.
+
 ## 1.0.6
 
 * Added import flutter foundation dependency in README.md to be able to use `defaultTargetPlatform`.

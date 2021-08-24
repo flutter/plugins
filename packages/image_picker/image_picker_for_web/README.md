@@ -1,4 +1,4 @@
-# image_picker_for_web
+# image\_picker\_for\_web
 
 A web implementation of [`image_picker`][1].
 
@@ -52,19 +52,9 @@ The argument `maxDuration` is not supported on the web.
 
 ### Import the package
 
-This package is an unendorsed web platform implementation of `image_picker`.
-
-In order to use this, you'll need to depend in `image_picker: ^0.6.7` (which was the first version of the plugin that allowed federation), and `image_picker_for_web: ^0.1.0`.
-
-```yaml
-...
-dependencies:
-  ...
-  image_picker: ^0.6.7
-  image_picker_for_web: ^0.1.0
-  ...
-...
-```
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin),
+which means you can simply use `image_picker`
+normally. This package will be automatically included in your app when you do.
 
 ### Use the plugin
 

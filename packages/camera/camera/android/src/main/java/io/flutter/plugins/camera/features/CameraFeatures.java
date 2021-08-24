@@ -4,6 +4,9 @@
 
 package io.flutter.plugins.camera.features;
 
+import android.app.Activity;
+import io.flutter.plugins.camera.CameraProperties;
+import io.flutter.plugins.camera.DartMessenger;
 import io.flutter.plugins.camera.features.autofocus.AutoFocusFeature;
 import io.flutter.plugins.camera.features.exposurelock.ExposureLockFeature;
 import io.flutter.plugins.camera.features.exposureoffset.ExposureOffsetFeature;
@@ -13,6 +16,7 @@ import io.flutter.plugins.camera.features.focuspoint.FocusPointFeature;
 import io.flutter.plugins.camera.features.fpsrange.FpsRangeFeature;
 import io.flutter.plugins.camera.features.noisereduction.NoiseReductionFeature;
 import io.flutter.plugins.camera.features.resolution.ResolutionFeature;
+import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 import java.util.Collection;
@@ -36,6 +40,39 @@ public class CameraFeatures {
   private static final String RESOLUTION = "RESOLUTION";
   private static final String SENSOR_ORIENTATION = "SENSOR_ORIENTATION";
   private static final String ZOOM_LEVEL = "ZOOM_LEVEL";
+
+  public static CameraFeatures init(
+      CameraFeatureFactory cameraFeatureFactory,
+      CameraProperties cameraProperties,
+      Activity activity,
+      DartMessenger dartMessenger,
+      ResolutionPreset resolutionPreset) {
+    CameraFeatures cameraFeatures = new CameraFeatures();
+    cameraFeatures.setAutoFocus(
+        cameraFeatureFactory.createAutoFocusFeature(cameraProperties, false));
+    cameraFeatures.setExposureLock(
+        cameraFeatureFactory.createExposureLockFeature(cameraProperties));
+    cameraFeatures.setExposureOffset(
+        cameraFeatureFactory.createExposureOffsetFeature(cameraProperties));
+    SensorOrientationFeature sensorOrientationFeature =
+        cameraFeatureFactory.createSensorOrientationFeature(
+            cameraProperties, activity, dartMessenger);
+    cameraFeatures.setSensorOrientation(sensorOrientationFeature);
+    cameraFeatures.setExposurePoint(
+        cameraFeatureFactory.createExposurePointFeature(
+            cameraProperties, sensorOrientationFeature));
+    cameraFeatures.setFlash(cameraFeatureFactory.createFlashFeature(cameraProperties));
+    cameraFeatures.setFocusPoint(
+        cameraFeatureFactory.createFocusPointFeature(cameraProperties, sensorOrientationFeature));
+    cameraFeatures.setFpsRange(cameraFeatureFactory.createFpsRangeFeature(cameraProperties));
+    cameraFeatures.setNoiseReduction(
+        cameraFeatureFactory.createNoiseReductionFeature(cameraProperties));
+    cameraFeatures.setResolution(
+        cameraFeatureFactory.createResolutionFeature(
+            cameraProperties, resolutionPreset, cameraProperties.getCameraName()));
+    cameraFeatures.setZoomLevel(cameraFeatureFactory.createZoomLevelFeature(cameraProperties));
+    return cameraFeatures;
+  }
 
   private Map<String, CameraFeature> featureMap = new HashMap<>();
 
