@@ -154,4 +154,60 @@ public class VideoPlayerTest {
     assertEquals(event.get("height"), 200);
     assertEquals(event.get("rotationCorrection"), 180);
   }
+
+  @Test
+  public void videoPlayerSendInitializedSetsRotationForRotationDegrees180() {
+    Format format = new Format.Builder().setRotationDegrees(180).build();
+    SimpleExoPlayer mockExoPlayer = mock(SimpleExoPlayer.class);
+    when(mockExoPlayer.getVideoFormat()).thenReturn(format);
+    final VideoPlayer player = new VideoPlayer(
+            mock(Context.class),
+            mock(EventChannel.class),
+            mock(TextureRegistry.SurfaceTextureEntry.class),
+            "",
+            "",
+            new HashMap<String, String>(),
+            mock(VideoPlayerOptions.class),
+            null
+    );
+    QueuingEventSink mockEventSink = mock(QueuingEventSink.class);
+    player.eventSink = mockEventSink;
+    player.isInitialized = true;
+
+    player.sendInitialized();
+
+    ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
+    verify(mockEventSink).success(eventCaptor.capture());
+    @SuppressWarnings("unchecked") Map<String, Object> capturedEventMap =
+            (Map<String, Object>) eventCaptor.getValue();
+    assertEquals(Math.PI, capturedEventMap.get("rotation"));
+  }
+
+  @Test
+  public void videoPlayerSendInitializedDoesNotSetRotationForRotationDegreesNot180() {
+    Format format = new Format.Builder().setRotationDegrees(90).build();
+    SimpleExoPlayer mockExoPlayer = mock(SimpleExoPlayer.class);
+    when(mockExoPlayer.getVideoFormat()).thenReturn(format);
+    final VideoPlayer player = new VideoPlayer(
+            mock(Context.class),
+            mock(EventChannel.class),
+            mock(TextureRegistry.SurfaceTextureEntry.class),
+            "",
+            "",
+            new HashMap<String, String>(),
+            mock(VideoPlayerOptions.class),
+            mockExoPlayer
+    );
+    QueuingEventSink mockEventSink = mock(QueuingEventSink.class);
+    player.eventSink = mockEventSink;
+    player.isInitialized = true;
+
+    player.sendInitialized();
+
+    ArgumentCaptor<Object> eventCaptor = ArgumentCaptor.forClass(Object.class);
+    verify(mockEventSink).success(eventCaptor.capture());
+    @SuppressWarnings("unchecked") Map<String, Object> capturedEventMap =
+            (Map<String, Object>) eventCaptor.getValue();
+    assertFalse(capturedEventMap.containsKey("rotation"));
+  }
 }
