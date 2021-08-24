@@ -463,13 +463,10 @@ void main() {
     });
 
     test('logs skipped platforms', () async {
-      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+      createFakePlugin('plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformAndroid: PlatformSupport.inline,
           });
-
-      final Directory pluginExampleDirectory =
-          pluginDirectory.childDirectory('example');
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['build-examples', '--apk', '--ios', '--macos']);
