@@ -115,7 +115,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
-        <io.Process>[MockProcess.failing()];
+        <io.Process>[MockProcess(exitCode: 1)];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
         runner, <String>['format'], errorHandler: (Error e) {
@@ -167,7 +167,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['java'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess(exitCode: 1)
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -194,7 +194,7 @@ void main() {
 
     processRunner.mockProcessesForExecutable['java'] = <io.Process>[
       MockProcess(), // check for working java
-      MockProcess.failing(), // format
+      MockProcess(exitCode: 1), // format
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -280,7 +280,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess(exitCode: 1)
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -336,7 +336,7 @@ void main() {
 
     processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
       MockProcess(), // check for working clang-format
-      MockProcess.failing(), // format
+      MockProcess(exitCode: 1), // format
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -448,7 +448,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['git'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess(exitCode: 1)
     ];
     Error? commandError;
     final List<String> output =
@@ -475,7 +475,7 @@ void main() {
     const String changedFilePath = 'packages/a_plugin/linux/foo_plugin.cc';
     processRunner.mockProcessesForExecutable['git'] = <io.Process>[
       MockProcess(stdout: changedFilePath), // ls-files
-      MockProcess.failing(), // diff
+      MockProcess(exitCode: 1), // diff
     ];
 
     Error? commandError;

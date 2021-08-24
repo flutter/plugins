@@ -147,7 +147,7 @@ void main() {
 
     test('returns null if simctl fails', () async {
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       expect(await xcode.findBestAvailableIphoneSimulator(), null);
@@ -218,7 +218,7 @@ void main() {
 
     test('returns error codes', () async {
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
       final Directory directory = const LocalFileSystem().currentDirectory;
 
@@ -381,7 +381,7 @@ void main() {
 
     test('returns null for failure', () async {
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        MockProcess.failing(), // xcodebuild -list
+        MockProcess(exitCode: 1), // xcodebuild -list
       ];
 
       final Directory project =

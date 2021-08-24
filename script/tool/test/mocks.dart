@@ -55,9 +55,6 @@ class MockProcess extends Mock implements io.Process {
     _stderrController.close();
   }
 
-  /// A mock process that terminates with exitCode 1.
-  MockProcess.failing() : this(exitCode: 1);
-
   final int _exitCode;
   final StreamController<List<int>> _stdoutController =
       StreamController<List<int>>();

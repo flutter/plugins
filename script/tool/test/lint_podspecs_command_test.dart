@@ -171,7 +171,7 @@ void main() {
 
       // Simulate failure from `which pod`.
       processRunner.mockProcessesForExecutable['which'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       Error? commandError;
@@ -197,7 +197,7 @@ void main() {
 
       // Simulate failure from `pod`.
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       Error? commandError;
@@ -226,7 +226,7 @@ void main() {
       // Simulate failure from the second call to `pod`.
       processRunner.mockProcessesForExecutable['pod'] = <io.Process>[
         MockProcess(),
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       Error? commandError;

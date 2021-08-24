@@ -40,7 +40,7 @@ void main() {
 
     test('fails if gcloud auth fails', () async {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
-        MockProcess.failing()
+        MockProcess(exitCode: 1)
       ];
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
@@ -65,7 +65,7 @@ void main() {
     test('retries gcloud set', () async {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
         MockProcess(), // auth
-        MockProcess.failing(), // config
+        MockProcess(exitCode: 1), // config
       ];
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
@@ -247,7 +247,7 @@ void main() {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
         MockProcess(), // auth
         MockProcess(), // config
-        MockProcess.failing(), // integration test #1
+        MockProcess(exitCode: 1), // integration test #1
         MockProcess(), // integration test #2
       ];
 
@@ -459,7 +459,7 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['flutter'] = <Process>[
-        MockProcess.failing() // flutter build
+        MockProcess(exitCode: 1) // flutter build
       ];
 
       Error? commandError;
@@ -496,7 +496,7 @@ void main() {
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
-        MockProcess.failing()
+        MockProcess(exitCode: 1)
       ];
 
       Error? commandError;
@@ -534,7 +534,7 @@ void main() {
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
         MockProcess(), // assembleAndroidTest
-        MockProcess.failing(), // assembleDebug
+        MockProcess(exitCode: 1), // assembleDebug
       ];
 
       Error? commandError;

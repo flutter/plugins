@@ -74,7 +74,7 @@ void main() {
       createFakePlugin('plugin_tools_test_package_a', packagesDir);
 
       processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-        MockProcess.failing()
+        MockProcess(exitCode: 1)
       ];
 
       expect(

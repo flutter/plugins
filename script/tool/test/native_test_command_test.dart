@@ -672,7 +672,7 @@ void main() {
             .childFile('gradlew')
             .path;
         processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -744,7 +744,7 @@ void main() {
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -774,10 +774,13 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        const String projectListOutput =
-            '{"project":{"targets":["RunnerTests", "RunnerUITests"]}}';
+        const Map<String, dynamic> projects = <String, dynamic>{
+          'project': <String, dynamic>{
+            'targets': <String>['RunnerTests', 'RunnerUITests']
+          }
+        };
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess(stdout: projectListOutput), // xcodebuild -list
+          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
         ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -836,10 +839,13 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        const String projectListOutput =
-            '{"project":{"targets":["RunnerTests", "RunnerUITests"]}}';
+        const Map<String, dynamic> projects = <String, dynamic>{
+          'project': <String, dynamic>{
+            'targets': <String>['RunnerTests', 'RunnerUITests']
+          }
+        };
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess(stdout: projectListOutput), // xcodebuild -list
+          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
         ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -899,10 +905,13 @@ void main() {
             pluginDirectory1.childDirectory('example');
 
         // Simulate a project with unit tests but no integration tests...
-        const String projectListOutput =
-            '{"project":{"targets":["RunnerTests"]}}';
+        const Map<String, dynamic> projects = <String, dynamic>{
+          'project': <String, dynamic>{
+            'targets': <String>['RunnerTests']
+          }
+        };
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess(stdout: projectListOutput), // xcodebuild -list
+          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
         ];
 
         // ... then try to run only integration tests.
@@ -949,7 +958,7 @@ void main() {
             pluginDirectory1.childDirectory('example');
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing(), // xcodebuild -list
+          MockProcess(exitCode: 1), // xcodebuild -list
         ];
 
         Error? commandError;
@@ -1201,7 +1210,7 @@ void main() {
             .childFile('gradlew')
             .path;
         processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -1252,11 +1261,11 @@ void main() {
             .childFile('gradlew')
             .path;
         processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
         // Simulate failing Android.
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;

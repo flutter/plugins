@@ -67,7 +67,7 @@ void main() {
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[
-        MockProcess.failing(), // plugin 1 test
+        MockProcess(exitCode: 1), // plugin 1 test
         MockProcess(), // plugin 2 test
       ];
 
@@ -132,7 +132,7 @@ void main() {
           extraFiles: <String>['test/empty_test.dart']);
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-        MockProcess.failing(), // dart pub get
+        MockProcess(exitCode: 1), // dart pub get
       ];
 
       Error? commandError;
@@ -157,7 +157,7 @@ void main() {
 
       processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
         MockProcess(), // dart pub get
-        MockProcess.failing(), // dart pub run test
+        MockProcess(exitCode: 1), // dart pub run test
       ];
 
       Error? commandError;
