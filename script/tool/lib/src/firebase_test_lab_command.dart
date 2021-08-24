@@ -13,6 +13,7 @@ import 'common/core.dart';
 import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 const int _exitGcloudAuthFailed = 2;
 
@@ -117,13 +118,13 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
-    final Directory exampleDirectory = package.childDirectory('example');
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
+    final RepositoryPackage example = package.getSingleExampleDeprecated();
     final Directory androidDirectory =
-        exampleDirectory.childDirectory('android');
+        example.directory.childDirectory('android');
     if (!androidDirectory.existsSync()) {
       return PackageResult.skip(
-          '${getPackageDescription(exampleDirectory)} does not support Android.');
+          '${example.displayName} does not support Android.');
     }
 
     if (!androidDirectory
@@ -137,7 +138,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     }
 
     // Ensures that gradle wrapper exists
-    final GradleProject project = GradleProject(exampleDirectory,
+    final GradleProject project = GradleProject(example.directory,
         processRunner: processRunner, platform: platform);
     if (!await _ensureGradleWrapperExists(project)) {
       return PackageResult.fail(<String>['Unable to build example apk']);
@@ -155,7 +156,8 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // test file's run.
     int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
-      final String testName = getRelativePosixPath(test, from: package);
+      final String testName =
+          getRelativePosixPath(test, from: package.directory);
       print('Testing $testName...');
       if (!await _runGradle(project, 'app:assembleDebug', testFile: test)) {
         printError('Could not build $testName');
@@ -165,7 +167,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       final String buildId = getStringArg('build-id');
       final String testRunId = getStringArg('test-run-id');
       final String resultsDir =
-          'plugins_android_test/${getPackageDescription(package)}/$buildId/$testRunId/${resultsCounter++}/';
+          'plugins_android_test/${package.displayName}/$buildId/$testRunId/${resultsCounter++}/';
       final List<String> args = <String>[
         'firebase',
         'test',
@@ -186,7 +188,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         args.addAll(<String>['--device', device]);
       }
       final int exitCode = await processRunner.runAndStream('gcloud', args,
-          workingDir: exampleDirectory);
+          workingDir: example.directory);
 
       if (exitCode != 0) {
         printError('Test failure for $testName');
@@ -262,9 +264,11 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   }
 
   /// Finds and returns all integration test files for [package].
-  Iterable<File> _findIntegrationTestFiles(Directory package) sync* {
-    final Directory integrationTestDir =
-        package.childDirectory('example').childDirectory('integration_test');
+  Iterable<File> _findIntegrationTestFiles(RepositoryPackage package) sync* {
+    final Directory integrationTestDir = package
+        .getSingleExampleDeprecated()
+        .directory
+        .childDirectory('integration_test');
 
     if (!integrationTestDir.existsSync()) {
       return;
