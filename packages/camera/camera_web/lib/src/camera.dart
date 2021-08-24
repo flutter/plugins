@@ -68,7 +68,7 @@ class Camera {
   /// Initialized in [initialize] and [play], reset in [stop].
   html.MediaStream? stream;
 
-  /// The stream of the camera stream tracks that have ended playing.
+  /// The stream of the camera video tracks that have ended playing.
   /// This occurs when there is no more camera stream data, e.g.
   /// the user has stopped the stream by changing the camera device,
   /// revoked the camera permissions or ejected the camera device.
