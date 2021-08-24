@@ -636,13 +636,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       ]);
     } on CameraException catch (e) {
       _showCameraException(e);
-    }
+    } finally {
+      if (mounted) {
+        setState(() {});
+      }
 
-    if (mounted) {
-      setState(() {});
+      await previousCameraController?.dispose();
     }
-
-    await previousCameraController?.dispose();
   }
 
   void onTakePictureButtonPressed() {
