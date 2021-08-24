@@ -1,6 +1,9 @@
-## 2.1.15
+## 2.1.16
 
 * Ensured seekTo isn't called before video player is initialized. Fixes [#89259](https://github.com/flutter/flutter/issues/89259).
+
+## 2.1.15
+
 * Updated Android lint settings.
 
 ## 2.1.14
