@@ -204,9 +204,9 @@ void main() {
 
   group('Publishes package', () {
     test('while showing all output from pub publish to the user', () async {
-      processRunner.mockPublishStdout = 'Foo';
-      processRunner.mockPublishStderr = 'Bar';
-      processRunner.mockPublishCompleteCode = 0;
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(stdout: 'Foo', stderr: 'Bar')
+      ];
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
@@ -1114,8 +1114,6 @@ class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
 
-  String? mockPublishStdout;
-  String? mockPublishStderr;
   int mockPublishCompleteCode = 0;
 
   @override
@@ -1134,8 +1132,6 @@ class TestProcessRunner extends RecordingProcessRunner {
       mockProcessesForExecutable[flutterCommand] = <io.Process>[
         mockPublishProcess = MockProcess(
           exitCode: mockPublishCompleteCode,
-          stdout: mockPublishStdout,
-          stderr: mockPublishStderr,
           stdoutEncoding: utf8,
           stderrEncoding: utf8,
         )
