@@ -8,7 +8,11 @@ set -e
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null && pwd)"
 readonly REPO_DIR="$(dirname "$SCRIPT_DIR")"
 
-source "$SCRIPT_DIR/common.sh"
+# Runs the plugin tools from the in-tree source.
+function plugin_tools() {
+  (pushd "$REPO_DIR/script/tool" && dart pub get && popd) >/dev/null
+  dart run "$REPO_DIR/script/tool/bin/flutter_plugin_tools.dart" "$@"
+}
 
 ACTIONS=("$@")
 

@@ -114,7 +114,7 @@ public class DeviceOrientationManager {
    */
   public int getPhotoOrientation(PlatformChannel.DeviceOrientation orientation) {
     int angle = 0;
-    // Fallback to device orientation when the orientation value is null
+    // Fallback to device orientation when the orientation value is null.
     if (orientation == null) {
       orientation = getUIOrientation();
     }
@@ -134,10 +134,10 @@ public class DeviceOrientationManager {
         break;
     }
 
-    // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X)
-    // We have to take that into account and rotate JPEG properly.
-    // For devices with orientation of 90, we simply return our mapping from ORIENTATIONS.
-    // For devices with orientation of 270, we need to rotate the JPEG 180 degrees.
+    // Sensor orientation is 90 for most devices, or 270 for some devices (eg. Nexus 5X).
+    // This has to be taken into account so the JPEG is rotated properly.
+    // For devices with orientation of 90, this simply returns the mapping from ORIENTATIONS.
+    // For devices with orientation of 270, the JPEG is rotated 180 degrees instead.
     return (angle + sensorOrientation + 270) % 360;
   }
 
@@ -166,7 +166,7 @@ public class DeviceOrientationManager {
   public int getVideoOrientation(PlatformChannel.DeviceOrientation orientation) {
     int angle = 0;
 
-    // Fallback to device orientation when the orientation value is null
+    // Fallback to device orientation when the orientation value is null.
     if (orientation == null) {
       orientation = getUIOrientation();
     }

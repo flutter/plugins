@@ -25,6 +25,7 @@ dependencies:
     sdk: flutter
   pedantic: ^1.10.0
   quiver: ^3.0.0
+  flutter_plugin_android_lifecycle: ^2.0.2
 
 dev_dependencies:
   flutter_test:

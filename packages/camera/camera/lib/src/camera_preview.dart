@@ -21,17 +21,23 @@ class CameraPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controller.value.isInitialized
-        ? AspectRatio(
-            aspectRatio: _isLandscape()
-                ? controller.value.aspectRatio
-                : (1 / controller.value.aspectRatio),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _wrapInRotatedBox(child: controller.buildPreview()),
-                child ?? Container(),
-              ],
-            ),
+        ? ValueListenableBuilder(
+            valueListenable: controller,
+            builder: (context, value, child) {
+              return AspectRatio(
+                aspectRatio: _isLandscape()
+                    ? controller.value.aspectRatio
+                    : (1 / controller.value.aspectRatio),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _wrapInRotatedBox(child: controller.buildPreview()),
+                    child ?? Container(),
+                  ],
+                ),
+              );
+            },
+            child: child,
           )
         : Container();
   }

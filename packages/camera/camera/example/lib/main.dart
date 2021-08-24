@@ -603,16 +603,20 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
-    if (controller != null) {
-      await controller!.dispose();
-    }
+    final previousCameraController = controller;
+
     final CameraController cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
+
     controller = cameraController;
+
+    if (mounted) {
+      setState(() {});
+    }
 
     // If the controller is updated then update the UI.
     cameraController.addListener(() {
@@ -646,6 +650,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (mounted) {
       setState(() {});
     }
+
+    await previousCameraController?.dispose();
   }
 
   void onTakePictureButtonPressed() {

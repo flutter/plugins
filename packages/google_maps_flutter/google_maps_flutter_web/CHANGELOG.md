@@ -1,3 +1,7 @@
+## 0.3.0+4
+
+* Add `implements` to pubspec.
+
 ## 0.3.0+3
 
 * Update the `README.md` usage instructions to not be tied to explicit package versions.

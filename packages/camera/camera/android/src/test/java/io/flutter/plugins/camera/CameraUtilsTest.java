@@ -12,7 +12,7 @@ import org.junit.Test;
 public class CameraUtilsTest {
 
   @Test
-  public void serializeDeviceOrientation_serializes_correctly() {
+  public void serializeDeviceOrientation_serializesCorrectly() {
     assertEquals(
         "portraitUp",
         CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_UP));
@@ -33,7 +33,7 @@ public class CameraUtilsTest {
   }
 
   @Test
-  public void deserializeDeviceOrientation_deserializes_correctly() {
+  public void deserializeDeviceOrientation_deserializesCorrectly() {
     assertEquals(
         PlatformChannel.DeviceOrientation.PORTRAIT_UP,
         CameraUtils.deserializeDeviceOrientation("portraitUp"));
@@ -49,7 +49,7 @@ public class CameraUtilsTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void deserializeDeviceOrientation_throws_for_null() {
+  public void deserializeDeviceOrientation_throwsForNull() {
     CameraUtils.deserializeDeviceOrientation(null);
   }
 }
