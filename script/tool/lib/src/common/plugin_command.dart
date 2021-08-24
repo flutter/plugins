@@ -19,10 +19,12 @@ import 'repository_package.dart';
 /// An entry in package enumeration for APIs that need to include extra
 /// data about the entry.
 class PackageEnumerationEntry {
-  /// Creates a new entry for the given package directory.
+  /// Creates a new entry for the given package.
   PackageEnumerationEntry(this.package, {required this.excluded});
 
-  /// The package.
+  /// The package this entry corresponds to. Be sure to check `excluded` before
+  /// using this, as having an entry does not necessarily mean that the package
+  /// should be included in the processing of the enumeration.
   final RepositoryPackage package;
 
   /// Whether or not this package was excluded by the command invocation.

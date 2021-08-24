@@ -13,12 +13,10 @@ import 'core.dart';
 // cache of the parsed pubspec.
 class RepositoryPackage {
   /// Creates a representation of the package at [directory].
-  ///
-  ///
   RepositoryPackage(this.directory);
 
   /// The location of the package.
-  Directory directory;
+  final Directory directory;
 
   /// The path to the package.
   String get path => directory.path;

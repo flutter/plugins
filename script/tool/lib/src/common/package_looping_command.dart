@@ -206,13 +206,13 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
     await initializeRun();
 
-    final List<PackageEnumerationEntry> packageEnumeration = includeSubpackages
+    final List<PackageEnumerationEntry> targetPackages = includeSubpackages
         ? await getTargetPackagesAndSubpackages(filterExcluded: false).toList()
         : await getTargetPackages(filterExcluded: false).toList();
 
     final Map<PackageEnumerationEntry, PackageResult> results =
         <PackageEnumerationEntry, PackageResult>{};
-    for (final PackageEnumerationEntry entry in packageEnumeration) {
+    for (final PackageEnumerationEntry entry in targetPackages) {
       _currentPackageEntry = entry;
       _printPackageHeading(entry);
 
@@ -239,13 +239,13 @@ abstract class PackageLoopingCommand extends PluginCommand {
     // If there were any errors reported, summarize them and exit.
     if (results.values
         .any((PackageResult result) => result.state == RunState.failed)) {
-      _printFailureSummary(packageEnumeration, results);
+      _printFailureSummary(targetPackages, results);
       return false;
     }
 
     // Otherwise, print a summary of what ran for ease of auditing that all the
     // expected tests ran.
-    _printRunSummary(packageEnumeration, results);
+    _printRunSummary(targetPackages, results);
 
     print('\n');
     _printSuccess('No issues found!');
