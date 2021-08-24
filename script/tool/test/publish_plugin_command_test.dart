@@ -152,9 +152,6 @@ void main() {
         MockProcess(exitCode: 1),
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
@@ -176,8 +173,6 @@ void main() {
     test('can publish non-flutter package', () async {
       const String packageName = 'a_package';
       createFakePackage(packageName, packagesDir);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
 
       final List<String> output = await runCapturingPrint(
           commandRunner, <String>[
@@ -203,7 +198,11 @@ void main() {
   group('Publishes package', () {
     test('while showing all output from pub publish to the user', () async {
       processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
-        MockProcess(stdout: 'Foo', stderr: 'Bar')
+        MockProcess(
+            stdout: 'Foo',
+            stderr: 'Bar',
+            stdoutEncoding: utf8,
+            stderrEncoding: utf8) // pub publish
       ];
 
       final List<String> output =
@@ -225,7 +224,6 @@ void main() {
 
     test('forwards input from the user to `pub publish`', () async {
       mockStdin.mockUserInputs.add(utf8.encode('user input'));
-      processRunner.mockPublishCompleteCode = 0;
 
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
@@ -240,8 +238,6 @@ void main() {
     });
 
     test('forwards --pub-publish-flags to pub publish', () async {
-      processRunner.mockPublishCompleteCode = 0;
-
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
@@ -263,7 +259,6 @@ void main() {
     test(
         '--skip-confirmation flag automatically adds --force to --pub-publish-flags',
         () async {
-      processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
 
       await runCapturingPrint(commandRunner, <String>[
@@ -286,7 +281,9 @@ void main() {
     });
 
     test('throws if pub publish fails', () async {
-      processRunner.mockPublishCompleteCode = 128;
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(exitCode: 128) // pub publish
+      ];
 
       Error? commandError;
       final List<String> output =
@@ -335,8 +332,6 @@ void main() {
 
   group('Tags release', () {
     test('with the version and name from the pubspec.yaml', () async {
-      processRunner.mockPublishCompleteCode = 0;
-
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
@@ -351,7 +346,9 @@ void main() {
     });
 
     test('only if publishing succeeded', () async {
-      processRunner.mockPublishCompleteCode = 128;
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(exitCode: 128) // pub publish
+      ];
 
       Error? commandError;
       final List<String> output =
@@ -379,7 +376,6 @@ void main() {
 
   group('Pushes tags', () {
     test('requires user confirmation', () async {
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'help';
 
       Error? commandError;
@@ -397,7 +393,6 @@ void main() {
     });
 
     test('to upstream by default', () async {
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output =
@@ -420,7 +415,6 @@ void main() {
 
     test('does not ask for user input if the --skip-confirmation flag is on',
         () async {
-      processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
 
       final List<String> output =
@@ -443,8 +437,6 @@ void main() {
     });
 
     test('to upstream by default, dry run', () async {
-      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishCompleteCode = 1;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -466,7 +458,6 @@ void main() {
     });
 
     test('to different remotes based on a flag', () async {
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output =
@@ -490,8 +481,6 @@ void main() {
     });
 
     test('only if tagging and pushing to remotes are both enabled', () async {
-      processRunner.mockPublishCompleteCode = 0;
-
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
@@ -558,8 +547,6 @@ void main() {
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -643,8 +630,6 @@ void main() {
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -787,8 +772,6 @@ void main() {
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output2 = await runCapturingPrint(commandRunner,
@@ -860,8 +843,6 @@ void main() {
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output2 = await runCapturingPrint(commandRunner,
@@ -1112,30 +1093,19 @@ class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
 
-  int mockPublishCompleteCode = 0;
-
   @override
   Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
-    final String flutterCommand = getFlutterCommand(const LocalPlatform());
+    final io.Process process =
+        await super.start(executable, args, workingDirectory: workingDirectory);
     // Route through super to get the logging.
-    if (mockProcessesForExecutable[flutterCommand]?.isEmpty ?? true) {
-      /// Never actually publish anything. Start is always and only used for this
-      /// since it returns something we can route stdin through.
-      assert(executable == flutterCommand &&
-          args.isNotEmpty &&
-          args[0] == 'pub' &&
-          args[1] == 'publish');
-
-      mockProcessesForExecutable[flutterCommand] = <io.Process>[
-        mockPublishProcess = MockProcess(
-          exitCode: mockPublishCompleteCode,
-          stdoutEncoding: utf8,
-          stderrEncoding: utf8,
-        )
-      ];
+    if (executable == getFlutterCommand(const LocalPlatform()) &&
+        args.isNotEmpty &&
+        args[0] == 'pub' &&
+        args[1] == 'publish') {
+      mockPublishProcess = process as MockProcess;
     }
-    return super.start(executable, args, workingDirectory: workingDirectory);
+    return process;
   }
 }
 
