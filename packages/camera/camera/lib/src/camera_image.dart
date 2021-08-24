@@ -132,11 +132,11 @@ class CameraImage {
   /// The aperture settings for this image.
   ///
   /// Represented as an f-stop value.
-  final double lensAperture;
+  final double? lensAperture;
 
   /// The sensor exposure time for this image in nanoseconds.
-  final int sensorExposureTime;
+  final int? sensorExposureTime;
 
   /// The sensor sensitivity in standard ISO arithmetic units.
-  final double sensorSensitivity;
+  final double? sensorSensitivity;
 }
