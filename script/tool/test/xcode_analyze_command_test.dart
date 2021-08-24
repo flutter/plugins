@@ -131,7 +131,7 @@ void main() {
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -228,7 +228,7 @@ void main() {
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
