@@ -10,7 +10,6 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -1108,7 +1107,7 @@ void main() {
   });
 }
 
-class TestProcessRunner extends ProcessRunner {
+class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
   final List<String> mockPublishArgs = <String>[];
@@ -1118,42 +1117,30 @@ class TestProcessRunner extends ProcessRunner {
   int mockPublishCompleteCode = 0;
 
   @override
-  Future<io.ProcessResult> run(
-    String executable,
-    List<String> args, {
-    Directory? workingDir,
-    bool exitOnError = false,
-    bool logOnError = false,
-    Encoding stdoutEncoding = io.systemEncoding,
-    Encoding stderrEncoding = io.systemEncoding,
-  }) async {
-    final io.ProcessResult result = io.Process.runSync(executable, args,
-        workingDirectory: workingDir?.path);
-    if (result.exitCode != 0) {
-      throw ToolExit(result.exitCode);
-    }
-    return result;
-  }
-
-  @override
   Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
-    /// Never actually publish anything. Start is always and only used for this
-    /// since it returns something we can route stdin through.
-    assert(executable == getFlutterCommand(const LocalPlatform()) &&
-        args.isNotEmpty &&
-        args[0] == 'pub' &&
-        args[1] == 'publish');
-    mockPublishArgs.addAll(args);
+    final String flutterCommand = getFlutterCommand(const LocalPlatform());
+    // Route through super to get the logging.
+    if (mockProcessesForExecutable[flutterCommand]?.isEmpty ?? true) {
+      /// Never actually publish anything. Start is always and only used for this
+      /// since it returns something we can route stdin through.
+      assert(executable == getFlutterCommand(const LocalPlatform()) &&
+          args.isNotEmpty &&
+          args[0] == 'pub' &&
+          args[1] == 'publish');
+      mockPublishArgs.addAll(args);
 
-    mockPublishProcess = MockProcess(
-      exitCode: mockPublishCompleteCode,
-      stdout: mockPublishStdout,
-      stderr: mockPublishStderr,
-      stdoutEncoding: utf8,
-      stderrEncoding: utf8,
-    );
-    return mockPublishProcess;
+      mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        mockPublishProcess = MockProcess(
+          exitCode: mockPublishCompleteCode,
+          stdout: mockPublishStdout,
+          stderr: mockPublishStderr,
+          stdoutEncoding: utf8,
+          stderrEncoding: utf8,
+        )
+      ];
+    }
+    return super.start(executable, args, workingDirectory: workingDirectory);
   }
 }
 
@@ -1188,13 +1175,4 @@ class MockStdin extends Mock implements io.Stdin {
       readLineOutput;
 
   void _addUserInputsToSteam(List<int> input) => _controller.add(input);
-}
-
-class MockProcessResult extends Mock implements io.ProcessResult {
-  MockProcessResult({int exitCode = 0}) : _exitCode = exitCode;
-
-  final int _exitCode;
-
-  @override
-  int get exitCode => _exitCode;
 }
