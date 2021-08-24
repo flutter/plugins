@@ -1,4 +1,4 @@
-## NEXT
+## 2.1.15
 
 * Fixes order-dependent unit tests.
 
