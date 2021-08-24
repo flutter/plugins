@@ -61,6 +61,9 @@ class CameraPlugin extends CameraPlatform {
   final _cameraVideoAbortSubscriptions =
       <int, StreamSubscription<html.Event>>{};
 
+  final _cameraEndedSubscriptions =
+      <int, StreamSubscription<html.MediaStreamTrack>>{};
+
   /// Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
       cameraEventStreamController.stream
@@ -273,6 +276,15 @@ class CameraPlugin extends CameraPlatform {
 
       await camera.play();
 
+      // Add camera's closing events to the camera events stream.
+      // The onEnded stream fires when there is no more camera stream data.
+      _cameraEndedSubscriptions[cameraId] =
+          camera.onEnded.listen((html.MediaStreamTrack _) {
+        cameraEventStreamController.add(
+          CameraClosingEvent(cameraId),
+        );
+      });
+
       final cameraSize = await camera.getVideoSize();
 
       cameraEventStreamController.add(
@@ -313,7 +325,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<CameraClosingEvent> onCameraClosing(int cameraId) {
-    throw UnimplementedError('onCameraClosing() is not implemented.');
+    return _cameraEvents(cameraId).whereType<CameraClosingEvent>();
   }
 
   @override
@@ -548,13 +560,15 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> dispose(int cameraId) async {
     try {
-      getCamera(cameraId).dispose();
+      await getCamera(cameraId).dispose();
       await _cameraVideoErrorSubscriptions[cameraId]?.cancel();
       await _cameraVideoAbortSubscriptions[cameraId]?.cancel();
+      await _cameraEndedSubscriptions[cameraId]?.cancel();
 
       cameras.remove(cameraId);
       _cameraVideoErrorSubscriptions.remove(cameraId);
       _cameraVideoAbortSubscriptions.remove(cameraId);
+      _cameraEndedSubscriptions.remove(cameraId);
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
     }
