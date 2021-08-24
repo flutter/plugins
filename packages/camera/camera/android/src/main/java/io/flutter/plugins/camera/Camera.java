@@ -1048,8 +1048,9 @@ class Camera
           imageBuffer.put("planes", planes);
           imageBuffer.put("lensAperture", this.captureProps.getLastLensAperture());
           imageBuffer.put("sensorExposureTime", this.captureProps.getLastSensorExposureTime());
+          Integer sensorSensitivity = this.captureProps.getLastSensorSensitivity();
           imageBuffer.put(
-              "sensorSensitivity", (double) this.captureProps.getLastSensorSensitivity());
+              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.post(() -> imageStreamSink.success(imageBuffer));

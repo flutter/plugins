@@ -73,12 +73,14 @@ class CameraCaptureCallback extends CaptureCallback {
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
 
     // Update capture properties
-    Float lensAperture = result.get(CaptureResult.LENS_APERTURE);
-    Long sensorExposureTime = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
-    Integer sensorSensitivity = result.get(CaptureResult.SENSOR_SENSITIVITY);
-    this.captureProps.setLastLensAperture(lensAperture);
-    this.captureProps.setLastSensorExposureTime(sensorExposureTime);
-    this.captureProps.setLastSensorSensitivity(sensorSensitivity);
+    if (result instanceof TotalCaptureResult) {
+      Float lensAperture = result.get(CaptureResult.LENS_APERTURE);
+      Long sensorExposureTime = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
+      Integer sensorSensitivity = result.get(CaptureResult.SENSOR_SENSITIVITY);
+      this.captureProps.setLastLensAperture(lensAperture);
+      this.captureProps.setLastSensorExposureTime(sensorExposureTime);
+      this.captureProps.setLastSensorSensitivity(sensorSensitivity);
+    }
 
     if (cameraState != CameraState.STATE_PREVIEW) {
       Log.d(
