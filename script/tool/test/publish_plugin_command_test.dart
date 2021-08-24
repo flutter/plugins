@@ -23,6 +23,7 @@ import 'util.dart';
 
 void main() {
   const String testPluginName = 'foo';
+  final String flutterCommand = getFlutterCommand(const LocalPlatform());
 
   late Directory packagesDir;
   late Directory pluginDir;
@@ -253,11 +254,12 @@ void main() {
         '--dry-run,--server=foo'
       ]);
 
-      expect(processRunner.mockPublishArgs.length, 4);
-      expect(processRunner.mockPublishArgs[0], 'pub');
-      expect(processRunner.mockPublishArgs[1], 'publish');
-      expect(processRunner.mockPublishArgs[2], '--dry-run');
-      expect(processRunner.mockPublishArgs[3], '--server=foo');
+      expect(
+          processRunner.recordedCalls,
+          contains(ProcessCall(
+              flutterCommand,
+              const <String>['pub', 'publish', '--dry-run', '--server=foo'],
+              pluginDir.path)));
     });
 
     test(
@@ -277,11 +279,12 @@ void main() {
         '--server=foo'
       ]);
 
-      expect(processRunner.mockPublishArgs.length, 4);
-      expect(processRunner.mockPublishArgs[0], 'pub');
-      expect(processRunner.mockPublishArgs[1], 'publish');
-      expect(processRunner.mockPublishArgs[2], '--server=foo');
-      expect(processRunner.mockPublishArgs[3], '--force');
+      expect(
+          processRunner.recordedCalls,
+          contains(ProcessCall(
+              flutterCommand,
+              const <String>['pub', 'publish', '--server=foo', '--force'],
+              pluginDir.path)));
     });
 
     test('throws if pub publish fails', () async {
@@ -1110,7 +1113,6 @@ void main() {
 class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
-  final List<String> mockPublishArgs = <String>[];
 
   String? mockPublishStdout;
   String? mockPublishStderr;
@@ -1124,11 +1126,10 @@ class TestProcessRunner extends RecordingProcessRunner {
     if (mockProcessesForExecutable[flutterCommand]?.isEmpty ?? true) {
       /// Never actually publish anything. Start is always and only used for this
       /// since it returns something we can route stdin through.
-      assert(executable == getFlutterCommand(const LocalPlatform()) &&
+      assert(executable == flutterCommand &&
           args.isNotEmpty &&
           args[0] == 'pub' &&
           args[1] == 'publish');
-      mockPublishArgs.addAll(args);
 
       mockProcessesForExecutable[flutterCommand] = <io.Process>[
         mockPublishProcess = MockProcess(
