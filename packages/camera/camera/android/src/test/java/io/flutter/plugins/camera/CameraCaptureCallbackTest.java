@@ -4,7 +4,11 @@
 
 package io.flutter.plugins.camera;
 
+import static org.mockito.ArgumentMatchers.anyFloat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -38,19 +42,16 @@ public class CameraCaptureCallbackTest {
   }
 
   @Test
-  public void onCaptureProgressed_updatesCameraCaptureProperties() {
+  public void onCaptureProgressed_doesNotUpdateCameraCaptureProperties() {
     CameraCaptureSession mockSession = mock(CameraCaptureSession.class);
     CaptureRequest mockRequest = mock(CaptureRequest.class);
     CaptureResult mockResult = mock(CaptureResult.class);
-    when(mockResult.get(CaptureResult.LENS_APERTURE)).thenReturn(1.0f);
-    when(mockResult.get(CaptureResult.SENSOR_EXPOSURE_TIME)).thenReturn(2L);
-    when(mockResult.get(CaptureResult.SENSOR_SENSITIVITY)).thenReturn(3);
 
     cameraCaptureCallback.onCaptureProgressed(mockSession, mockRequest, mockResult);
 
-    verify(mockCaptureProps, times(1)).setLastLensAperture(1.0f);
-    verify(mockCaptureProps, times(1)).setLastSensorExposureTime(2L);
-    verify(mockCaptureProps, times(1)).setLastSensorSensitivity(3);
+    verify(mockCaptureProps, never()).setLastLensAperture(anyFloat());
+    verify(mockCaptureProps, never()).setLastSensorExposureTime(anyLong());
+    verify(mockCaptureProps, never()).setLastSensorSensitivity(anyInt());
   }
 
   @Test
