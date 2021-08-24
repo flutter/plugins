@@ -1060,7 +1060,7 @@ class TestProcessRunner extends ProcessRunner {
 
   String? mockPublishStdout;
   String? mockPublishStderr;
-  int? mockPublishCompleteCode;
+  int mockPublishCompleteCode = 0;
 
   @override
   Future<io.ProcessResult> run(
@@ -1097,17 +1097,14 @@ class TestProcessRunner extends ProcessRunner {
         args[0] == 'pub' &&
         args[1] == 'publish');
     mockPublishArgs.addAll(args);
-    mockPublishProcess = MockProcess();
-    if (mockPublishStdout != null) {
-      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout!));
-    }
-    if (mockPublishStderr != null) {
-      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr!));
-    }
-    if (mockPublishCompleteCode != null) {
-      mockPublishProcess.exitCodeCompleter.complete(mockPublishCompleteCode);
-    }
 
+    mockPublishProcess = MockProcess(
+      exitCode: mockPublishCompleteCode,
+      stdout: mockPublishStdout,
+      stderr: mockPublishStderr,
+      stdoutEncoding: utf8,
+      stderrEncoding: utf8,
+    );
     return mockPublishProcess;
   }
 }
