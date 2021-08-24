@@ -1,6 +1,6 @@
 ## 0.1.4+6
 
-* Ensure that purchases correctly indicate if they are acknoledged or not (the `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed).
+* Ensure that purchases correctly indicate whether they are acknowledged or not. The `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed.
 
 ## 0.1.4+5
 
