@@ -1,3 +1,7 @@
+## 0.9.1
+
+* Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.
+
 ## 0.9.0
 
 * Complete rewrite of Android plugin to fix many capture, focus, flash, orientation and exposure issues.
