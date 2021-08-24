@@ -46,6 +46,7 @@ Directory createPackagesDirectory(
 ///
 /// [extraFiles] is an optional list of plugin-relative paths, using Posix
 /// separators, of extra files to create in the plugin.
+// TODO(stuartmorgan): Convert the return to a RepositoryPackage.
 Directory createFakePlugin(
   String name,
   Directory parentDirectory, {
@@ -77,6 +78,7 @@ Directory createFakePlugin(
 ///
 /// [extraFiles] is an optional list of package-relative paths, using unix-style
 /// separators, of extra files to create in the package.
+// TODO(stuartmorgan): Convert the return to a RepositoryPackage.
 Directory createFakePackage(
   String name,
   Directory parentDirectory, {

@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:test/test.dart';
 
 import '../util.dart';
@@ -21,7 +22,8 @@ void main() {
 
   group('pluginSupportsPlatform', () {
     test('no platforms', () async {
-      final Directory plugin = createFakePlugin('plugin', packagesDir);
+      final RepositoryPackage plugin =
+          RepositoryPackage(createFakePlugin('plugin', packagesDir));
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isFalse);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isFalse);
@@ -32,7 +34,8 @@ void main() {
     });
 
     test('all platforms', () async {
-      final Directory plugin = createFakePlugin('plugin', packagesDir,
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
+          'plugin', packagesDir,
           platformSupport: <String, PlatformSupport>{
             kPlatformAndroid: PlatformSupport.inline,
             kPlatformIos: PlatformSupport.inline,
@@ -40,7 +43,7 @@ void main() {
             kPlatformMacos: PlatformSupport.inline,
             kPlatformWeb: PlatformSupport.inline,
             kPlatformWindows: PlatformSupport.inline,
-          });
+          }));
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isTrue);
@@ -51,7 +54,7 @@ void main() {
     });
 
     test('some platforms', () async {
-      final Directory plugin = createFakePlugin(
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformSupport>{
@@ -59,7 +62,7 @@ void main() {
           kPlatformLinux: PlatformSupport.inline,
           kPlatformWeb: PlatformSupport.inline,
         },
-      );
+      ));
 
       expect(pluginSupportsPlatform(kPlatformAndroid, plugin), isTrue);
       expect(pluginSupportsPlatform(kPlatformIos, plugin), isFalse);
@@ -70,7 +73,7 @@ void main() {
     });
 
     test('inline plugins are only detected as inline', () async {
-      final Directory plugin = createFakePlugin(
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
         'plugin',
         packagesDir,
         platformSupport: <String, PlatformSupport>{
@@ -81,7 +84,7 @@ void main() {
           kPlatformWeb: PlatformSupport.inline,
           kPlatformWindows: PlatformSupport.inline,
         },
-      );
+      ));
 
       expect(
           pluginSupportsPlatform(kPlatformAndroid, plugin,
@@ -135,7 +138,7 @@ void main() {
 
     test('federated plugins are only detected as federated', () async {
       const String pluginName = 'plugin';
-      final Directory plugin = createFakePlugin(
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
         pluginName,
         packagesDir,
         platformSupport: <String, PlatformSupport>{
@@ -146,7 +149,7 @@ void main() {
           kPlatformWeb: PlatformSupport.federated,
           kPlatformWindows: PlatformSupport.federated,
         },
-      );
+      ));
 
       expect(
           pluginSupportsPlatform(kPlatformAndroid, plugin,

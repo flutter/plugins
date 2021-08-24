@@ -498,7 +498,7 @@ packages/plugin3/plugin3.dart
         expect(
             localCommand.plugins,
             unorderedEquals(expectedShards[i]
-                .map((Directory package) => package.path)
+                .map((Directory packageDir) => packageDir.path)
                 .toList()));
       }
     });
@@ -541,7 +541,7 @@ packages/plugin3/plugin3.dart
         expect(
             localCommand.plugins,
             unorderedEquals(expectedShards[i]
-                .map((Directory package) => package.path)
+                .map((Directory packageDir) => packageDir.path)
                 .toList()));
       }
     });
@@ -594,7 +594,7 @@ packages/plugin3/plugin3.dart
         expect(
             localCommand.plugins,
             unorderedEquals(expectedShards[i]
-                .map((Directory package) => package.path)
+                .map((Directory packageDir) => packageDir.path)
                 .toList()));
       }
     });
@@ -620,8 +620,8 @@ class SamplePluginCommand extends PluginCommand {
 
   @override
   Future<void> run() async {
-    await for (final PackageEnumerationEntry package in getTargetPackages()) {
-      plugins.add(package.directory.path);
+    await for (final PackageEnumerationEntry entry in getTargetPackages()) {
+      plugins.add(entry.package.path);
     }
   }
 }
