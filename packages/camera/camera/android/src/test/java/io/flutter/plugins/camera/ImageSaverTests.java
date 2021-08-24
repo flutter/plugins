@@ -80,7 +80,7 @@ public class ImageSaverTests {
   }
 
   @Test
-  public void run_writes_bytes_to_file_and_finishes_with_path() throws IOException {
+  public void runWritesBytesToFileAndFinishesWithPath() throws IOException {
     imageSaver.run();
 
     verify(mockFileOutputStream, times(1)).write(new byte[] {0x42, 0x00, 0x13});
@@ -89,7 +89,7 @@ public class ImageSaverTests {
   }
 
   @Test
-  public void run_calls_error_on_write_ioexception() throws IOException {
+  public void runCallsErrorOnWriteIoexception() throws IOException {
     doThrow(new IOException()).when(mockFileOutputStream).write(any());
     imageSaver.run();
     verify(mockCallback, times(1)).onError("IOError", "Failed saving image");
@@ -97,7 +97,7 @@ public class ImageSaverTests {
   }
 
   @Test
-  public void run_calls_error_on_close_ioexception() throws IOException {
+  public void runCallsErrorOnCloseIoexception() throws IOException {
     doThrow(new IOException("message")).when(mockFileOutputStream).close();
     imageSaver.run();
     verify(mockCallback, times(1)).onError("cameraAccess", "message");

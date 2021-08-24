@@ -1,8 +1,13 @@
+## 0.5.1+1
+
+- Fixed `build-examples` to work for non-plugin packages.
+
 ## 0.5.1
 
 - Added Android native integration test support to `native-test`.
 - Added a new `android-lint` command to lint Android plugin native code.
-- Fixed `build-examples` to work for non-plugin packages.
+- Pubspec validation now checks for `implements` in implementation packages.
+- Pubspec valitation now checks the full relative path of `repository` entries.
 
 ## 0.5.0
 

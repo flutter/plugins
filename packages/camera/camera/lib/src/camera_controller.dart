@@ -118,7 +118,7 @@ class CameraValue {
   /// Whether setting the focus point is supported.
   final bool focusPointSupported;
 
-  /// The current device orientation.
+  /// The current device UI orientation.
   final DeviceOrientation deviceOrientation;
 
   /// The currently locked capture orientation.
