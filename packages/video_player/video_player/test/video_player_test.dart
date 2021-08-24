@@ -284,6 +284,15 @@ void main() {
       });
     });
 
+    test('contentUri', () async {
+      final VideoPlayerController controller =
+          VideoPlayerController.contentUri(Uri.parse('content://video'));
+      await controller.initialize();
+
+      expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'content://video');
+    });
+
     test('dispose', () async {
       final VideoPlayerController controller = VideoPlayerController.network(
         'https://127.0.0.1',
