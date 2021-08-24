@@ -834,36 +834,37 @@ class Camera
      * For focus mode an extra step of actually locking/unlocking the
      * focus has to be done, in order to ensure it goes into the correct state.
      */
-      if (!pausedPreview) {
-        switch (newMode) {
-          case locked:
-            // Perform a single focus trigger.
-            if (captureSession == null) {
-              Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
-              return;
-            }
-            lockAutoFocus();
+    if (!pausedPreview) {
+      switch (newMode) {
+        case locked:
+          // Perform a single focus trigger.
+          if (captureSession == null) {
+            Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+            return;
+          }
+          lockAutoFocus();
 
-            // Set AF state to idle again.
-            previewRequestBuilder.set(
-                    CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+          // Set AF state to idle again.
+          previewRequestBuilder.set(
+              CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
 
-            try {
-              captureSession.setRepeatingRequest(
-                      previewRequestBuilder.build(), null, backgroundHandler);
-            } catch (CameraAccessException e) {
-              if (result != null) {
-                result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
-              }
-              return;
+          try {
+            captureSession.setRepeatingRequest(
+                previewRequestBuilder.build(), null, backgroundHandler);
+          } catch (CameraAccessException e) {
+            if (result != null) {
+              result.error(
+                  "setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
             }
-            break;
-          case auto:
-            // Cancel current AF trigger and set AF to idle again.
-            unlockAutoFocus();
-            break;
-        }
+            return;
+          }
+          break;
+        case auto:
+          // Cancel current AF trigger and set AF to idle again.
+          unlockAutoFocus();
+          break;
       }
+    }
 
     if (result != null) {
       result.success(null);
