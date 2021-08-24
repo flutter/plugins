@@ -104,7 +104,7 @@ class CameraImage {
         sensorExposureTime = data['sensorExposureTime'],
         sensorSensitivity = data['sensorSensitivity'],
         planes = List<Plane>.unmodifiable(data['planes']
-            .map((dynamic planeData) => Plane._fromPlatformData(planeData))) {}
+            .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
 
   /// Format of the image provided.
   ///
