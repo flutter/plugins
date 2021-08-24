@@ -19,7 +19,6 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
     required String? transactionDate,
     required this.billingClientPurchase,
     required PurchaseStatus status,
-    bool pendingCompletePurchase = false,
   }) : super(
           productID: productID,
           purchaseID: purchaseID,
@@ -27,7 +26,7 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
           verificationData: verificationData,
           status: status,
         ) {
-    this.pendingCompletePurchase = pendingCompletePurchase;
+    this.pendingCompletePurchase = !billingClientPurchase.isAcknowledged;
   }
 
   /// Points back to the [PurchaseWrapper] which was used to generate this
@@ -46,7 +45,6 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
       transactionDate: purchase.purchaseTime.toString(),
       billingClientPurchase: purchase,
       status: PurchaseStateConverter().toPurchaseStatus(purchase.purchaseState),
-      pendingCompletePurchase: !purchase.isAcknowledged,
     );
 
     if (purchaseDetails.status == PurchaseStatus.error) {
