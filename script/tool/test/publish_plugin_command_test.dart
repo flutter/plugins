@@ -29,7 +29,6 @@ void main() {
   late Directory pluginDir;
   late MockGitDir gitDir;
   late TestProcessRunner processRunner;
-  late RecordingProcessRunner gitProcessRunner;
   late CommandRunner<void> commandRunner;
   late MockStdin mockStdin;
   late FileSystem fileSystem;
@@ -49,7 +48,7 @@ void main() {
         createFakePlugin(testPluginName, packagesDir, examples: <String>[]);
     assert(pluginDir != null && pluginDir.existsSync());
 
-    gitProcessRunner = RecordingProcessRunner();
+    processRunner = TestProcessRunner();
     gitDir = MockGitDir();
     when(gitDir.path).thenReturn(packagesDir.parent.path);
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
@@ -59,10 +58,9 @@ void main() {
       // Attach the first argument to the command to make targeting the mock
       // results easier.
       final String gitCommand = arguments.removeAt(0);
-      return gitProcessRunner.run('git-$gitCommand', arguments);
+      return processRunner.run('git-$gitCommand', arguments);
     });
 
-    processRunner = TestProcessRunner();
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(packagesDir,
@@ -99,7 +97,7 @@ void main() {
     });
 
     test('refuses to proceed with dirty files', () async {
-      gitProcessRunner.mockProcessesForExecutable['git-status'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-status'] = <io.Process>[
         MockProcess(stdout: '?? ${pluginDir.childFile('tmp').path}\n')
       ];
 
@@ -128,7 +126,7 @@ void main() {
     });
 
     test('fails immediately if the remote doesn\'t exist', () async {
-      gitProcessRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
         MockProcess(exitCode: 1),
       ];
 
@@ -150,7 +148,7 @@ void main() {
 
     test("doesn't validate the remote if it's not pushing tags", () async {
       // Checking the remote should fail.
-      gitProcessRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
         MockProcess(exitCode: 1),
       ];
 
@@ -322,7 +320,7 @@ void main() {
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
       expect(
@@ -347,7 +345,7 @@ void main() {
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-tag', <String>['$testPluginName-v0.0.1'], null)));
     });
@@ -373,7 +371,7 @@ void main() {
             contains('Publish foo failed.'),
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           isNot(contains(
               const ProcessCall('git-tag', <String>['foo-v0.0.1'], null))));
     });
@@ -410,7 +408,7 @@ void main() {
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall('git-push',
               <String>['upstream', '$testPluginName-v0.0.1'], null)));
       expect(
@@ -434,7 +432,7 @@ void main() {
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall('git-push',
               <String>['upstream', '$testPluginName-v0.0.1'], null)));
       expect(
@@ -453,7 +451,7 @@ void main() {
           <String>['publish-plugin', '--package', testPluginName, '--dry-run']);
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
       expect(
@@ -481,7 +479,7 @@ void main() {
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['origin', '$testPluginName-v0.0.1'], null)));
       expect(
@@ -503,7 +501,7 @@ void main() {
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
       expect(
@@ -555,7 +553,7 @@ void main() {
         'plugin2',
         packagesDir.childDirectory('plugin2'),
       );
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -578,11 +576,11 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.1'], null)));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin2-v0.0.1'], null)));
     });
@@ -636,10 +634,10 @@ void main() {
 
       // Git results for plugin0 having been released already, and plugin1 and
       // plugin2 being new.
-      gitProcessRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
         MockProcess(stdout: 'plugin0-v0.0.1\n')
       ];
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -663,11 +661,11 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.1'], null)));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin2-v0.0.1'], null)));
     });
@@ -708,7 +706,7 @@ void main() {
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -739,7 +737,7 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -783,7 +781,7 @@ void main() {
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -806,11 +804,11 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.2'], null)));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin2-v0.0.2'], null)));
     });
@@ -856,7 +854,7 @@ void main() {
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       pluginDir2.deleteSync(recursive: true);
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -879,7 +877,7 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.2'], null)));
     });
@@ -924,12 +922,12 @@ void main() {
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
-      gitProcessRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
         MockProcess(
             stdout: 'plugin1-v0.0.2\n'
                 'plugin2-v0.0.2\n')
@@ -951,7 +949,7 @@ void main() {
           ]));
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -997,7 +995,7 @@ void main() {
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -1022,7 +1020,7 @@ void main() {
                 'However, the git release tag for this version (plugin2-v0.0.2) is not found.'),
           ]));
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -1034,7 +1032,7 @@ void main() {
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('plugin1.dart').path}\n'
                 '${pluginDir2.childFile('plugin2.dart').path}\n')
@@ -1052,7 +1050,7 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -1083,7 +1081,7 @@ void main() {
 
       final Directory flutterPluginTools =
           createFakePlugin('flutter_plugin_tools', packagesDir);
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(stdout: flutterPluginTools.childFile('pubspec.yaml').path)
       ];
 
@@ -1103,7 +1101,7 @@ void main() {
           ),
           isFalse);
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
