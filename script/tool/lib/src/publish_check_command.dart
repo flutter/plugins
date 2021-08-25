@@ -16,6 +16,7 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
+import 'common/repository_package.dart';
 
 /// A command to check that packages are publishable via 'dart publish'.
 class PublishCheckCommand extends PackageLoopingCommand {
@@ -75,7 +76,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final _PublishCheckResult? result = await _passesPublishCheck(package);
     if (result == null) {
       return PackageResult.skip('Package is marked as unpublishable.');
@@ -114,8 +115,8 @@ class PublishCheckCommand extends PackageLoopingCommand {
     }
   }
 
-  Pubspec? _tryParsePubspec(Directory package) {
-    final File pubspecFile = package.childFile('pubspec.yaml');
+  Pubspec? _tryParsePubspec(RepositoryPackage package) {
+    final File pubspecFile = package.pubspecFile;
 
     try {
       return Pubspec.parse(pubspecFile.readAsStringSync());
@@ -127,12 +128,12 @@ class PublishCheckCommand extends PackageLoopingCommand {
     }
   }
 
-  Future<bool> _hasValidPublishCheckRun(Directory package) async {
+  Future<bool> _hasValidPublishCheckRun(RepositoryPackage package) async {
     print('Running pub publish --dry-run:');
     final io.Process process = await processRunner.start(
       flutterCommand,
       <String>['pub', 'publish', '--', '--dry-run'],
-      workingDirectory: package,
+      workingDirectory: package.directory,
     );
 
     final StringBuffer outputBuffer = StringBuffer();
@@ -183,8 +184,9 @@ class PublishCheckCommand extends PackageLoopingCommand {
 
   /// Returns the result of the publish check, or null if the package is marked
   /// as unpublishable.
-  Future<_PublishCheckResult?> _passesPublishCheck(Directory package) async {
-    final String packageName = package.basename;
+  Future<_PublishCheckResult?> _passesPublishCheck(
+      RepositoryPackage package) async {
+    final String packageName = package.directory.basename;
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       print('no pubspec');
@@ -219,7 +221,7 @@ class PublishCheckCommand extends PackageLoopingCommand {
   Future<_PublishCheckResult> _checkPublishingStatus(
       {required String packageName, required Version? version}) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
-        await _pubVersionFinder.getPackageVersion(package: packageName);
+        await _pubVersionFinder.getPackageVersion(packageName: packageName);
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
         return pubVersionFinderResponse.versions.contains(version)
