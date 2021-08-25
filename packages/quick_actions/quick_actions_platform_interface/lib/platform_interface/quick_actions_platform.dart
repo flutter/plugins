@@ -38,7 +38,7 @@ abstract class QuickActionsPlatform extends PlatformInterface {
 
   /// Initializes this plugin.
   ///
-  /// Call this once before any further interaction with the the plugin.
+  /// Call this once before any further interaction with the plugin.
   Future<void> initialize(QuickActionHandler handler) async {
     throw UnimplementedError("initialize() has not been implemented.");
   }

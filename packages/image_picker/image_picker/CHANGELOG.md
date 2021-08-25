@@ -1,3 +1,8 @@
+## 0.8.3+3
+
+* Fix pickImage not returning a value on iOS when dismissing PHPicker sheet by swiping.
+* Updated Android lint settings.
+
 ## 0.8.3+2
 
 * Fix using Camera as image source on Android 11+

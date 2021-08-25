@@ -1,0 +1,389 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 3.5.0" client="gradle" variant="debug" version="3.5.0">
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        errorLine1="                String.format("
+        errorLine2="                ^">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/DartVmService.java"
+            line="180"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        errorLine1="                String.format("
+        errorLine2="                ^">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/DartVmService.java"
+            line="186"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="DefaultLocale"
+        message="Implicitly using the default locale is a common source of bugs: Use `String.format(Locale, ...)` instead"
+        errorLine1="                String.format("
+        errorLine2="                ^">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/DartVmService.java"
+            line="192"
+            column="17"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(errorObject.message, this.message)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/ErrorObject.java"
+            line="50"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(errorObject.data, this.data);"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/ErrorObject.java"
+            line="51"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    hash = hash * 31 + Objects.hashCode(message);"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/ErrorObject.java"
+            line="60"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    hash = hash * 31 + Objects.hashCode(data);"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/ErrorObject.java"
+            line="61"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="        return Objects.equals(isolate.id, this.id)"
+        errorLine2="                       ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetVmResponse.java"
+            line="114"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="            &amp;&amp; Objects.equals(isolate.runnable, this.runnable)"
+        errorLine2="                       ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetVmResponse.java"
+            line="115"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="            &amp;&amp; Objects.equals(isolate.extensionRpcList, this.extensionRpcList);"
+        errorLine2="                       ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetVmResponse.java"
+            line="116"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hash`"
+        errorLine1="      return Objects.hash(id, runnable, extensionRpcList);"
+        errorLine2="                     ~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetVmResponse.java"
+            line="124"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="        return Objects.equals(this.name, widgetProperty.name)"
+        errorLine2="                       ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetWidgetDiagnosticsResponse.java"
+            line="178"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="            &amp;&amp; Objects.equals(this.value, widgetProperty.value)"
+        errorLine2="                       ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetWidgetDiagnosticsResponse.java"
+            line="179"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="            &amp;&amp; Objects.equals(this.description, widgetProperty.description);"
+        errorLine2="                       ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetWidgetDiagnosticsResponse.java"
+            line="180"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hash`"
+        errorLine1="      return Objects.hash(name, value, description);"
+        errorLine2="                     ~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/GetWidgetDiagnosticsResponse.java"
+            line="186"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="      return Objects.equals(objRequest.id, this.id)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcRequest.java"
+            line="136"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(objRequest.method, this.method)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcRequest.java"
+            line="137"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(objRequest.params, this.params);"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcRequest.java"
+            line="138"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    int hash = Objects.hashCode(id);"
+        errorLine2="                       ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcRequest.java"
+            line="146"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    hash = hash * 31 + Objects.hashCode(method);"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcRequest.java"
+            line="147"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    hash = hash * 31 + Objects.hashCode(params);"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcRequest.java"
+            line="148"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="      return Objects.equals(objResponse.id, this.id)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcResponse.java"
+            line="141"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(objResponse.result, this.result)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcResponse.java"
+            line="142"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(objResponse.error, this.error);"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcResponse.java"
+            line="143"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    int hash = Objects.hashCode(id);"
+        errorLine2="                       ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcResponse.java"
+            line="151"
+            column="24"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    hash = hash * 31 + Objects.hashCode(result);"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcResponse.java"
+            line="152"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    hash = hash * 31 + Objects.hashCode(error);"
+        errorLine2="                               ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/jsonrpc/message/JsonRpcResponse.java"
+            line="153"
+            column="32"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="      return Objects.equals(actionId, otherAction.actionId);"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/api/SyntheticAction.java"
+            line="56"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hashCode`"
+        errorLine1="    return Objects.hashCode(actionId);"
+        errorLine2="                   ~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/api/SyntheticAction.java"
+            line="64"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="      return Objects.equals(widget.valueKey, this.valueKey)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/model/WidgetInfo.java"
+            line="78"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(widget.runtimeType, this.runtimeType)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/model/WidgetInfo.java"
+            line="79"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(widget.text, this.text)"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/model/WidgetInfo.java"
+            line="80"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#equals`"
+        errorLine1="          &amp;&amp; Objects.equals(widget.tooltip, this.tooltip);"
+        errorLine2="                     ~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/model/WidgetInfo.java"
+            line="81"
+            column="22"/>
+    </issue>
+
+    <issue
+        id="NewApi"
+        message="Call requires API level 19 (current min is 16): `java.util.Objects#hash`"
+        errorLine1="    return Objects.hash(valueKey, runtimeType, text, tooltip);"
+        errorLine2="                   ~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/model/WidgetInfo.java"
+            line="89"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="VisibleForTests"
+        message="This method should only be accessed from tests or within private scope"
+        errorLine1="          ((io.flutter.embedding.android.FlutterView) flutterView).getAttachedFlutterEngine();"
+        errorLine2="                                                                   ~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="src/main/java/androidx/test/espresso/flutter/internal/protocol/impl/DartVmServiceUtil.java"
+            line="83"
+            column="68"/>
+    </issue>
+
+</issues>

@@ -60,12 +60,10 @@ void main() {
       final String output =
           '''${includeBanner ? updateBanner : ''}[${devices.join(',')}]''';
 
-      final MockProcess mockDevicesProcess = MockProcess.succeeding();
-      mockDevicesProcess.stdoutController.close(); // ignore: unawaited_futures
+      final MockProcess mockDevicesProcess = MockProcess(stdout: output);
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[mockDevicesProcess];
-      processRunner.resultStdout = output;
     }
 
     test('fails if no platforms are provided', () async {
@@ -151,7 +149,7 @@ void main() {
       // Simulate failure from `flutter devices`.
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
-          <io.Process>[MockProcess.failing()];
+          <io.Process>[MockProcess(exitCode: 1)];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -954,8 +952,8 @@ void main() {
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[
         // No mock for 'devices', since it's running for macOS.
-        MockProcess.failing(), // 'drive' #1
-        MockProcess.failing(), // 'drive' #2
+        MockProcess(exitCode: 1), // 'drive' #1
+        MockProcess(exitCode: 1), // 'drive' #2
       ];
 
       Error? commandError;

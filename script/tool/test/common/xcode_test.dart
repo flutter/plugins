@@ -94,8 +94,9 @@ void main() {
         }
       };
 
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout = jsonEncode(devices);
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(stdout: jsonEncode(devices)),
+      ];
 
       expect(await xcode.findBestAvailableIphoneSimulator(), expectedDeviceId);
     });
@@ -137,15 +138,16 @@ void main() {
         }
       };
 
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout = jsonEncode(devices);
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(stdout: jsonEncode(devices)),
+      ];
 
       expect(await xcode.findBestAvailableIphoneSimulator(), null);
     });
 
     test('returns null if simctl fails', () async {
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       expect(await xcode.findBestAvailableIphoneSimulator(), null);
@@ -216,7 +218,7 @@ void main() {
 
     test('returns error codes', () async {
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
       final Directory directory = const LocalFileSystem().currentDirectory;
 
@@ -247,8 +249,7 @@ void main() {
 
   group('projectHasTarget', () {
     test('returns true when present', () async {
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout = '''
+      const String stdout = '''
 {
   "project" : {
     "configurations" : [
@@ -266,6 +267,9 @@ void main() {
     ]
   }
 }''';
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(stdout: stdout),
+      ];
 
       final Directory project =
           const LocalFileSystem().directory('/foo.xcodeproj');
@@ -287,8 +291,7 @@ void main() {
     });
 
     test('returns false when not present', () async {
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout = '''
+      const String stdout = '''
 {
   "project" : {
     "configurations" : [
@@ -305,6 +308,9 @@ void main() {
     ]
   }
 }''';
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(stdout: stdout),
+      ];
 
       final Directory project =
           const LocalFileSystem().directory('/foo.xcodeproj');
@@ -326,8 +332,9 @@ void main() {
     });
 
     test('returns null for unexpected output', () async {
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout = '{}';
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(stdout: '{}'),
+      ];
 
       final Directory project =
           const LocalFileSystem().directory('/foo.xcodeproj');
@@ -349,8 +356,9 @@ void main() {
     });
 
     test('returns null for invalid output', () async {
-      processRunner.processToReturn = MockProcess.succeeding();
-      processRunner.resultStdout = ':)';
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(stdout: ':)'),
+      ];
 
       final Directory project =
           const LocalFileSystem().directory('/foo.xcodeproj');
@@ -372,7 +380,9 @@ void main() {
     });
 
     test('returns null for failure', () async {
-      processRunner.processToReturn = MockProcess.failing();
+      processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        MockProcess(exitCode: 1), // xcodebuild -list
+      ];
 
       final Directory project =
           const LocalFileSystem().directory('/foo.xcodeproj');
