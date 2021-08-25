@@ -7,6 +7,7 @@ import 'dart:io';
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
+import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_command.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:git/git.dart';
@@ -30,6 +31,7 @@ void main() {
   late Directory thirdPartyPackagesDir;
   late List<List<String>?> gitDirCommands;
   late String gitDiffResponse;
+  late String gitRevParseResponse;
 
   setUp(() {
     fileSystem = MemoryFileSystem();
@@ -41,6 +43,7 @@ void main() {
 
     gitDirCommands = <List<String>?>[];
     gitDiffResponse = '';
+    gitRevParseResponse = '';
     final MockGitDir gitDir = MockGitDir();
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
         .thenAnswer((Invocation invocation) {
@@ -49,6 +52,9 @@ void main() {
       if (invocation.positionalArguments[0][0] == 'diff') {
         when<String?>(mockProcessResult.stdout as String?)
             .thenReturn(gitDiffResponse);
+      } else if (invocation.positionalArguments[0][0] == 'rev-parse') {
+        when<String?>(mockProcessResult.stdout as String?)
+            .thenReturn(gitRevParseResponse);
       }
       return Future<ProcessResult>.value(mockProcessResult);
     });
@@ -182,6 +188,68 @@ void main() {
         '--exclude=${configFile.path}'
       ]);
       expect(command.plugins, unorderedEquals(<String>[]));
+    });
+
+    group('conflicting package selecetion', () {
+      test('does not allow --packages with --run-on-changed-packages',
+          () async {
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'sample',
+          '--run-on-changed-packages',
+          '--packages=plugin1',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only one of --packages, --run-on-changed-packages, or '
+                  '--packages-for-branch can be provided.')
+            ]));
+      });
+
+      test('does not allow --packages with --packages-for-branch', () async {
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'sample',
+          '--packages-for-branch',
+          '--packages=plugin1',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only one of --packages, --run-on-changed-packages, or '
+                  '--packages-for-branch can be provided.')
+            ]));
+      });
+
+      test(
+          'does not allow --run-on-changed-packages with --packages-for-branch',
+          () async {
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'sample',
+          '--packages-for-branch',
+          '--packages=plugin1',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('Only one of --packages, --run-on-changed-packages, or '
+                  '--packages-for-branch can be provided.')
+            ]));
+      });
     });
 
     group('test run-on-changed-packages', () {
@@ -456,6 +524,43 @@ packages/plugin3/plugin3.dart
 
         expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
+    });
+  });
+
+  group('--packages-for-branch', () {
+    test('only tests changed packages on a branch', () async {
+      gitDiffResponse = 'packages/plugin1/plugin1.dart';
+      gitRevParseResponse = 'a-branch';
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      createFakePlugin('plugin2', packagesDir);
+      await runCapturingPrint(
+          runner, <String>['sample', '--pacakages-for-branch']);
+
+      expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
+    });
+
+    test('tests all packages on master', () async {
+      gitDiffResponse = 'packages/plugin1/plugin1.dart';
+      gitRevParseResponse = 'master';
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      await runCapturingPrint(
+          runner, <String>['sample', '--pacakages-for-branch']);
+
+      expect(command.plugins,
+          unorderedEquals(<String>[plugin1.path, plugin2.path]));
+    });
+
+    test('tests all packages if getting the branch fails', () async {
+      gitDiffResponse = 'packages/plugin1/plugin1.dart';
+      gitRevParseResponse = '';
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+      await runCapturingPrint(
+          runner, <String>['sample', '--pacakages-for-branch']);
+
+      expect(command.plugins,
+          unorderedEquals(<String>[plugin1.path, plugin2.path]));
     });
   });
 
