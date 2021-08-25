@@ -96,6 +96,12 @@ Common schemes supported by both iOS and Android:
 | `tel:<phone number>`, e.g. `tel:+1 555 010 999` | Make a phone call to <phone number> using the default phone app |
 | `sms:<phone number>`, e.g. `sms:5550101234` | Send an SMS message to <phone number> using the default messaging app |
 
+iOS specific schemes:
+
+| Scheme | Action |
+|---|---|
+| `shareddocuments://<application document dir>`, e.g. `shareddocuments://.../Data/Application/.../Documents/` | Opens iOS files app at location |
+  
 More details can be found here for [iOS](https://developer.apple.com/library/content/featuredarticles/iPhoneURLScheme_Reference/Introduction/Introduction.html) and [Android](https://developer.android.com/guide/components/intents-common.html)
 
 **Note**: URL schemes are only supported if there are apps installed on the device that can
