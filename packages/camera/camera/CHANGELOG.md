@@ -1,3 +1,7 @@
+## 0.9.1+1
+
+* Update the example app: remove controller that causes the camera view to be blank when switching cameras.
+
 ## 0.9.1
 
 * Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.

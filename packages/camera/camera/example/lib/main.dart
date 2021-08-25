@@ -594,8 +594,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {
-    final previousCameraController = controller;
-
     final CameraController cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
@@ -641,8 +639,6 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (mounted) {
       setState(() {});
     }
-
-    await previousCameraController?.dispose();
   }
 
   void onTakePictureButtonPressed() {
