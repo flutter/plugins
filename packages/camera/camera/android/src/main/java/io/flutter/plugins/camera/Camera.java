@@ -976,7 +976,7 @@ class Camera
   }
 
   /** Resume the preview from dart. */
-  public void resumePreview() throws CameraAccessException {
+  public void resumePreview() {
     this.pausedPreview = false;
     this.refreshPreviewCaptureSession(
         null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
