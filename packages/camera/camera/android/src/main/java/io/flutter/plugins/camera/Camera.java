@@ -61,6 +61,7 @@ import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationMan
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
+import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
@@ -130,6 +131,8 @@ class Camera
 
   /** Holds the current capture timeouts */
   private CaptureTimeoutsWrapper captureTimeouts;
+  /** Holds the last known capture properties */
+  private CameraCaptureProperties captureProps;
 
   private MethodChannel.Result flutterResult;
 
@@ -158,7 +161,8 @@ class Camera
 
     // Create capture callback.
     captureTimeouts = new CaptureTimeoutsWrapper(3000, 3000);
-    cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts);
+    captureProps = new CameraCaptureProperties();
+    cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts, captureProps);
 
     startBackgroundThread();
   }
@@ -1042,6 +1046,11 @@ class Camera
           imageBuffer.put("height", img.getHeight());
           imageBuffer.put("format", img.getFormat());
           imageBuffer.put("planes", planes);
+          imageBuffer.put("lensAperture", this.captureProps.getLastLensAperture());
+          imageBuffer.put("sensorExposureTime", this.captureProps.getLastSensorExposureTime());
+          Integer sensorSensitivity = this.captureProps.getLastSensorSensitivity();
+          imageBuffer.put(
+              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.post(() -> imageStreamSink.success(imageBuffer));
