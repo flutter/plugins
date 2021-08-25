@@ -1,6 +1,10 @@
-## 0.9.1
+## 0.9.2
 
 * Added functions to pause and resume the camera preview.
+
+## 0.9.1
+
+* Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.
 
 ## 0.9.0
 

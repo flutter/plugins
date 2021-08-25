@@ -11,6 +11,7 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 /// Key for APK.
 const String _platformFlagApk = 'apk';
@@ -96,7 +97,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final List<String> errors = <String>[];
 
     final Iterable<_PlatformDetails> requestedPlatforms = _platforms.entries
@@ -126,9 +127,9 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     }
     print('');
 
-    for (final Directory example in getExamplesForPlugin(package)) {
+    for (final RepositoryPackage example in package.getExamples()) {
       final String packageName =
-          getRelativePosixPath(example, from: packagesDir);
+          getRelativePosixPath(example.directory, from: packagesDir);
 
       for (final _PlatformDetails platform in buildPlatforms) {
         String buildPlatform = platform.label;
@@ -149,7 +150,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   }
 
   Future<bool> _buildExample(
-    Directory example,
+    RepositoryPackage example,
     String flutterBuildType, {
     List<String> extraBuildFlags = const <String>[],
   }) async {
@@ -164,7 +165,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
         if (enableExperiment.isNotEmpty)
           '--enable-experiment=$enableExperiment',
       ],
-      workingDir: example,
+      workingDir: example.directory,
     );
     return exitCode == 0;
   }
