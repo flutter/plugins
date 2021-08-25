@@ -1,4 +1,4 @@
-## 0.9.2
+## 0.9.1+1
 
 * Update `device_info` in favor of `device_info_plus` in the [README.md](README.md)
 
