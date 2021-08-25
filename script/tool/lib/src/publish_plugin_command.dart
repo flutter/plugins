@@ -11,6 +11,7 @@ import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:meta/meta.dart';
 import 'package:path/path.dart' as p;
+import 'package:platform/platform.dart';
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
@@ -48,15 +49,15 @@ class PublishPluginCommand extends PluginCommand {
   PublishPluginCommand(
     Directory packagesDir, {
     ProcessRunner processRunner = const ProcessRunner(),
-    Print print = print,
+    Platform platform = const LocalPlatform(),
     io.Stdin? stdinput,
     GitDir? gitDir,
     http.Client? httpClient,
   })  : _pubVersionFinder =
             PubVersionFinder(httpClient: httpClient ?? http.Client()),
-        _print = print,
         _stdin = stdinput ?? io.stdin,
-        super(packagesDir, processRunner: processRunner, gitDir: gitDir) {
+        super(packagesDir,
+            platform: platform, processRunner: processRunner, gitDir: gitDir) {
     argParser.addOption(
       _packageOption,
       help: 'The package to publish.'
@@ -133,7 +134,6 @@ class PublishPluginCommand extends PluginCommand {
       'If running this on CI, an environment variable named $_pubCredentialName must be set to a String that represents the pub credential JSON.\n'
       'WARNING: Do not check in the content of pub credential JSON, it should only come from secure sources.';
 
-  final Print _print;
   final io.Stdin _stdin;
   StreamSubscription<String>? _stdinSubscription;
   final PubVersionFinder _pubVersionFinder;
@@ -143,12 +143,12 @@ class PublishPluginCommand extends PluginCommand {
     final String packageName = getStringArg(_packageOption);
     final bool publishAllChanged = getBoolArg(_allChangedFlag);
     if (packageName.isEmpty && !publishAllChanged) {
-      _print(
+      printError(
           'Must specify a package to publish. See `plugin_tools help publish-plugin`.');
       throw ToolExit(1);
     }
 
-    _print('Checking local repo...');
+    print('Checking local repo...');
     final GitDir repository = await gitDir;
 
     final bool shouldPushTag = getBoolArg(_pushTagsOption);
@@ -163,9 +163,9 @@ class PublishPluginCommand extends PluginCommand {
       }
       remote = _RemoteInfo(name: remoteName, url: remoteUrl);
     }
-    _print('Local repo is ready!');
+    print('Local repo is ready!');
     if (getBoolArg(_dryRunFlag)) {
-      _print('===============  DRY RUN ===============');
+      print('===============  DRY RUN ===============');
     }
 
     bool successful;
@@ -193,11 +193,11 @@ class PublishPluginCommand extends PluginCommand {
     final List<String> changedPubspecs =
         await gitVersionFinder.getChangedPubSpecs();
     if (changedPubspecs.isEmpty) {
-      _print('No version updates in this commit.');
+      print('No version updates in this commit.');
       return true;
     }
 
-    _print('Getting existing tags...');
+    print('Getting existing tags...');
     final io.ProcessResult existingTagsResult =
         await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
     final List<String> existingTags = (existingTagsResult.stdout as String)
@@ -228,7 +228,7 @@ class PublishPluginCommand extends PluginCommand {
           packagesFailed.add(pubspecFile.parent.basename);
           continue;
       }
-      _print('\n');
+      print('\n');
       if (await _publishAndTagPackage(
         packageDir: pubspecFile.parent,
         remoteForTagPush: remoteForTagPush,
@@ -237,13 +237,13 @@ class PublishPluginCommand extends PluginCommand {
       } else {
         packagesFailed.add(pubspecFile.parent.basename);
       }
-      _print('\n');
+      print('\n');
     }
     if (packagesReleased.isNotEmpty) {
-      _print('Packages released: ${packagesReleased.join(', ')}');
+      print('Packages released: ${packagesReleased.join(', ')}');
     }
     if (packagesFailed.isNotEmpty) {
-      _print(
+      printError(
           'Failed to release the following packages: ${packagesFailed.join(', ')}, see above for details.');
     }
     return packagesFailed.isEmpty;
@@ -268,7 +268,7 @@ class PublishPluginCommand extends PluginCommand {
         return false;
       }
     }
-    _print('Released [${packageDir.basename}] successfully.');
+    print('Released [${packageDir.basename}] successfully.');
     return true;
   }
 
@@ -278,7 +278,7 @@ class PublishPluginCommand extends PluginCommand {
     required List<String> existingTags,
   }) async {
     if (!pubspecFile.existsSync()) {
-      _print('''
+      print('''
 The file at The pubspec file at ${pubspecFile.path} does not exist. Publishing will not happen for ${pubspecFile.parent.basename}.
 Safe to ignore if the package is deleted in this commit.
 ''');
@@ -299,7 +299,7 @@ Safe to ignore if the package is deleted in this commit.
     }
 
     if (pubspec.version == null) {
-      _print(
+      printError(
           'No version found. A package that intentionally has no version should be marked "publish_to: none"');
       return _CheckNeedsReleaseResult.failure;
     }
@@ -314,14 +314,14 @@ Safe to ignore if the package is deleted in this commit.
               tag.split('-v').first == pubspec.name &&
               tag.split('-v').last == version.toString(),
           orElse: () => '');
-      _print(
+      print(
           'The version $version of ${pubspec.name} has already been published');
       if (tagsForPackageWithSameVersion.isEmpty) {
-        _print(
+        printError(
             'However, the git release tag for this version (${pubspec.name}-v$version) is not found. Please manually fix the tag then run the command again.');
         return _CheckNeedsReleaseResult.failure;
       } else {
-        _print('skip.');
+        print('skip.');
         return _CheckNeedsReleaseResult.noRelease;
       }
     }
@@ -340,7 +340,7 @@ Safe to ignore if the package is deleted in this commit.
     if (!publishOK) {
       return false;
     }
-    _print('Package published!');
+    print('Package published!');
     return true;
   }
 
@@ -353,7 +353,7 @@ Safe to ignore if the package is deleted in this commit.
     _RemoteInfo? remoteForPush,
   }) async {
     final String tag = _getTag(packageDir);
-    _print('Tagging release $tag...');
+    print('Tagging release $tag...');
     if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await processRunner.run(
         'git',
@@ -370,7 +370,7 @@ Safe to ignore if the package is deleted in this commit.
       return true;
     }
 
-    _print('Pushing tag to ${remoteForPush.name}...');
+    print('Pushing tag to ${remoteForPush.name}...');
     return await _pushTagToRemote(
       tag: tag,
       remote: remoteForPush,
@@ -381,9 +381,9 @@ Safe to ignore if the package is deleted in this commit.
     await _stdinSubscription?.cancel();
     _stdinSubscription = null;
     if (successful) {
-      _print('Done!');
+      print('Done!');
     } else {
-      _print('Failed, see above for details.');
+      printError('Failed, see above for details.');
       throw ToolExit(1);
     }
   }
@@ -393,7 +393,7 @@ Safe to ignore if the package is deleted in this commit.
   Directory _getPackageDir(String packageName) {
     final Directory packageDir = packagesDir.childDirectory(packageName);
     if (!packageDir.existsSync()) {
-      _print('${packageDir.absolute.path} does not exist.');
+      printError('${packageDir.absolute.path} does not exist.');
       throw ToolExit(1);
     }
     return packageDir;
@@ -412,7 +412,7 @@ Safe to ignore if the package is deleted in this commit.
 
     final String statusOutput = statusResult.stdout as String;
     if (statusOutput.isNotEmpty) {
-      _print(
+      printError(
           "There are files in the package directory that haven't been saved in git. Refusing to publish these files:\n\n"
           '$statusOutput\n'
           'If the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.');
@@ -435,7 +435,7 @@ Safe to ignore if the package is deleted in this commit.
 
   Future<bool> _publish(Directory packageDir) async {
     final List<String> publishFlags = getStringListArg(_pubFlagsOption);
-    _print(
+    print(
         'Running `pub publish ${publishFlags.join(' ')}` in ${packageDir.absolute.path}...\n');
     if (getBoolArg(_dryRunFlag)) {
       return true;
@@ -451,18 +451,14 @@ Safe to ignore if the package is deleted in this commit.
     final io.Process publish = await processRunner.start(
         flutterCommand, <String>['pub', 'publish'] + publishFlags,
         workingDirectory: packageDir);
-    publish.stdout
-        .transform(utf8.decoder)
-        .listen((String data) => _print(data));
-    publish.stderr
-        .transform(utf8.decoder)
-        .listen((String data) => _print(data));
+    publish.stdout.transform(utf8.decoder).listen((String data) => print(data));
+    publish.stderr.transform(utf8.decoder).listen((String data) => print(data));
     _stdinSubscription ??= _stdin
         .transform(utf8.decoder)
         .listen((String data) => publish.stdin.writeln(data));
     final int result = await publish.exitCode;
     if (result != 0) {
-      _print('Publish ${packageDir.basename} failed.');
+      printError('Publish ${packageDir.basename} failed.');
       return false;
     }
     return true;
@@ -490,10 +486,10 @@ Safe to ignore if the package is deleted in this commit.
   }) async {
     assert(remote != null && tag != null);
     if (!getBoolArg(_skipConfirmationFlag)) {
-      _print('Ready to push $tag to ${remote.url} (y/n)?');
+      print('Ready to push $tag to ${remote.url} (y/n)?');
       final String? input = _stdin.readLineSync();
       if (input?.toLowerCase() != 'y') {
-        _print('Tag push canceled.');
+        print('Tag push canceled.');
         return false;
       }
     }

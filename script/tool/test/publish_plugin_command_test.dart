@@ -24,7 +24,6 @@ import 'util.dart';
 
 void main() {
   const String testPluginName = 'foo';
-  late List<String> printedMessages;
 
   late Directory testRoot;
   late Directory packagesDir;
@@ -62,13 +61,9 @@ void main() {
     await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
     processRunner = TestProcessRunner();
     mockStdin = MockStdin();
-    printedMessages = <String>[];
     commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          gitDir: gitDir));
+          processRunner: processRunner, stdinput: mockStdin, gitDir: gitDir));
   });
 
   tearDown(() {
@@ -77,50 +72,66 @@ void main() {
 
   group('Initial validation', () {
     test('requires a package flag', () async {
-      await expectLater(() => commandRunner.run(<String>['publish-plugin']),
-          throwsA(isA<ToolExit>()));
-      expect(
-          printedMessages.last, contains('Must specify a package to publish.'));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish-plugin'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(output.last, contains('Must specify a package to publish.'));
     });
 
     test('requires an existing flag', () async {
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                'iamerror',
-                '--no-push-tags'
-              ]),
-          throwsA(isA<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--package', 'iamerror', '--no-push-tags'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      expect(printedMessages.last, contains('iamerror does not exist'));
+      expect(commandError, isA<ToolExit>());
+      expect(output.last, contains('iamerror does not exist'));
     });
 
     test('refuses to proceed with dirty files', () async {
       pluginDir.childFile('tmp').createSync();
 
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-                '--no-push-tags'
-              ]),
-          throwsA(isA<ToolExit>()));
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+        '--no-push-tags'
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
 
+      expect(commandError, isA<ToolExit>());
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? packages/foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
-            'Failed, see above for details.',
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('There are files in the package directory that haven\'t '
+                'been saved in git. Refusing to publish these files:\n\n'
+                '?? packages/foo/tmp\n\n'
+                'If the directory should be clean, you can run `git clean -xdf && '
+                'git reset --hard HEAD` to wipe all local changes.'),
+            contains('Failed, see above for details.'),
           ]));
     });
 
     test('fails immediately if the remote doesn\'t exist', () async {
-      await expectLater(
-          () => commandRunner
-              .run(<String>['publish-plugin', '--package', testPluginName]),
-          throwsA(isA<ToolExit>()));
+      Error? commandError;
+      await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        testPluginName
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(processRunner.results.last.stderr, contains('No such remote'));
     });
 
@@ -128,7 +139,8 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
 
-      await commandRunner.run(<String>[
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -136,7 +148,7 @@ void main() {
         '--no-tag-release'
       ]);
 
-      expect(printedMessages.last, 'Done!');
+      expect(output.last, 'Done!');
     });
 
     test('can publish non-flutter package', () async {
@@ -149,49 +161,50 @@ void main() {
       await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
+
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>[
         'publish-plugin',
         '--package',
         packageName,
         '--no-push-tags',
         '--no-tag-release'
       ]);
-      expect(printedMessages.last, 'Done!');
+
+      expect(output.last, 'Done!');
     });
   });
 
   group('Publishes package', () {
     test('while showing all output from pub publish to the user', () async {
-      final Future<void> publishCommand = commandRunner.run(<String>[
-        'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
-
       processRunner.mockPublishStdout = 'Foo';
       processRunner.mockPublishStderr = 'Bar';
       processRunner.mockPublishCompleteCode = 0;
 
-      await publishCommand;
-
-      expect(printedMessages, contains('Foo'));
-      expect(printedMessages, contains('Bar'));
-    });
-
-    test('forwards input from the user to `pub publish`', () async {
-      final Future<void> publishCommand = commandRunner.run(<String>[
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
         '--no-push-tags',
         '--no-tag-release'
       ]);
+
+      expect(output, contains('Foo'));
+      expect(output, contains('Bar'));
+    });
+
+    test('forwards input from the user to `pub publish`', () async {
       mockStdin.mockUserInputs.add(utf8.encode('user input'));
       processRunner.mockPublishCompleteCode = 0;
 
-      await publishCommand;
+      await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+        '--no-push-tags',
+        '--no-tag-release'
+      ]);
 
       expect(processRunner.mockPublishProcess.stdinMock.lines,
           contains('user input'));
@@ -199,7 +212,8 @@ void main() {
 
     test('forwards --pub-publish-flags to pub publish', () async {
       processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
+
+      await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -221,7 +235,8 @@ void main() {
         () async {
       processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
-      await commandRunner.run(<String>[
+
+      await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -241,23 +256,30 @@ void main() {
 
     test('throws if pub publish fails', () async {
       processRunner.mockPublishCompleteCode = 128;
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-                '--no-push-tags',
-                '--no-tag-release',
-              ]),
-          throwsA(isA<ToolExit>()));
 
-      expect(printedMessages, contains('Publish foo failed.'));
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+        '--no-push-tags',
+        '--no-tag-release',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Publish foo failed.'),
+          ]));
     });
 
     test('publish, dry run', () async {
-      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishCompleteCode = 1;
-      await commandRunner.run(<String>[
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -268,7 +290,7 @@ void main() {
 
       expect(processRunner.pushTagsArgs, isEmpty);
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             '===============  DRY RUN ===============',
             'Running `pub publish ` in ${pluginDir.path}...\n',
@@ -280,7 +302,8 @@ void main() {
   group('Tags release', () {
     test('with the version and name from the pubspec.yaml', () async {
       processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
+
+      await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -295,16 +318,24 @@ void main() {
 
     test('only if publishing succeeded', () async {
       processRunner.mockPublishCompleteCode = 128;
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-                '--no-push-tags',
-              ]),
-          throwsA(isA<ToolExit>()));
 
-      expect(printedMessages, contains('Publish foo failed.'));
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+        '--no-push-tags',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Publish foo failed.'),
+          ]));
       final String? tag = (await gitDir.runCommand(
               <String>['show-ref', '$testPluginName-v0.0.1'],
               throwOnError: false))
@@ -322,22 +353,28 @@ void main() {
     test('requires user confirmation', () async {
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'help';
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-              ]),
-          throwsA(isA<ToolExit>()));
 
-      expect(printedMessages, contains('Tag push canceled.'));
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        testPluginName,
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(output, contains('Tag push canceled.'));
     });
 
     test('to upstream by default', () async {
       await gitDir.runCommand(<String>['tag', 'garbage']);
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(<String>[
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -346,7 +383,7 @@ void main() {
       expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
       expect(processRunner.pushTagsArgs[1], 'upstream');
       expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
-      expect(printedMessages.last, 'Done!');
+      expect(output.last, 'Done!');
     });
 
     test('does not ask for user input if the --skip-confirmation flag is on',
@@ -354,7 +391,9 @@ void main() {
       await gitDir.runCommand(<String>['tag', 'garbage']);
       processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
-      await commandRunner.run(<String>[
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--skip-confirmation',
         '--package',
@@ -364,7 +403,7 @@ void main() {
       expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
       expect(processRunner.pushTagsArgs[1], 'upstream');
       expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
-      expect(printedMessages.last, 'Done!');
+      expect(output.last, 'Done!');
     });
 
     test('to upstream by default, dry run', () async {
@@ -372,12 +411,13 @@ void main() {
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
       processRunner.mockPublishCompleteCode = 1;
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(
+
+      final List<String> output = await runCapturingPrint(commandRunner,
           <String>['publish-plugin', '--package', testPluginName, '--dry-run']);
 
       expect(processRunner.pushTagsArgs, isEmpty);
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             '===============  DRY RUN ===============',
             'Running `pub publish ` in ${pluginDir.path}...\n',
@@ -392,7 +432,9 @@ void main() {
           <String>['remote', 'add', 'origin', 'http://localhost:8001']);
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(<String>[
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -403,12 +445,14 @@ void main() {
       expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
       expect(processRunner.pushTagsArgs[1], 'origin');
       expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
-      expect(printedMessages.last, 'Done!');
+      expect(output.last, 'Done!');
     });
 
     test('only if tagging and pushing to remotes are both enabled', () async {
       processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
         testPluginName,
@@ -416,7 +460,7 @@ void main() {
       ]);
 
       expect(processRunner.pushTagsArgs.isEmpty, isTrue);
-      expect(printedMessages.last, 'Done!');
+      expect(output.last, 'Done!');
     });
   });
 
@@ -450,7 +494,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -473,10 +516,12 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -523,7 +568,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -543,8 +587,10 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       processRunner.pushTagsArgs.clear();
 
       // Non-federated
@@ -554,11 +600,12 @@ void main() {
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       await gitDir.runCommand(<String>['add', '-A']);
       await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      output.addAll(await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']));
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -597,7 +644,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -617,14 +663,17 @@ void main() {
       // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
       processRunner.mockPublishCompleteCode = 1;
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(<String>[
+
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>[
         'publish-plugin',
         '--all-changed',
         '--base-sha=HEAD~',
         '--dry-run'
       ]);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -662,7 +711,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -683,10 +731,12 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -704,7 +754,6 @@ void main() {
       expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
 
       processRunner.pushTagsArgs.clear();
-      printedMessages.clear();
 
       final List<String> plugin1Pubspec =
           pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
@@ -724,10 +773,10 @@ void main() {
       await gitDir
           .runCommand(<String>['commit', '-m', 'Update versions to 0.0.2']);
 
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      final List<String> output2 = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
-          printedMessages,
+          output2,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -769,7 +818,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -790,10 +838,11 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -811,7 +860,6 @@ void main() {
       expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
 
       processRunner.pushTagsArgs.clear();
-      printedMessages.clear();
 
       final List<String> plugin1Pubspec =
           pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
@@ -830,10 +878,10 @@ void main() {
         'Update plugin1 versions to 0.0.2, delete plugin2'
       ]);
 
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      final List<String> output2 = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
-          printedMessages,
+          output2,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -872,7 +920,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -895,10 +942,12 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -935,7 +984,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -956,10 +1004,17 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await expectLater(
-          () => commandRunner.run(
-              <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']),
-          throwsA(isA<ToolExit>()));
+
+      Error? commandError;
+      await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--all-changed',
+        '--base-sha=HEAD~'
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(processRunner.pushTagsArgs, isEmpty);
     });
 
@@ -984,10 +1039,12 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
@@ -1011,7 +1068,6 @@ void main() {
       });
       final PublishPluginCommand command = PublishPluginCommand(packagesDir,
           processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
           stdinput: mockStdin,
           httpClient: mockClient,
           gitDir: gitDir);
@@ -1029,23 +1085,24 @@ void main() {
       // Immediately return 0 when running `pub publish`.
       processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
             'Checking local repo...',
             'Local repo is ready!',
             'Done!'
           ]));
       expect(
-          printedMessages.contains(
+          output.contains(
             'Running `pub publish ` in ${flutterPluginTools.path}...\n',
           ),
           isFalse);
       expect(processRunner.pushTagsArgs, isEmpty);
       processRunner.pushTagsArgs.clear();
-      printedMessages.clear();
     });
   });
 }
