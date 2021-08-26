@@ -17,6 +17,8 @@ import 'package:path/path.dart' as p;
 import 'package:platform/platform.dart';
 import 'package:quiver/collection.dart';
 
+import 'mocks.dart';
+
 /// Returns the exe name that command will use when running Flutter on
 /// [platform].
 String getFlutterCommand(Platform platform) =>
@@ -320,7 +322,8 @@ class RecordingProcessRunner extends ProcessRunner {
   Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
     recordedCalls.add(ProcessCall(executable, args, workingDirectory?.path));
-    return Future<io.Process>.value(_getProcessToReturn(executable));
+    return Future<io.Process>.value(
+        _getProcessToReturn(executable) ?? MockProcess());
   }
 
   io.Process? _getProcessToReturn(String executable) {

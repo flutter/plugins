@@ -10,7 +10,6 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
@@ -23,13 +22,11 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  const String testPluginName = 'foo';
+  final String flutterCommand = getFlutterCommand(const LocalPlatform());
 
   late Directory packagesDir;
-  late Directory pluginDir;
   late MockGitDir gitDir;
   late TestProcessRunner processRunner;
-  late RecordingProcessRunner gitProcessRunner;
   late CommandRunner<void> commandRunner;
   late MockStdin mockStdin;
   late FileSystem fileSystem;
@@ -44,25 +41,21 @@ void main() {
   setUp(() async {
     fileSystem = MemoryFileSystem();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
-    // TODO(stuartmorgan): Move this from setup to individual tests.
-    pluginDir =
-        createFakePlugin(testPluginName, packagesDir, examples: <String>[]);
-    assert(pluginDir != null && pluginDir.existsSync());
 
-    gitProcessRunner = RecordingProcessRunner();
+    processRunner = TestProcessRunner();
     gitDir = MockGitDir();
     when(gitDir.path).thenReturn(packagesDir.parent.path);
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
         .thenAnswer((Invocation invocation) {
       final List<String> arguments =
           invocation.positionalArguments[0]! as List<String>;
-      // Attach the first argument to the command to make targeting the mock
-      // results easier.
+      // Route git calls through the process runner, to make mock output
+      // consistent with outer processes. Attach the first argument to the
+      // command to make targeting the mock results easier.
       final String gitCommand = arguments.removeAt(0);
-      return gitProcessRunner.run('git-$gitCommand', arguments);
+      return processRunner.run('git-$gitCommand', arguments);
     });
 
-    processRunner = TestProcessRunner();
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
       ..addCommand(PublishPluginCommand(packagesDir,
@@ -99,18 +92,17 @@ void main() {
     });
 
     test('refuses to proceed with dirty files', () async {
-      gitProcessRunner.mockProcessesForExecutable['git-status'] = <io.Process>[
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      processRunner.mockProcessesForExecutable['git-status'] = <io.Process>[
         MockProcess(stdout: '?? ${pluginDir.childFile('tmp').path}\n')
       ];
 
       Error? commandError;
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags'
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--package', 'foo', '--no-push-tags'],
+          errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -128,13 +120,15 @@ void main() {
     });
 
     test('fails immediately if the remote doesn\'t exist', () async {
-      gitProcessRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
         MockProcess(exitCode: 1),
       ];
 
       Error? commandError;
-      final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--package', testPluginName],
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish-plugin', '--package', 'foo'],
           errorHandler: (Error e) {
         commandError = e;
       });
@@ -149,19 +143,18 @@ void main() {
     });
 
     test("doesn't validate the remote if it's not pushing tags", () async {
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       // Checking the remote should fail.
-      gitProcessRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
         MockProcess(exitCode: 1),
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-
-      final List<String> output =
-          await runCapturingPrint(commandRunner, <String>[
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
         '--no-tag-release'
       ]);
@@ -169,17 +162,15 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Running `pub publish ` in /packages/$testPluginName...'),
+            contains('Running `pub publish ` in /packages/foo...'),
             contains('Package published!'),
-            contains('Released [$testPluginName] successfully.'),
+            contains('Released [foo] successfully.'),
           ]));
     });
 
     test('can publish non-flutter package', () async {
       const String packageName = 'a_package';
       createFakePackage(packageName, packagesDir);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
 
       final List<String> output = await runCapturingPrint(
           commandRunner, <String>[
@@ -204,15 +195,21 @@ void main() {
 
   group('Publishes package', () {
     test('while showing all output from pub publish to the user', () async {
-      processRunner.mockPublishStdout = 'Foo';
-      processRunner.mockPublishStderr = 'Bar';
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-      final List<String> output =
-          await runCapturingPrint(commandRunner, <String>[
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(
+            stdout: 'Foo',
+            stderr: 'Bar',
+            stdoutEncoding: utf8,
+            stderrEncoding: utf8) // pub publish
+      ];
+
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
         '--no-tag-release'
       ]);
@@ -226,13 +223,14 @@ void main() {
     });
 
     test('forwards input from the user to `pub publish`', () async {
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.mockUserInputs.add(utf8.encode('user input'));
-      processRunner.mockPublishCompleteCode = 0;
 
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
         '--no-tag-release'
       ]);
@@ -242,35 +240,38 @@ void main() {
     });
 
     test('forwards --pub-publish-flags to pub publish', () async {
-      processRunner.mockPublishCompleteCode = 0;
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
         '--no-tag-release',
         '--pub-publish-flags',
         '--dry-run,--server=foo'
       ]);
 
-      expect(processRunner.mockPublishArgs.length, 4);
-      expect(processRunner.mockPublishArgs[0], 'pub');
-      expect(processRunner.mockPublishArgs[1], 'publish');
-      expect(processRunner.mockPublishArgs[2], '--dry-run');
-      expect(processRunner.mockPublishArgs[3], '--server=foo');
+      expect(
+          processRunner.recordedCalls,
+          contains(ProcessCall(
+              flutterCommand,
+              const <String>['pub', 'publish', '--dry-run', '--server=foo'],
+              pluginDir.path)));
     });
 
     test(
         '--skip-confirmation flag automatically adds --force to --pub-publish-flags',
         () async {
-      processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
         '--no-tag-release',
         '--skip-confirmation',
@@ -278,22 +279,27 @@ void main() {
         '--server=foo'
       ]);
 
-      expect(processRunner.mockPublishArgs.length, 4);
-      expect(processRunner.mockPublishArgs[0], 'pub');
-      expect(processRunner.mockPublishArgs[1], 'publish');
-      expect(processRunner.mockPublishArgs[2], '--server=foo');
-      expect(processRunner.mockPublishArgs[3], '--force');
+      expect(
+          processRunner.recordedCalls,
+          contains(ProcessCall(
+              flutterCommand,
+              const <String>['pub', 'publish', '--server=foo', '--force'],
+              pluginDir.path)));
     });
 
     test('throws if pub publish fails', () async {
-      processRunner.mockPublishCompleteCode = 128;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(exitCode: 128) // pub publish
+      ];
 
       Error? commandError;
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
         '--no-tag-release',
       ], errorHandler: (Error e) {
@@ -309,18 +315,21 @@ void main() {
     });
 
     test('publish, dry run', () async {
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--dry-run',
         '--no-push-tags',
         '--no-tag-release',
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
       expect(
@@ -335,30 +344,31 @@ void main() {
 
   group('Tags release', () {
     test('with the version and name from the pubspec.yaml', () async {
-      processRunner.mockPublishCompleteCode = 0;
-
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
       await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
       ]);
 
-      expect(
-          gitProcessRunner.recordedCalls,
-          contains(const ProcessCall(
-              'git-tag', <String>['$testPluginName-v0.0.1'], null)));
+      expect(processRunner.recordedCalls,
+          contains(const ProcessCall('git-tag', <String>['foo-v0.0.1'], null)));
     });
 
     test('only if publishing succeeded', () async {
-      processRunner.mockPublishCompleteCode = 128;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(exitCode: 128) // pub publish
+      ];
 
       Error? commandError;
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-push-tags',
       ], errorHandler: (Error e) {
         commandError = e;
@@ -371,7 +381,7 @@ void main() {
             contains('Publish foo failed.'),
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           isNot(contains(
               const ProcessCall('git-tag', <String>['foo-v0.0.1'], null))));
     });
@@ -379,7 +389,8 @@ void main() {
 
   group('Pushes tags', () {
     test('requires user confirmation', () async {
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.readLineOutput = 'help';
 
       Error? commandError;
@@ -387,7 +398,7 @@ void main() {
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -397,61 +408,63 @@ void main() {
     });
 
     test('to upstream by default', () async {
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.readLineOutput = 'y';
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
-          contains(const ProcessCall('git-push',
-              <String>['upstream', '$testPluginName-v0.0.1'], null)));
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'foo-v0.0.1'], null)));
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [$testPluginName] successfully.'),
+            contains('Released [foo] successfully.'),
           ]));
     });
 
     test('does not ask for user input if the --skip-confirmation flag is on',
         () async {
-      processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--skip-confirmation',
         '--package',
-        testPluginName,
+        'foo',
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
-          contains(const ProcessCall('git-push',
-              <String>['upstream', '$testPluginName-v0.0.1'], null)));
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'foo-v0.0.1'], null)));
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [$testPluginName] successfully.'),
+            contains('Released [foo] successfully.'),
           ]));
     });
 
     test('to upstream by default, dry run', () async {
-      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishCompleteCode = 1;
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--package', testPluginName, '--dry-run']);
+          <String>['publish-plugin', '--package', 'foo', '--dry-run']);
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
       expect(
@@ -459,57 +472,58 @@ void main() {
           containsAllInOrder(<String>[
             '===============  DRY RUN ===============',
             'Running `pub publish ` in ${pluginDir.path}...\n',
-            'Tagging release $testPluginName-v0.0.1...',
+            'Tagging release foo-v0.0.1...',
             'Pushing tag to upstream...',
             'Done!'
           ]));
     });
 
     test('to different remotes based on a flag', () async {
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.readLineOutput = 'y';
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--remote',
         'origin',
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
-              'git-push', <String>['origin', '$testPluginName-v0.0.1'], null)));
+              'git-push', <String>['origin', 'foo-v0.0.1'], null)));
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [$testPluginName] successfully.'),
+            contains('Released [foo] successfully.'),
           ]));
     });
 
     test('only if tagging and pushing to remotes are both enabled', () async {
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--package',
-        testPluginName,
+        'foo',
         '--no-tag-release',
       ]);
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Running `pub publish ` in /packages/$testPluginName...'),
+            contains('Running `pub publish ` in /packages/foo...'),
             contains('Package published!'),
-            contains('Released [$testPluginName] successfully.'),
+            contains('Released [foo] successfully.'),
           ]));
     });
   });
@@ -553,13 +567,11 @@ void main() {
         'plugin2',
         packagesDir.childDirectory('plugin2'),
       );
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -576,11 +588,11 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.1'], null)));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin2-v0.0.1'], null)));
     });
@@ -634,17 +646,15 @@ void main() {
 
       // Git results for plugin0 having been released already, and plugin1 and
       // plugin2 being new.
-      gitProcessRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
         MockProcess(stdout: 'plugin0-v0.0.1\n')
       ];
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output = await runCapturingPrint(commandRunner,
@@ -661,11 +671,11 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.1'], null)));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin2-v0.0.1'], null)));
     });
@@ -706,7 +716,7 @@ void main() {
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -737,7 +747,7 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -781,14 +791,12 @@ void main() {
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output2 = await runCapturingPrint(commandRunner,
@@ -804,11 +812,11 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.2'], null)));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin2-v0.0.2'], null)));
     });
@@ -854,14 +862,12 @@ void main() {
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
       pluginDir2.deleteSync(recursive: true);
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
       mockStdin.readLineOutput = 'y';
 
       final List<String> output2 = await runCapturingPrint(commandRunner,
@@ -877,7 +883,7 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls,
+          processRunner.recordedCalls,
           contains(const ProcessCall(
               'git-push', <String>['upstream', 'plugin1-v0.0.2'], null)));
     });
@@ -922,12 +928,12 @@ void main() {
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
       ];
-      gitProcessRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
         MockProcess(
             stdout: 'plugin1-v0.0.2\n'
                 'plugin2-v0.0.2\n')
@@ -949,7 +955,7 @@ void main() {
           ]));
 
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -995,7 +1001,7 @@ void main() {
           'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
                 '${pluginDir2.childFile('pubspec.yaml').path}\n')
@@ -1020,7 +1026,7 @@ void main() {
                 'However, the git release tag for this version (plugin2-v0.0.2) is not found.'),
           ]));
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -1032,7 +1038,7 @@ void main() {
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(
             stdout: '${pluginDir1.childFile('plugin1.dart').path}\n'
                 '${pluginDir2.childFile('plugin2.dart').path}\n')
@@ -1050,7 +1056,7 @@ void main() {
             'Done!'
           ]));
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
@@ -1081,7 +1087,7 @@ void main() {
 
       final Directory flutterPluginTools =
           createFakePlugin('flutter_plugin_tools', packagesDir);
-      gitProcessRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
         MockProcess(stdout: flutterPluginTools.childFile('pubspec.yaml').path)
       ];
 
@@ -1101,75 +1107,41 @@ void main() {
           ),
           isFalse);
       expect(
-          gitProcessRunner.recordedCalls
+          processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
           isNot(contains('git-push')));
     });
   });
 }
 
-class TestProcessRunner extends ProcessRunner {
+/// An extension of [RecordingProcessRunner] that stores 'flutter pub publish'
+/// calls so that their input streams can be checked in tests.
+class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
-  final List<String> mockPublishArgs = <String>[];
-
-  String? mockPublishStdout;
-  String? mockPublishStderr;
-  int mockPublishCompleteCode = 0;
-
-  @override
-  Future<io.ProcessResult> run(
-    String executable,
-    List<String> args, {
-    Directory? workingDir,
-    bool exitOnError = false,
-    bool logOnError = false,
-    Encoding stdoutEncoding = io.systemEncoding,
-    Encoding stderrEncoding = io.systemEncoding,
-  }) async {
-    final io.ProcessResult result = io.Process.runSync(executable, args,
-        workingDirectory: workingDir?.path);
-    if (result.exitCode != 0) {
-      throw ToolExit(result.exitCode);
-    }
-    return result;
-  }
 
   @override
   Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
-    /// Never actually publish anything. Start is always and only used for this
-    /// since it returns something we can route stdin through.
-    assert(executable == getFlutterCommand(const LocalPlatform()) &&
+    final io.Process process =
+        await super.start(executable, args, workingDirectory: workingDirectory);
+    if (executable == getFlutterCommand(const LocalPlatform()) &&
         args.isNotEmpty &&
         args[0] == 'pub' &&
-        args[1] == 'publish');
-    mockPublishArgs.addAll(args);
-
-    mockPublishProcess = MockProcess(
-      exitCode: mockPublishCompleteCode,
-      stdout: mockPublishStdout,
-      stderr: mockPublishStderr,
-      stdoutEncoding: utf8,
-      stderrEncoding: utf8,
-    );
-    return mockPublishProcess;
+        args[1] == 'publish') {
+      mockPublishProcess = process as MockProcess;
+    }
+    return process;
   }
 }
 
 class MockStdin extends Mock implements io.Stdin {
   List<List<int>> mockUserInputs = <List<int>>[];
-  late StreamController<List<int>> _controller;
+  final StreamController<List<int>> _controller = StreamController<List<int>>();
   String? readLineOutput;
 
   @override
   Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
-    // In the test context, only one `PublishPluginCommand` object is created for a single test case.
-    // However, sometimes, we need to run multiple commands in a single test case.
-    // In such situation, this `MockStdin`'s StreamController might be listened to more than once, which is not allowed.
-    //
-    // Create a new controller every time so this Stdin could be listened to multiple times.
-    _controller = StreamController<List<int>>();
     mockUserInputs.forEach(_addUserInputsToSteam);
     return _controller.stream.transform(streamTransformer);
   }
@@ -1188,13 +1160,4 @@ class MockStdin extends Mock implements io.Stdin {
       readLineOutput;
 
   void _addUserInputsToSteam(List<int> input) => _controller.add(input);
-}
-
-class MockProcessResult extends Mock implements io.ProcessResult {
-  MockProcessResult({int exitCode = 0}) : _exitCode = exitCode;
-
-  final int _exitCode;
-
-  @override
-  int get exitCode => _exitCode;
 }
