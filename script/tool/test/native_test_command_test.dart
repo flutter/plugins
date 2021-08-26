@@ -122,11 +122,9 @@ void main() {
       final Directory pluginExampleDirectory =
           pluginDirectory1.childDirectory('example');
 
-      // Exit code 66 from testing indicates no tests.
-      final MockProcess noTestsProcessResult = MockProcess();
-      noTestsProcessResult.exitCodeCompleter.complete(66);
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-        noTestsProcessResult,
+        // Exit code 66 from testing indicates no tests.
+        MockProcess(exitCode: 66),
       ];
       final List<String> output =
           await runCapturingPrint(runner, <String>['native-test', '--macos']);
@@ -239,12 +237,13 @@ void main() {
             'plugin', packagesDir, platformSupport: <String, PlatformSupport>{
           kPlatformIos: PlatformSupport.inline
         });
-
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout = jsonEncode(_kDeviceListMap);
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess(stdout: jsonEncode(_kDeviceListMap)), // simctl
+        ];
+
         await runCapturingPrint(runner, <String>['native-test', '--ios']);
 
         expect(
@@ -673,7 +672,7 @@ void main() {
             .childFile('gradlew')
             .path;
         processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -745,7 +744,7 @@ void main() {
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -775,9 +774,14 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["RunnerTests", "RunnerUITests"]}}';
+        const Map<String, dynamic> projects = <String, dynamic>{
+          'project': <String, dynamic>{
+            'targets': <String>['RunnerTests', 'RunnerUITests']
+          }
+        };
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
+        ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -835,9 +839,14 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
-        processRunner.resultStdout =
-            '{"project":{"targets":["RunnerTests", "RunnerUITests"]}}';
+        const Map<String, dynamic> projects = <String, dynamic>{
+          'project': <String, dynamic>{
+            'targets': <String>['RunnerTests', 'RunnerUITests']
+          }
+        };
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
+        ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -895,9 +904,16 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.succeeding();
         // Simulate a project with unit tests but no integration tests...
-        processRunner.resultStdout = '{"project":{"targets":["RunnerTests"]}}';
+        const Map<String, dynamic> projects = <String, dynamic>{
+          'project': <String, dynamic>{
+            'targets': <String>['RunnerTests']
+          }
+        };
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
+        ];
+
         // ... then try to run only integration tests.
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -941,7 +957,9 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        processRunner.processToReturn = MockProcess.failing();
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          MockProcess(exitCode: 1), // xcodebuild -list
+        ];
 
         Error? commandError;
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -1192,7 +1210,7 @@ void main() {
             .childFile('gradlew')
             .path;
         processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -1243,11 +1261,11 @@ void main() {
             .childFile('gradlew')
             .path;
         processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
         // Simulate failing Android.
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;

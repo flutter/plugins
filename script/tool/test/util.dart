@@ -46,6 +46,7 @@ Directory createPackagesDirectory(
 ///
 /// [extraFiles] is an optional list of plugin-relative paths, using Posix
 /// separators, of extra files to create in the plugin.
+// TODO(stuartmorgan): Convert the return to a RepositoryPackage.
 Directory createFakePlugin(
   String name,
   Directory parentDirectory, {
@@ -77,6 +78,7 @@ Directory createFakePlugin(
 ///
 /// [extraFiles] is an optional list of package-relative paths, using unix-style
 /// separators, of extra files to create in the package.
+// TODO(stuartmorgan): Convert the return to a RepositoryPackage.
 Directory createFakePackage(
   String name,
   Directory parentDirectory, {
@@ -265,15 +267,6 @@ class RecordingProcessRunner extends ProcessRunner {
   final Map<String, List<io.Process>> mockProcessesForExecutable =
       <String, List<io.Process>>{};
 
-  /// Populate for [io.ProcessResult] to use a String [stdout] instead of a [List] of [int].
-  String? resultStdout;
-
-  /// Populate for [io.ProcessResult] to use a String [stderr] instead of a [List] of [int].
-  String? resultStderr;
-
-  // Deprecated--do not add new uses. Use mockProcessesForExecutable instead.
-  io.Process? processToReturn;
-
   @override
   Future<int> runAndStream(
     String executable,
@@ -291,8 +284,7 @@ class RecordingProcessRunner extends ProcessRunner {
     return Future<int>.value(exitCode);
   }
 
-  /// Returns [io.ProcessResult] created from [mockProcessesForExecutable],
-  /// [resultStdout], and [resultStderr].
+  /// Returns [io.ProcessResult] created from [mockProcessesForExecutable].
   @override
   Future<io.ProcessResult> run(
     String executable,
@@ -306,10 +298,16 @@ class RecordingProcessRunner extends ProcessRunner {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
 
     final io.Process? process = _getProcessToReturn(executable);
+    final List<String>? processStdout =
+        await process?.stdout.transform(stdoutEncoding.decoder).toList();
+    final String stdout = processStdout?.join('') ?? '';
+    final List<String>? processStderr =
+        await process?.stderr.transform(stderrEncoding.decoder).toList();
+    final String stderr = processStderr?.join('') ?? '';
+
     final io.ProcessResult result = process == null
         ? io.ProcessResult(1, 0, '', '')
-        : io.ProcessResult(process.pid, await process.exitCode,
-            resultStdout ?? process.stdout, resultStderr ?? process.stderr);
+        : io.ProcessResult(process.pid, await process.exitCode, stdout, stderr);
 
     if (exitOnError && (result.exitCode != 0)) {
       throw io.ProcessException(executable, args);
@@ -326,13 +324,11 @@ class RecordingProcessRunner extends ProcessRunner {
   }
 
   io.Process? _getProcessToReturn(String executable) {
-    io.Process? process;
     final List<io.Process>? processes = mockProcessesForExecutable[executable];
     if (processes != null && processes.isNotEmpty) {
-      process = mockProcessesForExecutable[executable]!.removeAt(0);
+      return processes.removeAt(0);
     }
-    // Fall back to `processToReturn` for backwards compatibility.
-    return process ?? processToReturn;
+    return null;
   }
 }
 

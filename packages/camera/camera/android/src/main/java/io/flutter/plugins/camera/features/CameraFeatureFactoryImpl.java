@@ -59,8 +59,10 @@ public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
   }
 
   @Override
-  public FocusPointFeature createFocusPointFeature(@NonNull CameraProperties cameraProperties) {
-    return new FocusPointFeature(cameraProperties);
+  public FocusPointFeature createFocusPointFeature(
+      @NonNull CameraProperties cameraProperties,
+      @NonNull SensorOrientationFeature sensorOrientationFeature) {
+    return new FocusPointFeature(cameraProperties, sensorOrientationFeature);
   }
 
   @Override
@@ -83,8 +85,9 @@ public class CameraFeatureFactoryImpl implements CameraFeatureFactory {
 
   @Override
   public ExposurePointFeature createExposurePointFeature(
-      @NonNull CameraProperties cameraProperties) {
-    return new ExposurePointFeature(cameraProperties);
+      @NonNull CameraProperties cameraProperties,
+      @NonNull SensorOrientationFeature sensorOrientationFeature) {
+    return new ExposurePointFeature(cameraProperties, sensorOrientationFeature);
   }
 
   @Override

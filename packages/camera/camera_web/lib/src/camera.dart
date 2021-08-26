@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html' as html;
 import 'dart:ui';
 
@@ -67,6 +68,23 @@ class Camera {
   /// Initialized in [initialize] and [play], reset in [stop].
   html.MediaStream? stream;
 
+  /// The stream of the camera video tracks that have ended playing.
+  ///
+  /// This occurs when there is no more camera stream data, e.g.
+  /// the user has stopped the stream by changing the camera device,
+  /// revoked the camera permissions or ejected the camera device.
+  ///
+  /// MediaStreamTrack.onended:
+  /// https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/onended
+  Stream<html.MediaStreamTrack> get onEnded => onEndedStreamController.stream;
+
+  /// The stream controller for the [onEnded] stream.
+  @visibleForTesting
+  final onEndedStreamController =
+      StreamController<html.MediaStreamTrack>.broadcast();
+
+  StreamSubscription<html.Event>? _onEndedSubscription;
+
   /// The camera flash mode.
   @visibleForTesting
   FlashMode? flashMode;
@@ -80,6 +98,7 @@ class Camera {
 
   /// Initializes the camera stream displayed in the [videoElement].
   /// Registers the camera view with [textureId] under [_getViewType] type.
+  /// Emits the camera default video track on the [onEnded] stream when it ends.
   Future<void> initialize() async {
     stream = await _cameraService.getMediaStreamForOptions(
       options,
@@ -103,6 +122,16 @@ class Camera {
       ..muted = !options.audio.enabled
       ..srcObject = stream
       ..setAttribute('playsinline', '');
+
+    final videoTracks = stream!.getVideoTracks();
+
+    if (videoTracks.isNotEmpty) {
+      final defaultVideoTrack = videoTracks.first;
+
+      _onEndedSubscription = defaultVideoTrack.onEnded.listen((html.Event _) {
+        onEndedStreamController.add(defaultVideoTrack);
+      });
+    }
   }
 
   /// Starts the camera stream.
@@ -126,7 +155,12 @@ class Camera {
 
   /// Stops the camera stream and resets the camera source.
   void stop() {
-    final tracks = videoElement.srcObject?.getTracks();
+    final videoTracks = stream!.getVideoTracks();
+    if (videoTracks.isNotEmpty) {
+      onEndedStreamController.add(videoTracks.first);
+    }
+
+    final tracks = stream?.getTracks();
     if (tracks != null) {
       for (final track in tracks) {
         track.stop();
@@ -303,7 +337,7 @@ class Camera {
 
   /// Disposes the camera by stopping the camera stream
   /// and reloading the camera source.
-  void dispose() {
+  Future<void> dispose() async {
     /// Stop the camera stream.
     stop();
 
@@ -311,6 +345,11 @@ class Camera {
     videoElement
       ..srcObject = null
       ..load();
+
+    await _onEndedSubscription?.cancel();
+    _onEndedSubscription = null;
+
+    await onEndedStreamController.close();
   }
 
   /// Applies default styles to the video [element].
