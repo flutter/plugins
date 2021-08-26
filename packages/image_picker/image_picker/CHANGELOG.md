@@ -1,6 +1,6 @@
 ## 0.8.4
 
-* Update `ImagePickerCache` to save list of images, in case more than one file was recovered.
+* Update `ImagePickerCache` to save and to recover multiple files.
 
 ## 0.8.3+3
 
