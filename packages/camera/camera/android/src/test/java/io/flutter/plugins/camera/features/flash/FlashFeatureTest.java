@@ -20,7 +20,7 @@ import org.junit.Test;
 
 public class FlashFeatureTest {
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
 
@@ -28,7 +28,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_auto_if_not_set() {
+  public void getValue_shouldReturnAutoIfNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
 
@@ -36,7 +36,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_the_set_value() {
+  public void getValue_shouldEchoTheSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
     FlashMode expectedValue = FlashMode.torch;
@@ -48,7 +48,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_flash_info_available_is_null() {
+  public void checkIsSupported_shouldReturnFalseWhenFlashInfoAvailableIsNull() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
 
@@ -58,7 +58,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_flash_info_available_is_false() {
+  public void checkIsSupported_shouldReturnFalseWhenFlashInfoAvailableIsFalse() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
 
@@ -68,7 +68,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_true_when_flash_info_available_is_true() {
+  public void checkIsSupported_shouldReturnTrueWhenFlashInfoAvailableIsTrue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
 
@@ -78,7 +78,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_return_when_checkIsSupported_is_false() {
+  public void updateBuilder_shouldReturnWhenCheckIsSupportedIsFalse() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
@@ -91,7 +91,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_ae_mode_and_flash_mode_when_flash_mode_is_off() {
+  public void updateBuilder_shouldSetAeModeAndFlashModeWhenFlashModeIsOff() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
@@ -107,7 +107,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_ae_mode_and_flash_mode_when_flash_mode_is_always() {
+  public void updateBuilder_shouldSetAeModeAndFlashModeWhenFlashModeIsAlways() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
@@ -123,7 +123,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_ae_mode_and_flash_mode_when_flash_mode_is_torch() {
+  public void updateBuilder_shouldSetAeModeAndFlashModeWhenFlashModeIsTorch() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);
@@ -139,7 +139,7 @@ public class FlashFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_ae_mode_and_flash_mode_when_flash_mode_is_auto() {
+  public void updateBuilder_shouldSetAeModeAndFlashModeWhenFlashModeIsAuto() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     FlashFeature flashFeature = new FlashFeature(mockCameraProperties);

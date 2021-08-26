@@ -14,15 +14,18 @@ import 'package:yaml/yaml.dart';
 import 'core.dart';
 import 'git_version_finder.dart';
 import 'process_runner.dart';
+import 'repository_package.dart';
 
 /// An entry in package enumeration for APIs that need to include extra
 /// data about the entry.
 class PackageEnumerationEntry {
-  /// Creates a new entry for the given package directory.
-  PackageEnumerationEntry(this.directory, {required this.excluded});
+  /// Creates a new entry for the given package.
+  PackageEnumerationEntry(this.package, {required this.excluded});
 
-  /// The package's location.
-  final Directory directory;
+  /// The package this entry corresponds to. Be sure to check `excluded` before
+  /// using this, as having an entry does not necessarily mean that the package
+  /// should be included in the processing of the enumeration.
+  final RepositoryPackage package;
 
   /// Whether or not this package was excluded by the command invocation.
   final bool excluded;
@@ -225,7 +228,7 @@ abstract class PluginCommand extends Command<void> {
     final List<PackageEnumerationEntry> allPlugins =
         await _getAllPackages().toList();
     allPlugins.sort((PackageEnumerationEntry p1, PackageEnumerationEntry p2) =>
-        p1.directory.path.compareTo(p2.directory.path));
+        p1.package.path.compareTo(p2.package.path));
     final int shardSize = allPlugins.length ~/ shardCount +
         (allPlugins.length % shardCount == 0 ? 0 : 1);
     final int start = min(shardIndex * shardSize, allPlugins.length);
@@ -287,7 +290,8 @@ abstract class PluginCommand extends Command<void> {
         // A top-level Dart package is a plugin package.
         if (_isDartPackage(entity)) {
           if (plugins.isEmpty || plugins.contains(p.basename(entity.path))) {
-            yield PackageEnumerationEntry(entity as Directory,
+            yield PackageEnumerationEntry(
+                RepositoryPackage(entity as Directory),
                 excluded: excludedPluginNames.contains(entity.basename));
           }
         } else if (entity is Directory) {
@@ -305,7 +309,8 @@ abstract class PluginCommand extends Command<void> {
               if (plugins.isEmpty ||
                   plugins.contains(relativePath) ||
                   plugins.contains(basenamePath)) {
-                yield PackageEnumerationEntry(subdir as Directory,
+                yield PackageEnumerationEntry(
+                    RepositoryPackage(subdir as Directory),
                     excluded: excludedPluginNames.contains(basenamePath) ||
                         excludedPluginNames.contains(packageName) ||
                         excludedPluginNames.contains(relativePath));
@@ -327,26 +332,26 @@ abstract class PluginCommand extends Command<void> {
     await for (final PackageEnumerationEntry plugin
         in getTargetPackages(filterExcluded: filterExcluded)) {
       yield plugin;
-      yield* plugin.directory
+      yield* plugin.package.directory
           .list(recursive: true, followLinks: false)
           .where(_isDartPackage)
           .map((FileSystemEntity directory) => PackageEnumerationEntry(
-              directory as Directory, // _isDartPackage guarantees this works.
+              // _isDartPackage guarantees that this cast is valid.
+              RepositoryPackage(directory as Directory),
               excluded: plugin.excluded));
     }
   }
 
-  /// Returns the files contained, recursively, within the plugins
+  /// Returns the files contained, recursively, within the packages
   /// involved in this command execution.
   Stream<File> getFiles() {
-    return getTargetPackages()
-        .map((PackageEnumerationEntry entry) => entry.directory)
-        .asyncExpand<File>((Directory folder) => getFilesForPackage(folder));
+    return getTargetPackages().asyncExpand<File>(
+        (PackageEnumerationEntry entry) => getFilesForPackage(entry.package));
   }
 
   /// Returns the files contained, recursively, within [package].
-  Stream<File> getFilesForPackage(Directory package) {
-    return package
+  Stream<File> getFilesForPackage(RepositoryPackage package) {
+    return package.directory
         .list(recursive: true, followLinks: false)
         .where((FileSystemEntity entity) => entity is File)
         .cast<File>();
@@ -356,25 +361,6 @@ abstract class PluginCommand extends Command<void> {
   /// `pubspec.yaml` file.
   bool _isDartPackage(FileSystemEntity entity) {
     return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
-  }
-
-  /// Returns the example Dart packages contained in the specified plugin, or
-  /// an empty List, if the plugin has no examples.
-  Iterable<Directory> getExamplesForPlugin(Directory plugin) {
-    final Directory exampleFolder = plugin.childDirectory('example');
-    if (!exampleFolder.existsSync()) {
-      return <Directory>[];
-    }
-    if (isFlutterPackage(exampleFolder)) {
-      return <Directory>[exampleFolder];
-    }
-    // Only look at the subdirectories of the example directory if the example
-    // directory itself is not a Dart package, and only look one level below the
-    // example directory for other dart packages.
-    return exampleFolder
-        .listSync()
-        .where((FileSystemEntity entity) => isFlutterPackage(entity))
-        .cast<Directory>();
   }
 
   /// Retrieve an instance of [GitVersionFinder] based on `_kBaseSha` and [gitDir].

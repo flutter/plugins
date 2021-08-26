@@ -101,7 +101,7 @@ void main() {
           });
 
       processRunner.mockProcessesForExecutable['gradlew'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       Error? commandError;

@@ -1,5 +1,6 @@
-## NEXT
+## 0.1.4+5
 
+* Add `implements` to pubspec.
 * Updated Android lint settings.
 
 ## 0.1.4+4

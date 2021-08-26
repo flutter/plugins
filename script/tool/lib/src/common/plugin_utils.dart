@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:yaml/yaml.dart';
 
 import 'core.dart';
@@ -16,7 +17,7 @@ enum PlatformSupport {
   federated,
 }
 
-/// Returns whether the given directory contains a Flutter [platform] plugin.
+/// Returns whether the given [package] is a Flutter [platform] plugin.
 ///
 /// It checks this by looking for the following pattern in the pubspec:
 ///
@@ -29,7 +30,7 @@ enum PlatformSupport {
 /// implementation in order to return true.
 bool pluginSupportsPlatform(
   String platform,
-  FileSystemEntity entity, {
+  RepositoryPackage package, {
   PlatformSupport? requiredMode,
   String? variant,
 }) {
@@ -39,14 +40,9 @@ bool pluginSupportsPlatform(
       platform == kPlatformMacos ||
       platform == kPlatformWindows ||
       platform == kPlatformLinux);
-  if (entity is! Directory) {
-    return false;
-  }
-
   try {
-    final File pubspecFile = entity.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
-        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+        loadYaml(package.pubspecFile.readAsStringSync()) as YamlMap;
     final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
     if (flutterSection == null) {
       return false;
@@ -106,35 +102,4 @@ bool pluginSupportsPlatform(
   } on YamlException {
     return false;
   }
-}
-
-/// Returns whether the given directory contains a Flutter Android plugin.
-bool isAndroidPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformAndroid, entity);
-}
-
-/// Returns whether the given directory contains a Flutter iOS plugin.
-bool isIosPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformIos, entity);
-}
-
-/// Returns whether the given directory contains a Flutter web plugin.
-bool isWebPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformWeb, entity);
-}
-
-/// Returns whether the given directory contains a Flutter Windows plugin
-/// supporting the given variant.
-bool isWindowsPlugin(FileSystemEntity entity, {required String variant}) {
-  return pluginSupportsPlatform(kPlatformWindows, entity, variant: variant);
-}
-
-/// Returns whether the given directory contains a Flutter macOS plugin.
-bool isMacOsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformMacos, entity);
-}
-
-/// Returns whether the given directory contains a Flutter linux plugin.
-bool isLinuxPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformLinux, entity);
 }
