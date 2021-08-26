@@ -21,7 +21,7 @@ void main() {
     setUp(() {
       // Since the core of this command is a call to 'flutter create', the test
       // has to use the real filesystem. Put everything possible in a unique
-      // temporary to minimize affect on the host system.
+      // temporary to minimize effect on the host system.
       fileSystem = const LocalFileSystem();
       testRoot = fileSystem.systemTempDirectory.createTempSync();
       packagesDir = testRoot.childDirectory('packages');
