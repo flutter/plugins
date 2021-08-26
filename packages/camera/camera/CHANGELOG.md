@@ -1,3 +1,7 @@
+## 0.9.1+1
+
+* Replace `device_info` reference with `device_info_plus` in the [README.md](README.md)
+
 ## 0.9.1
 
 * Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.
