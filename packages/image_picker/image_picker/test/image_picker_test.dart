@@ -330,7 +330,7 @@ void main() {
           expect(response.file, isNotNull);
           expect(response.file!.path, '/example/path1');
           expect(response.files!.first.path, '/example/path0');
-          expect(response.files!.length(), 2);
+          expect(response.files!.length, 2);
         });
 
         test('retrieveLostData get error response', () async {
