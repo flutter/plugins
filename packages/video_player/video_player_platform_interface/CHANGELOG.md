@@ -1,3 +1,7 @@
+## 4.1.1
+
+* Added VideoPlayerOptions for allowSelfSignedSsl flag
+
 ## 4.1.0
 
 * Add `httpHeaders` to `DataSource`

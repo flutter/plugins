@@ -1,3 +1,7 @@
+## 2.1.13
+
+* Added option for allowing self signed SSLs for ExoPlayer
+
 ## 2.1.12
 
 * Update the video url in the readme code sample
