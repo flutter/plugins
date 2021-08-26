@@ -50,12 +50,18 @@ public class CustomSSLSocketFactory extends SSLSocketFactory {
     };
   }
 
-  public CustomSSLSocketFactory() throws KeyManagementException, NoSuchAlgorithmException {
+  public CustomSSLSocketFactory(boolean allowSelfSignedSsl) throws KeyManagementException, NoSuchAlgorithmException {
     SSLContext context = SSLContext.getInstance("TLS");
-    context.init(null, disableSslCertificateVerify(), new SecureRandom());
 
-    HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
-    HttpsURLConnection.setDefaultHostnameVerifier(trustAllSslHostnameVerifier());
+    if (allowSelfSignedSsl) {
+      context.init(null, disableSslCertificateVerify(), new SecureRandom());
+
+      HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
+      HttpsURLConnection.setDefaultHostnameVerifier(trustAllSslHostnameVerifier());
+    } else {
+      // default ssl security
+      context.init(null, null, null);
+    }
 
     sslSocketFactory = context.getSocketFactory();
   }

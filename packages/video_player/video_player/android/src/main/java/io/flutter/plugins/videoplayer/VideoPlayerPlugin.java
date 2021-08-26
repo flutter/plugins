@@ -64,7 +64,7 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
 
     if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
       try {
-        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomSSLSocketFactory());
+        HttpsURLConnection.setDefaultSSLSocketFactory(new CustomSSLSocketFactory(options.allowSelfSignedSsl));
       } catch (KeyManagementException | NoSuchAlgorithmException e) {
         Log.w(
             TAG,
