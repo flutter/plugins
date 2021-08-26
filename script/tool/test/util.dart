@@ -41,6 +41,21 @@ Directory createPackagesDirectory(
   return packagesDir;
 }
 
+/// Details for platform support in a plugin.
+@immutable
+class PlatformDetails {
+  const PlatformDetails(
+    this.type, {
+    this.variants = const <String>[],
+  });
+
+  /// The type of support for the platform.
+  final PlatformSupport type;
+
+  /// Any 'supportVariants' to list in the pubspec.
+  final List<String> variants;
+}
+
 /// Creates a plugin package with the given [name] in [packagesDirectory].
 ///
 /// [platformSupport] is a map of platform string to the support details for
@@ -54,8 +69,8 @@ Directory createFakePlugin(
   Directory parentDirectory, {
   List<String> examples = const <String>['example'],
   List<String> extraFiles = const <String>[],
-  Map<String, PlatformSupport> platformSupport =
-      const <String, PlatformSupport>{},
+  Map<String, PlatformDetails> platformSupport =
+      const <String, PlatformDetails>{},
   String? version = '0.0.1',
 }) {
   final Directory pluginDirectory = createFakePackage(name, parentDirectory,
@@ -143,8 +158,8 @@ void createFakePubspec(
   String name = 'fake_package',
   bool isFlutter = true,
   bool isPlugin = false,
-  Map<String, PlatformSupport> platformSupport =
-      const <String, PlatformSupport>{},
+  Map<String, PlatformDetails> platformSupport =
+      const <String, PlatformDetails>{},
   String publishTo = 'http://no_pub_server.com',
   String? version,
 }) {
@@ -160,12 +175,11 @@ flutter:
   plugin:
     platforms:
 ''';
-      for (final MapEntry<String, PlatformSupport> platform
+      for (final MapEntry<String, PlatformDetails> platform
           in platformSupport.entries) {
         yaml += _pluginPlatformSection(platform.key, platform.value, name);
       }
     }
-
     yaml += '''
 dependencies:
   flutter:
@@ -186,50 +200,73 @@ publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being 
 }
 
 String _pluginPlatformSection(
-    String platform, PlatformSupport type, String packageName) {
-  if (type == PlatformSupport.federated) {
-    return '''
+    String platform, PlatformDetails support, String packageName) {
+  String entry = '';
+  // Build the main plugin entry.
+  if (support.type == PlatformSupport.federated) {
+    entry = '''
       $platform:
         default_package: ${packageName}_$platform
 ''';
-  }
-  switch (platform) {
-    case kPlatformAndroid:
-      return '''
+  } else {
+    switch (platform) {
+      case kPlatformAndroid:
+        entry = '''
       android:
         package: io.flutter.plugins.fake
         pluginClass: FakePlugin
 ''';
-    case kPlatformIos:
-      return '''
+        break;
+      case kPlatformIos:
+        entry = '''
       ios:
         pluginClass: FLTFakePlugin
 ''';
-    case kPlatformLinux:
-      return '''
+        break;
+      case kPlatformLinux:
+        entry = '''
       linux:
         pluginClass: FakePlugin
 ''';
-    case kPlatformMacos:
-      return '''
+        break;
+      case kPlatformMacos:
+        entry = '''
       macos:
         pluginClass: FakePlugin
 ''';
-    case kPlatformWeb:
-      return '''
+        break;
+      case kPlatformWeb:
+        entry = '''
       web:
         pluginClass: FakePlugin
         fileName: ${packageName}_web.dart
 ''';
-    case kPlatformWindows:
-      return '''
+        break;
+      case kPlatformWindows:
+        entry = '''
       windows:
         pluginClass: FakePlugin
 ''';
-    default:
-      assert(false);
-      return '';
+        break;
+      default:
+        assert(false, 'Unrecognized platform: $platform');
+        break;
+    }
   }
+
+  // Add any variants.
+  if (support.variants.isNotEmpty) {
+    entry += '''
+        supportedVariants:
+''';
+    for (final String variant in support.variants) {
+      entry += '''
+          - $variant
+''';
+    }
+  }
+
+  return entry;
 }
 
 typedef _ErrorHandler = void Function(Error error);

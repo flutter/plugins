@@ -56,8 +56,8 @@ void main() {
 
     test('fails if building fails', () async {
       createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformIos: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
           });
 
       processRunner
@@ -106,8 +106,8 @@ void main() {
     test('building for iOS', () async {
       mockPlatform.isMacOS = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformIos: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -163,8 +163,8 @@ void main() {
     test('building for Linux', () async {
       mockPlatform.isLinux = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformLinux: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -212,8 +212,8 @@ void main() {
     test('building for macOS', () async {
       mockPlatform.isMacOS = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformMacos: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -258,8 +258,8 @@ void main() {
 
     test('building for web', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformWeb: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -284,7 +284,7 @@ void main() {
     });
 
     test(
-        'building for Windows when plugin is not set up for Windows results in no-op',
+        'building for win32 when plugin is not set up for Windows results in no-op',
         () async {
       mockPlatform.isWindows = true;
       createFakePlugin('plugin', packagesDir);
@@ -296,7 +296,7 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for plugin'),
-          contains('Windows is not supported by this plugin'),
+          contains('Win32 is not supported by this plugin'),
         ]),
       );
 
@@ -305,11 +305,11 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for Windows', () async {
+    test('building for win32', () async {
       mockPlatform.isWindows = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformWindows: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -321,7 +321,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING plugin/example for Windows',
+          '\nBUILDING plugin/example for Win32 (windows)',
         ]),
       );
 
@@ -332,6 +332,91 @@ void main() {
                 getFlutterCommand(mockPlatform),
                 const <String>['build', 'windows'],
                 pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('building for UWP when plugin does not support UWP is a no-op',
+        () async {
+      createFakePlugin('plugin', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--winuwp']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('UWP is not supported by this plugin'),
+        ]),
+      );
+
+      print(processRunner.recordedCalls);
+      // Output should be empty since running build-examples --macos with no macos
+      // implementation is a no-op.
+      expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+    });
+
+    test('building for UWP', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformDetails>{
+        kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+            variants: <String>[platformVariantWinUwp]),
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--winuwp']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING plugin/example for UWP (winuwp)'),
+        ]),
+      );
+
+      print(processRunner.recordedCalls);
+      expect(
+          processRunner.recordedCalls,
+          containsAll(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'winuwp'], pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('building for UWP creates a folder if necessary', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformDetails>{
+        kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+            variants: <String>[platformVariantWinUwp]),
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--winuwp']);
+
+      expect(
+        output,
+        contains('Creating temporary winuwp folder'),
+      );
+
+      print(processRunner.recordedCalls);
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['create', '--platforms=winuwp', '.'],
+                pluginExampleDirectory.path),
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'winuwp'], pluginExampleDirectory.path),
           ]));
     });
 
@@ -358,8 +443,8 @@ void main() {
 
     test('building for Android', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -387,8 +472,8 @@ void main() {
 
     test('enable-experiment flag for Android', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -409,8 +494,8 @@ void main() {
 
     test('enable-experiment flag for ios', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformIos: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
