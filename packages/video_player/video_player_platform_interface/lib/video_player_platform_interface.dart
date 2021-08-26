@@ -356,7 +356,8 @@ class VideoPlayerOptions {
   /// Note: This option will be silently ignored in the web platform (there is
   /// currently no way to implement this feature in this platform).
   final bool mixWithOthers;
+  final bool allowSelfSignedSsl;
 
   /// set additional optional player settings
-  VideoPlayerOptions({this.mixWithOthers = false});
+  VideoPlayerOptions({this.mixWithOthers = false, this.allowSelfSignedSsl = false});
 }
