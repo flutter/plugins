@@ -1,4 +1,4 @@
-## 0.9.2
+## 0.9.1+1
 
 * Fixed camera controller throwing an exception when being replaced in the preview widget.
 
