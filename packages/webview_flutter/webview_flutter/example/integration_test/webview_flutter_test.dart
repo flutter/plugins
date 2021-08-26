@@ -1330,7 +1330,9 @@ void main() {
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
-  });
+  },
+      // Flaky on Android: https://github.com/flutter/flutter/issues/86757
+      skip: Platform.isAndroid);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
