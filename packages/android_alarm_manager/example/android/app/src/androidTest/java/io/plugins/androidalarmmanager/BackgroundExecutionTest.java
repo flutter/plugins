@@ -39,6 +39,7 @@ public class BackgroundExecutionTest {
     ActivityScenario.launch(DriverExtensionActivity.class);
   }
 
+  @Ignore("Disabled due to flake: https://github.com/flutter/flutter/issues/88837")
   @Test
   public void startBackgroundIsolate() throws Exception {
 
