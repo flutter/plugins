@@ -2,7 +2,7 @@
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html
 #
 Pod::Spec.new do |s|
-  s.name             = 'webview_flutter'
+  s.name             = 'webview_flutter_wkwebview'
   s.version          = '0.0.1'
   s.summary          = 'A WebView Plugin for Flutter.'
   s.description      = <<-DESC
