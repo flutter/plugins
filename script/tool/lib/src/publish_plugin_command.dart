@@ -66,23 +66,9 @@ class PublishPluginCommand extends PluginCommand {
     argParser.addMultiOption(_pubFlagsOption,
         help:
             'A list of options that will be forwarded on to pub. Separate multiple flags with commas.');
-    argParser.addFlag(
-      _tagReleaseOption,
-      help: 'Whether or not to tag the release.',
-      defaultsTo: true,
-      negatable: true,
-    );
-    argParser.addFlag(
-      _pushTagsOption,
-      help:
-          'Whether or not tags should be pushed to a remote after creation. Ignored if tag-release is false.',
-      defaultsTo: true,
-      negatable: true,
-    );
     argParser.addOption(
       _remoteOption,
-      help:
-          'The name of the remote to push the tags to. Ignored if push-tags or tag-release is false.',
+      help: 'The name of the remote to push the tags to.',
       // Flutter convention is to use "upstream" for the single source of truth, and "origin" for personal forks.
       defaultsTo: 'upstream',
     );
@@ -104,15 +90,12 @@ class PublishPluginCommand extends PluginCommand {
     );
     argParser.addFlag(_skipConfirmationFlag,
         help: 'Run the command without asking for Y/N inputs.\n'
-            'This command will add a `--force` flag to the `pub publish` command if it is not added with $_pubFlagsOption\n'
-            'It also skips the y/n inputs when pushing tags to remote.\n',
+            'This command will add a `--force` flag to the `pub publish` command if it is not added with $_pubFlagsOption\n',
         defaultsTo: false,
         negatable: true);
   }
 
   static const String _packageOption = 'package';
-  static const String _tagReleaseOption = 'tag-release';
-  static const String _pushTagsOption = 'push-tags';
   static const String _pubFlagsOption = 'pub-publish-flags';
   static const String _remoteOption = 'remote';
   static const String _allChangedFlag = 'all-changed';
@@ -150,19 +133,14 @@ class PublishPluginCommand extends PluginCommand {
 
     print('Checking local repo...');
     final GitDir repository = await gitDir;
-
-    final bool shouldPushTag = getBoolArg(_pushTagsOption);
-    _RemoteInfo? remote;
-    if (shouldPushTag) {
-      final String remoteName = getStringArg(_remoteOption);
-      final String? remoteUrl = await _verifyRemote(remoteName);
-      if (remoteUrl == null) {
-        printError(
-            'Unable to find URL for remote $remoteName; cannot push tags');
-        throw ToolExit(1);
-      }
-      remote = _RemoteInfo(name: remoteName, url: remoteUrl);
+    final String remoteName = getStringArg(_remoteOption);
+    final String? remoteUrl = await _verifyRemote(remoteName);
+    if (remoteUrl == null) {
+      printError('Unable to find URL for remote $remoteName; cannot push tags');
+      throw ToolExit(1);
     }
+    final _RemoteInfo remote = _RemoteInfo(name: remoteName, url: remoteUrl);
+
     print('Local repo is ready!');
     if (getBoolArg(_dryRunFlag)) {
       print('===============  DRY RUN ===============');
@@ -187,7 +165,7 @@ class PublishPluginCommand extends PluginCommand {
 
   Future<bool> _publishAllChangedPackages({
     required GitDir baseGitDir,
-    _RemoteInfo? remoteForTagPush,
+    required _RemoteInfo remoteForTagPush,
   }) async {
     final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
     final List<String> changedPubspecs =
@@ -249,24 +227,21 @@ class PublishPluginCommand extends PluginCommand {
     return packagesFailed.isEmpty;
   }
 
-  // Publish the package to pub with `pub publish`.
-  // If `_tagReleaseOption` is on, git tag the release.
-  // If `remoteForTagPush` is non-null, the tag will be pushed to that remote.
+  // Publish the package to pub with `pub publish`, then git tag the release
+  // and push the tag to [remoteForTagPush].
   // Returns `true` if publishing and tagging are successful.
   Future<bool> _publishAndTagPackage({
     required Directory packageDir,
-    _RemoteInfo? remoteForTagPush,
+    required _RemoteInfo remoteForTagPush,
   }) async {
     if (!await _publishPlugin(packageDir: packageDir)) {
       return false;
     }
-    if (getBoolArg(_tagReleaseOption)) {
-      if (!await _tagRelease(
-        packageDir: packageDir,
-        remoteForPush: remoteForTagPush,
-      )) {
-        return false;
-      }
+    if (!await _tagRelease(
+      packageDir: packageDir,
+      remoteForPush: remoteForTagPush,
+    )) {
+      return false;
     }
     print('Released [${packageDir.basename}] successfully.');
     return true;
@@ -479,14 +454,6 @@ Safe to ignore if the package is deleted in this commit.
     required _RemoteInfo remote,
   }) async {
     assert(remote != null && tag != null);
-    if (!getBoolArg(_skipConfirmationFlag)) {
-      print('Ready to push $tag to ${remote.url} (y/n)?');
-      final String? input = _stdin.readLineSync();
-      if (input?.toLowerCase() != 'y') {
-        print('Tag push canceled.');
-        return false;
-      }
-    }
     if (!getBoolArg(_dryRunFlag)) {
       final io.ProcessResult result = await (await gitDir).runCommand(
         <String>['push', remote.name, tag],

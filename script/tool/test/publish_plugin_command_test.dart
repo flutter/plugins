@@ -80,8 +80,8 @@ void main() {
 
     test('requires an existing flag', () async {
       Error? commandError;
-      final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--package', 'iamerror', '--no-push-tags'],
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish-plugin', '--package', 'iamerror'],
           errorHandler: (Error e) {
         commandError = e;
       });
@@ -100,8 +100,8 @@ void main() {
       ];
 
       Error? commandError;
-      final List<String> output = await runCapturingPrint(commandRunner,
-          <String>['publish-plugin', '--package', 'foo', '--no-push-tags'],
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish-plugin', '--package', 'foo'],
           errorHandler: (Error e) {
         commandError = e;
       });
@@ -141,56 +141,6 @@ void main() {
                 'Unable to find URL for remote upstream; cannot push tags'),
           ]));
     });
-
-    test("doesn't validate the remote if it's not pushing tags", () async {
-      createFakePlugin('foo', packagesDir, examples: <String>[]);
-
-      // Checking the remote should fail.
-      processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
-        MockProcess(exitCode: 1),
-      ];
-
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        'foo',
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
-
-      expect(
-          output,
-          containsAllInOrder(<Matcher>[
-            contains('Running `pub publish ` in /packages/foo...'),
-            contains('Package published!'),
-            contains('Released [foo] successfully.'),
-          ]));
-    });
-
-    test('can publish non-flutter package', () async {
-      const String packageName = 'a_package';
-      createFakePackage(packageName, packagesDir);
-
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        packageName,
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
-
-      expect(
-        output,
-        containsAllInOrder(
-          <Matcher>[
-            contains('Running `pub publish ` in /packages/a_package...'),
-            contains('Package published!'),
-          ],
-        ),
-      );
-    });
   });
 
   group('Publishes package', () {
@@ -206,13 +156,7 @@ void main() {
       ];
 
       final List<String> output = await runCapturingPrint(
-          commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        'foo',
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
+          commandRunner, <String>['publish-plugin', '--package', 'foo']);
 
       expect(
           output,
@@ -227,13 +171,8 @@ void main() {
 
       mockStdin.mockUserInputs.add(utf8.encode('user input'));
 
-      await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        'foo',
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
+      await runCapturingPrint(
+          commandRunner, <String>['publish-plugin', '--package', 'foo']);
 
       expect(processRunner.mockPublishProcess.stdinMock.lines,
           contains('user input'));
@@ -247,8 +186,6 @@ void main() {
         'publish-plugin',
         '--package',
         'foo',
-        '--no-push-tags',
-        '--no-tag-release',
         '--pub-publish-flags',
         '--dry-run,--server=foo'
       ]);
@@ -272,8 +209,6 @@ void main() {
         'publish-plugin',
         '--package',
         'foo',
-        '--no-push-tags',
-        '--no-tag-release',
         '--skip-confirmation',
         '--pub-publish-flags',
         '--server=foo'
@@ -300,8 +235,6 @@ void main() {
         'publish-plugin',
         '--package',
         'foo',
-        '--no-push-tags',
-        '--no-tag-release',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -324,8 +257,6 @@ void main() {
         '--package',
         'foo',
         '--dry-run',
-        '--no-push-tags',
-        '--no-tag-release',
       ]);
 
       expect(
@@ -340,6 +271,28 @@ void main() {
             'Done!'
           ]));
     });
+
+    test('can publish non-flutter package', () async {
+      const String packageName = 'a_package';
+      createFakePackage(packageName, packagesDir);
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--package',
+        packageName,
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(
+          <Matcher>[
+            contains('Running `pub publish ` in /packages/a_package...'),
+            contains('Package published!'),
+          ],
+        ),
+      );
+    });
   });
 
   group('Tags release', () {
@@ -349,7 +302,6 @@ void main() {
         'publish-plugin',
         '--package',
         'foo',
-        '--no-push-tags',
       ]);
 
       expect(processRunner.recordedCalls,
@@ -369,7 +321,6 @@ void main() {
         'publish-plugin',
         '--package',
         'foo',
-        '--no-push-tags',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -388,25 +339,6 @@ void main() {
   });
 
   group('Pushes tags', () {
-    test('requires user confirmation', () async {
-      createFakePlugin('foo', packagesDir, examples: <String>[]);
-
-      mockStdin.readLineOutput = 'help';
-
-      Error? commandError;
-      final List<String> output =
-          await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        'foo',
-      ], errorHandler: (Error e) {
-        commandError = e;
-      });
-
-      expect(commandError, isA<ToolExit>());
-      expect(output, contains('Tag push canceled.'));
-    });
-
     test('to upstream by default', () async {
       createFakePlugin('foo', packagesDir, examples: <String>[]);
 
@@ -499,30 +431,6 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [foo] successfully.'),
-          ]));
-    });
-
-    test('only if tagging and pushing to remotes are both enabled', () async {
-      createFakePlugin('foo', packagesDir, examples: <String>[]);
-
-      final List<String> output =
-          await runCapturingPrint(commandRunner, <String>[
-        'publish-plugin',
-        '--package',
-        'foo',
-        '--no-tag-release',
-      ]);
-
-      expect(
-          processRunner.recordedCalls
-              .map((ProcessCall call) => call.executable),
-          isNot(contains('git-push')));
-      expect(
-          output,
-          containsAllInOrder(<Matcher>[
-            contains('Running `pub publish ` in /packages/foo...'),
-            contains('Package published!'),
             contains('Released [foo] successfully.'),
           ]));
     });
