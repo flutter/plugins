@@ -15,6 +15,7 @@ environment:
 
 flutter:
   plugin:
+    implements: camera
     platforms:
       web:
         pluginClass: CameraPlugin

@@ -61,6 +61,7 @@ import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationMan
 import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 import io.flutter.plugins.camera.features.zoomlevel.ZoomLevelFeature;
 import io.flutter.plugins.camera.media.MediaRecorderBuilder;
+import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.view.TextureRegistry.SurfaceTextureEntry;
 import java.io.File;
@@ -125,11 +126,15 @@ class Camera
   private MediaRecorder mediaRecorder;
   /** True when recording video. */
   private boolean recordingVideo;
+  /** True when the preview is paused. */
+  private boolean pausedPreview;
 
   private File captureFile;
 
   /** Holds the current capture timeouts */
   private CaptureTimeoutsWrapper captureTimeouts;
+  /** Holds the last known capture properties */
+  private CameraCaptureProperties captureProps;
 
   private MethodChannel.Result flutterResult;
 
@@ -158,7 +163,8 @@ class Camera
 
     // Create capture callback.
     captureTimeouts = new CaptureTimeoutsWrapper(3000, 3000);
-    cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts);
+    captureProps = new CameraCaptureProperties();
+    cameraCaptureCallback = CameraCaptureCallback.create(this, captureTimeouts, captureProps);
 
     startBackgroundThread();
   }
@@ -424,8 +430,10 @@ class Camera
     }
 
     try {
-      captureSession.setRepeatingRequest(
-          previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
+      if (!pausedPreview) {
+        captureSession.setRepeatingRequest(
+            previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
+      }
 
       if (onSuccessCallback != null) {
         onSuccessCallback.run();
@@ -830,33 +838,36 @@ class Camera
      * For focus mode an extra step of actually locking/unlocking the
      * focus has to be done, in order to ensure it goes into the correct state.
      */
-    switch (newMode) {
-      case locked:
-        // Perform a single focus trigger.
-        lockAutoFocus();
-        if (captureSession == null) {
-          Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
-          return;
-        }
-
-        // Set AF state to idle again.
-        previewRequestBuilder.set(
-            CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
-
-        try {
-          captureSession.setRepeatingRequest(
-              previewRequestBuilder.build(), null, backgroundHandler);
-        } catch (CameraAccessException e) {
-          if (result != null) {
-            result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+    if (!pausedPreview) {
+      switch (newMode) {
+        case locked:
+          // Perform a single focus trigger.
+          if (captureSession == null) {
+            Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+            return;
           }
-          return;
-        }
-        break;
-      case auto:
-        // Cancel current AF trigger and set AF to idle again.
-        unlockAutoFocus();
-        break;
+          lockAutoFocus();
+
+          // Set AF state to idle again.
+          previewRequestBuilder.set(
+              CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+
+          try {
+            captureSession.setRepeatingRequest(
+                previewRequestBuilder.build(), null, backgroundHandler);
+          } catch (CameraAccessException e) {
+            if (result != null) {
+              result.error(
+                  "setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+            }
+            return;
+          }
+          break;
+        case auto:
+          // Cancel current AF trigger and set AF to idle again.
+          unlockAutoFocus();
+          break;
+      }
     }
 
     if (result != null) {
@@ -962,6 +973,19 @@ class Camera
     cameraFeatures.getSensorOrientation().unlockCaptureOrientation();
   }
 
+  /** Pause the preview from dart. */
+  public void pausePreview() throws CameraAccessException {
+    this.pausedPreview = true;
+    this.captureSession.stopRepeating();
+  }
+
+  /** Resume the preview from dart. */
+  public void resumePreview() {
+    this.pausedPreview = false;
+    this.refreshPreviewCaptureSession(
+        null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
+  }
+
   public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     Log.i(TAG, "startPreview");
@@ -1018,8 +1042,8 @@ class Camera
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
-          // Use acquireNextImage since image reader is only for one image.
           Image img = reader.acquireNextImage();
+          // Use acquireNextImage since image reader is only for one image.
           if (img == null) return;
 
           List<Map<String, Object>> planes = new ArrayList<>();
@@ -1042,6 +1066,11 @@ class Camera
           imageBuffer.put("height", img.getHeight());
           imageBuffer.put("format", img.getFormat());
           imageBuffer.put("planes", planes);
+          imageBuffer.put("lensAperture", this.captureProps.getLastLensAperture());
+          imageBuffer.put("sensorExposureTime", this.captureProps.getLastSensorExposureTime());
+          Integer sensorSensitivity = this.captureProps.getLastSensorSensitivity();
+          imageBuffer.put(
+              "sensorSensitivity", sensorSensitivity == null ? null : (double) sensorSensitivity);
 
           final Handler handler = new Handler(Looper.getMainLooper());
           handler.post(() -> imageStreamSink.success(imageBuffer));

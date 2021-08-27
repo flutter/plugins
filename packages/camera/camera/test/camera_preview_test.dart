@@ -113,6 +113,12 @@ class FakeController extends ValueNotifier<CameraValue>
 
   @override
   Future<void> unlockCaptureOrientation() async {}
+
+  @override
+  Future<void> pausePreview() async {}
+
+  @override
+  Future<void> resumePreview() async {}
 }
 
 void main() {

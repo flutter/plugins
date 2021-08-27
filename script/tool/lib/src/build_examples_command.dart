@@ -16,7 +16,16 @@ import 'common/repository_package.dart';
 /// Key for APK.
 const String _platformFlagApk = 'apk';
 
-const int _exitNoPlatformFlags = 2;
+const int _exitNoPlatformFlags = 3;
+
+// Flutter build types. These are the values passed to `flutter build <foo>`.
+const String _flutterBuildTypeAndroid = 'apk';
+const String _flutterBuildTypeIos = 'ios';
+const String _flutterBuildTypeLinux = 'linux';
+const String _flutterBuildTypeMacOS = 'macos';
+const String _flutterBuildTypeWeb = 'web';
+const String _flutterBuildTypeWin32 = 'windows';
+const String _flutterBuildTypeWinUwp = 'winuwp';
 
 /// A command to build the example applications for packages.
 class BuildExamplesCommand extends PackageLoopingCommand {
@@ -30,6 +39,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     argParser.addFlag(kPlatformMacos);
     argParser.addFlag(kPlatformWeb);
     argParser.addFlag(kPlatformWindows);
+    argParser.addFlag(kPlatformWinUwp);
     argParser.addFlag(kPlatformIos);
     argParser.addFlag(_platformFlagApk);
     argParser.addOption(
@@ -46,33 +56,40 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     _platformFlagApk: const _PlatformDetails(
       'Android',
       pluginPlatform: kPlatformAndroid,
-      flutterBuildType: 'apk',
+      flutterBuildType: _flutterBuildTypeAndroid,
     ),
     kPlatformIos: const _PlatformDetails(
       'iOS',
       pluginPlatform: kPlatformIos,
-      flutterBuildType: 'ios',
+      flutterBuildType: _flutterBuildTypeIos,
       extraBuildFlags: <String>['--no-codesign'],
     ),
     kPlatformLinux: const _PlatformDetails(
       'Linux',
       pluginPlatform: kPlatformLinux,
-      flutterBuildType: 'linux',
+      flutterBuildType: _flutterBuildTypeLinux,
     ),
     kPlatformMacos: const _PlatformDetails(
       'macOS',
       pluginPlatform: kPlatformMacos,
-      flutterBuildType: 'macos',
+      flutterBuildType: _flutterBuildTypeMacOS,
     ),
     kPlatformWeb: const _PlatformDetails(
       'web',
       pluginPlatform: kPlatformWeb,
-      flutterBuildType: 'web',
+      flutterBuildType: _flutterBuildTypeWeb,
     ),
     kPlatformWindows: const _PlatformDetails(
-      'Windows',
+      'Win32',
       pluginPlatform: kPlatformWindows,
-      flutterBuildType: 'windows',
+      pluginPlatformVariant: platformVariantWin32,
+      flutterBuildType: _flutterBuildTypeWin32,
+    ),
+    kPlatformWinUwp: const _PlatformDetails(
+      'UWP',
+      pluginPlatform: kPlatformWindows,
+      pluginPlatformVariant: platformVariantWinUwp,
+      flutterBuildType: _flutterBuildTypeWinUwp,
     ),
   };
 
@@ -107,7 +124,8 @@ class BuildExamplesCommand extends PackageLoopingCommand {
     final Set<_PlatformDetails> buildPlatforms = <_PlatformDetails>{};
     final Set<_PlatformDetails> unsupportedPlatforms = <_PlatformDetails>{};
     for (final _PlatformDetails platform in requestedPlatforms) {
-      if (pluginSupportsPlatform(platform.pluginPlatform, package)) {
+      if (pluginSupportsPlatform(platform.pluginPlatform, package,
+          variant: platform.pluginPlatformVariant)) {
         buildPlatforms.add(platform);
       } else {
         unsupportedPlatforms.add(platform);
@@ -156,6 +174,22 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   }) async {
     final String enableExperiment = getStringArg(kEnableExperiment);
 
+    // The UWP template is not yet stable, so the UWP directory
+    // needs to be created on the fly with 'flutter create .'
+    Directory? temporaryPlatformDirectory;
+    if (flutterBuildType == _flutterBuildTypeWinUwp) {
+      final Directory uwpDirectory = example.directory.childDirectory('winuwp');
+      if (!uwpDirectory.existsSync()) {
+        print('Creating temporary winuwp folder');
+        final int exitCode = await processRunner.runAndStream(flutterCommand,
+            <String>['create', '--platforms=$kPlatformWinUwp', '.'],
+            workingDir: example.directory);
+        if (exitCode == 0) {
+          temporaryPlatformDirectory = uwpDirectory;
+        }
+      }
+    }
+
     final int exitCode = await processRunner.runAndStream(
       flutterCommand,
       <String>[
@@ -167,6 +201,13 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       ],
       workingDir: example.directory,
     );
+
+    if (temporaryPlatformDirectory != null &&
+        temporaryPlatformDirectory.existsSync()) {
+      print('Cleaning up ${temporaryPlatformDirectory.path}');
+      temporaryPlatformDirectory.deleteSync(recursive: true);
+    }
+
     return exitCode == 0;
   }
 }
@@ -176,6 +217,7 @@ class _PlatformDetails {
   const _PlatformDetails(
     this.label, {
     required this.pluginPlatform,
+    this.pluginPlatformVariant,
     required this.flutterBuildType,
     this.extraBuildFlags = const <String>[],
   });
@@ -185,6 +227,10 @@ class _PlatformDetails {
 
   /// The key in a pubspec's platform: entry.
   final String pluginPlatform;
+
+  /// The supportedVariants key under a plugin's [pluginPlatform] entry, if
+  /// applicable.
+  final String? pluginPlatformVariant;
 
   /// The `flutter build` build type.
   final String flutterBuildType;
