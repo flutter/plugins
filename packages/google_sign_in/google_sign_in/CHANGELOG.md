@@ -1,3 +1,7 @@
+## NEXT
+
+* Updated Android lint settings.
+
 ## 5.0.7
 
 * Mark iOS arm64 simulators as unsupported.

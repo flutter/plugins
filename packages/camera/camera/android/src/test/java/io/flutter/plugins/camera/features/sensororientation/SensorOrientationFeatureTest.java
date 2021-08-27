@@ -52,7 +52,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void ctor_should_start_device_orientation_manager() {
+  public void ctor_shouldStartDeviceOrientationManager() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -60,7 +60,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -68,7 +68,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_null_if_not_set() {
+  public void getValue_shouldReturnNullIfNotSet() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -76,7 +76,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_setValue() {
+  public void getValue_shouldEchoSetValue() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -86,7 +86,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_returns_true() {
+  public void checkIsSupport_returnsTrue() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -94,8 +94,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void
-      getDeviceOrientationManager_should_return_initialized_DartOrientationManager_instance() {
+  public void getDeviceOrientationManager_shouldReturnInitializedDartOrientationManagerInstance() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -104,7 +103,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void lockCaptureOrientation_should_lock_to_specified_orientation() {
+  public void lockCaptureOrientation_shouldLockToSpecifiedOrientation() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
@@ -115,7 +114,7 @@ public class SensorOrientationFeatureTest {
   }
 
   @Test
-  public void unlockCaptureOrientation_should_set_lock_to_null() {
+  public void unlockCaptureOrientation_shouldSetLockToNull() {
     SensorOrientationFeature sensorOrientationFeature =
         new SensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);
 
