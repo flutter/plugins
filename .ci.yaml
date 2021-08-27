@@ -58,7 +58,6 @@ targets:
 
   - name: Linux ci_yaml plugins roller
     recipe: infra/ci_yaml
-    bringup: true
     timeout: 30
     scheduler: luci
     runIf:
