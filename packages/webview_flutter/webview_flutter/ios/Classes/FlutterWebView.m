@@ -477,7 +477,7 @@
   if (!arguments) {
     return nil;
   }
-    
+
   id requestParameters = arguments[@"request"];
   if (!(requestParameters && [requestParameters isKindOfClass:[NSDictionary class]])) {
     return nil;
