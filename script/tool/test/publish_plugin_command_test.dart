@@ -214,7 +214,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Publish foo failed.'),
+            contains('Publishing foo failed.'),
           ]));
     });
 
@@ -249,8 +249,7 @@ void main() {
       final List<String> output =
           await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        packageName,
+        '--packages=$packageName',
       ]);
 
       expect(
@@ -297,7 +296,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Publish foo failed.'),
+            contains('Publishing foo failed.'),
           ]));
       expect(
           processRunner.recordedCalls,
@@ -325,7 +324,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [foo] successfully.'),
+            contains('Published foo successfully.'),
           ]));
     });
 
@@ -348,7 +347,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [foo] successfully.'),
+            contains('Published foo successfully.'),
           ]));
     });
 
@@ -396,7 +395,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Released [foo] successfully.'),
+            contains('Published foo successfully.'),
           ]));
     });
   });
@@ -751,7 +750,7 @@ void main() {
             'Checking local repo...',
             'Local repo is ready!',
             'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'The file at The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n',
+            'The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n',
             'Packages released: plugin1',
             'Done!'
           ]));
