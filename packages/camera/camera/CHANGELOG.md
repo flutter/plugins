@@ -1,3 +1,7 @@
+## 0.9.2+1
+
+* Fixed camera controller throwing an exception when being replaced in the preview widget.
+
 ## 0.9.2
 
 * Added functions to pause and resume the camera preview.
