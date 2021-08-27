@@ -1,3 +1,7 @@
+## 0.9.2
+
+* Added functions to pause and resume the camera preview.
+
 ## 0.9.1+1
 
 * Replace `device_info` reference with `device_info_plus` in the [README.md](README.md)
