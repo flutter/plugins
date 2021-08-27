@@ -562,6 +562,7 @@ public class ImagePickerDelegate
   private void handleMultiImageResult(
       ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
+      ArrayList<String> finalPath = new ArrayList<>();
       for (int i = 0; i < paths.size(); i++) {
         String finalImagePath = getResizedImagePath(paths.get(i));
 
@@ -571,8 +572,10 @@ public class ImagePickerDelegate
             && shouldDeleteOriginalIfScaled) {
           new File(paths.get(i)).delete();
         }
-        paths.set(i, finalImagePath);
+        finalPath.add(i, finalImagePath);
       }
+      finishWithListSuccess(finalPath);
+    } else {
       finishWithListSuccess(paths);
     }
   }
