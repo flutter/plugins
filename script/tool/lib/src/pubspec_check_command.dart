@@ -97,6 +97,16 @@ class PubspecCheckCommand extends PackageLoopingCommand {
       printError('$listIndentation${sectionOrder.join('\n$listIndentation')}');
     }
 
+    if (isPlugin) {
+      final String? error = _checkForImplementsError(pubspec, package: package);
+      if (error != null) {
+        printError('$indentation$error');
+        passing = false;
+      }
+    }
+
+    // Ignore metadata that's only relevant for published packages if the
+    // packages is not intended for publishing.
     if (pubspec.publishTo != 'none') {
       final List<String> repositoryErrors =
           _checkForRepositoryLinkErrors(pubspec, package: package);
@@ -113,15 +123,6 @@ class PubspecCheckCommand extends PackageLoopingCommand {
             'search for open flutter/flutter bugs with the relevant label:\n'
             '${indentation * 2}$_expectedIssueLinkFormat<package label>');
         passing = false;
-      }
-
-      if (isPlugin) {
-        final String? error =
-            _checkForImplementsError(pubspec, package: package);
-        if (error != null) {
-          printError('$indentation$error');
-          passing = false;
-        }
       }
     }
 

@@ -55,6 +55,7 @@ void main() {
       String? repositoryPackagesDirRelativePath,
       bool includeHomepage = false,
       bool includeIssueTracker = true,
+      bool publishable = true,
     }) {
       final String repositoryPath = repositoryPackagesDirRelativePath ?? name;
       final String repoLink = 'https://github.com/flutter/'
@@ -69,6 +70,7 @@ ${includeRepository ? 'repository: $repoLink' : ''}
 ${includeHomepage ? 'homepage: $repoLink' : ''}
 ${includeIssueTracker ? 'issue_tracker: $issueTrackerLink' : ''}
 version: 1.0.0
+${publishable ? '' : 'publish_to: \'none\''}
 ''';
     }
 
@@ -563,6 +565,68 @@ ${devDependenciesSection()}
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for plugin_a_platform_interface...'),
+          contains('No issues found!'),
+        ]),
+      );
+    });
+
+    test('validates some properties even for unpublished packages', () async {
+      final Directory pluginDirectory = createFakePlugin(
+          'plugin_a_foo', packagesDir.childDirectory('plugin_a'));
+
+      // Environment section is in the wrong location.
+      // Missing 'implements'.
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin_a_foo', isPlugin: true, publishable: false)}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+${environmentSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Major sections should follow standard repository ordering:'),
+          contains('Missing "implements: plugin_a" in "plugin" section.'),
+        ]),
+      );
+    });
+
+    test('ignores some checks for unpublished packages', () async {
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+
+      // Missing metadata that is only useful for published packages, such as
+      // repository and issue tracker.
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection(
+        'plugin',
+        isPlugin: true,
+        publishable: false,
+        includeRepository: false,
+        includeIssueTracker: false,
+      )}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['pubspec-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin...'),
           contains('No issues found!'),
         ]),
       );

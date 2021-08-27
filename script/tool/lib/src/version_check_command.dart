@@ -178,7 +178,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
     if (!(await _validateChangelogVersion(package,
         pubspec: pubspec, pubspecVersionChanged: versionChanged))) {
-      errors.add('pubspec.yaml and CHANGELOG.md have different versions');
+      errors.add('CHANGELOG.md failed validation.');
     }
 
     return errors.isEmpty
