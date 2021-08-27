@@ -119,7 +119,7 @@ class Camera {
 
     videoElement
       ..autoplay = false
-      ..muted = !options.audio.enabled
+      ..muted = true
       ..srcObject = stream
       ..setAttribute('playsinline', '');
 
