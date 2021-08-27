@@ -219,9 +219,6 @@ class FakeIOSPlatform {
     switch (call.method) {
       // request makers
       case '-[InAppPurchasePlugin startProductRequest:result:]':
-        List<String> productIDS =
-            List.castFrom<dynamic, String>(call.arguments);
-        assert(productIDS is List<String>, 'invalid argument type');
         startProductRequestParam = call.arguments;
         if (getProductRequestFailTest) {
           return Future<dynamic>.value(null);
