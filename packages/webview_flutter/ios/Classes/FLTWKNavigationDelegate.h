@@ -11,7 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithChannel:(FlutterMethodChannel*)channel;
 
-- (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString;
+- (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString isRedirect:(BOOL)isRedirect;
 - (void)onPageFinishedWithUrl:(NSString * _Nonnull)urlString;
 - (void)onCachedPageFinishedWithUrl:(NSString * _Nonnull)urlString;
 

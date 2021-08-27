@@ -6,18 +6,20 @@
 
 @implementation FLTWKNavigationDelegate {
   FlutterMethodChannel *_methodChannel;
+  NSMutableDictionary<NSString*, NSNumber*> *_map;
 }
 
 - (instancetype)initWithChannel:(FlutterMethodChannel *)channel {
   self = [super init];
   if (self) {
     _methodChannel = channel;
+    _map = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
 
-- (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString {
-    [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : urlString}];
+- (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString isRedirect:(BOOL)isRedirect {
+    [_methodChannel invokeMethod:@"onPageStarted" arguments:@{@"url" : urlString, @"isRedirect": [NSNumber numberWithBool:isRedirect]}];
 }
 
 - (void)onPageFinishedWithUrl:(NSString * _Nonnull)urlString {
@@ -31,7 +33,11 @@
 #pragma mark - WKNavigationDelegate conformance
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
-    [self onPageStartedWithUrl:webView.URL.absoluteString];
+    BOOL isRedirect = [_map objectForKey:webView.URL.absoluteString] != nil;
+    [self onPageStartedWithUrl:webView.URL.absoluteString isRedirect:isRedirect];
+    if (isRedirect) {
+        [_map removeObjectForKey:webView.URL.absoluteString];
+    }
 }
 
 - (void)webView:(WKWebView *)webView
@@ -123,6 +129,11 @@
                                  code:WKErrorWebContentProcessTerminated
                              userInfo:nil];
   [self onWebResourceError:contentProcessTerminatedError];
+}
+
+- (void)webView:(WKWebView *)webView
+didReceiveServerRedirectForProvisionalNavigation:(WKNavigation *)navigation {
+    _map[webView.URL.absoluteString] = [NSNumber numberWithBool:YES];
 }
 
 @end
