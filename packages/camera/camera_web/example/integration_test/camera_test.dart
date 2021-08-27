@@ -5,6 +5,7 @@
 import 'dart:html';
 import 'dart:ui';
 
+import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_service.dart';
@@ -843,9 +844,80 @@ void main() {
 
         await camera.initialize();
 
-        camera.dispose();
+        await camera.dispose();
 
         expect(camera.videoElement.srcObject, isNull);
+      });
+    });
+
+    group('events', () {
+      group('onEnded', () {
+        testWidgets(
+            'emits the default video track '
+            'when it emits an ended event', (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraService: cameraService,
+          );
+
+          final streamQueue = StreamQueue(camera.onEnded);
+
+          await camera.initialize();
+
+          final videoTracks = camera.stream!.getVideoTracks();
+          final defaultVideoTrack = videoTracks.first;
+
+          defaultVideoTrack.dispatchEvent(Event('ended'));
+
+          expect(
+            await streamQueue.next,
+            equals(defaultVideoTrack),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits the default video track '
+            'when the camera is stopped', (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraService: cameraService,
+          );
+
+          final streamQueue = StreamQueue(camera.onEnded);
+
+          await camera.initialize();
+
+          final videoTracks = camera.stream!.getVideoTracks();
+          final defaultVideoTrack = videoTracks.first;
+
+          camera.stop();
+
+          expect(
+            await streamQueue.next,
+            equals(defaultVideoTrack),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'no longer emits the default video track '
+            'when the camera is disposed', (tester) async {
+          final camera = Camera(
+            textureId: textureId,
+            cameraService: cameraService,
+          );
+
+          await camera.initialize();
+          await camera.dispose();
+
+          expect(
+            camera.onEndedStreamController.isClosed,
+            isTrue,
+          );
+        });
       });
     });
   });

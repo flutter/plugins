@@ -355,11 +355,9 @@ Safe to ignore if the package is deleted in this commit.
     final String tag = _getTag(packageDir);
     print('Tagging release $tag...');
     if (!getBoolArg(_dryRunFlag)) {
-      final io.ProcessResult result = await processRunner.run(
-        'git',
+      final io.ProcessResult result = await (await gitDir).runCommand(
         <String>['tag', tag],
-        workingDir: packageDir,
-        logOnError: true,
+        throwOnError: false,
       );
       if (result.exitCode != 0) {
         return false;
@@ -400,11 +398,9 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<bool> _checkGitStatus(Directory packageDir) async {
-    final io.ProcessResult statusResult = await processRunner.run(
-      'git',
+    final io.ProcessResult statusResult = await (await gitDir).runCommand(
       <String>['status', '--porcelain', '--ignored', packageDir.absolute.path],
-      workingDir: packageDir,
-      logOnError: true,
+      throwOnError: false,
     );
     if (statusResult.exitCode != 0) {
       return false;
@@ -421,11 +417,9 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<String?> _verifyRemote(String remote) async {
-    final io.ProcessResult getRemoteUrlResult = await processRunner.run(
-      'git',
+    final io.ProcessResult getRemoteUrlResult = await (await gitDir).runCommand(
       <String>['remote', 'get-url', remote],
-      workingDir: packagesDir,
-      logOnError: true,
+      throwOnError: false,
     );
     if (getRemoteUrlResult.exitCode != 0) {
       return null;
@@ -494,11 +488,9 @@ Safe to ignore if the package is deleted in this commit.
       }
     }
     if (!getBoolArg(_dryRunFlag)) {
-      final io.ProcessResult result = await processRunner.run(
-        'git',
+      final io.ProcessResult result = await (await gitDir).runCommand(
         <String>['push', remote.name, tag],
-        workingDir: packagesDir,
-        logOnError: true,
+        throwOnError: false,
       );
       if (result.exitCode != 0) {
         return false;
