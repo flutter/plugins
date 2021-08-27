@@ -134,9 +134,11 @@ class ImagePickerCache {
     if (prefs.contains(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY)) {
       final Set<String> imagePathList =
           prefs.getStringSet(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, null);
-      pathList.addAll(imagePathList);
-      resultMap.put(MAP_KEY_PATH_LIST, pathList);
-      hasData = true;
+      if (imagePathList != null) {
+        pathList.addAll(imagePathList);
+        resultMap.put(MAP_KEY_PATH_LIST, pathList);
+        hasData = true;
+      }
     }
 
     if (prefs.contains(SHARED_PREFERENCE_ERROR_CODE_KEY)) {
