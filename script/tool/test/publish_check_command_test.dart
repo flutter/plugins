@@ -49,11 +49,6 @@ void main() {
       final Directory plugin2Dir =
           createFakePlugin('plugin_tools_test_package_b', packagesDir);
 
-      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-        MockProcess(),
-        MockProcess(),
-      ];
-
       await runCapturingPrint(runner, <String>['publish-check']);
 
       expect(
@@ -86,10 +81,6 @@ void main() {
     test('fail on bad pubspec', () async {
       final Directory dir = createFakePlugin('c', packagesDir);
       await dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
-
-      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-        MockProcess(),
-      ];
 
       expect(() => runCapturingPrint(runner, <String>['publish-check']),
           throwsA(isA<ToolExit>()));
@@ -245,10 +236,6 @@ void main() {
       createFakePlugin('no_publish_a', packagesDir, version: '0.1.0');
       createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
-      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-        MockProcess(),
-      ];
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
@@ -317,10 +304,6 @@ void main() {
       createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
       await plugin1Dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
-
-      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-        MockProcess(),
-      ];
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(

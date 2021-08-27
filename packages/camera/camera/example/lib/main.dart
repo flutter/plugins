@@ -548,9 +548,18 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                           cameraController.value.isRecordingVideo
                       ? onStopButtonPressed
                       : null,
-                )
+                ),
               ]
             : []),
+        IconButton(
+          icon: const Icon(Icons.pause_presentation),
+          color:
+              cameraController != null && cameraController.value.isPreviewPaused
+                  ? Colors.red
+                  : Colors.blue,
+          onPressed:
+              cameraController == null ? null : onPausePreviewButtonPressed,
+        ),
       ],
     );
   }
@@ -774,6 +783,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         _startVideoPlayer();
       }
     });
+  }
+
+  Future<void> onPausePreviewButtonPressed() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return;
+    }
+
+    if (cameraController.value.isPreviewPaused) {
+      await cameraController.resumePreview();
+    } else {
+      await cameraController.pausePreview();
+    }
+
+    if (mounted) setState(() {});
   }
 
   void onPauseButtonPressed() {
