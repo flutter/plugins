@@ -5,8 +5,8 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import '../src/types/webview_request.dart';
 
+import '../src/types/webview_request.dart';
 import '../platform_interface.dart';
 
 /// A [WebViewPlatformController] that uses a method channel to control the webview.
