@@ -30,6 +30,8 @@ void main() {
   late CommandRunner<void> commandRunner;
   late MockStdin mockStdin;
   late FileSystem fileSystem;
+  // Map of package name to mock response.
+  late Map<String, Map<String, dynamic>> mockHttpResponses;
 
   void _createMockCredentialFile() {
     final String credentialPath = PublishPluginCommand.getCredentialPath();
@@ -41,8 +43,20 @@ void main() {
   setUp(() async {
     fileSystem = MemoryFileSystem();
     packagesDir = createPackagesDirectory(fileSystem: fileSystem);
-
     processRunner = TestProcessRunner();
+
+    mockHttpResponses = <String, Map<String, dynamic>>{};
+    final MockClient mockClient = MockClient((http.Request request) async {
+      final String packageName =
+          request.url.pathSegments.last.replaceAll('.json', '');
+      final Map<String, dynamic>? response = mockHttpResponses[packageName];
+      if (response != null) {
+        return http.Response(json.encode(response), 200);
+      }
+      // Default to simulating the plugin never having been published.
+      return http.Response('', 404);
+    });
+
     gitDir = MockGitDir();
     when(gitDir.path).thenReturn(packagesDir.parent.path);
     when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
@@ -58,8 +72,13 @@ void main() {
 
     mockStdin = MockStdin();
     commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(packagesDir,
-          processRunner: processRunner, stdinput: mockStdin, gitDir: gitDir));
+      ..addCommand(PublishPluginCommand(
+        packagesDir,
+        processRunner: processRunner,
+        stdinput: mockStdin,
+        gitDir: gitDir,
+        httpClient: mockClient,
+      ));
   });
 
   group('Initial validation', () {
@@ -412,35 +431,15 @@ void main() {
 
   group('Auto release (all-changed flag)', () {
     test('can release newly created plugins', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>[],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>[],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
@@ -466,7 +465,7 @@ void main() {
             'Local repo is ready!',
             'Running `pub publish ` in ${pluginDir1.path}...\n',
             'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
+            'Packages released: plugin1, plugin2/plugin2',
             'Done!'
           ]));
       expect(
@@ -481,42 +480,20 @@ void main() {
 
     test('can release newly created plugins, while there are existing plugins',
         () async {
-      const Map<String, dynamic> httpResponsePlugin0 = <String, dynamic>{
+      mockHttpResponses['plugin0'] = <String, dynamic>{
         'name': 'plugin0',
         'versions': <String>['0.0.1'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>[],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>[],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin0.json') {
-          return http.Response(json.encode(httpResponsePlugin0), 200);
-        } else if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // The existing plugin.
       createFakePlugin('plugin0', packagesDir);
@@ -549,7 +526,7 @@ void main() {
             'Local repo is ready!',
             'Running `pub publish ` in ${pluginDir1.path}...\n',
             'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
+            'Packages released: plugin1, plugin2/plugin2',
             'Done!'
           ]));
       expect(
@@ -563,35 +540,16 @@ void main() {
     });
 
     test('can release newly created plugins, dry run', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>[],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>[],
       };
 
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
@@ -625,7 +583,7 @@ void main() {
             'Running `pub publish ` in ${pluginDir2.path}...\n',
             'Tagging release plugin2-v0.0.1...',
             'Pushing tag to upstream...',
-            'Packages released: plugin1, plugin2',
+            'Packages released: plugin1, plugin2/plugin2',
             'Done!'
           ]));
       expect(
@@ -635,35 +593,15 @@ void main() {
     });
 
     test('version change triggers releases.', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>['0.0.1'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>['0.0.1'],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
       final Directory pluginDir1 =
@@ -690,7 +628,7 @@ void main() {
             'Local repo is ready!',
             'Running `pub publish ` in ${pluginDir1.path}...\n',
             'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
+            'Packages released: plugin1, plugin2/plugin2',
             'Done!'
           ]));
       expect(
@@ -706,35 +644,15 @@ void main() {
     test(
         'delete package will not trigger publish but exit the command successfully.',
         () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>['0.0.1'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>['0.0.1'],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
       final Directory pluginDir1 =
@@ -772,35 +690,15 @@ void main() {
 
     test('Existing versions do not trigger release, also prints out message.',
         () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>['0.0.2'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>['0.0.2'],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
       final Directory pluginDir1 =
@@ -845,35 +743,15 @@ void main() {
     test(
         'Existing versions do not trigger release, but fail if the tags do not exist.',
         () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>['0.0.2'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>['0.0.2'],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
       final Directory pluginDir1 =
@@ -944,28 +822,10 @@ void main() {
     });
 
     test('Do not release flutter_plugin_tools', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'flutter_plugin_tools',
         'versions': <String>[],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'flutter_plugin_tools.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       final Directory flutterPluginTools =
           createFakePlugin('flutter_plugin_tools', packagesDir);

@@ -133,40 +133,52 @@ class PublishPluginCommand extends PluginCommand {
       print('===============  DRY RUN ===============');
     }
 
+    final List<PackageEnumerationEntry> packages = await _getPackagesToProcess()
+        .where((PackageEnumerationEntry entry) => !entry.excluded)
+        .toList();
     bool successful = true;
-    if (getBoolArg(_allChangedFlag)) {
-      successful = await _publishAllChangedPackages(
-        baseGitDir: repository,
-        remoteForTagPush: remote,
-      );
-    } else {
-      final Stream<PackageEnumerationEntry> packages = getTargetPackages()
-          .where((PackageEnumerationEntry entry) => !entry.excluded);
-      await for (final PackageEnumerationEntry entry in packages) {
-        successful &= await _publishAndTagPackage(
-          entry.package,
-          remoteForTagPush: remote,
-        );
-      }
-    }
 
-    _pubVersionFinder.httpClient.close();
+    successful = await _publishPackages(
+      packages,
+      baseGitDir: repository,
+      remoteForTagPush: remote,
+    );
+
     await _finish(successful);
   }
 
-  Future<bool> _publishAllChangedPackages({
+  Stream<PackageEnumerationEntry> _getPackagesToProcess() async* {
+    if (getBoolArg(_allChangedFlag)) {
+      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+      final List<String> changedPubspecs =
+          await gitVersionFinder.getChangedPubSpecs();
+
+      for (final String pubspecPath in changedPubspecs) {
+        // Convert git's Posix-style paths to a path that matches the current
+        // filesystem.
+        final String localStylePubspecPath =
+            path.joinAll(p.posix.split(pubspecPath));
+        final File pubspecFile = packagesDir.fileSystem
+            .directory((await gitDir).path)
+            .childFile(localStylePubspecPath);
+        yield PackageEnumerationEntry(RepositoryPackage(pubspecFile.parent),
+            excluded: false);
+      }
+    } else {
+      yield* getTargetPackages(filterExcluded: false);
+    }
+  }
+
+  Future<bool> _publishPackages(
+    List<PackageEnumerationEntry> packages, {
     required GitDir baseGitDir,
     required _RemoteInfo remoteForTagPush,
   }) async {
-    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-    final List<String> changedPubspecs =
-        await gitVersionFinder.getChangedPubSpecs();
-    if (changedPubspecs.isEmpty) {
+    if (packages.isEmpty) {
       print('No version updates in this commit.');
       return true;
     }
 
-    print('Getting existing tags...');
     final io.ProcessResult existingTagsResult =
         await baseGitDir.runCommand(<String>['tag', '--sort=-committerdate']);
     final List<String> existingTags = (existingTagsResult.stdout as String)
@@ -176,16 +188,11 @@ class PublishPluginCommand extends PluginCommand {
     final List<String> packagesReleased = <String>[];
     final List<String> packagesFailed = <String>[];
 
-    for (final String pubspecPath in changedPubspecs) {
-      // Convert git's Posix-style paths to a path that matches the current
-      // filesystem.
-      final String localStylePubspecPath =
-          path.joinAll(p.posix.split(pubspecPath));
-      final File pubspecFile = packagesDir.fileSystem
-          .directory(baseGitDir.path)
-          .childFile(localStylePubspecPath);
+    for (final PackageEnumerationEntry entry in packages) {
+      final RepositoryPackage package = entry.package;
+
       final _CheckNeedsReleaseResult result = await _checkNeedsRelease(
-        pubspecFile: pubspecFile,
+        package: package,
         existingTags: existingTags,
       );
       switch (result) {
@@ -194,17 +201,15 @@ class PublishPluginCommand extends PluginCommand {
         case _CheckNeedsReleaseResult.noRelease:
           continue;
         case _CheckNeedsReleaseResult.failure:
-          packagesFailed.add(pubspecFile.parent.basename);
+          packagesFailed.add(package.displayName);
           continue;
       }
       print('\n');
-      if (await _publishAndTagPackage(
-        RepositoryPackage(pubspecFile.parent),
-        remoteForTagPush: remoteForTagPush,
-      )) {
-        packagesReleased.add(pubspecFile.parent.basename);
+      if (await _publishAndTagPackage(package,
+          remoteForTagPush: remoteForTagPush)) {
+        packagesReleased.add(package.displayName);
       } else {
-        packagesFailed.add(pubspecFile.parent.basename);
+        packagesFailed.add(package.displayName);
       }
       print('\n');
     }
@@ -240,9 +245,10 @@ class PublishPluginCommand extends PluginCommand {
 
   // Returns a [_CheckNeedsReleaseResult] that indicates the result.
   Future<_CheckNeedsReleaseResult> _checkNeedsRelease({
-    required File pubspecFile,
+    required RepositoryPackage package,
     required List<String> existingTags,
   }) async {
+    final File pubspecFile = package.pubspecFile;
     if (!pubspecFile.existsSync()) {
       print('''
 The pubspec file at ${pubspecFile.path} does not exist. Publishing will not happen for ${pubspecFile.parent.basename}.
@@ -343,6 +349,7 @@ Safe to ignore if the package is deleted in this commit.
   }
 
   Future<void> _finish(bool successful) async {
+    _pubVersionFinder.httpClient.close();
     await _stdinSubscription?.cancel();
     _stdinSubscription = null;
     if (successful) {
