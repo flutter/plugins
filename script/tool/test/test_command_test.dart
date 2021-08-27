@@ -180,8 +180,8 @@ void main() {
         'plugin',
         packagesDir,
         extraFiles: <String>['test/empty_test.dart'],
-        platformSupport: <String, PlatformSupport>{
-          kPlatformWeb: PlatformSupport.inline,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
         },
       );
 

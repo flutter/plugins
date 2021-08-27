@@ -36,7 +36,10 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     argParser.addFlag(kPlatformWeb,
         help: 'Runs the web implementation of the examples');
     argParser.addFlag(kPlatformWindows,
-        help: 'Runs the Windows implementation of the examples');
+        help: 'Runs the Windows (Win32) implementation of the examples');
+    argParser.addFlag(kPlatformWinUwp,
+        help:
+            'Runs the UWP implementation of the examples [currently a no-op]');
     argParser.addOption(
       kEnableExperiment,
       defaultsTo: '',
@@ -67,6 +70,7 @@ class DriveExamplesCommand extends PackageLoopingCommand {
       kPlatformMacos,
       kPlatformWeb,
       kPlatformWindows,
+      kPlatformWinUwp,
     ];
     final int platformCount = platformSwitches
         .where((String platform) => getBoolArg(platform))
@@ -79,6 +83,10 @@ class DriveExamplesCommand extends PackageLoopingCommand {
           'Exactly one of ${platformSwitches.map((String platform) => '--$platform').join(', ')} '
           'must be specified.');
       throw ToolExit(_exitNoPlatformFlags);
+    }
+
+    if (getBoolArg(kPlatformWinUwp)) {
+      logWarning('Driving UWP applications is not yet supported');
     }
 
     String? androidDevice;
@@ -116,6 +124,10 @@ class DriveExamplesCommand extends PackageLoopingCommand {
         ],
       if (getBoolArg(kPlatformWindows))
         kPlatformWindows: <String>['-d', 'windows'],
+      // TODO(stuartmorgan): Check these flags once drive supports UWP:
+      // https://github.com/flutter/flutter/issues/82821
+      if (getBoolArg(kPlatformWinUwp))
+        kPlatformWinUwp: <String>['-d', 'winuwp'],
     };
   }
 
@@ -132,7 +144,17 @@ class DriveExamplesCommand extends PackageLoopingCommand {
     final List<String> deviceFlags = <String>[];
     for (final MapEntry<String, List<String>> entry
         in _targetDeviceFlags.entries) {
-      if (pluginSupportsPlatform(entry.key, package)) {
+      final String platform = entry.key;
+      String? variant;
+      if (platform == kPlatformWindows) {
+        variant = platformVariantWin32;
+      } else if (platform == kPlatformWinUwp) {
+        variant = platformVariantWinUwp;
+        // TODO(stuartmorgan): Remove this once drive supports UWP.
+        // https://github.com/flutter/flutter/issues/82821
+        return PackageResult.skip('Drive does not yet support UWP');
+      }
+      if (pluginSupportsPlatform(platform, package, variant: variant)) {
         deviceFlags.addAll(entry.value);
       } else {
         print('Skipping unsupported platform ${entry.key}...');

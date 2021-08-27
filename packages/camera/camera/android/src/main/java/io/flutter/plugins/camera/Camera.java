@@ -126,6 +126,8 @@ class Camera
   private MediaRecorder mediaRecorder;
   /** True when recording video. */
   private boolean recordingVideo;
+  /** True when the preview is paused. */
+  private boolean pausedPreview;
 
   private File captureFile;
 
@@ -428,8 +430,10 @@ class Camera
     }
 
     try {
-      captureSession.setRepeatingRequest(
-          previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
+      if (!pausedPreview) {
+        captureSession.setRepeatingRequest(
+            previewRequestBuilder.build(), cameraCaptureCallback, backgroundHandler);
+      }
 
       if (onSuccessCallback != null) {
         onSuccessCallback.run();
@@ -834,33 +838,36 @@ class Camera
      * For focus mode an extra step of actually locking/unlocking the
      * focus has to be done, in order to ensure it goes into the correct state.
      */
-    switch (newMode) {
-      case locked:
-        // Perform a single focus trigger.
-        lockAutoFocus();
-        if (captureSession == null) {
-          Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
-          return;
-        }
-
-        // Set AF state to idle again.
-        previewRequestBuilder.set(
-            CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
-
-        try {
-          captureSession.setRepeatingRequest(
-              previewRequestBuilder.build(), null, backgroundHandler);
-        } catch (CameraAccessException e) {
-          if (result != null) {
-            result.error("setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+    if (!pausedPreview) {
+      switch (newMode) {
+        case locked:
+          // Perform a single focus trigger.
+          if (captureSession == null) {
+            Log.i(TAG, "[unlockAutoFocus] captureSession null, returning");
+            return;
           }
-          return;
-        }
-        break;
-      case auto:
-        // Cancel current AF trigger and set AF to idle again.
-        unlockAutoFocus();
-        break;
+          lockAutoFocus();
+
+          // Set AF state to idle again.
+          previewRequestBuilder.set(
+              CaptureRequest.CONTROL_AF_TRIGGER, CameraMetadata.CONTROL_AF_TRIGGER_IDLE);
+
+          try {
+            captureSession.setRepeatingRequest(
+                previewRequestBuilder.build(), null, backgroundHandler);
+          } catch (CameraAccessException e) {
+            if (result != null) {
+              result.error(
+                  "setFocusModeFailed", "Error setting focus mode: " + e.getMessage(), null);
+            }
+            return;
+          }
+          break;
+        case auto:
+          // Cancel current AF trigger and set AF to idle again.
+          unlockAutoFocus();
+          break;
+      }
     }
 
     if (result != null) {
@@ -966,6 +973,19 @@ class Camera
     cameraFeatures.getSensorOrientation().unlockCaptureOrientation();
   }
 
+  /** Pause the preview from dart. */
+  public void pausePreview() throws CameraAccessException {
+    this.pausedPreview = true;
+    this.captureSession.stopRepeating();
+  }
+
+  /** Resume the preview from dart. */
+  public void resumePreview() {
+    this.pausedPreview = false;
+    this.refreshPreviewCaptureSession(
+        null, (code, message) -> dartMessenger.sendCameraErrorEvent(message));
+  }
+
   public void startPreview() throws CameraAccessException {
     if (pictureImageReader == null || pictureImageReader.getSurface() == null) return;
     Log.i(TAG, "startPreview");
@@ -1022,8 +1042,8 @@ class Camera
   private void setImageStreamImageAvailableListener(final EventChannel.EventSink imageStreamSink) {
     imageStreamReader.setOnImageAvailableListener(
         reader -> {
-          // Use acquireNextImage since image reader is only for one image.
           Image img = reader.acquireNextImage();
+          // Use acquireNextImage since image reader is only for one image.
           if (img == null) return;
 
           List<Map<String, Object>> planes = new ArrayList<>();
