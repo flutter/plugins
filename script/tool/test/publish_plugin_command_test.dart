@@ -119,24 +119,34 @@ void main() {
 
   group('Publishes package', () {
     test('while showing all output from pub publish to the user', () async {
-      createFakePlugin('foo', packagesDir, examples: <String>[]);
+      createFakePlugin('plugin1', packagesDir, examples: <String>[]);
+      createFakePlugin('plugin2', packagesDir, examples: <String>[]);
 
       processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
         MockProcess(
             stdout: 'Foo',
             stderr: 'Bar',
             stdoutEncoding: utf8,
-            stderrEncoding: utf8) // pub publish
+            stderrEncoding: utf8), // pub publish for plugin1
+        MockProcess(
+            stdout: 'Baz',
+            stdoutEncoding: utf8,
+            stderrEncoding: utf8), // pub publish for plugin1
       ];
 
-      final List<String> output = await runCapturingPrint(
-          commandRunner, <String>['publish-plugin', '--packages=foo']);
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--packages=plugin1,plugin2']);
 
       expect(
           output,
           containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in /packages/plugin1...'),
             contains('Foo'),
             contains('Bar'),
+            contains('Package published!'),
+            contains('Running `pub publish ` in /packages/plugin2...'),
+            contains('Baz'),
+            contains('Package published!'),
           ]));
     });
 
