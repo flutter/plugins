@@ -1,10 +1,8 @@
-## 3.0.0
+## 2.1.0
 
-* BREAKING CHANGE : 
-    * Update the `loadUrl` method to unify all supported HTTP methods for loading a page with URL 
-    that are defined in `WebViewLoadMethod`.
-    * Add the `WebViewRequest` class to define parameters that can be used to load a page 
-    in `WebView`.
+* Add the `loadRequest` method to unify all supported HTTP methods for loading a page with URL 
+that are defined in `WebViewLoadMethod`.
+* Add the `WebViewRequest` class to define parameters that can be used to load a page in `WebView`.
 * Improved the documentation on using the different Android Platform View modes.
 
 ## 2.0.11
