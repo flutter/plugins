@@ -32,6 +32,7 @@ class WebViewRequest {
   WebViewRequest({
     required this.uri,
     required this.method,
+    this.headers = const {},
     this.body,
   });
 
@@ -42,7 +43,7 @@ class WebViewRequest {
   final WebViewLoadMethod method;
 
   /// HTTP headers for the request.
-  final Map<String, String> headers = {};
+  final Map<String, String> headers;
 
   /// HTTP body for the request.
   final Uint8List? body;
