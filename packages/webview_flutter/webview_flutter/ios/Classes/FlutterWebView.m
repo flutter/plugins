@@ -195,25 +195,13 @@
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
-/**
- * Loads the web content referenced by the specified URL request object.
- *
- * After retrieves NSURLRequest object successfully loads a page from a local
- * or network-based URL and applies nil on FlutterResult. Otherwise, applies FlutterError
- * with the error details.
- *
- * @param call the method call with arguments.
- * @param result the FlutterResult.
- */
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSURLRequest* request = [self buildNSURLRequest:[call arguments]];
-  if (!request) {
+  if (![self loadRequest:[call arguments]]) {
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
-    [_webView loadRequest:request];
     result(nil);
   }
 }
@@ -464,6 +452,39 @@
     default:
       NSLog(@"webview_flutter: unknown auto media playback policy: %@", policy);
   }
+}
+
+- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
+  if (!request) {
+    return false;
+  }
+
+  NSString* url = request[@"url"];
+  if ([url isKindOfClass:[NSString class]]) {
+    id headers = request[@"headers"];
+    if ([headers isKindOfClass:[NSDictionary class]]) {
+      return [self loadUrl:url withHeaders:headers];
+    } else {
+      return [self loadUrl:url];
+    }
+  }
+
+  return false;
+}
+
+- (bool)loadUrl:(NSString*)url {
+  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
+}
+
+- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
+  NSURL* nsUrl = [NSURL URLWithString:url];
+  if (!nsUrl) {
+    return false;
+  }
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setAllHTTPHeaderFields:headers];
+  [_webView loadRequest:request];
+  return true;
 }
 
 /**
