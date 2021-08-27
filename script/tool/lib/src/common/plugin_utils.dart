@@ -17,7 +17,7 @@ enum PlatformSupport {
   federated,
 }
 
-/// Returns whether the given [package] is a Flutter [platform] plugin.
+/// Returns true if [package] is a Flutter [platform] plugin.
 ///
 /// It checks this by looking for the following pattern in the pubspec:
 ///
@@ -82,8 +82,8 @@ bool pluginSupportsPlatform(
   }
 }
 
-/// Returns whether the given [plugin] includes native code for [platform], as
-/// opposed to being implemented entirely in Dart.
+/// Returns true if [plugin] includes native code for [platform], as opposed to
+/// being implemented entirely in Dart.
 bool pluginHasNativeCodeForPlatform(String platform, RepositoryPackage plugin) {
   if (platform == kPlatformWeb) {
     // Web plugins are always Dart-only.
