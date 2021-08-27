@@ -1,3 +1,7 @@
+## 0.1.4+6
+
+* Ensure that purchases correctly indicate whether they are acknowledged or not. The `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed.
+
 ## 0.1.4+5
 
 * Add `implements` to pubspec.
@@ -9,7 +13,7 @@
 
 ## 0.1.4+3
 
-- Updated installation instructions in README.
+* Updated installation instructions in README.
 
 ## 0.1.4+2
 
