@@ -11,7 +11,6 @@ import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
-import 'package:webview_flutter/src/types/webview_request.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef void VoidCallback();
@@ -84,6 +83,7 @@ void main() {
 
     expect(controller, isNotNull);
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://flutter.io');
 
     expect(await controller!.currentUrl(), 'https://flutter.io');
@@ -103,10 +103,12 @@ void main() {
 
     expect(await controller!.currentUrl(), isNull);
 
+    // ignore: deprecated_member_use_from_same_package
     expect(() => controller!.loadUrl(''), throwsA(anything));
     expect(await controller!.currentUrl(), isNull);
 
     // Missing schema.
+    // ignore: deprecated_member_use_from_same_package
     expect(() => controller!.loadUrl('flutter.io'), throwsA(anything));
     expect(await controller!.currentUrl(), isNull);
   });
@@ -126,6 +128,7 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'CACHE-CONTROL': 'ABC'
     };
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://flutter.io', headers: headers);
     expect(await controller!.currentUrl(), equals('https://flutter.io'));
   });
@@ -196,6 +199,7 @@ void main() {
 
     expect(controller, isNotNull);
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://www.google.com');
     final bool canGoBackSecondPageLoaded = await controller!.canGoBack();
 
@@ -250,6 +254,7 @@ void main() {
 
     expect(controller, isNotNull);
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://youtube.com');
     await controller!.goBack();
     final bool canGoForwardFirstPageBacked = await controller!.canGoForward();
@@ -272,6 +277,7 @@ void main() {
 
     expect(await controller!.currentUrl(), 'https://youtube.com');
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://flutter.io');
 
     expect(await controller!.currentUrl(), 'https://flutter.io');
@@ -296,6 +302,7 @@ void main() {
 
     expect(await controller!.currentUrl(), 'https://youtube.com');
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://flutter.io');
 
     expect(await controller!.currentUrl(), 'https://flutter.io');
@@ -324,9 +331,11 @@ void main() {
     // Test a WebView without an explicitly set first URL.
     expect(await controller!.currentUrl(), isNull);
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://youtube.com');
     expect(await controller!.currentUrl(), 'https://youtube.com');
 
+    // ignore: deprecated_member_use_from_same_package
     await controller!.loadUrl('https://flutter.io');
     expect(await controller!.currentUrl(), 'https://flutter.io');
 
@@ -356,6 +365,7 @@ void main() {
     expect(platformWebView.currentUrl, 'https://flutter.io');
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 1);
 
+    // ignore: deprecated_member_use_from_same_package
     await controller.loadUrl('https://youtube.com');
 
     expect(platformWebView.amountOfReloadsOnCurrentUrl, 0);
@@ -895,6 +905,7 @@ void main() {
       final Map<String, String> headers = <String, String>{
         'header': 'value',
       };
+      // ignore: deprecated_member_use_from_same_package
       await controller.loadUrl('https://google.com', headers: headers);
 
       expect(platform.lastUrlLoaded, 'https://google.com');

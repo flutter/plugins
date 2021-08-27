@@ -14,7 +14,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:webview_flutter/src/types/webview_request.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -57,6 +56,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
+    // ignore: deprecated_member_use
     await controller.loadUrl('https://www.google.com/');
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
@@ -91,6 +91,7 @@ void main() {
     final Map<String, String> headers = <String, String>{
       'test_header': 'flutter_test_header'
     };
+    // ignore: deprecated_member_use
     await controller.loadUrl('https://flutter-header-echo.herokuapp.com/',
         headers: headers);
     final String? currentUrl = await controller.currentUrl();

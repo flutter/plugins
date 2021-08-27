@@ -270,6 +270,7 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+    // ignore: deprecated_member_use
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
