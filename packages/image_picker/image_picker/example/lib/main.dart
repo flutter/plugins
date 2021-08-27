@@ -88,8 +88,8 @@ class _MyHomePageState extends State<MyHomePage> {
           source: source, maxDuration: const Duration(seconds: 10));
       await _playVideo(file);
     } else if (isMultiImage) {
-      await _displayPickImageDialog(context!,
-          (double? maxWidth, double? maxHeight, int? quality) async {
+      await _displayPickImageDialog(context!, (double? maxWidth,
+          double? maxHeight, int? quality, bool forceFullMetadata) async {
         try {
           final pickedFileList = await _picker.pickMultiImage(
             maxWidth: maxWidth,
@@ -106,14 +106,15 @@ class _MyHomePageState extends State<MyHomePage> {
         }
       });
     } else {
-      await _displayPickImageDialog(context!,
-          (double? maxWidth, double? maxHeight, int? quality) async {
+      await _displayPickImageDialog(context!, (double? maxWidth,
+          double? maxHeight, int? quality, bool forceFullMetadata) async {
         try {
           final pickedFile = await _picker.pickImage(
             source: source,
             maxWidth: maxWidth,
             maxHeight: maxHeight,
             imageQuality: quality,
+            forceFullMetadata: forceFullMetadata,
           );
           setState(() {
             _imageFile = pickedFile;
@@ -358,60 +359,74 @@ class _MyHomePageState extends State<MyHomePage> {
     return showDialog(
         context: context,
         builder: (context) {
-          return AlertDialog(
-            title: Text('Add optional parameters'),
-            content: Column(
-              children: <Widget>[
-                TextField(
-                  controller: maxWidthController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      InputDecoration(hintText: "Enter maxWidth if desired"),
-                ),
-                TextField(
-                  controller: maxHeightController,
-                  keyboardType: TextInputType.numberWithOptions(decimal: true),
-                  decoration:
-                      InputDecoration(hintText: "Enter maxHeight if desired"),
-                ),
-                TextField(
-                  controller: qualityController,
-                  keyboardType: TextInputType.number,
-                  decoration:
-                      InputDecoration(hintText: "Enter quality if desired"),
-                ),
-              ],
-            ),
-            actions: <Widget>[
-              TextButton(
-                child: const Text('CANCEL'),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
+          bool forceFullMetadata = true;
+          return StatefulBuilder(builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Add optional parameters'),
+              content: Column(
+                children: <Widget>[
+                  TextField(
+                    controller: maxWidthController,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    decoration:
+                        InputDecoration(hintText: "Enter maxWidth if desired"),
+                  ),
+                  TextField(
+                    controller: maxHeightController,
+                    keyboardType:
+                        TextInputType.numberWithOptions(decimal: true),
+                    decoration:
+                        InputDecoration(hintText: "Enter maxHeight if desired"),
+                  ),
+                  TextField(
+                    controller: qualityController,
+                    keyboardType: TextInputType.number,
+                    decoration:
+                        InputDecoration(hintText: "Enter quality if desired"),
+                  ),
+                  CheckboxListTile(
+                    value: forceFullMetadata,
+                    onChanged: (bool? value) {
+                      setState(() {
+                        forceFullMetadata = value ?? false;
+                      });
+                    },
+                    title: Text("Force full metadata"),
+                  )
+                ],
               ),
-              TextButton(
-                  child: const Text('PICK'),
+              actions: <Widget>[
+                TextButton(
+                  child: const Text('CANCEL'),
                   onPressed: () {
-                    double? width = maxWidthController.text.isNotEmpty
-                        ? double.parse(maxWidthController.text)
-                        : null;
-                    double? height = maxHeightController.text.isNotEmpty
-                        ? double.parse(maxHeightController.text)
-                        : null;
-                    int? quality = qualityController.text.isNotEmpty
-                        ? int.parse(qualityController.text)
-                        : null;
-                    onPick(width, height, quality);
                     Navigator.of(context).pop();
-                  }),
-            ],
-          );
+                  },
+                ),
+                TextButton(
+                    child: const Text('PICK'),
+                    onPressed: () {
+                      double? width = maxWidthController.text.isNotEmpty
+                          ? double.parse(maxWidthController.text)
+                          : null;
+                      double? height = maxHeightController.text.isNotEmpty
+                          ? double.parse(maxHeightController.text)
+                          : null;
+                      int? quality = qualityController.text.isNotEmpty
+                          ? int.parse(qualityController.text)
+                          : null;
+                      onPick(width, height, quality, forceFullMetadata);
+                      Navigator.of(context).pop();
+                    }),
+              ],
+            );
+          });
         });
   }
 }
 
 typedef void OnPickImageCallback(
-    double? maxWidth, double? maxHeight, int? quality);
+    double? maxWidth, double? maxHeight, int? quality, bool forceFullMetadata);
 
 class AspectRatioVideo extends StatefulWidget {
   AspectRatioVideo(this.controller);

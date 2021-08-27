@@ -44,6 +44,11 @@ class ImagePicker {
   /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
   /// a warning message will be logged.
   ///
+  /// `forceFullMetadata` defaults to `true`, so the plugin tries to get the full image metadata which may require
+  /// extra permission requests on certain platforms.
+  /// If `forceFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces permission requests
+  /// from the platform (e.g. on iOS the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
+  ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
@@ -65,6 +70,7 @@ class ImagePicker {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
+    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     return platform.pickImage(
@@ -72,6 +78,7 @@ class ImagePicker {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      forceFullMetadata: forceFullMetadata,
       preferredCameraDevice: preferredCameraDevice,
     );
   }
@@ -185,6 +192,11 @@ class ImagePicker {
   /// image types such as JPEG and on Android PNG and WebP, too. If compression is not supported for the image that is picked,
   /// a warning message will be logged.
   ///
+  /// `forceFullMetadata` defaults to `true`, so the plugin tries to get the full image metadata which may require
+  /// extra permission requests on certain platforms.
+  /// If `forceFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces permission requests
+  /// from the platform (e.g. on iOS the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
+  ///
   /// Use `preferredCameraDevice` to specify the camera to use when the `source` is [ImageSource.camera].
   /// The `preferredCameraDevice` is ignored when `source` is [ImageSource.gallery]. It is also ignored if the chosen camera is not supported on the device.
   /// Defaults to [CameraDevice.rear]. Note that Android has no documented parameter for an intent to specify if
@@ -205,6 +217,7 @@ class ImagePicker {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
+    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     return platform.getImage(
@@ -212,6 +225,7 @@ class ImagePicker {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
+      forceFullMetadata: forceFullMetadata,
       preferredCameraDevice: preferredCameraDevice,
     );
   }
