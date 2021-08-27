@@ -18,7 +18,7 @@ enum ResolutionPreset {
   /// 1080p (1920x1080)
   veryHigh,
 
-  /// 2160p (3840x2160)
+  /// 2160p (3840x2160 on Android and iOS, 4096x2160 on Web)
   ultraHigh,
 
   /// The highest resolution available.
