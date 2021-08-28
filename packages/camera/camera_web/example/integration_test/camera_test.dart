@@ -98,7 +98,7 @@ void main() {
 
         expect(camera.videoElement, isNotNull);
         expect(camera.videoElement.autoplay, isFalse);
-        expect(camera.videoElement.muted, !audioConstraints.enabled);
+        expect(camera.videoElement.muted, isTrue);
         expect(camera.videoElement.srcObject, mediaStream);
         expect(camera.videoElement.attributes.keys, contains('playsinline'));
 

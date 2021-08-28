@@ -119,7 +119,8 @@ Directory createFakePackage(
   final Directory packageDirectory = parentDirectory.childDirectory(name);
   packageDirectory.createSync(recursive: true);
 
-  createFakePubspec(packageDirectory, name: name, isFlutter: isFlutter);
+  createFakePubspec(packageDirectory,
+      name: name, isFlutter: isFlutter, version: version);
   createFakeCHANGELOG(packageDirectory, '''
 ## $version
   * Some changes.

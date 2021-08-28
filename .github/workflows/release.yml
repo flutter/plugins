@@ -28,7 +28,7 @@ jobs:
       run: dart pub get
       working-directory: ${{ github.workspace }}/script/tool
 
-    # # This workflow should be the last to run. So wait for all the other tests to succeed.
+    # This workflow should be the last to run. So wait for all the other tests to succeed.
     - name: Wait on all tests
       uses: lewagon/wait-on-check-action@1b1630e169116b58a4b933d5ad7effc46d3d312d
       with:

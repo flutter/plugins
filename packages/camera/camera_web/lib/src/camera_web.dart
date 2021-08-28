@@ -343,7 +343,11 @@ class CameraPlugin extends CameraPlatform {
     final orientation = window?.screen?.orientation;
 
     if (orientation != null) {
-      return orientation.onChange.map(
+      // Create an initial orientation event that emits the device orientation
+      // as soon as subscribed to this stream.
+      final initialOrientationEvent = html.Event("change");
+
+      return orientation.onChange.startWith(initialOrientationEvent).map(
         (html.Event _) {
           final deviceOrientation = _cameraService
               .mapOrientationTypeToDeviceOrientation(orientation.type!);

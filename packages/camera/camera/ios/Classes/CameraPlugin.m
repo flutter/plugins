@@ -330,6 +330,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
+@property(assign, nonatomic) BOOL isPreviewPaused;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FocusMode focusMode;
@@ -1035,6 +1036,16 @@ NSString *const errorMethod = @"error";
   [captureDevice unlockForConfiguration];
 }
 
+- (void)pausePreviewWithResult:(FlutterResult)result {
+  _isPreviewPaused = true;
+  result(nil);
+}
+
+- (void)resumePreviewWithResult:(FlutterResult)result {
+  _isPreviewPaused = false;
+  result(nil);
+}
+
 - (CGPoint)getCGPointForCoordsWithOrientation:(UIDeviceOrientation)orientation
                                             x:(double)x
                                             y:(double)y {
@@ -1432,7 +1443,9 @@ NSString *const errorMethod = @"error";
 
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
-        [weakSelf.registry textureFrameAvailable:cameraId];
+        if (![weakSelf.camera isPreviewPaused]) {
+          [weakSelf.registry textureFrameAvailable:cameraId];
+        }
       };
       FlutterMethodChannel *methodChannel = [FlutterMethodChannel
           methodChannelWithName:[NSString stringWithFormat:@"flutter.io/cameraPlugin/camera%lu",
@@ -1519,6 +1532,10 @@ NSString *const errorMethod = @"error";
         y = ((NSNumber *)call.arguments[@"y"]).doubleValue;
       }
       [_camera setFocusPointWithResult:result x:x y:y];
+    } else if ([@"pausePreview" isEqualToString:call.method]) {
+      [_camera pausePreviewWithResult:result];
+    } else if ([@"resumePreview" isEqualToString:call.method]) {
+      [_camera resumePreviewWithResult:result];
     } else {
       result(FlutterMethodNotImplemented);
     }

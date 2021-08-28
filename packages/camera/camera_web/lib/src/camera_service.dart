@@ -277,7 +277,7 @@ class CameraService {
     switch (resolutionPreset) {
       case ResolutionPreset.max:
       case ResolutionPreset.ultraHigh:
-        return Size(3840, 2160);
+        return Size(4096, 2160);
       case ResolutionPreset.veryHigh:
         return Size(1920, 1080);
       case ResolutionPreset.high:
