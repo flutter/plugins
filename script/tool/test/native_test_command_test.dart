@@ -9,6 +9,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/native_test_command.dart';
 import 'package:test/test.dart';
@@ -1359,9 +1360,8 @@ void main() {
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
 
-        final File testBinary = pluginDirectory
-            .childDirectory('example')
-            .childFile(testBinaryRelativePath.split('/').join(r'\'));
+        final File testBinary = childFileWithSubcomponents(pluginDirectory,
+            <String>['example', ...testBinaryRelativePath.split('/')]);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -1397,9 +1397,8 @@ void main() {
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
 
-        final File debugTestBinary = pluginDirectory
-            .childDirectory('example')
-            .childFile(debugTestBinaryRelativePath.split('/').join(r'\'));
+        final File debugTestBinary = childFileWithSubcomponents(pluginDirectory,
+            <String>['example', ...debugTestBinaryRelativePath.split('/')]);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -1459,9 +1458,8 @@ void main() {
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
 
-        final File testBinary = pluginDirectory
-            .childDirectory('example')
-            .childFile(testBinaryRelativePath.split('/').join(r'\'));
+        final File testBinary = childFileWithSubcomponents(pluginDirectory,
+            <String>['example', ...testBinaryRelativePath.split('/')]);
 
         processRunner.mockProcessesForExecutable[testBinary.path] =
             <io.Process>[MockProcess(exitCode: 1)];

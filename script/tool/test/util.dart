@@ -10,6 +10,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
@@ -142,15 +143,10 @@ Directory createFakePackage(
     }
   }
 
-  final FileSystem fileSystem = packageDirectory.fileSystem;
   final p.Context posixContext = p.posix;
   for (final String file in extraFiles) {
-    final List<String> newFilePath = <String>[
-      packageDirectory.path,
-      ...posixContext.split(file)
-    ];
-    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
-    newFile.createSync(recursive: true);
+    childFileWithSubcomponents(packageDirectory, posixContext.split(file))
+        .createSync(recursive: true);
   }
 
   return packageDirectory;
