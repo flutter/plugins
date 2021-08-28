@@ -1,6 +1,10 @@
-## 5.0.8
+## 5.0.9
 
 * Re-use server auth code obtained on login.
+
+## 5.0.8
+
+* Updated Android lint settings.
 
 ## 5.0.7
 

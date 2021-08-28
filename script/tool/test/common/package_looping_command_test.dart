@@ -11,6 +11,7 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/package_looping_command.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
@@ -578,64 +579,6 @@ void main() {
           ]));
     });
   });
-
-  group('utility', () {
-    test('getPackageDescription prints packageDir-relative paths by default',
-        () async {
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
-
-      expect(
-        command.getPackageDescription(packagesDir.childDirectory('foo')),
-        'foo',
-      );
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('foo')
-            .childDirectory('bar')
-            .childDirectory('baz')),
-        'foo/bar/baz',
-      );
-    });
-
-    test('getPackageDescription always uses Posix-style paths', () async {
-      mockPlatform.isWindows = true;
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
-
-      expect(
-        command.getPackageDescription(packagesDir.childDirectory('foo')),
-        'foo',
-      );
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('foo')
-            .childDirectory('bar')
-            .childDirectory('baz')),
-        'foo/bar/baz',
-      );
-    });
-
-    test(
-        'getPackageDescription elides group name in grouped federated plugin structure',
-        () async {
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
-
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('a_plugin')
-            .childDirectory('a_plugin_platform_interface')),
-        'a_plugin_platform_interface',
-      );
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('a_plugin')
-            .childDirectory('a_plugin_web')),
-        'a_plugin_web',
-      );
-    });
-  });
 }
 
 class TestPackageLoopingCommand extends PackageLoopingCommand {
@@ -699,18 +642,18 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     checkedPackages.add(package.path);
-    final File warningFile = package.childFile(_warningFile);
+    final File warningFile = package.directory.childFile(_warningFile);
     if (warningFile.existsSync()) {
       final List<String> warnings = warningFile.readAsLinesSync();
       warnings.forEach(logWarning);
     }
-    final File skipFile = package.childFile(_skipFile);
+    final File skipFile = package.directory.childFile(_skipFile);
     if (skipFile.existsSync()) {
       return PackageResult.skip(skipFile.readAsStringSync());
     }
-    final File errorFile = package.childFile(_errorFile);
+    final File errorFile = package.directory.childFile(_errorFile);
     if (errorFile.existsSync()) {
       return PackageResult.fail(errorFile.readAsLinesSync());
     }

@@ -6,9 +6,11 @@ import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
 import 'common/core.dart';
+import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 import 'common/xcode.dart';
 
 const String _unitTestFlag = 'unit';
@@ -46,8 +48,6 @@ class NativeTestCommand extends PackageLoopingCommand {
     argParser.addFlag(_integrationTestFlag,
         help: 'Runs native integration (UI) tests', defaultsTo: true);
   }
-
-  static const String _gradleWrapper = 'gradlew';
 
   // The device destination flags for iOS tests.
   List<String> _iosDestinationFlags = <String>[];
@@ -96,11 +96,6 @@ this command.
       throw ToolExit(exitInvalidArguments);
     }
 
-    if (getBoolArg(kPlatformAndroid) && getBoolArg(_integrationTestFlag)) {
-      logWarning('This command currently only supports unit tests for Android. '
-          'See https://github.com/flutter/flutter/issues/86490.');
-    }
-
     // iOS-specific run-level state.
     if (_requestedPlatforms.contains('ios')) {
       String destination = getStringArg(_iosDestinationFlag);
@@ -121,7 +116,7 @@ this command.
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final List<String> testPlatforms = <String>[];
     for (final String platform in _requestedPlatforms) {
       if (pluginSupportsPlatform(platform, package,
@@ -177,42 +172,84 @@ this command.
         : PackageResult.success();
   }
 
-  Future<_PlatformResult> _testAndroid(Directory plugin, _TestMode mode) async {
-    final List<Directory> examplesWithTests = <Directory>[];
-    for (final Directory example in getExamplesForPlugin(plugin)) {
-      if (!isFlutterPackage(example)) {
-        continue;
-      }
-      if (example
+  Future<_PlatformResult> _testAndroid(
+      RepositoryPackage plugin, _TestMode mode) async {
+    bool exampleHasUnitTests(RepositoryPackage example) {
+      return example.directory
               .childDirectory('android')
               .childDirectory('app')
               .childDirectory('src')
               .childDirectory('test')
               .existsSync() ||
-          example.parent
+          example.directory.parent
               .childDirectory('android')
               .childDirectory('src')
               .childDirectory('test')
-              .existsSync()) {
-        examplesWithTests.add(example);
-      } else {
-        _printNoExampleTestsMessage(example, 'Android');
-      }
+              .existsSync();
     }
 
-    if (examplesWithTests.isEmpty) {
-      return _PlatformResult(RunState.skipped);
+    bool exampleHasNativeIntegrationTests(RepositoryPackage example) {
+      final Directory integrationTestDirectory = example.directory
+          .childDirectory('android')
+          .childDirectory('app')
+          .childDirectory('src')
+          .childDirectory('androidTest');
+      // There are two types of integration tests that can be in the androidTest
+      // directory:
+      // - FlutterTestRunner.class tests, which bridge to Dart integration tests
+      // - Purely native tests
+      // Only the latter is supported by this command; the former will hang if
+      // run here because they will wait for a Dart call that will never come.
+      //
+      // This repository uses a convention of putting the former in a
+      // *ActivityTest.java file, so ignore that file when checking for tests.
+      // Also ignore DartIntegrationTest.java, which defines the annotation used
+      // below for filtering the former out when running tests.
+      //
+      // If those are the only files, then there are no tests to run here.
+      return integrationTestDirectory.existsSync() &&
+          integrationTestDirectory
+              .listSync(recursive: true)
+              .whereType<File>()
+              .any((File file) {
+            final String basename = file.basename;
+            return !basename.endsWith('ActivityTest.java') &&
+                basename != 'DartIntegrationTest.java';
+          });
     }
 
+    final Iterable<RepositoryPackage> examples = plugin.getExamples();
+
+    bool ranTests = false;
     bool failed = false;
     bool hasMissingBuild = false;
-    for (final Directory example in examplesWithTests) {
-      final String exampleName = getPackageDescription(example);
+    for (final RepositoryPackage example in examples) {
+      final bool hasUnitTests = exampleHasUnitTests(example);
+      final bool hasIntegrationTests =
+          exampleHasNativeIntegrationTests(example);
+
+      if (mode.unit && !hasUnitTests) {
+        _printNoExampleTestsMessage(example, 'Android unit');
+      }
+      if (mode.integration && !hasIntegrationTests) {
+        _printNoExampleTestsMessage(example, 'Android integration');
+      }
+
+      final bool runUnitTests = mode.unit && hasUnitTests;
+      final bool runIntegrationTests = mode.integration && hasIntegrationTests;
+      if (!runUnitTests && !runIntegrationTests) {
+        continue;
+      }
+
+      final String exampleName = example.displayName;
       _printRunningExampleTestsMessage(example, 'Android');
 
-      final Directory androidDirectory = example.childDirectory('android');
-      final File gradleFile = androidDirectory.childFile(_gradleWrapper);
-      if (!gradleFile.existsSync()) {
+      final GradleProject project = GradleProject(
+        example.directory,
+        processRunner: processRunner,
+        platform: platform,
+      );
+      if (!project.isConfigured()) {
         printError('ERROR: Run "flutter build apk" on $exampleName, or run '
             'this tool\'s "build-examples --apk" command, '
             'before executing tests.');
@@ -221,25 +258,57 @@ this command.
         continue;
       }
 
-      final int exitCode = await processRunner.runAndStream(
-          gradleFile.path, <String>['testDebugUnitTest'],
-          workingDir: androidDirectory);
-      if (exitCode != 0) {
-        printError('$exampleName tests failed.');
-        failed = true;
+      if (runUnitTests) {
+        print('Running unit tests...');
+        final int exitCode = await project.runCommand('testDebugUnitTest');
+        if (exitCode != 0) {
+          printError('$exampleName unit tests failed.');
+          failed = true;
+        }
+        ranTests = true;
+      }
+
+      if (runIntegrationTests) {
+        // FlutterTestRunner-based tests will hang forever if run in a normal
+        // app build, since they wait for a Dart call from integration_test that
+        // will never come. Those tests have an extra annotation to allow
+        // filtering them out.
+        const String filter =
+            'notAnnotation=io.flutter.plugins.DartIntegrationTest';
+
+        print('Running integration tests...');
+        final int exitCode = await project.runCommand(
+          'app:connectedAndroidTest',
+          arguments: <String>[
+            '-Pandroid.testInstrumentationRunnerArguments.$filter',
+          ],
+        );
+        if (exitCode != 0) {
+          printError('$exampleName integration tests failed.');
+          failed = true;
+        }
+        ranTests = true;
       }
     }
-    return _PlatformResult(failed ? RunState.failed : RunState.succeeded,
-        error:
-            hasMissingBuild ? 'Examples must be built before testing.' : null);
+
+    if (failed) {
+      return _PlatformResult(RunState.failed,
+          error: hasMissingBuild
+              ? 'Examples must be built before testing.'
+              : null);
+    }
+    if (!ranTests) {
+      return _PlatformResult(RunState.skipped);
+    }
+    return _PlatformResult(RunState.succeeded);
   }
 
-  Future<_PlatformResult> _testIos(Directory plugin, _TestMode mode) {
+  Future<_PlatformResult> _testIos(RepositoryPackage plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'iOS', mode,
         extraFlags: _iosDestinationFlags);
   }
 
-  Future<_PlatformResult> _testMacOS(Directory plugin, _TestMode mode) {
+  Future<_PlatformResult> _testMacOS(RepositoryPackage plugin, _TestMode mode) {
     return _runXcodeTests(plugin, 'macOS', mode);
   }
 
@@ -249,7 +318,7 @@ this command.
   /// The tests targets must be added to the Xcode project of the example app,
   /// usually at "example/{ios,macos}/Runner.xcworkspace".
   Future<_PlatformResult> _runXcodeTests(
-    Directory plugin,
+    RepositoryPackage plugin,
     String platform,
     _TestMode mode, {
     List<String> extraFlags = const <String>[],
@@ -263,11 +332,11 @@ this command.
 
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
-    for (final Directory example in getExamplesForPlugin(plugin)) {
-      final String exampleName = getPackageDescription(example);
+    for (final RepositoryPackage example in plugin.getExamples()) {
+      final String exampleName = example.displayName;
 
       if (testTarget != null) {
-        final Directory project = example
+        final Directory project = example.directory
             .childDirectory(platform.toLowerCase())
             .childDirectory('Runner.xcodeproj');
         final bool? hasTarget =
@@ -284,7 +353,7 @@ this command.
 
       _printRunningExampleTestsMessage(example, platform);
       final int exitCode = await _xcode.runXcodeBuild(
-        example,
+        example.directory,
         actions: <String>['test'],
         workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
         scheme: 'Runner',
@@ -320,20 +389,22 @@ this command.
 
   /// Prints a standard format message indicating that [platform] tests for
   /// [plugin]'s [example] are about to be run.
-  void _printRunningExampleTestsMessage(Directory example, String platform) {
-    print('Running $platform tests for ${getPackageDescription(example)}...');
+  void _printRunningExampleTestsMessage(
+      RepositoryPackage example, String platform) {
+    print('Running $platform tests for ${example.displayName}...');
   }
 
   /// Prints a standard format message indicating that no tests were found for
   /// [plugin]'s [example] for [platform].
-  void _printNoExampleTestsMessage(Directory example, String platform) {
-    print('No $platform tests found for ${getPackageDescription(example)}');
+  void _printNoExampleTestsMessage(RepositoryPackage example, String platform) {
+    print('No $platform tests found for ${example.displayName}');
   }
 }
 
 // The type for a function that takes a plugin directory and runs its native
 // tests for a specific platform.
-typedef _TestFunction = Future<_PlatformResult> Function(Directory, _TestMode);
+typedef _TestFunction = Future<_PlatformResult> Function(
+    RepositoryPackage, _TestMode);
 
 /// A collection of information related to a specific platform.
 class _PlatformDetails {

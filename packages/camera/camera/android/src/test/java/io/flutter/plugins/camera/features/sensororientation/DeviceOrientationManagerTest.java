@@ -50,15 +50,15 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getMediaOrientation_when_natural_screen_orientation_equals_portrait_up() {
+  public void getVideoOrientation_whenNaturalScreenOrientationEqualsPortraitUp() {
     int degreesPortraitUp =
-        deviceOrientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_UP);
+        deviceOrientationManager.getVideoOrientation(DeviceOrientation.PORTRAIT_UP);
     int degreesPortraitDown =
-        deviceOrientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_DOWN);
+        deviceOrientationManager.getVideoOrientation(DeviceOrientation.PORTRAIT_DOWN);
     int degreesLandscapeLeft =
-        deviceOrientationManager.getMediaOrientation(DeviceOrientation.LANDSCAPE_LEFT);
+        deviceOrientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_LEFT);
     int degreesLandscapeRight =
-        deviceOrientationManager.getMediaOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
+        deviceOrientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
 
     assertEquals(0, degreesPortraitUp);
     assertEquals(90, degreesLandscapeLeft);
@@ -67,17 +67,17 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getMediaOrientation_when_natural_screen_orientation_equals_landscape_left() {
+  public void getVideoOrientation_whenNaturalScreenOrientationEqualsLandscapeLeft() {
     DeviceOrientationManager orientationManager =
         DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 90);
 
-    int degreesPortraitUp = orientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_UP);
+    int degreesPortraitUp = orientationManager.getVideoOrientation(DeviceOrientation.PORTRAIT_UP);
     int degreesPortraitDown =
-        orientationManager.getMediaOrientation(DeviceOrientation.PORTRAIT_DOWN);
+        orientationManager.getVideoOrientation(DeviceOrientation.PORTRAIT_DOWN);
     int degreesLandscapeLeft =
-        orientationManager.getMediaOrientation(DeviceOrientation.LANDSCAPE_LEFT);
+        orientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_LEFT);
     int degreesLandscapeRight =
-        orientationManager.getMediaOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
+        orientationManager.getVideoOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
 
     assertEquals(90, degreesPortraitUp);
     assertEquals(180, degreesLandscapeLeft);
@@ -86,50 +86,61 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void getMediaOrientation_should_fallback_to_sensor_orientation_when_orientation_is_null() {
+  public void getVideoOrientation_shouldFallbackToSensorOrientationWhenOrientationIsNull() {
     setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
 
-    int degrees = deviceOrientationManager.getMediaOrientation(null);
+    int degrees = deviceOrientationManager.getVideoOrientation(null);
 
     assertEquals(90, degrees);
   }
 
   @Test
-  public void handleSensorOrientationChange_should_send_message_when_sensor_access_is_allowed() {
-    try (MockedStatic<Settings.System> mockedSystem = mockStatic(Settings.System.class)) {
-      mockedSystem
-          .when(
-              () ->
-                  Settings.System.getInt(any(), eq(Settings.System.ACCELEROMETER_ROTATION), eq(0)))
-          .thenReturn(1);
-      setUpUIOrientationMocks(Configuration.ORIENTATION_PORTRAIT, Surface.ROTATION_0);
+  public void getPhotoOrientation_whenNaturalScreenOrientationEqualsPortraitUp() {
+    int degreesPortraitUp =
+        deviceOrientationManager.getPhotoOrientation(DeviceOrientation.PORTRAIT_UP);
+    int degreesPortraitDown =
+        deviceOrientationManager.getPhotoOrientation(DeviceOrientation.PORTRAIT_DOWN);
+    int degreesLandscapeLeft =
+        deviceOrientationManager.getPhotoOrientation(DeviceOrientation.LANDSCAPE_LEFT);
+    int degreesLandscapeRight =
+        deviceOrientationManager.getPhotoOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
 
-      deviceOrientationManager.handleSensorOrientationChange(90);
-    }
-
-    verify(mockDartMessenger, times(1))
-        .sendDeviceOrientationChangeEvent(DeviceOrientation.LANDSCAPE_LEFT);
+    assertEquals(0, degreesPortraitUp);
+    assertEquals(90, degreesLandscapeRight);
+    assertEquals(180, degreesPortraitDown);
+    assertEquals(270, degreesLandscapeLeft);
   }
 
   @Test
-  public void
-      handleSensorOrientationChange_should_send_message_when_sensor_access_is_not_allowed() {
-    try (MockedStatic<Settings.System> mockedSystem = mockStatic(Settings.System.class)) {
-      mockedSystem
-          .when(
-              () ->
-                  Settings.System.getInt(any(), eq(Settings.System.ACCELEROMETER_ROTATION), eq(0)))
-          .thenReturn(0);
-      setUpUIOrientationMocks(Configuration.ORIENTATION_PORTRAIT, Surface.ROTATION_0);
+  public void getPhotoOrientation_whenNaturalScreenOrientationEqualsLandscapeLeft() {
+    DeviceOrientationManager orientationManager =
+        DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 90);
 
-      deviceOrientationManager.handleSensorOrientationChange(90);
-    }
+    int degreesPortraitUp = orientationManager.getPhotoOrientation(DeviceOrientation.PORTRAIT_UP);
+    int degreesPortraitDown =
+        orientationManager.getPhotoOrientation(DeviceOrientation.PORTRAIT_DOWN);
+    int degreesLandscapeLeft =
+        orientationManager.getPhotoOrientation(DeviceOrientation.LANDSCAPE_LEFT);
+    int degreesLandscapeRight =
+        orientationManager.getPhotoOrientation(DeviceOrientation.LANDSCAPE_RIGHT);
 
-    verify(mockDartMessenger, never()).sendDeviceOrientationChangeEvent(any());
+    assertEquals(90, degreesPortraitUp);
+    assertEquals(180, degreesLandscapeRight);
+    assertEquals(270, degreesPortraitDown);
+    assertEquals(0, degreesLandscapeLeft);
   }
 
   @Test
-  public void handleUIOrientationChange_should_send_message_when_sensor_access_is_allowed() {
+  public void getPhotoOrientation_shouldFallbackToCurrentOrientationWhenOrientationIsNull() {
+    setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
+
+    int degrees = deviceOrientationManager.getPhotoOrientation(null);
+
+    assertEquals(270, degrees);
+  }
+
+  @Test
+  public void handleUIOrientationChange_shouldSendMessageWhenSensorAccessIsAllowed() {
     try (MockedStatic<Settings.System> mockedSystem = mockStatic(Settings.System.class)) {
       mockedSystem
           .when(
@@ -146,45 +157,25 @@ public class DeviceOrientationManagerTest {
   }
 
   @Test
-  public void handleUIOrientationChange_should_send_message_when_sensor_access_is_not_allowed() {
-    try (MockedStatic<Settings.System> mockedSystem = mockStatic(Settings.System.class)) {
-      mockedSystem
-          .when(
-              () ->
-                  Settings.System.getInt(any(), eq(Settings.System.ACCELEROMETER_ROTATION), eq(0)))
-          .thenReturn(1);
-      setUpUIOrientationMocks(Configuration.ORIENTATION_LANDSCAPE, Surface.ROTATION_0);
-
-      deviceOrientationManager.handleUIOrientationChange();
-    }
-
-    verify(mockDartMessenger, never()).sendDeviceOrientationChangeEvent(any());
-  }
-
-  @Test
-  public void handleOrientationChange_should_send_message_when_orientation_is_updated() {
+  public void handleOrientationChange_shouldSendMessageWhenOrientationIsUpdated() {
     DeviceOrientation previousOrientation = DeviceOrientation.PORTRAIT_UP;
     DeviceOrientation newOrientation = DeviceOrientation.LANDSCAPE_LEFT;
 
-    DeviceOrientation orientation =
-        DeviceOrientationManager.handleOrientationChange(
-            newOrientation, previousOrientation, mockDartMessenger);
+    DeviceOrientationManager.handleOrientationChange(
+        newOrientation, previousOrientation, mockDartMessenger);
 
     verify(mockDartMessenger, times(1)).sendDeviceOrientationChangeEvent(newOrientation);
-    assertEquals(newOrientation, orientation);
   }
 
   @Test
-  public void handleOrientationChange_should_not_send_message_when_orientation_is_not_updated() {
+  public void handleOrientationChange_shouldNotSendMessageWhenOrientationIsNotUpdated() {
     DeviceOrientation previousOrientation = DeviceOrientation.PORTRAIT_UP;
     DeviceOrientation newOrientation = DeviceOrientation.PORTRAIT_UP;
 
-    DeviceOrientation orientation =
-        DeviceOrientationManager.handleOrientationChange(
-            newOrientation, previousOrientation, mockDartMessenger);
+    DeviceOrientationManager.handleOrientationChange(
+        newOrientation, previousOrientation, mockDartMessenger);
 
     verify(mockDartMessenger, never()).sendDeviceOrientationChangeEvent(any());
-    assertEquals(newOrientation, orientation);
   }
 
   @Test
