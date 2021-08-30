@@ -9,7 +9,7 @@ env:
   # The base command flags for most tool invocations, handling:
   # - running the correct set of packages for the current branch
   # - including any sharding that is configured for a task via $PLUGIN_SHARDING
-  COMMON_FLAGS: --packages-for-branch $PLUGIN_SHARDING
+  COMMON_TOOL_FLAGS: --packages-for-branch $PLUGIN_SHARDING
 
 tool_setup_template: &TOOL_SETUP_TEMPLATE
   tool_setup_script:
@@ -72,11 +72,11 @@ task:
         - cd script/tool
         - CIRRUS_BUILD_ID=null pub run test
     - name: publishable
-      version_check_script: dart $PLUGIN_TOOL version-check $COMMON_FLAGS
-      publish_check_script: dart $PLUGIN_TOOL publish-check $COMMON_FLAGS
+      version_check_script: dart $PLUGIN_TOOL version-check $COMMON_TOOL_FLAGS
+      publish_check_script: dart $PLUGIN_TOOL publish-check $COMMON_TOOL_FLAGS
     - name: format
-      format_script: dart $PLUGIN_TOOL format --fail-on-change $COMMON_FLAGS
-      pubspec_script: dart $PLUGIN_TOOL pubspec-check $COMMON_FLAGS
+      format_script: dart $PLUGIN_TOOL format --fail-on-change $COMMON_TOOL_FLAGS
+      pubspec_script: dart $PLUGIN_TOOL pubspec-check $COMMON_TOOL_FLAGS
       license_script: dart $PLUGIN_TOOL license-check
     - name: test
       env:
@@ -84,7 +84,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
       test_script:
-        - dart $PLUGIN_TOOL test $COMMON_FLAGS
+        - dart $PLUGIN_TOOL test $COMMON_TOOL_FLAGS
     - name: analyze
       env:
         matrix:
@@ -134,9 +134,9 @@ task:
           CHANNEL: "stable"
       build_script:
         - flutter config --enable-linux-desktop
-        - dart $PLUGIN_TOOL build-examples --linux $COMMON_FLAGS
+        - dart $PLUGIN_TOOL build-examples --linux $COMMON_TOOL_FLAGS
       drive_script:
-        - xvfb-run dart $PLUGIN_TOOL drive-examples --linux $COMMON_FLAGS
+        - xvfb-run dart $PLUGIN_TOOL drive-examples --linux $COMMON_TOOL_FLAGS
 
 # Heavy-workload Linux tasks.
 # These use machines with more CPUs and memory, so will reduce parallelization
@@ -172,7 +172,7 @@ task:
         # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
-        - dart $PLUGIN_TOOL build-examples --apk $COMMON_FLAGS
+        - dart $PLUGIN_TOOL build-examples --apk $COMMON_TOOL_FLAGS
       lint_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -180,7 +180,7 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
         # Must come after build-examples.
-        - dart $PLUGIN_TOOL lint-android $COMMON_FLAGS
+        - dart $PLUGIN_TOOL lint-android $COMMON_TOOL_FLAGS
       native_unit_test_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -190,7 +190,7 @@ task:
         # Native integration tests are handled by firebase-test-lab below, so
         # only run unit tests.
         # Must come after build-examples.
-        - dart $PLUGIN_TOOL native-test --android --no-integration $COMMON_FLAGS
+        - dart $PLUGIN_TOOL native-test --android --no-integration $COMMON_TOOL_FLAGS
       firebase_test_lab_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -199,7 +199,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   dart $PLUGIN_TOOL firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml $COMMON_FLAGS
+        -   dart $PLUGIN_TOOL firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml $COMMON_TOOL_FLAGS
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
@@ -222,9 +222,9 @@ task:
         - dart lib/web_driver_installer.dart chromedriver --install-only
         - ./chromedriver/chromedriver --port=4444 &
       build_script:
-        - dart $PLUGIN_TOOL build-examples --web $COMMON_FLAGS
+        - dart $PLUGIN_TOOL build-examples --web $COMMON_TOOL_FLAGS
       drive_script:
-        - dart $PLUGIN_TOOL drive-examples --web --exclude=script/configs/exclude_integration_web.yaml $COMMON_FLAGS
+        - dart $PLUGIN_TOOL drive-examples --web --exclude=script/configs/exclude_integration_web.yaml $COMMON_TOOL_FLAGS
 
 # macOS tasks.
 task:
@@ -234,7 +234,7 @@ task:
     ### iOS+macOS tasks ***
     - name: lint_darwin_plugins
       script:
-        - dart $PLUGIN_TOOL podspecs $COMMON_FLAGS
+        - dart $PLUGIN_TOOL podspecs $COMMON_TOOL_FLAGS
     ### iOS tasks ###
     - name: build_all_plugins_ipa
       env:
@@ -259,16 +259,16 @@ task:
         - xcrun simctl list
         - xcrun simctl create Flutter-iPhone com.apple.CoreSimulator.SimDeviceType.iPhone-11 com.apple.CoreSimulator.SimRuntime.iOS-14-5 | xargs xcrun simctl boot
       build_script:
-        - dart $PLUGIN_TOOL build-examples --ios $COMMON_FLAGS
+        - dart $PLUGIN_TOOL build-examples --ios $COMMON_TOOL_FLAGS
       xcode_analyze_script:
-        - dart $PLUGIN_TOOL xcode-analyze --ios $COMMON_FLAGS
+        - dart $PLUGIN_TOOL xcode-analyze --ios $COMMON_TOOL_FLAGS
       native_test_script:
-        - dart $PLUGIN_TOOL native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" $COMMON_FLAGS
+        - dart $PLUGIN_TOOL native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" $COMMON_TOOL_FLAGS
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
         # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
-        - dart $PLUGIN_TOOL drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml $COMMON_FLAGS
+        - dart $PLUGIN_TOOL drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml $COMMON_TOOL_FLAGS
     ### macOS desktop tasks ###
     - name: build_all_plugins_macos
       env:
@@ -287,10 +287,10 @@ task:
         PATH: $PATH:/usr/local/bin
       build_script:
         - flutter config --enable-macos-desktop
-        - dart $PLUGIN_TOOL build-examples --macos $COMMON_FLAGS
+        - dart $PLUGIN_TOOL build-examples --macos $COMMON_TOOL_FLAGS
       xcode_analyze_script:
-        - dart $PLUGIN_TOOL xcode-analyze --macos $COMMON_FLAGS
+        - dart $PLUGIN_TOOL xcode-analyze --macos $COMMON_TOOL_FLAGS
       native_test_script:
-        - dart $PLUGIN_TOOL native-test --macos --exclude=script/configs/exclude_native_macos.yaml $COMMON_FLAGS
+        - dart $PLUGIN_TOOL native-test --macos --exclude=script/configs/exclude_native_macos.yaml $COMMON_TOOL_FLAGS
       drive_script:
-        - dart $PLUGIN_TOOL drive-examples --macos $COMMON_FLAGS
+        - dart $PLUGIN_TOOL drive-examples --macos $COMMON_TOOL_FLAGS
