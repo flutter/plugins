@@ -1,5 +1,6 @@
-## NEXT
+## 2.1.15
 
+* Upgraded Pigeon to 1.0
 * Updated Android lint settings.
 
 ## 2.1.14

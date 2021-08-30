@@ -2,68 +2,78 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
+import 'package:pigeon/pigeon.dart';
 
-import 'package:pigeon/pigeon_lib.dart';
-
+@ConfigurePigeon(PigeonOptions(
+  dartOut: '../video_player_platform_interface/lib/messages.dart',
+  dartTestOut: '../video_player_platform_interface/lib/test.dart',
+  objcHeaderOut: 'ios/Classes/messages.h',
+  objcSourceOut: 'ios/Classes/messages.m',
+  objcOptions: ObjcOptions(
+    prefix: 'FLT',
+  ),
+  javaOut: 'android/src/main/java/io/flutter/plugins/videoplayer/Messages.java',
+  javaOptions: JavaOptions(package: 'io.flutter.plugins.videoplayer'),
+  copyrightHeader: 'pigeons/copyright.txt',
+))
 class TextureMessage {
-  int textureId;
+  int? textureId;
 }
 
 class LoopingMessage {
-  int textureId;
-  bool isLooping;
+  int? textureId;
+  bool? isLooping;
 }
 
 class VolumeMessage {
-  int textureId;
-  double volume;
+  int? textureId;
+  double? volume;
 }
 
 class PlaybackSpeedMessage {
-  int textureId;
-  double speed;
+  int? textureId;
+  double? speed;
 }
 
 class PositionMessage {
-  int textureId;
-  int position;
+  int? textureId;
+  int? position;
 }
 
 class CreateMessage {
-  String asset;
-  String uri;
-  String packageName;
-  String formatHint;
-  Map<String, String> httpHeaders;
+  String? asset;
+  String? uri;
+  String? packageName;
+  String? formatHint;
+  Map<String?, String?>? httpHeaders;
 }
 
 class MixWithOthersMessage {
-  bool mixWithOthers;
+  bool? mixWithOthers;
 }
 
 @HostApi(dartHostTestHandler: 'TestHostVideoPlayerApi')
 abstract class VideoPlayerApi {
+  @ObjCSelector('initialize')
   void initialize();
+  @ObjCSelector('create:')
   TextureMessage create(CreateMessage msg);
+  @ObjCSelector('dispose:')
   void dispose(TextureMessage msg);
+  @ObjCSelector('setLooping:')
   void setLooping(LoopingMessage msg);
+  @ObjCSelector('setVolume:')
   void setVolume(VolumeMessage msg);
+  @ObjCSelector('setPlaybackSpeed:')
   void setPlaybackSpeed(PlaybackSpeedMessage msg);
+  @ObjCSelector('play:')
   void play(TextureMessage msg);
+  @ObjCSelector('position:')
   PositionMessage position(TextureMessage msg);
+  @ObjCSelector('seekTo:')
   void seekTo(PositionMessage msg);
+  @ObjCSelector('pause:')
   void pause(TextureMessage msg);
+  @ObjCSelector('setMixWithOthers:')
   void setMixWithOthers(MixWithOthersMessage msg);
-}
-
-void configurePigeon(PigeonOptions opts) {
-  opts.dartOut = '../video_player_platform_interface/lib/messages.dart';
-  opts.dartTestOut = '../video_player_platform_interface/lib/test.dart';
-  opts.objcHeaderOut = 'ios/Classes/messages.h';
-  opts.objcSourceOut = 'ios/Classes/messages.m';
-  opts.objcOptions.prefix = 'FLT';
-  opts.javaOut =
-      'android/src/main/java/io/flutter/plugins/videoplayer/Messages.java';
-  opts.javaOptions.package = 'io.flutter.plugins.videoplayer';
 }
