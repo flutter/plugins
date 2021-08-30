@@ -85,11 +85,17 @@ void main() {
           'creates a video element '
           'with correct properties', (tester) async {
         const audioConstraints = AudioConstraints(enabled: true);
+        final videoConstraints = VideoConstraints(
+          facingMode: FacingModeConstraint(
+            CameraType.user,
+          ),
+        );
 
         final camera = Camera(
           textureId: textureId,
           options: CameraOptions(
             audio: audioConstraints,
+            video: videoConstraints,
           ),
           cameraService: cameraService,
         );
@@ -108,6 +114,27 @@ void main() {
         expect(camera.videoElement.style.width, equals('100%'));
         expect(camera.videoElement.style.height, equals('100%'));
         expect(camera.videoElement.style.objectFit, equals('cover'));
+      });
+
+      testWidgets(
+          'flips the video element horizontally '
+          'for a back camera', (tester) async {
+        final videoConstraints = VideoConstraints(
+          facingMode: FacingModeConstraint(
+            CameraType.environment,
+          ),
+        );
+
+        final camera = Camera(
+          textureId: textureId,
+          options: CameraOptions(
+            video: videoConstraints,
+          ),
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+
         expect(camera.videoElement.style.transform, equals('scaleX(-1)'));
       });
 
@@ -376,7 +403,7 @@ void main() {
         await camera.initialize();
 
         expect(
-          await camera.getVideoSize(),
+          camera.getVideoSize(),
           equals(videoSize),
         );
       });
@@ -396,7 +423,7 @@ void main() {
         await camera.initialize();
 
         expect(
-          await camera.getVideoSize(),
+          camera.getVideoSize(),
           equals(Size.zero),
         );
       });
@@ -816,6 +843,87 @@ void main() {
                 ));
           });
         });
+      });
+    });
+
+    group('getLensDirection', () {
+      testWidgets(
+          'returns a lens direction '
+          'based on the first video track settings', (tester) async {
+        final videoElement = MockVideoElement();
+
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        )..videoElement = videoElement;
+
+        final firstVideoTrack = MockMediaStreamTrack();
+
+        when(() => videoElement.srcObject).thenReturn(
+          FakeMediaStream([
+            firstVideoTrack,
+            MockMediaStreamTrack(),
+          ]),
+        );
+
+        when(firstVideoTrack.getSettings)
+            .thenReturn({'facingMode': 'environment'});
+
+        when(() => cameraService.mapFacingModeToLensDirection('environment'))
+            .thenReturn(CameraLensDirection.external);
+
+        expect(
+          camera.getLensDirection(),
+          equals(CameraLensDirection.external),
+        );
+      });
+
+      testWidgets(
+          'returns null '
+          'if the first video track is missing the facing mode',
+          (tester) async {
+        final videoElement = MockVideoElement();
+
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        )..videoElement = videoElement;
+
+        final firstVideoTrack = MockMediaStreamTrack();
+
+        when(() => videoElement.srcObject).thenReturn(
+          FakeMediaStream([
+            firstVideoTrack,
+            MockMediaStreamTrack(),
+          ]),
+        );
+
+        when(firstVideoTrack.getSettings).thenReturn({});
+
+        expect(
+          camera.getLensDirection(),
+          isNull,
+        );
+      });
+
+      testWidgets(
+          'returns null '
+          'if the camera is missing video tracks', (tester) async {
+        // Create a video stream with no video tracks.
+        final videoElement = VideoElement();
+        mediaStream = videoElement.captureStream();
+
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+
+        expect(
+          camera.getLensDirection(),
+          isNull,
+        );
       });
     });
 

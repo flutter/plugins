@@ -106,7 +106,6 @@ class Camera {
     );
 
     videoElement = html.VideoElement();
-    _applyDefaultVideoStyles(videoElement);
 
     divElement = html.DivElement()
       ..style.setProperty('object-fit', 'cover')
@@ -122,6 +121,8 @@ class Camera {
       ..muted = true
       ..srcObject = stream
       ..setAttribute('playsinline', '');
+
+    _applyDefaultVideoStyles(videoElement);
 
     final videoTracks = stream!.getVideoTracks();
 
@@ -149,7 +150,7 @@ class Camera {
   }
 
   /// Pauses the camera stream on the current frame.
-  void pause() async {
+  void pause() {
     videoElement.pause();
   }
 
@@ -185,11 +186,17 @@ class Camera {
     final videoWidth = videoElement.videoWidth;
     final videoHeight = videoElement.videoHeight;
     final canvas = html.CanvasElement(width: videoWidth, height: videoHeight);
+    final isBackCamera = getLensDirection() == CameraLensDirection.back;
+
+    // Flip the picture horizontally if it is not taken from a back camera.
+    if (!isBackCamera) {
+      canvas.context2D
+        ..translate(videoWidth, 0)
+        ..scale(-1, 1);
+    }
 
     canvas.context2D
-      ..translate(videoWidth, 0)
-      ..scale(-1, 1)
-      ..drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
+        .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
 
     final blob = await canvas.toBlob('image/jpeg');
 
@@ -204,7 +211,7 @@ class Camera {
   ///
   /// Returns [Size.zero] if the camera is missing a video track or
   /// the video track does not include the width or height setting.
-  Future<Size> getVideoSize() async {
+  Size getVideoSize() {
     final videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
 
     if (videoTracks.isEmpty) {
@@ -332,6 +339,29 @@ class Camera {
     });
   }
 
+  /// Returns a lens direction of this camera.
+  ///
+  /// Returns null if the camera is missing a video track or
+  /// the video track does not include the facing mode setting.
+  CameraLensDirection? getLensDirection() {
+    final videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
+
+    if (videoTracks.isEmpty) {
+      return null;
+    }
+
+    final defaultVideoTrack = videoTracks.first;
+    final defaultVideoTrackSettings = defaultVideoTrack.getSettings();
+
+    final facingMode = defaultVideoTrackSettings['facingMode'];
+
+    if (facingMode != null) {
+      return _cameraService.mapFacingModeToLensDirection(facingMode);
+    } else {
+      return null;
+    }
+  }
+
   /// Returns the registered view type of the camera.
   String getViewType() => _getViewType(textureId);
 
@@ -354,12 +384,18 @@ class Camera {
 
   /// Applies default styles to the video [element].
   void _applyDefaultVideoStyles(html.VideoElement element) {
+    final isBackCamera = getLensDirection() == CameraLensDirection.back;
+
+    // Flip the video horizontally if it is not taken from a back camera.
+    if (!isBackCamera) {
+      element.style.transform = 'scaleX(-1)';
+    }
+
     element.style
       ..transformOrigin = 'center'
       ..pointerEvents = 'none'
       ..width = '100%'
       ..height = '100%'
-      ..objectFit = 'cover'
-      ..transform = 'scaleX(-1)';
+      ..objectFit = 'cover';
   }
 }
