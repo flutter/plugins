@@ -7,6 +7,8 @@ environment:
   flutter: ">=2.1.0" 
 
 dependencies:
+  google_maps_flutter:
+    path: ../../google_maps_flutter
   google_maps_flutter_web:
     path: ../
   flutter:
