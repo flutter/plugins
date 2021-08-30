@@ -668,12 +668,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       ]);
     } on CameraException catch (e) {
       _showCameraException(e);
-    } finally {
-      if (mounted) {
-        setState(() {});
-      }
+    }
 
-      await previousCameraController?.dispose();
+    if (mounted) {
+      setState(() {});
     }
   }
 
