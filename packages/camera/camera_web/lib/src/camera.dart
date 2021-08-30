@@ -339,12 +339,12 @@ class Camera {
   /// Disposes the camera by stopping the camera stream
   /// and reloading the camera source.
   Future<void> dispose() async {
-    /// Stop the camera stream.
+    // Stop the camera stream.
     stop();
 
-    _videoRecorderController.close();
+    await _videoRecorderController.close();
 
-    /// Reset the [videoElement] to its initial state.
+    // Reset the [videoElement] to its initial state.
     videoElement
       ..srcObject = null
       ..load();
@@ -374,6 +374,7 @@ class Camera {
 
   final StreamController<VideoRecordedEvent> _videoRecorderController =
       StreamController();
+
   Completer<XFile>? _videoAvailableCompleter;
 
   /// Stored dataavailable Listener to be able to remove it once the recording is done
