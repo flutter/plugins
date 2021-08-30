@@ -5,6 +5,10 @@
 - Pubspec validation now checks for `implements` in implementation packages.
 - Pubspec valitation now checks the full relative path of `repository` entries.
 - `build-examples` now supports UWP plugins via a `--winuwp` flag.
+- **Breaking change**: `publish` no longer accepts `--no-tag-release` or
+  `--no-push-flags`. Releases now always tag and push.
+- **Breaking change**: `publish`'s `--package` flag has been replaced with the
+  `--packages` flag used by most other packages.
 
 ## 0.5.0
 
