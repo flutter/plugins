@@ -48,10 +48,6 @@ class CameraErrorCode {
   static const CameraErrorCode missingMetadata =
       CameraErrorCode._('cameraMissingMetadata');
 
-  /// The media recording was not started.
-  static const CameraErrorCode mediaRecordingNotStarted =
-      CameraErrorCode._('cameraMediaRecordingNotStarted');
-
   /// The camera orientation is not supported.
   static const CameraErrorCode orientationNotSupported =
       CameraErrorCode._('orientationNotSupported');
@@ -71,6 +67,10 @@ class CameraErrorCode {
   /// The camera has not been initialized or started.
   static const CameraErrorCode notStarted =
       CameraErrorCode._('cameraNotStarted');
+
+  /// The video recording was not started.
+  static const CameraErrorCode videoRecordingNotStarted =
+      CameraErrorCode._('videoRecordingNotStarted');
 
   /// An unknown camera error.
   static const CameraErrorCode unknown = CameraErrorCode._('cameraUnknown');

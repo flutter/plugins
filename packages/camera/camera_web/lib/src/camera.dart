@@ -10,7 +10,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
 
 import 'shims/dart_ui.dart' as ui;
 
@@ -356,15 +355,15 @@ class Camera {
 
   /// Starts a new video recording using [html.MediaRecorder].
   ///
-  /// Throws a [PlatformException] if the provided maximum video duration is invalid
+  /// Throws a [CameraWebException] if the provided maximum video duration is invalid
   /// or the browser does not support any of the available video mime types
   /// from [_videoMimeType].
   Future<void> startVideoRecording({Duration? maxVideoDuration}) async {
     if (maxVideoDuration != null && maxVideoDuration.inMilliseconds <= 0) {
-      throw PlatformException(
-        code: CameraErrorCode.notSupported.toString(),
-        message:
-            'The maximum video duration must be greater than 0 milliseconds.',
+      throw CameraWebException(
+        textureId,
+        CameraErrorCode.notSupported,
+        'The maximum video duration must be greater than 0 milliseconds.',
       );
     }
 
@@ -423,30 +422,30 @@ class Camera {
 
   /// Pauses the current video recording.
   ///
-  /// Throws a [PlatformException] if the video recorder is uninitialized.
+  /// Throws a [CameraWebException] if the video recorder is uninitialized.
   Future<void> pauseVideoRecording() async {
     if (mediaRecorder == null) {
-      throw _mediaRecordingNotStartedException;
+      throw _videoRecordingNotStartedException;
     }
     mediaRecorder!.pause();
   }
 
   /// Resumes the current video recording.
   ///
-  /// Throws a [PlatformException] if the video recorder is uninitialized.
+  /// Throws a [CameraWebException] if the video recorder is uninitialized.
   Future<void> resumeVideoRecording() async {
     if (mediaRecorder == null) {
-      throw _mediaRecordingNotStartedException;
+      throw _videoRecordingNotStartedException;
     }
     mediaRecorder!.resume();
   }
 
   /// Stops the video recording and returns the captured video file.
   ///
-  /// Throws a [PlatformException] if the video recorder is uninitialized.
+  /// Throws a [CameraWebException] if the video recorder is uninitialized.
   Future<XFile> stopVideoRecording() async {
     if (mediaRecorder == null || _videoAvailableCompleter == null) {
-      throw _mediaRecordingNotStartedException;
+      throw _videoRecordingNotStartedException;
     }
 
     mediaRecorder!.stop();
@@ -476,7 +475,7 @@ class Camera {
   /// Returns the first supported video mime type (amongst mp4 and webm)
   /// to use when recording a video.
   ///
-  /// Throws a [PlatformException] if the browser does not support
+  /// Throws a [CameraWebException] if the browser does not support
   /// any of the available video mime types.
   String get _videoMimeType {
     const types = [
@@ -486,18 +485,19 @@ class Camera {
 
     return types.firstWhere(
       (type) => html.MediaRecorder.isTypeSupported(type),
-      orElse: () => throw PlatformException(
-        code: CameraErrorCode.notSupported.toString(),
-        message:
-            'The browser does not support any of the following video types: ${types.join(',')}.',
+      orElse: () => throw CameraWebException(
+        textureId,
+        CameraErrorCode.notSupported,
+        'The browser does not support any of the following video types: ${types.join(',')}.',
       ),
     );
   }
 
-  PlatformException get _mediaRecordingNotStartedException => PlatformException(
-        code: CameraErrorCode.mediaRecordingNotStarted.toString(),
-        message:
-            'The video recorder is uninitialized. The recording might not have been started. Make sure to call `startVideoRecording` first.',
+  CameraWebException get _videoRecordingNotStartedException =>
+      CameraWebException(
+        textureId,
+        CameraErrorCode.videoRecordingNotStarted,
+        'The video recorder is uninitialized. The recording might not have been started. Make sure to call `startVideoRecording` first.',
       );
 
   /// Applies default styles to the video [element].

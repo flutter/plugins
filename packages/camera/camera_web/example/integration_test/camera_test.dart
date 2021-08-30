@@ -10,7 +10,6 @@ import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
 import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -505,7 +504,7 @@ void main() {
         ).called(1);
       });
 
-      group('throws CameraWebException', () {
+      group('throws a CameraWebException', () {
         testWidgets(
             'with torchModeNotSupported error '
             'when there are no media devices', (tester) async {
@@ -748,7 +747,7 @@ void main() {
           ).called(1);
         });
 
-        group('throws CameraWebException', () {
+        group('throws a CameraWebException', () {
           testWidgets(
               'with zoomLevelInvalid error '
               'when the provided zoom level is below minimum', (tester) async {
@@ -801,20 +800,21 @@ void main() {
                 .thenReturn(zoomLevelCapability);
 
             expect(
-                () => camera.setZoomLevel(105.0),
-                throwsA(
-                  isA<CameraWebException>()
-                      .having(
-                        (e) => e.cameraId,
-                        'cameraId',
-                        textureId,
-                      )
-                      .having(
-                        (e) => e.code,
-                        'code',
-                        CameraErrorCode.zoomLevelInvalid,
-                      ),
-                ));
+              () => camera.setZoomLevel(105.0),
+              throwsA(
+                isA<CameraWebException>()
+                    .having(
+                      (e) => e.cameraId,
+                      'cameraId',
+                      textureId,
+                    )
+                    .having(
+                      (e) => e.code,
+                      'code',
+                      CameraErrorCode.zoomLevelInvalid,
+                    ),
+              ),
+            );
           });
         });
       });
@@ -891,7 +891,8 @@ void main() {
       });
 
       testWidgets(
-          'throws PlatformException '
+          'throws a CameraWebException '
+          'with notSupported error '
           'when maxVideoDuration is 0 milliseconds or less', (tester) async {
         final camera = Camera(
           textureId: 1,
@@ -901,9 +902,21 @@ void main() {
         await camera.initialize();
         await camera.play();
         expect(
-            () => camera.startVideoRecording(maxVideoDuration: Duration.zero),
-            throwsA(predicate<PlatformException>(
-                (ex) => ex.code == CameraErrorCode.notSupported.toString())));
+          () => camera.startVideoRecording(maxVideoDuration: Duration.zero),
+          throwsA(
+            isA<CameraWebException>()
+                .having(
+                  (e) => e.cameraId,
+                  'cameraId',
+                  textureId,
+                )
+                .having(
+                  (e) => e.code,
+                  'code',
+                  CameraErrorCode.notSupported,
+                ),
+          ),
+        );
       });
     });
 
@@ -924,8 +937,9 @@ void main() {
       });
 
       testWidgets(
-          'throws a PlatformException '
-          'if no recording was started', (tester) async {
+          'throws a CameraWebException '
+          'with videoRecordingNotStarted error '
+          'if the video recording was not started', (tester) async {
         final camera = Camera(
           textureId: 1,
           cameraService: cameraService,
@@ -935,10 +949,21 @@ void main() {
         await camera.play();
 
         expect(
-            camera.pauseVideoRecording,
-            throwsA(predicate<PlatformException>((ex) =>
-                ex.code ==
-                CameraErrorCode.mediaRecordingNotStarted.toString())));
+          camera.pauseVideoRecording,
+          throwsA(
+            isA<CameraWebException>()
+                .having(
+                  (e) => e.cameraId,
+                  'cameraId',
+                  textureId,
+                )
+                .having(
+                  (e) => e.code,
+                  'code',
+                  CameraErrorCode.videoRecordingNotStarted,
+                ),
+          ),
+        );
       });
     });
 
@@ -962,8 +987,9 @@ void main() {
       });
 
       testWidgets(
-          'throws a PlatformException '
-          'if no recording was started', (tester) async {
+          'throws a CameraWebException '
+          'with videoRecordingNotStarted error '
+          'if the video recording was not started', (tester) async {
         final camera = Camera(
           textureId: 1,
           cameraService: cameraService,
@@ -973,10 +999,21 @@ void main() {
         await camera.play();
 
         expect(
-            camera.resumeVideoRecording,
-            throwsA(predicate<PlatformException>((ex) =>
-                ex.code ==
-                CameraErrorCode.mediaRecordingNotStarted.toString())));
+          camera.resumeVideoRecording,
+          throwsA(
+            isA<CameraWebException>()
+                .having(
+                  (e) => e.cameraId,
+                  'cameraId',
+                  textureId,
+                )
+                .having(
+                  (e) => e.code,
+                  'code',
+                  CameraErrorCode.videoRecordingNotStarted,
+                ),
+          ),
+        );
       });
     });
 
@@ -1003,7 +1040,8 @@ void main() {
       });
 
       testWidgets(
-          'throws a PlatformException '
+          'throws a CameraWebException '
+          'with videoRecordingNotStarted error '
           'if no recording was started', (tester) async {
         final camera = Camera(
           textureId: 1,
@@ -1014,10 +1052,21 @@ void main() {
         await camera.play();
 
         expect(
-            camera.stopVideoRecording,
-            throwsA(predicate<PlatformException>((ex) =>
-                ex.code ==
-                CameraErrorCode.mediaRecordingNotStarted.toString())));
+          camera.stopVideoRecording,
+          throwsA(
+            isA<CameraWebException>()
+                .having(
+                  (e) => e.cameraId,
+                  'cameraId',
+                  textureId,
+                )
+                .having(
+                  (e) => e.code,
+                  'code',
+                  CameraErrorCode.videoRecordingNotStarted,
+                ),
+          ),
+        );
       });
     });
 
