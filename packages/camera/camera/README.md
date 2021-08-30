@@ -19,7 +19,7 @@ First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ### iOS
 
-iOS 10.0 of higher is needed to use the camera plugin. If compiling for any version lower than 10.0 make sure to check the iOS version before using the camera plugin. For example, using the [device_info](https://pub.dev/packages/device_info) plugin.
+iOS 10.0 of higher is needed to use the camera plugin. If compiling for any version lower than 10.0 make sure to check the iOS version before using the camera plugin. For example, using the [device_info_plus](https://pub.dev/packages/device_info_plus) plugin.
 
 Add two rows to the `ios/Runner/Info.plist`:
 

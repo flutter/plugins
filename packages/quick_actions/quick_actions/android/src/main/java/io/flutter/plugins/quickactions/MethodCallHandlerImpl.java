@@ -20,9 +20,8 @@ import java.util.List;
 import java.util.Map;
 
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
-
+  protected static final String EXTRA_ACTION = "some unique action key";
   private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
-  private static final String EXTRA_ACTION = "some unique action key";
 
   private final Context context;
   private Activity activity;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:file/file.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:yaml/yaml.dart';
 
 import 'core.dart';
@@ -16,7 +17,7 @@ enum PlatformSupport {
   federated,
 }
 
-/// Returns whether the given directory contains a Flutter [platform] plugin.
+/// Returns whether the given [package] is a Flutter [platform] plugin.
 ///
 /// It checks this by looking for the following pattern in the pubspec:
 ///
@@ -27,22 +28,21 @@ enum PlatformSupport {
 ///
 /// If [requiredMode] is provided, the plugin must have the given type of
 /// implementation in order to return true.
-bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
-    {PlatformSupport? requiredMode}) {
+bool pluginSupportsPlatform(
+  String platform,
+  RepositoryPackage package, {
+  PlatformSupport? requiredMode,
+  String? variant,
+}) {
   assert(platform == kPlatformIos ||
       platform == kPlatformAndroid ||
       platform == kPlatformWeb ||
       platform == kPlatformMacos ||
       platform == kPlatformWindows ||
       platform == kPlatformLinux);
-  if (entity is! Directory) {
-    return false;
-  }
-
   try {
-    final File pubspecFile = entity.childFile('pubspec.yaml');
     final YamlMap pubspecYaml =
-        loadYaml(pubspecFile.readAsStringSync()) as YamlMap;
+        loadYaml(package.pubspecFile.readAsStringSync()) as YamlMap;
     final YamlMap? flutterSection = pubspecYaml['flutter'] as YamlMap?;
     if (flutterSection == null) {
       return false;
@@ -69,42 +69,37 @@ bool pluginSupportsPlatform(String platform, FileSystemEntity entity,
     }
     // If the platform entry is present, then it supports the platform. Check
     // for required mode if specified.
-    final bool federated = platformEntry.containsKey('default_package');
-    return requiredMode == null ||
-        federated == (requiredMode == PlatformSupport.federated);
+    if (requiredMode != null) {
+      final bool federated = platformEntry.containsKey('default_package');
+      if (federated != (requiredMode == PlatformSupport.federated)) {
+        return false;
+      }
+    }
+
+    // If a variant is specified, check for that variant.
+    if (variant != null) {
+      const String variantsKey = 'supportedVariants';
+      if (platformEntry.containsKey(variantsKey)) {
+        if (!(platformEntry['supportedVariants']! as YamlList)
+            .contains(variant)) {
+          return false;
+        }
+      } else {
+        // Platforms with variants have a default variant when unspecified for
+        // backward compatibility. Must match the flutter tool logic.
+        const Map<String, String> defaultVariants = <String, String>{
+          kPlatformWindows: platformVariantWin32,
+        };
+        if (variant != defaultVariants[platform]) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   } on FileSystemException {
     return false;
   } on YamlException {
     return false;
   }
-}
-
-/// Returns whether the given directory contains a Flutter Android plugin.
-bool isAndroidPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformAndroid, entity);
-}
-
-/// Returns whether the given directory contains a Flutter iOS plugin.
-bool isIosPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformIos, entity);
-}
-
-/// Returns whether the given directory contains a Flutter web plugin.
-bool isWebPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformWeb, entity);
-}
-
-/// Returns whether the given directory contains a Flutter Windows plugin.
-bool isWindowsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformWindows, entity);
-}
-
-/// Returns whether the given directory contains a Flutter macOS plugin.
-bool isMacOsPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformMacos, entity);
-}
-
-/// Returns whether the given directory contains a Flutter linux plugin.
-bool isLinuxPlugin(FileSystemEntity entity) {
-  return pluginSupportsPlatform(kPlatformLinux, entity);
 }

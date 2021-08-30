@@ -1,6 +1,12 @@
 ## NEXT
 
+* Updated Android lint settings.
+
+## 2.0.12
+
 * Improved the documentation on using the different Android Platform View modes.
+* So that Android and iOS behave the same, `onWebResourceError` is now only called for the main
+  page.
 
 ## 2.0.11
 

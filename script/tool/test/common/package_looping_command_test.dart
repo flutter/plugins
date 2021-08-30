@@ -11,6 +11,7 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
 import 'package:flutter_plugin_tools/src/common/package_looping_command.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
+import 'package:flutter_plugin_tools/src/common/repository_package.dart';
 import 'package:git/git.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
@@ -184,6 +185,28 @@ void main() {
             package.path,
             package.childDirectory('example').path,
           ]));
+    });
+
+    test('excludes subpackages when main package is excluded', () async {
+      final Directory excluded = createFakePlugin('a_plugin', packagesDir,
+          examples: <String>['example1', 'example2']);
+      final Directory included = createFakePackage('a_package', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(includeSubpackages: true);
+      await runCommand(command, arguments: <String>['--exclude=a_plugin']);
+
+      expect(
+          command.checkedPackages,
+          unorderedEquals(<String>[
+            included.path,
+            included.childDirectory('example').path,
+          ]));
+      expect(command.checkedPackages, isNot(contains(excluded.path)));
+      expect(command.checkedPackages,
+          isNot(contains(excluded.childDirectory('example1').path)));
+      expect(command.checkedPackages,
+          isNot(contains(excluded.childDirectory('example2').path)));
     });
   });
 
@@ -376,6 +399,23 @@ void main() {
           ]));
     });
 
+    test('logs exclusions', () async {
+      createFakePackage('package_a', packagesDir);
+      createFakePackage('package_b', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--exclude=package_b']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startHeadingColor}Running for package_a...$_endColor',
+            '${_startSkipColor}Not running for package_b; excluded$_endColor',
+          ]));
+    });
+
     test('logs warnings', () async {
       final Directory warnPackage = createFakePackage('package_a', packagesDir);
       warnPackage
@@ -435,6 +475,24 @@ void main() {
       expect(output, isNot(contains(contains('package a - ran'))));
     });
 
+    test('counts exclusions as skips in run summary', () async {
+      createFakePackage('package_a', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--exclude=package_a']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '------------------------------------------------------------',
+            'Skipped 1 package(s)',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+    });
+
     test('prints long-form run summary for long-output commands', () async {
       final Directory warnPackage1 =
           createFakePackage('package_a', packagesDir);
@@ -478,6 +536,25 @@ void main() {
           ]));
     });
 
+    test('prints exclusions as skips in long-form run summary', () async {
+      createFakePackage('package_a', packagesDir);
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: true);
+      final List<String> output =
+          await runCommand(command, arguments: <String>['--exclude=package_a']);
+
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '  package_a - ${_startSkipColor}excluded$_endColor',
+            '',
+            'Skipped 1 package(s)',
+            '\n',
+            '${_startSuccessColor}No issues found!$_endColor',
+          ]));
+    });
+
     test('handles warnings outside of runForPackage', () async {
       createFakePackage('package_a', packagesDir);
 
@@ -500,64 +577,6 @@ void main() {
             '\n',
             '${_startSuccessColor}No issues found!$_endColor',
           ]));
-    });
-  });
-
-  group('utility', () {
-    test('getPackageDescription prints packageDir-relative paths by default',
-        () async {
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
-
-      expect(
-        command.getPackageDescription(packagesDir.childDirectory('foo')),
-        'foo',
-      );
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('foo')
-            .childDirectory('bar')
-            .childDirectory('baz')),
-        'foo/bar/baz',
-      );
-    });
-
-    test('getPackageDescription always uses Posix-style paths', () async {
-      mockPlatform.isWindows = true;
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
-
-      expect(
-        command.getPackageDescription(packagesDir.childDirectory('foo')),
-        'foo',
-      );
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('foo')
-            .childDirectory('bar')
-            .childDirectory('baz')),
-        'foo/bar/baz',
-      );
-    });
-
-    test(
-        'getPackageDescription elides group name in grouped federated plugin structure',
-        () async {
-      final TestPackageLoopingCommand command =
-          TestPackageLoopingCommand(packagesDir, platform: mockPlatform);
-
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('a_plugin')
-            .childDirectory('a_plugin_platform_interface')),
-        'a_plugin_platform_interface',
-      );
-      expect(
-        command.getPackageDescription(packagesDir
-            .childDirectory('a_plugin')
-            .childDirectory('a_plugin_web')),
-        'a_plugin_web',
-      );
     });
   });
 }
@@ -623,18 +642,18 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     checkedPackages.add(package.path);
-    final File warningFile = package.childFile(_warningFile);
+    final File warningFile = package.directory.childFile(_warningFile);
     if (warningFile.existsSync()) {
       final List<String> warnings = warningFile.readAsLinesSync();
       warnings.forEach(logWarning);
     }
-    final File skipFile = package.childFile(_skipFile);
+    final File skipFile = package.directory.childFile(_skipFile);
     if (skipFile.existsSync()) {
       return PackageResult.skip(skipFile.readAsStringSync());
     }
-    final File errorFile = package.childFile(_errorFile);
+    final File errorFile = package.directory.childFile(_errorFile);
     if (errorFile.existsSync()) {
       return PackageResult.fail(errorFile.readAsLinesSync());
     }

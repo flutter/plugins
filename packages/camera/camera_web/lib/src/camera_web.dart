@@ -8,7 +8,7 @@ import 'dart:math';
 
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,18 +25,18 @@ const String _kDefaultErrorMessage =
 /// This class implements the `package:camera` functionality for the web.
 class CameraPlugin extends CameraPlatform {
   /// Creates a new instance of [CameraPlugin]
-  /// with the given [cameraSettings] utility.
-  CameraPlugin({required CameraSettings cameraSettings})
-      : _cameraSettings = cameraSettings;
+  /// with the given [cameraService].
+  CameraPlugin({required CameraService cameraService})
+      : _cameraService = cameraService;
 
   /// Registers this class as the default instance of [CameraPlatform].
   static void registerWith(Registrar registrar) {
     CameraPlatform.instance = CameraPlugin(
-      cameraSettings: CameraSettings(),
+      cameraService: CameraService(),
     );
   }
 
-  final CameraSettings _cameraSettings;
+  final CameraService _cameraService;
 
   /// The cameras managed by the [CameraPlugin].
   @visibleForTesting
@@ -60,6 +60,9 @@ class CameraPlugin extends CameraPlatform {
 
   final _cameraVideoAbortSubscriptions =
       <int, StreamSubscription<html.Event>>{};
+
+  final _cameraEndedSubscriptions =
+      <int, StreamSubscription<html.MediaStreamTrack>>{};
 
   /// Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
@@ -86,7 +89,7 @@ class CameraPlugin extends CameraPlatform {
       }
 
       // Request video and audio permissions.
-      await _cameraSettings.getMediaStreamForOptions(
+      await _cameraService.getMediaStreamForOptions(
         CameraOptions(
           audio: AudioConstraints(enabled: true),
         ),
@@ -121,13 +124,13 @@ class CameraPlugin extends CameraPlatform {
         if (videoTracks.isNotEmpty) {
           // Get the facing mode from the first available video track.
           final facingMode =
-              _cameraSettings.getFacingModeForVideoTrack(videoTracks.first);
+              _cameraService.getFacingModeForVideoTrack(videoTracks.first);
 
           // Get the lens direction based on the facing mode.
           // Fallback to the external lens direction
           // if the facing mode is not available.
           final lensDirection = facingMode != null
-              ? _cameraSettings.mapFacingModeToLensDirection(facingMode)
+              ? _cameraService.mapFacingModeToLensDirection(facingMode)
               : CameraLensDirection.external;
 
           // Create a camera description.
@@ -191,20 +194,19 @@ class CameraPlugin extends CameraPlatform {
       final cameraMetadata = camerasMetadata[cameraDescription]!;
 
       final cameraType = cameraMetadata.facingMode != null
-          ? _cameraSettings
-              .mapFacingModeToCameraType(cameraMetadata.facingMode!)
+          ? _cameraService.mapFacingModeToCameraType(cameraMetadata.facingMode!)
           : null;
 
       // Use the highest resolution possible
       // if the resolution preset is not specified.
-      final videoSize = _cameraSettings
+      final videoSize = _cameraService
           .mapResolutionPresetToSize(resolutionPreset ?? ResolutionPreset.max);
 
       // Create a camera with the given audio and video constraints.
       // Sensor orientation is currently not supported.
       final camera = Camera(
         textureId: textureId,
-        cameraSettings: _cameraSettings,
+        cameraService: _cameraService,
         options: CameraOptions(
           audio: AudioConstraints(enabled: enableAudio),
           video: VideoConstraints(
@@ -274,6 +276,15 @@ class CameraPlugin extends CameraPlatform {
 
       await camera.play();
 
+      // Add camera's closing events to the camera events stream.
+      // The onEnded stream fires when there is no more camera stream data.
+      _cameraEndedSubscriptions[cameraId] =
+          camera.onEnded.listen((html.MediaStreamTrack _) {
+        cameraEventStreamController.add(
+          CameraClosingEvent(cameraId),
+        );
+      });
+
       final cameraSize = await camera.getVideoSize();
 
       cameraEventStreamController.add(
@@ -302,14 +313,19 @@ class CameraPlugin extends CameraPlatform {
     return _cameraEvents(cameraId).whereType<CameraInitializedEvent>();
   }
 
+  /// Emits an empty stream as there is no event corresponding to a change
+  /// in the camera resolution on the web.
+  ///
+  /// In order to change the camera resolution a new camera with appropriate
+  /// [CameraOptions.video] constraints has to be created and initialized.
   @override
   Stream<CameraResolutionChangedEvent> onCameraResolutionChanged(int cameraId) {
-    throw UnimplementedError('onCameraResolutionChanged() is not implemented.');
+    return const Stream.empty();
   }
 
   @override
   Stream<CameraClosingEvent> onCameraClosing(int cameraId) {
-    throw UnimplementedError('onCameraClosing() is not implemented.');
+    return _cameraEvents(cameraId).whereType<CameraClosingEvent>();
   }
 
   @override
@@ -324,22 +340,70 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
-    throw UnimplementedError(
-      'onDeviceOrientationChanged() is not implemented.',
-    );
+    final orientation = window?.screen?.orientation;
+
+    if (orientation != null) {
+      // Create an initial orientation event that emits the device orientation
+      // as soon as subscribed to this stream.
+      final initialOrientationEvent = html.Event("change");
+
+      return orientation.onChange.startWith(initialOrientationEvent).map(
+        (html.Event _) {
+          final deviceOrientation = _cameraService
+              .mapOrientationTypeToDeviceOrientation(orientation.type!);
+          return DeviceOrientationChangedEvent(deviceOrientation);
+        },
+      );
+    } else {
+      return const Stream.empty();
+    }
   }
 
   @override
   Future<void> lockCaptureOrientation(
     int cameraId,
-    DeviceOrientation orientation,
-  ) {
-    throw UnimplementedError('lockCaptureOrientation() is not implemented.');
+    DeviceOrientation deviceOrientation,
+  ) async {
+    try {
+      final orientation = window?.screen?.orientation;
+      final documentElement = window?.document.documentElement;
+
+      if (orientation != null && documentElement != null) {
+        final orientationType = _cameraService
+            .mapDeviceOrientationToOrientationType(deviceOrientation);
+
+        // Full-screen mode may be required to modify the device orientation.
+        // See: https://w3c.github.io/screen-orientation/#interaction-with-fullscreen-api
+        documentElement.requestFullscreen();
+        await orientation.lock(orientationType.toString());
+      } else {
+        throw PlatformException(
+          code: CameraErrorCode.orientationNotSupported.toString(),
+          message: 'Orientation is not supported in the current browser.',
+        );
+      }
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
-  Future<void> unlockCaptureOrientation(int cameraId) {
-    throw UnimplementedError('unlockCaptureOrientation() is not implemented.');
+  Future<void> unlockCaptureOrientation(int cameraId) async {
+    try {
+      final orientation = window?.screen?.orientation;
+      final documentElement = window?.document.documentElement;
+
+      if (orientation != null && documentElement != null) {
+        orientation.unlock();
+      } else {
+        throw PlatformException(
+          code: CameraErrorCode.orientationNotSupported.toString(),
+          message: 'Orientation is not supported in the current browser.',
+        );
+      }
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
   }
 
   @override
@@ -348,6 +412,9 @@ class CameraPlugin extends CameraPlatform {
       return getCamera(cameraId).takePicture();
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
     }
   }
 
@@ -394,8 +461,15 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> setFlashMode(int cameraId, FlashMode mode) {
-    throw UnimplementedError('setFlashMode() is not implemented.');
+  Future<void> setFlashMode(int cameraId, FlashMode mode) async {
+    try {
+      getCamera(cameraId).setFlashMode(mode);
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
@@ -439,18 +513,62 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<double> getMaxZoomLevel(int cameraId) {
-    throw UnimplementedError('getMaxZoomLevel() is not implemented.');
+  Future<double> getMaxZoomLevel(int cameraId) async {
+    try {
+      return getCamera(cameraId).getMaxZoomLevel();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
-  Future<double> getMinZoomLevel(int cameraId) {
-    throw UnimplementedError('getMinZoomLevel() is not implemented.');
+  Future<double> getMinZoomLevel(int cameraId) async {
+    try {
+      return getCamera(cameraId).getMinZoomLevel();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
-  Future<void> setZoomLevel(int cameraId, double zoom) {
-    throw UnimplementedError('setZoomLevel() is not implemented.');
+  Future<void> setZoomLevel(int cameraId, double zoom) async {
+    try {
+      getCamera(cameraId).setZoomLevel(zoom);
+    } on html.DomException catch (e) {
+      throw CameraException(e.name, e.message);
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw CameraException(e.code.toString(), e.description);
+    }
+  }
+
+  @override
+  Future<void> pausePreview(int cameraId) async {
+    try {
+      getCamera(cameraId).pause();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    }
+  }
+
+  @override
+  Future<void> resumePreview(int cameraId) async {
+    try {
+      await getCamera(cameraId).play();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
@@ -463,13 +581,15 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> dispose(int cameraId) async {
     try {
-      getCamera(cameraId).dispose();
+      await getCamera(cameraId).dispose();
       await _cameraVideoErrorSubscriptions[cameraId]?.cancel();
       await _cameraVideoAbortSubscriptions[cameraId]?.cancel();
+      await _cameraEndedSubscriptions[cameraId]?.cancel();
 
       cameras.remove(cameraId);
       _cameraVideoErrorSubscriptions.remove(cameraId);
       _cameraVideoAbortSubscriptions.remove(cameraId);
+      _cameraEndedSubscriptions.remove(cameraId);
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
     }
@@ -484,7 +604,7 @@ class CameraPlugin extends CameraPlatform {
       video: VideoConstraints(deviceId: deviceId),
     );
 
-    return _cameraSettings.getMediaStreamForOptions(cameraOptions);
+    return _cameraService.getMediaStreamForOptions(cameraOptions);
   }
 
   /// Returns a camera for the given [cameraId].
