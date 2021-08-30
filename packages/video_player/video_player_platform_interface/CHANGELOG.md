@@ -1,3 +1,7 @@
+## 5.0.0
+
+* Upgraded to Pigeon 1.0.
+
 ## 4.1.0
 
 * Add `httpHeaders` to `DataSource`
