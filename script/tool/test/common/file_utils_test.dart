@@ -2,15 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:io' as io;
-
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:test/test.dart';
-
-import '../mocks.dart';
-import '../util.dart';
 
 void main() {
   test('works on Posix', () async {
