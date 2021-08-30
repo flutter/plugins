@@ -631,12 +631,12 @@ public class ImagePickerDelegate
     clearMethodCallAndResult();
   }
 
-  private void finishWithListSuccess(ArrayList<String> imagePath) {
+  private void finishWithListSuccess(ArrayList<String> imagePaths) {
     if (pendingResult == null) {
-      cache.saveResult(imagePath, null, null);
+      cache.saveResult(imagePaths, null, null);
       return;
     }
-    pendingResult.success(imagePath);
+    pendingResult.success(imagePaths);
     clearMethodCallAndResult();
   }
 
