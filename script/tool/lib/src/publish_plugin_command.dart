@@ -18,6 +18,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
+import 'common/file_utils.dart';
 import 'common/git_version_finder.dart';
 import 'common/plugin_command.dart';
 import 'common/process_runner.dart';
@@ -154,13 +155,10 @@ class PublishPluginCommand extends PluginCommand {
           await gitVersionFinder.getChangedPubSpecs();
 
       for (final String pubspecPath in changedPubspecs) {
-        // Convert git's Posix-style paths to a path that matches the current
-        // filesystem.
-        final String localStylePubspecPath =
-            path.joinAll(p.posix.split(pubspecPath));
-        final File pubspecFile = packagesDir.fileSystem
-            .directory((await gitDir).path)
-            .childFile(localStylePubspecPath);
+        // git outputs a relativa, Posix-style path.
+        final File pubspecFile = childFileWithSubcomponents(
+            packagesDir.fileSystem.directory((await gitDir).path),
+            p.posix.split(pubspecPath));
         yield PackageEnumerationEntry(RepositoryPackage(pubspecFile.parent),
             excluded: false);
       }

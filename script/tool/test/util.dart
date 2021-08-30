@@ -10,6 +10,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/common/plugin_utils.dart';
 import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:meta/meta.dart';
@@ -47,6 +48,8 @@ class PlatformDetails {
   const PlatformDetails(
     this.type, {
     this.variants = const <String>[],
+    this.hasNativeCode = true,
+    this.hasDartCode = false,
   });
 
   /// The type of support for the platform.
@@ -54,6 +57,16 @@ class PlatformDetails {
 
   /// Any 'supportVariants' to list in the pubspec.
   final List<String> variants;
+
+  /// Whether or not the plugin includes native code.
+  ///
+  /// Ignored for web, which does not have native code.
+  final bool hasNativeCode;
+
+  /// Whether or not the plugin includes Dart code.
+  ///
+  /// Ignored for web, which always has native code.
+  final bool hasDartCode;
 }
 
 /// Creates a plugin package with the given [name] in [packagesDirectory].
@@ -130,15 +143,10 @@ Directory createFakePackage(
     }
   }
 
-  final FileSystem fileSystem = packageDirectory.fileSystem;
   final p.Context posixContext = p.posix;
   for (final String file in extraFiles) {
-    final List<String> newFilePath = <String>[
-      packageDirectory.path,
-      ...posixContext.split(file)
-    ];
-    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
-    newFile.createSync(recursive: true);
+    childFileWithSubcomponents(packageDirectory, posixContext.split(file))
+        .createSync(recursive: true);
   }
 
   return packageDirectory;
@@ -210,49 +218,38 @@ String _pluginPlatformSection(
         default_package: ${packageName}_$platform
 ''';
   } else {
+    final List<String> lines = <String>[
+      '      $platform:',
+    ];
     switch (platform) {
       case kPlatformAndroid:
-        entry = '''
-      android:
-        package: io.flutter.plugins.fake
-        pluginClass: FakePlugin
-''';
-        break;
+        lines.add('        package: io.flutter.plugins.fake');
+        continue nativeByDefault;
+      nativeByDefault:
       case kPlatformIos:
-        entry = '''
-      ios:
-        pluginClass: FLTFakePlugin
-''';
-        break;
       case kPlatformLinux:
-        entry = '''
-      linux:
-        pluginClass: FakePlugin
-''';
-        break;
       case kPlatformMacos:
-        entry = '''
-      macos:
-        pluginClass: FakePlugin
-''';
+      case kPlatformWindows:
+        if (support.hasNativeCode) {
+          final String className =
+              platform == kPlatformIos ? 'FLTFakePlugin' : 'FakePlugin';
+          lines.add('        pluginClass: $className');
+        }
+        if (support.hasDartCode) {
+          lines.add('        dartPluginClass: FakeDartPlugin');
+        }
         break;
       case kPlatformWeb:
-        entry = '''
-      web:
-        pluginClass: FakePlugin
-        fileName: ${packageName}_web.dart
-''';
-        break;
-      case kPlatformWindows:
-        entry = '''
-      windows:
-        pluginClass: FakePlugin
-''';
+        lines.addAll(<String>[
+          '        pluginClass: FakePlugin',
+          '        fileName: ${packageName}_web.dart',
+        ]);
         break;
       default:
         assert(false, 'Unrecognized platform: $platform');
         break;
     }
+    entry = lines.join('\n') + '\n';
   }
 
   // Add any variants.
