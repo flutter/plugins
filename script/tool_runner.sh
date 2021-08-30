@@ -16,16 +16,8 @@ function plugin_tools() {
 
 ACTIONS=("$@")
 
-BRANCH_NAME="${BRANCH_NAME:-"$(git rev-parse --abbrev-ref HEAD)"}"
-
 # This has to be turned into a list and then split out to the command line,
 # otherwise it gets treated as a single argument.
 PLUGIN_SHARDING=($PLUGIN_SHARDING)
 
-if [[ "${BRANCH_NAME}" == "master" ]]; then
-  echo "Running for all packages"
-  (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" ${PLUGIN_SHARDING[@]})
-else
-  echo running "${ACTIONS[@]}"
-  (cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --run-on-changed-packages ${PLUGIN_SHARDING[@]})
-fi
+(cd "$REPO_DIR" && plugin_tools "${ACTIONS[@]}" --packages-for-branch ${PLUGIN_SHARDING[@]})

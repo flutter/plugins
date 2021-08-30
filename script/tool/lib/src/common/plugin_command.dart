@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io' as io;
 import 'dart:math';
 
-import 'package:args/args.dart';
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:git/git.dart';
@@ -302,15 +302,23 @@ abstract class PluginCommand extends Command<void> {
         throw ToolExit(exitInvalidArguments);
       } else {
         runOnChangedPackages = branch != 'master';
+        // Log the mode for auditing what was intended to run.
+        print('--$_packagesForBranchArg: running on '
+            '${runOnChangedPackages ? 'changed' : 'all'} packages');
       }
     } else {
-      runOnChangedPackages = plugins.isEmpty;
+      runOnChangedPackages = false;
     }
 
     final Set<String> excludedPluginNames = getExcludedPackageNames();
 
-    if (runOnChangedPackages && !(await _changesRequireFullTest())) {
-      plugins = await _getChangedPackages();
+    if (runOnChangedPackages) {
+      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+      final List<String> changedFiles =
+          await gitVersionFinder.getChangedFiles();
+      if (!_changesRequireFullTest(changedFiles)) {
+        plugins = _getChangedPackages(changedFiles);
+      }
     }
 
     final Directory thirdPartyPackagesDirectory = packagesDir.parent
@@ -410,14 +418,10 @@ abstract class PluginCommand extends Command<void> {
     return gitVersionFinder;
   }
 
-  // Returns packages that have been changed relative to the git base.
-  Future<Set<String>> _getChangedPackages() async {
-    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-
-    final List<String> allChangedFiles =
-        await gitVersionFinder.getChangedFiles();
+  // Returns packages that have been changed given a list of changed files.
+  Set<String> _getChangedPackages(List<String> changedFiles) {
     final Set<String> packages = <String>{};
-    for (final String path in allChangedFiles) {
+    for (final String path in changedFiles) {
       final List<String> pathComponents = path.split('/');
       final int packagesIndex =
           pathComponents.indexWhere((String element) => element == 'packages');
@@ -435,14 +439,18 @@ abstract class PluginCommand extends Command<void> {
   }
 
   Future<String?> _getBranch() async {
-    return null;
+    final io.ProcessResult branchResult = await (await gitDir).runCommand(
+        <String>['rev-parse', '--abbrev-ref', 'HEAD'],
+        throwOnError: false);
+    if (branchResult.exitCode != 0) {
+      return null;
+    }
+    return (branchResult.stdout as String).trim();
   }
 
   // Returns true if one or more files changed that have the potential to affect
   // any plugin (e.g., CI script changes).
-  Future<bool> _changesRequireFullTest() async {
-    final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-
+  bool _changesRequireFullTest(List<String> changedFiles) {
     const List<String> specialFiles = <String>[
       '.ci.yaml', // LUCI config.
       '.cirrus.yml', // Cirrus config.
@@ -457,9 +465,7 @@ abstract class PluginCommand extends Command<void> {
     // check below is done via string prefixing.
     assert(specialDirectories.every((String dir) => dir.endsWith('/')));
 
-    final List<String> allChangedFiles =
-        await gitVersionFinder.getChangedFiles();
-    return allChangedFiles.any((String path) =>
+    return changedFiles.any((String path) =>
         specialFiles.contains(path) ||
         specialDirectories.any((String dir) => path.startsWith(dir)));
   }
