@@ -273,4 +273,72 @@ void main() {
           isTrue);
     });
   });
+
+  group('pluginHasNativeCodeForPlatform', () {
+    test('returns false for web', () async {
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
+        'plugin',
+        packagesDir,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
+        },
+      ));
+
+      expect(pluginHasNativeCodeForPlatform(kPlatformWeb, plugin), isFalse);
+    });
+
+    test('returns false for a native-only plugin', () async {
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
+        'plugin',
+        packagesDir,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
+        },
+      ));
+
+      expect(pluginHasNativeCodeForPlatform(kPlatformLinux, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(kPlatformMacos, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(kPlatformWindows, plugin), isTrue);
+    });
+
+    test('returns true for a native+Dart plugin', () async {
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
+        'plugin',
+        packagesDir,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline,
+              hasNativeCode: true, hasDartCode: true),
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline,
+              hasNativeCode: true, hasDartCode: true),
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+              hasNativeCode: true, hasDartCode: true),
+        },
+      ));
+
+      expect(pluginHasNativeCodeForPlatform(kPlatformLinux, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(kPlatformMacos, plugin), isTrue);
+      expect(pluginHasNativeCodeForPlatform(kPlatformWindows, plugin), isTrue);
+    });
+
+    test('returns false for a Dart-only plugin', () async {
+      final RepositoryPackage plugin = RepositoryPackage(createFakePlugin(
+        'plugin',
+        packagesDir,
+        platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline,
+              hasNativeCode: false, hasDartCode: true),
+          kPlatformMacos: const PlatformDetails(PlatformSupport.inline,
+              hasNativeCode: false, hasDartCode: true),
+          kPlatformWindows: const PlatformDetails(PlatformSupport.inline,
+              hasNativeCode: false, hasDartCode: true),
+        },
+      ));
+
+      expect(pluginHasNativeCodeForPlatform(kPlatformLinux, plugin), isFalse);
+      expect(pluginHasNativeCodeForPlatform(kPlatformMacos, plugin), isFalse);
+      expect(pluginHasNativeCodeForPlatform(kPlatformWindows, plugin), isFalse);
+    });
+  });
 }

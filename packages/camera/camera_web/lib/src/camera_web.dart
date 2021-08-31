@@ -285,7 +285,7 @@ class CameraPlugin extends CameraPlatform {
         );
       });
 
-      final cameraSize = await camera.getVideoSize();
+      final cameraSize = camera.getVideoSize();
 
       cameraEventStreamController.add(
         CameraInitializedEvent(

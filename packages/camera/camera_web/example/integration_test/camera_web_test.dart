@@ -574,9 +574,7 @@ void main() {
         abortStreamController = StreamController<Event>();
         endedStreamController = StreamController<MediaStreamTrack>();
 
-        when(camera.getVideoSize).thenAnswer(
-          (_) => Future.value(Size(10, 10)),
-        );
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
         when(camera.play).thenAnswer((_) => Future.value());
 
@@ -1954,9 +1952,7 @@ void main() {
         abortStreamController = StreamController<Event>();
         endedStreamController = StreamController<MediaStreamTrack>();
 
-        when(camera.getVideoSize).thenAnswer(
-          (_) => Future.value(Size(10, 10)),
-        );
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
         when(camera.play).thenAnswer((_) => Future.value());
         when(camera.dispose).thenAnswer((_) => Future.value());
@@ -2112,9 +2108,7 @@ void main() {
         abortStreamController = StreamController<Event>();
         endedStreamController = StreamController<MediaStreamTrack>();
 
-        when(camera.getVideoSize).thenAnswer(
-          (_) => Future.value(Size(10, 10)),
-        );
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
         when(camera.play).thenAnswer((_) => Future.value());
 
