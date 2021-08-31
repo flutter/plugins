@@ -180,7 +180,7 @@ void main() {
       expect(command.plugins, unorderedEquals(<String>[]));
     });
 
-    group('conflicting package selecetion', () {
+    group('conflicting package selection', () {
       test('does not allow --packages with --run-on-changed-packages',
           () async {
         Error? commandError;
