@@ -26,8 +26,10 @@ String _getViewType(int cameraId) => 'plugins.flutter.io/camera_$cameraId';
 /// the video element in [_applyDefaultVideoStyles].
 /// See: https://github.com/flutter/flutter/issues/79519
 ///
-/// The camera can be played/stopped by calling [play]/[stop]
-/// or may capture a picture by calling [takePicture].
+/// The camera stream can be played/stopped by calling [play]/[stop],
+/// may capture a picture by calling [takePicture] or capture a video
+/// by calling [startVideoRecording], [pauseVideoRecording],
+/// [resumeVideoRecording] or [stopVideoRecording].
 ///
 /// The camera zoom may be adjusted with [setZoomLevel]. The provided
 /// zoom level must be a value in the range of [getMinZoomLevel] to
@@ -76,12 +78,11 @@ class Camera {
   ///
   /// MediaStreamTrack.onended:
   /// https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/onended
-  Stream<html.MediaStreamTrack> get onEnded => onEndedStreamController.stream;
+  Stream<html.MediaStreamTrack> get onEnded => onEndedController.stream;
 
   /// The stream controller for the [onEnded] stream.
   @visibleForTesting
-  final onEndedStreamController =
-      StreamController<html.MediaStreamTrack>.broadcast();
+  final onEndedController = StreamController<html.MediaStreamTrack>.broadcast();
 
   StreamSubscription<html.Event>? _onEndedSubscription;
 
@@ -108,11 +109,12 @@ class Camera {
 
   /// The stream that emits a [VideoRecordedEvent] when a video recording is created.
   Stream<VideoRecordedEvent> get onVideoRecordedEvent =>
-      _videoRecorderController.stream;
+      videoRecorderController.stream;
 
   /// The stream controller for the [onVideoRecordedEvent] stream.
-  final StreamController<VideoRecordedEvent> _videoRecorderController =
-      StreamController();
+  @visibleForTesting
+  final StreamController<VideoRecordedEvent> videoRecorderController =
+      StreamController<VideoRecordedEvent>.broadcast();
 
   /// Initializes the camera stream displayed in the [videoElement].
   /// Registers the camera view with [textureId] under [_getViewType] type.
@@ -147,7 +149,7 @@ class Camera {
       final defaultVideoTrack = videoTracks.first;
 
       _onEndedSubscription = defaultVideoTrack.onEnded.listen((html.Event _) {
-        onEndedStreamController.add(defaultVideoTrack);
+        onEndedController.add(defaultVideoTrack);
       });
     }
   }
@@ -175,7 +177,7 @@ class Camera {
   void stop() {
     final videoTracks = stream!.getVideoTracks();
     if (videoTracks.isNotEmpty) {
-      onEndedStreamController.add(videoTracks.first);
+      onEndedController.add(videoTracks.first);
     }
 
     final tracks = stream?.getTracks();
@@ -398,7 +400,7 @@ class Camera {
       name: blob.hashCode.toString(),
     );
 
-    _videoRecorderController.add(
+    videoRecorderController.add(
       VideoRecordedEvent(this.textureId, file, maxVideoDuration),
     );
 
@@ -459,7 +461,7 @@ class Camera {
     // Stop the camera stream.
     stop();
 
-    await _videoRecorderController.close();
+    await videoRecorderController.close();
 
     // Reset the [videoElement] to its initial state.
     videoElement
@@ -469,7 +471,7 @@ class Camera {
     await _onEndedSubscription?.cancel();
     _onEndedSubscription = null;
 
-    await onEndedStreamController.close();
+    await onEndedController.close();
   }
 
   /// Returns the first supported video mime type (amongst mp4 and webm)

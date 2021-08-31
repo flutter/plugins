@@ -836,21 +836,6 @@ void main() {
       });
     });
 
-    group('dispose', () {
-      testWidgets('resets the video element\'s source', (tester) async {
-        final camera = Camera(
-          textureId: textureId,
-          cameraService: cameraService,
-        );
-
-        await camera.initialize();
-
-        await camera.dispose();
-
-        expect(camera.videoElement.srcObject, isNull);
-      });
-    });
-
     group('startVideoRecording', () {
       testWidgets('starts a video recording', (tester) async {
         final camera = Camera(
@@ -1070,6 +1055,50 @@ void main() {
       });
     });
 
+    group('dispose', () {
+      testWidgets('resets the video element\'s source', (tester) async {
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+        await camera.dispose();
+
+        expect(camera.videoElement.srcObject, isNull);
+      });
+
+      testWidgets('closes the onEnded stream', (tester) async {
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+        await camera.dispose();
+
+        expect(
+          camera.onEndedController.isClosed,
+          isTrue,
+        );
+      });
+
+      testWidgets('closes the onVideoRecordedEvent stream', (tester) async {
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+        await camera.dispose();
+
+        expect(
+          camera.videoRecorderController.isClosed,
+          isTrue,
+        );
+      });
+    });
+
     group('events', () {
       group('onEnded', () {
         testWidgets(
@@ -1120,23 +1149,6 @@ void main() {
           );
 
           await streamQueue.cancel();
-        });
-
-        testWidgets(
-            'no longer emits the default video track '
-            'when the camera is disposed', (tester) async {
-          final camera = Camera(
-            textureId: textureId,
-            cameraService: cameraService,
-          );
-
-          await camera.initialize();
-          await camera.dispose();
-
-          expect(
-            camera.onEndedStreamController.isClosed,
-            isTrue,
-          );
         });
       });
     });
