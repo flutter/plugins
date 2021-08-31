@@ -111,7 +111,7 @@
     NSString* initialUrl = args[@"initialUrl"];
 
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      NSURLRequest* request = [self buildNSURLRequest:@{@"url" : initialUrl}];
+      NSURLRequest* request = [self buildNSURLRequest:@{@"request" : @{@"url" : initialUrl}}];
       [_webView loadRequest:request];
     }
   }
