@@ -1,13 +1,21 @@
-## 0.5.1+1
+## 0.6.0+1
 
 - Fixed `build-examples` to work for non-plugin packages.
 
-## 0.5.1
+## 0.6.0
 
 - Added Android native integration test support to `native-test`.
 - Added a new `android-lint` command to lint Android plugin native code.
 - Pubspec validation now checks for `implements` in implementation packages.
 - Pubspec valitation now checks the full relative path of `repository` entries.
+- `build-examples` now supports UWP plugins via a `--winuwp` flag.
+- `native-test` now supports `--windows` for unit tests.
+- **Breaking change**: `publish` no longer accepts `--no-tag-release` or
+  `--no-push-flags`. Releases now always tag and push.
+- **Breaking change**: `publish`'s `--package` flag has been replaced with the
+  `--packages` flag used by most other packages.
+- **Breaking change** Passing both `--run-on-changed-packages` and `--packages`
+  is now an error; previously it the former would be ignored.
 
 ## 0.5.0
 

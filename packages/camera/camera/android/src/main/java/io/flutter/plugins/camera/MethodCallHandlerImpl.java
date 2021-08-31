@@ -339,6 +339,22 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
           }
           break;
         }
+      case "pausePreview":
+        {
+          try {
+            camera.pausePreview();
+            result.success(null);
+          } catch (Exception e) {
+            handleException(e, result);
+          }
+          break;
+        }
+      case "resumePreview":
+        {
+          camera.resumePreview();
+          result.success(null);
+          break;
+        }
       case "dispose":
         {
           if (camera != null) {

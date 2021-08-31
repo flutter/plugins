@@ -47,6 +47,8 @@ class CameraValue {
     required this.deviceOrientation,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
+    this.isPreviewPaused = false,
+    this.previewPauseOrientation,
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
@@ -63,6 +65,7 @@ class CameraValue {
           focusMode: FocusMode.auto,
           focusPointSupported: false,
           deviceOrientation: DeviceOrientation.portraitUp,
+          isPreviewPaused: false,
         );
 
   /// True after [CameraController.initialize] has completed successfully.
@@ -78,6 +81,12 @@ class CameraValue {
   final bool isStreamingImages;
 
   final bool _isRecordingPaused;
+
+  /// True when the preview widget has been paused manually.
+  final bool isPreviewPaused;
+
+  /// Set to the orientation the preview was paused in, if it is currently paused.
+  final DeviceOrientation? previewPauseOrientation;
 
   /// True when camera [isRecordingVideo] and recording is paused.
   bool get isRecordingPaused => isRecordingVideo && _isRecordingPaused;
@@ -150,6 +159,8 @@ class CameraValue {
     DeviceOrientation? deviceOrientation,
     Optional<DeviceOrientation>? lockedCaptureOrientation,
     Optional<DeviceOrientation>? recordingOrientation,
+    bool? isPreviewPaused,
+    Optional<DeviceOrientation>? previewPauseOrientation,
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
@@ -172,6 +183,10 @@ class CameraValue {
       recordingOrientation: recordingOrientation == null
           ? this.recordingOrientation
           : recordingOrientation.orNull,
+      isPreviewPaused: isPreviewPaused ?? this.isPreviewPaused,
+      previewPauseOrientation: previewPauseOrientation == null
+          ? this.previewPauseOrientation
+          : previewPauseOrientation.orNull,
     );
   }
 
@@ -190,7 +205,9 @@ class CameraValue {
         'focusPointSupported: $focusPointSupported, '
         'deviceOrientation: $deviceOrientation, '
         'lockedCaptureOrientation: $lockedCaptureOrientation, '
-        'recordingOrientation: $recordingOrientation)';
+        'recordingOrientation: $recordingOrientation, '
+        'isPreviewPaused: $isPreviewPaused, '
+        'previewPausedOrientation: $previewPauseOrientation)';
   }
 }
 
@@ -323,6 +340,35 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Throws a [CameraException] if the prepare fails.
   Future<void> prepareForVideoRecording() async {
     await CameraPlatform.instance.prepareForVideoRecording();
+  }
+
+  /// Pauses the current camera preview
+  Future<void> pausePreview() async {
+    if (value.isPreviewPaused) {
+      return;
+    }
+    try {
+      await CameraPlatform.instance.pausePreview(_cameraId);
+      value = value.copyWith(
+          isPreviewPaused: true,
+          previewPauseOrientation: Optional.of(this.value.deviceOrientation));
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Resumes the current camera preview
+  Future<void> resumePreview() async {
+    if (!value.isPreviewPaused) {
+      return;
+    }
+    try {
+      await CameraPlatform.instance.resumePreview(_cameraId);
+      value = value.copyWith(
+          isPreviewPaused: false, previewPauseOrientation: Optional.absent());
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
   }
 
   /// Captures an image and returns the file where it was saved.
@@ -776,6 +822,16 @@ class CameraController extends ValueNotifier<CameraValue> {
         'Disposed CameraController',
         '$functionName() was called on a disposed CameraController.',
       );
+    }
+  }
+
+  @override
+  void removeListener(VoidCallback listener) {
+    // Prevent ValueListenableBuilder in CameraPreview widget from causing an
+    // exception to be thrown by attempting to remove its own listener after
+    // the controller has already been disposed.
+    if (!_isDisposed) {
+      super.removeListener(listener);
     }
   }
 }

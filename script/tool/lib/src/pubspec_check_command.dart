@@ -10,6 +10,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 /// A command to enforce pubspec conventions across the repository.
 ///
@@ -64,8 +65,8 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   bool get includeSubpackages => true;
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
-    final File pubspec = package.childFile('pubspec.yaml');
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
+    final File pubspec = package.pubspecFile;
     final bool passesCheck =
         !pubspec.existsSync() || await _checkPubspec(pubspec, package: package);
     if (!passesCheck) {
@@ -76,7 +77,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
 
   Future<bool> _checkPubspec(
     File pubspecFile, {
-    required Directory package,
+    required RepositoryPackage package,
   }) async {
     final String contents = pubspecFile.readAsStringSync();
     final Pubspec? pubspec = _tryParsePubspec(contents);
@@ -96,6 +97,16 @@ class PubspecCheckCommand extends PackageLoopingCommand {
       printError('$listIndentation${sectionOrder.join('\n$listIndentation')}');
     }
 
+    if (isPlugin) {
+      final String? error = _checkForImplementsError(pubspec, package: package);
+      if (error != null) {
+        printError('$indentation$error');
+        passing = false;
+      }
+    }
+
+    // Ignore metadata that's only relevant for published packages if the
+    // packages is not intended for publishing.
     if (pubspec.publishTo != 'none') {
       final List<String> repositoryErrors =
           _checkForRepositoryLinkErrors(pubspec, package: package);
@@ -112,15 +123,6 @@ class PubspecCheckCommand extends PackageLoopingCommand {
             'search for open flutter/flutter bugs with the relevant label:\n'
             '${indentation * 2}$_expectedIssueLinkFormat<package label>');
         passing = false;
-      }
-
-      if (isPlugin) {
-        final String? error =
-            _checkForImplementsError(pubspec, package: package);
-        if (error != null) {
-          printError('$indentation$error');
-          passing = false;
-        }
       }
     }
 
@@ -154,7 +156,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
 
   List<String> _checkForRepositoryLinkErrors(
     Pubspec pubspec, {
-    required Directory package,
+    required RepositoryPackage package,
   }) {
     final List<String> errorMessages = <String>[];
     if (pubspec.repository == null) {
@@ -189,12 +191,12 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   // Should only be called on plugin packages.
   String? _checkForImplementsError(
     Pubspec pubspec, {
-    required Directory package,
+    required RepositoryPackage package,
   }) {
     if (_isImplementationPackage(package)) {
       final String? implements =
           pubspec.flutter!['plugin']!['implements'] as String?;
-      final String expectedImplements = package.parent.basename;
+      final String expectedImplements = package.directory.parent.basename;
       if (implements == null) {
         return 'Missing "implements: $expectedImplements" in "plugin" section.';
       } else if (implements != expectedImplements) {
@@ -207,13 +209,13 @@ class PubspecCheckCommand extends PackageLoopingCommand {
 
   // Returns true if [packageName] appears to be an implementation package
   // according to repository conventions.
-  bool _isImplementationPackage(Directory package) {
+  bool _isImplementationPackage(RepositoryPackage package) {
     // An implementation package should be in a group folder...
-    final Directory parentDir = package.parent;
+    final Directory parentDir = package.directory.parent;
     if (parentDir.path == packagesDir.path) {
       return false;
     }
-    final String packageName = package.basename;
+    final String packageName = package.directory.basename;
     final String parentName = parentDir.basename;
     // ... whose name is a prefix of the package name.
     if (!packageName.startsWith(parentName)) {

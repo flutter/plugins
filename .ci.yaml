@@ -9,6 +9,17 @@ enabled_branches:
   - master
 
 platform_properties:
+  linux:
+    properties:
+      caches: >-
+        [
+        ]
+      dependencies: >
+        [
+          {"dependency": "curl"}
+        ]
+      device_type: none
+      os: Linux
   windows:
     properties:
       caches: >-
@@ -44,3 +55,10 @@ targets:
           {"dependency": "vs_build"}
         ]
     scheduler: luci
+
+  - name: Linux ci_yaml plugins roller
+    recipe: infra/ci_yaml
+    timeout: 30
+    scheduler: luci
+    runIf:
+      - .ci.yaml

@@ -168,7 +168,7 @@ void main() {
 
       processRunner.mockProcessesForExecutable[project.gradleWrapper.path] =
           <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       final int exitCode = await project.runCommand('foo');

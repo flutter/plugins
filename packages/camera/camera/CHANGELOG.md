@@ -1,3 +1,19 @@
+## 0.9.2+1
+
+* Fixed camera controller throwing an exception when being replaced in the preview widget.
+
+## 0.9.2
+
+* Added functions to pause and resume the camera preview.
+
+## 0.9.1+1
+
+* Replace `device_info` reference with `device_info_plus` in the [README.md](README.md)
+
+## 0.9.1
+
+* Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.
+
 ## 0.9.0
 
 * Complete rewrite of Android plugin to fix many capture, focus, flash, orientation and exposure issues.
