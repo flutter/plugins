@@ -8,11 +8,9 @@
 # from a top-level package into more specific packages in order to incrementally
 # migrate a federated plugin.
 #
-# DO NOT move or delete this file without updating both
+# DO NOT move or delete this file without updating
 # https://github.com/dart-lang/sdk/blob/master/tools/bots/flutter/analyze_flutter_plugins.sh
-# and
-# https://github.com/flutter/flutter/blob/master/dev/bots/test.dart
-# which reference this file from source, but out-of-repo.
+# which references this file from source, but out-of-repo.
 # Contact stuartmorgan or devoncarew for assistance if necessary.
 
 # TODO(ecosystem): Remove everything from this list. See:
