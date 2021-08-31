@@ -41,6 +41,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CVDisplayLinkRef displayLink;
 @property(readonly, nonatomic) FLTFrameUpdater* frameUpdater;
+@property(readonly, nonatomic) CVPixelBufferRef _Nullable frame;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic) CGAffineTransform preferredTransform;
@@ -164,11 +165,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   CVDisplayLinkStop(_displayLink);
 }
 
-- (void)notifyFrameAvailable {
-  if (!_playerItem || _playerItem.status != AVPlayerItemStatusReadyToPlay) {
+- (void)notifyIfFrameAvailable {
+  CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
+  if (!_playerItem || _playerItem.status != AVPlayerItemStatusReadyToPlay || ![_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
     return;
+  } else {
+    _frame = [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
+    if (_frame == NULL) {
+      NSLog(@"copyPixelBufferForItemTime returned NULL");
+    }
+    [_frameUpdater notifyFrameAvailable];
   }
-  [_frameUpdater notifyFrameAvailable];
 }
 
 static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
@@ -178,7 +185,7 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
                               void* CV_NULLABLE displayLinkContext) {
   __weak FLTVideoPlayer* video_player = (__bridge FLTVideoPlayer*)(displayLinkContext);
   dispatch_async(dispatch_get_main_queue(), ^{
-    [video_player notifyFrameAvailable];
+    [video_player notifyIfFrameAvailable];
   });
   return kCVReturnSuccess;
 }
@@ -430,12 +437,10 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-  CMTime outputItemTime = [_videoOutput itemTimeForHostTime:CACurrentMediaTime()];
-  if ([_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
-    return [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
-  } else {
-    return NULL;
+  if (_frame == NULL) {
+    NSLog(@"Returning NULL from copyPixelBuffer");
   }
+  return _frame;
 }
 
 - (void)onTextureUnregistered:(NSObject<FlutterTexture>*)texture {
