@@ -92,6 +92,18 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// arguments are invalid), and to set up any run-level state.
   Future<void> initializeRun() async {}
 
+  /// Returns the packages to process. By default, this returns the packages
+  /// defined by the standard tooling flags and the [inculdeSubpackages] option,
+  /// but can be overridden for custom package enumeration.
+  ///
+  /// Note: Consistent behavior across commands whenever possibel is a goal for
+  /// this tool, so this should be overridden only in rare cases.
+  Stream<PackageEnumerationEntry> getPackagesToProcess() async* {
+    yield* includeSubpackages
+        ? getTargetPackagesAndSubpackages(filterExcluded: false)
+        : getTargetPackages(filterExcluded: false);
+  }
+
   /// Runs the command for [package], returning a list of errors.
   ///
   /// Errors may either be an empty string if there is no context that should
@@ -137,6 +149,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// This only needs to be overridden if the summary should provide extra
   /// context.
   String get failureListFooter => 'See above for full details.';
+
+  /// The summary string used for a successful run in the final overview output.
+  String get successSummaryMessage => 'ran';
 
   /// If true, all printing (including the summary) will be redirected to a
   /// buffer, and provided in a call to [handleCapturedOutput] at the end of
@@ -206,9 +221,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
     await initializeRun();
 
-    final List<PackageEnumerationEntry> targetPackages = includeSubpackages
-        ? await getTargetPackagesAndSubpackages(filterExcluded: false).toList()
-        : await getTargetPackages(filterExcluded: false).toList();
+    final List<PackageEnumerationEntry> targetPackages =
+        await getPackagesToProcess().toList();
 
     final Map<PackageEnumerationEntry, PackageResult> results =
         <PackageEnumerationEntry, PackageResult>{};
@@ -346,7 +360,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
         summary = 'skipped';
         style = hadWarning ? Styles.LIGHT_YELLOW : Styles.DARK_GRAY;
       } else {
-        summary = 'ran';
+        summary = successSummaryMessage;
         style = hadWarning ? Styles.YELLOW : Styles.GREEN;
       }
       if (hadWarning) {

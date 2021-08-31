@@ -108,7 +108,8 @@ void main() {
                 '?? /packages/foo/tmp\n\n'
                 'If the directory should be clean, you can run `git clean -xdf && '
                 'git reset --hard HEAD` to wipe all local changes.'),
-            contains('Failed, see above for details.'),
+            contains('foo:\n'
+                '    uncommitted changes'),
           ]));
     });
 
@@ -264,10 +265,13 @@ void main() {
           isNot(contains('git-push')));
       expect(
           output,
-          containsAllInOrder(<String>[
-            '===============  DRY RUN ===============',
-            'Running `pub publish ` in ${pluginDir.path}...\n',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('=============== DRY RUN ==============='),
+            contains('Running for foo'),
+            contains('Running `pub publish ` in ${pluginDir.path}...'),
+            contains('Tagging release foo-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published foo successfully!'),
           ]));
     });
 
@@ -353,7 +357,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Published foo successfully.'),
+            contains('Pushing tag to upstream...'),
+            contains('Published foo successfully!'),
           ]));
     });
 
@@ -376,7 +381,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Published foo successfully.'),
+            contains('Published foo successfully!'),
           ]));
     });
 
@@ -395,12 +400,12 @@ void main() {
           isNot(contains('git-push')));
       expect(
           output,
-          containsAllInOrder(<String>[
-            '===============  DRY RUN ===============',
-            'Running `pub publish ` in ${pluginDir.path}...\n',
-            'Tagging release foo-v0.0.1...',
-            'Pushing tag to upstream...',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('=============== DRY RUN ==============='),
+            contains('Running `pub publish ` in ${pluginDir.path}...'),
+            contains('Tagging release foo-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published foo successfully!'),
           ]));
     });
 
@@ -424,7 +429,7 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('Published foo successfully.'),
+            contains('Published foo successfully!'),
           ]));
     });
   });
@@ -460,13 +465,11 @@ void main() {
 
       expect(
           output,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2/plugin2',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('plugin1 - \x1B[32mpublished\x1B[0m'),
+            contains('plugin2/plugin2 - \x1B[32mpublished\x1B[0m'),
           ]));
       expect(
           processRunner.recordedCalls,
@@ -522,12 +525,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
             'Running `pub publish ` in ${pluginDir1.path}...\n',
             'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2/plugin2',
-            'Done!'
           ]));
       expect(
           processRunner.recordedCalls,
@@ -573,18 +572,16 @@ void main() {
 
       expect(
           output,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            '===============  DRY RUN ===============',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Tagging release plugin1-v0.0.1...',
-            'Pushing tag to upstream...',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Tagging release plugin2-v0.0.1...',
-            'Pushing tag to upstream...',
-            'Packages released: plugin1, plugin2/plugin2',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('=============== DRY RUN ==============='),
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Tagging release plugin1-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published plugin1 successfully!'),
+            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Tagging release plugin2-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published plugin2 successfully!'),
           ]));
       expect(
           processRunner.recordedCalls
@@ -623,13 +620,11 @@ void main() {
           <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           output2,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2/plugin2',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Published plugin1 successfully!'),
+            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Published plugin2 successfully!'),
           ]));
       expect(
           processRunner.recordedCalls,
@@ -642,7 +637,7 @@ void main() {
     });
 
     test(
-        'delete package will not trigger publish but exit the command successfully.',
+        'delete package will not trigger publish but exit the command successfully!',
         () async {
       mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
@@ -674,13 +669,13 @@ void main() {
           <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
           output2,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n',
-            'Packages released: plugin1',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Published plugin1 successfully!'),
+            contains(
+                'The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n'),
+            contains('SKIPPING: package deleted'),
+            contains('skipped (with warning)'),
           ]));
       expect(
           processRunner.recordedCalls,
@@ -724,14 +719,11 @@ void main() {
 
       expect(
           output,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'The version 0.0.2 of plugin1 has already been published',
-            'skip.',
-            'The version 0.0.2 of plugin2 has already been published',
-            'skip.',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains('plugin1 0.0.2 has already been published'),
+            contains('SKIPPING: already published'),
+            contains('plugin2 0.0.2 has already been published'),
+            contains('SKIPPING: already published'),
           ]));
 
       expect(
@@ -778,12 +770,10 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('The version 0.0.2 of plugin1 has already been published'),
-            contains(
-                'However, the git release tag for this version (plugin1-v0.0.2) is not found.'),
-            contains('The version 0.0.2 of plugin2 has already been published'),
-            contains(
-                'However, the git release tag for this version (plugin2-v0.0.2) is not found.'),
+            contains('plugin1 0.0.2 has already been published, '
+                'however the git release tag (plugin1-v0.0.2) was not found.'),
+            contains('plugin2 0.0.2 has already been published, '
+                'however the git release tag (plugin2-v0.0.2) was not found.'),
           ]));
       expect(
           processRunner.recordedCalls
@@ -807,14 +797,7 @@ void main() {
       final List<String> output = await runCapturingPrint(commandRunner,
           <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
 
-      expect(
-          output,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'No version updates in this commit.',
-            'Done!'
-          ]));
+      expect(output, containsAllInOrder(<String>['Ran for 0 package(s)']));
       expect(
           processRunner.recordedCalls
               .map((ProcessCall call) => call.executable),
@@ -838,14 +821,13 @@ void main() {
 
       expect(
           output,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Done!'
+          containsAllInOrder(<Matcher>[
+            contains(
+                'SKIPPING: publishing flutter_plugin_tools via the tool is not supported')
           ]));
       expect(
           output.contains(
-            'Running `pub publish ` in ${flutterPluginTools.path}...\n',
+            'Running `pub publish ` in ${flutterPluginTools.path}...',
           ),
           isFalse);
       expect(
