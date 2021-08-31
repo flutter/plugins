@@ -1,3 +1,19 @@
+## 2.1.3
+
+* Fix pointer value to boolean conversion analyzer warnings.
+
+## 2.1.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
+
 ## 2.0.2
 
 * Fix `VideoPlayerValue` size and aspect ratio documentation

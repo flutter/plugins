@@ -227,7 +227,7 @@
 			attributes = {
 				DefaultBuildSystemTypeForWorkspace = Original;
 				LastUpgradeCheck = 1030;
-				ORGANIZATIONNAME = "The Chromium Authors";
+				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
 					68BDCAE823C3F7CB00D9C032 = {
 						ProvisioningStyle = Automatic;

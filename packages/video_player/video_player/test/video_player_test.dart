@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -29,6 +29,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   String get dataSource => '';
+
+  @override
+  Map<String, String> get httpHeaders => {};
 
   @override
   DataSourceType get dataSourceType => DataSourceType.file;
@@ -200,22 +203,60 @@ void main() {
         );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-            'https://127.0.0.1');
         expect(
-            fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint, null);
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          null,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
       });
 
       test('network with hint', () async {
         final VideoPlayerController controller = VideoPlayerController.network(
-            'https://127.0.0.1',
-            formatHint: VideoFormat.dash);
+          'https://127.0.0.1',
+          formatHint: VideoFormat.dash,
+        );
         await controller.initialize();
 
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
-            'https://127.0.0.1');
-        expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
-            'dash');
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          'dash',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
+      });
+
+      test('network with some headers', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          httpHeaders: {'Authorization': 'Bearer token'},
+        );
+        await controller.initialize();
+
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'https://127.0.0.1',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          null,
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {'Authorization': 'Bearer token'},
+        );
       });
 
       test('init errors', () async {

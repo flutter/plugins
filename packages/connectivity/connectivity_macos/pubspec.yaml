@@ -1,21 +1,29 @@
 name: connectivity_macos
 description: macOS implementation of the connectivity plugin.
-version: 0.2.0
+version: 0.2.1+1
 homepage: https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_macos
 
 flutter:
   plugin:
+    implements: connectivity_platform_interface
     platforms:
       macos:
         pluginClass: ConnectivityPlugin
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
   flutter: ">=1.20.0"
 
 dependencies:
   flutter:
     sdk: flutter
+  # The implementation of this plugin doesn't explicitly depend on the method channel
+  # defined in the platform interface.
+  # To prevent potential breakages, this dependency is added.
+  #
+  # In the future, this plugin's platform code should be able to reference the
+  # interface's platform code. (Android already supports this).
+  connectivity_platform_interface: ^2.0.0
 
 dev_dependencies:
   pedantic: ^1.10.0

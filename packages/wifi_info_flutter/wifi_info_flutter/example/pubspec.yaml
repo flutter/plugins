@@ -1,9 +1,9 @@
 name: wifi_info_flutter_example
 description: Demonstrates how to use the wifi_info_flutter plugin.
-publish_to: 'none'
+publish_to: none
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
   connectivity: ^3.0.0
@@ -19,7 +19,7 @@ dependencies:
 
 dev_dependencies:
   integration_test:
-    path: ../../../integration_test
+    sdk: flutter
   flutter_test:
     sdk: flutter
 

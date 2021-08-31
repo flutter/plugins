@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -329,7 +329,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
   } else if ([call.method isEqualToString:@"map#isMapToolbarEnabled"]) {
-    NSNumber* isMapToolbarEnabled = [NSNumber numberWithBool:NO];
+    NSNumber* isMapToolbarEnabled = @NO;
     result(isMapToolbarEnabled);
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
@@ -340,7 +340,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
   } else if ([call.method isEqualToString:@"map#isZoomControlsEnabled"]) {
-    NSNumber* isZoomControlsEnabled = [NSNumber numberWithBool:NO];
+    NSNumber* isZoomControlsEnabled = @NO;
     result(isZoomControlsEnabled);
   } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
     NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);

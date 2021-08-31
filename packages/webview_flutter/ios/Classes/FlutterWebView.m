@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -89,6 +89,7 @@
     NSDictionary<NSString*, id>* settings = args[@"settings"];
 
     WKWebViewConfiguration* configuration = [[WKWebViewConfiguration alloc] init];
+    [self applyConfigurationSettings:settings toConfiguration:configuration];
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
@@ -193,12 +194,12 @@
 
 - (void)onCanGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoBack = [_webView canGoBack];
-  result([NSNumber numberWithBool:canGoBack]);
+  result(@(canGoBack));
 }
 
 - (void)onCanGoForward:(FlutterMethodCall*)call result:(FlutterResult)result {
   BOOL canGoForward = [_webView canGoForward];
-  result([NSNumber numberWithBool:canGoForward]);
+  result(@(canGoForward));
 }
 
 - (void)onGoBack:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -313,12 +314,12 @@
 
 - (void)getScrollX:(FlutterMethodCall*)call result:(FlutterResult)result {
   int offsetX = _webView.scrollView.contentOffset.x;
-  result([NSNumber numberWithInt:offsetX]);
+  result(@(offsetX));
 }
 
 - (void)getScrollY:(FlutterMethodCall*)call result:(FlutterResult)result {
   int offsetY = _webView.scrollView.contentOffset.y;
-  result([NSNumber numberWithInt:offsetY]);
+  result(@(offsetY));
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
@@ -347,9 +348,6 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
-    } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
-      NSNumber* allowsInlineMediaPlayback = settings[key];
-      _webView.configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
     } else {
       [unknownKeys addObject:key];
     }
@@ -359,6 +357,18 @@
   }
   return [NSString stringWithFormat:@"webview_flutter: unknown setting keys: {%@}",
                                     [unknownKeys componentsJoinedByString:@", "]];
+}
+
+- (void)applyConfigurationSettings:(NSDictionary<NSString*, id>*)settings
+                   toConfiguration:(WKWebViewConfiguration*)configuration {
+  NSAssert(configuration != _webView.configuration,
+           @"configuration needs to be updated before webView.configuration.");
+  for (NSString* key in settings) {
+    if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
+      NSNumber* allowsInlineMediaPlayback = settings[key];
+      configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
+    }
+  }
 }
 
 - (void)updateJsMode:(NSNumber*)mode {

@@ -1,30 +1,40 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
-import 'package:platform/platform.dart';
 import 'package:flutter_plugin_tools/src/common.dart';
+import 'package:meta/meta.dart';
+import 'package:platform/platform.dart';
 import 'package:quiver/collection.dart';
 
+// TODO(stuartmorgan): Eliminate this in favor of setting up a clean filesystem
+// for each test, to eliminate the chance of files from one test interfering
+// with another test.
 FileSystem mockFileSystem = MemoryFileSystem(
-    style: LocalPlatform().isWindows
+    style: const LocalPlatform().isWindows
         ? FileSystemStyle.windows
         : FileSystemStyle.posix);
-Directory mockPackagesDir;
+late Directory mockPackagesDir;
 
 /// Creates a mock packages directory in the mock file system.
 ///
 /// If [parentDir] is set the mock packages dir will be creates as a child of
 /// it. If not [mockFileSystem] will be used instead.
-void initializeFakePackages({Directory parentDir}) {
+void initializeFakePackages({Directory? parentDir}) {
   mockPackagesDir =
       (parentDir ?? mockFileSystem.currentDirectory).childDirectory('packages');
   mockPackagesDir.createSync();
 }
 
-/// Creates a plugin package with the given [name] in [mockPackagesDir].
+/// Creates a plugin package with the given [name] in [packagesDirectory],
+/// defaulting to [mockPackagesDir].
 Directory createFakePlugin(
   String name, {
   bool withSingleExample = false,
@@ -39,28 +49,31 @@ Directory createFakePlugin(
   bool isWindowsPlugin = false,
   bool includeChangeLog = false,
   bool includeVersion = false,
+  String version = '0.0.1',
   String parentDirectoryName = '',
+  Directory? packagesDirectory,
 }) {
   assert(!(withSingleExample && withExamples.isNotEmpty),
       'cannot pass withSingleExample and withExamples simultaneously');
 
-  final Directory pluginDirectory = (parentDirectoryName != '')
-      ? mockPackagesDir.childDirectory(parentDirectoryName).childDirectory(name)
-      : mockPackagesDir.childDirectory(name);
+  Directory parentDirectory = packagesDirectory ?? mockPackagesDir;
+  if (parentDirectoryName != '') {
+    parentDirectory = parentDirectory.childDirectory(parentDirectoryName);
+  }
+  final Directory pluginDirectory = parentDirectory.childDirectory(name);
   pluginDirectory.createSync(recursive: true);
 
-  createFakePubspec(
-    pluginDirectory,
-    name: name,
-    isFlutter: isFlutter,
-    isAndroidPlugin: isAndroidPlugin,
-    isIosPlugin: isIosPlugin,
-    isWebPlugin: isWebPlugin,
-    isLinuxPlugin: isLinuxPlugin,
-    isMacOsPlugin: isMacOsPlugin,
-    isWindowsPlugin: isWindowsPlugin,
-    includeVersion: includeVersion,
-  );
+  createFakePubspec(pluginDirectory,
+      name: name,
+      isFlutter: isFlutter,
+      isAndroidPlugin: isAndroidPlugin,
+      isIosPlugin: isIosPlugin,
+      isWebPlugin: isWebPlugin,
+      isLinuxPlugin: isLinuxPlugin,
+      isMacOsPlugin: isMacOsPlugin,
+      isWindowsPlugin: isWindowsPlugin,
+      includeVersion: includeVersion,
+      version: version);
   if (includeChangeLog) {
     createFakeCHANGELOG(pluginDirectory, '''
 ## 0.0.1
@@ -72,22 +85,28 @@ Directory createFakePlugin(
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
     createFakePubspec(exampleDir,
-        name: "${name}_example", isFlutter: isFlutter);
+        name: '${name}_example',
+        isFlutter: isFlutter,
+        includeVersion: false,
+        publishTo: 'none');
   } else if (withExamples.isNotEmpty) {
     final Directory exampleDir = pluginDirectory.childDirectory('example')
       ..createSync();
-    for (String example in withExamples) {
+    for (final String example in withExamples) {
       final Directory currentExample = exampleDir.childDirectory(example)
         ..createSync();
-      createFakePubspec(currentExample, name: example, isFlutter: isFlutter);
+      createFakePubspec(currentExample,
+          name: example,
+          isFlutter: isFlutter,
+          includeVersion: false,
+          publishTo: 'none');
     }
   }
 
-  for (List<String> file in withExtraFiles) {
-    final List<String> newFilePath = <String>[pluginDirectory.path]
-      ..addAll(file);
-    final File newFile =
-        mockFileSystem.file(mockFileSystem.path.joinAll(newFilePath));
+  final FileSystem fileSystem = pluginDirectory.fileSystem;
+  for (final List<String> file in withExtraFiles) {
+    final List<String> newFilePath = <String>[pluginDirectory.path, ...file];
+    final File newFile = fileSystem.file(fileSystem.path.joinAll(newFilePath));
     newFile.createSync(recursive: true);
   }
 
@@ -111,6 +130,7 @@ void createFakePubspec(
   bool isLinuxPlugin = false,
   bool isMacOsPlugin = false,
   bool isWindowsPlugin = false,
+  String publishTo = 'http://no_pub_server.com',
   String version = '0.0.1',
 }) {
   parent.childFile('pubspec.yaml').createSync();
@@ -168,7 +188,11 @@ dependencies:
   if (includeVersion) {
     yaml += '''
 version: $version
-publish_to: http://no_pub_server.com # Hardcoded safeguard to prevent this from somehow being published by a broken test.
+''';
+  }
+  if (publishTo.isNotEmpty) {
+    yaml += '''
+publish_to: $publishTo # Hardcoded safeguard to prevent this from somehow being published by a broken test.
 ''';
   }
   parent.childFile('pubspec.yaml').writeAsStringSync(yaml);
@@ -181,93 +205,89 @@ void cleanupPackages() {
   });
 }
 
+typedef _ErrorHandler = void Function(Error error);
+
 /// Run the command [runner] with the given [args] and return
 /// what was printed.
+/// A custom [errorHandler] can be used to handle the runner error as desired without throwing.
 Future<List<String>> runCapturingPrint(
-    CommandRunner<PluginCommand> runner, List<String> args) async {
+    CommandRunner<void> runner, List<String> args,
+    {_ErrorHandler? errorHandler}) async {
   final List<String> prints = <String>[];
   final ZoneSpecification spec = ZoneSpecification(
     print: (_, __, ___, String message) {
       prints.add(message);
     },
   );
-  await Zone.current
-      .fork(specification: spec)
-      .run<Future<void>>(() => runner.run(args));
+  try {
+    await Zone.current
+        .fork(specification: spec)
+        .run<Future<void>>(() => runner.run(args));
+  } on Error catch (e) {
+    if (errorHandler == null) {
+      rethrow;
+    }
+    errorHandler(e);
+  }
 
   return prints;
 }
 
 /// A mock [ProcessRunner] which records process calls.
 class RecordingProcessRunner extends ProcessRunner {
-  io.Process processToReturn;
+  io.Process? processToReturn;
   final List<ProcessCall> recordedCalls = <ProcessCall>[];
 
   /// Populate for [io.ProcessResult] to use a String [stdout] instead of a [List] of [int].
-  String resultStdout;
+  String? resultStdout;
 
   /// Populate for [io.ProcessResult] to use a String [stderr] instead of a [List] of [int].
-  String resultStderr;
+  String? resultStderr;
 
   @override
   Future<int> runAndStream(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
     bool exitOnError = false,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
     return Future<int>.value(
-        processToReturn == null ? 0 : await processToReturn.exitCode);
+        processToReturn == null ? 0 : await processToReturn!.exitCode);
   }
 
   /// Returns [io.ProcessResult] created from [processToReturn], [resultStdout], and [resultStderr].
   @override
-  Future<io.ProcessResult> run(String executable, List<String> args,
-      {Directory workingDir,
-      bool exitOnError = false,
-      stdoutEncoding = io.systemEncoding,
-      stderrEncoding = io.systemEncoding}) async {
-    recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    io.ProcessResult result;
-
-    if (processToReturn != null) {
-      result = io.ProcessResult(
-          processToReturn.pid,
-          await processToReturn.exitCode,
-          resultStdout ?? processToReturn.stdout,
-          resultStderr ?? processToReturn.stderr);
-    }
-    return Future<io.ProcessResult>.value(result);
-  }
-
-  @override
-  Future<io.ProcessResult> runAndExitOnError(
+  Future<io.ProcessResult> run(
     String executable,
     List<String> args, {
-    Directory workingDir,
+    Directory? workingDir,
+    bool exitOnError = false,
+    bool logOnError = false,
+    Encoding stdoutEncoding = io.systemEncoding,
+    Encoding stderrEncoding = io.systemEncoding,
   }) async {
     recordedCalls.add(ProcessCall(executable, args, workingDir?.path));
-    io.ProcessResult result;
-    if (processToReturn != null) {
-      result = io.ProcessResult(
-          processToReturn.pid,
-          await processToReturn.exitCode,
-          resultStdout ?? processToReturn.stdout,
-          resultStderr ?? processToReturn.stderr);
+    io.ProcessResult? result;
+
+    final io.Process? process = processToReturn;
+    if (process != null) {
+      result = io.ProcessResult(process.pid, await process.exitCode,
+          resultStdout ?? process.stdout, resultStderr ?? process.stderr);
     }
     return Future<io.ProcessResult>.value(result);
   }
 
   @override
   Future<io.Process> start(String executable, List<String> args,
-      {Directory workingDirectory}) async {
+      {Directory? workingDirectory}) async {
     recordedCalls.add(ProcessCall(executable, args, workingDirectory?.path));
     return Future<io.Process>.value(processToReturn);
   }
 }
 
 /// A recorded process call.
+@immutable
 class ProcessCall {
   const ProcessCall(this.executable, this.args, this.workingDir);
 
@@ -278,29 +298,23 @@ class ProcessCall {
   final List<String> args;
 
   /// The working directory this process was called from.
-  final String workingDir;
+  final String? workingDir;
 
   @override
   bool operator ==(dynamic other) {
-    if (other is! ProcessCall) {
-      return false;
-    }
-    final ProcessCall otherCall = other;
-    return executable == otherCall.executable &&
-        listsEqual(args, otherCall.args) &&
-        workingDir == otherCall.workingDir;
+    return other is ProcessCall &&
+        executable == other.executable &&
+        listsEqual(args, other.args) &&
+        workingDir == other.workingDir;
   }
 
   @override
   int get hashCode =>
-      executable?.hashCode ??
-      0 ^ args?.hashCode ??
-      0 ^ workingDir?.hashCode ??
-      0;
+      (executable.hashCode) ^ (args.hashCode) ^ (workingDir?.hashCode ?? 0);
 
   @override
   String toString() {
-    final List<String> command = <String>[executable]..addAll(args);
+    final List<String> command = <String>[executable, ...args];
     return '"${command.join(' ')}" in $workingDir';
   }
 }

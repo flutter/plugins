@@ -1,3 +1,11 @@
+## 6.0.4
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 6.0.3
+
+* Update README notes about URL schemes on iOS
+
 ## 6.0.2
 
 * Update platform_plugin_interface version requirement.

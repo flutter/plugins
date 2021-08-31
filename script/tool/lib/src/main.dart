@@ -1,6 +1,8 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
+// @dart=2.9
 
 import 'dart:io' as io;
 
@@ -19,6 +21,7 @@ import 'drive_examples_command.dart';
 import 'firebase_test_lab_command.dart';
 import 'format_command.dart';
 import 'java_test_command.dart';
+import 'license_check_command.dart';
 import 'lint_podspecs_command.dart';
 import 'list_command.dart';
 import 'test_command.dart';
@@ -26,7 +29,7 @@ import 'version_check_command.dart';
 import 'xctest_command.dart';
 
 void main(List<String> args) {
-  final FileSystem fileSystem = const LocalFileSystem();
+  const FileSystem fileSystem = LocalFileSystem();
 
   Directory packagesDir = fileSystem
       .directory(p.join(fileSystem.currentDirectory.path, 'packages'));
@@ -40,7 +43,7 @@ void main(List<String> args) {
     }
   }
 
-  final CommandRunner<Null> commandRunner = CommandRunner<Null>(
+  final CommandRunner<void> commandRunner = CommandRunner<void>(
       'pub global run flutter_plugin_tools',
       'Productivity utils for hosting multiple plugins within one repository.')
     ..addCommand(AnalyzeCommand(packagesDir, fileSystem))
@@ -50,6 +53,7 @@ void main(List<String> args) {
     ..addCommand(FirebaseTestLabCommand(packagesDir, fileSystem))
     ..addCommand(FormatCommand(packagesDir, fileSystem))
     ..addCommand(JavaTestCommand(packagesDir, fileSystem))
+    ..addCommand(LicenseCheckCommand(packagesDir, fileSystem))
     ..addCommand(LintPodspecsCommand(packagesDir, fileSystem))
     ..addCommand(ListCommand(packagesDir, fileSystem))
     ..addCommand(PublishCheckCommand(packagesDir, fileSystem))
@@ -59,7 +63,7 @@ void main(List<String> args) {
     ..addCommand(XCTestCommand(packagesDir, fileSystem));
 
   commandRunner.run(args).catchError((Object e) {
-    final ToolExit toolExit = e;
+    final ToolExit toolExit = e as ToolExit;
     io.exit(toolExit.exitCode);
   }, test: (Object e) => e is ToolExit);
 }

@@ -1,3 +1,29 @@
+## 0.7.5+3
+* Localize `UIAlertController` strings.
+
+## 0.7.5+2
+* Implement `UIAlertController` with a preferredStyle of `UIAlertControllerStyleAlert` since `UIAlertView` is deprecated.
+
+## 0.7.5+1
+
+* Fixes a rotation problem where Select Photos limited access is chosen but the image that is picked
+is not included selected photos and image is scaled.
+
+## 0.7.5
+
+* Fixes an issue where image rotation is wrong when Select Photos chose and image is scaled.
+* Migrate to PHPicker for iOS 14 and higher versions to pick image from the photo library.
+* Implement the limited permission to pick photo from the photo library when Select Photo is chosen.
+
+## 0.7.4
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
+## 0.7.3
+
+* Endorse image_picker_for_web
+
 ## 0.7.2+1
 
 * Android: fixes an issue where videos could be wrongly picked with `.jpg` extension.
