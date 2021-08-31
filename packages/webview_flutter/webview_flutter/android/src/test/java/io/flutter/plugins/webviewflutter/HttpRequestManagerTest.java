@@ -8,7 +8,6 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -43,8 +42,6 @@ public class HttpRequestManagerTest {
   URL mockUrl;
   MockedStatic<HttpRequestManager.BufferedOutputStreamFactory> mockedBufferedOutputStreamFactory;
   BufferedOutputStream mockBufferedOutputStream;
-  MockedStatic<HttpRequestManager.StringBuilderFactory> mockedStringBuilderFactory;
-  StringBuilder mockStringBuilder = mock(StringBuilder.class);
   MockedStatic<HttpRequestManager.BufferedReaderFactory> mockedBufferedReaderFactory;
   BufferedReader mockBufferedReader = mock(BufferedReader.class);
   MockedStatic<HttpRequestManager.InputStreamReaderFactory> mockedInputStreamReaderFactory;
@@ -65,22 +62,16 @@ public class HttpRequestManagerTest {
     mockBufferedOutputStream = mock(BufferedOutputStream.class);
     mockedBufferedOutputStreamFactory =
         mockStatic(HttpRequestManager.BufferedOutputStreamFactory.class);
-    mockedURLFactory
+    mockedBufferedOutputStreamFactory
         .when(
             () ->
                 HttpRequestManager.BufferedOutputStreamFactory.create(
                     ArgumentMatchers.<OutputStream>any()))
         .thenReturn(mockBufferedOutputStream);
 
-    mockStringBuilder = spy(StringBuilder.class);
-    mockedStringBuilderFactory = mockStatic(HttpRequestManager.StringBuilderFactory.class);
-    mockedURLFactory
-        .when(HttpRequestManager.StringBuilderFactory::create)
-        .thenReturn(mockStringBuilder);
-
     mockBufferedReader = mock(BufferedReader.class);
     mockedBufferedReaderFactory = mockStatic(HttpRequestManager.BufferedReaderFactory.class);
-    mockedURLFactory
+    mockedBufferedReaderFactory
         .when(
             () ->
                 HttpRequestManager.BufferedReaderFactory.create(
@@ -89,7 +80,7 @@ public class HttpRequestManagerTest {
 
     mockInputStreamReader = mock(InputStreamReader.class);
     mockedInputStreamReaderFactory = mockStatic(HttpRequestManager.InputStreamReaderFactory.class);
-    mockedURLFactory
+    mockedInputStreamReaderFactory
         .when(
             () ->
                 HttpRequestManager.InputStreamReaderFactory.create(
@@ -101,7 +92,6 @@ public class HttpRequestManagerTest {
   public void tearDown() {
     mockedURLFactory.close();
     mockedBufferedOutputStreamFactory.close();
-    mockedStringBuilderFactory.close();
     mockedBufferedReaderFactory.close();
     mockedInputStreamReaderFactory.close();
   }
@@ -158,7 +148,6 @@ public class HttpRequestManagerTest {
     mockedBufferedReaderFactory.verify(
         () -> HttpRequestManager.BufferedReaderFactory.create(mockInputStreamReader));
     verify(mockBufferedReader, times(4)).readLine();
-    verify(mockStringBuilder, times(3)).append(anyString());
     assertEquals("***", resp);
     // Verify cleanup
     verify(mockConnection, times(1)).disconnect();

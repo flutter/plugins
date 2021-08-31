@@ -103,7 +103,7 @@ public class HttpRequestManager {
 
       // Collect and return response body
       String line = "";
-      StringBuilder contentBuilder = StringBuilderFactory.create();
+      StringBuilder contentBuilder = new StringBuilder();
       BufferedReader rd =
           BufferedReaderFactory.create(
               InputStreamReaderFactory.create(httpURLConnection.getInputStream()));
@@ -165,21 +165,6 @@ public class HttpRequestManager {
     @VisibleForTesting
     public static BufferedOutputStream create(OutputStream stream) {
       return new BufferedOutputStream(stream);
-    }
-  }
-  /** Factory class for creating a {@link StringBuilder} */
-  static class StringBuilderFactory {
-    /**
-     * Creates a {@link StringBuilder}.
-     *
-     * <p><strong>Important:</strong> This method is visible for testing purposes only and should
-     * never be called from outside this class.
-     *
-     * @return The new {@link StringBuilder} object.
-     */
-    @VisibleForTesting
-    public static StringBuilder create() {
-      return new StringBuilder();
     }
   }
   /** Factory class for creating a {@link BufferedReader} */
