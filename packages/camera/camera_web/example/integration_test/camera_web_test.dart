@@ -1003,10 +1003,10 @@ void main() {
     });
 
     group('startVideoRecording', () {
-      testWidgets('starts Video Recording', (tester) async {
+      testWidgets('starts a video recording', (tester) async {
         final camera = MockCamera();
 
-        when(camera.startVideoRecording).thenAnswer((_) => Future.value());
+        when(camera.startVideoRecording).thenAnswer((_) async {});
 
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
@@ -1053,11 +1053,37 @@ void main() {
             ),
           );
         });
+
+        testWidgets('when startVideoRecording throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.startVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.startVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
       });
     });
 
     group('stopVideoRecording', () {
-      testWidgets('stops Video Recording', (tester) async {
+      testWidgets('stops a video recording', (tester) async {
         final camera = MockCamera();
         final capturedVideo = MockXFile();
 
@@ -1112,14 +1138,40 @@ void main() {
             ),
           );
         });
+
+        testWidgets('when stopVideoRecording throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.stopVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.stopVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
       });
     });
 
     group('pauseVideoRecording', () {
-      testWidgets('pauses Video Recording', (tester) async {
+      testWidgets('pauses a video recording', (tester) async {
         final camera = MockCamera();
 
-        when(camera.pauseVideoRecording).thenAnswer((_) => Future.value());
+        when(camera.pauseVideoRecording).thenAnswer((_) async {});
 
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
@@ -1166,14 +1218,40 @@ void main() {
             ),
           );
         });
+
+        testWidgets('when pauseVideoRecording throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.pauseVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.pauseVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
       });
     });
 
     group('resumeVideoRecording', () {
-      testWidgets('resumes Video Recording', (tester) async {
+      testWidgets('resumes a video recording', (tester) async {
         final camera = MockCamera();
 
-        when(camera.resumeVideoRecording).thenAnswer((_) => Future.value());
+        when(camera.resumeVideoRecording).thenAnswer((_) async {});
 
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
@@ -1216,6 +1294,32 @@ void main() {
                 (e) => e.code,
                 'code',
                 exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when resumeVideoRecording throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.resumeVideoRecording).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.resumeVideoRecording(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
               ),
             ),
           );
@@ -2581,7 +2685,7 @@ void main() {
         });
       });
 
-      testWidgets('onVideoRecordedEvent emits VideoRecordedEvent',
+      testWidgets('onVideoRecordedEvent emits a VideoRecordedEvent',
           (tester) async {
         final camera = MockCamera();
         final capturedVideo = MockXFile();

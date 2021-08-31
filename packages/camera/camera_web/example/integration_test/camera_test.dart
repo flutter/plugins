@@ -1261,7 +1261,7 @@ void main() {
     group('events', () {
       group('onVideoRecordedEvent', () {
         testWidgets(
-            'emits VideoRecordedEvent '
+            'emits a VideoRecordedEvent '
             'when a video recording is created', (tester) async {
           const maxVideoDuration = Duration(hours: 1);
           const supportedVideoType = 'video/webm';
