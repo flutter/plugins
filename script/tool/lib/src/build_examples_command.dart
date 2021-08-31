@@ -132,14 +132,18 @@ class BuildExamplesCommand extends PackageLoopingCommand {
                 variant: platform.pluginPlatformVariant))
             .toSet()
         : requestedPlatforms.toSet();
+
+    String platformDisplayList(Iterable<_PlatformDetails> platforms) {
+      return platforms.map((_PlatformDetails p) => p.label).join(', ');
+    }
+
     if (buildPlatforms.isEmpty) {
       final String unsupported = requestedPlatforms.length == 1
           ? '${requestedPlatforms.first.label} is not supported'
-          : 'None of [${requestedPlatforms.map((_PlatformDetails p) => p.label).join(', ')}] are supported';
+          : 'None of [${platformDisplayList(requestedPlatforms)}] are supported';
       return PackageResult.skip('$unsupported by this plugin');
     }
-    print('Building for: '
-        '${buildPlatforms.map((_PlatformDetails platform) => platform.label).join(', ')}');
+    print('Building for: ${platformDisplayList(buildPlatforms)}');
 
     final Set<_PlatformDetails> unsupportedPlatforms =
         requestedPlatforms.toSet().difference(buildPlatforms);
