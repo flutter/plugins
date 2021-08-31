@@ -419,10 +419,12 @@ abstract class PluginCommand extends Command<void> {
   }
 
   // Returns packages that have been changed given a list of changed files.
+  //
+  // The paths must use POSIX separators (e.g., as provided by git output).
   Set<String> _getChangedPackages(List<String> changedFiles) {
     final Set<String> packages = <String>{};
     for (final String path in changedFiles) {
-      final List<String> pathComponents = path.split('/');
+      final List<String> pathComponents = p.posix.split(path);
       final int packagesIndex =
           pathComponents.indexWhere((String element) => element == 'packages');
       if (packagesIndex != -1) {
