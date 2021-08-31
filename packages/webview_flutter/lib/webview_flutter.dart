@@ -176,6 +176,9 @@ typedef void PageLoadingCallback(int progress);
 /// Signature for when a [WebView] has failed to load a resource.
 typedef void WebResourceErrorCallback(WebResourceError error);
 
+/// Signature for when a [WebView] has loaded a cached page.
+typedef void CachedPageFinishedCallback(String url);
+
 /// Specifies possible restrictions on automatic media playback.
 ///
 /// This is typically used in [WebView.initialMediaPlaybackPolicy].
@@ -205,7 +208,7 @@ class JavascriptChannel {
   JavascriptChannel({
     required this.name,
     required this.onMessageReceived,
-  })   : assert(name != null),
+  })  : assert(name != null),
         assert(onMessageReceived != null),
         assert(_validChannelNames.hasMatch(name));
 
@@ -248,6 +251,7 @@ class WebView extends StatefulWidget {
     this.gestureRecognizers,
     this.onPageStarted,
     this.onPageFinished,
+    this.onCachedPageFinished,
     this.onProgress,
     this.onWebResourceError,
     this.debuggingEnabled = false,
@@ -392,6 +396,9 @@ class WebView extends StatefulWidget {
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback? onPageFinished;
+
+  /// Invoked when a page was loaded from cached webview.
+  final CachedPageFinishedCallback? onCachedPageFinished;
 
   /// Invoked when a page is loading.
   final PageLoadingCallback? onProgress;
@@ -658,6 +665,13 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   void onPageFinished(String url) {
     if (_widget.onPageFinished != null) {
       _widget.onPageFinished!(url);
+    }
+  }
+
+  @override
+  void onCachedPageFinished(String url) {
+    if (_widget.onCachedPageFinished != null) {
+      _widget.onCachedPageFinished!(url);
     }
   }
 

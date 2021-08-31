@@ -24,7 +24,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   final MethodChannel _channel;
 
   static const MethodChannel _cookieManagerChannel =
-  MethodChannel('plugins.flutter.io/cookie_manager');
+      MethodChannel('plugins.flutter.io/cookie_manager');
 
   Future<bool?> _onMethodCall(MethodCall call) async {
     switch (call.method) {
@@ -40,6 +40,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         );
       case 'onPageFinished':
         _platformCallbacksHandler.onPageFinished(call.arguments['url']!);
+        return null;
+      case 'onCachedPageFinished':
+        _platformCallbacksHandler.onCachedPageFinished(call.arguments['url']!);
         return null;
       case 'onProgress':
         _platformCallbacksHandler.onProgress(call.arguments['progress']);
@@ -58,11 +61,11 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
             errorType: call.arguments['errorType'] == null
                 ? null
                 : WebResourceErrorType.values.firstWhere(
-                  (WebResourceErrorType type) {
-                return type.toString() ==
-                    '$WebResourceErrorType.${call.arguments['errorType']}';
-              },
-            ),
+                    (WebResourceErrorType type) {
+                      return type.toString() ==
+                          '$WebResourceErrorType.${call.arguments['errorType']}';
+                    },
+                  ),
           ),
         );
         return null;
@@ -74,8 +77,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<void> loadUrl(String url,
-      Map<String, String>? headers,) async {
+  Future<void> loadUrl(
+    String url,
+    Map<String, String>? headers,
+  ) async {
     assert(url != null);
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
@@ -111,9 +116,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<void> reload() => _channel.invokeMethod<void>("reload");
 
-
   Future<void> refreshWhiteListing(
-      Map<String, Map<String, int>> whiteListing) =>
+          Map<String, Map<String, int>> whiteListing) =>
       _channel.invokeMethod<void>("refreshWhiteListing", whiteListing);
 
   @override
@@ -220,10 +224,10 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   ///
   /// This is used for the `creationParams` argument of the platform views created by
   /// [AndroidWebViewBuilder] and [CupertinoWebViewBuilder].
-  static Map<String, dynamic> creationParamsToMap(CreationParams creationParams,
-      {
-        bool usesHybridComposition = false,
-      }) {
+  static Map<String, dynamic> creationParamsToMap(
+    CreationParams creationParams, {
+    bool usesHybridComposition = false,
+  }) {
     return <String, dynamic>{
       'initialUrl': creationParams.initialUrl,
       'settings': _webSettingsToMap(creationParams.webSettings),

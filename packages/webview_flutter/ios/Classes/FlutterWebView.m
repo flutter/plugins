@@ -131,10 +131,10 @@
             NSString *tabId = args[@"tabId"];
             [webViewManager cacheWebView:_webView forId:tabId];
         }
-    } else if (args[@"initialUrl"]) {
-        // WebView was cached so report the onPageFinished event
-        NSString* initialUrl = args[@"initialUrl"];
-        [_navigationDelegate onPageFinishedWithUrl:initialUrl];
+    } else {
+        // WebView was cached so report the onCachedPageFinished event
+        NSString* currentUrl = [[_webView URL] absoluteString];
+        [_navigationDelegate onCachedPageFinishedWithUrl:currentUrl];
     }
 
     _webView.UIDelegate = self;

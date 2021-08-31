@@ -146,6 +146,12 @@ class FlutterWebViewClient {
         methodChannel.invokeMethod("onPageFinished", args);
     }
 
+    public void onCachedPageFinished(String url) {
+        Map<String, Object> args = new HashMap<>();
+        args.put("url", url);
+        methodChannel.invokeMethod("onCachedPageFinished", args);
+    }
+
     void onLoadingProgress(int progress) {
         if (hasProgressTracking) {
             Map<String, Object> args = new HashMap<>();

@@ -24,6 +24,10 @@
     [_methodChannel invokeMethod:@"onPageFinished" arguments:@{@"url" : urlString}];
 }
 
+- (void)onCachedPageFinishedWithUrl:(NSString * _Nonnull)urlString {
+    [_methodChannel invokeMethod:@"onCachedPageFinished" arguments:@{@"url" : urlString}];
+}
+
 #pragma mark - WKNavigationDelegate conformance
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {

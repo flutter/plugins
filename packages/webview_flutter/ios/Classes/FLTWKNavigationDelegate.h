@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)onPageStartedWithUrl:(NSString * _Nonnull)urlString;
 - (void)onPageFinishedWithUrl:(NSString * _Nonnull)urlString;
+- (void)onCachedPageFinishedWithUrl:(NSString * _Nonnull)urlString;
 
 /**
  * Whether to delegate navigation decisions over the method channel.

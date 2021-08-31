@@ -154,10 +154,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         String tabId = (String) params.get("tabId");
         webViewManager.cacheWebView(webView, tabId);
       }
-    } else if (params.containsKey("initialUrl")) {
-        // WebView was cached so report the onPageFinished event
-        String url = (String) params.get("initialUrl");
-        flutterWebViewClient.onPageFinished(url);
+    } else {
+        // WebView was cached so report the onCachedPageFinished event
+        String url = (String) webView.getUrl();
+        flutterWebViewClient.onCachedPageFinished(url);
     }
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
