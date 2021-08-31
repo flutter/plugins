@@ -5,9 +5,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -51,7 +55,7 @@ public class HttpRequestManagerTest {
   public void setup() {
     mockExecutor = mock(Executor.class);
     mockHandler = mock(Handler.class);
-    httpRequestManager = new HttpRequestManager(mockExecutor, mockHandler);
+    httpRequestManager = spy(new HttpRequestManager(mockExecutor, mockHandler));
 
     mockUrl = mock(URL.class);
     mockedURLFactory = mockStatic(HttpRequestManager.URLFactory.class);
@@ -190,5 +194,99 @@ public class HttpRequestManagerTest {
     verify(mockConnection, never()).setDoOutput(anyBoolean());
     verify(mockBufferedOutputStream, never()).write(any(), anyInt(), anyInt());
     verify(mockBufferedOutputStream, never()).flush();
+  }
+
+  @Test
+  public void requestAsync_shouldScheduleRequest() throws IOException {
+    // Preparation
+    WebViewRequest request = mock(WebViewRequest.class);
+    when(request.getUrl()).thenReturn("1");
+    when(request.getBody()).thenReturn(null);
+    when(request.getMethod()).thenReturn(WebViewLoadMethod.POST);
+    when(request.getHeaders()).thenReturn(Collections.emptyMap());
+    HttpRequestCallback mockCallback = mock(HttpRequestCallback.class);
+
+    // Execute
+    httpRequestManager.requestAsync(request, mockCallback);
+
+    // Validation
+    verify(mockExecutor, times(1)).execute(any());
+  }
+
+  @Test
+  public void requestAsync_shouldCallOnCompleteCallbackOnSuccess() throws IOException {
+    // Preparation
+    WebViewRequest request = mock(WebViewRequest.class);
+    when(request.getUrl()).thenReturn("1");
+    when(request.getBody()).thenReturn(null);
+    when(request.getMethod()).thenReturn(WebViewLoadMethod.POST);
+    when(request.getHeaders()).thenReturn(Collections.emptyMap());
+    HttpRequestCallback mockCallback = mock(HttpRequestCallback.class);
+    doAnswer(
+            (Answer<Object>)
+                invocationOnMock -> {
+                  Runnable runnable = invocationOnMock.getArgument(0, Runnable.class);
+                  runnable.run();
+                  return null;
+                })
+        .when(mockExecutor)
+        .execute(any());
+    doAnswer(
+            (Answer)
+                invocationOnMock -> {
+                  Runnable runnable = invocationOnMock.getArgument(0, Runnable.class);
+                  runnable.run();
+                  return null;
+                })
+        .when(mockHandler)
+        .post(any());
+    doReturn("RESPONSE").when(httpRequestManager).request(any());
+
+    // Execute
+    httpRequestManager.requestAsync(request, mockCallback);
+
+    // Validation
+    verify(mockHandler, times(1)).post(any());
+    verify(mockCallback, never()).onError(any());
+    verify(mockCallback, times(1)).onComplete("RESPONSE");
+  }
+
+  @Test
+  public void requestAsync_shouldCallOnErrorCallbackOnIOException() throws IOException {
+    // Preparation
+    WebViewRequest request = mock(WebViewRequest.class);
+    when(request.getUrl()).thenReturn("1");
+    when(request.getBody()).thenReturn(null);
+    when(request.getMethod()).thenReturn(WebViewLoadMethod.POST);
+    when(request.getHeaders()).thenReturn(Collections.emptyMap());
+    HttpRequestCallback mockCallback = mock(HttpRequestCallback.class);
+    doAnswer(
+            (Answer<Object>)
+                invocationOnMock -> {
+                  Runnable runnable = invocationOnMock.getArgument(0, Runnable.class);
+                  runnable.run();
+                  return null;
+                })
+        .when(mockExecutor)
+        .execute(any());
+    doAnswer(
+            (Answer)
+                invocationOnMock -> {
+                  Runnable runnable = invocationOnMock.getArgument(0, Runnable.class);
+                  runnable.run();
+                  return null;
+                })
+        .when(mockHandler)
+        .post(any());
+    IOException exception = new IOException();
+    doThrow(exception).when(httpRequestManager).request(any());
+
+    // Execute
+    httpRequestManager.requestAsync(request, mockCallback);
+
+    // Validation
+    verify(mockHandler, times(1)).post(any());
+    verify(mockCallback, never()).onComplete(any());
+    verify(mockCallback, times(1)).onError(exception);
   }
 }
