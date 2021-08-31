@@ -211,7 +211,7 @@ void main() {
     createFakePlugin('foo', packagesDir);
 
     processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-      MockProcess.failing() // flutter packages get
+      MockProcess(exitCode: 1) // flutter packages get
     ];
 
     Error? commandError;
@@ -233,7 +233,7 @@ void main() {
     createFakePlugin('foo', packagesDir);
 
     processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-      MockProcess.failing() // dart analyze
+      MockProcess(exitCode: 1) // dart analyze
     ];
 
     Error? commandError;

@@ -40,7 +40,7 @@ void main() {
 
     test('fails if gcloud auth fails', () async {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
-        MockProcess.failing()
+        MockProcess(exitCode: 1)
       ];
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
@@ -64,8 +64,8 @@ void main() {
 
     test('retries gcloud set', () async {
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
-        MockProcess.succeeding(), // auth
-        MockProcess.failing(), // config
+        MockProcess(), // auth
+        MockProcess(exitCode: 1), // config
       ];
       createFakePlugin('plugin', packagesDir, extraFiles: <String>[
         'example/integration_test/foo_test.dart',
@@ -245,10 +245,10 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['gcloud'] = <Process>[
-        MockProcess.succeeding(), // auth
-        MockProcess.succeeding(), // config
-        MockProcess.failing(), // integration test #1
-        MockProcess.succeeding(), // integration test #2
+        MockProcess(), // auth
+        MockProcess(), // config
+        MockProcess(exitCode: 1), // integration test #1
+        MockProcess(), // integration test #2
       ];
 
       Error? commandError;
@@ -459,7 +459,7 @@ void main() {
       ]);
 
       processRunner.mockProcessesForExecutable['flutter'] = <Process>[
-        MockProcess.failing() // flutter build
+        MockProcess(exitCode: 1) // flutter build
       ];
 
       Error? commandError;
@@ -496,7 +496,7 @@ void main() {
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
-        MockProcess.failing()
+        MockProcess(exitCode: 1)
       ];
 
       Error? commandError;
@@ -533,8 +533,8 @@ void main() {
           .childFile('gradlew')
           .path;
       processRunner.mockProcessesForExecutable[gradlewPath] = <Process>[
-        MockProcess.succeeding(), // assembleAndroidTest
-        MockProcess.failing(), // assembleDebug
+        MockProcess(), // assembleAndroidTest
+        MockProcess(exitCode: 1), // assembleDebug
       ];
 
       Error? commandError;

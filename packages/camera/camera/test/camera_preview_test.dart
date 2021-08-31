@@ -113,6 +113,12 @@ class FakeController extends ValueNotifier<CameraValue>
 
   @override
   Future<void> unlockCaptureOrientation() async {}
+
+  @override
+  Future<void> pausePreview() async {}
+
+  @override
+  Future<void> resumePreview() async {}
 }
 
 void main() {
@@ -146,7 +152,7 @@ void main() {
 
       RotatedBox rotatedBox =
           tester.widget<RotatedBox>(find.byType(RotatedBox));
-      expect(rotatedBox.quarterTurns, 1);
+      expect(rotatedBox.quarterTurns, 3);
 
       debugDefaultTargetPlatformOverride = null;
     });
@@ -179,7 +185,7 @@ void main() {
 
       RotatedBox rotatedBox =
           tester.widget<RotatedBox>(find.byType(RotatedBox));
-      expect(rotatedBox.quarterTurns, 3);
+      expect(rotatedBox.quarterTurns, 1);
 
       debugDefaultTargetPlatformOverride = null;
     });

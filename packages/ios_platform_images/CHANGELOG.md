@@ -1,6 +1,7 @@
-## NEXT
+## 0.2.0+1
 
 * Add iOS unit test target.
+* Fix repository link in pubspec.yaml.
 
 ## 0.2.0
 

@@ -19,7 +19,7 @@ import org.robolectric.RobolectricTestRunner;
 public class CameraZoomTest {
 
   @Test
-  public void ctor_when_parameters_are_valid() {
+  public void ctor_whenParametersAreValid() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Float maxZoom = 4.0f;
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
@@ -31,7 +31,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void ctor_when_sensor_size_is_null() {
+  public void ctor_whenSensorSizeIsNull() {
     final Rect sensorSize = null;
     final Float maxZoom = 4.0f;
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
@@ -42,7 +42,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void ctor_when_max_zoom_is_null() {
+  public void ctor_whenMaxZoomIsNull() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Float maxZoom = null;
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
@@ -53,7 +53,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void ctor_when_max_zoom_is_smaller_then_default_zoom_factor() {
+  public void ctor_whenMaxZoomIsSmallerThenDefaultZoomFactor() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Float maxZoom = 0.5f;
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, maxZoom);
@@ -64,7 +64,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void setZoom_when_no_support_should_not_set_scaler_crop_region() {
+  public void setZoom_whenNoSupportShouldNotSetScalerCropRegion() {
     final CameraZoom cameraZoom = new CameraZoom(null, null);
     final Rect computedZoom = cameraZoom.computeZoom(2f);
 
@@ -72,7 +72,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void setZoom_when_sensor_size_equals_zero_should_return_crop_region_of_zero() {
+  public void setZoom_whenSensorSizeEqualsZeroShouldReturnCropRegionOfZero() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, 20f);
     final Rect computedZoom = cameraZoom.computeZoom(18f);
@@ -85,7 +85,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void setZoom_when_sensor_size_is_valid_should_return_crop_region() {
+  public void setZoom_whenSensorSizeIsValidShouldReturnCropRegion() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, 20f);
     final Rect computedZoom = cameraZoom.computeZoom(18f);
@@ -98,7 +98,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void setZoom_when_zoom_is_greater_then_max_zoom_clamp_to_max_zoom() {
+  public void setZoom_whenZoomIsGreaterThenMaxZoomClampToMaxZoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, 10f);
     final Rect computedZoom = cameraZoom.computeZoom(25f);
@@ -111,7 +111,7 @@ public class CameraZoomTest {
   }
 
   @Test
-  public void setZoom_when_zoom_is_smaller_then_min_zoom_clamp_to_min_zoom() {
+  public void setZoom_whenZoomIsSmallerThenMinZoomClampToMinZoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
     final CameraZoom cameraZoom = new CameraZoom(sensorSize, 10f);
     final Rect computedZoom = cameraZoom.computeZoom(0.5f);

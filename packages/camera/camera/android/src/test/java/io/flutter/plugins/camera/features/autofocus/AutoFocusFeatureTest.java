@@ -28,7 +28,7 @@ public class AutoFocusFeatureTest {
       };
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -36,7 +36,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_auto_if_not_set() {
+  public void getValue_shouldReturnAutoIfNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -44,7 +44,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_the_set_value() {
+  public void getValue_shouldEchoTheSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
     FocusMode expectedValue = FocusMode.locked;
@@ -56,7 +56,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_minimum_focus_distance_is_zero() {
+  public void checkIsSupported_shouldReturnFalseWhenMinimumFocusDistanceIsZero() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -67,7 +67,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_minimum_focus_distance_is_null() {
+  public void checkIsSupported_shouldReturnFalseWhenMinimumFocusDistanceIsNull() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -78,7 +78,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_should_return_false_when_no_focus_modes_are_available() {
+  public void checkIsSupport_shouldReturnFalseWhenNoFocusModesAreAvailable() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -89,7 +89,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_should_return_false_when_only_focus_off_is_available() {
+  public void checkIsSupport_shouldReturnFalseWhenOnlyFocusOffIsAvailable() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -100,7 +100,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_should_return_true_when_only_multiple_focus_modes_are_available() {
+  public void checkIsSupport_shouldReturnTrueWhenOnlyMultipleFocusModesAreAvailable() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
 
@@ -111,7 +111,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_return_when_checkIsSupported_is_false() {
+  public void updateBuilderShouldReturnWhenCheckIsSupportedIsFalse() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
@@ -125,7 +125,7 @@ public class AutoFocusFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_control_mode_to_auto_when_focus_is_locked() {
+  public void updateBuilder_shouldSetControlModeToAutoWhenFocusIsLocked() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
@@ -142,7 +142,7 @@ public class AutoFocusFeatureTest {
 
   @Test
   public void
-      updateBuilder_should_set_control_mode_to_continuous_video_when_focus_is_auto_and_recording_video() {
+      updateBuilder_shouldSetControlModeToContinuousVideoWhenFocusIsAutoAndRecordingVideo() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, true);
@@ -159,7 +159,7 @@ public class AutoFocusFeatureTest {
 
   @Test
   public void
-      updateBuilder_should_set_control_mode_to_continuous_video_when_focus_is_auto_and_not_recording_video() {
+      updateBuilder_shouldSetControlModeToContinuousVideoWhenFocusIsAutoAndNotRecordingVideo() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     AutoFocusFeature autoFocusFeature = new AutoFocusFeature(mockCameraProperties, false);
