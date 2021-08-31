@@ -101,6 +101,11 @@ class Camera {
   @visibleForTesting
   html.MediaRecorder? mediaRecorder;
 
+  /// Whether the video of the given type is supported.
+  @visibleForTesting
+  bool Function(String) isVideoTypeSupported =
+      html.MediaRecorder.isTypeSupported;
+
   /// Completes when the video recording is stopped/finished.
   Completer<XFile>? _videoAvailableCompleter;
 
@@ -462,6 +467,8 @@ class Camera {
     stop();
 
     await videoRecorderController.close();
+    mediaRecorder = null;
+    _videoDataAvailableListener = null;
 
     // Reset the [videoElement] to its initial state.
     videoElement
@@ -486,7 +493,7 @@ class Camera {
     ];
 
     return types.firstWhere(
-      (type) => html.MediaRecorder.isTypeSupported(type),
+      (type) => isVideoTypeSupported(type),
       orElse: () => throw CameraWebException(
         textureId,
         CameraErrorCode.notSupported,

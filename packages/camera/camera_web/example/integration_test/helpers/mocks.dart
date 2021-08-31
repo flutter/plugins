@@ -41,6 +41,8 @@ class MockXFile extends Mock implements XFile {}
 
 class MockJsUtil extends Mock implements JsUtil {}
 
+class MockMediaRecorder extends Mock implements MediaRecorder {}
+
 /// A fake [MediaStream] that returns the provided [_videoTracks].
 class FakeMediaStream extends Fake implements MediaStream {
   FakeMediaStream(this._videoTracks);
@@ -120,6 +122,16 @@ class FakeElementStream<T extends Event> extends Fake
       cancelOnError: cancelOnError,
     );
   }
+}
+
+/// A fake [BlobEvent] that returns the provided blob [data].
+class FakeBlobEvent extends Fake implements BlobEvent {
+  FakeBlobEvent(this._blob);
+
+  final Blob? _blob;
+
+  @override
+  Blob? get data => _blob;
 }
 
 /// Returns a video element with a blank stream of size [videoSize].

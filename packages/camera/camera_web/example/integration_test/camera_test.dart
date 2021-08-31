@@ -836,222 +836,381 @@ void main() {
       });
     });
 
-    group('startVideoRecording', () {
-      testWidgets('starts a video recording', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+    group('video recording', () {
+      const supportedVideoType = 'video/webm';
 
-        await camera.initialize();
-        await camera.play();
+      late MediaRecorder mediaRecorder;
 
-        await camera.startVideoRecording();
+      bool isVideoTypeSupported(String type) => type == supportedVideoType;
 
-        expect('recording', camera.mediaRecorder!.state);
+      setUp(() {
+        mediaRecorder = MockMediaRecorder();
       });
 
-      testWidgets(
-          'starts a video recording with a given maxDuration '
-          'emits a VideoRecordedEvent', (tester) async {
-        // TODO: MediaRecorder with a Timeslice does not seem to call the dataavailable Listener in a Test
-        /*
-          final maxDuration = Duration(milliseconds: 3000);
-
+      group('startVideoRecording', () {
+        testWidgets(
+            'creates a media recorder '
+            'with appropriate options', (tester) async {
           final camera = Camera(
             textureId: 1,
-            cameraSettings: cameraSettings,
-          );
+            cameraService: cameraService,
+          )..isVideoTypeSupported = isVideoTypeSupported;
 
           await camera.initialize();
           await camera.play();
 
-          final recordedEvent = camera.onVideoRecordedEvent.first;
-          await camera.startVideoRecording(maxVideoDuration: maxDuration);
+          await camera.startVideoRecording();
 
-          final event = await recordedEvent;
-          expect(event, isNotNull);
-          expect(event.maxVideoDuration, maxDuration);
-         */
+          expect(
+            camera.mediaRecorder!.stream,
+            equals(camera.stream),
+          );
+
+          expect(
+            camera.mediaRecorder!.mimeType,
+            equals(supportedVideoType),
+          );
+
+          expect(
+            camera.mediaRecorder!.state,
+            equals('recording'),
+          );
+        });
+
+        testWidgets('listens to the media recorder data', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          verify(
+            () => mediaRecorder.addEventListener('dataavailable', any()),
+          ).called(1);
+        });
+
+        testWidgets('starts a video recording', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          verify(mediaRecorder.start).called(1);
+        });
+
+        testWidgets(
+            'starts a video recording '
+            'with maxVideoDuration', (tester) async {
+          const maxVideoDuration = Duration(hours: 1);
+
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
+
+          verify(() => mediaRecorder.start(maxVideoDuration.inMilliseconds))
+              .called(1);
+        });
+
+        group('throws a CameraWebException', () {
+          testWidgets(
+              'with notSupported error '
+              'when maxVideoDuration is 0 milliseconds or less',
+              (tester) async {
+            final camera = Camera(
+              textureId: 1,
+              cameraService: cameraService,
+            )
+              ..mediaRecorder = mediaRecorder
+              ..isVideoTypeSupported = isVideoTypeSupported;
+
+            await camera.initialize();
+            await camera.play();
+
+            expect(
+              () => camera.startVideoRecording(maxVideoDuration: Duration.zero),
+              throwsA(
+                isA<CameraWebException>()
+                    .having(
+                      (e) => e.cameraId,
+                      'cameraId',
+                      textureId,
+                    )
+                    .having(
+                      (e) => e.code,
+                      'code',
+                      CameraErrorCode.notSupported,
+                    ),
+              ),
+            );
+          });
+
+          testWidgets(
+              'with notSupported error '
+              'when no video types are supported', (tester) async {
+            final camera = Camera(
+              textureId: 1,
+              cameraService: cameraService,
+            )..isVideoTypeSupported = (type) => false;
+
+            await camera.initialize();
+            await camera.play();
+
+            expect(
+              camera.startVideoRecording,
+              throwsA(
+                isA<CameraWebException>()
+                    .having(
+                      (e) => e.cameraId,
+                      'cameraId',
+                      textureId,
+                    )
+                    .having(
+                      (e) => e.code,
+                      'code',
+                      CameraErrorCode.notSupported,
+                    ),
+              ),
+            );
+          });
+        });
       });
 
-      testWidgets(
-          'throws a CameraWebException '
-          'with notSupported error '
-          'when maxVideoDuration is 0 milliseconds or less', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+      group('pauseVideoRecording', () {
+        testWidgets('pauses a video recording', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )..mediaRecorder = mediaRecorder;
 
-        await camera.initialize();
-        await camera.play();
-        expect(
-          () => camera.startVideoRecording(maxVideoDuration: Duration.zero),
-          throwsA(
-            isA<CameraWebException>()
-                .having(
-                  (e) => e.cameraId,
-                  'cameraId',
-                  textureId,
-                )
-                .having(
-                  (e) => e.code,
-                  'code',
-                  CameraErrorCode.notSupported,
-                ),
-          ),
-        );
-      });
-    });
+          await camera.pauseVideoRecording();
 
-    group('pauseVideoRecording', () {
-      testWidgets('pauses a video recording', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+          verify(mediaRecorder.pause).called(1);
+        });
 
-        await camera.initialize();
-        await camera.play();
-        await camera.startVideoRecording();
+        testWidgets(
+            'throws a CameraWebException '
+            'with videoRecordingNotStarted error '
+            'if the video recording was not started', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          );
 
-        await camera.pauseVideoRecording();
-
-        expect('paused', camera.mediaRecorder!.state);
+          expect(
+            camera.pauseVideoRecording,
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.videoRecordingNotStarted,
+                  ),
+            ),
+          );
+        });
       });
 
-      testWidgets(
-          'throws a CameraWebException '
-          'with videoRecordingNotStarted error '
-          'if the video recording was not started', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+      group('resumeVideoRecording', () {
+        testWidgets('resumes a video recording', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )..mediaRecorder = mediaRecorder;
 
-        await camera.initialize();
-        await camera.play();
+          await camera.resumeVideoRecording();
 
-        expect(
-          camera.pauseVideoRecording,
-          throwsA(
-            isA<CameraWebException>()
-                .having(
-                  (e) => e.cameraId,
-                  'cameraId',
-                  textureId,
-                )
-                .having(
-                  (e) => e.code,
-                  'code',
-                  CameraErrorCode.videoRecordingNotStarted,
-                ),
-          ),
-        );
-      });
-    });
+          verify(mediaRecorder.resume).called(1);
+        });
 
-    group('resumeVideoRecording', () {
-      testWidgets('resumes a video recording', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+        testWidgets(
+            'throws a CameraWebException '
+            'with videoRecordingNotStarted error '
+            'if the video recording was not started', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          );
 
-        await camera.initialize();
-        await camera.play();
-
-        await camera.startVideoRecording();
-
-        await camera.pauseVideoRecording();
-
-        await camera.resumeVideoRecording();
-
-        expect('recording', camera.mediaRecorder!.state);
+          expect(
+            camera.resumeVideoRecording,
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.videoRecordingNotStarted,
+                  ),
+            ),
+          );
+        });
       });
 
-      testWidgets(
-          'throws a CameraWebException '
-          'with videoRecordingNotStarted error '
-          'if the video recording was not started', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+      group('stopVideoRecording', () {
+        testWidgets(
+            'stops a video recording and '
+            'returns the captured file', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
 
-        await camera.initialize();
-        await camera.play();
+          await camera.initialize();
+          await camera.play();
 
-        expect(
-          camera.resumeVideoRecording,
-          throwsA(
-            isA<CameraWebException>()
-                .having(
-                  (e) => e.cameraId,
-                  'cameraId',
-                  textureId,
-                )
-                .having(
-                  (e) => e.code,
-                  'code',
-                  CameraErrorCode.videoRecordingNotStarted,
-                ),
-          ),
-        );
+          late void Function(Event) videoDataAvailableListener;
+
+          when(
+            () => mediaRecorder.addEventListener('dataavailable', any()),
+          ).thenAnswer((invocation) {
+            videoDataAvailableListener = invocation.positionalArguments[1];
+          });
+
+          await camera.startVideoRecording();
+          final videoFileFuture = camera.stopVideoRecording();
+
+          final capturedVideo = Blob([]);
+          videoDataAvailableListener.call(FakeBlobEvent(capturedVideo));
+
+          final videoFile = await videoFileFuture;
+
+          verify(mediaRecorder.stop).called(1);
+
+          expect(
+            videoFile,
+            isNotNull,
+          );
+
+          expect(
+            videoFile.mimeType,
+            equals(supportedVideoType),
+          );
+
+          expect(
+            videoFile.name,
+            equals(capturedVideo.hashCode.toString()),
+          );
+        });
+
+        testWidgets(
+            'throws a CameraWebException '
+            'with videoRecordingNotStarted error '
+            'if the video recording was not started', (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          );
+
+          expect(
+            camera.stopVideoRecording,
+            throwsA(
+              isA<CameraWebException>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.code,
+                    'code',
+                    CameraErrorCode.videoRecordingNotStarted,
+                  ),
+            ),
+          );
+        });
       });
-    });
 
-    group('stopVideoRecording', () {
-      testWidgets(
-          'stops a video recording '
-          'returns a File'
-          'and emits a videorecordedevent', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+      group('on video data available', () {
+        late void Function(Event) videoDataAvailableListener;
 
-        await camera.initialize();
-        await camera.play();
+        setUp(() {
+          when(
+            () => mediaRecorder.addEventListener('dataavailable', any()),
+          ).thenAnswer((invocation) {
+            videoDataAvailableListener = invocation.positionalArguments[1];
+          });
+        });
 
-        await camera.startVideoRecording();
-        final recordedEvent = camera.onVideoRecordedEvent.first;
-        final videoFile = await camera.stopVideoRecording();
+        testWidgets(
+            'stops a video recording '
+            'if maxVideoDuration is given and '
+            'the recording was not stopped manually', (tester) async {
+          const maxVideoDuration = Duration(hours: 1);
 
-        expect(videoFile, isNotNull);
-        expect(await recordedEvent, isNotNull);
-        expect(camera.mediaRecorder, isNull);
-      });
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
 
-      testWidgets(
-          'throws a CameraWebException '
-          'with videoRecordingNotStarted error '
-          'if no recording was started', (tester) async {
-        final camera = Camera(
-          textureId: 1,
-          cameraService: cameraService,
-        );
+          await camera.initialize();
+          await camera.play();
+          await camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
 
-        await camera.initialize();
-        await camera.play();
+          when(() => mediaRecorder.state).thenReturn('recording');
 
-        expect(
-          camera.stopVideoRecording,
-          throwsA(
-            isA<CameraWebException>()
-                .having(
-                  (e) => e.cameraId,
-                  'cameraId',
-                  textureId,
-                )
-                .having(
-                  (e) => e.code,
-                  'code',
-                  CameraErrorCode.videoRecordingNotStarted,
-                ),
-          ),
-        );
+          videoDataAvailableListener.call(FakeBlobEvent(Blob([])));
+
+          await Future.microtask(() {});
+
+          verify(mediaRecorder.stop).called(1);
+        });
+
+        testWidgets('stops listening to the media recorder data',
+            (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          videoDataAvailableListener.call(FakeBlobEvent(Blob([])));
+
+          await Future.microtask(() {});
+
+          verify(
+            () => mediaRecorder.removeEventListener('dataavailable', any()),
+          ).called(1);
+        });
       });
     });
 
@@ -1100,6 +1259,76 @@ void main() {
     });
 
     group('events', () {
+      group('onVideoRecordedEvent', () {
+        testWidgets(
+            'emits VideoRecordedEvent '
+            'when a video recording is created', (tester) async {
+          const maxVideoDuration = Duration(hours: 1);
+          const supportedVideoType = 'video/webm';
+
+          final mediaRecorder = MockMediaRecorder();
+
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = (type) => type == 'video/webm';
+
+          await camera.initialize();
+          await camera.play();
+
+          late void Function(Event) videoDataAvailableListener;
+
+          when(
+            () => mediaRecorder.addEventListener('dataavailable', any()),
+          ).thenAnswer((invocation) {
+            videoDataAvailableListener = invocation.positionalArguments[1];
+          });
+
+          final streamQueue = StreamQueue(camera.onVideoRecordedEvent);
+
+          await camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
+
+          final capturedVideo = Blob([]);
+          videoDataAvailableListener.call(FakeBlobEvent(capturedVideo));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              isA<VideoRecordedEvent>()
+                  .having(
+                    (e) => e.cameraId,
+                    'cameraId',
+                    textureId,
+                  )
+                  .having(
+                    (e) => e.file,
+                    'file',
+                    isA<XFile>()
+                        .having(
+                          (f) => f.mimeType,
+                          'mimeType',
+                          supportedVideoType,
+                        )
+                        .having(
+                          (f) => f.name,
+                          'name',
+                          capturedVideo.hashCode.toString(),
+                        ),
+                  )
+                  .having(
+                    (e) => e.maxVideoDuration,
+                    'maxVideoDuration',
+                    maxVideoDuration,
+                  ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+      });
+
       group('onEnded', () {
         testWidgets(
             'emits the default video track '
