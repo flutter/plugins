@@ -1,4 +1,4 @@
-## NEXT
+## 0.6.0
 
 - Added Android native integration test support to `native-test`.
 - Added a new `android-lint` command to lint Android plugin native code.
@@ -10,6 +10,8 @@
   `--no-push-flags`. Releases now always tag and push.
 - **Breaking change**: `publish`'s `--package` flag has been replaced with the
   `--packages` flag used by most other packages.
+- **Breaking change** Passing both `--run-on-changed-packages` and `--packages`
+  is now an error; previously it the former would be ignored.
 
 ## 0.5.0
 
