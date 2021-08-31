@@ -18,7 +18,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.content.Context;
-import android.os.Handler;
 import android.view.View;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -26,7 +25,6 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executor;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -51,8 +49,7 @@ public class FlutterWebViewTest {
   private View mockView;
   private DisplayListenerProxy mockDisplayListenerProxy;
   private MethodChannel.Result mockResult;
-  private CustomHttpPostRequest mockCustomHttpPostRequest;
-  private CustomRequestCallback mockCallback;
+  private HttpRequestManager mockHttpRequestManager;
 
   @Before
   public void before() {
@@ -68,8 +65,7 @@ public class FlutterWebViewTest {
     mockView = mock(View.class);
     mockDisplayListenerProxy = mock(DisplayListenerProxy.class);
     mockResult = mock(MethodChannel.Result.class);
-    mockCustomHttpPostRequest = mock(CustomHttpPostRequest.class);
-    mockCallback = mock(CustomRequestCallback.class);
+    mockHttpRequestManager = mock(HttpRequestManager.class);
 
     when(mockWebViewBuilder.setDomStorageEnabled(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setJavaScriptCanOpenWindowsAutomatically(anyBoolean()))
@@ -126,7 +122,7 @@ public class FlutterWebViewTest {
 
     ArgumentCaptor<byte[]> valueCapture = ArgumentCaptor.forClass(byte[].class);
 
-    doNothing().when(mockWebView).postUrl(ArgumentMatchers.<String>any(), valueCapture.capture());
+    doNothing().when(mockWebView).postUrl(ArgumentMatchers.any(), valueCapture.capture());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -169,24 +165,6 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void loadRequest_should_return_error_when_unsupported_http_method_is_invoked() {
-    FlutterWebView flutterWebView = initFlutterWebView();
-
-    request.put("url", URL);
-    request.put("method", "delete");
-
-    MethodCall call = buildMethodCall(LOAD_REQUEST, request);
-
-    ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
-
-    doNothing().when(mockResult).error(valueCapture.capture(), anyString(), any());
-
-    flutterWebView.onMethodCall(call, mockResult);
-
-    assertEquals("unsupported_method", valueCapture.getValue());
-  }
-
-  @Test
   public void loadRequest_should_return_error_when_webview_is_null() {
     FlutterWebView flutterWebView = initFlutterWebView();
     headers.put("Content-Type", "application/json");
@@ -208,15 +186,14 @@ public class FlutterWebViewTest {
             new Answer<Void>() {
               @Override
               public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                CustomRequestCallback callback =
-                    (CustomRequestCallback) invocationOnMock.getArguments()[1];
+                HttpRequestCallback callback =
+                    (HttpRequestCallback) invocationOnMock.getArguments()[1];
                 callback.onComplete("");
                 return null;
               }
             })
-        .when(mockCustomHttpPostRequest)
-        .makePostRequest(
-            ArgumentMatchers.<WebViewRequest>any(), ArgumentMatchers.<CustomRequestCallback>any());
+        .when(mockHttpRequestManager)
+        .requestAsync(ArgumentMatchers.any(), ArgumentMatchers.any());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -245,15 +222,14 @@ public class FlutterWebViewTest {
             new Answer<Void>() {
               @Override
               public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                CustomRequestCallback callback =
-                    (CustomRequestCallback) invocationOnMock.getArguments()[1];
+                HttpRequestCallback callback =
+                    (HttpRequestCallback) invocationOnMock.getArguments()[1];
                 callback.onError(null);
                 return null;
               }
             })
-        .when(mockCustomHttpPostRequest)
-        .makePostRequest(
-            ArgumentMatchers.<WebViewRequest>any(), ArgumentMatchers.<CustomRequestCallback>any());
+        .when(mockHttpRequestManager)
+        .requestAsync(ArgumentMatchers.any(), ArgumentMatchers.any());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -272,9 +248,7 @@ public class FlutterWebViewTest {
 
     ArgumentCaptor<String> valueCapture = ArgumentCaptor.forClass(String.class);
 
-    doNothing()
-        .when(mockWebView)
-        .loadUrl(valueCapture.capture(), ArgumentMatchers.<String, String>anyMap());
+    doNothing().when(mockWebView).loadUrl(valueCapture.capture(), ArgumentMatchers.anyMap());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -322,24 +296,23 @@ public class FlutterWebViewTest {
         .when(mockWebView)
         .loadDataWithBaseURL(
             valueCapture.capture(),
-            ArgumentMatchers.<String>any(),
-            ArgumentMatchers.<String>any(),
-            ArgumentMatchers.<String>any(),
-            ArgumentMatchers.<String>any());
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any());
 
     doAnswer(
             new Answer<Void>() {
               @Override
               public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                CustomRequestCallback callback =
-                    (CustomRequestCallback) invocationOnMock.getArguments()[1];
+                HttpRequestCallback callback =
+                    (HttpRequestCallback) invocationOnMock.getArguments()[1];
                 callback.onComplete("");
                 return null;
               }
             })
-        .when(mockCustomHttpPostRequest)
-        .makePostRequest(
-            ArgumentMatchers.<WebViewRequest>any(), ArgumentMatchers.<CustomRequestCallback>any());
+        .when(mockHttpRequestManager)
+        .requestAsync(ArgumentMatchers.any(), ArgumentMatchers.any());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -368,25 +341,24 @@ public class FlutterWebViewTest {
     doNothing()
         .when(mockWebView)
         .loadDataWithBaseURL(
-            ArgumentMatchers.<String>any(),
+            ArgumentMatchers.any(),
             valueCapture.capture(),
-            ArgumentMatchers.<String>any(),
-            ArgumentMatchers.<String>any(),
-            ArgumentMatchers.<String>any());
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any(),
+            ArgumentMatchers.any());
 
     doAnswer(
             new Answer<Void>() {
               @Override
               public Void answer(InvocationOnMock invocationOnMock) throws Throwable {
-                CustomRequestCallback callback =
-                    (CustomRequestCallback) invocationOnMock.getArguments()[1];
+                HttpRequestCallback callback =
+                    (HttpRequestCallback) invocationOnMock.getArguments()[1];
                 callback.onComplete(content);
                 return null;
               }
             })
-        .when(mockCustomHttpPostRequest)
-        .makePostRequest(
-            ArgumentMatchers.<WebViewRequest>any(), ArgumentMatchers.<CustomRequestCallback>any());
+        .when(mockHttpRequestManager)
+        .requestAsync(ArgumentMatchers.any(), ArgumentMatchers.any());
 
     flutterWebView.onMethodCall(call, mockResult);
 
@@ -411,35 +383,31 @@ public class FlutterWebViewTest {
   }
 
   private FlutterWebView initFlutterWebView() {
-    try (MockedStatic<FlutterWebView> mockedStaticFlutterWebView =
-        mockStatic(FlutterWebView.class)) {
-
-      mockedStaticFlutterWebView
+    try (MockedStatic<FlutterWebView.HttpRequestManagerFactory> mockedHttpRequestManagerFactory =
+        mockStatic(FlutterWebView.HttpRequestManagerFactory.class)) {
+      mockedHttpRequestManagerFactory
           .when(
-              new MockedStatic.Verification() {
-                @Override
-                public void apply() throws Throwable {
-                  FlutterWebView.createWebView(
-                      ArgumentMatchers.<WebViewBuilder>any(),
-                      ArgumentMatchers.<String, Object>anyMap(),
-                      ArgumentMatchers.<WebChromeClient>any());
-                }
-              })
-          .thenReturn(mockWebView);
+              () ->
+                  FlutterWebView.HttpRequestManagerFactory.create(
+                      ArgumentMatchers.any(), ArgumentMatchers.any()))
+          .thenReturn(mockHttpRequestManager);
+      try (MockedStatic<FlutterWebView> mockedStaticFlutterWebView =
+          mockStatic(FlutterWebView.class)) {
 
-      mockedStaticFlutterWebView
-          .when(
-              new MockedStatic.Verification() {
-                @Override
-                public void apply() throws Throwable {
-                  FlutterWebView.createCustomHttpPostRequest(
-                      ArgumentMatchers.<Executor>any(), ArgumentMatchers.<Handler>any());
-                }
-              })
-          .thenReturn(mockCustomHttpPostRequest);
+        mockedStaticFlutterWebView
+            .when(
+                () ->
+                    FlutterWebView.createWebView(
+                        ArgumentMatchers.any(), ArgumentMatchers.anyMap(), ArgumentMatchers.any()))
+            .thenReturn(mockWebView);
 
-      return new FlutterWebView(
-          mockContext, mockChannel, createParameterMap(false), mockView, mockDisplayListenerProxy);
+        return new FlutterWebView(
+            mockContext,
+            mockChannel,
+            createParameterMap(false),
+            mockView,
+            mockDisplayListenerProxy);
+      }
     }
   }
 }

@@ -33,6 +33,11 @@ android {
         disable 'InvalidPackage'
         disable 'GradleDependency'
     }
+    compileOptions {
+        sourceCompatibility = '1.8'
+        targetCompatibility = '1.8'
+    }
+
 
     dependencies {
         implementation 'androidx.annotation:annotation:1.0.0'

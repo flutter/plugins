@@ -9,14 +9,12 @@ import java.util.Map;
 
 /**
  * Defines the supported HTTP methods for loading a page in the {@link android.webkit.WebView} and
- * the {@link CustomHttpPostRequest}.
+ * the {@link HttpRequestManager}.
  */
 enum WebViewLoadMethod {
   GET("get"),
 
-  POST("post"),
-
-  UNSUPPORTED("unsupported");
+  POST("post");
 
   private final String value;
 
@@ -25,8 +23,13 @@ enum WebViewLoadMethod {
   }
 
   /** Converts to WebViewLoadMethod to String format. */
-  public static String serialize(WebViewLoadMethod webViewLoadMethod) {
-    return webViewLoadMethod.value;
+  public String serialize() {
+    return getValue();
+  }
+
+  /** Returns the enum value. */
+  public String getValue() {
+    return value;
   }
 
   /** Converts to String to WebViewLoadMethod format. */
@@ -36,7 +39,7 @@ enum WebViewLoadMethod {
         return webViewLoadMethod;
       }
     }
-    return WebViewLoadMethod.UNSUPPORTED;
+    throw new IllegalArgumentException("No enum value found for '" + value + "'.");
   }
 }
 
@@ -44,7 +47,7 @@ enum WebViewLoadMethod {
  * Creates a HTTP request object.
  *
  * <p>Defines the parameters that can be used to load a page in the {@link android.webkit.WebView}
- * and the {@link CustomHttpPostRequest}.
+ * and the {@link HttpRequestManager}.
  */
 public class WebViewRequest {
   private final String url;
@@ -55,7 +58,7 @@ public class WebViewRequest {
   WebViewRequest(String url, WebViewLoadMethod method, Map<String, String> headers, byte[] body) {
     this.url = url;
     this.method = method;
-    this.headers = headers;
+    this.headers = headers == null ? Collections.emptyMap() : headers;
     this.body = body;
   }
 
@@ -73,9 +76,6 @@ public class WebViewRequest {
     }
 
     Map<String, String> headers = (Map<String, String>) requestObject.get("headers");
-    if (headers == null) {
-      headers = Collections.emptyMap();
-    }
 
     WebViewLoadMethod invokedMethod =
         WebViewLoadMethod.deserialize((String) requestObject.get("method"));

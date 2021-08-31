@@ -41,7 +41,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final Handler platformThreadHandler;
   private final Handler mainThreadHandler;
   private final ExecutorService executorService;
-  private final CustomHttpPostRequest customHttpPostRequest;
+  private final HttpRequestManager httpRequestManager;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -114,7 +114,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     mainThreadHandler = HandlerCompat.createAsync(Looper.getMainLooper());
 
-    customHttpPostRequest = createCustomHttpPostRequest(executorService, mainThreadHandler);
+    httpRequestManager = HttpRequestManagerFactory.create(executorService, mainThreadHandler);
 
     this.methodChannel = methodChannel;
     this.methodChannel.setMethodCallHandler(this);
@@ -182,22 +182,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             webChromeClient); // Always use {@link FlutterWebChromeClient} as web Chrome client.
 
     return webViewBuilder.build();
-  }
-
-  /**
-   * Creates a {@link CustomHttpPostRequest}.
-   *
-   * <p><strong>Important:</strong> This method is visible for testing purposes only and should
-   * never be called from outside this class.
-   *
-   * @param executor a {@link Executor} to run network request on background thread.
-   * @param resultHandler a {@link Handler} to communicate back with main thread.
-   * @return The new {@link CustomHttpPostRequest} object.
-   */
-  @VisibleForTesting
-  static CustomHttpPostRequest createCustomHttpPostRequest(
-      Executor executor, Handler resultHandler) {
-    return new CustomHttpPostRequest(executor, resultHandler);
   }
 
   @Override
@@ -341,10 +325,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           if (webViewRequest.getHeaders().isEmpty()) {
             webView.postUrl(webViewRequest.getUrl(), webViewRequest.getBody());
           } else {
-            // Workaround to accept headers with the post request.
-            customHttpPostRequest.makePostRequest(
+            // Execute the request manually to be able to provide headers with the post request.
+            httpRequestManager.requestAsync(
                 webViewRequest,
-                new CustomRequestCallback() {
+                new HttpRequestCallback() {
                   @Override
                   public void onComplete(String content) {
                     if (!webView.isAttachedToWindow()) {
@@ -360,7 +344,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
                   @Override
                   public void onError(Exception error) {
-                    result.error("request_failed", "HttpURLConnection is failed", null);
+                    result.error("request_failed", "HttpURLConnection has failed", null);
                   }
                 });
           }
@@ -574,5 +558,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       ((InputAwareWebView) webView).dispose();
     }
     webView.destroy();
+  }
+
+  /** Factory class for creating a {@link HttpRequestManager} */
+  static class HttpRequestManagerFactory {
+    /**
+     * Creates a {@link HttpRequestManager}.
+     *
+     * <p><strong>Important:</strong> This method is visible for testing purposes only and should
+     * never be called from outside this class.
+     *
+     * @param executor a {@link Executor} to run network request on background thread.
+     * @param resultHandler a {@link Handler} to communicate back with main thread.
+     * @return The new {@link HttpRequestManager} object.
+     */
+    @VisibleForTesting
+    public static HttpRequestManager create(Executor executor, Handler resultHandler) {
+      return new HttpRequestManager(executor, resultHandler);
+    }
   }
 }
