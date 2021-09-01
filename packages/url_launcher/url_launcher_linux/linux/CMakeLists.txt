@@ -55,11 +55,6 @@ target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${TEST_RUNNER} PRIVATE flutter)
 target_link_libraries(${TEST_RUNNER} PRIVATE PkgConfig::GTK)
 target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)
-# flutter_wrapper_plugin has link dependencies on the Flutter shared library.
-#add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
-#  COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#  "${FLUTTER_LIBRARY}" $<TARGET_FILE_DIR:${TEST_RUNNER}>
-#)
 
 include(GoogleTest)
 gtest_discover_tests(${TEST_RUNNER})
