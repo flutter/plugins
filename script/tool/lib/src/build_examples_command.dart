@@ -117,39 +117,65 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final List<String> errors = <String>[];
 
+    final bool isPlugin = isFlutterPlugin(package);
     final Iterable<_PlatformDetails> requestedPlatforms = _platforms.entries
         .where(
             (MapEntry<String, _PlatformDetails> entry) => getBoolArg(entry.key))
         .map((MapEntry<String, _PlatformDetails> entry) => entry.value);
-    final Set<_PlatformDetails> buildPlatforms = <_PlatformDetails>{};
-    final Set<_PlatformDetails> unsupportedPlatforms = <_PlatformDetails>{};
-    for (final _PlatformDetails platform in requestedPlatforms) {
-      if (pluginSupportsPlatform(platform.pluginPlatform, package,
-          variant: platform.pluginPlatformVariant)) {
-        buildPlatforms.add(platform);
-      } else {
-        unsupportedPlatforms.add(platform);
-      }
+
+    // Platform support is checked at the package level for plugins; there is
+    // no package-level platform information for non-plugin packages.
+    final Set<_PlatformDetails> buildPlatforms = isPlugin
+        ? requestedPlatforms
+            .where((_PlatformDetails platform) => pluginSupportsPlatform(
+                platform.pluginPlatform, package,
+                variant: platform.pluginPlatformVariant))
+            .toSet()
+        : requestedPlatforms.toSet();
+
+    String platformDisplayList(Iterable<_PlatformDetails> platforms) {
+      return platforms.map((_PlatformDetails p) => p.label).join(', ');
     }
+
     if (buildPlatforms.isEmpty) {
       final String unsupported = requestedPlatforms.length == 1
           ? '${requestedPlatforms.first.label} is not supported'
-          : 'None of [${requestedPlatforms.map((_PlatformDetails p) => p.label).join(',')}] are supported';
+          : 'None of [${platformDisplayList(requestedPlatforms)}] are supported';
       return PackageResult.skip('$unsupported by this plugin');
     }
-    print('Building for: '
-        '${buildPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
+    print('Building for: ${platformDisplayList(buildPlatforms)}');
+
+    final Set<_PlatformDetails> unsupportedPlatforms =
+        requestedPlatforms.toSet().difference(buildPlatforms);
     if (unsupportedPlatforms.isNotEmpty) {
+      final List<String> skippedPlatforms = unsupportedPlatforms
+          .map((_PlatformDetails platform) => platform.label)
+          .toList();
+      skippedPlatforms.sort();
       print('Skipping unsupported platform(s): '
-          '${unsupportedPlatforms.map((_PlatformDetails platform) => platform.label).join(',')}');
+          '${skippedPlatforms.join(', ')}');
     }
     print('');
 
+    bool builtSomething = false;
     for (final RepositoryPackage example in package.getExamples()) {
       final String packageName =
           getRelativePosixPath(example.directory, from: packagesDir);
 
       for (final _PlatformDetails platform in buildPlatforms) {
+        // Repo policy is that a plugin must have examples configured for all
+        // supported platforms. For packages, just log and skip any requested
+        // platform that a package doesn't have set up.
+        if (!isPlugin &&
+            !example.directory
+                .childDirectory(platform.flutterPlatformDirectory)
+                .existsSync()) {
+          print('Skipping ${platform.label} for $packageName; not supported.');
+          continue;
+        }
+
+        builtSomething = true;
+
         String buildPlatform = platform.label;
         if (platform.label.toLowerCase() != platform.flutterBuildType) {
           buildPlatform += ' (${platform.flutterBuildType})';
@@ -159,6 +185,15 @@ class BuildExamplesCommand extends PackageLoopingCommand {
             extraBuildFlags: platform.extraBuildFlags)) {
           errors.add('$packageName (${platform.label})');
         }
+      }
+    }
+
+    if (!builtSomething) {
+      if (isPlugin) {
+        errors.add('No examples found');
+      } else {
+        return PackageResult.skip(
+            'No examples found supporting requested platform(s).');
       }
     }
 
@@ -234,6 +269,11 @@ class _PlatformDetails {
 
   /// The `flutter build` build type.
   final String flutterBuildType;
+
+  /// The Flutter platform directory name.
+  // In practice, this is the same as the plugin platform key for all platforms.
+  // If that changes, this can be adjusted.
+  String get flutterPlatformDirectory => pluginPlatform;
 
   /// Any extra flags to pass to `flutter build`.
   final List<String> extraBuildFlags;

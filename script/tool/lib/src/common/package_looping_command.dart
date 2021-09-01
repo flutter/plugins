@@ -237,7 +237,14 @@ abstract class PackageLoopingCommand extends PluginCommand {
         continue;
       }
 
-      final PackageResult result = await runForPackage(entry.package);
+      PackageResult result;
+      try {
+        result = await runForPackage(entry.package);
+      } catch (e, stack) {
+        printError(e.toString());
+        printError(stack.toString());
+        result = PackageResult.fail(<String>['Unhandled exception']);
+      }
       if (result.state == RunState.skipped) {
         final String message =
             '${indentation}SKIPPING: ${result.details.first}';
