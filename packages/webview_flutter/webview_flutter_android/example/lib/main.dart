@@ -32,20 +32,47 @@ class WebViewExample extends StatefulWidget {
 
   @override
   _WebViewExampleState createState() => _WebViewExampleState();
+
+  void onPageStarted(String url) {
+    print('Page started loading: $url');
+  }
+
+  void onPageFinished(String url) {
+    print('Page finished loading: $url');
+  }
+
+  void onProgress(int progress) {
+    print("WebView is loading (progress : $progress%)");
+  }
+
+  void onWebResourceError(WebResourceError error) {
+    print("Webview resource error encountered: ${error.description}");
+  }
 }
 
 class _WebViewExampleState extends State<WebViewExample> {
-  final Completer<WebViewController> _controller =
-  Completer<WebViewController>();
-  final JavascriptChannelRegistry _javascriptChannelRegistry;
+  final Completer<WebViewController> _controller = Completer<WebViewController>();
+  late final JavascriptChannelRegistry _javascriptChannelRegistry;
+  late final _PlatformCallbacksHandler _platformCallbacksHandler;
 
   @override
   void initState() {
     super.initState();
-    _javascriptChannelRegistry = JavascriptChannelRegistry([
-      _toasterJavascriptChannel(context),
-    ]);
+    _javascriptChannelRegistry = JavascriptChannelRegistry({
+      _toasterJavascriptChannel(),
+    });
+    _platformCallbacksHandler = _PlatformCallbacksHandler(widget);
   }
+
+  @override
+  void didUpdateWidget(WebViewExample oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    _controller.future.then((WebViewController controller) {
+      _platformCallbacksHandler._widget = widget;
+      controller._updateWidget(widget);
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -61,42 +88,25 @@ class _WebViewExampleState extends State<WebViewExample> {
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
-        // return WebView(
-        //   initialUrl: 'https://flutter.dev',
-        //   javascriptMode: JavascriptMode.unrestricted,
-        //   onWebViewCreated: (WebViewController webViewController) {
-        //     _controller.complete(webViewController);
-        //   },
-        //   onProgress: (int progress) {
-        //     print("WebView is loading (progress : $progress%)");
-        //   },
-        //   javascriptChannels: <JavascriptChannel>{
-        //     _toasterJavascriptChannel(context),
-        //   },
-        //   navigationDelegate: (NavigationRequest request) {
-        //     if (request.url.startsWith('https://www.youtube.com/')) {
-        //       print('blocking navigation to $request}');
-        //       return NavigationDecision.prevent;
-        //     }
-        //     print('allowing navigation to $request');
-        //     return NavigationDecision.navigate;
-        //   },
-        //   onPageStarted: (String url) {
-        //     print('Page started loading: $url');
-        //   },
-        //   onPageFinished: (String url) {
-        //     print('Page finished loading: $url');
-        //   },
-        //   gestureNavigationEnabled: true,
-        // );
         return widget.platform.build(
-            context: context,
-            onWebViewPlatformCreated: _onWebViewPlatformCreated,
-            webViewPlatformCallbacksHandler: _platformCallbacksHandler,
-            gestureRecognizers: widget.gestureRecognizers,
-            creationParams: _creationParamsfromWidget(widget),
-            javascriptChannelRegistry
-            :
+          context: context,
+          onWebViewPlatformCreated: (WebViewPlatformController? webViewPlatformController) {
+            WebViewController controller = WebViewController._(
+              widget,
+              webViewPlatformController!,
+              _platformCallbacksHandler,
+              _javascriptChannelRegistry,
+            );
+            _controller.complete(controller);
+          },
+          webViewPlatformCallbacksHandler: _platformCallbacksHandler,
+          creationParams: CreationParams(
+            initialUrl: 'https://flutter.dev',
+            webSettings: _webSettingsFromWidget(widget),
+            javascriptChannelNames: _javascriptChannelRegistry.channels.keys.toSet(),
+            autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+          ),
+          javascriptChannelRegistry: _javascriptChannelRegistry,
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -473,7 +483,7 @@ class WebViewController {
   Future<void> _updateWidget(WebViewExample widget) async {
     _widget = widget;
     await _updateSettings(_webSettingsFromWidget(widget));
-    await _updateJavascriptChannels(widget.javascriptChannels);
+    await _updateJavascriptChannels(_javascriptChannelRegistry.channels.values.toSet()); // TODO: CHECK WITH MAURITS IF POINTLESS. PROBABLY REMOVE THIS?
   }
 
   Future<void> _updateSettings(WebSettings newSettings) {
@@ -565,13 +575,13 @@ class WebViewController {
 
 WebSettings _webSettingsFromWidget(WebViewExample widget) {
   return WebSettings(
-    javascriptMode: widget.javascriptMode,
-    hasNavigationDelegate: widget.navigationDelegate != null,
+    javascriptMode: JavascriptMode.unrestricted,
+    hasNavigationDelegate: false,
     hasProgressTracking: widget.onProgress != null,
-    debuggingEnabled: widget.debuggingEnabled,
-    gestureNavigationEnabled: widget.gestureNavigationEnabled,
-    allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
-    userAgent: WebSetting<String?>.of(widget.userAgent),
+    debuggingEnabled: false,
+    gestureNavigationEnabled: false, // TODO: REMOVE COMMENT BEFORE MERGING, SET TO TRUE IN IOS EXAMPLE. POINTLESS FOR ANDROID.
+    allowsInlineMediaPlayback: false,
+    userAgent: WebSetting<String?>.of(null),
   );
 }
 
@@ -585,38 +595,33 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     required String url,
     required bool isForMainFrame,
   }) async {
-    final NavigationRequest request =
-    NavigationRequest._(url: url, isForMainFrame: isForMainFrame);
-    final bool allowNavigation = _widget.navigationDelegate == null ||
-        await _widget.navigationDelegate!(request) ==
-            NavigationDecision.navigate;
-    return allowNavigation;
+    return true;
   }
 
   @override
   void onPageStarted(String url) {
     if (_widget.onPageStarted != null) {
-      _widget.onPageStarted!(url);
+      _widget.onPageStarted(url);
     }
   }
 
   @override
   void onPageFinished(String url) {
     if (_widget.onPageFinished != null) {
-      _widget.onPageFinished!(url);
+      _widget.onPageFinished(url);
     }
   }
 
   @override
   void onProgress(int progress) {
     if (_widget.onProgress != null) {
-      _widget.onProgress!(progress);
+      _widget.onProgress(progress);
     }
   }
 
   void onWebResourceError(WebResourceError error) {
     if (_widget.onWebResourceError != null) {
-      _widget.onWebResourceError!(error);
+      _widget.onWebResourceError(error);
     }
   }
 }
