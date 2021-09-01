@@ -5,10 +5,12 @@
 package io.flutter.plugins.imagepicker;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -26,9 +28,13 @@ import android.net.Uri;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -366,6 +372,34 @@ public class ImagePickerDelegateTest {
 
     verify(mockResult).success("pathFromUri");
     verifyNoMoreInteractions(mockResult);
+  }
+
+  @Test
+  public void
+      retrieveLostImage_ShouldBeAbleToReturnLastItemFromResultMapWhenSingleFileIsRecovered() {
+    Map<String, Object> resultMap = new HashMap<>();
+    ArrayList<String> pathList = new ArrayList<>();
+    pathList.add("/example/first_item");
+    pathList.add("/example/last_item");
+    resultMap.put("pathList", pathList);
+
+    when(mockImageResizer.resizeImageIfNeeded(pathList.get(0), null, null, 100))
+        .thenReturn(pathList.get(0));
+    when(mockImageResizer.resizeImageIfNeeded(pathList.get(1), null, null, 100))
+        .thenReturn(pathList.get(1));
+    when(cache.getCacheMap()).thenReturn(resultMap);
+
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    ImagePickerDelegate mockDelegate = createDelegate();
+
+    ArgumentCaptor<Map<String, Object>> valueCapture = ArgumentCaptor.forClass(Map.class);
+
+    doNothing().when(mockResult).success(valueCapture.capture());
+
+    mockDelegate.retrieveLostImage(mockResult);
+
+    assertEquals("/example/last_item", valueCapture.getValue().get("path"));
   }
 
   private ImagePickerDelegate createDelegate() {
