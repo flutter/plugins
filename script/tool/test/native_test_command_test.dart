@@ -736,6 +736,147 @@ void main() {
       });
     });
 
+    group('Linux', () {
+      test('runs unit tests', () async {
+        const String testBinaryRelativePath =
+            'build/linux/foo/release/bar/plugin_test';
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/$testBinaryRelativePath'
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+        });
+
+        final File testBinary = childFileWithSubcomponents(pluginDirectory,
+            <String>['example', ...testBinaryRelativePath.split('/')]);
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--linux',
+          '--no-integration',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running plugin_test...'),
+            contains('No issues found!'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(testBinary.path, const <String>[], null),
+            ]));
+      });
+
+      test('only runs release unit tests', () async {
+        const String debugTestBinaryRelativePath =
+            'build/linux/foo/debug/bar/plugin_test';
+        const String releaseTestBinaryRelativePath =
+            'build/linux/foo/release/bar/plugin_test';
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/$debugTestBinaryRelativePath',
+          'example/$releaseTestBinaryRelativePath'
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+        });
+
+        final File releaseTestBinary = childFileWithSubcomponents(
+            pluginDirectory,
+            <String>['example', ...releaseTestBinaryRelativePath.split('/')]);
+
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--linux',
+          '--no-integration',
+        ]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running plugin_test...'),
+            contains('No issues found!'),
+          ]),
+        );
+
+        // Only the release version should be run.
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(releaseTestBinary.path, const <String>[], null),
+            ]));
+      });
+
+      test('fails if there are no unit tests', () async {
+        createFakePlugin('plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            });
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--linux',
+          '--no-integration',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No test binaries found.'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('fails if a unit test fails', () async {
+        const String testBinaryRelativePath =
+            'build/linux/foo/release/bar/plugin_test';
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+          'example/$testBinaryRelativePath'
+        ], platformSupport: <String, PlatformDetails>{
+          kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+        });
+
+        final File testBinary = childFileWithSubcomponents(pluginDirectory,
+            <String>['example', ...testBinaryRelativePath.split('/')]);
+
+        processRunner.mockProcessesForExecutable[testBinary.path] =
+            <io.Process>[MockProcess(exitCode: 1)];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(runner, <String>[
+          'native-test',
+          '--linux',
+          '--no-integration',
+        ], errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running plugin_test...'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(testBinary.path, const <String>[], null),
+            ]));
+      });
+    });
+
     // Tests behaviors of implementation that is shared between iOS and macOS.
     group('iOS/macOS', () {
       test('fails if xcrun fails', () async {
@@ -1352,7 +1493,7 @@ void main() {
     group('Windows', () {
       test('runs unit tests', () async {
         const String testBinaryRelativePath =
-            'build/windows/foo/Debug/bar/plugin_test.exe';
+            'build/windows/foo/Release/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
@@ -1384,7 +1525,7 @@ void main() {
             ]));
       });
 
-      test('only runs debug unit tests', () async {
+      test('only runs release unit tests', () async {
         const String debugTestBinaryRelativePath =
             'build/windows/foo/Debug/bar/plugin_test.exe';
         const String releaseTestBinaryRelativePath =
@@ -1397,8 +1538,9 @@ void main() {
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
 
-        final File debugTestBinary = childFileWithSubcomponents(pluginDirectory,
-            <String>['example', ...debugTestBinaryRelativePath.split('/')]);
+        final File releaseTestBinary = childFileWithSubcomponents(
+            pluginDirectory,
+            <String>['example', ...releaseTestBinaryRelativePath.split('/')]);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -1414,11 +1556,11 @@ void main() {
           ]),
         );
 
-        // Only the debug version should be run.
+        // Only the release version should be run.
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(debugTestBinary.path, const <String>[], null),
+              ProcessCall(releaseTestBinary.path, const <String>[], null),
             ]));
       });
 
@@ -1450,7 +1592,7 @@ void main() {
 
       test('fails if a unit test fails', () async {
         const String testBinaryRelativePath =
-            'build/windows/foo/Debug/bar/plugin_test.exe';
+            'build/windows/foo/Release/bar/plugin_test.exe';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'

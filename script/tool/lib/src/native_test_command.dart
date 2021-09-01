@@ -21,7 +21,9 @@ const String _iosDestinationFlag = 'ios-destination';
 const int _exitNoIosSimulators = 3;
 
 /// The command to run native tests for plugins:
-/// - iOS and macOS: XCTests (XCUnitTest and XCUITest) in plugins.
+/// - iOS and macOS: XCTests (XCUnitTest and XCUITest)
+/// - Android: JUnit tests
+/// - Windows and Linux: GoogleTest tests
 class NativeTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   NativeTestCommand(
@@ -39,6 +41,7 @@ class NativeTestCommand extends PackageLoopingCommand {
     );
     argParser.addFlag(kPlatformAndroid, help: 'Runs Android tests');
     argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
+    argParser.addFlag(kPlatformLinux, help: 'Runs Linux tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
     argParser.addFlag(kPlatformWindows, help: 'Runs Windows tests');
 
@@ -63,9 +66,11 @@ class NativeTestCommand extends PackageLoopingCommand {
 Runs native unit tests and native integration tests.
 
 Currently supported platforms:
-- Android (unit tests only)
+- Android
 - iOS: requires 'xcrun' to be in your path.
+- Linux (unit tests only)
 - macOS: requires 'xcrun' to be in your path.
+- Windows (unit tests only)
 
 The example app(s) must be built for all targeted platforms before running
 this command.
@@ -80,6 +85,7 @@ this command.
     _platforms = <String, _PlatformDetails>{
       kPlatformAndroid: _PlatformDetails('Android', _testAndroid),
       kPlatformIos: _PlatformDetails('iOS', _testIos),
+      kPlatformLinux: _PlatformDetails('Linux', _testLinux),
       kPlatformMacos: _PlatformDetails('macOS', _testMacOS),
       kPlatformWindows: _PlatformDetails('Windows', _testWindows),
     };
@@ -101,6 +107,11 @@ this command.
     if (getBoolArg(kPlatformWindows) && getBoolArg(_integrationTestFlag)) {
       logWarning('This command currently only supports unit tests for Windows. '
           'See https://github.com/flutter/flutter/issues/70233.');
+    }
+
+    if (getBoolArg(kPlatformLinux) && getBoolArg(_integrationTestFlag)) {
+      logWarning('This command currently only supports unit tests for Linux. '
+          'See https://github.com/flutter/flutter/issues/70235.');
     }
 
     // iOS-specific run-level state.
@@ -418,6 +429,21 @@ this command.
         buildDirectoryName: 'windows', isTestBinary: isTestBinary);
   }
 
+  Future<_PlatformResult> _testLinux(
+      RepositoryPackage plugin, _TestMode mode) async {
+    if (mode.integrationOnly) {
+      return _PlatformResult(RunState.skipped);
+    }
+
+    bool isTestBinary(File file) {
+      return file.basename.endsWith('_test') ||
+          file.basename.endsWith('_tests');
+    }
+
+    return _runGoogleTestTests(plugin,
+        buildDirectoryName: 'linux', isTestBinary: isTestBinary);
+  }
+
   /// Finds every file in the [buildDirectoryName] subdirectory of [plugin]'s
   /// build directory for which [isTestBinary] is true, and runs all of them,
   /// returning the overall result.
@@ -442,10 +468,11 @@ this command.
           .whereType<File>()
           .where(isTestBinary)
           .where((File file) {
-        // Only run the debug build of the unit tests, to avoid running the
-        // same tests multiple times.
+        // Only run the release build of the unit tests, to avoid running the
+        // same tests multiple times. Release is used rather than debug since
+        // `build-examples` builds release versions.
         final List<String> components = path.split(file.path);
-        return components.contains('debug') || components.contains('Debug');
+        return components.contains('release') || components.contains('Release');
       }));
     }
 

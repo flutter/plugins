@@ -1,3 +1,7 @@
+## NEXT
+
+- `native-test` now supports `--linux` for unit tests.
+
 ## 0.6.0+1
 
 - Fixed `build-examples` to work for non-plugin packages.
