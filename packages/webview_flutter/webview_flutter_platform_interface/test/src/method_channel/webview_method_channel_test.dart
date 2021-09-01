@@ -7,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:webview_flutter_platform_interface/src/method_channel/webview_method_channel.dart';
+import 'package:webview_flutter_platform_interface/src/utils/javascript_channel_registry.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 void main() {
@@ -18,6 +19,8 @@ void main() {
         MethodChannel('plugins.flutter.io/webview_$channelId');
     final WebViewPlatformCallbacksHandler callbacksHandler =
         MockWebViewPlatformCallbacksHandler();
+    final JavascriptChannelRegistry javascriptChannelRegistry =
+        MockJavascriptChannelRegistry();
 
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -43,7 +46,11 @@ void main() {
     });
 
     final MethodChannelWebViewPlatform webViewPlatform =
-        MethodChannelWebViewPlatform(channelId, callbacksHandler);
+        MethodChannelWebViewPlatform(
+      channelId,
+      callbacksHandler,
+      javascriptChannelRegistry,
+    );
 
     tearDown(() {
       log.clear();
@@ -446,3 +453,6 @@ void main() {
 
 class MockWebViewPlatformCallbacksHandler extends Mock
     implements WebViewPlatformCallbacksHandler {}
+
+class MockJavascriptChannelRegistry extends Mock
+    implements JavascriptChannelRegistry {}

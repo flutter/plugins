@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:webview_flutter_platform_interface/src/utils/javascript_channel_registry.dart';
 
 import '../platform_interface/webview_platform_callbacks_handler.dart';
 import '../platform_interface/webview_platform_controller.dart';
@@ -14,11 +15,16 @@ import '../types/types.dart';
 class MethodChannelWebViewPlatform implements WebViewPlatformController {
   /// Constructs an instance that will listen for webviews broadcasting to the
   /// given [id], using the given [WebViewPlatformCallbacksHandler].
-  MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
-      : assert(_platformCallbacksHandler != null),
+  MethodChannelWebViewPlatform(
+    int id,
+    this._platformCallbacksHandler,
+    this._javascriptChannelRegistry,
+  )   : assert(_platformCallbacksHandler != null),
         _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _channel.setMethodCallHandler(_onMethodCall);
   }
+
+  final JavascriptChannelRegistry _javascriptChannelRegistry;
 
   final WebViewPlatformCallbacksHandler _platformCallbacksHandler;
 
@@ -32,7 +38,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel']! as String;
         final String message = call.arguments['message']! as String;
-        _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
+        _javascriptChannelRegistry.onJavascriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
         return await _platformCallbacksHandler.onNavigationRequest(
@@ -40,13 +46,16 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
           isForMainFrame: call.arguments['isForMainFrame']! as bool,
         );
       case 'onPageFinished':
-        _platformCallbacksHandler.onPageFinished(call.arguments['url']! as String);
+        _platformCallbacksHandler
+            .onPageFinished(call.arguments['url']! as String);
         return null;
       case 'onProgress':
-        _platformCallbacksHandler.onProgress(call.arguments['progress']! as int);
+        _platformCallbacksHandler
+            .onProgress(call.arguments['progress']! as int);
         return null;
       case 'onPageStarted':
-        _platformCallbacksHandler.onPageStarted(call.arguments['url']! as String);
+        _platformCallbacksHandler
+            .onPageStarted(call.arguments['url']! as String);
         return null;
       case 'onWebResourceError':
         _platformCallbacksHandler.onWebResourceError(
@@ -94,8 +103,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       _channel.invokeMethod<bool>('canGoBack').then((bool? result) => result!);
 
   @override
-  Future<bool> canGoForward() =>
-      _channel.invokeMethod<bool>('canGoForward').then((bool? result) => result!);
+  Future<bool> canGoForward() => _channel
+      .invokeMethod<bool>('canGoForward')
+      .then((bool? result) => result!);
 
   @override
   Future<void> goBack() => _channel.invokeMethod<void>('goBack');
