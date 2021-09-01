@@ -468,10 +468,11 @@ this command.
           .whereType<File>()
           .where(isTestBinary)
           .where((File file) {
-        // Only run the debug build of the unit tests, to avoid running the
-        // same tests multiple times.
+        // Only run the release build of the unit tests, to avoid running the
+        // same tests multiple times. Release is used rather than debug since
+        // `build-examples` builds release versions.
         final List<String> components = path.split(file.path);
-        return components.contains('debug') || components.contains('Debug');
+        return components.contains('release') || components.contains('Release');
       }));
     }
 
