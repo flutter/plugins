@@ -4,6 +4,7 @@
 
 export 'auto_media_playback_policy.dart';
 export 'creation_params.dart';
+export 'javascript_channel.dart';
 export 'javascript_message.dart';
 export 'javascript_mode.dart';
 export 'web_resource_error.dart';
