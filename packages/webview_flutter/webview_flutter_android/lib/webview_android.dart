@@ -23,6 +23,7 @@ class AndroidWebView implements WebViewPlatform {
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    required JavascriptChannelRegistry javascriptChannelRegistry,
   }) {
     assert(webViewPlatformCallbacksHandler != null);
     return GestureDetector(
@@ -42,7 +43,7 @@ class AndroidWebView implements WebViewPlatform {
             return;
           }
           onWebViewPlatformCreated(MethodChannelWebViewPlatform(
-              id, webViewPlatformCallbacksHandler));
+              id, webViewPlatformCallbacksHandler, javascriptChannelRegistry));
         },
         gestureRecognizers: gestureRecognizers,
         layoutDirection: Directionality.maybeOf(context) ?? TextDirection.rtl,
