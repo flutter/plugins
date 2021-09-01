@@ -1,6 +1,8 @@
-## NEXT
+## 0.7.0
 
 - `native-test` now supports `--linux` for unit tests.
+- Formatting now skips Dart files that contain a line that exactly
+  matches the string `// This file is hand-formatted.`.
 
 ## 0.6.0+1
 
