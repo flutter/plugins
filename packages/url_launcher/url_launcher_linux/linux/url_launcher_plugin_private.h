@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "include/url_launcher_linux/url_launcher_plugin.h"
-
 #include <flutter_linux/flutter_linux.h>
+
+#include "include/url_launcher_linux/url_launcher_plugin.h"
 
 // Handles the canLaunch method call.
 //
