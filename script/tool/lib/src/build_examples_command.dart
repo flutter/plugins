@@ -230,9 +230,19 @@ class BuildExamplesCommand extends PackageLoopingCommand {
       <String>[
         'build',
         flutterBuildType,
+        '-v',
         ...extraBuildFlags,
         if (enableExperiment.isNotEmpty)
           '--enable-experiment=$enableExperiment',
+      ],
+      workingDir: example.directory,
+    );
+
+    await processRunner.runAndStream(
+      flutterCommand,
+      <String>[
+        'find',
+        'build',
       ],
       workingDir: example.directory,
     );
