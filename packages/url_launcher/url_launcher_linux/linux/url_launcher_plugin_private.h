@@ -6,8 +6,9 @@
 
 #include "include/url_launcher_linux/url_launcher_plugin.h"
 
+// TODO(stuartmorgan): Remove this private header and change the below back to
+// a static function once https://github.com/flutter/flutter/issues/88724
+// is fixed, and test through the public API instead.
+
 // Handles the canLaunch method call.
-//
-// Temporarily exposed for testing due to
-// https://github.com/flutter/flutter/issues/88724
 FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args);
