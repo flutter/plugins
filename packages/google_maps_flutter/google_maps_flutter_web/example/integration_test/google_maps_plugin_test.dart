@@ -100,7 +100,7 @@ void main() {
         expect(
           cache[testMapId]!.isInitialized,
           isTrue,
-          reason: 'buildView calls init on the controller'
+          reason: 'buildView calls init on the controller',
         );
       });
 
@@ -137,7 +137,7 @@ void main() {
         expect(
           cache[testMapId]!.isInitialized,
           isTrue,
-          reason: 'buildView calls init on the controller'
+          reason: 'buildView calls init on the controller',
         );
         expect(
           await reportedMapIdCompleter.future,
@@ -150,9 +150,11 @@ void main() {
         expect(
           numberOnPlatformViewCreatedCalls,
           equals(1),
-          reason: 'Should not call onPlatformViewCreated for the same controller multiple times',
+          reason:
+              'Should not call onPlatformViewCreated for the same controller multiple times',
         );
       });
+    });
 
     group('setMapStyles', () {
       String mapStyle = '''[{
@@ -452,7 +454,6 @@ void main() {
       });
     });
   });
-});
 }
 
 class _OtherMapEvent extends MapEvent<void> {
