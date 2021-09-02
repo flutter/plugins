@@ -3,4 +3,5 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-./script/tool_runner.sh build-examples --windows
+dart ./script/tool/bin/flutter_plugin_tools.dart build-examples --windows \
+   --packages-for-branch
