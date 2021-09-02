@@ -1,3 +1,9 @@
+## 0.3.1
+
+* Fix the `getScreenCoordinate(LatLng)` method.
+* Wait until the map tiles have loaded before calling `onPlatformViewCreated`, so
+the returned controller is 100% functional (has bounds, a projection, etc...)
+
 ## 0.3.0+4
 
 * Add `implements` to pubspec.
