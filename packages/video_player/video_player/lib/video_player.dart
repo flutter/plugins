@@ -415,14 +415,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyLooping() async {
-    if (_isDisposedOrNotInitialized()) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     await _videoPlayerPlatform.setLooping(_textureId, value.isLooping);
   }
 
   Future<void> _applyPlayPause() async {
-    if (_isDisposedOrNotInitialized()) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     if (value.isPlaying) {
@@ -455,14 +455,14 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   }
 
   Future<void> _applyVolume() async {
-    if (_isDisposedOrNotInitialized()) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     await _videoPlayerPlatform.setVolume(_textureId, value.volume);
   }
 
   Future<void> _applyPlaybackSpeed() async {
-    if (_isDisposedOrNotInitialized()) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
 
@@ -491,7 +491,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   /// If [moment] is outside of the video's full range it will be automatically
   /// and silently clamped.
   Future<void> seekTo(Duration position) async {
-    if (_isDisposedOrNotInitialized()) {
+    if (_isDisposedOrNotInitialized) {
       return;
     }
     if (position > value.duration) {
@@ -573,9 +573,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(caption: _getCaptionAt(position));
   }
 
-  bool _isDisposedOrNotInitialized() {
-    return _isDisposed || !value.isInitialized;
-  }
+  bool get _isDisposedOrNotInitialized => _isDisposed || !value.isInitialized;
 }
 
 class _VideoAppLifeCycleObserver extends Object with WidgetsBindingObserver {
