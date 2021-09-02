@@ -39,6 +39,7 @@ targets:
     recipe: plugins/plugins
     timeout: 30
     properties:
+      target_file: windows_build_and_platform_tests.yaml
       dependencies: >
         [
           {"dependency": "vs_build"}
@@ -49,6 +50,7 @@ targets:
     recipe: plugins/plugins
     timeout: 30
     properties:
+      target_file: windows_build_and_platform_tests.yaml
       channel: stable
       dependencies: >
         [
