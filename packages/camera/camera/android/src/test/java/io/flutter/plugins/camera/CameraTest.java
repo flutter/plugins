@@ -687,11 +687,13 @@ public class CameraTest {
         mockCameraFeatureFactory.createExposureOffsetFeature(mockCameraProperties);
     MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
 
+    when(mockExposureOffsetFeature.getValue()).thenReturn(1.0);
+
     camera.setExposureOffset(mockResult, 1.0);
 
     verify(mockExposureOffsetFeature, times(1)).setValue(1.0);
     verify(mockResult, never()).error(any(), any(), any());
-    verify(mockResult, times(1)).success(null);
+    verify(mockResult, times(1)).success(1.0);
   }
 
   @Test
