@@ -421,6 +421,13 @@ class Camera
   // Send a repeating request to refresh  capture session.
   private void refreshPreviewCaptureSession(
       @Nullable Runnable onSuccessCallback, @NonNull ErrorCallback onErrorCallback) {
+    if (backgroundHandler == null) {
+      Log.i(
+          TAG,
+          "[refreshPreviewCaptureSession] backgroundHandler not yet initialized, "
+              + "skipping preview capture session refresh.");
+      return;
+    }
     if (captureSession == null) {
       Log.i(
           TAG,
