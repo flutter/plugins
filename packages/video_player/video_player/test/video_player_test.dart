@@ -318,6 +318,17 @@ void main() {
       expect(fakeVideoPlayerPlatform.calls.last, 'setPlaybackSpeed');
     });
 
+    test('play before initialized does not call platform', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+      expect(controller.value.isInitialized, isFalse);
+
+      await controller.play();
+
+      expect(fakeVideoPlayerPlatform.calls, isEmpty);
+    });
+
     test('play restarts from beginning if video is at end', () async {
       final VideoPlayerController controller = VideoPlayerController.network(
         'https://127.0.0.1',
@@ -371,6 +382,17 @@ void main() {
         await controller.seekTo(const Duration(milliseconds: 500));
 
         expect(await controller.position, const Duration(milliseconds: 500));
+      });
+
+      test('before initialized does not call platform', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        expect(controller.value.isInitialized, isFalse);
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+
+        expect(fakeVideoPlayerPlatform.calls, isEmpty);
       });
 
       test('clamps values that are too high or low', () async {
