@@ -580,7 +580,7 @@ WebSettings _webSettingsFromWidget(WebViewExample widget) {
     hasNavigationDelegate: false,
     hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: false,
-    gestureNavigationEnabled: false, // TODO: REMOVE COMMENT BEFORE MERGING, SET TO TRUE IN IOS EXAMPLE. POINTLESS FOR ANDROID.
+    gestureNavigationEnabled: false,
     allowsInlineMediaPlayback: false,
     userAgent: WebSetting<String?>.of(null),
   );

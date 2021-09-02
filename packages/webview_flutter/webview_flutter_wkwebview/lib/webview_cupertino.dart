@@ -23,6 +23,7 @@ class CupertinoWebView implements WebViewPlatform {
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+    required JavascriptChannelRegistry javascriptChannelRegistry,
   }) {
     return UiKitView(
       viewType: 'plugins.flutter.io/webview',
@@ -31,7 +32,7 @@ class CupertinoWebView implements WebViewPlatform {
           return;
         }
         onWebViewPlatformCreated(
-            MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler));
+            MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler, javascriptChannelRegistry));
       },
       gestureRecognizers: gestureRecognizers,
       creationParams:
