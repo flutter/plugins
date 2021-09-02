@@ -906,7 +906,7 @@ class Camera
     exposureOffsetFeature.updateBuilder(previewRequestBuilder);
 
     refreshPreviewCaptureSession(
-        () -> result.success(null),
+        () -> result.success(exposureOffsetFeature.getValue()),
         (code, message) ->
             result.error("setExposureOffsetFailed", "Could not set exposure offset.", null));
   }

@@ -399,6 +399,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                             onSetExposureModeButtonPressed(ExposureMode.locked)
                         : null,
                   ),
+                  TextButton(
+                    child: Text('RESET OFFSET'),
+                    style: styleLocked,
+                    onPressed: controller != null
+                        ? () => controller!.setExposureOffset(0.0)
+                        : null,
+                  ),
                 ],
               ),
               Center(

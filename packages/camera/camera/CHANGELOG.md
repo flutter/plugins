@@ -1,3 +1,7 @@
+## 0.9.2+2
+
+* Ensure that setting the exposure offset returns the new offset value on Android.
+
 ## 0.9.2+1
 
 * Fixed camera controller throwing an exception when being replaced in the preview widget.
