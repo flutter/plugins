@@ -7,8 +7,6 @@ environment:
   flutter: ">=2.1.0" 
 
 dependencies:
-  google_maps_flutter: # Used for projection_test.dart
-    path: ../../google_maps_flutter
   google_maps_flutter_web:
     path: ../
   flutter:
@@ -17,6 +15,8 @@ dependencies:
 dev_dependencies:
   build_runner: ^2.1.1
   google_maps: ^5.1.0
+  google_maps_flutter: # Used for projection_test.dart
+    path: ../../google_maps_flutter
   http: ^0.13.0
   mockito: ^5.0.0
   flutter_driver:
