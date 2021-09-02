@@ -39,6 +39,7 @@ targets:
     recipe: plugins/plugins
     timeout: 30
     properties:
+      add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
       dependencies: >
         [
@@ -50,6 +51,7 @@ targets:
     recipe: plugins/plugins
     timeout: 30
     properties:
+      add_recipes_cq: "true"
       target_file: windows_build_and_platform_tests.yaml
       channel: stable
       dependencies: >
