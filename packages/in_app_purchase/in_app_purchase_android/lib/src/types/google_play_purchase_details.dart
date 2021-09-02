@@ -20,29 +20,18 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
     required this.billingClientPurchase,
     required PurchaseStatus status,
   }) : super(
-            productID: productID,
-            purchaseID: purchaseID,
-            transactionDate: transactionDate,
-            verificationData: verificationData,
-            status: status) {
-    this.status = status;
+          productID: productID,
+          purchaseID: purchaseID,
+          transactionDate: transactionDate,
+          verificationData: verificationData,
+          status: status,
+        ) {
+    this.pendingCompletePurchase = !billingClientPurchase.isAcknowledged;
   }
 
   /// Points back to the [PurchaseWrapper] which was used to generate this
   /// [GooglePlayPurchaseDetails] object.
   final PurchaseWrapper billingClientPurchase;
-
-  late PurchaseStatus _status;
-
-  /// The status that this [PurchaseDetails] is currently on.
-  PurchaseStatus get status => _status;
-  set status(PurchaseStatus status) {
-    _pendingCompletePurchase = status == PurchaseStatus.purchased;
-    _status = status;
-  }
-
-  bool _pendingCompletePurchase = false;
-  bool get pendingCompletePurchase => _pendingCompletePurchase;
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   factory GooglePlayPurchaseDetails.fromPurchase(PurchaseWrapper purchase) {

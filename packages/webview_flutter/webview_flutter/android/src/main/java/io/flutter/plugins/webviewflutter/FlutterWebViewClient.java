@@ -14,6 +14,7 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
@@ -192,8 +193,10 @@ class FlutterWebViewClient {
       @Override
       public void onReceivedError(
           WebView view, WebResourceRequest request, WebResourceError error) {
-        FlutterWebViewClient.this.onWebResourceError(
-            error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        if (request.isForMainFrame()) {
+          FlutterWebViewClient.this.onWebResourceError(
+              error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        }
       }
 
       @Override
@@ -239,9 +242,13 @@ class FlutterWebViewClient {
       @SuppressLint("RequiresFeature")
       @Override
       public void onReceivedError(
-          WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
-        FlutterWebViewClient.this.onWebResourceError(
-            error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+          @NonNull WebView view,
+          @NonNull WebResourceRequest request,
+          @NonNull WebResourceErrorCompat error) {
+        if (request.isForMainFrame()) {
+          FlutterWebViewClient.this.onWebResourceError(
+              error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        }
       }
 
       @Override

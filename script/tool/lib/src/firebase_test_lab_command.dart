@@ -10,8 +10,10 @@ import 'package:platform/platform.dart';
 import 'package:uuid/uuid.dart';
 
 import 'common/core.dart';
+import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 const int _exitGcloudAuthFailed = 2;
 
@@ -74,15 +76,12 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       'Runs tests in test_instrumentation folder using the '
       'instrumentation_test package.';
 
-  static const String _gradleWrapper = 'gradlew';
-
-  Completer<void>? _firebaseProjectConfigured;
+  bool _firebaseProjectConfigured = false;
 
   Future<void> _configureFirebaseProject() async {
-    if (_firebaseProjectConfigured != null) {
-      return _firebaseProjectConfigured!.future;
+    if (_firebaseProjectConfigured) {
+      return;
     }
-    _firebaseProjectConfigured = Completer<void>();
 
     final String serviceKey = getStringArg('service-key');
     if (serviceKey.isEmpty) {
@@ -110,39 +109,44 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       print('');
       if (exitCode == 0) {
         print('Firebase project configured.');
-        return;
       } else {
         logWarning(
             'Warning: gcloud config set returned a non-zero exit code. Continuing anyway.');
       }
     }
-    _firebaseProjectConfigured!.complete(null);
+    _firebaseProjectConfigured = true;
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
-    if (!package
-        .childDirectory('example')
-        .childDirectory('android')
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
+    final RepositoryPackage example = package.getSingleExampleDeprecated();
+    final Directory androidDirectory =
+        example.directory.childDirectory('android');
+    if (!androidDirectory.existsSync()) {
+      return PackageResult.skip(
+          '${example.displayName} does not support Android.');
+    }
+
+    if (!androidDirectory
         .childDirectory('app')
         .childDirectory('src')
         .childDirectory('androidTest')
         .existsSync()) {
-      return PackageResult.skip('No example with androidTest directory');
+      printError('No androidTest directory found.');
+      return PackageResult.fail(
+          <String>['No tests ran (use --exclude if this is intentional).']);
     }
 
-    final Directory exampleDirectory = package.childDirectory('example');
-    final Directory androidDirectory =
-        exampleDirectory.childDirectory('android');
-
     // Ensures that gradle wrapper exists
-    if (!await _ensureGradleWrapperExists(androidDirectory)) {
+    final GradleProject project = GradleProject(example.directory,
+        processRunner: processRunner, platform: platform);
+    if (!await _ensureGradleWrapperExists(project)) {
       return PackageResult.fail(<String>['Unable to build example apk']);
     }
 
     await _configureFirebaseProject();
 
-    if (!await _runGradle(androidDirectory, 'app:assembleAndroidTest')) {
+    if (!await _runGradle(project, 'app:assembleAndroidTest')) {
       return PackageResult.fail(<String>['Unable to assemble androidTest']);
     }
 
@@ -152,10 +156,10 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     // test file's run.
     int resultsCounter = 0;
     for (final File test in _findIntegrationTestFiles(package)) {
-      final String testName = getRelativePosixPath(test, from: package);
+      final String testName =
+          getRelativePosixPath(test, from: package.directory);
       print('Testing $testName...');
-      if (!await _runGradle(androidDirectory, 'app:assembleDebug',
-          testFile: test)) {
+      if (!await _runGradle(project, 'app:assembleDebug', testFile: test)) {
         printError('Could not build $testName');
         errors.add('$testName failed to build');
         continue;
@@ -163,7 +167,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
       final String buildId = getStringArg('build-id');
       final String testRunId = getStringArg('test-run-id');
       final String resultsDir =
-          'plugins_android_test/${getPackageDescription(package)}/$buildId/$testRunId/${resultsCounter++}/';
+          'plugins_android_test/${package.displayName}/$buildId/$testRunId/${resultsCounter++}/';
       final List<String> args = <String>[
         'firebase',
         'test',
@@ -176,7 +180,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         '--test',
         'build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk',
         '--timeout',
-        '5m',
+        '7m',
         '--results-bucket=${getStringArg('results-bucket')}',
         '--results-dir=$resultsDir',
       ];
@@ -184,24 +188,30 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         args.addAll(<String>['--device', device]);
       }
       final int exitCode = await processRunner.runAndStream('gcloud', args,
-          workingDir: exampleDirectory);
+          workingDir: example.directory);
 
       if (exitCode != 0) {
         printError('Test failure for $testName');
         errors.add('$testName failed tests');
       }
     }
+
+    if (errors.isEmpty && resultsCounter == 0) {
+      printError('No integration tests were run.');
+      errors.add('No tests ran (use --exclude if this is intentional).');
+    }
+
     return errors.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(errors);
   }
 
-  /// Checks that 'gradlew' exists in [androidDirectory], and if not runs a
+  /// Checks that Gradle has been configured for [project], and if not runs a
   /// Flutter build to generate it.
   ///
   /// Returns true if either gradlew was already present, or the build succeeds.
-  Future<bool> _ensureGradleWrapperExists(Directory androidDirectory) async {
-    if (!androidDirectory.childFile(_gradleWrapper).existsSync()) {
+  Future<bool> _ensureGradleWrapperExists(GradleProject project) async {
+    if (!project.isConfigured()) {
       print('Running flutter build apk...');
       final String experiment = getStringArg(kEnableExperiment);
       final int exitCode = await processRunner.runAndStream(
@@ -211,7 +221,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
             'apk',
             if (experiment.isNotEmpty) '--enable-experiment=$experiment',
           ],
-          workingDir: androidDirectory);
+          workingDir: project.androidDirectory);
 
       if (exitCode != 0) {
         return false;
@@ -220,15 +230,15 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
     return true;
   }
 
-  /// Builds [target] using 'gradlew' in the given [directory]. Assumes
-  /// 'gradlew' already exists.
+  /// Builds [target] using Gradle in the given [project]. Assumes Gradle is
+  /// already configured.
   ///
   /// [testFile] optionally does the Flutter build with the given test file as
   /// the build target.
   ///
   /// Returns true if the command succeeds.
   Future<bool> _runGradle(
-    Directory directory,
+    GradleProject project,
     String target, {
     File? testFile,
   }) async {
@@ -237,17 +247,15 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         ? Uri.encodeComponent('--enable-experiment=$experiment')
         : null;
 
-    final int exitCode = await processRunner.runAndStream(
-        directory.childFile(_gradleWrapper).path,
-        <String>[
-          target,
-          '-Pverbose=true',
-          if (testFile != null) '-Ptarget=${testFile.path}',
-          if (extraOptions != null) '-Pextra-front-end-options=$extraOptions',
-          if (extraOptions != null)
-            '-Pextra-gen-snapshot-options=$extraOptions',
-        ],
-        workingDir: directory);
+    final int exitCode = await project.runCommand(
+      target,
+      arguments: <String>[
+        '-Pverbose=true',
+        if (testFile != null) '-Ptarget=${testFile.path}',
+        if (extraOptions != null) '-Pextra-front-end-options=$extraOptions',
+        if (extraOptions != null) '-Pextra-gen-snapshot-options=$extraOptions',
+      ],
+    );
 
     if (exitCode != 0) {
       return false;
@@ -256,9 +264,11 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   }
 
   /// Finds and returns all integration test files for [package].
-  Iterable<File> _findIntegrationTestFiles(Directory package) sync* {
-    final Directory integrationTestDir =
-        package.childDirectory('example').childDirectory('integration_test');
+  Iterable<File> _findIntegrationTestFiles(RepositoryPackage package) sync* {
+    final Directory integrationTestDir = package
+        .getSingleExampleDeprecated()
+        .directory
+        .childDirectory('integration_test');
 
     if (!integrationTestDir.existsSync()) {
       return;

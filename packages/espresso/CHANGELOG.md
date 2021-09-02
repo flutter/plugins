@@ -1,3 +1,11 @@
+## NEXT
+
+* Updated Android lint settings.
+
+## 0.1.0+3
+
+* Remove references to the Android v1 embedding.
+
 ## 0.1.0+2
 
 * Migrate maven repo from jcenter to mavenCentral

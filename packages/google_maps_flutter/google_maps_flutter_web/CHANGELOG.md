@@ -1,3 +1,11 @@
+## 0.3.0+4
+
+* Add `implements` to pubspec.
+
+## 0.3.0+3
+
+* Update the `README.md` usage instructions to not be tied to explicit package versions.
+
 ## 0.3.0+2
 
 * Document `liteModeEnabled` is not available on the web. [#83737](https://github.com/flutter/flutter/issues/83737).
