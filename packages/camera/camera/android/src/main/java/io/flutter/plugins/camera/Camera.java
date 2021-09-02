@@ -422,8 +422,9 @@ class Camera
   private void refreshPreviewCaptureSession(
       @Nullable Runnable onSuccessCallback, @NonNull ErrorCallback onErrorCallback) {
     if (backgroundHandler == null){
-      Log.i(TAG,
-              "[refreshPreviewCaptureSession] backgroundHandler not yet initialized, "
+      Log.i(
+          TAG,
+          "[refreshPreviewCaptureSession] backgroundHandler not yet initialized, "
                       + "skipping preview capture session refresh.");
       return;
     }
