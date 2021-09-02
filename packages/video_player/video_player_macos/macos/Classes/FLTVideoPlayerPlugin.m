@@ -170,6 +170,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   if (!_playerItem || _playerItem.status != AVPlayerItemStatusReadyToPlay || ![_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
     return;
   } else {
+    CVBufferRelease(_frame);
     _frame = [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
     if (_frame == NULL) {
       NSLog(@"copyPixelBufferForItemTime returned NULL");
@@ -440,6 +441,7 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
   if (_frame == NULL) {
     NSLog(@"Returning NULL from copyPixelBuffer");
   }
+  CVBufferRetain(_frame);
   return _frame;
 }
 
@@ -471,6 +473,7 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
 /// so the channel is going to die or is already dead.
 - (void)disposeSansEventChannel {
   _disposed = true;
+  CVBufferRelease(_frame);
   [self stopDisplayLink];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
   [[_player currentItem] removeObserver:self
