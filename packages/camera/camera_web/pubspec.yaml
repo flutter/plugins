@@ -22,6 +22,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
+  stream_transform: ^2.0.0
 
 dev_dependencies:
   flutter_test:
