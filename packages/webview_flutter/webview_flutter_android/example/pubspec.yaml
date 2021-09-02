@@ -21,3 +21,6 @@ dependencies:
 
 dev_dependencies:
   pedantic: ^1.10.0
+
+flutter:
+  uses-material-design: true
