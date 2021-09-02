@@ -1,3 +1,20 @@
+## 2.3.0
+
+* Updated `LostDataResponse` to include a `files` property, in case more than one file was recovered.
+
+## 2.2.0
+
+* Added new methods that return `XFile` (from `package:cross_file`)
+  * `getImage` (will deprecate `pickImage`)
+  * `getVideo` (will deprecate `pickVideo`)
+  * `getMultiImage` (will deprecate `pickMultiImage`)
+
+_`PickedFile` will also be marked as deprecated in an upcoming release._
+
+## 2.1.0
+
+* Add `pickMultiImage` method.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.

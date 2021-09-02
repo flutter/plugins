@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -8,6 +8,8 @@
 #include <gtk/gtk.h>
 
 #include <cstring>
+
+#include "url_launcher_plugin_private.h"
 
 // See url_launcher_channel.dart for documentation.
 const char kChannelName[] = "plugins.flutter.io/url_launcher";
@@ -44,7 +46,7 @@ static gchar* get_url(FlValue* args, GError** error) {
 }
 
 // Called to check if a URL can be launched.
-static FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
+FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
   g_autoptr(GError) error = nullptr;
   g_autofree gchar* url = get_url(args, &error);
   if (url == nullptr) {

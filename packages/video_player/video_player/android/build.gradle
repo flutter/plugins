@@ -5,7 +5,7 @@ def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -16,7 +16,7 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -35,6 +35,7 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        disable 'GradleDependency'
     }
     android {
         compileOptions {
@@ -44,9 +45,24 @@ android {
     }
 
     dependencies {
-        implementation 'com.google.android.exoplayer:exoplayer-core:2.12.1'
-        implementation 'com.google.android.exoplayer:exoplayer-hls:2.12.1'
-        implementation 'com.google.android.exoplayer:exoplayer-dash:2.12.1'
-        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.12.1'
+        implementation 'com.google.android.exoplayer:exoplayer-core:2.14.1'
+        implementation 'com.google.android.exoplayer:exoplayer-hls:2.14.1'
+        implementation 'com.google.android.exoplayer:exoplayer-dash:2.14.1'
+        implementation 'com.google.android.exoplayer:exoplayer-smoothstreaming:2.14.1'
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.mockito:mockito-inline:3.9.0'
+    }
+
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
     }
 }

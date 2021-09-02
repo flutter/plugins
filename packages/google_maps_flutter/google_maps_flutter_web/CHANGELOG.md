@@ -1,3 +1,28 @@
+## 0.3.0+4
+
+* Add `implements` to pubspec.
+
+## 0.3.0+3
+
+* Update the `README.md` usage instructions to not be tied to explicit package versions.
+
+## 0.3.0+2
+
+* Document `liteModeEnabled` is not available on the web. [#83737](https://github.com/flutter/flutter/issues/83737).
+
+## 0.3.0+1
+
+* Change sizing code of `GoogleMap` widget's `HtmlElementView` so it works well when slotted.
+
+## 0.3.0
+
+* Migrate package to null-safety.
+* **Breaking changes:**
+  * The property `icon` of a `Marker` cannot be `null`. Defaults to `BitmapDescriptor.defaultMarker`
+  * The property `initialCameraPosition` of a `GoogleMapController` can't be `null`. It is also marked as `required`.
+  * The parameter `creationId` of the `buildView` method cannot be `null` (this should be handled internally for users of the plugin)
+  * Most of the Controller methods can't be called after `remove`/`dispose`. Calling these methods now will throw an Assertion error. Before it'd be a no-op, or a null-pointer exception.
+
 ## 0.2.1
 
 * Move integration tests to `example`.

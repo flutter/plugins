@@ -1,10 +1,8 @@
-// Copyright 2017 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'dart:async';
-
 import 'package:flutter/services.dart';
 import 'package:path_provider_linux/path_provider_linux.dart';
 
@@ -67,7 +65,9 @@ class _MyAppState extends State<MyApp> {
     // If the widget was removed from the tree while the asynchronous platform
     // message was in flight, we want to discard the reply rather than calling
     // setState to update our non-existent appearance.
-    if (!mounted) return;
+    if (!mounted) {
+      return;
+    }
 
     setState(() {
       _tempDirectory = tempDirectory;
@@ -86,7 +86,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(
-            children: [
+            children: <Widget>[
               Text('Temp Directory: $_tempDirectory\n'),
               Text('Documents Directory: $_documentsDirectory\n'),
               Text('Downloads Directory: $_downloadsDirectory\n'),
