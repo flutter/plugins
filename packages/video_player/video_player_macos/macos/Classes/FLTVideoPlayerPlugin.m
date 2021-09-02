@@ -489,6 +489,8 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
                              forKeyPath:@"playbackBufferFull"
                                 context:playbackBufferFullContext];
   [_player replaceCurrentItemWithPlayerItem:nil];
+  _player = nil;
+  _playerItem = nil;
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
