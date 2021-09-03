@@ -985,7 +985,8 @@ void main() {
           );
         });
 
-        testWidgets('listens to the media recorder data', (tester) async {
+        testWidgets('listens to the media recorder data events',
+            (tester) async {
           final camera = Camera(
             textureId: 1,
             cameraService: cameraService,
@@ -1000,6 +1001,25 @@ void main() {
 
           verify(
             () => mediaRecorder.addEventListener('dataavailable', any()),
+          ).called(1);
+        });
+
+        testWidgets('listens to the media recorder stop events',
+            (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          verify(
+            () => mediaRecorder.addEventListener('stop', any()),
           ).called(1);
         });
 
@@ -1187,7 +1207,8 @@ void main() {
       group('stopVideoRecording', () {
         testWidgets(
             'stops a video recording and '
-            'returns the captured file', (tester) async {
+            'returns the captured file '
+            'based on all video data parts', (tester) async {
           final camera = Camera(
             textureId: 1,
             cameraService: cameraService,
@@ -1199,6 +1220,7 @@ void main() {
           await camera.play();
 
           late void Function(Event) videoDataAvailableListener;
+          late void Function(Event) videoRecordingStoppedListener;
 
           when(
             () => mediaRecorder.addEventListener('dataavailable', any()),
@@ -1206,11 +1228,36 @@ void main() {
             videoDataAvailableListener = invocation.positionalArguments[1];
           });
 
+          when(
+            () => mediaRecorder.addEventListener('stop', any()),
+          ).thenAnswer((invocation) {
+            videoRecordingStoppedListener = invocation.positionalArguments[1];
+          });
+
+          Blob? finalVideo;
+          List<Blob>? videoParts;
+          camera.blobBuilder = (blobs, videoType) {
+            videoParts = [...blobs];
+            finalVideo = Blob(blobs, videoType);
+            return finalVideo!;
+          };
+
           await camera.startVideoRecording();
           final videoFileFuture = camera.stopVideoRecording();
 
-          final capturedVideo = Blob([]);
-          videoDataAvailableListener.call(FakeBlobEvent(capturedVideo));
+          final capturedVideoPartOne = Blob([]);
+          final capturedVideoPartTwo = Blob([]);
+
+          final capturedVideoParts = [
+            capturedVideoPartOne,
+            capturedVideoPartTwo,
+          ];
+
+          videoDataAvailableListener
+            ..call(FakeBlobEvent(capturedVideoPartOne))
+            ..call(FakeBlobEvent(capturedVideoPartTwo));
+
+          videoRecordingStoppedListener.call(Event('stop'));
 
           final videoFile = await videoFileFuture;
 
@@ -1228,7 +1275,12 @@ void main() {
 
           expect(
             videoFile.name,
-            equals(capturedVideo.hashCode.toString()),
+            equals(finalVideo.hashCode.toString()),
+          );
+
+          expect(
+            videoParts,
+            equals(capturedVideoParts),
           );
         });
 
@@ -1296,8 +1348,20 @@ void main() {
 
           verify(mediaRecorder.stop).called(1);
         });
+      });
 
-        testWidgets('stops listening to the media recorder data',
+      group('on video recording stopped', () {
+        late void Function(Event) videoRecordingStoppedListener;
+
+        setUp(() {
+          when(
+            () => mediaRecorder.addEventListener('stop', any()),
+          ).thenAnswer((invocation) {
+            videoRecordingStoppedListener = invocation.positionalArguments[1];
+          });
+        });
+
+        testWidgets('stops listening to the media recorder data events',
             (tester) async {
           final camera = Camera(
             textureId: 1,
@@ -1311,12 +1375,35 @@ void main() {
 
           await camera.startVideoRecording();
 
-          videoDataAvailableListener.call(FakeBlobEvent(Blob([])));
+          videoRecordingStoppedListener.call(Event('stop'));
 
           await Future.microtask(() {});
 
           verify(
             () => mediaRecorder.removeEventListener('dataavailable', any()),
+          ).called(1);
+        });
+
+        testWidgets('stops listening to the media recorder stop events',
+            (tester) async {
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          videoRecordingStoppedListener.call(Event('stop'));
+
+          await Future.microtask(() {});
+
+          verify(
+            () => mediaRecorder.removeEventListener('stop', any()),
           ).called(1);
         });
       });
@@ -1387,6 +1474,7 @@ void main() {
           await camera.play();
 
           late void Function(Event) videoDataAvailableListener;
+          late void Function(Event) videoRecordingStoppedListener;
 
           when(
             () => mediaRecorder.addEventListener('dataavailable', any()),
@@ -1394,12 +1482,24 @@ void main() {
             videoDataAvailableListener = invocation.positionalArguments[1];
           });
 
+          when(
+            () => mediaRecorder.addEventListener('stop', any()),
+          ).thenAnswer((invocation) {
+            videoRecordingStoppedListener = invocation.positionalArguments[1];
+          });
+
           final streamQueue = StreamQueue(camera.onVideoRecordedEvent);
 
           await camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
 
-          final capturedVideo = Blob([]);
-          videoDataAvailableListener.call(FakeBlobEvent(capturedVideo));
+          Blob? finalVideo;
+          camera.blobBuilder = (blobs, videoType) {
+            finalVideo = Blob(blobs, videoType);
+            return finalVideo!;
+          };
+
+          videoDataAvailableListener.call(FakeBlobEvent(Blob([])));
+          videoRecordingStoppedListener.call(Event('stop'));
 
           expect(
             await streamQueue.next,
@@ -1422,7 +1522,7 @@ void main() {
                         .having(
                           (f) => f.name,
                           'name',
-                          capturedVideo.hashCode.toString(),
+                          finalVideo.hashCode.toString(),
                         ),
                   )
                   .having(
