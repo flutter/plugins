@@ -1,3 +1,7 @@
+## 0.8.4+1
+
+* Fix dependencies to support name and mimeType in web.
+
 ## 0.8.4
 
 * Update `ImagePickerCache` to cache multiple files.
