@@ -1,4 +1,4 @@
-## 0.8.4+1
+## 0.8.5
 
 * Fix dependencies to support name and mimeType in web.
 
