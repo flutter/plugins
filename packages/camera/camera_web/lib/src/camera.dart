@@ -106,11 +106,22 @@ class Camera {
   bool Function(String) isVideoTypeSupported =
       html.MediaRecorder.isTypeSupported;
 
+  /// The list of consecutive video data files recorded with [mediaRecorder].
+  List<html.Blob> _videoData = [];
+
   /// Completes when the video recording is stopped/finished.
   Completer<XFile>? _videoAvailableCompleter;
 
   /// A data listener fired when a new part of video data is available.
   void Function(html.Event)? _videoDataAvailableListener;
+
+  /// A listener fired when a video recording is stopped.
+  void Function(html.Event)? _videoRecordingStoppedListener;
+
+  /// A builder to merge a list of blobs into a single blob.
+  @visibleForTesting
+  html.Blob Function(List<html.Blob> blobs, String type) blobBuilder =
+      (blobs, type) => html.Blob(blobs, type);
 
   /// The stream that emits a [VideoRecordedEvent] when a video recording is created.
   Stream<VideoRecordedEvent> get onVideoRecordedEvent =>
@@ -413,9 +424,17 @@ class Camera {
     _videoDataAvailableListener =
         (event) => _onVideoDataAvailable(event, maxVideoDuration);
 
+    _videoRecordingStoppedListener =
+        (event) => _onVideoRecordingStopped(event, maxVideoDuration);
+
     mediaRecorder!.addEventListener(
       'dataavailable',
       _videoDataAvailableListener,
+    );
+
+    mediaRecorder!.addEventListener(
+      'stop',
+      _videoRecordingStoppedListener,
     );
 
     if (maxVideoDuration != null) {
@@ -426,35 +445,63 @@ class Camera {
     }
   }
 
-  void _onVideoDataAvailable(html.Event event, [Duration? maxVideoDuration]) {
+  void _onVideoDataAvailable(
+    html.Event event, [
+    Duration? maxVideoDuration,
+  ]) {
     final blob = (event as html.BlobEvent).data;
 
-    final file = XFile(
-      html.Url.createObjectUrl(blob),
-      mimeType: _videoMimeType,
-      name: blob.hashCode.toString(),
-    );
-
-    videoRecorderController.add(
-      VideoRecordedEvent(this.textureId, file, maxVideoDuration),
-    );
-
-    _videoAvailableCompleter?.complete(file);
-
-    // Remove a data listener before stopping the recorder.
-    mediaRecorder!.removeEventListener(
-      'dataavailable',
-      _videoDataAvailableListener,
-    );
+    // Append the recorded part of the video to the list of all video data files.
+    if (blob != null) {
+      _videoData.add(blob);
+    }
 
     // Stop the recorder if the video has a maxVideoDuration
     // and the recording was not stopped manually.
     if (maxVideoDuration != null && mediaRecorder!.state == 'recording') {
       mediaRecorder!.stop();
     }
+  }
+
+  void _onVideoRecordingStopped(
+    html.Event event, [
+    Duration? maxVideoDuration,
+  ]) {
+    if (_videoData.isNotEmpty) {
+      // Concatenate all video data files into a single blob.
+      final videoType = _videoData.first.type;
+      final videoBlob = blobBuilder(_videoData, videoType);
+
+      // Create a file containing the video blob.
+      final file = XFile(
+        html.Url.createObjectUrl(videoBlob),
+        mimeType: _videoMimeType,
+        name: videoBlob.hashCode.toString(),
+      );
+
+      // Emit an event containing the recorded video file.
+      videoRecorderController.add(
+        VideoRecordedEvent(this.textureId, file, maxVideoDuration),
+      );
+
+      _videoAvailableCompleter?.complete(file);
+    }
+
+    // Clean up the media recorder with its event listeners and video data.
+    mediaRecorder!.removeEventListener(
+      'dataavailable',
+      _videoDataAvailableListener,
+    );
+
+    mediaRecorder!.removeEventListener(
+      'stop',
+      _videoDataAvailableListener,
+    );
 
     mediaRecorder = null;
     _videoDataAvailableListener = null;
+    _videoRecordingStoppedListener = null;
+    _videoData.clear();
   }
 
   /// Pauses the current video recording.
