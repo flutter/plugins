@@ -95,5 +95,4 @@ The web implementation of [`camera`][camera] is missing the following features:
 - Streaming of frames
 
 <!-- Links -->
-[Stream Web API]: https://developer.mozilla.org/en-US/docs/Web/API/Media_Streams_API
 [camera]: https://pub.dev/packages/camera
