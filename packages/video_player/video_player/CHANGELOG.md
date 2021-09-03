@@ -1,4 +1,4 @@
-## 2.1.15
+## 2.2.0
 
 * Add `contentUri` based VideoPlayerController.
 * Updated Android lint settings.
