@@ -176,6 +176,25 @@ void main() {
           ]));
     });
 
+    test('takes an allow config file', () async {
+      final Directory pluginDir = createFakePlugin('foo', packagesDir,
+          extraFiles: <String>['analysis_options.yaml']);
+      final File allowFile = packagesDir.childFile('custom.yaml');
+      allowFile.writeAsStringSync('- foo');
+
+      await runCapturingPrint(
+          runner, <String>['analyze', '--custom-analysis', allowFile.path]);
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                'flutter', const <String>['packages', 'get'], pluginDir.path),
+            ProcessCall('dart', const <String>['analyze', '--fatal-infos'],
+                pluginDir.path),
+          ]));
+    });
+
     // See: https://github.com/flutter/flutter/issues/78994
     test('takes an empty allow list', () async {
       createFakePlugin('foo', packagesDir,
@@ -192,7 +211,7 @@ void main() {
     createFakePlugin('foo', packagesDir);
 
     processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
-      MockProcess.failing() // flutter packages get
+      MockProcess(exitCode: 1) // flutter packages get
     ];
 
     Error? commandError;
@@ -214,7 +233,7 @@ void main() {
     createFakePlugin('foo', packagesDir);
 
     processRunner.mockProcessesForExecutable['dart'] = <io.Process>[
-      MockProcess.failing() // dart analyze
+      MockProcess(exitCode: 1) // dart analyze
     ];
 
     Error? commandError;
@@ -229,6 +248,45 @@ void main() {
       containsAllInOrder(<Matcher>[
         contains('The following packages had errors:'),
         contains('  foo'),
+      ]),
+    );
+  });
+
+  // Ensure that the command used to analyze flutter/plugins in the Dart repo:
+  // https://github.com/dart-lang/sdk/blob/master/tools/bots/flutter/analyze_flutter_plugins.sh
+  // continues to work.
+  //
+  // DO NOT remove or modify this test without a coordination plan in place to
+  // modify the script above, as it is run from source, but out-of-repo.
+  // Contact stuartmorgan or devoncarew for assistance.
+  test('Dart repo analyze command works', () async {
+    final Directory pluginDir = createFakePlugin('foo', packagesDir,
+        extraFiles: <String>['analysis_options.yaml']);
+    final File allowFile = packagesDir.childFile('custom.yaml');
+    allowFile.writeAsStringSync('- foo');
+
+    await runCapturingPrint(runner, <String>[
+      // DO NOT change this call; see comment above.
+      'analyze',
+      '--analysis-sdk',
+      'foo/bar/baz',
+      '--custom-analysis',
+      allowFile.path
+    ]);
+
+    expect(
+      processRunner.recordedCalls,
+      orderedEquals(<ProcessCall>[
+        ProcessCall(
+          'flutter',
+          const <String>['packages', 'get'],
+          pluginDir.path,
+        ),
+        ProcessCall(
+          'foo/bar/baz/bin/dart',
+          const <String>['analyze', '--fatal-infos'],
+          pluginDir.path,
+        ),
       ]),
     );
   });

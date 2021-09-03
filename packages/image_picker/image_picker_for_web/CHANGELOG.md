@@ -1,3 +1,17 @@
+## 2.1.3
+
+* Add `implements` to pubspec.
+
+## 2.1.2
+
+* Updated installation instructions in README.
+
+# 2.1.1
+
+* Implemented `getMultiImage`.
+* Initialized the following `XFile` attributes for picked files:
+  * `name`, `length`, `mimeType` and `lastModified`.
+
 # 2.1.0
 
 * Implemented `getImage`, `getVideo` and `getFile` methods that return `XFile` instances.

@@ -79,7 +79,7 @@ public class ResolutionFeatureTest {
   }
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ResolutionFeature resolutionFeature =
         new ResolutionFeature(mockCameraProperties, ResolutionPreset.max, cameraName);
@@ -88,7 +88,7 @@ public class ResolutionFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_initial_value_when_not_set() {
+  public void getValue_shouldReturnInitialValueWhenNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ResolutionFeature resolutionFeature =
         new ResolutionFeature(mockCameraProperties, ResolutionPreset.max, cameraName);
@@ -97,7 +97,7 @@ public class ResolutionFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_setValue() {
+  public void getValue_shouldEchoSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ResolutionFeature resolutionFeature =
         new ResolutionFeature(mockCameraProperties, ResolutionPreset.max, cameraName);
@@ -108,7 +108,7 @@ public class ResolutionFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_returns_true() {
+  public void checkIsSupport_returnsTrue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ResolutionFeature resolutionFeature =
         new ResolutionFeature(mockCameraProperties, ResolutionPreset.max, cameraName);
@@ -117,7 +117,7 @@ public class ResolutionFeatureTest {
   }
 
   @Test
-  public void getBestAvailableCamcorderProfileForResolutionPreset_should_fall_through() {
+  public void getBestAvailableCamcorderProfileForResolutionPreset_shouldFallThrough() {
     mockedStaticProfile
         .when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH))
         .thenReturn(false);
@@ -147,42 +147,42 @@ public class ResolutionFeatureTest {
   }
 
   @Test
-  public void computeBestPreviewSize_should_use_720P_when_resolution_preset_max() {
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetMax() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
-  public void computeBestPreviewSize_should_use_720P_when_resolution_preset_ultraHigh() {
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetUltraHigh() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.ultraHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
-  public void computeBestPreviewSize_should_use_720P_when_resolution_preset_veryHigh() {
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetVeryHigh() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.veryHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
-  public void computeBestPreviewSize_should_use_720P_when_resolution_preset_high() {
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetHigh() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.high);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
   }
 
   @Test
-  public void computeBestPreviewSize_should_use_480P_when_resolution_preset_medium() {
+  public void computeBestPreviewSize_shouldUse480PWhenResolutionPresetMedium() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.medium);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P));
   }
 
   @Test
-  public void computeBestPreviewSize_should_use_QVGA_when_resolution_preset_low() {
+  public void computeBestPreviewSize_shouldUseQVGAWhenResolutionPresetLow() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.low);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA));

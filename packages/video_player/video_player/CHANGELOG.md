@@ -1,3 +1,23 @@
+## NEXT
+
+* Updated Android lint settings.
+
+## 2.1.14
+
+* Removed dependency on the `flutter_test` package.
+
+## 2.1.13
+
+* Removed obsolete warning about not working in iOS simulators from README.
+
+## 2.1.12
+
+* Update the video url in the readme code sample
+
+## 2.1.11
+
+* Remove references to the Android V1 embedding.
+
 ## 2.1.10
 
 * Ensure video pauses correctly when it finishes.

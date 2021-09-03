@@ -11,7 +11,7 @@ import org.junit.Test;
 public class ExposureModeTest {
 
   @Test
-  public void getValueForString_returns_correct_values() {
+  public void getValueForString_returnsCorrectValues() {
     assertEquals(
         "Returns ExposureMode.auto for 'auto'",
         ExposureMode.getValueForString("auto"),
@@ -23,13 +23,13 @@ public class ExposureModeTest {
   }
 
   @Test
-  public void getValueForString_returns_null_for_nonexistant_value() {
+  public void getValueForString_returnsNullForNonexistantValue() {
     assertEquals(
         "Returns null for 'nonexistant'", ExposureMode.getValueForString("nonexistant"), null);
   }
 
   @Test
-  public void toString_returns_correct_value() {
+  public void toString_returnsCorrectValue() {
     assertEquals("Returns 'auto' for ExposureMode.auto", ExposureMode.auto.toString(), "auto");
     assertEquals(
         "Returns 'locked' for ExposureMode.locked", ExposureMode.locked.toString(), "locked");
