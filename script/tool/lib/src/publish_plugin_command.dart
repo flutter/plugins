@@ -159,6 +159,9 @@ class PublishPluginCommand extends PackageLoopingCommand {
   Stream<PackageEnumerationEntry> getPackagesToProcess() async* {
     if (getBoolArg(_allChangedFlag)) {
       final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+      final String baseSha = await gitVersionFinder.getBaseSha();
+      print(
+          'Publishing all packages that have changed relative to "$baseSha"\n');
       final List<String> changedPubspecs =
           await gitVersionFinder.getChangedPubSpecs();
 
