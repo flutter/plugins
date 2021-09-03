@@ -430,7 +430,8 @@ void main() {
           ],
         );
 
-        await runCapturingPrint(runner, <String>['native-test', '--android']);
+        await runCapturingPrint(
+            runner, <String>['native-test', '--android', '--no-unit']);
 
         final Directory androidFolder =
             plugin.childDirectory('example').childDirectory('android');
@@ -467,7 +468,8 @@ void main() {
           ],
         );
 
-        await runCapturingPrint(runner, <String>['native-test', '--android']);
+        await runCapturingPrint(
+            runner, <String>['native-test', '--android', '--no-unit']);
 
         // Nothing should run since those files are all
         // integration_test-specific.
@@ -641,7 +643,11 @@ void main() {
         );
 
         final List<String> output = await runCapturingPrint(
-            runner, <String>['native-test', '--android']);
+            runner, <String>['native-test', '--android'],
+            errorHandler: (Error e) {
+          // Having no unit tests is fatal, but that's not the point of this
+          // test so just ignore the failure.
+        });
 
         expect(
             output,
@@ -654,7 +660,7 @@ void main() {
             ]));
       });
 
-      test('fails when a test fails', () async {
+      test('fails when a unit test fails', () async {
         final Directory pluginDir = createFakePlugin(
           'plugin',
           packagesDir,
@@ -695,6 +701,84 @@ void main() {
         );
       });
 
+      test('fails when an integration test fails', () async {
+        final Directory pluginDir = createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/test/example_test.java',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+
+        final String gradlewPath = pluginDir
+            .childDirectory('example')
+            .childDirectory('android')
+            .childFile('gradlew')
+            .path;
+        processRunner.mockProcessesForExecutable[gradlewPath] = <io.Process>[
+          MockProcess(), // unit passes
+          MockProcess(exitCode: 1), // integration fails
+        ];
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('plugin/example integration tests failed.'),
+            contains('The following packages had errors:'),
+            contains('plugin')
+          ]),
+        );
+      });
+
+      test('fails if there are no unit tests', () async {
+        createFakePlugin(
+          'plugin',
+          packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
+          },
+          extraFiles: <String>[
+            'example/android/gradlew',
+            'example/android/app/src/androidTest/IntegrationTest.java',
+          ],
+        );
+
+        Error? commandError;
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['native-test', '--android'],
+            errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No Android unit tests found for plugin/example'),
+            contains(
+                'No unit tests ran. Plugins are required to have unit tests.'),
+            contains('The following packages had errors:'),
+            contains('plugin:\n'
+                '    No unit tests ran (use --exclude if this is intentional).')
+          ]),
+        );
+      });
+
       test('skips if Android is not supported', () async {
         createFakePlugin(
           'plugin',
@@ -713,7 +797,7 @@ void main() {
         );
       });
 
-      test('skips when running no tests', () async {
+      test('skips when running no tests in integration-only mode', () async {
         createFakePlugin(
           'plugin',
           packagesDir,
@@ -723,12 +807,11 @@ void main() {
         );
 
         final List<String> output = await runCapturingPrint(
-            runner, <String>['native-test', '--android']);
+            runner, <String>['native-test', '--android', '--no-unit']);
 
         expect(
           output,
           containsAllInOrder(<Matcher>[
-            contains('No Android unit tests found for plugin/example'),
             contains('No Android integration tests found for plugin/example'),
             contains('SKIPPING: No tests found.'),
           ]),
