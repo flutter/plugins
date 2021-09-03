@@ -182,7 +182,8 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         # Native integration tests are handled by firebase-test-lab below, so
         # only run unit tests.
-        - ./script/tool_runner.sh native-test --android --no-integration  # must come after apk build
+        # Must come after build-examples.
+        - ./script/tool_runner.sh native-test --android --no-integration --exclude script/configs/exclude_native_unit_android.yaml
       firebase_test_lab_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
