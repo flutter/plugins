@@ -62,7 +62,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: windows-build+platform-tests master
+  - name: Windows win32_build+platform-tests master
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -76,7 +76,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: windows-build+platform-tests stable
+  - name: Windows win32_build+platform-tests stable
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -91,7 +91,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: build_all_plugins_windows master
+  - name: Windows build_all_plugins master
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -105,7 +105,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: build_all_plugins_windows stable
+  - name: Windows build_all_plugins stable
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -120,7 +120,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: uwp-build+platform-tests master
+  - name: Windows uwp-build+platform-tests master
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -134,7 +134,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: plugin_tools_tests - Windows
+  - name: Windows plugin_tools_tests
     recipe: plugins/plugins
     bringup: true
     timeout: 30
