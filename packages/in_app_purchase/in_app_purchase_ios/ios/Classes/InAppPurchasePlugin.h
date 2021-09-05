@@ -18,4 +18,9 @@
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
+#if TARGET_OS_IPHONE
+- (void)presentCodeRedemptionSheet API_AVAILABLE(ios(14));
+- (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4));
+#endif
+
 @end

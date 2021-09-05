@@ -14,11 +14,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 // Converts an instance of SKProductSubscriptionPeriod into a dictionary.
 + (NSDictionary *)getMapFromSKProductSubscriptionPeriod:(SKProductSubscriptionPeriod *)period
-    API_AVAILABLE(ios(11.2));
+    API_AVAILABLE(ios(11.2), macos(10.13.2));
 
 // Converts an instance of SKProductDiscount into a dictionary.
 + (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount
-    API_AVAILABLE(ios(11.2));
+    API_AVAILABLE(ios(11.2), macos(10.13.2));
 
 // Converts an instance of SKProductsResponse into a dictionary.
 + (NSDictionary *)getMapFromSKProductsResponse:(SKProductsResponse *)productResponse;

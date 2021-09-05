@@ -102,7 +102,9 @@
     [self restoreTransactions:call result:result];
   } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
                  isEqualToString:call.method]) {
-    [self presentCodeRedemptionSheet:call result:result];
+    #if TARGET_OS_IPHONE
+      [self presentCodeRedemptionSheet:call result:result];
+    #endif
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
@@ -116,7 +118,9 @@
   } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
     [self removePaymentQueueDelegate:result];
   } else if ([@"-[SKPaymentQueue showPriceConsentIfNeeded]" isEqualToString:call.method]) {
-    [self showPriceConsentIfNeeded:result];
+    #if TARGET_OS_IPHONE
+      [self showPriceConsentIfNeeded:result];
+    #endif
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -265,11 +269,16 @@
   [self.paymentQueueHandler restoreTransactions:call.arguments];
   result(nil);
 }
-
+#if TARGET_OS_IPHONE
 - (void)presentCodeRedemptionSheet:(FlutterMethodCall *)call result:(FlutterResult)result {
-  [self.paymentQueueHandler presentCodeRedemptionSheet];
+  if (@available(iOS 14, *)) {
+    [self.paymentQueueHandler presentCodeRedemptionSheet];
+  } else {
+    NSLog(@"presentCodeRedemptionSheet is only available on iOS 14 or newer");
+  }
   result(nil);
 }
+#endif
 
 - (void)retrieveReceiptData:(FlutterMethodCall *)call result:(FlutterResult)result {
   FlutterError *error = nil;
@@ -347,12 +356,14 @@
   result(nil);
 }
 
+#if TARGET_OS_IPHONE
 - (void)showPriceConsentIfNeeded:(FlutterResult)result {
   if (@available(iOS 13.4, *)) {
     [_paymentQueueHandler showPriceConsentIfNeeded];
   }
   result(nil);
 }
+#endif
 
 #pragma mark - transaction observer:
 
