@@ -25,7 +25,9 @@ dependencies:
   in_app_purchase_android: ^0.1.4
   in_app_purchase_ios: ^0.1.1
   in_app_purchase_macos:
-    path: ../in_app_purchase_macos/
+    git:
+      url: git://github.com/Ahmadre/plugins
+      path: packages/in_app_purchase/in_app_purchase_macos
 
 dev_dependencies:
   flutter_driver:
