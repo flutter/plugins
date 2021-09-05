@@ -44,7 +44,8 @@ class InAppPurchaseMacOSPlatform extends InAppPurchasePlatform {
   static void registerPlatform() {
     // Register the [InAppPurchaseMacOSPlatformAddition] containing macOS
     // platform-specific functionality.
-    InAppPurchasePlatformAddition.instance = InAppPurchaseMacOSPlatformAddition();
+    InAppPurchasePlatformAddition.instance =
+        InAppPurchaseMacOSPlatformAddition();
 
     // Register the platform-specific implementation of the idiomatic
     // InAppPurchase API.

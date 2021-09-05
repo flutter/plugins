@@ -142,7 +142,8 @@ void main() {
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.restoreTransactions(applicationUserName: 'aUserID');
-      expect(fakeMACOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
+      expect(
+          fakeMACOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
     });
 
     test('startObservingTransactionQueue should call methodChannel', () async {

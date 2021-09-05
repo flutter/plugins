@@ -27,7 +27,8 @@ void main() {
 
   setUp(() {
     InAppPurchaseMacOSPlatform.registerPlatform();
-    iapMacOSPlatform = InAppPurchasePlatform.instance as InAppPurchaseMacOSPlatform;
+    iapMacOSPlatform =
+        InAppPurchasePlatform.instance as InAppPurchaseMacOSPlatform;
     fakeMACOSPlatform.reset();
   });
 
@@ -41,7 +42,8 @@ void main() {
 
   group('query product list', () {
     test('should get product list and correct invalid identifiers', () async {
-      final InAppPurchaseMacOSPlatform connection = InAppPurchaseMacOSPlatform();
+      final InAppPurchaseMacOSPlatform connection =
+          InAppPurchaseMacOSPlatform();
       final ProductDetailsResponse response = await connection
           .queryProductDetails(<String>['123', '456', '789'].toSet());
       List<ProductDetails> products = response.productDetails;
@@ -60,7 +62,8 @@ void main() {
           code: 'error_code',
           message: 'error_message',
           details: {'info': 'error_info'});
-      final InAppPurchaseMacOSPlatform connection = InAppPurchaseMacOSPlatform();
+      final InAppPurchaseMacOSPlatform connection =
+          InAppPurchaseMacOSPlatform();
       final ProductDetailsResponse response = await connection
           .queryProductDetails(<String>['123', '456', '789'].toSet());
       expect(response.productDetails, []);
@@ -91,7 +94,8 @@ void main() {
 
       expect(details.length, 2);
       for (int i = 0; i < fakeMACOSPlatform.transactions.length; i++) {
-        SKPaymentTransactionWrapper expected = fakeMACOSPlatform.transactions[i];
+        SKPaymentTransactionWrapper expected =
+            fakeMACOSPlatform.transactions[i];
         PurchaseDetails actual = details[i];
 
         expect(actual.purchaseID, expected.transactionIdentifier);
@@ -106,8 +110,8 @@ void main() {
     });
 
     test('should not block transaction updates', () async {
-      fakeMACOSPlatform.transactions
-          .insert(0, fakeMACOSPlatform.createPurchasedTransaction('foo', 'bar'));
+      fakeMACOSPlatform.transactions.insert(
+          0, fakeMACOSPlatform.createPurchasedTransaction('foo', 'bar'));
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapMacOSPlatform.purchaseStream;
 
@@ -122,7 +126,8 @@ void main() {
       List<PurchaseDetails> details = await completer.future;
       expect(details.length, 3);
       for (int i = 0; i < fakeMACOSPlatform.transactions.length; i++) {
-        SKPaymentTransactionWrapper expected = fakeMACOSPlatform.transactions[i];
+        SKPaymentTransactionWrapper expected =
+            fakeMACOSPlatform.transactions[i];
         PurchaseDetails actual = details[i];
 
         expect(actual.purchaseID, expected.transactionIdentifier);
