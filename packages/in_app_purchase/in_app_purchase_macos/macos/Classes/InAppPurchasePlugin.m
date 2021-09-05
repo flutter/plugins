@@ -5,7 +5,6 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
-#import "FIAPPaymentQueueDelegate.h"
 #import "FIAPReceiptManager.h"
 #import "FIAPRequestHandler.h"
 #import "FIAPaymentQueueHandler.h"
@@ -23,16 +22,11 @@
 // Callback channel to dart used for when a function from the transaction observer is triggered.
 @property(strong, nonatomic, readonly) FlutterMethodChannel *transactionObserverCallbackChannel;
 
-// Callback channel to dart used for when a function from the payment queue delegate is triggered.
-@property(strong, nonatomic, readonly) FlutterMethodChannel *paymentQueueDelegateCallbackChannel;
-
 @property(strong, nonatomic, readonly) NSObject<FlutterTextureRegistry> *registry;
 @property(strong, nonatomic, readonly) NSObject<FlutterBinaryMessenger> *messenger;
 @property(strong, nonatomic, readonly) NSObject<FlutterPluginRegistrar> *registrar;
 
 @property(strong, nonatomic, readonly) FIAPReceiptManager *receiptManager;
-@property(strong, nonatomic, readonly)
-    FIAPPaymentQueueDelegate *paymentQueueDelegate API_AVAILABLE(ios(13));
 
 @end
 
@@ -108,10 +102,6 @@
     [self startObservingPaymentQueue:result];
   } else if ([@"-[SKPaymentQueue stopObservingTransactionQueue]" isEqualToString:call.method]) {
     [self stopObservingPaymentQueue:result];
-  } else if ([@"-[SKPaymentQueue registerDelegate]" isEqualToString:call.method]) {
-    [self registerPaymentQueueDelegate:result];
-  } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
-    [self removePaymentQueueDelegate:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -193,12 +183,6 @@
   payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
   NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
   payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
-  if (@available(iOS 8.3, *)) {
-    NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
-    payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
-                                             ? NO
-                                             : [simulatesAskToBuyInSandbox boolValue];
-  }
 
   if (![self.paymentQueueHandler addPayment:payment]) {
     result([FlutterError
@@ -312,28 +296,6 @@
 
 - (void)stopObservingPaymentQueue:(FlutterResult)result {
   [_paymentQueueHandler stopObservingPaymentQueue];
-  result(nil);
-}
-
-- (void)registerPaymentQueueDelegate:(FlutterResult)result {
-  if (@available(iOS 13.0, *)) {
-    _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
-        methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
-              binaryMessenger:_messenger];
-
-    _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc]
-        initWithMethodChannel:_paymentQueueDelegateCallbackChannel];
-    _paymentQueueHandler.delegate = _paymentQueueDelegate;
-  }
-  result(nil);
-}
-
-- (void)removePaymentQueueDelegate:(FlutterResult)result {
-  if (@available(iOS 13.0, *)) {
-    _paymentQueueHandler.delegate = nil;
-  }
-  _paymentQueueDelegate = nil;
-  _paymentQueueDelegateCallbackChannel = nil;
   result(nil);
 }
 

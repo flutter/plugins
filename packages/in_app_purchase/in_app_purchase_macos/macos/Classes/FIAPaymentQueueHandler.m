@@ -75,24 +75,6 @@
   }
 }
 
-#if TARGET_OS_IPHONE
-- (void)presentCodeRedemptionSheet {
-  if (@available(iOS 14, *)) {
-    [self.queue presentCodeRedemptionSheet];
-  } else {
-    NSLog(@"presentCodeRedemptionSheet is only available on iOS 14 or newer");
-  }
-}
-
-- (void)showPriceConsentIfNeeded {
-  if (@available(iOS 13.4, *)) {
-    [self.queue showPriceConsentIfNeeded];
-  } else {
-    NSLog(@"showPriceConsentIfNeeded is only available on iOS 13.4 or newer");
-  }
-}
-#endif
-
 #pragma mark - observing
 
 // Sent when the transaction array has changed (additions or state changes).  Client should check

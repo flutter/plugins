@@ -24,21 +24,6 @@
   // https://github.com/flutter/flutter/issues/26610
   [map setObject:[FIAObjectTranslator getMapFromNSLocale:product.priceLocale] ?: [NSNull null]
           forKey:@"priceLocale"];
-  if (@available(iOS 11.2, *)) {
-    [map setObject:[FIAObjectTranslator
-                       getMapFromSKProductSubscriptionPeriod:product.subscriptionPeriod]
-                       ?: [NSNull null]
-            forKey:@"subscriptionPeriod"];
-  }
-  if (@available(iOS 11.2, *)) {
-    [map setObject:[FIAObjectTranslator getMapFromSKProductDiscount:product.introductoryPrice]
-                       ?: [NSNull null]
-            forKey:@"introductoryPrice"];
-  }
-  if (@available(iOS 12.0, *)) {
-    [map setObject:product.subscriptionGroupIdentifier ?: [NSNull null]
-            forKey:@"subscriptionGroupIdentifier"];
-  }
   return map;
 }
 
@@ -96,9 +81,6 @@
     @"quantity" : @(payment.quantity),
     @"applicationUsername" : payment.applicationUsername ?: [NSNull null]
   }];
-  if (@available(iOS 8.3, *)) {
-    [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
-  }
   return map;
 }
 
@@ -125,9 +107,6 @@
   payment.requestData = [utf8String dataUsingEncoding:NSUTF8StringEncoding];
   payment.quantity = [map[@"quantity"] integerValue];
   payment.applicationUsername = map[@"applicationUsername"];
-  if (@available(iOS 8.3, *)) {
-    payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
-  }
   return payment;
 }
 
