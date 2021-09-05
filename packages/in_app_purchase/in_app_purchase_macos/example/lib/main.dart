@@ -5,8 +5,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios_example/example_payment_queue_delegate.dart';
+import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
+import 'package:in_app_purchase_macos_example/example_payment_queue_delegate.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'consumable_store.dart';
 

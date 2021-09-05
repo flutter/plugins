@@ -1,5 +1,5 @@
-name: in_app_purchase_ios_example
-description: Demonstrates how to use the in_app_purchase_ios plugin.
+name: in_app_purchase_macos_example
+description: Demonstrates how to use the in_app_purchase_macos plugin.
 publish_to: none
 
 environment:
@@ -10,7 +10,7 @@ dependencies:
   flutter:
     sdk: flutter
   shared_preferences: ^2.0.0
-  in_app_purchase_ios:
+  in_app_purchase_macos:
     # When depending on this package from a real application you should use:
     #   in_app_purchase: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints

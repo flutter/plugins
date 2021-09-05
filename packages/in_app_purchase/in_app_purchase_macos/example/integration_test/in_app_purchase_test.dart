@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
@@ -12,7 +12,7 @@ void main() {
 
   testWidgets('Can create InAppPurchaseAndroid instance',
       (WidgetTester tester) async {
-    InAppPurchaseIosPlatform.registerPlatform();
+    InAppPurchaseMacOSPlatform.registerPlatform();
     final InAppPurchasePlatform androidPlatform =
         InAppPurchasePlatform.instance;
     expect(androidPlatform, isNotNull);
