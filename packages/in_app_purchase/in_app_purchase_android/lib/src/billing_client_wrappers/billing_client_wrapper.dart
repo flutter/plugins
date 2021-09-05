@@ -35,7 +35,8 @@ const String _kOnBillingServiceDisconnected =
 ///
 /// Wraps a
 /// [`PurchasesUpdatedListener`](https://developer.android.com/reference/com/android/billingclient/api/PurchasesUpdatedListener.html).
-typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
+typedef PurchasesUpdatedListener = void Function(
+    PurchasesResultWrapper purchasesResult);
 
 /// This class can be used directly instead of [InAppPurchaseConnection] to call
 /// Play-specific billing APIs.
@@ -356,7 +357,7 @@ class BillingClient {
 /// Wraps
 /// [`com.android.billingclient.api.BillingClientStateListener.onServiceDisconnected()`](https://developer.android.com/reference/com/android/billingclient/api/BillingClientStateListener.html#onBillingServiceDisconnected())
 /// to call back on `BillingClient` disconnect.
-typedef void OnBillingServiceDisconnected();
+typedef OnBillingServiceDisconnected = void Function();
 
 /// Possible `BillingClient` response statuses.
 ///

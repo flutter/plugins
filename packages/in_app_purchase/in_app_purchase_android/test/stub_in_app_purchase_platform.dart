@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'package:flutter/services.dart';
 
-typedef void AdditionalSteps(dynamic args);
+typedef AdditionalSteps = void Function(dynamic args);
 
 class StubInAppPurchasePlatform {
   Map<String, dynamic> _expectedCalls = <String, dynamic>{};

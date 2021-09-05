@@ -38,8 +38,7 @@ class InAppPurchase implements InAppPurchasePlatformAdditionProvider {
       InAppPurchaseAndroidPlatform.registerPlatform();
     } else if (defaultTargetPlatform == TargetPlatform.macOS) {
       InAppPurchaseMacOSPlatform.registerPlatform();
-    }
-     else if (defaultTargetPlatform == TargetPlatform.iOS) {
+    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
       InAppPurchaseIosPlatform.registerPlatform();
     }
 
