@@ -102,9 +102,9 @@
     [self restoreTransactions:call result:result];
   } else if ([@"-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]"
                  isEqualToString:call.method]) {
-    #if TARGET_OS_IPHONE
-      [self presentCodeRedemptionSheet:call result:result];
-    #endif
+#if TARGET_OS_IPHONE
+    [self presentCodeRedemptionSheet:call result:result];
+#endif
   } else if ([@"-[InAppPurchasePlugin retrieveReceiptData:result:]" isEqualToString:call.method]) {
     [self retrieveReceiptData:call result:result];
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
@@ -118,9 +118,9 @@
   } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
     [self removePaymentQueueDelegate:result];
   } else if ([@"-[SKPaymentQueue showPriceConsentIfNeeded]" isEqualToString:call.method]) {
-    #if TARGET_OS_IPHONE
-      [self showPriceConsentIfNeeded:result];
-    #endif
+#if TARGET_OS_IPHONE
+    [self showPriceConsentIfNeeded:result];
+#endif
   } else {
     result(FlutterMethodNotImplemented);
   }
