@@ -7,14 +7,14 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios/src/channel.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
+import 'package:in_app_purchase_macos/src/channel.dart';
+import 'package:in_app_purchase_macos/store_kit_wrappers.dart';
 
 import '../store_kit_wrappers/sk_test_stub_objects.dart';
 
-class FakeIOSPlatform {
-  FakeIOSPlatform() {
+class FakeMACOSPlatform {
+  FakeMACOSPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 
@@ -102,7 +102,7 @@ class FakeIOSPlatform {
         transactionTimeStamp: 123123.121,
         error: SKError(
             code: 0,
-            domain: 'ios_domain',
+            domain: 'macos_domain',
             userInfo: {'message': 'an error message'}),
         originalTransaction: null);
   }
@@ -135,15 +135,15 @@ class FakeIOSPlatform {
           throw restoreException!;
         }
         if (testRestoredError != null) {
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseMacOSPlatform.observer
               .restoreCompletedTransactionsFailed(error: testRestoredError!);
           return Future<void>.sync(() {});
         }
         if (!testRestoredTransactionsNull) {
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseMacOSPlatform.observer
               .updatedTransactions(transactions: transactions);
         }
-        InAppPurchaseIosPlatform.observer
+        InAppPurchaseMacOSPlatform.observer
             .paymentQueueRestoreCompletedTransactionsFinished();
 
         return Future<void>.sync(() {});
@@ -159,19 +159,19 @@ class FakeIOSPlatform {
       case '-[InAppPurchasePlugin addPayment:result:]':
         String id = call.arguments['productIdentifier'];
         SKPaymentTransactionWrapper transaction = createPendingTransaction(id);
-        InAppPurchaseIosPlatform.observer
+        InAppPurchaseMacOSPlatform.observer
             .updatedTransactions(transactions: [transaction]);
         sleep(const Duration(milliseconds: 30));
         if (testTransactionFail) {
           SKPaymentTransactionWrapper transaction_failed =
               createFailedTransaction(id);
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseMacOSPlatform.observer
               .updatedTransactions(transactions: [transaction_failed]);
         } else {
           SKPaymentTransactionWrapper transaction_finished =
               createPurchasedTransaction(
                   id, transaction.transactionIdentifier ?? '');
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseMacOSPlatform.observer
               .updatedTransactions(transactions: [transaction_finished]);
         }
         break;

@@ -4,26 +4,26 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/src/channel.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_macos/src/channel.dart';
+import 'package:in_app_purchase_macos/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
+  final FakeMACOSPlatform fakeMACOSPlatform = FakeMACOSPlatform();
 
   setUpAll(() {
     SystemChannels.platform
-        .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
+        .setMockMethodCallHandler(fakeMACOSPlatform.onMethodCall);
   });
 
   setUp(() {});
 
   tearDown(() {
-    fakeIOSPlatform.testReturnNull = false;
-    fakeIOSPlatform.queueIsActive = null;
-    fakeIOSPlatform.getReceiptFailTest = false;
+    fakeMACOSPlatform.testReturnNull = false;
+    fakeMACOSPlatform.queueIsActive = null;
+    fakeMACOSPlatform.getReceiptFailTest = false;
   });
 
   group('sk_request_maker', () {
@@ -57,31 +57,31 @@ void main() {
       );
 
       expect(
-        fakeIOSPlatform.startProductRequestParam,
+        fakeMACOSPlatform.startProductRequestParam,
         ['xxx'],
       );
     });
 
     test('get products method channel should throw exception', () async {
-      fakeIOSPlatform.getProductRequestFailTest = true;
+      fakeMACOSPlatform.getProductRequestFailTest = true;
       expect(
         SKRequestMaker().startProductRequest(<String>['xxx']),
         throwsException,
       );
-      fakeIOSPlatform.getProductRequestFailTest = false;
+      fakeMACOSPlatform.getProductRequestFailTest = false;
     });
 
     test('refreshed receipt', () async {
-      int receiptCountBefore = fakeIOSPlatform.refreshReceipt;
+      int receiptCountBefore = fakeMACOSPlatform.refreshReceipt;
       await SKRequestMaker().startRefreshReceiptRequest(
           receiptProperties: <String, dynamic>{"isExpired": true});
-      expect(fakeIOSPlatform.refreshReceipt, receiptCountBefore + 1);
-      expect(fakeIOSPlatform.refreshReceiptParam,
+      expect(fakeMACOSPlatform.refreshReceipt, receiptCountBefore + 1);
+      expect(fakeMACOSPlatform.refreshReceiptParam,
           <String, dynamic>{"isExpired": true});
     });
 
     test('should get null receipt if any exceptions are raised', () async {
-      fakeIOSPlatform.getReceiptFailTest = true;
+      fakeMACOSPlatform.getReceiptFailTest = true;
       expect(() async => SKReceiptManager.retrieveReceiptData(),
           throwsA(TypeMatcher<PlatformException>()));
     });
@@ -102,7 +102,7 @@ void main() {
 
     test('canMakePayment returns false if method channel returns null',
         () async {
-      fakeIOSPlatform.testReturnNull = true;
+      fakeMACOSPlatform.testReturnNull = true;
       expect(await SKPaymentQueueWrapper.canMakePayments(), false);
     });
 
@@ -123,7 +123,7 @@ void main() {
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.addPayment(dummyPayment);
-      expect(fakeIOSPlatform.payments.first, equals(dummyPayment));
+      expect(fakeMACOSPlatform.payments.first, equals(dummyPayment));
     });
 
     test('should finish transaction', () async {
@@ -132,7 +132,7 @@ void main() {
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.finishTransaction(dummyTransaction);
-      expect(fakeIOSPlatform.transactionsFinished.first,
+      expect(fakeMACOSPlatform.transactionsFinished.first,
           equals(dummyTransaction.toFinishMap()));
     });
 
@@ -142,48 +142,48 @@ void main() {
           TestPaymentTransactionObserver();
       queue.setTransactionObserver(observer);
       await queue.restoreTransactions(applicationUserName: 'aUserID');
-      expect(fakeIOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
+      expect(fakeMACOSPlatform.applicationNameHasTransactionRestored, 'aUserID');
     });
 
     test('startObservingTransactionQueue should call methodChannel', () async {
-      expect(fakeIOSPlatform.queueIsActive, isNot(true));
+      expect(fakeMACOSPlatform.queueIsActive, isNot(true));
       await SKPaymentQueueWrapper().startObservingTransactionQueue();
-      expect(fakeIOSPlatform.queueIsActive, true);
+      expect(fakeMACOSPlatform.queueIsActive, true);
     });
 
     test('stopObservingTransactionQueue should call methodChannel', () async {
-      expect(fakeIOSPlatform.queueIsActive, isNot(false));
+      expect(fakeMACOSPlatform.queueIsActive, isNot(false));
       await SKPaymentQueueWrapper().stopObservingTransactionQueue();
-      expect(fakeIOSPlatform.queueIsActive, false);
+      expect(fakeMACOSPlatform.queueIsActive, false);
     });
 
     test('setDelegate should call methodChannel', () async {
-      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, false);
+      expect(fakeMACOSPlatform.isPaymentQueueDelegateRegistered, false);
       await SKPaymentQueueWrapper().setDelegate(TestPaymentQueueDelegate());
-      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, true);
+      expect(fakeMACOSPlatform.isPaymentQueueDelegateRegistered, true);
       await SKPaymentQueueWrapper().setDelegate(null);
-      expect(fakeIOSPlatform.isPaymentQueueDelegateRegistered, false);
+      expect(fakeMACOSPlatform.isPaymentQueueDelegateRegistered, false);
     });
 
     test('showPriceConsentIfNeeded should call methodChannel', () async {
-      expect(fakeIOSPlatform.showPriceConsentIfNeeded, false);
+      expect(fakeMACOSPlatform.showPriceConsentIfNeeded, false);
       await SKPaymentQueueWrapper().showPriceConsentIfNeeded();
-      expect(fakeIOSPlatform.showPriceConsentIfNeeded, true);
+      expect(fakeMACOSPlatform.showPriceConsentIfNeeded, true);
     });
   });
 
   group('Code Redemption Sheet', () {
     test('presentCodeRedemptionSheet should not throw', () async {
-      expect(fakeIOSPlatform.presentCodeRedemption, false);
+      expect(fakeMACOSPlatform.presentCodeRedemption, false);
       await SKPaymentQueueWrapper().presentCodeRedemptionSheet();
-      expect(fakeIOSPlatform.presentCodeRedemption, true);
-      fakeIOSPlatform.presentCodeRedemption = false;
+      expect(fakeMACOSPlatform.presentCodeRedemption, true);
+      fakeMACOSPlatform.presentCodeRedemption = false;
     });
   });
 }
 
-class FakeIOSPlatform {
-  FakeIOSPlatform() {
+class FakeMACOSPlatform {
+  FakeMACOSPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
   }
   // get product request

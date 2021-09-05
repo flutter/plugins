@@ -4,33 +4,25 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import 'fakes/fake_ios_platform.dart';
+import 'fakes/fake_macos_platform.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
+  final FakeMACOSPlatform fakeMACOSPlatform = FakeMACOSPlatform();
 
   setUpAll(() {
     SystemChannels.platform
-        .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
-  });
-
-  group('present code redemption sheet', () {
-    test('null', () async {
-      expect(
-          await InAppPurchaseIosPlatformAddition().presentCodeRedemptionSheet(),
-          null);
-    });
+        .setMockMethodCallHandler(fakeMACOSPlatform.onMethodCall);
   });
 
   group('refresh receipt data', () {
     test('should refresh receipt data', () async {
       PurchaseVerificationData? receiptData =
-          await InAppPurchaseIosPlatformAddition()
+          await InAppPurchaseMacOSPlatformAddition()
               .refreshPurchaseVerificationData();
       expect(receiptData, isNotNull);
       expect(receiptData!.source, kIAPSource);
