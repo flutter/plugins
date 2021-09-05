@@ -19,7 +19,7 @@ Downloaded by pub (not CocoaPods).
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'FlutterMacOS'
-  s.platform = :osx, '10.12'
+  s.platform = :osx, '10.15'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
   s.static_framework = true
 end
