@@ -34,7 +34,7 @@ class AppStoreProductDetails extends ProductDetails {
   /// this [AppStoreProductDetails] object.
   final SKProductWrapper skProduct;
 
-  /// Generate a [AppStoreProductDetails] object based on an iOS [SKProductWrapper] object.
+  /// Generate a [AppStoreProductDetails] object based on an macOS [SKProductWrapper] object.
   factory AppStoreProductDetails.fromSKProduct(SKProductWrapper product) {
     return AppStoreProductDetails(
       id: product.productIdentifier,

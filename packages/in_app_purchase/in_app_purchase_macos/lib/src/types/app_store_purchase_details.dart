@@ -4,7 +4,7 @@
 
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import '../../in_app_purchase_ios.dart';
+import '../../in_app_purchase_macos.dart';
 import '../../store_kit_wrappers.dart';
 import '../store_kit_wrappers/enum_converters.dart';
 
@@ -45,7 +45,7 @@ class AppStorePurchaseDetails extends PurchaseDetails {
   bool _pendingCompletePurchase = false;
   bool get pendingCompletePurchase => _pendingCompletePurchase;
 
-  /// Generate a [AppStorePurchaseDetails] object based on an iOS
+  /// Generate a [AppStorePurchaseDetails] object based on an macOS
   /// [SKPaymentTransactionWrapper] object.
   factory AppStorePurchaseDetails.fromSKTransaction(
     SKPaymentTransactionWrapper transaction,
