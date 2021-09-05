@@ -157,29 +157,6 @@ void main() {
       await SKPaymentQueueWrapper().stopObservingTransactionQueue();
       expect(fakeMACOSPlatform.queueIsActive, false);
     });
-
-    test('setDelegate should call methodChannel', () async {
-      expect(fakeMACOSPlatform.isPaymentQueueDelegateRegistered, false);
-      await SKPaymentQueueWrapper().setDelegate(TestPaymentQueueDelegate());
-      expect(fakeMACOSPlatform.isPaymentQueueDelegateRegistered, true);
-      await SKPaymentQueueWrapper().setDelegate(null);
-      expect(fakeMACOSPlatform.isPaymentQueueDelegateRegistered, false);
-    });
-
-    test('showPriceConsentIfNeeded should call methodChannel', () async {
-      expect(fakeMACOSPlatform.showPriceConsentIfNeeded, false);
-      await SKPaymentQueueWrapper().showPriceConsentIfNeeded();
-      expect(fakeMACOSPlatform.showPriceConsentIfNeeded, true);
-    });
-  });
-
-  group('Code Redemption Sheet', () {
-    test('presentCodeRedemptionSheet should not throw', () async {
-      expect(fakeMACOSPlatform.presentCodeRedemption, false);
-      await SKPaymentQueueWrapper().presentCodeRedemptionSheet();
-      expect(fakeMACOSPlatform.presentCodeRedemption, true);
-      fakeMACOSPlatform.presentCodeRedemption = false;
-    });
   });
 }
 
@@ -278,8 +255,6 @@ class FakeMACOSPlatform {
     return Future.error('method not mocked');
   }
 }
-
-class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {}
 
 class TestPaymentTransactionObserver extends SKTransactionObserverWrapper {
   void updatedTransactions(
