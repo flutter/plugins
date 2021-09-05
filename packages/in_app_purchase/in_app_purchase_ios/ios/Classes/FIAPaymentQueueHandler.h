@@ -32,7 +32,6 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
 - (void)finishTransaction:(nonnull SKPaymentTransaction *)transaction;
 - (void)restoreTransactions:(nullable NSString *)applicationName;
-- (void)presentCodeRedemptionSheet API_AVAILABLE(ios(14.0));
 - (NSArray<SKPaymentTransaction *> *)getUnfinishedTransactions;
 
 // This method needs to be called before any other methods.
@@ -46,6 +45,10 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // @return whether "addPayment" was successful.
 - (BOOL)addPayment:(SKPayment *)payment;
 
+#if TARGET_OS_IPHONE
+// Can throw exceptions if the transaction type is purchasing, should always used in a @try block.
+- (void)presentCodeRedemptionSheet API_AVAILABLE(ios(14.0));
+
 // Displays the price consent sheet.
 //
 // The price consent sheet is only displayed when the following
@@ -54,6 +57,7 @@ typedef void (^UpdatedDownloads)(NSArray<SKDownload *> *downloads);
 // - The subscriber has not yet responded to a price consent query.
 // Otherwise the method has no effect.
 - (void)showPriceConsentIfNeeded API_AVAILABLE(ios(13.4));
+#endif
 
 @end
 
