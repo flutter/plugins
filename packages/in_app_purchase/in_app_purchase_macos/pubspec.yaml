@@ -1,5 +1,5 @@
 name: in_app_purchase_macos
-description: An implementation for the macOS platform of the Flutter `in_app_purchase` plugin. This uses the iOS StoreKit Framework.
+description: An implementation for the macOS platform of the Flutter `in_app_purchase` plugin. This uses the macOS StoreKit Framework.
 repository: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase_ios
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+in_app_purchase%22
 version: 0.1.3+3
