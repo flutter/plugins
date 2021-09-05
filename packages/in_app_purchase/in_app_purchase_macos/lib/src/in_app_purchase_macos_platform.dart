@@ -6,10 +6,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase_ios/src/in_app_purchase_ios_platform_addition.dart';
+import 'package:in_app_purchase_macos/src/in_app_purchase_macos_platform_addition.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import '../in_app_purchase_ios.dart';
+import '../in_app_purchase_macos.dart';
 import '../store_kit_wrappers.dart';
 
 /// [IAPError.code] code for failed purchases.
@@ -22,16 +22,16 @@ const String kIAPSource = 'app_store';
 ///
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
-class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
+class InAppPurchaseMacOSPlatform extends InAppPurchasePlatform {
   static late SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static late _TransactionObserver _observer;
 
-  /// Creates an [InAppPurchaseIosPlatform] object.
+  /// Creates an [InAppPurchaseMacOSPlatform] object.
   ///
   /// This constructor should only be used for testing, for any other purpose
   /// get the connection from the [instance] getter.
   @visibleForTesting
-  InAppPurchaseIosPlatform();
+  InAppPurchaseMacOSPlatform();
 
   Stream<List<PurchaseDetails>> get purchaseStream =>
       _observer.purchaseUpdatedController.stream;
@@ -42,13 +42,13 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
 
   /// Registers this class as the default instance of [InAppPurchasePlatform].
   static void registerPlatform() {
-    // Register the [InAppPurchaseIosPlatformAddition] containing iOS
+    // Register the [InAppPurchaseMacOSPlatformAddition] containing macOS
     // platform-specific functionality.
-    InAppPurchasePlatformAddition.instance = InAppPurchaseIosPlatformAddition();
+    InAppPurchasePlatformAddition.instance = InAppPurchaseMacOSPlatformAddition();
 
     // Register the platform-specific implementation of the idiomatic
     // InAppPurchase API.
-    InAppPurchasePlatform.instance = InAppPurchaseIosPlatform();
+    InAppPurchasePlatform.instance = InAppPurchaseMacOSPlatform();
 
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
 
@@ -77,13 +77,13 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
             : false,
         requestData: null));
 
-    return true; // There's no error feedback from iOS here to return.
+    return true; // There's no error feedback from macOS here to return.
   }
 
   @override
   Future<bool> buyConsumable(
       {required PurchaseParam purchaseParam, bool autoConsume = true}) {
-    assert(autoConsume == true, 'On iOS, we should always auto consume');
+    assert(autoConsume == true, 'On macOS, we should always auto consume');
     return buyNonConsumable(purchaseParam: purchaseParam);
   }
 
@@ -91,7 +91,7 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
   Future<void> completePurchase(PurchaseDetails purchase) {
     assert(
       purchase is AppStorePurchaseDetails,
-      'On iOS, the `purchase` should always be of type `AppStorePurchaseDetails`.',
+      'On macOS, the `purchase` should always be of type `AppStorePurchaseDetails`.',
     );
 
     return _skPaymentQueueWrapper.finishTransaction(

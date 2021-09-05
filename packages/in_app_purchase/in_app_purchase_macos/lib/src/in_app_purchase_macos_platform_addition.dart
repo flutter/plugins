@@ -2,20 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../store_kit_wrappers.dart';
 
-/// Contains InApp Purchase features that are only available on iOS.
-class InAppPurchaseIosPlatformAddition extends InAppPurchasePlatformAddition {
-  /// Present Code Redemption Sheet.
-  ///
-  /// Available on devices running iOS 14 and iPadOS 14 and later.
-  Future presentCodeRedemptionSheet() {
-    return SKPaymentQueueWrapper().presentCodeRedemptionSheet();
-  }
-
+/// Contains InApp Purchase features that are only available on macOS.
+class InAppPurchaseMacOSPlatformAddition extends InAppPurchasePlatformAddition {
   /// Retry loading purchase data after an initial failure.
   ///
   /// If no results, a `null` value is returned.
@@ -37,10 +30,10 @@ class InAppPurchaseIosPlatformAddition extends InAppPurchasePlatformAddition {
 
   /// Sets an implementation of the [SKPaymentQueueDelegateWrapper].
   ///
-  /// The [SKPaymentQueueDelegateWrapper] can be used to inform iOS how to
+  /// The [SKPaymentQueueDelegateWrapper] can be used to inform macOS how to
   /// finish transactions when the storefront changes or if the price consent
   /// sheet should be displayed when the price of a subscription has changed. If
-  /// no delegate is registered iOS will fallback to it's default configuration.
+  /// no delegate is registered macOS will fallback to it's default configuration.
   /// See the documentation on StoreKite's [`-[SKPaymentQueue delegate:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc).
   ///
   /// When set to `null` the payment queue delegate will be removed and the
