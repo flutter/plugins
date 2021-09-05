@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "FIAPaymentQueueHandler.h"
-#import "FIAPPaymentQueueDelegate.h"
 
 @interface FIAPaymentQueueHandler ()
 
