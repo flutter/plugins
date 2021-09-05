@@ -8,12 +8,12 @@ import 'dart:ui' show hashValues;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_macos/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../channel.dart';
-import '../in_app_purchase_ios_platform.dart';
+import '../in_app_purchase_macos_platform.dart';
 import 'sk_payment_queue_delegate_wrapper.dart';
 import 'sk_payment_transaction_wrappers.dart';
 import 'sk_product_wrapper.dart';
@@ -69,7 +69,7 @@ class SKPaymentQueueWrapper {
     channel.setMethodCallHandler(handleObserverCallbacks);
   }
 
-  /// Instructs the iOS implementation to register a transaction observer and
+  /// Instructs the macOS implementation to register a transaction observer and
   /// start listening to it.
   ///
   /// Call this method when the first listener is subscribed to the
@@ -77,7 +77,7 @@ class SKPaymentQueueWrapper {
   Future startObservingTransactionQueue() => channel
       .invokeMethod<void>('-[SKPaymentQueue startObservingTransactionQueue]');
 
-  /// Instructs the iOS implementation to remove the transaction observer and
+  /// Instructs the macOS implementation to remove the transaction observer and
   /// stop listening to it.
   ///
   /// Call this when there are no longer any listeners subscribed to the
@@ -87,10 +87,10 @@ class SKPaymentQueueWrapper {
 
   /// Sets an implementation of the [SKPaymentQueueDelegateWrapper].
   ///
-  /// The [SKPaymentQueueDelegateWrapper] can be used to inform iOS how to
+  /// The [SKPaymentQueueDelegateWrapper] can be used to inform macOS how to
   /// finish transactions when the storefront changes or if the price consent
   /// sheet should be displayed when the price of a subscription has changed. If
-  /// no delegate is registered iOS will fallback to it's default configuration.
+  /// no delegate is registered macOS will fallback to it's default configuration.
   /// See the documentation on StoreKite's [`-[SKPaymentQueue delegate:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc).
   ///
   /// When set to `null` the payment queue delegate will be removed and the
@@ -425,9 +425,9 @@ class SKPaymentWrapper {
   /// The value must be null before sending the payment. If the value is not
   /// null, the payment will be rejected.
   ///
-  // The iOS Platform provided this property but it is reserved for future use.
-  // We also provide this property to match the iOS platform. Converted to
-  // String from NSData from ios platform using UTF8Encoding. The / default is
+  // The macOS Platform provided this property but it is reserved for future use.
+  // We also provide this property to match the macOS platform. Converted to
+  // String from NSData from macos platform using UTF8Encoding. The / default is
   // null.
   final String? requestData;
 
