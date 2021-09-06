@@ -1,3 +1,7 @@
+## 1.1.0
+
+* Merge Apple speficic implementation to new shared package: `in_app_purchase_storekit`
+
 ## 1.0.8
 
 * Fix repository link in pubspec.yaml.
