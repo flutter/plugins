@@ -31,8 +31,8 @@ class CupertinoWebView implements WebViewPlatform {
         if (onWebViewPlatformCreated == null) {
           return;
         }
-        onWebViewPlatformCreated(
-            MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler, javascriptChannelRegistry));
+        onWebViewPlatformCreated(MethodChannelWebViewPlatform(
+            id, webViewPlatformCallbacksHandler, javascriptChannelRegistry));
       },
       gestureRecognizers: gestureRecognizers,
       creationParams:

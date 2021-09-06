@@ -8,18 +8,18 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
   flutter: ">=2.0.0"
 
-flutter:
-  plugin:
-    platforms:
-      android:
-        package: io.flutter.plugins.webviewflutter
-        pluginClass: WebViewFlutterPlugin
-      ios:
-        pluginClass: FLTWebViewFlutterPlugin
-
 dependencies:
   flutter:
     sdk: flutter
+  # TODO (BeMacized): Replace with pub.dev version once published
+  webview_flutter_platform_interface:
+    path: ../webview_flutter_platform_interface
+  # TODO (BeMacized): Replace with pub.dev version once published
+  webview_flutter_wkwebview:
+    path: ../webview_flutter_wkwebview
+  # TODO (BeMacized): Replace with pub.dev version once published
+  webview_flutter_android:
+    path: ../webview_flutter_android
 
 dev_dependencies:
   flutter_driver:

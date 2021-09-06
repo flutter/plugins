@@ -10,8 +10,8 @@ import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 typedef void VoidCallback();
 
@@ -1108,6 +1108,8 @@ class _FakePlatformViewsController {
   FakePlatformWebView? lastCreatedView;
 
   Future<dynamic> fakePlatformViewsMethodHandler(MethodCall call) {
+    print('TEST $call');
+
     switch (call.method) {
       case 'create':
         final Map<dynamic, dynamic> args = call.arguments;
@@ -1175,12 +1177,13 @@ class MyWebViewPlatform implements WebViewPlatform {
     BuildContext? context,
     CreationParams? creationParams,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    required JavascriptChannelRegistry javascriptChannelRegistry,
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
     assert(onWebViewPlatformCreated != null);
-    lastPlatformBuilt = MyWebViewPlatformController(
-        creationParams, gestureRecognizers, webViewPlatformCallbacksHandler);
+    lastPlatformBuilt =
+        MyWebViewPlatformController(creationParams, gestureRecognizers);
     onWebViewPlatformCreated!(lastPlatformBuilt);
     return Container();
   }
@@ -1192,9 +1195,8 @@ class MyWebViewPlatform implements WebViewPlatform {
 }
 
 class MyWebViewPlatformController extends WebViewPlatformController {
-  MyWebViewPlatformController(this.creationParams, this.gestureRecognizers,
-      WebViewPlatformCallbacksHandler platformHandler)
-      : super(platformHandler);
+  MyWebViewPlatformController(this.creationParams, this.gestureRecognizers)
+      : super();
 
   CreationParams? creationParams;
   Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers;

@@ -39,7 +39,6 @@ class _WebViewExampleState extends State<WebViewExample> {
   @override
   void initState() {
     super.initState();
-    if (Platform.isAndroid) WebView.platform = SurfaceAndroidWebView();
   }
 
   @override
@@ -300,6 +299,7 @@ class NavigationControls extends StatelessWidget {
       future: _webViewControllerFuture,
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
+        if (!snapshot.hasData) return Container();
         final bool webViewReady =
             snapshot.connectionState == ConnectionState.done;
         final WebViewController controller = snapshot.data!;
