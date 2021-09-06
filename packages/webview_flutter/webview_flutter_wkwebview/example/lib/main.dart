@@ -27,7 +27,6 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
-
 class WebViewExample extends StatefulWidget {
   final WebViewPlatform platform = CupertinoWebView();
 
