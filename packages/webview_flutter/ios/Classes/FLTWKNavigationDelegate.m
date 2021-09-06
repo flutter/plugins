@@ -33,11 +33,16 @@
 #pragma mark - WKNavigationDelegate conformance
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {
+//    [self onPageStartedWithUrl:webView.URL.absoluteString isRedirect:NO];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
     BOOL isRedirect = [_map objectForKey:webView.URL.absoluteString] != nil;
     [self onPageStartedWithUrl:webView.URL.absoluteString isRedirect:isRedirect];
     if (isRedirect) {
         [_map removeObjectForKey:webView.URL.absoluteString];
     }
+    decisionHandler(WKNavigationResponsePolicyAllow);
 }
 
 - (void)webView:(WKWebView *)webView
