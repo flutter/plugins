@@ -16,10 +16,17 @@ Downloaded by pub (not CocoaPods).
   # TODO(mvanbeusekom): update URL when in_app_purchase_storekit package is published.
   # Updating it before the package is published will cause a lint error and block the tree.                   
   s.documentation_url = 'https://pub.dev/packages/in_app_purchase'
-  s.source_files = '../storekit/Classes/**/*'
-  s.public_header_files = '../storekit/Classes/**/*.h'
-  s.dependency 'FlutterMacOS'
-  s.platform = :osx, '10.15'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
-  s.static_framework = true
+  s.source_files = 'Classes/**/*'
+  s.public_header_files = 'Classes/**/*.h'
+  
+  # OSX specifications
+  s.osx.static_framework = true
+  s.osx.dependency 'FlutterMacOS'
+  s.osx.platform = :osx, '10.15'
+  s.osx.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
+
+  # IOS specifications
+  s.ios.dependency 'Flutter'
+  s.ios.platform = :ios, '8.0'
+  s.ios.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS' => 'armv7 arm64 x86_64' }
 end
