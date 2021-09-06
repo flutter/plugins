@@ -5,6 +5,7 @@
 import 'dart:async';
 
 import 'package:camera/camera.dart';
+import 'package:camera_platform_interface/src/types/audio_format_group.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +39,9 @@ class FakeController extends ValueNotifier<CameraValue>
 
   @override
   bool get enableAudio => false;
+
+  @override
+  AudioFormatGroup? get audioFormatGroup => null;
 
   @override
   Future<double> getExposureOffsetStepSize() async => 1.0;

@@ -83,6 +83,7 @@ class MethodChannelCamera extends CameraPlatform {
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
+    AudioFormatGroup? audioFormatGroup,
   }) async {
     try {
       final reply = await _channel
@@ -92,6 +93,7 @@ class MethodChannelCamera extends CameraPlatform {
             ? _serializeResolutionPreset(resolutionPreset)
             : null,
         'enableAudio': enableAudio,
+        'audioFormatGroup': audioFormatGroup?.name(),
       });
 
       return reply!['cameraId'];

@@ -1,3 +1,7 @@
+## 0.10.0
+
+* Allow for configuration of `AudioFormatGroup` in `CameraController`
+
 ## 0.9.2+2
 
 * Ensure that setting the exposure offset returns the new offset value on Android.

@@ -89,6 +89,28 @@ public class MediaRecorderBuilderTest {
     inOrder.verify(recorder).prepare();
   }
 
+  @Test
+  public void build_shouldSetAudioEncoderWhenProvided() throws IOException {
+    CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
+    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
+        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    String outputFilePath = "mock_video_file_path";
+    int mediaOrientation = 1;
+    int audioEncoder = MediaRecorder.AudioEncoder.AAC;
+    MediaRecorderBuilder builder =
+        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
+            .setEnableAudio(true)
+            .setAudioEncoder(audioEncoder)
+            .setMediaOrientation(mediaOrientation);
+
+    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
+
+    MediaRecorder recorder = builder.build();
+
+    verify(recorder).setAudioEncoder(audioEncoder);
+  }
+
   private CamcorderProfile getEmptyCamcorderProfile() {
     try {
       Constructor<CamcorderProfile> constructor =

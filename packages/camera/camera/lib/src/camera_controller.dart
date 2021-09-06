@@ -225,6 +225,7 @@ class CameraController extends ValueNotifier<CameraValue> {
     this.resolutionPreset, {
     this.enableAudio = true,
     this.imageFormatGroup,
+    this.audioFormatGroup,
   }) : super(const CameraValue.uninitialized());
 
   /// The properties of the camera device controlled by this controller.
@@ -245,6 +246,14 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// When null the imageFormat will fallback to the platforms default.
   final ImageFormatGroup? imageFormatGroup;
+
+  /// The [AudioFormatGroup] describes the audio codec to be used when recording video.
+  /// Leaving this value `null` might cause cross-platform playback problems of the output file.
+  /// See [https://github.com/flutter/flutter/issues/86984]
+  ///
+  /// When null, platform will select the default audio codec.
+  /// Has no effect if `enableAudio` is set to `false`.
+  final AudioFormatGroup? audioFormatGroup;
 
   /// The id of a camera that hasn't been initialized.
   @visibleForTesting
@@ -290,6 +299,7 @@ class CameraController extends ValueNotifier<CameraValue> {
         description,
         resolutionPreset,
         enableAudio: enableAudio,
+        audioFormatGroup: audioFormatGroup,
       );
 
       unawaited(CameraPlatform.instance

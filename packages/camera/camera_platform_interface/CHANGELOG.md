@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Allow for configuration of `AudioFormatGroup` in `CameraController`
+
 ## 2.1.0
 
 * Introduces interface methods for pausing and resuming the camera preview.

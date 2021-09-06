@@ -72,6 +72,7 @@ public class CameraTest {
     final String cameraName = "1";
     final ResolutionPreset resolutionPreset = ResolutionPreset.high;
     final boolean enableAudio = false;
+    final Integer audioEncoder = null;
 
     when(mockCameraProperties.getCameraName()).thenReturn(cameraName);
 
@@ -83,7 +84,8 @@ public class CameraTest {
             mockDartMessenger,
             mockCameraProperties,
             resolutionPreset,
-            enableAudio);
+            enableAudio,
+            audioEncoder);
 
     TestUtils.setPrivateField(camera, "captureSession", mockCaptureSession);
     TestUtils.setPrivateField(camera, "previewRequestBuilder", mockPreviewRequestBuilder);
@@ -103,6 +105,7 @@ public class CameraTest {
     final String cameraName = "1";
     final ResolutionPreset resolutionPreset = ResolutionPreset.high;
     final boolean enableAudio = false;
+    final Integer audioEncoder = null;
 
     when(mockCameraProperties.getCameraName()).thenReturn(cameraName);
     SensorOrientationFeature mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
@@ -117,7 +120,8 @@ public class CameraTest {
             mockDartMessenger,
             mockCameraProperties,
             resolutionPreset,
-            enableAudio);
+            enableAudio,
+            audioEncoder);
 
     verify(mockCameraFeatureFactory, times(1))
         .createSensorOrientationFeature(mockCameraProperties, mockActivity, mockDartMessenger);

@@ -40,6 +40,27 @@ void logError(String code, String? message) {
   }
 }
 
+enum _AudioMode {
+  off,
+  on,
+  aac,
+}
+
+extension _AudioModeExtension on _AudioMode {
+  _AudioMode next() => _AudioMode.values[(_AudioMode.values.indexOf(this) + 1) % _AudioMode.values.length];
+
+  IconData get icon {
+    switch(this) {
+      case _AudioMode.off:
+        return Icons.volume_off;
+      case _AudioMode.on:
+        return Icons.volume_up;
+      case _AudioMode.aac:
+        return IconData('A'.codeUnitAt(0), fontFamily: 'Roboto');
+    }
+  }
+}
+
 class _CameraExampleHomeState extends State<CameraExampleHome>
     with WidgetsBindingObserver, TickerProviderStateMixin {
   CameraController? controller;
@@ -47,7 +68,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   XFile? videoFile;
   VideoPlayerController? videoController;
   VoidCallback? videoPlayerListener;
-  bool enableAudio = true;
+  _AudioMode audioMode = _AudioMode.on;
   double _minAvailableExposureOffset = 0.0;
   double _maxAvailableExposureOffset = 0.0;
   double _currentExposureOffset = 0.0;
@@ -279,7 +300,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               onPressed: controller != null ? onFocusModeButtonPressed : null,
             ),
             IconButton(
-              icon: Icon(enableAudio ? Icons.volume_up : Icons.volume_mute),
+              icon: Icon(audioMode.icon),
               color: Colors.blue,
               onPressed: controller != null ? onAudioModeButtonPressed : null,
             ),
@@ -617,7 +638,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     final CameraController cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
-      enableAudio: enableAudio,
+      enableAudio: audioMode != _AudioMode.off,
+      audioFormatGroup: audioMode == _AudioMode.aac ? AudioFormatGroup.aac : null,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
@@ -701,7 +723,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   void onAudioModeButtonPressed() {
-    enableAudio = !enableAudio;
+    audioMode = audioMode.next();
     if (controller != null) {
       onNewCameraSelected(controller!.description);
     }

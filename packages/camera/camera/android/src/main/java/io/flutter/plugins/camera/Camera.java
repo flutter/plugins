@@ -103,6 +103,7 @@ class Camera
 
   private final SurfaceTextureEntry flutterTexture;
   private final boolean enableAudio;
+  private final Integer audioEncoder;
   private final Context applicationContext;
   private final DartMessenger dartMessenger;
   private final CameraProperties cameraProperties;
@@ -145,13 +146,15 @@ class Camera
       final DartMessenger dartMessenger,
       final CameraProperties cameraProperties,
       final ResolutionPreset resolutionPreset,
-      final boolean enableAudio) {
+      final boolean enableAudio,
+      final Integer audioEncoder) {
 
     if (activity == null) {
       throw new IllegalStateException("No activity available!");
     }
     this.activity = activity;
     this.enableAudio = enableAudio;
+    this.audioEncoder = audioEncoder;
     this.flutterTexture = flutterTexture;
     this.dartMessenger = dartMessenger;
     this.applicationContext = activity.getApplicationContext();
@@ -205,6 +208,7 @@ class Camera
     mediaRecorder =
         new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
             .setEnableAudio(enableAudio)
+            .setAudioEncoder(audioEncoder)
             .setMediaOrientation(
                 lockedOrientation == null
                     ? getDeviceOrientationManager().getVideoOrientation()

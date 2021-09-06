@@ -51,10 +51,14 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Creates an uninitialized camera instance and returns the cameraId.
+  ///
+  /// [audioFormatGroup] is used to specify audio codec to be used during recording.
+  /// `null` value will allow platform to select the audio codec.
   Future<int> createCamera(
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
+    AudioFormatGroup? audioFormatGroup,
   }) {
     throw UnimplementedError('createCamera() is not implemented.');
   }

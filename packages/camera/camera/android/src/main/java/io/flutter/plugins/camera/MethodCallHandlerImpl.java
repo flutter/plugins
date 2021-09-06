@@ -25,6 +25,7 @@ import io.flutter.plugins.camera.features.autofocus.FocusMode;
 import io.flutter.plugins.camera.features.exposurelock.ExposureMode;
 import io.flutter.plugins.camera.features.flash.FlashMode;
 import io.flutter.plugins.camera.features.resolution.ResolutionPreset;
+import io.flutter.plugins.camera.types.AudioFormatGroup;
 import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
@@ -377,6 +378,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
     String cameraName = call.argument("cameraName");
     String preset = call.argument("resolutionPreset");
     boolean enableAudio = call.argument("enableAudio");
+    String audioFormatGroup = call.argument("audioFormatGroup");
 
     TextureRegistry.SurfaceTextureEntry flutterSurfaceTexture =
         textureRegistry.createSurfaceTexture();
@@ -386,6 +388,11 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
     CameraProperties cameraProperties =
         new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
     ResolutionPreset resolutionPreset = ResolutionPreset.valueOf(preset);
+
+    Integer audioEncoder = null;
+    if(audioFormatGroup != null) {
+      audioEncoder = AudioFormatGroup.getValueForString(audioFormatGroup).getEncoder();
+    }
 
     if (camera != null && lifecycle != null) {
       lifecycle.removeObserver(camera);
@@ -399,7 +406,8 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
             dartMessenger,
             cameraProperties,
             resolutionPreset,
-            enableAudio);
+            enableAudio,
+            audioEncoder);
 
     if (lifecycle != null) {
       lifecycle.addObserver(camera);

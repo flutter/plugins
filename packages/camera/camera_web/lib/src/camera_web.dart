@@ -179,6 +179,7 @@ class CameraPlugin extends CameraPlatform {
     CameraDescription cameraDescription,
     ResolutionPreset? resolutionPreset, {
     bool enableAudio = false,
+    AudioFormatGroup? audioFormatGroup,
   }) async {
     try {
       if (!camerasMetadata.containsKey(cameraDescription)) {
