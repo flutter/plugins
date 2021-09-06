@@ -47,6 +47,8 @@ enum _AudioMode {
 }
 
 extension _AudioModeExtension on _AudioMode {
+  static const _AIconData = IconData(65, fontFamily: 'Roboto');
+
   _AudioMode next() => _AudioMode.values[(_AudioMode.values.indexOf(this) + 1) % _AudioMode.values.length];
 
   IconData get icon {
@@ -56,7 +58,7 @@ extension _AudioModeExtension on _AudioMode {
       case _AudioMode.on:
         return Icons.volume_up;
       case _AudioMode.aac:
-        return IconData('A'.codeUnitAt(0), fontFamily: 'Roboto');
+        return _AIconData;
     }
   }
 }

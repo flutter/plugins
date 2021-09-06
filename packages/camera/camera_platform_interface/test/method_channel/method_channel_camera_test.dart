@@ -51,7 +51,8 @@ void main() {
             arguments: {
               'cameraName': 'Test',
               'resolutionPreset': 'high',
-              'enableAudio': false
+              'enableAudio': false,
+              'audioFormatGroup': null,
             },
           ),
         ]);
