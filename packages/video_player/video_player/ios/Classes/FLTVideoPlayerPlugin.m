@@ -40,6 +40,7 @@
 @property(nonatomic, readonly) bool disposed;
 @property(nonatomic, readonly) bool isPlaying;
 @property(nonatomic) bool isLooping;
+@property(nonatomic) double internalPlaybackSpeed;
 @property(nonatomic, readonly) bool isInitialized;
 - (instancetype)initWithURL:(NSURL*)url
                frameUpdater:(FLTFrameUpdater*)frameUpdater
@@ -47,6 +48,7 @@
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
+- (void)setInternalPlaybackSpeed:(double)speed;
 - (void)updatePlayingState;
 @end
 
@@ -242,6 +244,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
+  [self setInternalPlaybackSpeed:1.0f];
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -310,6 +313,9 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   }
   if (_isPlaying) {
     [_player play];
+
+    // fix to always set playback speed accurately
+    [self setPlaybackSpeed: _internalPlaybackSpeed];
   } else {
     [_player pause];
   }
@@ -369,6 +375,10 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _isLooping = isLooping;
 }
 
+- (void)setInternalPlaybackSpeed:(double)speed {
+  _internalPlaybackSpeed = speed;
+}
+
 - (void)setVolume:(double)volume {
   _player.volume = (float)((volume < 0.0) ? 0.0 : ((volume > 1.0) ? 1.0 : volume));
 }
@@ -394,6 +404,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     return;
   }
 
+  [self setInternalPlaybackSpeed:speed];
   _player.rate = speed;
 }
 
