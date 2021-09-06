@@ -12,6 +12,7 @@ environment:
 
 flutter:
   plugin:
+    implements: webview_flutter
     platforms:
       ios:
         pluginClass: FLTWebViewFlutterPlugin
