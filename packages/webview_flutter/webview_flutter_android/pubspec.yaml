@@ -13,6 +13,7 @@ environment:
 
 flutter:
   plugin:
+    implements: webview_flutter
     platforms:
       android:
         package: io.flutter.plugins.webviewflutter
