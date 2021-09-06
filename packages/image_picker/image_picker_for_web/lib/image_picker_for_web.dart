@@ -53,7 +53,6 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     String? capture = computeCaptureAttribute(source, preferredCameraDevice);
@@ -116,7 +115,6 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
     String? capture = computeCaptureAttribute(source, preferredCameraDevice);

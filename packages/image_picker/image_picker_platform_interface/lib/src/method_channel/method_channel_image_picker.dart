@@ -24,7 +24,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
     String? path = await _getImagePath(
@@ -32,7 +31,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
-      forceFullMetadata: forceFullMetadata,
       preferredCameraDevice: preferredCameraDevice,
     );
     return path != null ? PickedFile(path) : null;
@@ -87,7 +85,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) {
     if (imageQuality != null && (imageQuality < 0 || imageQuality > 100)) {
@@ -110,7 +107,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
         'maxWidth': maxWidth,
         'maxHeight': maxHeight,
         'imageQuality': imageQuality,
-        'forceFullMetadata': forceFullMetadata,
         'cameraDevice': preferredCameraDevice.index
       },
     );
@@ -187,7 +183,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-    bool forceFullMetadata = true,
     CameraDevice preferredCameraDevice = CameraDevice.rear,
   }) async {
     String? path = await _getImagePath(
@@ -195,7 +190,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
       maxWidth: maxWidth,
       maxHeight: maxHeight,
       imageQuality: imageQuality,
-      forceFullMetadata: forceFullMetadata,
       preferredCameraDevice: preferredCameraDevice,
     );
     return path != null ? XFile(path) : null;
