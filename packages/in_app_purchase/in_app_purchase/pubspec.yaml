@@ -16,7 +16,7 @@ flutter:
       ios:
         default_package: in_app_purchase_ios
       macos:
-        default_package: in_app_purchase_macos
+        default_package: in_app_purchase_storekit
 
 dependencies:
   flutter:
