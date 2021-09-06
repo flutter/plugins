@@ -7,9 +7,9 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
-import 'package:in_app_purchase_macos/src/channel.dart';
-import 'package:in_app_purchase_macos/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/src/channel.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 import '../store_kit_wrappers/sk_test_stub_objects.dart';
 

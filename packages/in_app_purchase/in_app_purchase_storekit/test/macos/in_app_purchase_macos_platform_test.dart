@@ -6,12 +6,12 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_macos/in_app_purchase_macos.dart';
-import 'package:in_app_purchase_macos/src/store_kit_wrappers/enum_converters.dart';
-import 'package:in_app_purchase_macos/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/src/store_kit_wrappers/enum_converters.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import 'fakes/fake_macos_platform.dart';
+import 'fakes/fake_storekit_platform.dart';
 import 'store_kit_wrappers/sk_test_stub_objects.dart';
 
 void main() {

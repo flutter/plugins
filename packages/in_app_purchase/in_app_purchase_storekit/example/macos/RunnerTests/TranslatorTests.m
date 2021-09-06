@@ -5,7 +5,7 @@
 #import <XCTest/XCTest.h>
 #import "Stubs.h"
 
-@import in_app_purchase_macos;
+@import in_app_purchase_storekit;
 
 @interface TranslatorTest : XCTestCase
 

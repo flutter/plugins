@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 #import <StoreKit/StoreKit.h>
 
-@import in_app_purchase_macos;
+@import in_app_purchase_storekit;
 
 NS_ASSUME_NONNULL_BEGIN
 API_AVAILABLE(ios(11.2), macos(10.13.2))

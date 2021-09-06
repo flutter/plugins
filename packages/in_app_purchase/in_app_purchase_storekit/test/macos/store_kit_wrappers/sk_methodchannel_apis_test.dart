@@ -4,8 +4,8 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_macos/src/channel.dart';
-import 'package:in_app_purchase_macos/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/src/channel.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'sk_test_stub_objects.dart';
 
 void main() {
