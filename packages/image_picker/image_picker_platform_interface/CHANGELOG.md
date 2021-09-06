@@ -1,3 +1,8 @@
+## 2.4.1
+
+* Reverts the changes from 2.4.0, which was a breaking change that
+  was incorrectly marked as a non-breaking change.
+
 ## 2.4.0
 
 * Add `forceFullMetadata` option to `pickImage`.

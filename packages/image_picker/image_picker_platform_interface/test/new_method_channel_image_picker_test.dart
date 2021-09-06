@@ -40,16 +40,14 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
           ],
         );
@@ -95,56 +93,49 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': 70,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': 70,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': 70,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
           ],
         );
@@ -205,7 +196,6 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 0,
-              'forceFullMetadata': true,
             }),
           ],
         );
@@ -225,7 +215,6 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 1,
-              'forceFullMetadata': true,
             }),
           ],
         );
@@ -520,16 +509,14 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 1,
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
           ],
         );
@@ -575,56 +562,49 @@ void main() {
               'maxWidth': null,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': null,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': null,
               'imageQuality': 70,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': null,
               'maxHeight': 10.0,
               'imageQuality': 70,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
             isMethodCall('pickImage', arguments: <String, dynamic>{
               'source': 0,
               'maxWidth': 10.0,
               'maxHeight': 20.0,
               'imageQuality': 70,
-              'cameraDevice': 0,
-              'forceFullMetadata': true,
+              'cameraDevice': 0
             }),
           ],
         );
@@ -684,7 +664,6 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 0,
-              'forceFullMetadata': true,
             }),
           ],
         );
@@ -704,7 +683,6 @@ void main() {
               'maxHeight': null,
               'imageQuality': null,
               'cameraDevice': 1,
-              'forceFullMetadata': true,
             }),
           ],
         );
