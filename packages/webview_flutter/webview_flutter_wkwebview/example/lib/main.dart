@@ -27,8 +27,9 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
+
 class WebViewExample extends StatefulWidget {
-  WebViewPlatform platform = CupertinoWebView();
+  final WebViewPlatform platform = CupertinoWebView();
 
   @override
   _WebViewExampleState createState() => _WebViewExampleState();
@@ -95,7 +96,6 @@ class _WebViewExampleState extends State<WebViewExample> {
             WebViewController controller = WebViewController._(
               widget,
               webViewPlatformController!,
-              _platformCallbacksHandler,
               _javascriptChannelRegistry,
             );
             _controller.complete(controller);
@@ -391,7 +391,6 @@ class WebViewController {
   WebViewController._(
     this._widget,
     this._webViewPlatformController,
-    this._platformCallbacksHandler,
     this._javascriptChannelRegistry,
   ) : assert(_webViewPlatformController != null) {
     _settings = _webSettingsFromWidget(_widget);
@@ -400,8 +399,6 @@ class WebViewController {
   final JavascriptChannelRegistry _javascriptChannelRegistry;
 
   final WebViewPlatformController _webViewPlatformController;
-
-  final _PlatformCallbacksHandler _platformCallbacksHandler;
 
   late WebSettings _settings;
 
