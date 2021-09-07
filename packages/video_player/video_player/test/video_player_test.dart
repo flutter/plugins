@@ -524,7 +524,7 @@ void main() {
         const Duration nonzeroDuration = Duration(milliseconds: 100);
         controller.value = controller.value.copyWith(duration: nonzeroDuration);
         expect(controller.value.isPlaying, isFalse);
-
+        await controller.play();
         expect(controller.value.isPlaying, isTrue);
         final FakeVideoEventStream fakeVideoEventStream =
             fakeVideoPlayerPlatform.streams[controller.textureId]!;
