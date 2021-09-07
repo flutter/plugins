@@ -325,7 +325,6 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       if (_isDisposed) {
         return;
       }
-      print('event listener ${event.eventType}');
       switch (event.eventType) {
         case VideoEventType.initialized:
           value = value.copyWith(
