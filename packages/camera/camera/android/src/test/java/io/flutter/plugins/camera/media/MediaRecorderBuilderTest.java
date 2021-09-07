@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -24,7 +24,7 @@ public class MediaRecorderBuilderTest {
   }
 
   @Test
-  public void build_Should_set_values_in_correct_order_When_audio_is_disabled() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabled() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
@@ -55,7 +55,7 @@ public class MediaRecorderBuilderTest {
   }
 
   @Test
-  public void build_Should_set_values_in_correct_order_When_audio_is_enabled() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);

@@ -1,3 +1,26 @@
+## 2.1.1
+
+* Method `buildViewWithTextDirection` has been added to the platform interface.
+
+## 2.1.0
+
+* Add support for Hybrid Composition when building the Google Maps widget on Android. Set
+  `MethodChannelGoogleMapsFlutter.useAndroidViewSurface` to `true` to build with Hybrid Composition.
+
+## 2.0.4
+
+* Preserve the `TileProvider` when copying `TileOverlay`, fixing a
+  regression with tile overlays introduced in the null safety migration.
+
+## 2.0.3
+
+* Fix type issues in `isMarkerInfoWindowShown` and `getZoomLevel` introduced
+  in the null safety migration.
+
+## 2.0.2
+
+* Mark constructors for CameraUpdate, CircleId, MapsObjectId, MarkerId, PolygonId, PolylineId and TileOverlayId as const
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.

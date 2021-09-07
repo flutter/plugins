@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ import org.junit.Test;
 public class FlashModeTest {
 
   @Test
-  public void getValueForString_returns_correct_values() {
+  public void getValueForString_returnsCorrectValues() {
     assertEquals(
         "Returns FlashMode.off for 'off'", FlashMode.getValueForString("off"), FlashMode.off);
     assertEquals(
@@ -27,13 +27,13 @@ public class FlashModeTest {
   }
 
   @Test
-  public void getValueForString_returns_null_for_nonexistant_value() {
+  public void getValueForString_returnsNullForNonexistantValue() {
     assertEquals(
         "Returns null for 'nonexistant'", FlashMode.getValueForString("nonexistant"), null);
   }
 
   @Test
-  public void toString_returns_correct_value() {
+  public void toString_returnsCorrectValue() {
     assertEquals("Returns 'off' for FlashMode.off", FlashMode.off.toString(), "off");
     assertEquals("Returns 'auto' for FlashMode.auto", FlashMode.auto.toString(), "auto");
     assertEquals("Returns 'always' for FlashMode.always", FlashMode.always.toString(), "always");

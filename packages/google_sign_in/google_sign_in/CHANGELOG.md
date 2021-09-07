@@ -1,3 +1,41 @@
+## 5.1.0
+
+* Add reAuthenticate option to signInSilently to allow re-authentication to be requested
+
+* Updated Android lint settings.
+
+## 5.0.7
+
+* Mark iOS arm64 simulators as unsupported.
+
+## 5.0.6
+
+* Remove references to the Android V1 embedding.
+
+## 5.0.5
+
+* Add iOS unit and UI integration test targets.
+* Add iOS unit test module map.
+* Exclude arm64 simulators in example app.
+
+## 5.0.4
+
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 5.0.3
+
+* Fixed links in `README.md`.
+* Added documentation for usage on the web.
+
+## 5.0.2
+
+* Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
+
+## 5.0.1
+
+* Update platforms `init` function to prioritize `clientId` property when available;
+* Updates `google_sign_in_platform_interface` version.
+
 ## 5.0.0
 
 * Migrate to null safety.

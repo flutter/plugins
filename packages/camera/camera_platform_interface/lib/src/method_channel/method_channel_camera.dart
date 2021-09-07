@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -397,6 +397,22 @@ class MethodChannelCamera extends CameraPlatform {
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }
+  }
+
+  @override
+  Future<void> pausePreview(int cameraId) async {
+    await _channel.invokeMethod<double>(
+      'pausePreview',
+      <String, dynamic>{'cameraId': cameraId},
+    );
+  }
+
+  @override
+  Future<void> resumePreview(int cameraId) async {
+    await _channel.invokeMethod<double>(
+      'resumePreview',
+      <String, dynamic>{'cameraId': cameraId},
+    );
   }
 
   @override

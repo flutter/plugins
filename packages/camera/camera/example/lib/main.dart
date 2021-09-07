@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -68,7 +68,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance?.addObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.addObserver(this);
 
     _flashModeControlRowAnimationController = AnimationController(
       duration: const Duration(milliseconds: 300),
@@ -98,7 +98,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
 
   @override
   void dispose() {
-    WidgetsBinding.instance?.removeObserver(this);
+    _ambiguate(WidgetsBinding.instance)?.removeObserver(this);
     _flashModeControlRowAnimationController.dispose();
     _exposureModeControlRowAnimationController.dispose();
     super.dispose();
@@ -399,6 +399,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                             onSetExposureModeButtonPressed(ExposureMode.locked)
                         : null,
                   ),
+                  TextButton(
+                    child: Text('RESET OFFSET'),
+                    style: styleLocked,
+                    onPressed: controller != null
+                        ? () => controller!.setExposureOffset(0.0)
+                        : null,
+                  ),
                 ],
               ),
               Center(
@@ -530,7 +537,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   cameraController.value.isRecordingVideo
               ? onStopButtonPressed
               : null,
-        )
+        ),
+        IconButton(
+          icon: const Icon(Icons.pause_presentation),
+          color:
+              cameraController != null && cameraController.value.isPreviewPaused
+                  ? Colors.red
+                  : Colors.blue,
+          onPressed:
+              cameraController == null ? null : onPausePreviewButtonPressed,
+        ),
       ],
     );
   }
@@ -597,12 +613,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller!.dispose();
     }
+
     final CameraController cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
+
     controller = cameraController;
 
     // If the controller is updated then update the UI.
@@ -739,6 +757,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         _startVideoPlayer();
       }
     });
+  }
+
+  Future<void> onPausePreviewButtonPressed() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return;
+    }
+
+    if (cameraController.value.isPreviewPaused) {
+      await cameraController.resumePreview();
+    } else {
+      await cameraController.pausePreview();
+    }
+
+    if (mounted) setState(() {});
   }
 
   void onPauseButtonPressed() {
@@ -951,3 +986,10 @@ Future<void> main() async {
   }
   runApp(CameraApp());
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

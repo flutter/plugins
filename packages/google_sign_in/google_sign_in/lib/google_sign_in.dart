@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:ui' show hashValues;
@@ -108,6 +108,8 @@ class GoogleSignInAccount implements GoogleIdentity {
     final String? token = (await authentication).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
+      // TODO(kevmoo): Use the correct value once it's available from authentication
+      // See https://github.com/flutter/flutter/issues/80905
       "X-Goog-AuthUser": "0",
     };
   }
@@ -312,11 +314,13 @@ class GoogleSignIn {
   /// successful sign in or `null` if there is no previously authenticated user.
   /// Use [signIn] method to trigger interactive sign in process.
   ///
-  /// Authentication process is triggered only if there is no currently signed in
+  /// Authentication is triggered if there is no currently signed in
   /// user (that is when `currentUser == null`), otherwise this method returns
   /// a Future which resolves to the same user instance.
   ///
-  /// Re-authentication can be triggered only after [signOut] or [disconnect].
+  /// Re-authentication can be triggered after [signOut] or [disconnect]. It can
+  /// also be triggered by setting [reAuthenticate] to `true` if a new ID token
+  /// is required.
   ///
   /// When [suppressErrors] is set to `false` and an error occurred during sign in
   /// returned Future completes with [PlatformException] whose `code` can be
@@ -325,10 +329,11 @@ class GoogleSignIn {
   /// (when an unknown error occurred).
   Future<GoogleSignInAccount?> signInSilently({
     bool suppressErrors = true,
+    bool reAuthenticate = false,
   }) async {
     try {
       return await _addMethodCall(GoogleSignInPlatform.instance.signInSilently,
-          canSkipCall: true);
+          canSkipCall: !reAuthenticate);
     } catch (_) {
       if (suppressErrors) {
         return null;

@@ -1,10 +1,9 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
-import 'dart:io';
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:ffi/ffi.dart';
 import 'package:meta/meta.dart';
@@ -22,14 +21,15 @@ import 'folders.dart';
 class VersionInfoQuerier {
   /// Returns the value for [key] in [versionInfo]s English strings section, or
   /// null if there is no such entry, or if versionInfo is null.
-  getStringValue(Pointer<Uint8>? versionInfo, key) {
+  String? getStringValue(Pointer<Uint8>? versionInfo, String key) {
     if (versionInfo == null) {
       return null;
     }
-    const kEnUsLanguageCode = '040904e4';
-    final keyPath = TEXT('\\StringFileInfo\\$kEnUsLanguageCode\\$key');
-    final length = calloc<Uint32>();
-    final valueAddress = calloc<Pointer<Utf16>>();
+    const String kEnUsLanguageCode = '040904e4';
+    final Pointer<Utf16> keyPath =
+        TEXT('\\StringFileInfo\\$kEnUsLanguageCode\\$key');
+    final Pointer<Uint32> length = calloc<Uint32>();
+    final Pointer<Pointer<Utf16>> valueAddress = calloc<Pointer<Utf16>>();
     try {
       if (VerQueryValue(versionInfo, keyPath, valueAddress, length) == 0) {
         return null;
@@ -47,6 +47,11 @@ class VersionInfoQuerier {
 ///
 /// This class implements the `package:path_provider` functionality for Windows.
 class PathProviderWindows extends PathProviderPlatform {
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    PathProviderPlatform.instance = PathProviderWindows();
+  }
+
   /// The object to use for performing VerQueryValue calls.
   @visibleForTesting
   VersionInfoQuerier versionInfoQuerier = VersionInfoQuerier();
@@ -54,14 +59,14 @@ class PathProviderWindows extends PathProviderPlatform {
   /// This is typically the same as the TMP environment variable.
   @override
   Future<String?> getTemporaryPath() async {
-    final buffer = calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
+    final Pointer<Utf16> buffer = calloc<Uint16>(MAX_PATH + 1).cast<Utf16>();
     String path;
 
     try {
-      final length = GetTempPath(MAX_PATH, buffer);
+      final int length = GetTempPath(MAX_PATH, buffer);
 
       if (length == 0) {
-        final error = GetLastError();
+        final int error = GetLastError();
         throw WindowsException(error);
       } else {
         path = buffer.toDartString();
@@ -69,18 +74,18 @@ class PathProviderWindows extends PathProviderPlatform {
         // GetTempPath adds a trailing backslash, but SHGetKnownFolderPath does
         // not. Strip off trailing backslash for consistency with other methods
         // here.
-        if (path.endsWith('\\')) {
+        if (path.endsWith(r'\')) {
           path = path.substring(0, path.length - 1);
         }
       }
 
       // Ensure that the directory exists, since GetTempPath doesn't.
-      final directory = Directory(path);
+      final Directory directory = Directory(path);
       if (!directory.existsSync()) {
         await directory.create(recursive: true);
       }
 
-      return Future.value(path);
+      return path;
     } finally {
       calloc.free(buffer);
     }
@@ -88,8 +93,12 @@ class PathProviderWindows extends PathProviderPlatform {
 
   @override
   Future<String?> getApplicationSupportPath() async {
-    final appDataRoot = await getPath(WindowsKnownFolder.RoamingAppData);
-    final directory = Directory(
+    final String? appDataRoot =
+        await getPath(WindowsKnownFolder.RoamingAppData);
+    if (appDataRoot == null) {
+      return null;
+    }
+    final Directory directory = Directory(
         path.join(appDataRoot, _getApplicationSpecificSubdirectory()));
     // Ensure that the directory exists if possible, since it will on other
     // platforms. If the name is longer than MAXPATH, creating will fail, so
@@ -114,12 +123,12 @@ class PathProviderWindows extends PathProviderPlatform {
   ///
   /// folderID is a GUID that represents a specific known folder ID, drawn from
   /// [WindowsKnownFolder].
-  Future<String> getPath(String folderID) {
-    final pathPtrPtr = calloc<Pointer<Utf16>>();
+  Future<String?> getPath(String folderID) {
+    final Pointer<Pointer<Utf16>> pathPtrPtr = calloc<Pointer<Utf16>>();
     final Pointer<GUID> knownFolderID = calloc<GUID>()..ref.setGUID(folderID);
 
     try {
-      final hr = SHGetKnownFolderPath(
+      final int hr = SHGetKnownFolderPath(
         knownFolderID,
         KF_FLAG_DEFAULT,
         NULL,
@@ -130,10 +139,11 @@ class PathProviderWindows extends PathProviderPlatform {
         if (hr == E_INVALIDARG || hr == E_FAIL) {
           throw WindowsException(hr);
         }
+        return Future<String?>.value(null);
       }
 
-      final path = pathPtrPtr.value.toDartString();
-      return Future.value(path);
+      final String path = pathPtrPtr.value.toDartString();
+      return Future<String>.value(path);
     } finally {
       calloc.free(pathPtrPtr);
       calloc.free(knownFolderID);
@@ -160,14 +170,15 @@ class PathProviderWindows extends PathProviderPlatform {
     Pointer<Uint8>? infoBuffer;
     try {
       // Get the module name.
-      final moduleNameLength = GetModuleFileName(0, moduleNameBuffer, MAX_PATH);
+      final int moduleNameLength =
+          GetModuleFileName(0, moduleNameBuffer, MAX_PATH);
       if (moduleNameLength == 0) {
-        final error = GetLastError();
+        final int error = GetLastError();
         throw WindowsException(error);
       }
 
       // From that, load the VERSIONINFO resource
-      int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
+      final int infoSize = GetFileVersionInfoSize(moduleNameBuffer, unused);
       if (infoSize != 0) {
         infoBuffer = calloc<Uint8>(infoSize);
         if (GetFileVersionInfo(moduleNameBuffer, 0, infoSize, infoBuffer) ==
@@ -182,10 +193,8 @@ class PathProviderWindows extends PathProviderPlatform {
           versionInfoQuerier.getStringValue(infoBuffer, 'ProductName'));
 
       // If there was no product name, use the executable name.
-      if (productName == null) {
-        productName =
-            path.basenameWithoutExtension(moduleNameBuffer.toDartString());
-      }
+      productName ??=
+          path.basenameWithoutExtension(moduleNameBuffer.toDartString());
 
       return companyName != null
           ? path.join(companyName, productName)
@@ -214,7 +223,7 @@ class PathProviderWindows extends PathProviderPlatform {
         .trimRight()
         // Ensure that it does not end with a '.'.
         .replaceAll(RegExp(r'[.]+$'), '');
-    const kMaxComponentLength = 255;
+    const int kMaxComponentLength = 255;
     if (sanitized.length > kMaxComponentLength) {
       sanitized = sanitized.substring(0, kMaxComponentLength);
     }

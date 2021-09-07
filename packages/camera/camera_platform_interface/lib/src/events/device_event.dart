@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -20,8 +20,7 @@ import 'package:flutter/services.dart';
 /// They can be (and in fact, are) filtered by the `instanceof`-operator.
 abstract class DeviceEvent {}
 
-/// The [DeviceOrientationChangedEvent] is fired every time the user changes the
-/// physical orientation of the device.
+/// The [DeviceOrientationChangedEvent] is fired every time the orientation of the device UI changes.
 class DeviceOrientationChangedEvent extends DeviceEvent {
   /// The new orientation of the device
   final DeviceOrientation orientation;

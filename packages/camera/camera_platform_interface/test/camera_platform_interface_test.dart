@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -405,6 +405,32 @@ void main() {
       // Act & Assert
       expect(
         () => cameraPlatform.setZoomLevel(1, 1.0),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of pausePreview() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.pausePreview(1),
+        throwsUnimplementedError,
+      );
+    });
+
+    test(
+        'Default implementation of resumePreview() should throw unimplemented error',
+        () {
+      // Arrange
+      final cameraPlatform = ExtendsCameraPlatform();
+
+      // Act & Assert
+      expect(
+        () => cameraPlatform.resumePreview(1),
         throwsUnimplementedError,
       );
     });

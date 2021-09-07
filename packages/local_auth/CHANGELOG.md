@@ -1,3 +1,36 @@
+## NEXT
+
+* Updated Android lint settings.
+
+## 1.1.7
+
+* Remove references to the Android V1 embedding.
+
+## 1.1.6
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 1.1.5
+
+* Updated grammatical errors and inaccurate information in README.
+
+## 1.1.4
+
+* Add debug assertion that `localizedReason` in `LocalAuthentication.authenticateWithBiometrics`  must not be empty.
+
+## 1.1.3
+
+* Fix crashes due to threading issues in iOS implementation.
+
+## 1.1.2
+
+* Update Jetpack dependencies to latest stable versions.
+
+## 1.1.1
+
+* Update flutter_plugin_android_lifecycle dependency to 2.0.1 to fix an R8 issue
+  on some versions.
+
 ## 1.1.0
 
 * Migrate to null safety.
