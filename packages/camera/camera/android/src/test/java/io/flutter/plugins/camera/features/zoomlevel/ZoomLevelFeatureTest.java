@@ -50,7 +50,7 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void ctor_when_parameters_are_valid() {
+  public void ctor_whenParametersAreValid() {
     when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
     when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
 
@@ -63,7 +63,7 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void ctor_when_sensor_size_is_null() {
+  public void ctor_whenSensorSizeIsNull() {
     when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(null);
     when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
 
@@ -77,7 +77,7 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void ctor_when_max_zoom_is_null() {
+  public void ctor_whenMaxZoomIsNull() {
     when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
     when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(null);
 
@@ -91,7 +91,7 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void ctor_when_max_zoom_is_smaller_then_default_zoom_factor() {
+  public void ctor_whenMaxZoomIsSmallerThenDefaultZoomFactor() {
     when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
     when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(0.5f);
 
@@ -105,21 +105,21 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
     assertEquals("ZoomLevelFeature", zoomLevelFeature.getDebugName());
   }
 
   @Test
-  public void getValue_should_return_null_if_not_set() {
+  public void getValue_shouldReturnNullIfNotSet() {
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
     assertEquals(1.0, (float) zoomLevelFeature.getValue(), 0);
   }
 
   @Test
-  public void getValue_should_echo_setValue() {
+  public void getValue_shouldEchoSetValue() {
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
     zoomLevelFeature.setValue(2.3f);
@@ -128,14 +128,14 @@ public class ZoomLevelFeatureTest {
   }
 
   @Test
-  public void checkIsSupport_returns_false_by_default() {
+  public void checkIsSupport_returnsFalseByDefault() {
     ZoomLevelFeature zoomLevelFeature = new ZoomLevelFeature(mockCameraProperties);
 
     assertFalse(zoomLevelFeature.checkIsSupported());
   }
 
   @Test
-  public void updateBuilder_should_set_scalar_crop_region_when_checkIsSupport_is_true() {
+  public void updateBuilder_shouldSetScalarCropRegionWhenCheckIsSupportIsTrue() {
     when(mockCameraProperties.getSensorInfoActiveArraySize()).thenReturn(mockSensorArray);
     when(mockCameraProperties.getScalerAvailableMaxDigitalZoom()).thenReturn(42f);
 

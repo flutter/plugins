@@ -54,11 +54,15 @@ void main() {
     late List<List<String>> gitDirCommands;
     Map<String, String> gitShowResponses;
     late MockGitDir gitDir;
+    // Ignored if mockHttpResponse is set.
+    int mockHttpStatus;
+    Map<String, dynamic>? mockHttpResponse;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
       mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
+
       gitDirCommands = <List<String>>[];
       gitShowResponses = <String, String>{};
       gitDir = MockGitDir();
@@ -81,9 +85,21 @@ void main() {
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
+
+      // Default to simulating the plugin never having been published.
+      mockHttpStatus = 404;
+      mockHttpResponse = null;
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(mockHttpResponse),
+            mockHttpResponse == null ? mockHttpStatus : 200);
+      });
+
       processRunner = RecordingProcessRunner();
       final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, platform: mockPlatform, gitDir: gitDir);
+          processRunner: processRunner,
+          platform: mockPlatform,
+          gitDir: gitDir,
+          httpClient: mockClient);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
@@ -456,7 +472,9 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains('When bumping the version for release, the NEXT section '
-              'should be incorporated into the new version\'s release notes.')
+              'should be incorporated into the new version\'s release notes.'),
+          contains('plugin:\n'
+              '    CHANGELOG.md failed validation.'),
         ]),
       );
     });
@@ -497,7 +515,7 @@ void main() {
     });
 
     test('allows valid against pub', () async {
-      const Map<String, dynamic> httpResponse = <String, dynamic>{
+      mockHttpResponse = <String, dynamic>{
         'name': 'some_package',
         'versions': <String>[
           '0.0.1',
@@ -505,15 +523,6 @@ void main() {
           '1.0.0',
         ],
       };
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response(json.encode(httpResponse), 200);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -531,22 +540,13 @@ void main() {
     });
 
     test('denies invalid against pub', () async {
-      const Map<String, dynamic> httpResponse = <String, dynamic>{
+      mockHttpResponse = <String, dynamic>{
         'name': 'some_package',
         'versions': <String>[
           '0.0.1',
           '0.0.2',
         ],
       };
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response(json.encode(httpResponse), 200);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -578,15 +578,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
     test(
         'throw and print error message if http request failed when checking against pub',
         () async {
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response('xx', 400);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
+      mockHttpStatus = 400;
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -609,7 +601,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
           contains('''
 ${indentation}Error fetching version on pub for plugin.
 ${indentation}HTTP Status 400
-${indentation}HTTP response: xx
+${indentation}HTTP response: null
 ''')
         ]),
       );
@@ -617,15 +609,7 @@ ${indentation}HTTP response: xx
 
     test('when checking against pub, allow any version if http status is 404.',
         () async {
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response('xx', 404);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
+      mockHttpStatus = 404;
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{

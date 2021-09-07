@@ -217,17 +217,21 @@ public class ImagePickerDelegate
 
   void retrieveLostImage(MethodChannel.Result result) {
     Map<String, Object> resultMap = cache.getCacheMap();
-    String path = (String) resultMap.get(cache.MAP_KEY_PATH);
-    if (path != null) {
-      Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
-      Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
-      int imageQuality =
-          resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
-              ? 100
-              : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
+    ArrayList<String> pathList = (ArrayList<String>) resultMap.get(cache.MAP_KEY_PATH_LIST);
+    ArrayList<String> newPathList = new ArrayList<>();
+    if (pathList != null) {
+      for (String path : pathList) {
+        Double maxWidth = (Double) resultMap.get(cache.MAP_KEY_MAX_WIDTH);
+        Double maxHeight = (Double) resultMap.get(cache.MAP_KEY_MAX_HEIGHT);
+        int imageQuality =
+            resultMap.get(cache.MAP_KEY_IMAGE_QUALITY) == null
+                ? 100
+                : (int) resultMap.get(cache.MAP_KEY_IMAGE_QUALITY);
 
-      String newPath = imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality);
-      resultMap.put(cache.MAP_KEY_PATH, newPath);
+        newPathList.add(imageResizer.resizeImageIfNeeded(path, maxWidth, maxHeight, imageQuality));
+      }
+      resultMap.put(cache.MAP_KEY_PATH_LIST, newPathList);
+      resultMap.put(cache.MAP_KEY_PATH, newPathList.get(newPathList.size() - 1));
     }
     if (resultMap.isEmpty()) {
       result.success(null);
@@ -558,6 +562,7 @@ public class ImagePickerDelegate
   private void handleMultiImageResult(
       ArrayList<String> paths, boolean shouldDeleteOriginalIfScaled) {
     if (methodCall != null) {
+      ArrayList<String> finalPath = new ArrayList<>();
       for (int i = 0; i < paths.size(); i++) {
         String finalImagePath = getResizedImagePath(paths.get(i));
 
@@ -567,8 +572,10 @@ public class ImagePickerDelegate
             && shouldDeleteOriginalIfScaled) {
           new File(paths.get(i)).delete();
         }
-        paths.set(i, finalImagePath);
+        finalPath.add(i, finalImagePath);
       }
+      finishWithListSuccess(finalPath);
+    } else {
       finishWithListSuccess(paths);
     }
   }
@@ -615,7 +622,9 @@ public class ImagePickerDelegate
 
   private void finishWithSuccess(String imagePath) {
     if (pendingResult == null) {
-      cache.saveResult(imagePath, null, null);
+      ArrayList<String> pathList = new ArrayList<>();
+      pathList.add(imagePath);
+      cache.saveResult(pathList, null, null);
       return;
     }
     pendingResult.success(imagePath);
@@ -624,9 +633,7 @@ public class ImagePickerDelegate
 
   private void finishWithListSuccess(ArrayList<String> imagePaths) {
     if (pendingResult == null) {
-      for (String imagePath : imagePaths) {
-        cache.saveResult(imagePath, null, null);
-      }
+      cache.saveResult(imagePaths, null, null);
       return;
     }
     pendingResult.success(imagePaths);

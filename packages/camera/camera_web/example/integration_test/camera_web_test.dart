@@ -563,24 +563,32 @@ void main() {
       late Camera camera;
       late VideoElement videoElement;
 
+      late StreamController<Event> errorStreamController, abortStreamController;
+      late StreamController<MediaStreamTrack> endedStreamController;
+
       setUp(() {
         camera = MockCamera();
         videoElement = MockVideoElement();
 
-        when(() => camera.videoElement).thenReturn(videoElement);
-        when(() => videoElement.onError)
-            .thenAnswer((_) => FakeElementStream(Stream.empty()));
-        when(() => videoElement.onAbort)
-            .thenAnswer((_) => FakeElementStream(Stream.empty()));
-      });
+        errorStreamController = StreamController<Event>();
+        abortStreamController = StreamController<Event>();
+        endedStreamController = StreamController<MediaStreamTrack>();
 
-      testWidgets('initializes and plays the camera', (tester) async {
-        when(camera.getVideoSize).thenAnswer(
-          (_) => Future.value(Size(10, 10)),
-        );
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
         when(camera.play).thenAnswer((_) => Future.value());
 
+        when(() => camera.videoElement).thenReturn(videoElement);
+        when(() => videoElement.onError)
+            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
+        when(() => videoElement.onAbort)
+            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
+
+        when(() => camera.onEnded)
+            .thenAnswer((_) => endedStreamController.stream);
+      });
+
+      testWidgets('initializes and plays the camera', (tester) async {
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
 
@@ -588,6 +596,32 @@ void main() {
 
         verify(camera.initialize).called(1);
         verify(camera.play).called(1);
+      });
+
+      testWidgets('starts listening to the camera video error and abort events',
+          (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(errorStreamController.hasListener, isFalse);
+        expect(abortStreamController.hasListener, isFalse);
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+
+        expect(errorStreamController.hasListener, isTrue);
+        expect(abortStreamController.hasListener, isTrue);
+      });
+
+      testWidgets('starts listening to the camera ended events',
+          (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(endedStreamController.hasListener, isFalse);
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+
+        expect(endedStreamController.hasListener, isTrue);
       });
 
       group('throws PlatformException', () {
@@ -1610,6 +1644,35 @@ void main() {
     });
 
     group('dispose', () {
+      late Camera camera;
+      late VideoElement videoElement;
+
+      late StreamController<Event> errorStreamController, abortStreamController;
+      late StreamController<MediaStreamTrack> endedStreamController;
+
+      setUp(() {
+        camera = MockCamera();
+        videoElement = MockVideoElement();
+
+        errorStreamController = StreamController<Event>();
+        abortStreamController = StreamController<Event>();
+        endedStreamController = StreamController<MediaStreamTrack>();
+
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
+        when(camera.initialize).thenAnswer((_) => Future.value());
+        when(camera.play).thenAnswer((_) => Future.value());
+        when(camera.dispose).thenAnswer((_) => Future.value());
+
+        when(() => camera.videoElement).thenReturn(videoElement);
+        when(() => videoElement.onError)
+            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
+        when(() => videoElement.onAbort)
+            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
+
+        when(() => camera.onEnded)
+            .thenAnswer((_) => endedStreamController.stream);
+      });
+
       testWidgets('disposes the correct camera', (tester) async {
         const firstCameraId = 0;
         const secondCameraId = 1;
@@ -1642,38 +1705,26 @@ void main() {
         );
       });
 
-      testWidgets('cancels camera video and abort error subscriptions',
+      testWidgets('cancels the camera video error and abort subscriptions',
           (tester) async {
-        final camera = MockCamera();
-        final videoElement = MockVideoElement();
-
-        final errorStreamController = StreamController<Event>();
-        final abortStreamController = StreamController<Event>();
-
-        when(camera.getVideoSize).thenAnswer(
-          (_) => Future.value(Size(10, 10)),
-        );
-        when(camera.initialize).thenAnswer((_) => Future.value());
-        when(camera.play).thenAnswer((_) => Future.value());
-
-        when(() => camera.videoElement).thenReturn(videoElement);
-        when(() => videoElement.onError)
-            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
-        when(() => videoElement.onAbort)
-            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
-
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
 
         await CameraPlatform.instance.initializeCamera(cameraId);
-
-        expect(errorStreamController.hasListener, isTrue);
-        expect(abortStreamController.hasListener, isTrue);
-
         await CameraPlatform.instance.dispose(cameraId);
 
         expect(errorStreamController.hasListener, isFalse);
         expect(abortStreamController.hasListener, isFalse);
+      });
+
+      testWidgets('cancels the camera ended subscriptions', (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+        await CameraPlatform.instance.dispose(cameraId);
+
+        expect(endedStreamController.hasListener, isFalse);
       });
 
       group('throws PlatformException', () {
@@ -1749,6 +1800,34 @@ void main() {
     });
 
     group('events', () {
+      late Camera camera;
+      late VideoElement videoElement;
+
+      late StreamController<Event> errorStreamController, abortStreamController;
+      late StreamController<MediaStreamTrack> endedStreamController;
+
+      setUp(() {
+        camera = MockCamera();
+        videoElement = MockVideoElement();
+
+        errorStreamController = StreamController<Event>();
+        abortStreamController = StreamController<Event>();
+        endedStreamController = StreamController<MediaStreamTrack>();
+
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
+        when(camera.initialize).thenAnswer((_) => Future.value());
+        when(camera.play).thenAnswer((_) => Future.value());
+
+        when(() => camera.videoElement).thenReturn(videoElement);
+        when(() => videoElement.onError)
+            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
+        when(() => videoElement.onAbort)
+            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
+
+        when(() => camera.onEnded)
+            .thenAnswer((_) => endedStreamController.stream);
+      });
+
       testWidgets(
           'onCameraInitialized emits a CameraInitializedEvent '
           'on initializeCamera', (tester) async {
@@ -1805,46 +1884,40 @@ void main() {
         );
       });
 
-      testWidgets('onCameraClosing throws UnimplementedError', (tester) async {
+      testWidgets(
+          'onCameraClosing emits a CameraClosingEvent '
+          'on the camera ended event', (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        final Stream<CameraClosingEvent> eventStream =
+            CameraPlatform.instance.onCameraClosing(cameraId);
+
+        final streamQueue = StreamQueue(eventStream);
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+
+        endedStreamController.add(MockMediaStreamTrack());
+
         expect(
-          () => CameraPlatform.instance.onCameraClosing(cameraId),
-          throwsUnimplementedError,
+          await streamQueue.next,
+          equals(
+            CameraClosingEvent(cameraId),
+          ),
         );
+
+        await streamQueue.cancel();
       });
 
       group('onCameraError', () {
-        late Camera camera;
-        late VideoElement videoElement;
-
-        late StreamController<Event> errorStreamController,
-            abortStreamController;
-
         setUp(() {
-          camera = MockCamera();
-          videoElement = MockVideoElement();
-
-          errorStreamController = StreamController<Event>();
-          abortStreamController = StreamController<Event>();
-
-          when(camera.getVideoSize).thenAnswer(
-            (_) => Future.value(Size(10, 10)),
-          );
-          when(camera.initialize).thenAnswer((_) => Future.value());
-          when(camera.play).thenAnswer((_) => Future.value());
-
-          when(() => camera.videoElement).thenReturn(videoElement);
-          when(() => videoElement.onError).thenAnswer(
-              (_) => FakeElementStream(errorStreamController.stream));
-          when(() => videoElement.onAbort).thenAnswer(
-              (_) => FakeElementStream(abortStreamController.stream));
-
           // Save the camera in the camera plugin.
           (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
         });
 
         testWidgets(
             'emits a CameraErrorEvent '
-            'on initialize video error '
+            'on the camera video error event '
             'with a message', (tester) async {
           final Stream<CameraErrorEvent> eventStream =
               CameraPlatform.instance.onCameraError(cameraId);
@@ -1879,7 +1952,7 @@ void main() {
 
         testWidgets(
             'emits a CameraErrorEvent '
-            'on initialize video error '
+            'on the camera video error event '
             'with no message', (tester) async {
           final Stream<CameraErrorEvent> eventStream =
               CameraPlatform.instance.onCameraError(cameraId);
@@ -1910,7 +1983,7 @@ void main() {
 
         testWidgets(
             'emits a CameraErrorEvent '
-            'on initialize abort error', (tester) async {
+            'on the camera video abort event', (tester) async {
           final Stream<CameraErrorEvent> eventStream =
               CameraPlatform.instance.onCameraError(cameraId);
 
@@ -2190,6 +2263,40 @@ void main() {
           });
         });
 
+        testWidgets('emits the initial DeviceOrientationChangedEvent',
+            (tester) async {
+          when(
+            () => cameraService.mapOrientationTypeToDeviceOrientation(
+              OrientationType.portraitPrimary,
+            ),
+          ).thenReturn(DeviceOrientation.portraitUp);
+
+          // Set the initial screen orientation to portraitPrimary.
+          when(() => screenOrientation.type)
+              .thenReturn(OrientationType.portraitPrimary);
+
+          final eventStreamController = StreamController<Event>();
+
+          when(() => screenOrientation.onChange)
+              .thenAnswer((_) => eventStreamController.stream);
+
+          final Stream<DeviceOrientationChangedEvent> eventStream =
+              CameraPlatform.instance.onDeviceOrientationChanged();
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            await streamQueue.next,
+            equals(
+              DeviceOrientationChangedEvent(
+                DeviceOrientation.portraitUp,
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
         testWidgets(
             'emits a DeviceOrientationChangedEvent '
             'when the screen orientation is changed', (tester) async {
@@ -2220,7 +2327,7 @@ void main() {
           when(() => screenOrientation.type)
               .thenReturn(OrientationType.landscapePrimary);
 
-          eventStreamController.add(Event('orientationChanged'));
+          eventStreamController.add(Event('change'));
 
           expect(
             await streamQueue.next,
@@ -2236,7 +2343,7 @@ void main() {
           when(() => screenOrientation.type)
               .thenReturn(OrientationType.portraitSecondary);
 
-          eventStreamController.add(Event('orientationChanged'));
+          eventStreamController.add(Event('change'));
 
           expect(
             await streamQueue.next,

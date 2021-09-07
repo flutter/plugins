@@ -11,7 +11,7 @@ import 'package:yaml/yaml.dart';
 /// Finding diffs based on `baseGitDir` and `baseSha`.
 class GitVersionFinder {
   /// Constructor
-  GitVersionFinder(this.baseGitDir, this.baseSha);
+  GitVersionFinder(this.baseGitDir, String? baseSha) : _baseSha = baseSha;
 
   /// The top level directory of the git repo.
   ///
@@ -19,7 +19,7 @@ class GitVersionFinder {
   final GitDir baseGitDir;
 
   /// The base sha used to get diff.
-  final String? baseSha;
+  String? _baseSha;
 
   static bool _isPubspec(String file) {
     return file.trim().endsWith('pubspec.yaml');
@@ -32,10 +32,9 @@ class GitVersionFinder {
 
   /// Get a list of all the changed files.
   Future<List<String>> getChangedFiles() async {
-    final String baseSha = await _getBaseSha();
+    final String baseSha = await getBaseSha();
     final io.ProcessResult changedFilesCommand = await baseGitDir
         .runCommand(<String>['diff', '--name-only', baseSha, 'HEAD']);
-    print('Determine diff with base sha: $baseSha');
     final String changedFilesStdout = changedFilesCommand.stdout.toString();
     if (changedFilesStdout.isEmpty) {
       return <String>[];
@@ -49,7 +48,7 @@ class GitVersionFinder {
   /// at the revision of `gitRef` (defaulting to the base if not provided).
   Future<Version?> getPackageVersion(String pubspecPath,
       {String? gitRef}) async {
-    final String ref = gitRef ?? (await _getBaseSha());
+    final String ref = gitRef ?? (await getBaseSha());
 
     io.ProcessResult gitShow;
     try {
@@ -63,9 +62,11 @@ class GitVersionFinder {
     return versionString == null ? null : Version.parse(versionString);
   }
 
-  Future<String> _getBaseSha() async {
-    if (baseSha != null && baseSha!.isNotEmpty) {
-      return baseSha!;
+  /// Returns the base used to diff against.
+  Future<String> getBaseSha() async {
+    String? baseSha = _baseSha;
+    if (baseSha != null && baseSha.isNotEmpty) {
+      return baseSha;
     }
 
     io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
@@ -76,6 +77,8 @@ class GitVersionFinder {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);
     }
-    return (baseShaFromMergeBase.stdout as String).trim();
+    baseSha = (baseShaFromMergeBase.stdout as String).trim();
+    _baseSha = baseSha;
+    return baseSha;
   }
 }
