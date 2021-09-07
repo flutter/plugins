@@ -33,8 +33,7 @@ public class MethodCallHandlerImplTest {
             mock(BinaryMessenger.class),
             mock(CameraPermissions.class),
             mock(CameraPermissions.PermissionsRegistry.class),
-            mock(TextureRegistry.class),
-            null);
+            mock(TextureRegistry.class));
     mockResult = mock(MethodChannel.Result.class);
     mockCamera = mock(Camera.class);
     TestUtils.setPrivateField(handler, "camera", mockCamera);
