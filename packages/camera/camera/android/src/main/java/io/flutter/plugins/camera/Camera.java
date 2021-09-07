@@ -35,9 +35,6 @@ import android.view.Display;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -82,8 +79,7 @@ interface ErrorCallback {
 
 class Camera
     implements CameraCaptureCallback.CameraCaptureStateListener,
-        ImageReader.OnImageAvailableListener,
-        LifecycleObserver {
+        ImageReader.OnImageAvailableListener {
   private static final String TAG = "Camera";
 
   private static final HashMap<String, Integer> supportedImageFormats;
@@ -576,19 +572,19 @@ class Camera
   }
 
   /** Starts a background thread and its {@link Handler}. */
-  @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
   public void startBackgroundThread() {
-    backgroundHandlerThread = new HandlerThread("CameraBackground");
-    try {
-      backgroundHandlerThread.start();
-    } catch (IllegalThreadStateException e) {
-      // Ignore exception in case the thread has already started.
+    if (backgroundHandlerThread == null) {
+      backgroundHandlerThread = new HandlerThread("CameraBackground");
+      try {
+        backgroundHandlerThread.start();
+      } catch (IllegalThreadStateException e) {
+        // Ignore exception in case the thread has already started.
+      }
+      backgroundHandler = new Handler(backgroundHandlerThread.getLooper());
     }
-    backgroundHandler = new Handler(backgroundHandlerThread.getLooper());
   }
 
   /** Stops the background thread and its {@link Handler}. */
-  @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
   public void stopBackgroundThread() {
     if (backgroundHandlerThread != null) {
       backgroundHandlerThread.quitSafely();
