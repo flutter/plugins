@@ -1,10 +1,7 @@
 ## 2.0.13
 
-* Enable native double-tap to zoom, and pinch to zoom functionality on Android
-
-## NEXT
-
 * Updated Android lint settings.
+* Enable native double-tap to zoom, and pinch to zoom functionality on Android
 
 ## 2.0.12
 
