@@ -379,7 +379,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       // Output should be empty since running build-examples --macos with no macos
       // implementation is a no-op.
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
@@ -407,7 +406,6 @@ void main() {
         ]),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           containsAll(<ProcessCall>[
@@ -436,7 +434,6 @@ void main() {
         contains('Creating temporary winuwp folder'),
       );
 
-      print(processRunner.recordedCalls);
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
@@ -678,6 +675,51 @@ void main() {
                   packageDirectory.childDirectory('example').path),
             ]));
       });
+    });
+
+    test('The .pluginToolsConfig.yaml file', () async {
+      mockPlatform.isLinux = true;
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      final File pluginExampleConfigFile =
+          pluginExampleDirectory.childFile('.pluginToolsConfig.yaml');
+      pluginExampleConfigFile
+          .writeAsStringSync('buildFlags:\n  global:\n     - "test argument"');
+
+      final List<String> output = <String>[
+        ...await runCapturingPrint(
+            runner, <String>['build-examples', '--linux']),
+        ...await runCapturingPrint(
+            runner, <String>['build-examples', '--macos']),
+      ];
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          '\nBUILDING plugin/example for Linux',
+          '\nBUILDING plugin/example for macOS',
+        ]),
+      );
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['build', 'linux', 'test argument'],
+                pluginExampleDirectory.path),
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['build', 'macos', 'test argument'],
+                pluginExampleDirectory.path),
+          ]));
     });
   });
 }

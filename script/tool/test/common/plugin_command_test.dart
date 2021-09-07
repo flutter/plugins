@@ -398,11 +398,18 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
+        final List<String> output = await runCapturingPrint(runner, <String>[
           'sample',
           '--base-sha=master',
           '--run-on-changed-packages'
         ]);
+
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains(
+                  'Running for all packages that have changed relative to "master"'),
+            ]));
 
         expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });

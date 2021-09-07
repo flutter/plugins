@@ -314,6 +314,9 @@ abstract class PluginCommand extends Command<void> {
 
     if (runOnChangedPackages) {
       final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+      final String baseSha = await gitVersionFinder.getBaseSha();
+      print(
+          'Running for all packages that have changed relative to "$baseSha"\n');
       final List<String> changedFiles =
           await gitVersionFinder.getChangedFiles();
       if (!_changesRequireFullTest(changedFiles)) {
