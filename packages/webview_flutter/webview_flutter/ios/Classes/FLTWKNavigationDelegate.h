@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
  * Whether to delegate navigation decisions over the method channel.
  */
 @property(nonatomic, assign) BOOL hasDartNavigationDelegate;
+@property(nonatomic, copy) void (^didFinishLoad)(WKNavigation *navigation);
 
 @end
 
