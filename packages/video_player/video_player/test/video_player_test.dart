@@ -71,6 +71,9 @@ class FakeController extends ValueNotifier<VideoPlayerValue>
 
   @override
   VideoPlayerOptions? get videoPlayerOptions => null;
+
+  @override
+  VoidCallback? get onComplete => null;
 }
 
 Future<ClosedCaptionFile> _loadClosedCaption() async =>
@@ -493,6 +496,26 @@ void main() {
     });
 
     group('Platform callbacks', () {
+      testWidgets('onComplete called', (WidgetTester tester) async {
+        bool completed = false;
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+          onComplete: () {
+            completed = true;
+          },
+        );
+        await controller.initialize();
+
+        await controller.play();
+        final FakeVideoEventStream fakeVideoEventStream =
+            fakeVideoPlayerPlatform.streams[controller.textureId]!;
+
+        fakeVideoEventStream.eventsChannel
+            .sendEvent(<String, dynamic>{'event': 'completed'});
+        await tester.pumpAndSettle();
+        expect(completed, true);
+      });
+
       testWidgets('playing completed', (WidgetTester tester) async {
         final VideoPlayerController controller = VideoPlayerController.network(
           'https://127.0.0.1',
@@ -501,7 +524,7 @@ void main() {
         const Duration nonzeroDuration = Duration(milliseconds: 100);
         controller.value = controller.value.copyWith(duration: nonzeroDuration);
         expect(controller.value.isPlaying, isFalse);
-        await controller.play();
+
         expect(controller.value.isPlaying, isTrue);
         final FakeVideoEventStream fakeVideoEventStream =
             fakeVideoPlayerPlatform.streams[controller.textureId]!;
