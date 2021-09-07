@@ -50,6 +50,10 @@ public class FlutterWebViewTest {
     verify(mockWebViewBuilder, times(1)).setSupportMultipleWindows(true);
     verify(mockWebViewBuilder, times(1)).setUsesHybridComposition(false);
     verify(mockWebViewBuilder, times(1)).setWebChromeClient(mockWebChromeClient);
+    verify(mockWebViewBuilder, times(1)).setLoadWithOverviewMode(true);
+    verify(mockWebViewBuilder, times(1)).setUseWideViewPort(true);
+    verify(mockWebViewBuilder, times(1)).setBuiltInZoomControls(true);
+    verify(mockWebViewBuilder, times(1)).setDisplayZoomControls(false);
   }
 
   private Map<String, Object> createParameterMap(boolean usesHybridComposition) {

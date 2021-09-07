@@ -166,6 +166,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         .setSupportMultipleWindows(true) // Always support multiple windows.
         .setWebChromeClient(
             webChromeClient); // Always use {@link FlutterWebChromeClient} as web Chrome client.
+        .setBuiltInZoomControls(true); //Always use built-in zoom mechanisms.
+        .setLoadWithOverviewMode(true); //Always zooms out the content to fit on screen by width.
+        .setUseWideViewPort(true); //Always support using a wide viewport
+        .setDisplayZoomControls(false); //Never display on-screen zoom controls.
 
     return webViewBuilder.build();
   }
@@ -441,18 +445,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "zoomEnabled":
           zoomEnabled((boolean) settings.get(key));
           break;
-        case "builtInZoomControlsEnabled":
-          builtInZoomControlsEnabled((boolean) settings.get(key));
-          break;
-        case "displayZoomControls":
-          displayZoomControls((boolean) settings.get(key));
-          break;
-        case "useWideViewPort":
-          useWideViewPort((boolean) settings.get(key));
-          break;
-        case "loadWithOverviewMode":
-          loadWithOverviewMode((boolean) settings.get(key));
-          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -494,23 +486,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void zoomEnabled(boolean shouldEnable) {
     webView.getSettings().setSupportZoom(shouldEnable);
-  }
-
-  private void builtInZoomControlsEnabled(boolean shouldEnable) {
-    webView.getSettings().setBuiltInZoomControls(shouldEnable);
-  }
-
-  private void displayZoomControls(boolean shouldEnable) {
-    // On-screen zoom controls are deprecated in Android (see ZoomButtonsController) so it's recommended to set this to false.
-    webView.getSettings().setDisplayZoomControls(shouldEnable);
-  }
-
-  private void useWideViewPort(boolean shouldEnable) {
-    webView.getSettings().setUseWideViewPort(shouldEnable);
-  }
-
-  private void loadWithOverviewMode(boolean shouldEnable) {
-    webView.getSettings().setLoadWithOverviewMode(shouldEnable);
   }
 
   @Override
