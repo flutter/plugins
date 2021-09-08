@@ -1,0 +1,8 @@
+
+tasks:
+  - name: "prepare tool"
+    script: .ci/scripts/prepare_tool.sh
+  - name: "build examples"
+    script: .ci/scripts/build_examples_win32.sh
+  - name: "drive examples"
+    script: .ci/scripts/drive_examples_win32.sh
