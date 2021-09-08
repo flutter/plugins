@@ -62,7 +62,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows win32_build+platform-tests master
+  - name: Windows win32-platform_tests master
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -76,14 +76,14 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows win32_build+platform-tests stable
+  - name: Windows win32-platform_tests stable
     recipe: plugins/plugins
     bringup: true
     timeout: 30
     properties:
       # TODO(stuartmorgan): Uncomment when removing bringup.
       #add_recipes_cq: "true"
-      target_file: uwp_build_and_platform_tests.yaml
+      target_file: windows_build_and_platform_tests.yaml
       channel: stable
       dependencies: >
         [
@@ -91,7 +91,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows build_all_plugins master
+  - name: Windows windows-build_all_plugins master
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -105,7 +105,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows build_all_plugins stable
+  - name: Windows windows-build_all_plugins stable
     recipe: plugins/plugins
     bringup: true
     timeout: 30
@@ -120,7 +120,7 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows uwp-build+platform-tests master
+  - name: Windows uwp-platform_tests master
     recipe: plugins/plugins
     bringup: true
     timeout: 30

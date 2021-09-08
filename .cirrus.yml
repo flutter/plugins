@@ -63,7 +63,7 @@ task:
     namespace: default
   matrix:
     ### Platform-agnostic tasks ###
-    - name: plugin_tools_tests
+    - name: Linux plugin_tools_tests
       script:
         - cd script/tool
         - dart pub run test
@@ -74,7 +74,7 @@ task:
       format_script: ./script/tool_runner.sh format --fail-on-change
       pubspec_script: ./script/tool_runner.sh pubspec-check
       license_script: dart $PLUGIN_TOOL license-check
-    - name: test
+    - name: dart_unit_tests
       env:
         matrix:
           CHANNEL: "master"
@@ -94,7 +94,7 @@ task:
         # See the comment in script/configs/custom_analysis.yaml for details.
         - ./script/tool_runner.sh analyze --custom-analysis=script/configs/custom_analysis.yaml
     ### Android tasks ###
-    - name: build_all_plugins_apk
+    - name: android-build_all_plugins
       env:
         BUILD_ALL_ARGS: "apk"
         matrix:
@@ -102,7 +102,7 @@ task:
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Web tasks ###
-    - name: build_all_plugins_web
+    - name: web-build_all_plugins
       env:
         BUILD_ALL_ARGS: "web"
         matrix:
@@ -110,7 +110,7 @@ task:
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
     ### Linux desktop tasks ###
-    - name: build_all_plugins_linux
+    - name: linux-build_all_plugins
       env:
         BUILD_ALL_ARGS: "linux"
         matrix:
@@ -119,7 +119,7 @@ task:
       setup_script:
         - flutter config --enable-linux-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
-    - name: linux-build+platform-tests
+    - name: linux-platform_tests
       env:
         matrix:
           CHANNEL: "master"
@@ -148,7 +148,7 @@ task:
     memory: 12G
   matrix:
     ### Android tasks ###
-    - name: android-build+platform-tests
+    - name: android-platform_tests
       env:
         matrix:
           PLUGIN_SHARDING: "--shardIndex 0 --shardCount 4"
@@ -202,7 +202,7 @@ task:
           type: text/xml
           format: android-lint
     ### Web tasks ###
-    - name: web-build+platform-tests
+    - name: web-platform_tests
       env:
         matrix:
           CHANNEL: "master"
@@ -224,18 +224,18 @@ task:
   << : *FLUTTER_UPGRADE_TEMPLATE
   matrix:
     ### iOS+macOS tasks ***
-    - name: lint_darwin_plugins
+    - name: darwin-lint_podspecs
       script:
         - ./script/tool_runner.sh podspecs
     ### iOS tasks ###
-    - name: build_all_plugins_ipa
+    - name: ios-build_all_plugins
       env:
         BUILD_ALL_ARGS: "ios --no-codesign"
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
-    - name: ios-build+platform-tests
+    - name: ios-platform_tests
       env:
         PATH: $PATH:/usr/local/bin
         matrix:
@@ -262,7 +262,7 @@ task:
         # So we run `drive-examples` after `native-test`; changing the order will result ci failure.
         - ./script/tool_runner.sh drive-examples --ios --exclude=script/configs/exclude_integration_ios.yaml
     ### macOS desktop tasks ###
-    - name: build_all_plugins_macos
+    - name: macos-build_all_plugins
       env:
         BUILD_ALL_ARGS: "macos"
         matrix:
@@ -271,7 +271,7 @@ task:
       setup_script:
         - flutter config --enable-macos-desktop
       << : *BUILD_ALL_PLUGINS_APP_TEMPLATE
-    - name: macos-build+platform-tests
+    - name: macos-platform_tests
       env:
         matrix:
           CHANNEL: "master"
