@@ -125,13 +125,13 @@ public class WebViewBuilder {
   }
 
   /**
-   * Registers the interface to be used when content can not be handled by the rendering engine,
-   * and should be downloaded instead. This will replace the current handler.
+   * Registers the interface to be used when content can not be handled by the rendering engine, and
+   * should be downloaded instead. This will replace the current handler.
    *
    * @param downloadListener an implementation of DownloadListener This value may be null.
    * @return This builder. This value cannot be {@code null}.
    */
-  public WebViewBuilder setDownloadListener(@Nullable DownloadListener downloadListener){
+  public WebViewBuilder setDownloadListener(@Nullable DownloadListener downloadListener) {
     this.downloadListener = downloadListener;
     return this;
   }

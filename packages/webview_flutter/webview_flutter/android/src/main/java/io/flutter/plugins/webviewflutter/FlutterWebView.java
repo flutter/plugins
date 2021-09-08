@@ -101,17 +101,19 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     flutterWebViewClient = new FlutterWebViewClient(methodChannel);
 
-    FlutterDownloadListener flutterDownloadListener = new FlutterDownloadListener(flutterWebViewClient);
+    FlutterDownloadListener flutterDownloadListener =
+        new FlutterDownloadListener(flutterWebViewClient);
     webView =
         createWebView(
-            new WebViewBuilder(context, containerView), params, new FlutterWebChromeClient(), flutterDownloadListener);
+            new WebViewBuilder(context, containerView),
+            params,
+            new FlutterWebChromeClient(),
+            flutterDownloadListener);
     flutterDownloadListener.setWebView(webView);
-
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
 
     platformThreadHandler = new Handler(context.getMainLooper());
-
 
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
     if (settings != null) {
@@ -163,7 +165,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
    */
   @VisibleForTesting
   static WebView createWebView(
-          WebViewBuilder webViewBuilder, Map<String, Object> params, WebChromeClient webChromeClient, @Nullable DownloadListener downloadListener) {
+      WebViewBuilder webViewBuilder,
+      Map<String, Object> params,
+      WebChromeClient webChromeClient,
+      @Nullable DownloadListener downloadListener) {
     boolean usesHybridComposition = Boolean.TRUE.equals(params.get("usesHybridComposition"));
     webViewBuilder
         .setUsesHybridComposition(usesHybridComposition)
@@ -171,9 +176,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         .setJavaScriptCanOpenWindowsAutomatically(
             true) // Always allow automatically opening of windows.
         .setSupportMultipleWindows(true) // Always support multiple windows.
-        .setWebChromeClient(
-            webChromeClient)
-    .setDownloadListener(downloadListener);// Always use {@link FlutterWebChromeClient} as web Chrome client.
+        .setWebChromeClient(webChromeClient)
+        .setDownloadListener(
+            downloadListener); // Always use {@link FlutterWebChromeClient} as web Chrome client.
 
     return webViewBuilder.build();
   }

@@ -40,7 +40,7 @@ public class FlutterWebViewTest {
     when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
         .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setDownloadListener(any(DownloadListener.class)))
-            .thenReturn(mockWebViewBuilder);
+        .thenReturn(mockWebViewBuilder);
 
     when(mockWebViewBuilder.build()).thenReturn(mockWebView);
   }

@@ -120,7 +120,6 @@ class FlutterWebViewClient {
    *
    * @param view the webView the result of the navigation delegate will be send to.
    * @param url the download url
-   *
    * @return A boolean whether or not the request is forwarded to the Flutter code.
    */
   boolean notifyDownload(WebView view, String url) {
