@@ -58,10 +58,11 @@ This section has examples of code for the following tasks:
 * [Listening to purchase updates](#listening-to-purchase-updates)
 * [Connecting to the underlying store](#connecting-to-the-underlying-store)
 * [Loading products for sale](#loading-products-for-sale)
-* [Loading previous purchases](#loading-previous-purchases)
+* [Restoring previous purchases](#restoring-previous-purchases)
 * [Making a purchase](#making-a-purchase)
 * [Completing a purchase](#completing-a-purchase)
 * [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
+* [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
 * [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
 
 ### Initializing the plugin
@@ -72,6 +73,7 @@ The following initialization code is required for Google Play:
 // Import `in_app_purchase_android.dart` to be able to access the 
 // `InAppPurchaseAndroidPlatformAddition` class.
 import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+import 'package:flutter/foundation.dart';
 
 void main() {
   // Inform the plugin that this app supports pending purchases on Android.
@@ -136,7 +138,6 @@ void _listenToPurchaseUpdated(List<PurchaseDetails> purchaseDetailsList) {
           _deliverProduct(purchaseDetails);
         } else {
           _handleInvalidPurchase(purchaseDetails);
-          return;
         }
       }
       if (purchaseDetails.pendingCompletePurchase) {
@@ -245,6 +246,174 @@ PurchaseParam purchaseParam = GooglePlayPurchaseParam(
 InAppPurchase.instance
     .buyNonConsumable(purchaseParam: purchaseParam);
 ```
+
+### Confirming subscription price changes
+
+When the price of a subscription is changed the consumer will need to confirm that price change. If the consumer does not 
+confirm the price change the subscription will not be auto-renewed. By default on both iOS and Android the consumer will 
+automatically get a popup to confirm the price change, but App developers can override this mechanism and show the popup on a later moment so it doesn't interrupt the critical flow of the App. This works different on the Apple App Store and on the Google Play Store.
+
+#### Google Play Store (Android)
+When the subscription price is raised, the consumer should approve the price change within 7 days. The official 
+documentation can be found [here](https://support.google.com/googleplay/android-developer/answer/140504?hl=en#zippy=%2Cprice-changes).
+When the price is lowered the consumer will automatically receive the lower price and does not have to approve the price change.
+
+After 7 days the consumer will be notified through email and notifications on Google Play to agree with the new price. App developers have 7 days to explain the consumer that the price is going to change and ask them to accept this change. App developers have to keep track of whether or not the price change is already accepted within the app or in the backend. The [Google Play API](https://developers.google.com/android-publisher/api-ref/rest/v3/purchases.subscriptions) can be used to check whether or not the price change is accepted by the consumer by reading the `priceChange` property on a subscription object.
+
+The `InAppPurchaseAndroidPlatformAddition` can be used to show the price change confirmation flow. The additions contain the function `launchPriceChangeConfirmationFlow` which needs the SKU code of the subscription. 
+
+```dart
+//import for InAppPurchaseAndroidPlatformAddition
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for BillingResponse
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+
+if (Platform.isAndroid) {
+  final InAppPurchaseAndroidPlatformAddition androidAddition =
+    _inAppPurchase
+      .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
+  var priceChangeConfirmationResult = 
+      await androidAddition.launchPriceChangeConfirmationFlow(
+    sku: 'purchaseId',
+  );
+  if (priceChangeConfirmationResult.responseCode == BillingResponse.ok){
+    // TODO acknowledge price change
+  }else{
+    // TODO show error
+  }
+}
+```
+
+#### Apple App Store (iOS)
+
+When the price of a subscription is raised iOS will also show a popup in the app. 
+The StoreKit Payment Queue will notify the app that it wants to show a price change confirmation popup.
+By default the queue will get the response that it can continue and show the popup. 
+However, it is possible to prevent this popup via the InAppPurchaseIosPlatformAddition and show the 
+popup at a different time, for example after clicking a button.
+
+To know when the App Store wants to show a popup and prevent this from happening a queue delegate can be registered.
+The `InAppPurchaseIosPlatformAddition` contains a `setDelegate(SKPaymentQueueDelegateWrapper? delegate)` function that
+can be used to set a delegate or remove one by setting it to `null`.
+```dart
+//import for InAppPurchaseIosPlatformAddition
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+
+Future<void> initStoreInfo() async {
+  if (Platform.isIOS) {
+    var iosPlatformAddition = _inAppPurchase
+            .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+    await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate()); 
+  }
+}
+
+@override
+Future<void> disposeStore() {
+  if (Platform.isIOS) {
+    var iosPlatformAddition = _inAppPurchase
+            .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+    await iosPlatformAddition.setDelegate(null);
+  }
+}
+```
+The delegate that is set should implement `SKPaymentQueueDelegateWrapper` and handle `shouldContinueTransaction` and 
+`shouldShowPriceConsent`. When setting `shouldShowPriceConsent` to false the default popup will not be shown and the app
+needs to show this later.
+
+```dart
+// import for SKPaymentQueueDelegateWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+
+class ExamplePaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
+  @override
+  bool shouldContinueTransaction(
+      SKPaymentTransactionWrapper transaction, SKStorefrontWrapper storefront) {
+    return true;
+  }
+
+  @override
+  bool shouldShowPriceConsent() {
+    return false;
+  }
+}
+```
+
+The dialog can be shown by calling `showPriceConsentIfNeeded` on the `InAppPurchaseIosPlatformAddition`. This future
+will complete immediately when the dialog is shown. A confirmed transaction will be delivered on the `purchaseStream`.
+```dart
+if (Platform.isIOS) {
+  var iapIosPlatformAddition = _inAppPurchase
+      .getPlatformAddition<InAppPurchaseIosPlatformAddition>();
+  await iapIosPlatformAddition.showPriceConsentIfNeeded();
+}
+```
+
+### Accessing platform specific product or purchase properties
+
+The function `_inAppPurchase.queryProductDetails(productIds);` provides a `ProductDetailsResponse` with a 
+list of purchasable products of type `List<ProductDetails>`. This `ProductDetails` class is a platform independent class 
+containing properties only available on all endorsed platforms. However, in some cases it is necessary to access platform specific properties. The `ProductDetails` instance is of subtype `GooglePlayProductDetails`
+when the platform is Android and `AppStoreProductDetails` on iOS. Accessing the skuDetails (on Android) or the skProduct (on iOS) provides all the information that is available in the original platform objects.
+
+This is an example on how to get the `introductoryPricePeriod` on Android:
+```dart
+//import for GooglePlayProductDetails
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for SkuDetailsWrapper
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+
+if (productDetails is GooglePlayProductDetails) {
+  SkuDetailsWrapper skuDetails = (productDetails as GooglePlayProductDetails).skuDetails;
+  print(skuDetails.introductoryPricePeriod);
+}
+```
+
+And this is the way to get the subscriptionGroupIdentifier of a subscription on iOS:
+```dart
+//import for AppStoreProductDetails
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for SKProductWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+
+if (productDetails is AppStoreProductDetails) {
+  SKProductWrapper skProduct = (productDetails as AppStoreProductDetails).skProduct;
+  print(skProduct.subscriptionGroupIdentifier);
+}
+```
+
+The `purchaseStream` provides objects of type `PurchaseDetails`. PurchaseDetails' provides all 
+information that is available on all endorsed platforms, such as purchaseID and transactionDate. In addition, it is 
+possible to access the platform specific properties. The `PurchaseDetails` object is of subtype `GooglePlayPurchaseDetails` 
+when the platform is Android and `AppStorePurchaseDetails` on iOS. Accessing the billingClientPurchase, resp. 
+skPaymentTransaction provides all the information that is available in the original platform objects.
+
+This is an example on how to get the `originalJson` on Android:
+```dart
+//import for GooglePlayPurchaseDetails
+import 'package:in_app_purchase_android/in_app_purchase_android.dart';
+//import for PurchaseWrapper
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
+
+if (purchaseDetails is GooglePlayPurchaseDetails) {
+  PurchaseWrapper billingClientPurchase = (purchaseDetails as GooglePlayPurchaseDetails).billingClientPurchase;
+  print(billingClientPurchase.originalJson);
+}
+```
+
+How to get the `transactionState` of a purchase in iOS:
+```dart
+//import for AppStorePurchaseDetails
+import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+//import for SKProductWrapper
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+
+if (purchaseDetails is AppStorePurchaseDetails) {
+  SKPaymentTransactionWrapper skProduct = (purchaseDetails as AppStorePurchaseDetails).skPaymentTransaction;
+  print(skProduct.transactionState);
+}
+```
+
+Please note that it is required to import `in_app_purchase_android` and/or `in_app_purchase_ios`.
 
 ### Presenting a code redemption sheet (iOS 14)
 

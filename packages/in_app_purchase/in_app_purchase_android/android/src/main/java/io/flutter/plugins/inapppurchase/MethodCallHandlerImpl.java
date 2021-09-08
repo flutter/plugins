@@ -24,6 +24,7 @@ import com.android.billingclient.api.BillingFlowParams.ProrationMode;
 import com.android.billingclient.api.BillingResult;
 import com.android.billingclient.api.ConsumeParams;
 import com.android.billingclient.api.ConsumeResponseListener;
+import com.android.billingclient.api.PriceChangeFlowParams;
 import com.android.billingclient.api.PurchaseHistoryRecord;
 import com.android.billingclient.api.PurchaseHistoryResponseListener;
 import com.android.billingclient.api.SkuDetails;
@@ -41,7 +42,7 @@ class MethodCallHandlerImpl
 
   private static final String TAG = "InAppPurchasePlugin";
   private static final String LOAD_SKU_DOC_URL =
-      "https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/README.md#loading-products-for-sale";
+      "https://github.com/flutter/plugins/blob/master/packages/in_app_purchase/in_app_purchase/README.md#loading-products-for-sale";
 
   @Nullable private BillingClient billingClient;
   private final BillingClientFactory billingClientFactory;
@@ -144,6 +145,12 @@ class MethodCallHandlerImpl
         break;
       case InAppPurchasePlugin.MethodNames.ACKNOWLEDGE_PURCHASE:
         acknowledgePurchase((String) call.argument("purchaseToken"), result);
+        break;
+      case InAppPurchasePlugin.MethodNames.IS_FEATURE_SUPPORTED:
+        isFeatureSupported((String) call.argument("feature"), result);
+        break;
+      case InAppPurchasePlugin.MethodNames.LAUNCH_PRICE_CHANGE_CONFIRMATION_FLOW:
+        launchPriceChangeConfirmationFlow((String) call.argument("sku"), result);
         break;
       default:
         result.notImplemented();
@@ -327,7 +334,7 @@ class MethodCallHandlerImpl
           @Override
           public void onBillingSetupFinished(BillingResult billingResult) {
             if (alreadyFinished) {
-              Log.d(TAG, "Tried to call onBilllingSetupFinished multiple times.");
+              Log.d(TAG, "Tried to call onBillingSetupFinished multiple times.");
               return;
             }
             alreadyFinished = true;
@@ -371,6 +378,44 @@ class MethodCallHandlerImpl
     }
   }
 
+  private void launchPriceChangeConfirmationFlow(String sku, MethodChannel.Result result) {
+    if (activity == null) {
+      result.error(
+          "ACTIVITY_UNAVAILABLE",
+          "launchPriceChangeConfirmationFlow is not available. "
+              + "This method must be run with the app in foreground.",
+          null);
+      return;
+    }
+    if (billingClientError(result)) {
+      return;
+    }
+    // Note that assert doesn't work on Android (see https://stackoverflow.com/a/6176529/5167831 and https://stackoverflow.com/a/8164195/5167831)
+    // and that this assert is only added to silence the analyser. The actual null check
+    // is handled by the `billingClientError()` call.
+    assert billingClient != null;
+
+    SkuDetails skuDetails = cachedSkus.get(sku);
+    if (skuDetails == null) {
+      result.error(
+          "NOT_FOUND",
+          String.format(
+              "Details for sku %s are not available. It might because skus were not fetched prior to the call. Please fetch the skus first. An example of how to fetch the skus could be found here: %s",
+              sku, LOAD_SKU_DOC_URL),
+          null);
+      return;
+    }
+
+    PriceChangeFlowParams params =
+        new PriceChangeFlowParams.Builder().setSkuDetails(skuDetails).build();
+    billingClient.launchPriceChangeConfirmationFlow(
+        activity,
+        params,
+        billingResult -> {
+          result.success(Translator.fromBillingResult(billingResult));
+        });
+  }
+
   private boolean billingClientError(MethodChannel.Result result) {
     if (billingClient != null) {
       return false;
@@ -378,5 +423,14 @@ class MethodCallHandlerImpl
 
     result.error("UNAVAILABLE", "BillingClient is unset. Try reconnecting.", null);
     return true;
+  }
+
+  private void isFeatureSupported(String feature, MethodChannel.Result result) {
+    if (billingClientError(result)) {
+      return;
+    }
+    assert billingClient != null;
+    BillingResult billingResult = billingClient.isFeatureSupported(feature);
+    result.success(billingResult.getResponseCode() == BillingClient.BillingResponseCode.OK);
   }
 }

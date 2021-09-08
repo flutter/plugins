@@ -7,7 +7,7 @@ _See also: [Flutter's code of conduct](https://github.com/flutter/flutter/blob/m
 ## Welcome
 
 For an introduction to contributing to Flutter, see [our contributor
-guide][https://github.com/flutter/flutter/blob/master/CONTRIBUTING.md].
+guide](https://github.com/flutter/flutter/blob/master/CONTRIBUTING.md).
 
 Additional resources specific to the plugins repository:
 - [Setting up the Plugins development
@@ -20,25 +20,18 @@ Additional resources specific to the plugins repository:
   As explained in the Flutter guide,
   [**PRs needs tests**](https://github.com/flutter/flutter/wiki/Tree-hygiene#tests), so
   this is critical to read before submitting a PR.
+- [Contributing to Plugins and Packages](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages),
+  for more information about how to make PRs for this repository, especially when
+  changing federated plugins.
 
 ## Important note
 
-As of January 2021, we are no longer accepting non-critical PRs for plugins
-for which there is a corresponding [Flutter Community Plus
-Plugin](https://plus.fluttercommunity.dev/), as we hope in time to be able
-to transition users to those versions of the plugins. If you have a PR for
-something other than a critical issue (crashes, build failures, null safety, etc.)
-for any of the following plugins, we encourage you to submit it
-[there](https://github.com/fluttercommunity/plus_plugins/pulls) instead:
-- `android_alarm_manager`
-- `android_intent`
-- `battery`
-- `connectivity`
-- `device_info`
-- `package_info`
-- `sensors`
-- `share`
-- `wifi_info_flutter` (corresponds to `network_info_plus`)
+As of January 2021, we are no longer accepting non-critical PRs for the
+[deprecated plugins](./README.md#deprecated), as all new development should
+happen in the Flutter Community Plus replacements. If you have a PR for
+something other than a critical issue (crashes, build failures, security issues)
+in one of those pluigns, please [submit it to the Flutter Community Plus
+replacement](https://github.com/fluttercommunity/plus_plugins/pulls) instead.
 
 ## Other notes
 
@@ -57,7 +50,7 @@ use, and use auto-formatters:
   `google-java-format`
 - [Objective-C](https://google.github.io/styleguide/objcguide.html) formatted with
   `clang-format`
-  
+
 ### The review process
 
 Reviewing PRs often requires a non-trivial amount of time. We prioritize issues, not PRs, so that we use our maintainers' time in the most impactful way. Issues pertaining to this repository are managed in the [flutter/flutter issue tracker and are labeled with "plugin"](https://github.com/flutter/flutter/issues?q=is%3Aopen+is%3Aissue+label%3Aplugin+sort%3Areactions-%2B1-desc). Non-trivial PRs should have an associated issue that will be used for prioritization. See the [prioritization section](https://github.com/flutter/flutter/wiki/Issue-hygiene#prioritization) in the Flutter wiki to understand how issues are prioritized.

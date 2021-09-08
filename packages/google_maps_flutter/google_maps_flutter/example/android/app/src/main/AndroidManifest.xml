@@ -4,10 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
 
-    <application
-        android:name="io.flutter.app.FlutterApplication"
-        android:label="google_maps_flutter_example"
-        android:icon="@mipmap/ic_launcher">
+    <application android:label="google_maps_flutter_example" android:icon="@mipmap/ic_launcher">
       <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -27,13 +24,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".EmbeddingV1Activity"
-            android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
-            android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
         </activity>
         <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>

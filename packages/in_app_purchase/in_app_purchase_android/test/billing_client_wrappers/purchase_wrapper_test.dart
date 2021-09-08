@@ -19,6 +19,8 @@ final PurchaseWrapper dummyPurchase = PurchaseWrapper(
   developerPayload: 'dummy payload',
   isAcknowledged: true,
   purchaseState: PurchaseStateWrapper.purchased,
+  obfuscatedAccountId: 'Account101',
+  obfuscatedProfileId: 'Profile103',
 );
 
 final PurchaseWrapper dummyUnacknowledgedPurchase = PurchaseWrapper(
@@ -69,9 +71,10 @@ void main() {
       expect(parsed, equals(expected));
     });
 
-    test('toPurchaseDetails() should return correct PurchaseDetail object', () {
+    test('fromPurchase() should return correct PurchaseDetail object', () {
       final GooglePlayPurchaseDetails details =
           GooglePlayPurchaseDetails.fromPurchase(dummyPurchase);
+
       expect(details.purchaseID, dummyPurchase.orderId);
       expect(details.productID, dummyPurchase.sku);
       expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
@@ -82,6 +85,25 @@ void main() {
       expect(details.verificationData.serverVerificationData,
           dummyPurchase.purchaseToken);
       expect(details.billingClientPurchase, dummyPurchase);
+      expect(details.pendingCompletePurchase, false);
+    });
+
+    test(
+        'fromPurchase() should return set pendingCompletePurchase to true for unacknowledged purchase',
+        () {
+      final GooglePlayPurchaseDetails details =
+          GooglePlayPurchaseDetails.fromPurchase(dummyUnacknowledgedPurchase);
+
+      expect(details.purchaseID, dummyPurchase.orderId);
+      expect(details.productID, dummyPurchase.sku);
+      expect(details.transactionDate, dummyPurchase.purchaseTime.toString());
+      expect(details.verificationData, isNotNull);
+      expect(details.verificationData.source, kIAPSource);
+      expect(details.verificationData.localVerificationData,
+          dummyPurchase.originalJson);
+      expect(details.verificationData.serverVerificationData,
+          dummyPurchase.purchaseToken);
+      expect(details.billingClientPurchase, dummyUnacknowledgedPurchase);
       expect(details.pendingCompletePurchase, true);
     });
   });
@@ -191,6 +213,8 @@ Map<String, dynamic> buildPurchaseMap(PurchaseWrapper original) {
     'developerPayload': original.developerPayload,
     'purchaseState': PurchaseStateConverter().toJson(original.purchaseState),
     'isAcknowledged': original.isAcknowledged,
+    'obfuscatedAccountId': original.obfuscatedAccountId,
+    'obfuscatedProfileId': original.obfuscatedProfileId,
   };
 }
 

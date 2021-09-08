@@ -1,3 +1,8 @@
+## NEXT
+
+* Remove references to the V1 Android embedding.
+* Updated Android lint settings.
+
 ## 2.0.2
 
 * Update README to point to Plus Plugins version.

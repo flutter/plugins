@@ -38,6 +38,7 @@ class SkuDetailsWrapper {
     required this.price,
     required this.priceAmountMicros,
     required this.priceCurrencyCode,
+    required this.priceCurrencySymbol,
     required this.sku,
     required this.subscriptionPeriod,
     required this.title,
@@ -91,6 +92,12 @@ class SkuDetailsWrapper {
   @JsonKey(defaultValue: '')
   final String priceCurrencyCode;
 
+  /// [price] localized currency symbol
+  /// For example, for the US Dollar, the symbol is "$" if the locale
+  /// is the US, while for other locales it may be "US$".
+  @JsonKey(defaultValue: '')
+  final String priceCurrencySymbol;
+
   /// The product ID in Google Play Console.
   @JsonKey(defaultValue: '')
   final String sku;
@@ -120,22 +127,21 @@ class SkuDetailsWrapper {
       return false;
     }
 
-    final SkuDetailsWrapper typedOther = other;
-    return typedOther is SkuDetailsWrapper &&
-        typedOther.description == description &&
-        typedOther.freeTrialPeriod == freeTrialPeriod &&
-        typedOther.introductoryPrice == introductoryPrice &&
-        typedOther.introductoryPriceMicros == introductoryPriceMicros &&
-        typedOther.introductoryPriceCycles == introductoryPriceCycles &&
-        typedOther.introductoryPricePeriod == introductoryPricePeriod &&
-        typedOther.price == price &&
-        typedOther.priceAmountMicros == priceAmountMicros &&
-        typedOther.sku == sku &&
-        typedOther.subscriptionPeriod == subscriptionPeriod &&
-        typedOther.title == title &&
-        typedOther.type == type &&
-        typedOther.originalPrice == originalPrice &&
-        typedOther.originalPriceAmountMicros == originalPriceAmountMicros;
+    return other is SkuDetailsWrapper &&
+        other.description == description &&
+        other.freeTrialPeriod == freeTrialPeriod &&
+        other.introductoryPrice == introductoryPrice &&
+        other.introductoryPriceMicros == introductoryPriceMicros &&
+        other.introductoryPriceCycles == introductoryPriceCycles &&
+        other.introductoryPricePeriod == introductoryPricePeriod &&
+        other.price == price &&
+        other.priceAmountMicros == priceAmountMicros &&
+        other.sku == sku &&
+        other.subscriptionPeriod == subscriptionPeriod &&
+        other.title == title &&
+        other.type == type &&
+        other.originalPrice == originalPrice &&
+        other.originalPriceAmountMicros == originalPriceAmountMicros;
   }
 
   @override
@@ -188,10 +194,9 @@ class SkuDetailsResponseWrapper {
       return false;
     }
 
-    final SkuDetailsResponseWrapper typedOther = other;
-    return typedOther is SkuDetailsResponseWrapper &&
-        typedOther.billingResult == billingResult &&
-        typedOther.skuDetailsList == skuDetailsList;
+    return other is SkuDetailsResponseWrapper &&
+        other.billingResult == billingResult &&
+        other.skuDetailsList == skuDetailsList;
   }
 
   @override
@@ -233,10 +238,9 @@ class BillingResultWrapper {
       return false;
     }
 
-    final BillingResultWrapper typedOther = other;
-    return typedOther is BillingResultWrapper &&
-        typedOther.responseCode == responseCode &&
-        typedOther.debugMessage == debugMessage;
+    return other is BillingResultWrapper &&
+        other.responseCode == responseCode &&
+        other.debugMessage == debugMessage;
   }
 
   @override

@@ -49,6 +49,8 @@ void main() {
       expect(products[1].id, '456');
       expect(response.notFoundIDs, ['789']);
       expect(response.error, isNull);
+      expect(response.productDetails.first.currencySymbol, r'$');
+      expect(response.productDetails[1].currencySymbol, 'EUR');
     });
 
     test(
@@ -300,6 +302,21 @@ void main() {
       expect(result.length, 2);
       expect(result.first.productID, dummyProductWrapper.productIdentifier);
       expect(fakeIOSPlatform.finishedTransactions.length, 1);
+    });
+  });
+
+  group('purchase stream', () {
+    test('Should only have active queue when purchaseStream has listeners', () {
+      Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
+      expect(fakeIOSPlatform.queueIsActive, false);
+      StreamSubscription subscription1 = stream.listen((event) {});
+      expect(fakeIOSPlatform.queueIsActive, true);
+      StreamSubscription subscription2 = stream.listen((event) {});
+      expect(fakeIOSPlatform.queueIsActive, true);
+      subscription1.cancel();
+      expect(fakeIOSPlatform.queueIsActive, true);
+      subscription2.cancel();
+      expect(fakeIOSPlatform.queueIsActive, false);
     });
   });
 }

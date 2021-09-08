@@ -6,28 +6,42 @@ package io.flutter.plugins.camera.features.exposurepoint;
 
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
-import android.util.Log;
+import android.util.Size;
 import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
+import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
-import io.flutter.plugins.camera.types.CameraRegions;
+import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 
 /** Exposure point controls where in the frame exposure metering will come from. */
 public class ExposurePointFeature extends CameraFeature<Point> {
 
-  private final CameraRegions cameraRegions;
-  private Point currentSetting = new Point(0.0, 0.0);
+  private Size cameraBoundaries;
+  private Point exposurePoint;
+  private MeteringRectangle exposureRectangle;
+  private final SensorOrientationFeature sensorOrientationFeature;
 
   /**
    * Creates a new instance of the {@link ExposurePointFeature}.
    *
    * @param cameraProperties Collection of the characteristics for the current camera device.
-   * @param cameraRegions Utility class to assist in calculating exposure boundaries.
    */
-  public ExposurePointFeature(CameraProperties cameraProperties, CameraRegions cameraRegions) {
+  public ExposurePointFeature(
+      CameraProperties cameraProperties, SensorOrientationFeature sensorOrientationFeature) {
     super(cameraProperties);
-    this.cameraRegions = cameraRegions;
+    this.sensorOrientationFeature = sensorOrientationFeature;
+  }
+
+  /**
+   * Sets the camera boundaries that are required for the exposure point feature to function.
+   *
+   * @param cameraBoundaries - The camera boundaries to set.
+   */
+  public void setCameraBoundaries(@NonNull Size cameraBoundaries) {
+    this.cameraBoundaries = cameraBoundaries;
+    this.buildExposureRectangle();
   }
 
   @Override
@@ -37,18 +51,13 @@ public class ExposurePointFeature extends CameraFeature<Point> {
 
   @Override
   public Point getValue() {
-    return currentSetting;
+    return exposurePoint;
   }
 
   @Override
-  public void setValue(@NonNull Point value) {
-    this.currentSetting = value;
-
-    if (value.x == null || value.y == null) {
-      cameraRegions.resetAutoExposureMeteringRectangle();
-    } else {
-      cameraRegions.setAutoExposureMeteringRectangleFromPoint(value.x, value.y);
-    }
+  public void setValue(Point value) {
+    this.exposurePoint = (value == null || value.x == null || value.y == null) ? null : value;
+    this.buildExposureRectangle();
   }
 
   // Whether or not this camera can set the exposure point.
@@ -63,16 +72,28 @@ public class ExposurePointFeature extends CameraFeature<Point> {
     if (!checkIsSupported()) {
       return;
     }
-
-    MeteringRectangle aeRect = null;
-    try {
-      aeRect = cameraRegions.getAEMeteringRectangle();
-    } catch (Exception e) {
-      Log.w("Camera", "Unable to retrieve the Auto Exposure metering rectangle.", e);
-    }
-
     requestBuilder.set(
         CaptureRequest.CONTROL_AE_REGIONS,
-        aeRect == null ? null : new MeteringRectangle[] {aeRect});
+        exposureRectangle == null ? null : new MeteringRectangle[] {exposureRectangle});
+  }
+
+  private void buildExposureRectangle() {
+    if (this.cameraBoundaries == null) {
+      throw new AssertionError(
+          "The cameraBoundaries should be set (using `ExposurePointFeature.setCameraBoundaries(Size)`) before updating the exposure point.");
+    }
+    if (this.exposurePoint == null) {
+      this.exposureRectangle = null;
+    } else {
+      PlatformChannel.DeviceOrientation orientation =
+          this.sensorOrientationFeature.getLockedCaptureOrientation();
+      if (orientation == null) {
+        orientation =
+            this.sensorOrientationFeature.getDeviceOrientationManager().getLastUIOrientation();
+      }
+      this.exposureRectangle =
+          CameraRegionUtils.convertPointToMeteringRectangle(
+              this.cameraBoundaries, this.exposurePoint.x, this.exposurePoint.y, orientation);
+    }
   }
 }
