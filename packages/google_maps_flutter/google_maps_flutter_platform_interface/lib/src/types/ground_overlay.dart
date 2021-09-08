@@ -159,15 +159,15 @@ class GroundOverlay implements MapsObject {
     }
 
     addIfPresent("groundOverlayId", groundOverlayId.value);
-    addIfPresent("image", image);
+    addIfPresent("image", image.toJson());
     addIfPresent("anchorU", anchorU);
     addIfPresent("anchorV", anchorV);
     addIfPresent("bearing", bearing);
     addIfPresent("isClickable", isClickable);
-    addIfPresent("position", position);
+    addIfPresent("position", position?.toJson());
     addIfPresent("width", width);
     addIfPresent("height", height);
-    addIfPresent("positionFromBounds", positionFromBounds);
+    addIfPresent("positionFromBounds", positionFromBounds?.toJson());
     addIfPresent("transparency", transparency);
     addIfPresent("isVisible", isVisible);
     addIfPresent("zIndex", zIndex);

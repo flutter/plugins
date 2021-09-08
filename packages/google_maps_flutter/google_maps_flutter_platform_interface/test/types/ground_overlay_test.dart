@@ -44,12 +44,12 @@ void main() {
 
       expect(json, <String, Object>{
         'groundOverlayId': 'id',
-        'image': BitmapDescriptor.defaultMarker,
+        'image': BitmapDescriptor.defaultMarker.toJson(),
         'anchorU': moreOrLessEquals(0.75),
         'anchorV': moreOrLessEquals(0.5),
         'bearing': 2,
         'isClickable': true,
-        'position': LatLng(30, 50),
+        'position': LatLng(30, 50).toJson(),
         'width': 2,
         'transparency': moreOrLessEquals(0.7),
         'isVisible': true,
