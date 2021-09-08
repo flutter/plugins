@@ -30,7 +30,7 @@ jobs:
 
     # This workflow should be the last to run. So wait for all the other tests to succeed.
     - name: Wait on all tests
-      uses: lewagon/wait-on-check-action@a0f99ce1e713de216866868c3da4d4183a051cbe
+      uses: lewagon/wait-on-check-action@5e937358caba2c7876a2ee06e4a48d0664fe4967
       with:
         ref: ${{ github.sha }}
         running-workflow-name: 'release'
