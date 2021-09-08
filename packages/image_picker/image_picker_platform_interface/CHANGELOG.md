@@ -1,3 +1,20 @@
+## 2.4.1
+
+* Reverts the changes from 2.4.0, which was a breaking change that
+  was incorrectly marked as a non-breaking change.
+
+## 2.4.0
+
+* Add `forceFullMetadata` option to `pickImage`.
+  * To keep this non-breaking `forceFullMetadata` defaults to `true`, so the plugin tries
+   to get the full image metadata which may require extra permission requests on certain platforms.
+  * If `forceFullMetadata` is set to `false`, the plugin fetches the image in a way that reduces
+   permission requests from the platform (e.g on iOS the plugin won’t ask for the `NSPhotoLibraryUsageDescription` permission).
+
+## 2.3.0
+
+* Updated `LostDataResponse` to include a `files` property, in case more than one file was recovered.
+
 ## 2.2.0
 
 * Added new methods that return `XFile` (from `package:cross_file`)

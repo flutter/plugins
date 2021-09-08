@@ -9,6 +9,8 @@
 
 #include <cstring>
 
+#include "url_launcher_plugin_private.h"
+
 // See url_launcher_channel.dart for documentation.
 const char kChannelName[] = "plugins.flutter.io/url_launcher";
 const char kBadArgumentsError[] = "Bad Arguments";
@@ -44,7 +46,7 @@ static gchar* get_url(FlValue* args, GError** error) {
 }
 
 // Called to check if a URL can be launched.
-static FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
+FlMethodResponse* can_launch(FlUrlLauncherPlugin* self, FlValue* args) {
   g_autoptr(GError) error = nullptr;
   g_autofree gchar* url = get_url(args, &error);
   if (url == nullptr) {

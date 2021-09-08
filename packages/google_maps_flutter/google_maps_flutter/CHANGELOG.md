@@ -1,7 +1,12 @@
-## NEXT
+## 2.0.8
+
+* Mark iOS arm64 simulators as unsupported.
+
+## 2.0.7
 
 * Add iOS unit and UI integration test targets.
 * Exclude arm64 simulators in example app.
+* Remove references to the Android V1 embedding.
 
 ## 2.0.6
 
