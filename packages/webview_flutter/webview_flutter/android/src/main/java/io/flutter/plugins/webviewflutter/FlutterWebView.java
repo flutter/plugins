@@ -165,10 +165,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             true) // Always allow automatically opening of windows.
         .setSupportMultipleWindows(true) // Always support multiple windows.
         .setWebChromeClient(
-            webChromeClient); // Always use {@link FlutterWebChromeClient} as web Chrome client.
-        .setBuiltInZoomControls(true); //Always use built-in zoom mechanisms.
-        .setLoadWithOverviewMode(true); //Always zooms out the content to fit on screen by width.
-        .setUseWideViewPort(true); //Always support using a wide viewport
+            webChromeClient) // Always use {@link FlutterWebChromeClient} as web Chrome client.
+        .setBuiltInZoomControls(true) //Always use built-in zoom mechanisms.
+        .setLoadWithOverviewMode(true) //Always zooms out the content to fit on screen by width.
+        .setUseWideViewPort(true) //Always support using a wide viewport
         .setDisplayZoomControls(false); //Never display on-screen zoom controls.
 
     return webViewBuilder.build();
