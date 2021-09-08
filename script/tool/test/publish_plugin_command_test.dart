@@ -466,6 +466,8 @@ void main() {
       expect(
           output,
           containsAllInOrder(<Matcher>[
+            contains(
+                'Publishing all packages that have changed relative to "HEAD~"'),
             contains('Running `pub publish ` in ${pluginDir1.path}...'),
             contains('Running `pub publish ` in ${pluginDir2.path}...'),
             contains('plugin1 - \x1B[32mpublished\x1B[0m'),
