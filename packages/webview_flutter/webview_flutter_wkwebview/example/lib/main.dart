@@ -59,9 +59,7 @@ class _WebViewExampleState extends State<WebViewExample> {
   @override
   void initState() {
     super.initState();
-    _javascriptChannelRegistry = JavascriptChannelRegistry({
-      _toasterJavascriptChannel(),
-    });
+    _javascriptChannelRegistry = JavascriptChannelRegistry(null);
     _platformCallbacksHandler = _PlatformCallbacksHandler(widget);
   }
 
@@ -88,6 +86,8 @@ class _WebViewExampleState extends State<WebViewExample> {
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (BuildContext context) {
+        _javascriptChannelRegistry.updateJavascriptChannelsFromSet(
+            {_toasterJavascriptChannel(context)});
         return widget.platform.build(
           context: context,
           onWebViewPlatformCreated:
@@ -115,7 +115,7 @@ class _WebViewExampleState extends State<WebViewExample> {
     );
   }
 
-  JavascriptChannel _toasterJavascriptChannel() {
+  JavascriptChannel _toasterJavascriptChannel(BuildContext context) {
     return JavascriptChannel(
         name: 'Toaster',
         onMessageReceived: (JavascriptMessage message) {
@@ -578,7 +578,7 @@ class WebViewController {
 WebSettings _webSettingsFromWidget(WebViewExample widget) {
   return WebSettings(
     javascriptMode: JavascriptMode.unrestricted,
-    hasNavigationDelegate: false,
+    hasNavigationDelegate: true,
     hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: false,
     gestureNavigationEnabled: true,
@@ -597,6 +597,11 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     required String url,
     required bool isForMainFrame,
   }) async {
+    if (url.startsWith('https://www.youtube.com/')) {
+      print('blocking navigation to $url');
+      return false;
+    }
+    print('allowing navigation to $url');
     return true;
   }
 
