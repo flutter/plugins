@@ -34,6 +34,10 @@ public class FlutterWebViewTest {
         .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setSupportMultipleWindows(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setUsesHybridComposition(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setLoadWithOverviewMode(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setUseWideViewPort(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setBuiltInZoomControls(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setDisplayZoomControls(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
         .thenReturn(mockWebViewBuilder);
 

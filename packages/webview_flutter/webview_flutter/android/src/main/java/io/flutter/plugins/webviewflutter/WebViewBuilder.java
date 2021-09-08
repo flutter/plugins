@@ -44,6 +44,11 @@ public class WebViewBuilder {
   private boolean supportMultipleWindows;
   private boolean usesHybridComposition;
   private WebChromeClient webChromeClient;
+  private boolean builtInZoomControls;
+  private boolean loadWithOverviewMode;
+  private boolean useWideViewPort;
+  private boolean displayZoomControls;
+
 
   /**
    * Constructs a new {@link WebViewBuilder} object with a custom implementation of the {@link
@@ -123,6 +128,54 @@ public class WebViewBuilder {
   }
 
   /**
+   * Sets whether the {@link WebView} should use its built-in zoom mechanisms.
+   * The default value is {@code true}.
+   *
+   * @param flag {@code true} if built in zoom controls are allowed.
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setBuiltInZoomControls(boolean flag) {
+    this.builtInZoomControls = flag;
+    return this;
+  }
+
+  /**
+   * Sets whether the {@link WebView} loads pages zoomed out so the content will fit on screen by width
+   * The default value is {@code true}.
+   *
+   * @param flag {@code true} if should allow pages to load in overview mode.
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setLoadWithOverviewMode(boolean flag) {
+    this.loadWithOverviewMode = flag;
+    return this;
+  }
+
+  /**
+   * Sets whether the {@link WebView} should enable support for the "viewport" HTML meta tag or should use a wide viewport
+   * The default value is {@code true}.
+   *
+   * @param flag {@code true} if should use wide viewport.
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setUseWideViewPort(boolean flag) {
+    this.useWideViewPort = flag;
+    return this;
+  }
+
+  /**
+   * Sets whether the {@link WebView} should display on-screen zoom controls when using the built-in zoom mechanisms.
+   * The default value is {@code false} as on-screen zoom controls are deprecated in Android.
+   *
+   * @param flag {@code true} if should display zoom controls
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setDisplayZoomControls(boolean flag) {
+    this.displayZoomControls = flag;
+    return this;
+  }
+
+  /**
    * Build the {@link android.webkit.WebView} using the current settings.
    *
    * @return The {@link android.webkit.WebView} using the current settings.
@@ -134,6 +187,10 @@ public class WebViewBuilder {
     webSettings.setDomStorageEnabled(enableDomStorage);
     webSettings.setJavaScriptCanOpenWindowsAutomatically(javaScriptCanOpenWindowsAutomatically);
     webSettings.setSupportMultipleWindows(supportMultipleWindows);
+    webSettings.setLoadWithOverviewMode(loadWithOverviewMode);
+    webSettings.setUseWideViewPort(useWideViewPort);
+    webSettings.setBuiltInZoomControls(builtInZoomControls);
+    webSettings.setDisplayZoomControls(displayZoomControls);
     webView.setWebChromeClient(webChromeClient);
 
     return webView;
