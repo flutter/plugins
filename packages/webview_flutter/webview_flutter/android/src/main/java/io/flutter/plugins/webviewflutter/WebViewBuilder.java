@@ -152,7 +152,8 @@ public class WebViewBuilder {
   }
 
   /**
-   * Sets whether the {@link WebView} should enable support for the "viewport" HTML meta tag or should use a wide viewport
+   * Sets whether the {@link WebView} should enable support for the "viewport" HTML meta tag or
+   * should use a wide viewport
    * The default value is {@code true}.
    *
    * @param flag {@code true} if should use wide viewport.
@@ -164,8 +165,9 @@ public class WebViewBuilder {
   }
 
   /**
-   * Sets whether the {@link WebView} should display on-screen zoom controls when using the built-in zoom mechanisms.
-   * The default value is {@code false} as on-screen zoom controls are deprecated in Android.
+   * Sets whether the {@link WebView} should display on-screen zoom controls when using the built-in
+   * zoom mechanisms.
+   * The default value is {@code false} as on-screen zoom controls are deprecated
    *
    * @param flag {@code true} if should display zoom controls
    * @return This builder. This value cannot be {@code null}.
