@@ -10,6 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -23,6 +24,9 @@ import android.hardware.camera2.CaptureRequest;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.os.Handler;
+import android.os.HandlerThread;
+import android.os.Looper;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -49,6 +53,7 @@ import io.flutter.view.TextureRegistry;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 public class CameraTest {
   private CameraProperties mockCameraProperties;
@@ -57,6 +62,10 @@ public class CameraTest {
   private Camera camera;
   private CameraCaptureSession mockCaptureSession;
   private CaptureRequest.Builder mockPreviewRequestBuilder;
+  private MockedStatic<Camera.HandlerThreadFactory> mockHandlerThreadFactory;
+  private HandlerThread mockHandlerThread;
+  private MockedStatic<Camera.HandlerFactory> mockHandlerFactory;
+  private Handler mockHandler;
 
   @Before
   public void before() {
@@ -65,6 +74,10 @@ public class CameraTest {
     mockDartMessenger = mock(DartMessenger.class);
     mockCaptureSession = mock(CameraCaptureSession.class);
     mockPreviewRequestBuilder = mock(CaptureRequest.Builder.class);
+    mockHandlerThreadFactory = mockStatic(Camera.HandlerThreadFactory.class);
+    mockHandlerThread = mock(HandlerThread.class);
+    mockHandlerFactory = mockStatic(Camera.HandlerFactory.class);
+    mockHandler = mock(Handler.class);
 
     final Activity mockActivity = mock(Activity.class);
     final TextureRegistry.SurfaceTextureEntry mockFlutterTexture =
@@ -74,6 +87,10 @@ public class CameraTest {
     final boolean enableAudio = false;
 
     when(mockCameraProperties.getCameraName()).thenReturn(cameraName);
+    mockHandlerFactory.when(() -> Camera.HandlerFactory.create(any())).thenReturn(mockHandler);
+    mockHandlerThreadFactory
+        .when(() -> Camera.HandlerThreadFactory.create(any()))
+        .thenReturn(mockHandlerThread);
 
     camera =
         new Camera(
@@ -92,6 +109,8 @@ public class CameraTest {
   @After
   public void after() {
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 0);
+    mockHandlerThreadFactory.close();
+    mockHandlerFactory.close();
   }
 
   @Test
@@ -771,6 +790,17 @@ public class CameraTest {
     camera.resumePreview();
 
     verify(mockDartMessenger, times(1)).sendCameraErrorEvent(any());
+  }
+
+  @Test
+  public void startBackgroundThread_shouldStartNewThread() {
+    Looper mockLooper = mock(Looper.class);
+    when(mockHandlerThread.getLooper()).thenReturn(mockLooper);
+
+    camera.startBackgroundThread();
+
+    verify(mockHandlerThread).start();
+    assertEquals(mockHandler, TestUtils.getPrivateField(camera, "backgroundHandler"));
   }
 
   private static class TestCameraFeatureFactory implements CameraFeatureFactory {
