@@ -1,6 +1,20 @@
-## 2.0.1
+## 2.0.4
 
 * Update version of video_player_platform_interface
+
+## 2.0.3
+
+* Add `implements` to pubspec.
+
+## 2.0.2
+
+* Updated installation instructions in README.
+
+## 2.0.1
+
+* Fix videos not playing in Safari/Chrome on iOS by setting autoplay to false
+* Change sizing code of `Video` widget's `HtmlElementView` so it works well when slotted.
+* Move tests to `example` directory, so they run as integration_tests with `flutter drive`.
 
 ## 2.0.0
 

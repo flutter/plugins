@@ -33,7 +33,7 @@ dependencies:
   # the constraints on the interface pins it.
   # TODO(amirh): Revisit this (either update this part in the design or the pub tool).
   # https://github.com/flutter/flutter/issues/46264
-  video_player_web: ^2.0.1
+  video_player_web: ^2.0.4
 
 dev_dependencies:
   pedantic: ^1.10.0
