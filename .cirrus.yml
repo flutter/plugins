@@ -66,7 +66,7 @@ task:
     - name: plugin_tools_tests
       script:
         - cd script/tool
-        - CIRRUS_BUILD_ID=null pub run test
+        - dart pub run test
     - name: publishable
       version_check_script: ./script/tool_runner.sh version-check
       publish_check_script: ./script/tool_runner.sh publish-check
