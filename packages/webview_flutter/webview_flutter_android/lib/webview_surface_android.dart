@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
@@ -32,9 +36,9 @@ class SurfaceAndroidWebView extends AndroidWebView {
     return PlatformViewLink(
       viewType: 'plugins.flutter.io/webview',
       surfaceFactory: (
-          BuildContext context,
-          PlatformViewController controller,
-          ) {
+        BuildContext context,
+        PlatformViewController controller,
+      ) {
         return AndroidViewSurface(
           controller: controller as AndroidViewController,
           gestureRecognizers: gestureRecognizers ??
@@ -62,7 +66,8 @@ class SurfaceAndroidWebView extends AndroidWebView {
               return;
             }
             onWebViewPlatformCreated(
-              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler, javascriptChannelRegistry),
+              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler,
+                  javascriptChannelRegistry),
             );
           })
           ..create();

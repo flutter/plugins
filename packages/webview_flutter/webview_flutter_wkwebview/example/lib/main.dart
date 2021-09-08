@@ -28,7 +28,7 @@ The navigation delegate is set to block navigation to the youtube website.
 ''';
 
 class WebViewExample extends StatefulWidget {
-  WebViewPlatform platform = CupertinoWebView();
+  final WebViewPlatform platform = CupertinoWebView();
 
   @override
   _WebViewExampleState createState() => _WebViewExampleState();
@@ -51,7 +51,8 @@ class WebViewExample extends StatefulWidget {
 }
 
 class _WebViewExampleState extends State<WebViewExample> {
-  final Completer<WebViewController> _controller = Completer<WebViewController>();
+  final Completer<WebViewController> _controller =
+      Completer<WebViewController>();
   late final JavascriptChannelRegistry _javascriptChannelRegistry;
   late final _PlatformCallbacksHandler _platformCallbacksHandler;
 
@@ -73,7 +74,6 @@ class _WebViewExampleState extends State<WebViewExample> {
     });
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -90,11 +90,11 @@ class _WebViewExampleState extends State<WebViewExample> {
       body: Builder(builder: (BuildContext context) {
         return widget.platform.build(
           context: context,
-          onWebViewPlatformCreated: (WebViewPlatformController? webViewPlatformController) {
+          onWebViewPlatformCreated:
+              (WebViewPlatformController? webViewPlatformController) {
             WebViewController controller = WebViewController._(
               widget,
               webViewPlatformController!,
-              _platformCallbacksHandler,
               _javascriptChannelRegistry,
             );
             _controller.complete(controller);
@@ -103,8 +103,10 @@ class _WebViewExampleState extends State<WebViewExample> {
           creationParams: CreationParams(
             initialUrl: 'https://flutter.dev',
             webSettings: _webSettingsFromWidget(widget),
-            javascriptChannelNames: _javascriptChannelRegistry.channels.keys.toSet(),
-            autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+            javascriptChannelNames:
+                _javascriptChannelRegistry.channels.keys.toSet(),
+            autoMediaPlaybackPolicy:
+                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
           ),
           javascriptChannelRegistry: _javascriptChannelRegistry,
         );
@@ -195,8 +197,7 @@ class SampleMenu extends StatelessWidget {
                 break;
             }
           },
-          itemBuilder: (BuildContext context) =>
-          <PopupMenuItem<MenuOptions>>[
+          itemBuilder: (BuildContext context) => <PopupMenuItem<MenuOptions>>[
             PopupMenuItem<MenuOptions>(
               value: MenuOptions.showUserAgent,
               child: const Text('Show user agent'),
@@ -232,18 +233,18 @@ class SampleMenu extends StatelessWidget {
     );
   }
 
-  void _onShowUserAgent(WebViewController controller,
-      BuildContext context) async {
+  void _onShowUserAgent(
+      WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
     await controller.evaluateJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onListCookies(WebViewController controller,
-      BuildContext context) async {
+  void _onListCookies(
+      WebViewController controller, BuildContext context) async {
     final String cookies =
-    await controller.evaluateJavascript('document.cookie');
+        await controller.evaluateJavascript('document.cookie');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
@@ -280,8 +281,8 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onClearCookies(WebViewController controller,
-      BuildContext context) async {
+  void _onClearCookies(
+      WebViewController controller, BuildContext context) async {
     final bool hadCookies = await controller._widget.platform.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
     if (!hadCookies) {
@@ -293,10 +294,10 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onNavigationDelegateExample(WebViewController controller,
-      BuildContext context) async {
+  void _onNavigationDelegateExample(
+      WebViewController controller, BuildContext context) async {
     final String contentBase64 =
-    base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
+        base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 
@@ -306,7 +307,7 @@ class SampleMenu extends StatelessWidget {
     }
     final List<String> cookieList = cookies.split(';');
     final Iterable<Text> cookieWidgets =
-    cookieList.map((String cookie) => Text(cookie));
+        cookieList.map((String cookie) => Text(cookie));
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       mainAxisSize: MainAxisSize.min,
@@ -338,41 +339,41 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoBack()) {
-                  await controller.goBack();
-                } else {
-                  // ignore: deprecated_member_use
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(content: Text("No back history item")),
-                  );
-                  return;
-                }
-              },
+                      if (await controller.canGoBack()) {
+                        await controller.goBack();
+                      } else {
+                        // ignore: deprecated_member_use
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(content: Text("No back history item")),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.arrow_forward_ios),
               onPressed: !webViewReady
                   ? null
                   : () async {
-                if (await controller.canGoForward()) {
-                  await controller.goForward();
-                } else {
-                  // ignore: deprecated_member_use
-                  Scaffold.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text("No forward history item")),
-                  );
-                  return;
-                }
-              },
+                      if (await controller.canGoForward()) {
+                        await controller.goForward();
+                      } else {
+                        // ignore: deprecated_member_use
+                        Scaffold.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("No forward history item")),
+                        );
+                        return;
+                      }
+                    },
             ),
             IconButton(
               icon: const Icon(Icons.replay),
               onPressed: !webViewReady
                   ? null
                   : () {
-                controller.reload();
-              },
+                      controller.reload();
+                    },
             ),
           ],
         );
@@ -386,19 +387,17 @@ class NavigationControls extends StatelessWidget {
 /// A [WebViewController] instance can be obtained by setting the [WebView.onWebViewCreated]
 /// callback for a [WebView] widget.
 class WebViewController {
-  WebViewController._(this._widget,
-      this._webViewPlatformController,
-      this._platformCallbacksHandler,
-      this._javascriptChannelRegistry,)
-      : assert(_webViewPlatformController != null) {
+  WebViewController._(
+    this._widget,
+    this._webViewPlatformController,
+    this._javascriptChannelRegistry,
+  ) : assert(_webViewPlatformController != null) {
     _settings = _webSettingsFromWidget(_widget);
   }
 
   final JavascriptChannelRegistry _javascriptChannelRegistry;
 
   final WebViewPlatformController _webViewPlatformController;
-
-  final _PlatformCallbacksHandler _platformCallbacksHandler;
 
   late WebSettings _settings;
 
@@ -412,7 +411,8 @@ class WebViewController {
   /// `url` must not be null.
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
-  Future<void> loadUrl(String url, {
+  Future<void> loadUrl(
+    String url, {
     Map<String, String>? headers,
   }) async {
     assert(url != null);
@@ -484,12 +484,13 @@ class WebViewController {
   Future<void> _updateWidget(WebViewExample widget) async {
     _widget = widget;
     await _updateSettings(_webSettingsFromWidget(widget));
-    await _updateJavascriptChannels(_javascriptChannelRegistry.channels.values.toSet()); // TODO: CHECK WITH MAURITS IF POINTLESS. PROBABLY REMOVE THIS?
+    await _updateJavascriptChannels(_javascriptChannelRegistry.channels.values
+        .toSet()); // TODO: CHECK WITH MAURITS IF POINTLESS. PROBABLY REMOVE THIS?
   }
 
   Future<void> _updateSettings(WebSettings newSettings) {
     final WebSettings update =
-    _clearUnchangedWebSettings(_settings, newSettings);
+        _clearUnchangedWebSettings(_settings, newSettings);
     _settings = newSettings;
     return _webViewPlatformController.updateSettings(update);
   }
@@ -497,12 +498,12 @@ class WebViewController {
   Future<void> _updateJavascriptChannels(
       Set<JavascriptChannel>? newChannels) async {
     final Set<String> currentChannels =
-    _javascriptChannelRegistry.channels.keys.toSet();
+        _javascriptChannelRegistry.channels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
     final Set<String> channelsToAdd =
-    newChannelNames.difference(currentChannels);
+        newChannelNames.difference(currentChannels);
     final Set<String> channelsToRemove =
-    currentChannels.difference(newChannelNames);
+        currentChannels.difference(newChannelNames);
     if (channelsToRemove.isNotEmpty) {
       await _webViewPlatformController
           .removeJavascriptChannels(channelsToRemove);
@@ -656,8 +657,8 @@ void _validateUrlString(String url) {
 }
 
 // This method assumes that no fields in `currentValue` are null.
-WebSettings _clearUnchangedWebSettings(WebSettings currentValue,
-    WebSettings newValue) {
+WebSettings _clearUnchangedWebSettings(
+    WebSettings currentValue, WebSettings newValue) {
   assert(currentValue.javascriptMode != null);
   assert(currentValue.hasNavigationDelegate != null);
   assert(currentValue.hasProgressTracking != null);
@@ -716,4 +717,3 @@ enum NavigationDecision {
   /// Allow the navigation to take place.
   navigate,
 }
-
