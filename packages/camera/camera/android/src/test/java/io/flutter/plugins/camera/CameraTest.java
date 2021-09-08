@@ -26,7 +26,6 @@ import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
-import android.os.Looper;
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -794,13 +793,18 @@ public class CameraTest {
 
   @Test
   public void startBackgroundThread_shouldStartNewThread() {
-    Looper mockLooper = mock(Looper.class);
-    when(mockHandlerThread.getLooper()).thenReturn(mockLooper);
-
     camera.startBackgroundThread();
 
-    verify(mockHandlerThread).start();
+    verify(mockHandlerThread, times(1)).start();
     assertEquals(mockHandler, TestUtils.getPrivateField(camera, "backgroundHandler"));
+  }
+
+  @Test
+  public void startBackgroundThread_shouldNotStartNewThreadWhenAlreadyCreated() {
+    camera.startBackgroundThread();
+    camera.startBackgroundThread();
+
+    verify(mockHandlerThread, times(1)).start();
   }
 
   private static class TestCameraFeatureFactory implements CameraFeatureFactory {
