@@ -49,7 +49,6 @@ public class WebViewBuilder {
   private boolean useWideViewPort;
   private boolean displayZoomControls;
 
-
   /**
    * Constructs a new {@link WebViewBuilder} object with a custom implementation of the {@link
    * WebViewFactory} object.
@@ -128,8 +127,8 @@ public class WebViewBuilder {
   }
 
   /**
-   * Sets whether the {@link WebView} should use its built-in zoom mechanisms.
-   * The default value is {@code true}.
+   * Sets whether the {@link WebView} should use its built-in zoom mechanisms. The default value is
+   * {@code true}.
    *
    * @param flag {@code true} if built in zoom controls are allowed.
    * @return This builder. This value cannot be {@code null}.
@@ -140,9 +139,8 @@ public class WebViewBuilder {
   }
 
   /**
-   * Sets whether the {@link WebView} loads pages zoomed out so the content will fit on screen
-   * by width
-   * The default value is {@code true}.
+   * Sets whether the {@link WebView} loads pages zoomed out so the content will fit on screen by
+   * width The default value is {@code true}.
    *
    * @param flag {@code true} if should allow pages to load in overview mode.
    * @return This builder. This value cannot be {@code null}.
