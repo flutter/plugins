@@ -1,3 +1,7 @@
+## 2.0.1
+
+* Update version of video_player_platform_interface
+
 ## 2.0.0
 
 * Migrate to null safety.

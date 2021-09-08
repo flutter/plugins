@@ -1,3 +1,7 @@
+## 4.2.0
+
+* Add `observeAppLifecycle` to `VideoPlayerOptions`
+
 ## 4.1.0
 
 * Add `httpHeaders` to `DataSource`

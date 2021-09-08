@@ -696,6 +696,14 @@ void main() {
     await controller.initialize();
     expect(controller.videoPlayerOptions!.mixWithOthers, true);
   });
+
+  test('observeAppLifecycle', () async {
+    final VideoPlayerController controller = VideoPlayerController.file(
+        File(''),
+        videoPlayerOptions: VideoPlayerOptions(observeAppLifecycle: true));
+    await controller.initialize();
+    expect(controller.videoPlayerOptions!.observeAppLifecycle, true);
+  });
 }
 
 class FakeVideoPlayerPlatform extends TestHostVideoPlayerApi {
