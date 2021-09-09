@@ -1,7 +1,3 @@
-## 2.0.4
-
-* Update version of video_player_platform_interface
-
 ## 2.0.3
 
 * Add `implements` to pubspec.
