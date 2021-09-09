@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_ios_example/example_payment_queue_delegate.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'consumable_store.dart';
 
@@ -40,6 +41,9 @@ class _MyApp extends StatefulWidget {
 class _MyAppState extends State<_MyApp> {
   final InAppPurchaseIosPlatform _iapIosPlatform =
       InAppPurchasePlatform.instance as InAppPurchaseIosPlatform;
+  final InAppPurchaseIosPlatformAddition _iapIosPlatformAddition =
+      InAppPurchasePlatformAddition.instance
+          as InAppPurchaseIosPlatformAddition;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
@@ -61,6 +65,10 @@ class _MyAppState extends State<_MyApp> {
     }, onError: (error) {
       // handle error here.
     });
+
+    // Register the example payment queue delegate
+    _iapIosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
+
     initStoreInfo();
     super.initState();
   }
@@ -241,7 +249,11 @@ class _MyAppState extends State<_MyApp> {
               productDetails.description,
             ),
             trailing: previousPurchase != null
-                ? Icon(Icons.check)
+                ? IconButton(
+                    onPressed: () {
+                      _iapIosPlatformAddition.showPriceConsentIfNeeded();
+                    },
+                    icon: Icon(Icons.upgrade))
                 : TextButton(
                     child: Text(productDetails.price),
                     style: TextButton.styleFrom(

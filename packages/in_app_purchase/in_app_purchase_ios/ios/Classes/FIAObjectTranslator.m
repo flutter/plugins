@@ -111,6 +111,7 @@
           forKey:@"currencySymbol"];
   [map setObject:[locale objectForKey:NSLocaleCurrencyCode] ?: [NSNull null]
           forKey:@"currencyCode"];
+  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
   return map;
 }
 
@@ -167,6 +168,33 @@
     }
   }
   return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront {
+  if (!storefront) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"countryCode" : storefront.countryCode,
+    @"identifier" : storefront.identifier
+  }];
+
+  return map;
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
+                 andSKPaymentTransaction:(SKPaymentTransaction *)transaction {
+  if (!storefront || !transaction) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"storefront" : [FIAObjectTranslator getMapFromSKStorefront:storefront],
+    @"transaction" : [FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]
+  }];
+
+  return map;
 }
 
 @end

@@ -4,7 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.USE_FINGERPRINT"/>
 
-    <application android:name="io.flutter.app.FlutterApplication" android:label="local_auth_example" android:icon="@mipmap/ic_launcher">
+    <application android:label="local_auth_example" android:icon="@mipmap/ic_launcher">
         <activity android:name="io.flutter.embedding.android.FlutterFragmentActivity"
                   android:launchMode="singleTop"
                   android:theme="@style/Theme.AppCompat.Light"
@@ -15,12 +15,6 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
-        </activity>
-        <activity
-            android:name=".EmbeddingV1Activity"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
-            android:hardwareAccelerated="true"
-            android:windowSoftInputMode="adjustResize">
         </activity>
         <meta-data android:name="flutterEmbedding" android:value="2"/>
     </application>

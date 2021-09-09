@@ -19,12 +19,13 @@ typedef enum {
 
 - (void)applyFocusMode;
 - (void)applyFocusMode:(FocusMode)focusMode onDevice:(AVCaptureDevice *)captureDevice;
+- (void)setFocusPointWithResult:(FlutterResult)result x:(double)x y:(double)y;
 @end
 
 @interface CameraFocusTests : XCTestCase
 @property(readonly, nonatomic) FLTCam *camera;
 @property(readonly, nonatomic) id mockDevice;
-
+@property(readonly, nonatomic) id mockUIDevice;
 @end
 
 @implementation CameraFocusTests
@@ -32,11 +33,12 @@ typedef enum {
 - (void)setUp {
   _camera = [[FLTCam alloc] init];
   _mockDevice = OCMClassMock([AVCaptureDevice class]);
+  _mockUIDevice = OCMPartialMock([UIDevice currentDevice]);
 }
 
 - (void)tearDown {
-  // Put teardown code here. This method is called after the invocation of each test method in the
-  // class.
+  [_mockDevice stopMocking];
+  [_mockUIDevice stopMocking];
 }
 
 - (void)testAutoFocusWithContinuousModeSupported_ShouldSetContinuousAutoFocus {
@@ -115,6 +117,25 @@ typedef enum {
 
   // Run test
   [_camera applyFocusMode:FocusModeLocked onDevice:_mockDevice];
+}
+
+- (void)testSetFocusPointWithResult_SetsFocusPointOfInterest {
+  // UI is currently in landscape left orientation
+  OCMStub([(UIDevice *)_mockUIDevice orientation]).andReturn(UIDeviceOrientationLandscapeLeft);
+  // Focus point of interest is supported
+  OCMStub([_mockDevice isFocusPointOfInterestSupported]).andReturn(true);
+  // Set mock device as the current capture device
+  [_camera setValue:_mockDevice forKey:@"captureDevice"];
+
+  // Run test
+  [_camera
+      setFocusPointWithResult:^void(id _Nullable result) {
+      }
+                            x:1
+                            y:1];
+
+  // Verify the focus point of interest has been set
+  OCMVerify([_mockDevice setFocusPointOfInterest:CGPointMake(1, 1)]);
 }
 
 @end

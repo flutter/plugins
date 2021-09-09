@@ -1,3 +1,47 @@
+## 0.9.2+2
+
+* Ensure that setting the exposure offset returns the new offset value on Android.
+
+## 0.9.2+1
+
+* Fixed camera controller throwing an exception when being replaced in the preview widget.
+
+## 0.9.2
+
+* Added functions to pause and resume the camera preview.
+
+## 0.9.1+1
+
+* Replace `device_info` reference with `device_info_plus` in the [README.md](README.md)
+
+## 0.9.1
+
+* Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.
+
+## 0.9.0
+
+* Complete rewrite of Android plugin to fix many capture, focus, flash, orientation and exposure issues.
+* Fixed crash when opening front-facing cameras on some legacy android devices like Sony XZ.
+* Android Flash mode works with full precapture sequence.
+* Updated Android lint settings.
+
+## 0.8.1+7
+
+* Fix device orientation sometimes not affecting the camera preview orientation.
+
+## 0.8.1+6
+
+* Remove references to the Android V1 embedding.
+
+## 0.8.1+5
+
+* Make sure the `setFocusPoint` and `setExposurePoint` coordinates work correctly in all orientations on iOS (instead of only in portrait mode).
+
+## 0.8.1+4
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
 ## 0.8.1+3
 
 * Do not change camera orientation when iOS device is flat.
