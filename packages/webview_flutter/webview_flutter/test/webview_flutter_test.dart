@@ -986,11 +986,6 @@ class FakePlatformWebView {
     debuggingEnabled = params['settings']['debuggingEnabled'];
     userAgent = params['settings']['userAgent'];
     zoomEnabled = params['settings']['zoomEnabled'] ?? true;
-    builtInZoomControlsEnabled =
-        params['settings']['builtInZoomControlsEnabled'] ?? true;
-    displayZoomControls = params['settings']['displayZoomControls'] ?? false;
-    useWideViewPort = params['settings']['useWideViewPort'];
-    loadWithOverviewMode = params['settings']['loadWithOverviewMode'];
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -1011,10 +1006,6 @@ class FakePlatformWebView {
   bool? debuggingEnabled;
   String? userAgent;
   bool? zoomEnabled;
-  bool? builtInZoomControlsEnabled;
-  bool? displayZoomControls;
-  bool? useWideViewPort;
-  bool? loadWithOverviewMode;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -1035,19 +1026,6 @@ class FakePlatformWebView {
         userAgent = call.arguments['userAgent'];
         if (call.arguments['zoomEnabled'] != null) {
           zoomEnabled = call.arguments['zoomEnabled'];
-        }
-        if (call.arguments['builtInZoomControlsEnabled'] != null) {
-          builtInZoomControlsEnabled =
-              call.arguments['builtInZoomControlsEnabled'];
-        }
-        if (call.arguments['displayZoomControls'] != null) {
-          displayZoomControls = call.arguments['displayZoomControls'];
-        }
-        if (call.arguments['useWideViewPort'] != null) {
-          useWideViewPort = call.arguments['useWideViewPort'];
-        }
-        if (call.arguments['loadWithOverviewMode'] != null) {
-          loadWithOverviewMode = call.arguments['loadWithOverviewMode'];
         }
         break;
       case 'canGoBack':
