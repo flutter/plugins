@@ -11,9 +11,6 @@ import '../types/types.dart';
 /// The webview plugin implements this class, and passes an instance to the [WebViewPlatformController].
 /// [WebViewPlatformController] is notifying this handler on events that happened on the platform's webview.
 abstract class WebViewPlatformCallbacksHandler {
-  /// Invoked by [WebViewPlatformController] when a JavaScript channel message is received.
-  void onJavaScriptChannelMessage(String channel, String message);
-
   /// Invoked by [WebViewPlatformController] when a navigation request is pending.
   ///
   /// If true is returned the navigation is allowed, otherwise it is blocked.

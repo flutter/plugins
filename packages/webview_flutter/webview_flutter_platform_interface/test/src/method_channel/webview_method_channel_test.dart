@@ -17,7 +17,9 @@ void main() {
     const MethodChannel channel =
     MethodChannel('plugins.flutter.io/webview_$channelId');
     final WebViewPlatformCallbacksHandler callbacksHandler =
-    MockWebViewPlatformCallbacksHandler();
+      MockWebViewPlatformCallbacksHandler();
+    final JavascriptChannelRegistry javascriptChannelRegistry =
+      MockJavascriptChannelRegistry();
 
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -46,6 +48,7 @@ void main() {
     MethodChannelWebViewPlatform(
       channelId,
       callbacksHandler,
+      javascriptChannelRegistry,
     );
 
     tearDown(() {
@@ -449,3 +452,6 @@ void main() {
 
 class MockWebViewPlatformCallbacksHandler extends Mock
     implements WebViewPlatformCallbacksHandler {}
+
+class MockJavascriptChannelRegistry extends Mock
+    implements JavascriptChannelRegistry {}

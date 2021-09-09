@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 
+import '../platform_interface/javascript_channel_registry.dart';
 import '../platform_interface/platform_interface.dart';
 import '../types/types.dart';
 
@@ -13,11 +14,16 @@ import '../types/types.dart';
 class MethodChannelWebViewPlatform implements WebViewPlatformController {
   /// Constructs an instance that will listen for webviews broadcasting to the
   /// given [id], using the given [WebViewPlatformCallbacksHandler].
-  MethodChannelWebViewPlatform(int id, this._platformCallbacksHandler)
-      : assert(_platformCallbacksHandler != null),
+  MethodChannelWebViewPlatform(
+    int id,
+    this._platformCallbacksHandler,
+    this._javascriptChannelRegistry,
+  )   : assert(_platformCallbacksHandler != null),
         _channel = MethodChannel('plugins.flutter.io/webview_$id') {
     _channel.setMethodCallHandler(_onMethodCall);
   }
+
+  final JavascriptChannelRegistry _javascriptChannelRegistry;
 
   final WebViewPlatformCallbacksHandler _platformCallbacksHandler;
 
@@ -31,7 +37,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       case 'javascriptChannelMessage':
         final String channel = call.arguments['channel']!;
         final String message = call.arguments['message']!;
-        _platformCallbacksHandler.onJavaScriptChannelMessage(channel, message);
+        _javascriptChannelRegistry.onJavascriptChannelMessage(channel, message);
         return true;
       case 'navigationRequest':
         return await _platformCallbacksHandler.onNavigationRequest(
