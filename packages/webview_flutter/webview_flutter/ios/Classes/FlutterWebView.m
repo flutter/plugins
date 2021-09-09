@@ -222,6 +222,14 @@
   result(_currentUrl);
 }
 
+- (NSString*)escapeStringForJavaScript:(NSString*)string {
+  NSArray* arrayForEncoding = @[ string ];
+  NSString* jsonString = [[NSString alloc]
+      initWithData:[NSJSONSerialization dataWithJSONObject:arrayForEncoding options:0 error:nil]
+          encoding:NSUTF8StringEncoding];
+  return [jsonString substringWithRange:NSMakeRange(2, jsonString.length - 4)];
+}
+
 - (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* jsString = [call arguments];
   if (!jsString) {
@@ -230,18 +238,31 @@
                                details:nil]);
     return;
   }
-  [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
-               if (error) {
-                 result([FlutterError
-                     errorWithCode:@"evaluateJavaScript_failed"
-                           message:@"Failed evaluating JavaScript"
-                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
-                                                              jsString, error]]);
-               } else {
-                 result([NSString stringWithFormat:@"%@", evaluateResult]);
-               }
-             }];
+  void (^evalResultHandler)(id, NSError*) = ^(_Nullable id evaluateResult,
+                                              NSError* _Nullable error) {
+    if (error) {
+      result([FlutterError
+          errorWithCode:@"evaluateJavaScript_failed"
+                message:@"Failed evaluating JavaScript"
+                details:[NSString
+                            stringWithFormat:@"JavaScript string was: '%@'\n%@", jsString, error]]);
+    } else if (evaluateResult == /*null*/ [NSNull null] || evaluateResult == /*undefined*/ nil) {
+      result(@"null");
+    } else {
+      result([NSString stringWithFormat:@"%@", evaluateResult]);
+    }
+  };
+  if (@available(iOS 14, *)) {
+    jsString = [NSString
+        stringWithFormat:@"return eval(\"%@\");", [self escapeStringForJavaScript:jsString]];
+    [_webView callAsyncJavaScript:jsString
+                        arguments:nil
+                          inFrame:nil
+                   inContentWorld:WKContentWorld.pageWorld
+                completionHandler:evalResultHandler];
+  } else {
+    [_webView evaluateJavaScript:jsString completionHandler:evalResultHandler];
+  }
 }
 
 - (void)onAddJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {

@@ -88,4 +88,129 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
+- (void)testEvaluateJavaScriptShouldCallCallAsyncJavaScriptIOS14AndAbove {
+  if (@available(iOS 14, *)) {
+    // Setup
+    FLTWebViewController *controller =
+        [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                     viewIdentifier:1
+                                          arguments:nil
+                                    binaryMessenger:self.mockBinaryMessenger];
+    FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
+    [OCMStub([mockView callAsyncJavaScript:[OCMArg any]
+                                 arguments:[OCMArg any]
+                                   inFrame:[OCMArg any]
+                            inContentWorld:[OCMArg any]
+                         completionHandler:[OCMArg any]]) andDo:^(NSInvocation *invocation) {
+      // __unsafe_unretained: https://github.com/erikdoe/ocmock/issues/384#issuecomment-589376668
+      __unsafe_unretained void (^evalResultHandler)(id, NSError *);
+      [invocation getArgument:&evalResultHandler atIndex:6];
+      evalResultHandler(@"RESULT", nil);
+    }];
+    controller.webView = mockView;
+    XCTestExpectation *resultExpectation = [self
+        expectationWithDescription:@"Should return successful result over the method channel."];
+
+    // Run
+    [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"evaluateJavascript"
+                                                               arguments:@"console.log('test')"]
+                      result:^(id _Nullable result) {
+                        XCTAssertTrue([@"RESULT" isEqualToString:result]);
+                        [resultExpectation fulfill];
+                      }];
+
+    // Verify
+    OCMVerify([mockView
+        callAsyncJavaScript:[OCMArg isEqual:@"return eval(\"console.log('test')\");"]
+                  arguments:[OCMArg any]
+                    inFrame:[OCMArg any]
+             inContentWorld:[OCMArg any]
+          completionHandler:[OCMArg any]]);
+    OCMReject([mockView evaluateJavaScript:[OCMArg any] completionHandler:[OCMArg any]]);
+    [self waitForExpectationsWithTimeout:30.0 handler:nil];
+  }
+}
+
+- (void)testEvaluateJavaScriptShouldCallEvaluateJavaScriptBelowIOS14 {
+  if (@available(iOS 14, *)) {
+  } else {
+    // Setup
+    FLTWebViewController *controller =
+        [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                     viewIdentifier:1
+                                          arguments:nil
+                                    binaryMessenger:self.mockBinaryMessenger];
+    FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
+    [OCMStub([mockView evaluateJavaScript:[OCMArg any]
+                        completionHandler:[OCMArg any]]) andDo:^(NSInvocation *invocation) {
+      // __unsafe_unretained: https://github.com/erikdoe/ocmock/issues/384#issuecomment-589376668
+      __unsafe_unretained void (^evalResultHandler)(id, NSError *);
+      [invocation getArgument:&evalResultHandler atIndex:3];
+      evalResultHandler(@"RESULT", nil);
+    }];
+    controller.webView = mockView;
+    XCTestExpectation *resultExpectation = [self
+        expectationWithDescription:@"Should return successful result over the method channel."];
+
+    // Run
+    [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"evaluateJavascript"
+                                                               arguments:@"console.log('test')"]
+                      result:^(id _Nullable result) {
+                        XCTAssertTrue([@"RESULT" isEqualToString:result]);
+                        [resultExpectation fulfill];
+                      }];
+
+    // Verify
+    OCMVerify([mockView evaluateJavaScript:@"console.log('test')" completionHandler:[OCMArg any]]);
+    [self waitForExpectationsWithTimeout:30.0 handler:nil];
+  }
+}
+
+- (void)testEvaluateJavaScriptShouldSendErrorResultOnError {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  NSError *testError = [NSError errorWithDomain:@""
+                                           code:1
+                                       userInfo:@{NSLocalizedDescriptionKey : @"Test Error"}];
+  FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return error result over the method channel."];
+  if (@available(iOS 14, *)) {
+    [OCMStub([mockView callAsyncJavaScript:[OCMArg any]
+                                 arguments:[OCMArg any]
+                                   inFrame:[OCMArg any]
+                            inContentWorld:[OCMArg any]
+                         completionHandler:[OCMArg any]]) andDo:^(NSInvocation *invocation) {
+      // __unsafe_unretained: https://github.com/erikdoe/ocmock/issues/384#issuecomment-589376668
+      __unsafe_unretained void (^evalResultHandler)(id, NSError *);
+      [invocation getArgument:&evalResultHandler atIndex:6];
+      evalResultHandler(nil, testError);
+    }];
+  } else {
+    [OCMStub([mockView evaluateJavaScript:[OCMArg any]
+                        completionHandler:[OCMArg any]]) andDo:^(NSInvocation *invocation) {
+      // __unsafe_unretained: https://github.com/erikdoe/ocmock/issues/384#issuecomment-589376668
+      __unsafe_unretained void (^evalResultHandler)(id, NSError *);
+      [invocation getArgument:&evalResultHandler atIndex:3];
+      evalResultHandler(nil, testError);
+    }];
+  }
+  controller.webView = mockView;
+
+  // Run
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"evaluateJavascript"
+                                                             arguments:@"console.log('test')"]
+                    result:^(id _Nullable result) {
+                      XCTAssertTrue([result class] == [FlutterError class]);
+                      [resultExpectation fulfill];
+                    }];
+
+  // Verify
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
 @end

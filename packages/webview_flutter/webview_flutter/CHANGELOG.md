@@ -1,5 +1,6 @@
-## NEXT
+## 2.0.13
 
+* Fixed platform exception being thrown on iOS 14+ when evaluating any JavaScript evaluating to null or undefined.
 * Updated Android lint settings.
 
 ## 2.0.12
