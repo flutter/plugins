@@ -319,7 +319,7 @@ class GoogleMapController {
     assert(_googleMap != null,
         'Cannot get the screen coordinates with a null map.');
 
-    final point = _latLngToPixel(_googleMap!, _latLngToGmLatLng(latLng));
+    final point = toScreenLocation(_googleMap!, _latLngToGmLatLng(latLng));
 
     return ScreenCoordinate(x: point.x!.toInt(), y: point.y!.toInt());
   }
