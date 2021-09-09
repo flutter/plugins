@@ -15,11 +15,11 @@ void main() {
   group('Tests on `plugin.flutter.io/webview_<channel_id>` channel', () {
     const int channelId = 1;
     const MethodChannel channel =
-    MethodChannel('plugins.flutter.io/webview_$channelId');
+        MethodChannel('plugins.flutter.io/webview_$channelId');
     final WebViewPlatformCallbacksHandler callbacksHandler =
-      MockWebViewPlatformCallbacksHandler();
+        MockWebViewPlatformCallbacksHandler();
     final JavascriptChannelRegistry javascriptChannelRegistry =
-      MockJavascriptChannelRegistry();
+        MockJavascriptChannelRegistry();
 
     final List<MethodCall> log = <MethodCall>[];
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -45,7 +45,7 @@ void main() {
     });
 
     final MethodChannelWebViewPlatform webViewPlatform =
-    MethodChannelWebViewPlatform(
+        MethodChannelWebViewPlatform(
       channelId,
       callbacksHandler,
       javascriptChannelRegistry,
@@ -204,7 +204,7 @@ void main() {
 
     test('updateSettings', () async {
       final WebSettings settings =
-      WebSettings(userAgent: WebSetting<String?>.of('Dart Test'));
+          WebSettings(userAgent: WebSetting<String?>.of('Dart Test'));
       await webViewPlatform.updateSettings(settings);
 
       expect(
@@ -253,7 +253,7 @@ void main() {
 
     test('updateSettings without settings', () async {
       final WebSettings settings =
-      WebSettings(userAgent: WebSetting<String?>.absent());
+          WebSettings(userAgent: WebSetting<String?>.absent());
       await webViewPlatform.updateSettings(settings);
 
       expect(
@@ -264,7 +264,7 @@ void main() {
 
     test('evaluateJavascript', () async {
       final String evaluateJavascript =
-      await webViewPlatform.evaluateJavascript(
+          await webViewPlatform.evaluateJavascript(
         'This simulates some Javascript code.',
       );
 
@@ -413,7 +413,7 @@ void main() {
 
   group('Tests on `plugins.flutter.io/cookie_manager` channel', () {
     const MethodChannel cookieChannel =
-    MethodChannel('plugins.flutter.io/cookie_manager');
+        MethodChannel('plugins.flutter.io/cookie_manager');
 
     final List<MethodCall> log = <MethodCall>[];
     cookieChannel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -434,7 +434,7 @@ void main() {
 
     test('clearCookies', () async {
       final bool clearCookies =
-      await MethodChannelWebViewPlatform.clearCookies();
+          await MethodChannelWebViewPlatform.clearCookies();
 
       expect(clearCookies, true);
       expect(

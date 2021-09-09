@@ -32,9 +32,9 @@ abstract class WebViewPlatformController {
   ///
   /// Throws an ArgumentError if `url` is not a valid URL string.
   Future<void> loadUrl(
-      String url,
-      Map<String, String>? headers,
-      ) {
+    String url,
+    Map<String, String>? headers,
+  ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
   }
