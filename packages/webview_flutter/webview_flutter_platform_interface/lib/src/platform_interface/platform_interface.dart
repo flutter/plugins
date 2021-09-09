@@ -2,6 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export 'src/platform_interface/platform_interface.dart';
-export 'src/types/types.dart';
-export 'src/webview_method_channel.dart';
+export 'webview_platform.dart';
+export 'webview_platform_callbacks_handler.dart';
+export 'webview_platform_controller.dart';
