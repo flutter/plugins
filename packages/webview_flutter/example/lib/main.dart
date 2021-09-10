@@ -103,8 +103,11 @@ class _WebViewExampleState extends State<WebViewExample> {
           onPageStarted: (String url, bool isRedirect) {
             print('Page started loading: $url');
           },
-          onPageFinished: (String url) {
+          onPageFinished: (String url) async {
             print('Page finished loading: $url');
+            final ctrl = await _controller.future;
+            final history = await ctrl.getHistory();
+            print(history);
           },
           gestureNavigationEnabled: true,
           blockingRules: {

@@ -366,7 +366,8 @@ abstract class WebViewPlatformController {
         "WebView getLastScreenshot is not implemented on the current platform");
   }
 
-  Future<List<String>> getHistory() {
+  /// Return the url history visited by the user.
+  Future<List<dynamic>> getHistory() {
     throw UnimplementedError(
         "WebView getHistory is not implemented on the current platform");
   }

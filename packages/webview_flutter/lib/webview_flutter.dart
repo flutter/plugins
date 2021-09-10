@@ -923,8 +923,9 @@ class WebViewController {
   }
 
   /// Return the url history visited by the user.
-  Future<List<String>> getHistory() {
-    return _webViewPlatformController.getHistory();
+  Future<List<String>> getHistory() async {
+    final historyObjects = await _webViewPlatformController.getHistory();
+    return historyObjects.map((e) => e as String).toList();
   }
 }
 

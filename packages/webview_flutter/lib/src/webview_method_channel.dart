@@ -189,8 +189,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       _channel.invokeMethod<Uint8List>("getLastScreenshot");
 
   @override
-  Future<List<String>> getHistory() => _channel
-      .invokeMethod<List<String>>("getHistory")
+  Future<List<dynamic>> getHistory() => _channel
+      .invokeMethod<List<dynamic>>("getHistory")
       .then((result) => result!);
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
