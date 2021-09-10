@@ -921,6 +921,11 @@ class WebViewController {
   Future<Uint8List?> getLastScreenshot() {
     return _webViewPlatformController.getLastScreenshot();
   }
+
+  /// Return the url history visited by the user.
+  Future<List<String>> getHistory() {
+    return _webViewPlatformController.getHistory();
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.
