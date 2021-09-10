@@ -242,7 +242,8 @@ this command.
 
     final Iterable<RepositoryPackage> examples = plugin.getExamples();
 
-    bool ranTests = false;
+    bool ranUnitTests = false;
+    bool ranAnyTests = false;
     bool failed = false;
     bool hasMissingBuild = false;
     for (final RepositoryPackage example in examples) {
@@ -289,7 +290,8 @@ this command.
           printError('$exampleName unit tests failed.');
           failed = true;
         }
-        ranTests = true;
+        ranUnitTests = true;
+        ranAnyTests = true;
       }
 
       if (runIntegrationTests) {
@@ -311,7 +313,7 @@ this command.
           printError('$exampleName integration tests failed.');
           failed = true;
         }
-        ranTests = true;
+        ranAnyTests = true;
       }
     }
 
@@ -321,7 +323,12 @@ this command.
               ? 'Examples must be built before testing.'
               : null);
     }
-    if (!ranTests) {
+    if (!mode.integrationOnly && !ranUnitTests) {
+      printError('No unit tests ran. Plugins are required to have unit tests.');
+      return _PlatformResult(RunState.failed,
+          error: 'No unit tests ran (use --exclude if this is intentional).');
+    }
+    if (!ranAnyTests) {
       return _PlatformResult(RunState.skipped);
     }
     return _PlatformResult(RunState.succeeded);
