@@ -1,6 +1,10 @@
-## 2.1.16
+## 2.2.1
 
 * Fixed playback speed resetting on iOS (on seeking and on initialization).
+
+## 2.2.0
+
+* Add `contentUri` based VideoPlayerController.
 
 ## 2.1.15
 

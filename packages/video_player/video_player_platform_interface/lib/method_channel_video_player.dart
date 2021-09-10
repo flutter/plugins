@@ -42,6 +42,9 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       case DataSourceType.file:
         message.uri = dataSource.uri;
         break;
+      case DataSourceType.contentUri:
+        message.uri = dataSource.uri;
+        break;
     }
 
     TextureMessage response = await _api.create(message);
