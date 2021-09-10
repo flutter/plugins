@@ -315,7 +315,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
     [_player play];
 
     // fix to always set playback speed accurately
-    [self setPlaybackSpeed: _internalPlaybackSpeed];
+    [self setPlaybackSpeed:_internalPlaybackSpeed];
   } else {
     [_player pause];
   }
