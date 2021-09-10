@@ -315,7 +315,7 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
     mapController.events.whereType<WebMapReadyEvent>().first.then((event) {
       assert(creationId == event.mapId,
           'Received WebMapReadyEvent for the wrong map');
-      // *now* we can notify the plugin that there's a fully working controller.
+      // Notify the plugin now that there's a fully initialized controller.
       onPlatformViewCreated.call(event.mapId);
     });
 
