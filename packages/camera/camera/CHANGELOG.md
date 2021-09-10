@@ -1,3 +1,7 @@
+## 0.9.3
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
 ## 0.9.2+2
 
 * Ensure that setting the exposure offset returns the new offset value on Android.

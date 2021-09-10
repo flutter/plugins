@@ -3,6 +3,10 @@
 - `native-test --android` now fails plugins that don't have unit tests,
   rather than skipping them.
 
+## 0.7.1
+
+- Add support for `.pluginToolsConfig.yaml` in the `build-examples` command.
+
 ## 0.7.0
 
 - `native-test` now supports `--linux` for unit tests.

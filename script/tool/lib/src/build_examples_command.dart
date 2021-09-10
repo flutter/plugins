@@ -6,6 +6,7 @@ import 'dart:async';
 
 import 'package:file/file.dart';
 import 'package:platform/platform.dart';
+import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
@@ -16,7 +17,19 @@ import 'common/repository_package.dart';
 /// Key for APK.
 const String _platformFlagApk = 'apk';
 
+const String _pluginToolsConfigFileName = '.pluginToolsConfig.yaml';
+const String _pluginToolsConfigBuildFlagsKey = 'buildFlags';
+const String _pluginToolsConfigGlobalKey = 'global';
+
+const String _pluginToolsConfigExample = '''
+$_pluginToolsConfigBuildFlagsKey:
+  $_pluginToolsConfigGlobalKey:
+    - "--no-tree-shake-icons"
+    - "--dart-define=buildmode=testing"
+''';
+
 const int _exitNoPlatformFlags = 3;
+const int _exitInvalidPluginToolsConfig = 4;
 
 // Flutter build types. These are the values passed to `flutter build <foo>`.
 const String _flutterBuildTypeAndroid = 'apk';
@@ -99,7 +112,13 @@ class BuildExamplesCommand extends PackageLoopingCommand {
   @override
   final String description =
       'Builds all example apps (IPA for iOS and APK for Android).\n\n'
-      'This command requires "flutter" to be in your path.';
+      'This command requires "flutter" to be in your path.\n\n'
+      'A $_pluginToolsConfigFileName file can be placed in an example app '
+      'directory to specify additional build arguments. It should be a YAML '
+      'file with a top-level map containing a single key '
+      '"$_pluginToolsConfigBuildFlagsKey" containing a map containing a '
+      'single key "$_pluginToolsConfigGlobalKey" containing a list of build '
+      'arguments.';
 
   @override
   Future<void> initializeRun() async {
@@ -202,6 +221,58 @@ class BuildExamplesCommand extends PackageLoopingCommand {
         : PackageResult.fail(errors);
   }
 
+  Iterable<String> _readExtraBuildFlagsConfiguration(
+      Directory directory) sync* {
+    final File pluginToolsConfig =
+        directory.childFile(_pluginToolsConfigFileName);
+    if (pluginToolsConfig.existsSync()) {
+      final Object? configuration =
+          loadYaml(pluginToolsConfig.readAsStringSync());
+      if (configuration is! YamlMap) {
+        printError('The $_pluginToolsConfigFileName file must be a YAML map.');
+        printError(
+            'Currently, the key "$_pluginToolsConfigBuildFlagsKey" is the only one that has an effect.');
+        printError(
+            'It must itself be a map. Currently, in that map only the key "$_pluginToolsConfigGlobalKey"');
+        printError(
+            'has any effect; it must contain a list of arguments to pass to the');
+        printError('flutter tool.');
+        printError(_pluginToolsConfigExample);
+        throw ToolExit(_exitInvalidPluginToolsConfig);
+      }
+      if (configuration.containsKey(_pluginToolsConfigBuildFlagsKey)) {
+        final Object? buildFlagsConfiguration =
+            configuration[_pluginToolsConfigBuildFlagsKey];
+        if (buildFlagsConfiguration is! YamlMap) {
+          printError(
+              'The $_pluginToolsConfigFileName file\'s "$_pluginToolsConfigBuildFlagsKey" key must be a map.');
+          printError(
+              'Currently, in that map only the key "$_pluginToolsConfigGlobalKey" has any effect; it must ');
+          printError(
+              'contain a list of arguments to pass to the flutter tool.');
+          printError(_pluginToolsConfigExample);
+          throw ToolExit(_exitInvalidPluginToolsConfig);
+        }
+        if (buildFlagsConfiguration.containsKey(_pluginToolsConfigGlobalKey)) {
+          final Object? globalBuildFlagsConfiguration =
+              buildFlagsConfiguration[_pluginToolsConfigGlobalKey];
+          if (globalBuildFlagsConfiguration is! YamlList) {
+            printError(
+                'The $_pluginToolsConfigFileName file\'s "$_pluginToolsConfigBuildFlagsKey" key must be a map');
+            printError('whose "$_pluginToolsConfigGlobalKey" key is a list.');
+            printError(
+                'That list must contain a list of arguments to pass to the flutter tool.');
+            printError(
+                'For example, the $_pluginToolsConfigFileName file could look like:');
+            printError(_pluginToolsConfigExample);
+            throw ToolExit(_exitInvalidPluginToolsConfig);
+          }
+          yield* globalBuildFlagsConfiguration.cast<String>();
+        }
+      }
+    }
+  }
+
   Future<bool> _buildExample(
     RepositoryPackage example,
     String flutterBuildType, {
@@ -231,6 +302,7 @@ class BuildExamplesCommand extends PackageLoopingCommand {
         'build',
         flutterBuildType,
         ...extraBuildFlags,
+        ..._readExtraBuildFlagsConfiguration(example.directory),
         if (enableExperiment.isNotEmpty)
           '--enable-experiment=$enableExperiment',
       ],

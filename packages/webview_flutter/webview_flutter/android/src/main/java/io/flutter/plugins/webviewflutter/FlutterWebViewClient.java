@@ -115,6 +115,22 @@ class FlutterWebViewClient {
     return true;
   }
 
+  /**
+   * Notifies the Flutter code that a download should start when a navigation delegate is set.
+   *
+   * @param view the webView the result of the navigation delegate will be send to.
+   * @param url the download url
+   * @return A boolean whether or not the request is forwarded to the Flutter code.
+   */
+  boolean notifyDownload(WebView view, String url) {
+    if (!hasNavigationDelegate) {
+      return false;
+    }
+
+    notifyOnNavigationRequest(url, null, view, true);
+    return true;
+  }
+
   private void onPageStarted(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
