@@ -8,7 +8,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter:
+  webview_flutter_android:
     # When depending on this package from a real application you should use:
     #   webview_flutter: ^x.y.z
     # See https://dart.dev/tools/pub/dependencies#version-constraints
