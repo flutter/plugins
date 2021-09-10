@@ -232,6 +232,8 @@
     [self takeScreenshot:call result:result];
   } else if ([[call method] isEqualToString:@"getLastScreenshot"]) {
     [self getLastScreenshot:call result:result];
+  } else if ([[call method] isEqualToString:@"getHistory"]) {
+    [self getHistory:call result:result];
   } else if ([[call method] isEqualToString:@"refreshWhiteListing"]) {
     [self onRefreshWhiteListing:call result:result];
   } else {
@@ -442,6 +444,14 @@
 
 - (void)getLastScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result {
     result(_lastScreenshootData);
+}
+
+- (void)getHistory:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSMutableArray *history = [NSMutableArray new];
+    for (WKBackForwardListItem *item in _webView.backForwardList.backList) {
+        [history addObject:item.initialURL.absoluteString];
+    }
+    result(history);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.

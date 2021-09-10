@@ -49,8 +49,8 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
         return null;
       case 'onPageStarted':
         _platformCallbacksHandler.onPageStarted(
-            call.arguments['url']!,
-            call.arguments['isRedirect']!,
+          call.arguments['url']!,
+          call.arguments['isRedirect']!,
         );
         return null;
       case 'onWebResourceError':
@@ -187,6 +187,11 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   @override
   Future<Uint8List?> getLastScreenshot() =>
       _channel.invokeMethod<Uint8List>("getLastScreenshot");
+
+  @override
+  Future<List<String>> getHistory() => _channel
+      .invokeMethod<List<String>>("getHistory")
+      .then((result) => result!);
 
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {

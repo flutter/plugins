@@ -78,7 +78,7 @@ void main() {
             controllerCompleter.complete(controller);
           },
           javascriptMode: JavascriptMode.unrestricted,
-          onPageStarted: (String url) {
+          onPageStarted: (String url, _) {
             pageStarts.add(url);
           },
           onPageFinished: (String url) {
@@ -130,7 +130,7 @@ void main() {
               },
             ),
           },
-          onPageStarted: (String url) {
+          onPageStarted: (String url, _) {
             pageStarted.complete(null);
           },
           onPageFinished: (String url) {
@@ -192,7 +192,7 @@ void main() {
           },
         ),
       },
-      onPageStarted: (String url) {
+      onPageStarted: (String url, _) {
         pageStarted.complete(null);
       },
       onPageFinished: (String url) {
@@ -589,7 +589,7 @@ void main() {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
-            onPageStarted: (String url) {
+            onPageStarted: (String url, _) {
               pageStarted.complete(null);
             },
             onPageFinished: (String url) {
@@ -621,7 +621,7 @@ void main() {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
-            onPageStarted: (String url) {
+            onPageStarted: (String url, _) {
               pageStarted.complete(null);
             },
             onPageFinished: (String url) {
@@ -659,7 +659,7 @@ void main() {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
-            onPageStarted: (String url) {
+            onPageStarted: (String url, _) {
               pageStarted.complete(null);
             },
             onPageFinished: (String url) {
@@ -689,7 +689,7 @@ void main() {
               controllerCompleter.complete(controller);
             },
             javascriptMode: JavascriptMode.unrestricted,
-            onPageStarted: (String url) {
+            onPageStarted: (String url, _) {
               pageStarted.complete(null);
             },
             onPageFinished: (String url) {
@@ -735,7 +735,7 @@ void main() {
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
-          onPageStarted: (String url) {
+          onPageStarted: (String url, _) {
             pageStarted.complete(null);
           },
           onPageFinished: (String url) {

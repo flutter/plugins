@@ -365,6 +365,11 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getLastScreenshot is not implemented on the current platform");
   }
+
+  Future<List<String>> getHistory() {
+    throw UnimplementedError(
+        "WebView getHistory is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.
