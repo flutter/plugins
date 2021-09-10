@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -44,6 +45,7 @@ public class WebViewBuilder {
   private boolean supportMultipleWindows;
   private boolean usesHybridComposition;
   private WebChromeClient webChromeClient;
+  private DownloadListener downloadListener;
 
   /**
    * Constructs a new {@link WebViewBuilder} object with a custom implementation of the {@link
@@ -123,6 +125,18 @@ public class WebViewBuilder {
   }
 
   /**
+   * Registers the interface to be used when content can not be handled by the rendering engine, and
+   * should be downloaded instead. This will replace the current handler.
+   *
+   * @param downloadListener an implementation of DownloadListener This value may be null.
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setDownloadListener(@Nullable DownloadListener downloadListener) {
+    this.downloadListener = downloadListener;
+    return this;
+  }
+
+  /**
    * Build the {@link android.webkit.WebView} using the current settings.
    *
    * @return The {@link android.webkit.WebView} using the current settings.
@@ -135,7 +149,7 @@ public class WebViewBuilder {
     webSettings.setJavaScriptCanOpenWindowsAutomatically(javaScriptCanOpenWindowsAutomatically);
     webSettings.setSupportMultipleWindows(supportMultipleWindows);
     webView.setWebChromeClient(webChromeClient);
-
+    webView.setDownloadListener(downloadListener);
     return webView;
   }
 }
