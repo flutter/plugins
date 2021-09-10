@@ -1,6 +1,10 @@
-## 2.0.13
+## 2.0.14
 
 * Fixed platform exception being thrown on iOS 14+ when evaluating any JavaScript evaluating to null or undefined.
+
+## 2.0.13
+
+* Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
 
 ## 2.0.12
