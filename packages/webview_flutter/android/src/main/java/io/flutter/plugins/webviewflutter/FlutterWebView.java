@@ -14,7 +14,9 @@ import android.os.Message;
 import android.os.Looper;
 import android.view.View;
 import android.view.ViewTreeObserver;
+import android.webkit.WebBackForwardList;
 import android.webkit.WebChromeClient;
+import android.webkit.WebHistoryItem;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebStorage;
 import android.webkit.WebView;
@@ -30,6 +32,7 @@ import io.flutter.plugin.common.MethodChannel.Result;
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugins.webviewflutter.adblock.ContentBlocker;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -337,6 +340,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getLastScreenshot":
         getLastScreenshot(result);
         break;
+      case "getHistory":
+        getHistory(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -479,8 +485,19 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     result.success(webView.getScrollY());
   }
 
-  private void getLastScreenshot(Result result){
+  private void getLastScreenshot(Result result) {
     result.success(lastScreenshotByteArray);
+  }
+
+  private void getHistory(Result result) {
+    WebBackForwardList backForwardList = webView.copyBackForwardList();
+    List<String> history = new ArrayList<>();
+    for (int i = 0; i <= backForwardList.getCurrentIndex(); i++) {
+      WebHistoryItem currentItem = backForwardList.getItemAtIndex(i);
+      String url = currentItem.getUrl();
+      history.add(url);
+    }
+    result.success(history);
   }
 
   private void takeScreenshot(Result result){
