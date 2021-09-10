@@ -11,6 +11,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import java.util.HashMap;
@@ -20,6 +21,7 @@ import org.junit.Test;
 
 public class FlutterWebViewTest {
   private WebChromeClient mockWebChromeClient;
+  private DownloadListener mockDownloadListener;
   private WebViewBuilder mockWebViewBuilder;
   private WebView mockWebView;
 
@@ -28,6 +30,7 @@ public class FlutterWebViewTest {
     mockWebChromeClient = mock(WebChromeClient.class);
     mockWebViewBuilder = mock(WebViewBuilder.class);
     mockWebView = mock(WebView.class);
+    mockDownloadListener = mock(DownloadListener.class);
 
     when(mockWebViewBuilder.setDomStorageEnabled(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setJavaScriptCanOpenWindowsAutomatically(anyBoolean()))
@@ -36,6 +39,8 @@ public class FlutterWebViewTest {
     when(mockWebViewBuilder.setUsesHybridComposition(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
         .thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setDownloadListener(any(DownloadListener.class)))
+        .thenReturn(mockWebViewBuilder);
 
     when(mockWebViewBuilder.build()).thenReturn(mockWebView);
   }
@@ -43,7 +48,7 @@ public class FlutterWebViewTest {
   @Test
   public void createWebView_should_create_webview_with_default_configuration() {
     FlutterWebView.createWebView(
-        mockWebViewBuilder, createParameterMap(false), mockWebChromeClient);
+        mockWebViewBuilder, createParameterMap(false), mockWebChromeClient, mockDownloadListener);
 
     verify(mockWebViewBuilder, times(1)).setDomStorageEnabled(true);
     verify(mockWebViewBuilder, times(1)).setJavaScriptCanOpenWindowsAutomatically(true);
