@@ -492,7 +492,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void getHistory(Result result) {
     WebBackForwardList backForwardList = webView.copyBackForwardList();
     List<String> history = new ArrayList<>();
-    for (int i = 0; i <= backForwardList.getCurrentIndex(); i++) {
+    for (int i = 0; i < backForwardList.getCurrentIndex(); i++) {
       WebHistoryItem currentItem = backForwardList.getItemAtIndex(i);
       String url = currentItem.getUrl();
       history.add(url);
