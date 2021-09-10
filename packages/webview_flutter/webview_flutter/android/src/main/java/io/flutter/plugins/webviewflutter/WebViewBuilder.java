@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -44,6 +45,7 @@ public class WebViewBuilder {
   private boolean supportMultipleWindows;
   private boolean usesHybridComposition;
   private WebChromeClient webChromeClient;
+  private DownloadListener downloadListener;
   private boolean builtInZoomControls;
   private boolean loadWithOverviewMode;
   private boolean useWideViewPort;
@@ -127,6 +129,18 @@ public class WebViewBuilder {
   }
 
   /**
+   * Registers the interface to be used when content can not be handled by the rendering engine, and
+   * should be downloaded instead. This will replace the current handler.
+   *
+   * @param downloadListener an implementation of DownloadListener This value may be null.
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setDownloadListener(@Nullable DownloadListener downloadListener) {
+    this.downloadListener = downloadListener;
+    return this;
+  }
+
+  /**
    * Sets whether the {@link WebView} should use its built-in zoom mechanisms. The default value is
    * {@code true}.
    *
@@ -191,7 +205,7 @@ public class WebViewBuilder {
     webSettings.setBuiltInZoomControls(builtInZoomControls);
     webSettings.setDisplayZoomControls(displayZoomControls);
     webView.setWebChromeClient(webChromeClient);
-
+    webView.setDownloadListener(downloadListener);
     return webView;
   }
 }

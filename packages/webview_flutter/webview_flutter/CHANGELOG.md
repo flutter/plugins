@@ -1,5 +1,6 @@
 ## 2.0.13
 
+* Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
 * Enable native double-tap to zoom, and pinch to zoom functionality on Android
 
