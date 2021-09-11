@@ -1,3 +1,7 @@
+## 0.8.4+1
+
+* Fix README Example for `ImagePickerCache` to cache multiple files.
+
 ## 0.8.4
 
 * Update `ImagePickerCache` to cache multiple files.
