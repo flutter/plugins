@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Updates exoplayer to the latest - 2.5.0
+
 ## 2.2.0
 
 * Add `contentUri` based VideoPlayerController.
