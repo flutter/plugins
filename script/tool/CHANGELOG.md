@@ -1,9 +1,36 @@
 ## NEXT
 
+- `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
+  have unit tests, rather than skipping them.
+
+## 0.7.1
+
+- Add support for `.pluginToolsConfig.yaml` in the `build-examples` command.
+
+## 0.7.0
+
+- `native-test` now supports `--linux` for unit tests.
+- Formatting now skips Dart files that contain a line that exactly
+  matches the string `// This file is hand-formatted.`.
+
+## 0.6.0+1
+
+- Fixed `build-examples` to work for non-plugin packages.
+
+## 0.6.0
+
 - Added Android native integration test support to `native-test`.
 - Added a new `android-lint` command to lint Android plugin native code.
 - Pubspec validation now checks for `implements` in implementation packages.
 - Pubspec valitation now checks the full relative path of `repository` entries.
+- `build-examples` now supports UWP plugins via a `--winuwp` flag.
+- `native-test` now supports `--windows` for unit tests.
+- **Breaking change**: `publish` no longer accepts `--no-tag-release` or
+  `--no-push-flags`. Releases now always tag and push.
+- **Breaking change**: `publish`'s `--package` flag has been replaced with the
+  `--packages` flag used by most other packages.
+- **Breaking change** Passing both `--run-on-changed-packages` and `--packages`
+  is now an error; previously it the former would be ignored.
 
 ## 0.5.0
 

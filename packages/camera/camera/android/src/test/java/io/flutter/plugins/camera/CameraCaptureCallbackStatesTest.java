@@ -17,6 +17,7 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.CaptureResult.Key;
 import android.hardware.camera2.TotalCaptureResult;
 import io.flutter.plugins.camera.CameraCaptureCallback.CameraCaptureStateListener;
+import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 import io.flutter.plugins.camera.types.Timeout;
 import io.flutter.plugins.camera.utils.TestUtils;
@@ -40,6 +41,7 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
   private CaptureRequest mockCaptureRequest;
   private CaptureResult mockPartialCaptureResult;
   private CaptureTimeoutsWrapper mockCaptureTimeouts;
+  private CameraCaptureProperties mockCaptureProps;
   private TotalCaptureResult mockTotalCaptureResult;
   private MockedStatic<Timeout> mockedStaticTimeout;
   private Timeout mockTimeout;
@@ -83,6 +85,7 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
     mockTotalCaptureResult = mock(TotalCaptureResult.class);
     mockTimeout = mock(Timeout.class);
     mockCaptureTimeouts = mock(CaptureTimeoutsWrapper.class);
+    mockCaptureProps = mock(CameraCaptureProperties.class);
     when(mockCaptureTimeouts.getPreCaptureFocusing()).thenReturn(mockTimeout);
     when(mockCaptureTimeouts.getPreCaptureMetering()).thenReturn(mockTimeout);
 
@@ -95,7 +98,8 @@ public class CameraCaptureCallbackStatesTest extends TestCase {
     mockedStaticTimeout.when(() -> Timeout.create(1000)).thenReturn(mockTimeout);
 
     cameraCaptureCallback =
-        CameraCaptureCallback.create(mockCaptureStateListener, mockCaptureTimeouts);
+        CameraCaptureCallback.create(
+            mockCaptureStateListener, mockCaptureTimeouts, mockCaptureProps);
   }
 
   @Override

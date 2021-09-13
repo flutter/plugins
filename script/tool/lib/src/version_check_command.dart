@@ -16,6 +16,7 @@ import 'common/git_version_finder.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
+import 'common/repository_package.dart';
 
 /// Categories of version change types.
 enum NextVersionType {
@@ -133,7 +134,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
   Future<void> initializeRun() async {}
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final Pubspec? pubspec = _tryParsePubspec(package);
     if (pubspec == null) {
       // No remaining checks make sense, so fail immediately.
@@ -177,7 +178,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
     if (!(await _validateChangelogVersion(package,
         pubspec: pubspec, pubspecVersionChanged: versionChanged))) {
-      errors.add('pubspec.yaml and CHANGELOG.md have different versions');
+      errors.add('CHANGELOG.md failed validation.');
     }
 
     return errors.isEmpty
@@ -196,7 +197,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
   /// the name from pubspec.yaml, not the on disk name if different.)
   Future<Version?> _fetchPreviousVersionFromPub(String packageName) async {
     final PubVersionFinderResponse pubVersionFinderResponse =
-        await _pubVersionFinder.getPackageVersion(package: packageName);
+        await _pubVersionFinder.getPackageVersion(packageName: packageName);
     switch (pubVersionFinderResponse.result) {
       case PubVersionFinderResult.success:
         return pubVersionFinderResponse.versions.first;
@@ -214,10 +215,10 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
 
   /// Returns the version of [package] from git at the base comparison hash.
   Future<Version?> _getPreviousVersionFromGit(
-    Directory package, {
+    RepositoryPackage package, {
     required GitVersionFinder gitVersionFinder,
   }) async {
-    final File pubspecFile = package.childFile('pubspec.yaml');
+    final File pubspecFile = package.pubspecFile;
     final String relativePath =
         path.relative(pubspecFile.absolute.path, from: (await gitDir).path);
     // Use Posix-style paths for git.
@@ -230,7 +231,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   /// Returns the state of the verison of [package] relative to the comparison
   /// base (git or pub, depending on flags).
   Future<_CurrentVersionState> _getVersionState(
-    Directory package, {
+    RepositoryPackage package, {
     required Pubspec pubspec,
   }) async {
     // This method isn't called unless `version` is non-null.
@@ -310,7 +311,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   ///
   /// Returns false if the CHANGELOG fails validation.
   Future<bool> _validateChangelogVersion(
-    Directory package, {
+    RepositoryPackage package, {
     required Pubspec pubspec,
     required bool pubspecVersionChanged,
   }) async {
@@ -318,7 +319,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final Version fromPubspec = pubspec.version!;
 
     // get first version from CHANGELOG
-    final File changelog = package.childFile('CHANGELOG.md');
+    final File changelog = package.directory.childFile('CHANGELOG.md');
     final List<String> lines = changelog.readAsLinesSync();
     String? firstLineWithText;
     final Iterator<String> iterator = lines.iterator;
@@ -386,8 +387,8 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     return true;
   }
 
-  Pubspec? _tryParsePubspec(Directory package) {
-    final File pubspecFile = package.childFile('pubspec.yaml');
+  Pubspec? _tryParsePubspec(RepositoryPackage package) {
+    final File pubspecFile = package.pubspecFile;
 
     try {
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());

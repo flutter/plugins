@@ -1,5 +1,10 @@
-## NEXT
+## 0.8.4
 
+* Update `ImagePickerCache` to cache multiple files.
+
+## 0.8.3+3
+
+* Fix pickImage not returning a value on iOS when dismissing PHPicker sheet by swiping.
 * Updated Android lint settings.
 
 ## 0.8.3+2
