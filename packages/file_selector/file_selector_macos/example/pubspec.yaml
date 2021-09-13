@@ -1,10 +1,11 @@
 name: example
-description: Local testbed for desktop file_selector implementations.
+description: Example for file_selector_macos implementation.
 publish_to: 'none'
 version: 1.0.0
 
 environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
@@ -12,6 +13,11 @@ dependencies:
 
   file_selector_platform_interface: ^2.0.0
   file_selector_macos:
+    # When depending on this package from a real application you should use:
+    #   file_selector_macos: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
     path: ..
 
 dev_dependencies:

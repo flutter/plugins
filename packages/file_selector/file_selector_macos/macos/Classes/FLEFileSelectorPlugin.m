@@ -1,4 +1,4 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ static NSString *const kTypeGroupMimeTypesKey = @"mimeTypes";
 static NSString *const kTypeGroupUTIsKey = @"macUTIs";
 
 // Returns the value for |key| in |dict|, returning nil for NSNull.
-id GetNonNullValueForKey( NSDictionary<NSString *, id>* dict, NSString* key) {
+id GetNonNullValueForKey(NSDictionary<NSString *, id> *dict, NSString *key) {
   id value = dict[key];
   return value == [NSNull null] ? nil : value;
 }
@@ -51,11 +51,12 @@ id GetNonNullValueForKey( NSDictionary<NSString *, id>* dict, NSString* key) {
  */
 - (void)configureSavePanel:(nonnull NSSavePanel *)panel
              withArguments:(nonnull NSDictionary<NSString *, id> *)arguments {
-  NSString* initialDirectory = GetNonNullValueForKey(arguments, kInitialDirectoryKey);
+  NSString *initialDirectory = GetNonNullValueForKey(arguments, kInitialDirectoryKey);
   if (initialDirectory) {
     panel.directoryURL = [NSURL URLWithString:initialDirectory];
   }
-  NSArray<NSDictionary<NSString*, id>*>* acceptedTypeGroups = GetNonNullValueForKey(arguments, kAcceptedTypeGroupsKey);
+  NSArray<NSDictionary<NSString *, id> *> *acceptedTypeGroups =
+      GetNonNullValueForKey(arguments, kAcceptedTypeGroupsKey);
   if (acceptedTypeGroups.count > 0) {
     // macOS doesn't support filter groups, so combine all allowed types into a flat list.
     NSMutableArray<NSString *> *allowedTypes = [NSMutableArray array];
@@ -74,11 +75,11 @@ id GetNonNullValueForKey( NSDictionary<NSString *, id>* dict, NSString* key) {
     }
     panel.allowedFileTypes = allowedTypes;
   }
-  NSString* suggestedName = GetNonNullValueForKey(arguments, kSuggestedNameKey);
+  NSString *suggestedName = GetNonNullValueForKey(arguments, kSuggestedNameKey);
   if (suggestedName) {
     panel.nameFieldStringValue = suggestedName;
   }
-  NSString* confirmButtonText = GetNonNullValueForKey(arguments, kConfirmButtonTextKey);
+  NSString *confirmButtonText = GetNonNullValueForKey(arguments, kConfirmButtonTextKey);
   if (confirmButtonText) {
     panel.prompt = confirmButtonText;
   }
@@ -120,8 +121,7 @@ id GetNonNullValueForKey( NSDictionary<NSString *, id>* dict, NSString* key) {
     [self configureSavePanel:savePanel withArguments:arguments];
     [savePanel beginSheetModalForWindow:_registrar.view.window
                       completionHandler:^(NSModalResponse panelResult) {
-                        NSURL *URL =
-                            (panelResult == NSModalResponseOK) ? savePanel.URL : nil;
+                        NSURL *URL = (panelResult == NSModalResponseOK) ? savePanel.URL : nil;
                         result(URL.path);
                       }];
 
@@ -130,18 +130,16 @@ id GetNonNullValueForKey( NSDictionary<NSString *, id>* dict, NSString* key) {
     NSOpenPanel *openPanel = [NSOpenPanel openPanel];
     BOOL choosingDirectory = [call.method isEqualToString:kGetDirectoryPathMethod];
     [self configureSavePanel:openPanel withArguments:arguments];
-    [self configureOpenPanel:openPanel
-               withArguments:arguments
-           choosingDirectory:choosingDirectory];
+    [self configureOpenPanel:openPanel withArguments:arguments choosingDirectory:choosingDirectory];
     [openPanel beginSheetModalForWindow:_registrar.view.window
                       completionHandler:^(NSModalResponse panelResult) {
                         NSArray<NSURL *> *URLs =
                             (panelResult == NSModalResponseOK) ? openPanel.URLs : nil;
-      if (choosingDirectory) {
-        result(URLs.firstObject.path);
-      } else {
-                        result([URLs valueForKey:@"path"]);
-      }
+                        if (choosingDirectory) {
+                          result(URLs.firstObject.path);
+                        } else {
+                          result([URLs valueForKey:@"path"]);
+                        }
                       }];
   } else {
     result(FlutterMethodNotImplemented);
