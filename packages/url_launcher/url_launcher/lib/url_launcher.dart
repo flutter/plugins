@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -44,6 +44,12 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// [enableDomStorage] is an Android only setting. If true, WebView enable
 /// DOM storage.
 /// [headers] is an Android only setting that adds headers to the WebView.
+/// When not using a WebView, the header information is passed to the browser,
+/// some Android browsers do not support the [Browser.EXTRA_HEADERS](https://developer.android.com/reference/android/provider/Browser#EXTRA_HEADERS)
+/// intent extra and the header information will be lost.
+/// [webOnlyWindowName] is an Web only setting . _blank opens the new url in new tab ,
+/// _self opens the new url in current tab.
+/// Default behaviour is to open the url in new tab.
 ///
 /// Note that if any of the above are set to true but the URL is not a web URL,
 /// this will throw a [PlatformException].
@@ -56,15 +62,15 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// is set to true and the universal link failed to launch.
 Future<bool> launch(
   String urlString, {
-  bool forceSafariVC,
-  bool forceWebView,
-  bool enableJavaScript,
-  bool enableDomStorage,
-  bool universalLinksOnly,
-  Map<String, String> headers,
-  Brightness statusBarBrightness,
+  bool? forceSafariVC,
+  bool forceWebView = false,
+  bool enableJavaScript = false,
+  bool enableDomStorage = false,
+  bool universalLinksOnly = false,
+  Map<String, String> headers = const <String, String>{},
+  Brightness? statusBarBrightness,
+  String? webOnlyWindowName,
 }) async {
-  assert(urlString != null);
   final Uri url = Uri.parse(urlString.trimLeft());
   final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
   if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
@@ -77,37 +83,50 @@ Future<bool> launch(
   /// [true] so that ui is automatically computed if [statusBarBrightness] is set.
   bool previousAutomaticSystemUiAdjustment = true;
   if (statusBarBrightness != null &&
-      defaultTargetPlatform == TargetPlatform.iOS) {
-    previousAutomaticSystemUiAdjustment =
-        WidgetsBinding.instance.renderView.automaticSystemUiAdjustment;
-    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment = false;
+      defaultTargetPlatform == TargetPlatform.iOS &&
+      _ambiguate(WidgetsBinding.instance) != null) {
+    previousAutomaticSystemUiAdjustment = _ambiguate(WidgetsBinding.instance)!
+        .renderView
+        .automaticSystemUiAdjustment;
+    _ambiguate(WidgetsBinding.instance)!
+        .renderView
+        .automaticSystemUiAdjustment = false;
     SystemChrome.setSystemUIOverlayStyle(statusBarBrightness == Brightness.light
         ? SystemUiOverlayStyle.dark
         : SystemUiOverlayStyle.light);
   }
+
   final bool result = await UrlLauncherPlatform.instance.launch(
     urlString,
     useSafariVC: forceSafariVC ?? isWebURL,
-    useWebView: forceWebView ?? false,
-    enableJavaScript: enableJavaScript ?? false,
-    enableDomStorage: enableDomStorage ?? false,
-    universalLinksOnly: universalLinksOnly ?? false,
-    headers: headers ?? <String, String>{},
+    useWebView: forceWebView,
+    enableJavaScript: enableJavaScript,
+    enableDomStorage: enableDomStorage,
+    universalLinksOnly: universalLinksOnly,
+    headers: headers,
+    webOnlyWindowName: webOnlyWindowName,
   );
-  assert(previousAutomaticSystemUiAdjustment != null);
-  if (statusBarBrightness != null) {
-    WidgetsBinding.instance.renderView.automaticSystemUiAdjustment =
-        previousAutomaticSystemUiAdjustment;
+
+  if (statusBarBrightness != null &&
+      _ambiguate(WidgetsBinding.instance) != null) {
+    _ambiguate(WidgetsBinding.instance)!
+        .renderView
+        .automaticSystemUiAdjustment = previousAutomaticSystemUiAdjustment;
   }
+
   return result;
 }
 
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
+///
+/// On Android (from API 30), [canLaunch] will return `false` when the required
+/// visibility configuration is not provided in the AndroidManifest.xml file.
+/// For more information see the
+/// [Package visibility filtering on Android](https://developer.android.com/training/basics/intents/package-visibility)
+/// article in the Android documentation or the url_launcher example app's
+/// [AndroidManifest.xml's queries element](https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/example/android/app/src/main/AndroidManifest.xml).
 Future<bool> canLaunch(String urlString) async {
-  if (urlString == null) {
-    return false;
-  }
   return await UrlLauncherPlatform.instance.canLaunch(urlString);
 }
 
@@ -125,3 +144,10 @@ Future<bool> canLaunch(String urlString) async {
 Future<void> closeWebView() async {
   return await UrlLauncherPlatform.instance.closeWebView();
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

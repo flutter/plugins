@@ -1,6 +1,6 @@
-// Copyright 2017, the Flutter project authors.  Please see the AUTHORS file
-// for details. All rights reserved. Use of this source code is governed by a
-// BSD-style license that can be found in the LICENSE file.
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:ui' show hashValues;
@@ -22,13 +22,13 @@ class GoogleSignInAuthentication {
   final GoogleSignInTokenData _data;
 
   /// An OpenID Connect ID token that identifies the user.
-  String get idToken => _data.idToken;
+  String? get idToken => _data.idToken;
 
   /// The OAuth2 access token to access Google services.
-  String get accessToken => _data.accessToken;
+  String? get accessToken => _data.accessToken;
 
   /// Server auth code used to access Google Login
-  String get serverAuthCode => _data.serverAuthCode;
+  String? get serverAuthCode => _data.serverAuthCode;
 
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
@@ -57,7 +57,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   static const String kUserRecoverableAuthError = 'user_recoverable_auth';
 
   @override
-  final String displayName;
+  final String? displayName;
 
   @override
   final String email;
@@ -66,9 +66,9 @@ class GoogleSignInAccount implements GoogleIdentity {
   final String id;
 
   @override
-  final String photoUrl;
+  final String? photoUrl;
 
-  final String _idToken;
+  final String? _idToken;
   final GoogleSignIn _googleSignIn;
 
   /// Retrieve [GoogleSignInAuthentication] for this account.
@@ -105,9 +105,11 @@ class GoogleSignInAccount implements GoogleIdentity {
   ///
   /// See also https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization.
   Future<Map<String, String>> get authHeaders async {
-    final String token = (await authentication).accessToken;
+    final String? token = (await authentication).accessToken;
     return <String, String>{
       "Authorization": "Bearer $token",
+      // TODO(kevmoo): Use the correct value once it's available from authentication
+      // See https://github.com/flutter/flutter/issues/80905
       "X-Goog-AuthUser": "0",
     };
   }
@@ -117,7 +119,7 @@ class GoogleSignInAccount implements GoogleIdentity {
   /// If client runs into 401 errors using a token, it is expected to call
   /// this method and grab `authHeaders` once again.
   Future<void> clearAuthCache() async {
-    final String token = (await authentication).accessToken;
+    final String token = (await authentication).accessToken!;
     await GoogleSignInPlatform.instance.clearAuthCache(token: token);
   }
 
@@ -174,7 +176,7 @@ class GoogleSignIn {
   /// Factory for creating default sign in user experience.
   factory GoogleSignIn.standard({
     List<String> scopes = const <String>[],
-    String hostedDomain,
+    String? hostedDomain,
   }) {
     return GoogleSignIn(
         signInOption: SignInOption.standard,
@@ -212,22 +214,22 @@ class GoogleSignIn {
   final List<String> scopes;
 
   /// Domain to restrict sign-in to.
-  final String hostedDomain;
+  final String? hostedDomain;
 
   /// Client ID being used to connect to google sign-in. Only supported on web.
-  final String clientId;
+  final String? clientId;
 
-  StreamController<GoogleSignInAccount> _currentUserController =
-      StreamController<GoogleSignInAccount>.broadcast();
+  StreamController<GoogleSignInAccount?> _currentUserController =
+      StreamController<GoogleSignInAccount?>.broadcast();
 
   /// Subscribe to this stream to be notified when the current user changes.
-  Stream<GoogleSignInAccount> get onCurrentUserChanged =>
+  Stream<GoogleSignInAccount?> get onCurrentUserChanged =>
       _currentUserController.stream;
 
   // Future that completes when we've finished calling `init` on the native side
-  Future<void> _initialization;
+  Future<void>? _initialization;
 
-  Future<GoogleSignInAccount> _callMethod(Function method) async {
+  Future<GoogleSignInAccount?> _callMethod(Function method) async {
     await _ensureInitialized();
 
     final dynamic response = await method();
@@ -237,7 +239,7 @@ class GoogleSignIn {
         : null);
   }
 
-  GoogleSignInAccount _setCurrentUser(GoogleSignInAccount currentUser) {
+  GoogleSignInAccount? _setCurrentUser(GoogleSignInAccount? currentUser) {
     if (currentUser != _currentUser) {
       _currentUser = currentUser;
       _currentUserController.add(_currentUser);
@@ -258,7 +260,7 @@ class GoogleSignIn {
   }
 
   /// The most recently scheduled method call.
-  Future<void> _lastMethodCall;
+  Future<void>? _lastMethodCall;
 
   /// Returns a [Future] that completes with a success after [future], whether
   /// it completed with a value or an error.
@@ -279,15 +281,15 @@ class GoogleSignIn {
   /// The optional, named parameter [canSkipCall] lets the plugin know that the
   /// method call may be skipped, if there's already [_currentUser] information.
   /// This is used from the [signIn] and [signInSilently] methods.
-  Future<GoogleSignInAccount> _addMethodCall(
+  Future<GoogleSignInAccount?> _addMethodCall(
     Function method, {
     bool canSkipCall = false,
   }) async {
-    Future<GoogleSignInAccount> response;
+    Future<GoogleSignInAccount?> response;
     if (_lastMethodCall == null) {
       response = _callMethod(method);
     } else {
-      response = _lastMethodCall.then((_) {
+      response = _lastMethodCall!.then((_) {
         // If after the last completed call `currentUser` is not `null` and requested
         // method can be skipped (`canSkipCall`), re-use the same authenticated user
         // instead of making extra call to the native side.
@@ -303,8 +305,8 @@ class GoogleSignIn {
   }
 
   /// The currently signed in account, or null if the user is signed out.
-  GoogleSignInAccount get currentUser => _currentUser;
-  GoogleSignInAccount _currentUser;
+  GoogleSignInAccount? get currentUser => _currentUser;
+  GoogleSignInAccount? _currentUser;
 
   /// Attempts to sign in a previously authenticated user without interaction.
   ///
@@ -312,23 +314,26 @@ class GoogleSignIn {
   /// successful sign in or `null` if there is no previously authenticated user.
   /// Use [signIn] method to trigger interactive sign in process.
   ///
-  /// Authentication process is triggered only if there is no currently signed in
+  /// Authentication is triggered if there is no currently signed in
   /// user (that is when `currentUser == null`), otherwise this method returns
   /// a Future which resolves to the same user instance.
   ///
-  /// Re-authentication can be triggered only after [signOut] or [disconnect].
+  /// Re-authentication can be triggered after [signOut] or [disconnect]. It can
+  /// also be triggered by setting [reAuthenticate] to `true` if a new ID token
+  /// is required.
   ///
   /// When [suppressErrors] is set to `false` and an error occurred during sign in
   /// returned Future completes with [PlatformException] whose `code` can be
   /// one of [kSignInRequiredError] (when there is no authenticated user) ,
   /// [kNetworkError] (when a network error occurred) or [kSignInFailedError]
   /// (when an unknown error occurred).
-  Future<GoogleSignInAccount> signInSilently({
+  Future<GoogleSignInAccount?> signInSilently({
     bool suppressErrors = true,
+    bool reAuthenticate = false,
   }) async {
     try {
       return await _addMethodCall(GoogleSignInPlatform.instance.signInSilently,
-          canSkipCall: true);
+          canSkipCall: !reAuthenticate);
     } catch (_) {
       if (suppressErrors) {
         return null;
@@ -354,8 +359,8 @@ class GoogleSignIn {
   /// a Future which resolves to the same user instance.
   ///
   /// Re-authentication can be triggered only after [signOut] or [disconnect].
-  Future<GoogleSignInAccount> signIn() {
-    final Future<GoogleSignInAccount> result =
+  Future<GoogleSignInAccount?> signIn() {
+    final Future<GoogleSignInAccount?> result =
         _addMethodCall(GoogleSignInPlatform.instance.signIn, canSkipCall: true);
     bool isCanceled(dynamic error) =>
         error is PlatformException && error.code == kSignInCanceledError;
@@ -363,12 +368,12 @@ class GoogleSignIn {
   }
 
   /// Marks current user as being in the signed out state.
-  Future<GoogleSignInAccount> signOut() =>
+  Future<GoogleSignInAccount?> signOut() =>
       _addMethodCall(GoogleSignInPlatform.instance.signOut);
 
   /// Disconnects the current user from the app and revokes previous
   /// authentication.
-  Future<GoogleSignInAccount> disconnect() =>
+  Future<GoogleSignInAccount?> disconnect() =>
       _addMethodCall(GoogleSignInPlatform.instance.disconnect);
 
   /// Requests the user grants additional Oauth [scopes].

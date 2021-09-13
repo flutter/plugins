@@ -1,12 +1,12 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:meta/meta.dart' show required;
 
+import 'link.dart';
 import 'url_launcher_platform_interface.dart';
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
@@ -14,11 +14,14 @@ const MethodChannel _channel = MethodChannel('plugins.flutter.io/url_launcher');
 /// An implementation of [UrlLauncherPlatform] that uses method channels.
 class MethodChannelUrlLauncher extends UrlLauncherPlatform {
   @override
+  final LinkDelegate? linkDelegate = null;
+
+  @override
   Future<bool> canLaunch(String url) {
     return _channel.invokeMethod<bool>(
       'canLaunch',
       <String, Object>{'url': url},
-    );
+    ).then((value) => value ?? false);
   }
 
   @override
@@ -29,12 +32,13 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
   @override
   Future<bool> launch(
     String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
   }) {
     return _channel.invokeMethod<bool>(
       'launch',
@@ -47,6 +51,6 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
         'universalLinksOnly': universalLinksOnly,
         'headers': headers,
       },
-    );
+    ).then((value) => value ?? false);
   }
 }

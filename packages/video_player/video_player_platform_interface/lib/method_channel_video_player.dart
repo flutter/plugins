@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -26,7 +26,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
-  Future<int> create(DataSource dataSource) async {
+  Future<int?> create(DataSource dataSource) async {
     CreateMessage message = CreateMessage();
 
     switch (dataSource.sourceType) {
@@ -37,8 +37,12 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       case DataSourceType.network:
         message.uri = dataSource.uri;
         message.formatHint = _videoFormatStringMap[dataSource.formatHint];
+        message.httpHeaders = dataSource.httpHeaders;
         break;
       case DataSourceType.file:
+        message.uri = dataSource.uri;
+        break;
+      case DataSourceType.contentUri:
         message.uri = dataSource.uri;
         break;
     }
@@ -72,6 +76,15 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   }
 
   @override
+  Future<void> setPlaybackSpeed(int textureId, double speed) {
+    assert(speed > 0);
+
+    return _api.setPlaybackSpeed(PlaybackSpeedMessage()
+      ..textureId = textureId
+      ..speed = speed);
+  }
+
+  @override
   Future<void> seekTo(int textureId, Duration position) {
     return _api.seekTo(PositionMessage()
       ..textureId = textureId
@@ -82,7 +95,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
   Future<Duration> getPosition(int textureId) async {
     PositionMessage response =
         await _api.position(TextureMessage()..textureId = textureId);
-    return Duration(milliseconds: response.position);
+    return Duration(milliseconds: response.position!);
   }
 
   @override

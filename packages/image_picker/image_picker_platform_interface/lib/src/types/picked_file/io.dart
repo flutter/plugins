@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -29,7 +33,7 @@ class PickedFile extends PickedFileBase {
   }
 
   @override
-  Stream<Uint8List> openRead([int start, int end]) {
+  Stream<Uint8List> openRead([int? start, int? end]) {
     return _file
         .openRead(start ?? 0, end)
         .map((chunk) => Uint8List.fromList(chunk));

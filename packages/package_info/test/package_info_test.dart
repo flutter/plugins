@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,7 +11,7 @@ void main() {
 
   const MethodChannel channel =
       MethodChannel('plugins.flutter.io/package_info');
-  List<MethodCall> log;
+  late List<MethodCall> log;
 
   channel.setMockMethodCallHandler((MethodCall methodCall) async {
     log.add(methodCall);

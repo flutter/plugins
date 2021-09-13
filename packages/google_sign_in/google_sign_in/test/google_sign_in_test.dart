@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -41,8 +41,8 @@ void main() {
     };
 
     final List<MethodCall> log = <MethodCall>[];
-    Map<String, dynamic> responses;
-    GoogleSignIn googleSignIn;
+    late Map<String, dynamic> responses;
+    late GoogleSignIn googleSignIn;
 
     setUp(() {
       responses = Map<String, dynamic>.from(kDefaultResponses);
@@ -64,11 +64,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -80,10 +76,25 @@ void main() {
       expect(
         log,
         <Matcher>[
+          _isSignInMethodCall(),
+          isMethodCall('signIn', arguments: null),
+        ],
+      );
+    });
+
+    test('signIn prioritize clientId parameter when available', () async {
+      final fakeClientId = 'fakeClientId';
+      googleSignIn = GoogleSignIn(clientId: fakeClientId);
+      await googleSignIn.signIn();
+      expect(googleSignIn.currentUser, isNotNull);
+      expect(
+        log,
+        <Matcher>[
           isMethodCall('init', arguments: <String, dynamic>{
             'signInOption': 'SignInOption.standard',
             'scopes': <String>[],
             'hostedDomain': null,
+            'clientId': fakeClientId,
           }),
           isMethodCall('signIn', arguments: null),
         ],
@@ -94,11 +105,7 @@ void main() {
       await googleSignIn.signOut();
       expect(googleSignIn.currentUser, isNull);
       expect(log, <Matcher>[
-        isMethodCall('init', arguments: <String, dynamic>{
-          'signInOption': 'SignInOption.standard',
-          'scopes': <String>[],
-          'hostedDomain': null,
-        }),
+        _isSignInMethodCall(),
         isMethodCall('signOut', arguments: null),
       ]);
     });
@@ -109,11 +116,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('disconnect', arguments: null),
         ],
       );
@@ -126,11 +129,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('disconnect', arguments: null),
         ],
       );
@@ -140,11 +139,7 @@ void main() {
       final bool result = await googleSignIn.isSignedIn();
       expect(result, isTrue);
       expect(log, <Matcher>[
-        isMethodCall('init', arguments: <String, dynamic>{
-          'signInOption': 'SignInOption.standard',
-          'scopes': <String>[],
-          'hostedDomain': null,
-        }),
+        _isSignInMethodCall(),
         isMethodCall('isSignedIn', arguments: null),
       ]);
     });
@@ -152,18 +147,14 @@ void main() {
     test('signIn works even if a previous call throws error in other zone',
         () async {
       responses['signInSilently'] = Exception('Not a user');
-      await runZoned(() async {
+      await runZonedGuarded(() async {
         expect(await googleSignIn.signInSilently(), isNull);
-      }, onError: (dynamic e, dynamic st) {});
+      }, (Object e, StackTrace st) {});
       expect(await googleSignIn.signIn(), isNotNull);
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
           isMethodCall('signIn', arguments: null),
         ],
@@ -171,27 +162,23 @@ void main() {
     });
 
     test('concurrent calls of the same method trigger sign in once', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signInSilently(),
       ];
       expect(futures.first, isNot(futures.last),
           reason: 'Must return new Future');
-      final List<GoogleSignInAccount> users = await Future.wait(futures);
+      final List<GoogleSignInAccount?> users = await Future.wait(futures);
       expect(googleSignIn.currentUser, isNotNull);
-      expect(users, <GoogleSignInAccount>[
+      expect(users, <GoogleSignInAccount?>[
         googleSignIn.currentUser,
         googleSignIn.currentUser
       ]);
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -204,11 +191,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
           isMethodCall('signIn', arguments: null),
         ],
@@ -216,21 +199,17 @@ void main() {
     });
 
     test('concurrent calls of different signIn methods', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signIn(),
       ];
       expect(futures.first, isNot(futures.last));
-      final List<GoogleSignInAccount> users = await Future.wait(futures);
+      final List<GoogleSignInAccount?> users = await Future.wait(futures);
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -246,8 +225,8 @@ void main() {
     });
 
     test('signOut/disconnect methods always trigger native calls', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signOut(),
         googleSignIn.signOut(),
         googleSignIn.disconnect(),
@@ -257,11 +236,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signOut', arguments: null),
           isMethodCall('signOut', arguments: null),
           isMethodCall('disconnect', arguments: null),
@@ -271,8 +246,8 @@ void main() {
     });
 
     test('queue of many concurrent calls', () async {
-      final List<Future<GoogleSignInAccount>> futures =
-          <Future<GoogleSignInAccount>>[
+      final List<Future<GoogleSignInAccount?>> futures =
+          <Future<GoogleSignInAccount?>>[
         googleSignIn.signInSilently(),
         googleSignIn.signOut(),
         googleSignIn.signIn(),
@@ -282,11 +257,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
           isMethodCall('signOut', arguments: null),
           isMethodCall('signIn', arguments: null),
@@ -308,6 +279,22 @@ void main() {
       });
       expect(googleSignIn.signInSilently(suppressErrors: false),
           throwsA(isInstanceOf<PlatformException>()));
+    });
+
+    test('signInSilently allows re-authentication to be requested', () async {
+      await googleSignIn.signInSilently();
+      expect(googleSignIn.currentUser, isNotNull);
+
+      await googleSignIn.signInSilently(reAuthenticate: true);
+
+      expect(
+        log,
+        <Matcher>[
+          _isSignInMethodCall(),
+          isMethodCall('signInSilently', arguments: null),
+          isMethodCall('signInSilently', arguments: null),
+        ],
+      );
     });
 
     test('can sign in after init failed before', () async {
@@ -333,11 +320,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -352,11 +335,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.games',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(signInOption: 'SignInOption.games'),
           isMethodCall('signInSilently', arguments: null),
         ],
       );
@@ -366,7 +345,7 @@ void main() {
       await googleSignIn.signIn();
       log.clear();
 
-      final GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAccount user = googleSignIn.currentUser!;
       final GoogleSignInAuthentication auth = await user.authentication;
 
       expect(auth.accessToken, '456');
@@ -391,11 +370,7 @@ void main() {
       expect(
         log,
         <Matcher>[
-          isMethodCall('init', arguments: <String, dynamic>{
-            'signInOption': 'SignInOption.standard',
-            'scopes': <String>[],
-            'hostedDomain': null,
-          }),
+          _isSignInMethodCall(),
           isMethodCall('signIn', arguments: null),
           isMethodCall('requestScopes', arguments: <String, dynamic>{
             'scopes': ['testScope'],
@@ -413,11 +388,11 @@ void main() {
       photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
     );
 
-    GoogleSignIn googleSignIn;
+    late GoogleSignIn googleSignIn;
 
     setUp(() {
       final MethodChannelGoogleSignIn platformInstance =
-          GoogleSignInPlatform.instance;
+          GoogleSignInPlatform.instance as MethodChannelGoogleSignIn;
       platformInstance.channel.setMockMethodCallHandler(
           (FakeSignInBackend()..user = kUserData).handleMethodCall);
       googleSignIn = GoogleSignIn();
@@ -430,7 +405,7 @@ void main() {
     test('can sign in and sign out', () async {
       await googleSignIn.signIn();
 
-      final GoogleSignInAccount user = googleSignIn.currentUser;
+      final GoogleSignInAccount user = googleSignIn.currentUser!;
 
       expect(user.displayName, equals(kUserData.displayName));
       expect(user.email, equals(kUserData.email));
@@ -445,5 +420,14 @@ void main() {
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
     });
+  });
+}
+
+Matcher _isSignInMethodCall({String signInOption = 'SignInOption.standard'}) {
+  return isMethodCall('init', arguments: <String, dynamic>{
+    'signInOption': signInOption,
+    'scopes': <String>[],
+    'hostedDomain': null,
+    'clientId': null,
   });
 }

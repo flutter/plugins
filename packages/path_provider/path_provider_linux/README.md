@@ -1,15 +1,11 @@
-# path_provider_linux
+# path\_provider\_linux
 
 The linux implementation of [`path_provider`].
 
-**Please set your constraint to `path_provider: '>=0.0.y+x <2.0.0'`**
-
-## Backward compatible 1.0.0 version is coming
-The `path_provider` plugin has reached a stable API, we guarantee that version `1.0.0` will be backward compatible with `0.0.y+z`.
-Please use `path_provider: '>=0.0.y+x <2.0.0'` as your dependency constraint to allow a smoother ecosystem migration.
-For more details see: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-
 ## Usage
 
-This package is already included as part of the `path_provider` package dependency, and will
-be included when using `path_provider` as normal. You will need to use version 1.6.10 or newer.
+This package is [endorsed][2], which means you can simply use `path_provider`
+normally. This package will be automatically included in your app when you do.
+
+[1]: https://pub.dev/packages/path_provider
+[2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin

@@ -1,4 +1,4 @@
-// Copyright 2019 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,7 +7,6 @@ package io.flutter.plugins.imagepicker;
 import android.app.Activity;
 import android.app.Application;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
@@ -92,6 +91,7 @@ public class ImagePickerPlugin
   }
 
   static final String METHOD_CALL_IMAGE = "pickImage";
+  static final String METHOD_CALL_MULTI_IMAGE = "pickMultiImage";
   static final String METHOD_CALL_VIDEO = "pickVideo";
   private static final String METHOD_CALL_RETRIEVE = "retrieve";
   private static final int CAMERA_DEVICE_FRONT = 1;
@@ -111,7 +111,8 @@ public class ImagePickerPlugin
   private Lifecycle lifecycle;
   private LifeCycleObserver observer;
 
-  public static void registerWith(PluginRegistry.Registrar registrar) {
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
     if (registrar.activity() == null) {
       // If a background flutter view tries to register the plugin, there will be no activity from the registrar,
       // we stop the registering process immediately because the ImagePicker requires an activity.
@@ -215,11 +216,11 @@ public class ImagePickerPlugin
     application = null;
   }
 
-  private final ImagePickerDelegate constructDelegate(final Activity setupActivity) {
+  @VisibleForTesting
+  final ImagePickerDelegate constructDelegate(final Activity setupActivity) {
     final ImagePickerCache cache = new ImagePickerCache(setupActivity);
 
-    final File externalFilesDirectory =
-        setupActivity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+    final File externalFilesDirectory = setupActivity.getCacheDir();
     final ExifDataCopier exifDataCopier = new ExifDataCopier();
     final ImageResizer imageResizer = new ImageResizer(externalFilesDirectory, exifDataCopier);
     return new ImagePickerDelegate(setupActivity, externalFilesDirectory, imageResizer, cache);
@@ -301,6 +302,9 @@ public class ImagePickerPlugin
           default:
             throw new IllegalArgumentException("Invalid image source: " + imageSource);
         }
+        break;
+      case METHOD_CALL_MULTI_IMAGE:
+        delegate.chooseMultiImageFromGallery(call, result);
         break;
       case METHOD_CALL_VIDEO:
         imageSource = call.argument("source");

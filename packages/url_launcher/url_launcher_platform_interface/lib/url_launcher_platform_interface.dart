@@ -1,11 +1,11 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 
-import 'package:meta/meta.dart' show required;
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:url_launcher_platform_interface/link.dart';
 
 import 'method_channel_url_launcher.dart';
 
@@ -38,6 +38,9 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
     _instance = instance;
   }
 
+  /// The delegate used by the Link widget to build itself.
+  LinkDelegate? get linkDelegate;
+
   /// Returns `true` if this platform is able to launch [url].
   Future<bool> canLaunch(String url) {
     throw UnimplementedError('canLaunch() has not been implemented.');
@@ -49,12 +52,13 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
   /// in `package:url_launcher/url_launcher.dart`.
   Future<bool> launch(
     String url, {
-    @required bool useSafariVC,
-    @required bool useWebView,
-    @required bool enableJavaScript,
-    @required bool enableDomStorage,
-    @required bool universalLinksOnly,
-    @required Map<String, String> headers,
+    required bool useSafariVC,
+    required bool useWebView,
+    required bool enableJavaScript,
+    required bool enableDomStorage,
+    required bool universalLinksOnly,
+    required Map<String, String> headers,
+    String? webOnlyWindowName,
   }) {
     throw UnimplementedError('launch() has not been implemented.');
   }

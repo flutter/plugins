@@ -1,12 +1,12 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 // ignore_for_file: public_member_api_docs
 
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/services.dart' show rootBundle;
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 import 'page.dart';
 
@@ -56,7 +56,7 @@ class MapUiBodyState extends State<MapUiBody> {
   bool _myLocationEnabled = true;
   bool _myTrafficEnabled = false;
   bool _myLocationButtonEnabled = true;
-  GoogleMapController _controller;
+  late GoogleMapController _controller;
   bool _nightMode = false;
 
   @override
@@ -70,7 +70,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _compassToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_compassEnabled ? 'disable' : 'enable'} compass'),
       onPressed: () {
         setState(() {
@@ -81,7 +81,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _mapToolbarToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_mapToolbarEnabled ? 'disable' : 'enable'} map toolbar'),
       onPressed: () {
         setState(() {
@@ -92,7 +92,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _latLngBoundsToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(
         _cameraTargetBounds.bounds == null
             ? 'bound camera target'
@@ -109,7 +109,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomBoundsToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(_minMaxZoomPreference.minZoom == null
           ? 'bound zoom'
           : 'release zoom'),
@@ -126,7 +126,7 @@ class MapUiBodyState extends State<MapUiBody> {
   Widget _mapTypeCycler() {
     final MapType nextType =
         MapType.values[(_mapType.index + 1) % MapType.values.length];
-    return FlatButton(
+    return TextButton(
       child: Text('change map type to $nextType'),
       onPressed: () {
         setState(() {
@@ -137,7 +137,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _rotateToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_rotateGesturesEnabled ? 'disable' : 'enable'} rotate'),
       onPressed: () {
         setState(() {
@@ -148,7 +148,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _scrollToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_scrollGesturesEnabled ? 'disable' : 'enable'} scroll'),
       onPressed: () {
         setState(() {
@@ -159,7 +159,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _tiltToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_tiltGesturesEnabled ? 'disable' : 'enable'} tilt'),
       onPressed: () {
         setState(() {
@@ -170,7 +170,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_zoomGesturesEnabled ? 'disable' : 'enable'} zoom'),
       onPressed: () {
         setState(() {
@@ -181,7 +181,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _zoomControlsToggler() {
-    return FlatButton(
+    return TextButton(
       child:
           Text('${_zoomControlsEnabled ? 'disable' : 'enable'} zoom controls'),
       onPressed: () {
@@ -193,7 +193,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _indoorViewToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_indoorViewEnabled ? 'disable' : 'enable'} indoor'),
       onPressed: () {
         setState(() {
@@ -204,9 +204,9 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myLocationToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(
-          '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
+          '${_myLocationEnabled ? 'disable' : 'enable'} my location marker'),
       onPressed: () {
         setState(() {
           _myLocationEnabled = !_myLocationEnabled;
@@ -216,7 +216,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myLocationButtonToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text(
           '${_myLocationButtonEnabled ? 'disable' : 'enable'} my location button'),
       onPressed: () {
@@ -228,7 +228,7 @@ class MapUiBodyState extends State<MapUiBody> {
   }
 
   Widget _myTrafficToggler() {
-    return FlatButton(
+    return TextButton(
       child: Text('${_myTrafficEnabled ? 'disable' : 'enable'} my traffic'),
       onPressed: () {
         setState(() {
@@ -249,11 +249,10 @@ class MapUiBodyState extends State<MapUiBody> {
     });
   }
 
+  // Should only be called if _isMapCreated is true.
   Widget _nightModeToggler() {
-    if (!_isMapCreated) {
-      return null;
-    }
-    return FlatButton(
+    assert(_isMapCreated);
+    return TextButton(
       child: Text('${_nightMode ? 'disable' : 'enable'} night mode'),
       onPressed: () {
         if (_nightMode) {

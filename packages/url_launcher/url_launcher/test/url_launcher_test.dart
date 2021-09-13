@@ -1,16 +1,17 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:async';
 import 'dart:ui';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
 import 'package:flutter/foundation.dart';
-import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 import 'package:flutter/services.dart' show PlatformException;
+
+import 'mock_url_launcher_platform.dart';
 
 void main() {
   final MockUrlLauncher mock = MockUrlLauncher();
@@ -18,12 +19,14 @@ void main() {
 
   test('closeWebView default behavior', () async {
     await closeWebView();
-    verify(mock.closeWebView());
+    expect(mock.closeWebViewCalled, isTrue);
   });
 
   group('canLaunch', () {
     test('returns true', () async {
-      when(mock.canLaunch('foo')).thenAnswer((_) => Future<bool>.value(true));
+      mock
+        ..setCanLaunchExpectations('foo')
+        ..setResponse(true);
 
       final bool result = await canLaunch('foo');
 
@@ -31,7 +34,9 @@ void main() {
     });
 
     test('returns false', () async {
-      when(mock.canLaunch('foo')).thenAnswer((_) => Future<bool>.value(false));
+      mock
+        ..setCanLaunchExpectations('foo')
+        ..setResponse(false);
 
       final bool result = await canLaunch('foo');
 
@@ -39,151 +44,146 @@ void main() {
     });
   });
   group('launch', () {
-    test('requires a non-null urlString', () {
-      expect(() => launch(null), throwsAssertionError);
-    });
-
     test('default behavior', () async {
-      await launch('http://flutter.dev/');
-      expect(
-        verify(mock.launch(
-          captureAny,
-          useSafariVC: captureAnyNamed('useSafariVC'),
-          useWebView: captureAnyNamed('useWebView'),
-          enableJavaScript: captureAnyNamed('enableJavaScript'),
-          enableDomStorage: captureAnyNamed('enableDomStorage'),
-          universalLinksOnly: captureAnyNamed('universalLinksOnly'),
-          headers: captureAnyNamed('headers'),
-        )).captured,
-        <dynamic>[
-          'http://flutter.dev/',
-          true,
-          false,
-          false,
-          false,
-          false,
-          <String, String>{},
-        ],
-      );
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(await launch('http://flutter.dev/'), isTrue);
     });
 
     test('with headers', () async {
-      await launch(
-        'http://flutter.dev/',
-        headers: <String, String>{'key': 'value'},
-      );
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{'key': 'value'},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
       expect(
-        verify(mock.launch(
-          any,
-          useSafariVC: anyNamed('useSafariVC'),
-          useWebView: anyNamed('useWebView'),
-          enableJavaScript: anyNamed('enableJavaScript'),
-          enableDomStorage: anyNamed('enableDomStorage'),
-          universalLinksOnly: anyNamed('universalLinksOnly'),
-          headers: captureAnyNamed('headers'),
-        )).captured.single,
-        <String, String>{'key': 'value'},
-      );
+          await launch(
+            'http://flutter.dev/',
+            headers: <String, String>{'key': 'value'},
+          ),
+          isTrue);
     });
 
     test('force SafariVC', () async {
-      await launch('http://flutter.dev/', forceSafariVC: true);
-      expect(
-        verify(mock.launch(
-          any,
-          useSafariVC: captureAnyNamed('useSafariVC'),
-          useWebView: anyNamed('useWebView'),
-          enableJavaScript: anyNamed('enableJavaScript'),
-          enableDomStorage: anyNamed('enableDomStorage'),
-          universalLinksOnly: anyNamed('universalLinksOnly'),
-          headers: anyNamed('headers'),
-        )).captured.single,
-        true,
-      );
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(await launch('http://flutter.dev/', forceSafariVC: true), isTrue);
     });
 
     test('universal links only', () async {
-      await launch('http://flutter.dev/',
-          forceSafariVC: false, universalLinksOnly: true);
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: false,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: true,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
       expect(
-        verify(mock.launch(
-          any,
-          useSafariVC: captureAnyNamed('useSafariVC'),
-          useWebView: anyNamed('useWebView'),
-          enableJavaScript: anyNamed('enableJavaScript'),
-          enableDomStorage: anyNamed('enableDomStorage'),
-          universalLinksOnly: captureAnyNamed('universalLinksOnly'),
-          headers: anyNamed('headers'),
-        )).captured,
-        <bool>[false, true],
-      );
+          await launch('http://flutter.dev/',
+              forceSafariVC: false, universalLinksOnly: true),
+          isTrue);
     });
 
     test('force WebView', () async {
-      await launch('http://flutter.dev/', forceWebView: true);
-      expect(
-        verify(mock.launch(
-          any,
-          useSafariVC: anyNamed('useSafariVC'),
-          useWebView: captureAnyNamed('useWebView'),
-          enableJavaScript: anyNamed('enableJavaScript'),
-          enableDomStorage: anyNamed('enableDomStorage'),
-          universalLinksOnly: anyNamed('universalLinksOnly'),
-          headers: anyNamed('headers'),
-        )).captured.single,
-        true,
-      );
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: true,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(await launch('http://flutter.dev/', forceWebView: true), isTrue);
     });
 
     test('force WebView enable javascript', () async {
-      await launch('http://flutter.dev/',
-          forceWebView: true, enableJavaScript: true);
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: true,
+          enableJavaScript: true,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
       expect(
-        verify(mock.launch(
-          any,
-          useSafariVC: anyNamed('useSafariVC'),
-          useWebView: captureAnyNamed('useWebView'),
-          enableJavaScript: captureAnyNamed('enableJavaScript'),
-          enableDomStorage: anyNamed('enableDomStorage'),
-          universalLinksOnly: anyNamed('universalLinksOnly'),
-          headers: anyNamed('headers'),
-        )).captured,
-        <bool>[true, true],
-      );
+          await launch('http://flutter.dev/',
+              forceWebView: true, enableJavaScript: true),
+          isTrue);
     });
 
     test('force WebView enable DOM storage', () async {
-      await launch('http://flutter.dev/',
-          forceWebView: true, enableDomStorage: true);
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: true,
+          enableJavaScript: false,
+          enableDomStorage: true,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
       expect(
-        verify(mock.launch(
-          any,
-          useSafariVC: anyNamed('useSafariVC'),
-          useWebView: captureAnyNamed('useWebView'),
-          enableJavaScript: anyNamed('enableJavaScript'),
-          enableDomStorage: captureAnyNamed('enableDomStorage'),
-          universalLinksOnly: anyNamed('universalLinksOnly'),
-          headers: anyNamed('headers'),
-        )).captured,
-        <bool>[true, true],
-      );
+          await launch('http://flutter.dev/',
+              forceWebView: true, enableDomStorage: true),
+          isTrue);
     });
 
     test('force SafariVC to false', () async {
-      await launch('http://flutter.dev/', forceSafariVC: false);
-      expect(
-        // ignore: missing_required_param
-        verify(mock.launch(
-          any,
-          useSafariVC: captureAnyNamed('useSafariVC'),
-          useWebView: anyNamed('useWebView'),
-          enableJavaScript: anyNamed('enableJavaScript'),
-          enableDomStorage: anyNamed('enableDomStorage'),
-          universalLinksOnly: anyNamed('universalLinksOnly'),
-          headers: anyNamed('headers'),
-        )).captured.single,
-        false,
-      );
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: false,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(await launch('http://flutter.dev/', forceSafariVC: false), isTrue);
     });
 
     test('cannot launch a non-web in webview', () async {
@@ -191,9 +191,56 @@ void main() {
           throwsA(isA<PlatformException>()));
     });
 
+    test('send e-mail', () async {
+      mock
+        ..setLaunchExpectations(
+          url: 'mailto:gmail-noreply@google.com?subject=Hello',
+          useSafariVC: false,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(await launch('mailto:gmail-noreply@google.com?subject=Hello'),
+          isTrue);
+    });
+
+    test('cannot send e-mail with forceSafariVC: true', () async {
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceSafariVC: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('cannot send e-mail with forceWebView: true', () async {
+      expect(
+          () async => await launch(
+              'mailto:gmail-noreply@google.com?subject=Hello',
+              forceWebView: true),
+          throwsA(isA<PlatformException>()));
+    });
+
     test('controls system UI when changing statusBarBrightness', () async {
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized();
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+              as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
       final Future<bool> launchResult =
@@ -207,8 +254,22 @@ void main() {
     });
 
     test('sets automaticSystemUiAdjustment to not be null', () async {
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+
       final TestWidgetsFlutterBinding binding =
-          TestWidgetsFlutterBinding.ensureInitialized();
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+              as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
       final Future<bool> launchResult =
@@ -223,6 +284,10 @@ void main() {
   });
 }
 
-class MockUrlLauncher extends Mock
-    with MockPlatformInterfaceMixin
-    implements UrlLauncherPlatform {}
+/// This removes the type information from a value so that it can be cast
+/// to another type even if that cast is redundant.
+///
+/// We use this so that APIs whose type have become more descriptive can still
+/// be used on the stable branch where they require a cast.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+Object? _anonymize<T>(T? value) => value;

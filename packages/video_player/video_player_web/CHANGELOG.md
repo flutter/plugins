@@ -1,3 +1,39 @@
+## 2.0.4
+
+* Adopt `video_player_platform_interface` 4.2 and opt out of `contentUri` data source.
+  
+## 2.0.3
+
+* Add `implements` to pubspec.
+
+## 2.0.2
+
+* Updated installation instructions in README.
+
+## 2.0.1
+
+* Fix videos not playing in Safari/Chrome on iOS by setting autoplay to false
+* Change sizing code of `Video` widget's `HtmlElementView` so it works well when slotted.
+* Move tests to `example` directory, so they run as integration_tests with `flutter drive`.
+
+## 2.0.0
+
+* Migrate to null safety.
+* Calling `setMixWithOthers()` now is silently ignored instead of throwing an exception.
+* Fixed an issue where `isBuffering` was not updating on Web.
+
+## 0.1.4+2
+
+* Update Flutter SDK constraint.
+
+## 0.1.4+1
+
+* Substitute `undefined_prefixed_name: ignore` analyzer setting by a `dart:ui` shim with conditional exports. [Issue](https://github.com/flutter/flutter/issues/69309).
+
+## 0.1.4
+
+* Added option to set the video playback speed on the video controller.
+
 ## 0.1.3+2
 
 * Allow users to set the 'muted' attribute on video elements by setting their volume to 0.

@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,10 @@ import 'dart:io' show Platform;
 
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:meta/meta.dart';
-
 import 'package:shared_preferences_linux/shared_preferences_linux.dart';
-import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 import 'package:shared_preferences_platform_interface/method_channel_shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
+import 'package:shared_preferences_windows/shared_preferences_windows.dart';
 
 /// Wraps NSUserDefaults (on iOS) and SharedPreferences (on Android), providing
 /// a persistent store for simple data.
@@ -20,21 +20,23 @@ class SharedPreferences {
   SharedPreferences._(this._preferenceCache);
 
   static const String _prefix = 'flutter.';
-  static Completer<SharedPreferences> _completer;
+  static Completer<SharedPreferences>? _completer;
   static bool _manualDartRegistrationNeeded = true;
 
   static SharedPreferencesStorePlatform get _store {
-    // This is to manually endorse the Linux implementation until automatic
-    // registration of dart plugins is implemented. For details see
-    // https://github.com/flutter/flutter/issues/52267.
+    // TODO(egarciad): Remove once auto registration lands on Flutter stable.
+    // https://github.com/flutter/flutter/issues/81421.
     if (_manualDartRegistrationNeeded) {
       // Only do the initial registration if it hasn't already been overridden
       // with a non-default instance.
       if (!kIsWeb &&
-          Platform.isLinux &&
           SharedPreferencesStorePlatform.instance
               is MethodChannelSharedPreferencesStore) {
-        SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
+        if (Platform.isLinux) {
+          SharedPreferencesStorePlatform.instance = SharedPreferencesLinux();
+        } else if (Platform.isWindows) {
+          SharedPreferencesStorePlatform.instance = SharedPreferencesWindows();
+        }
       }
       _manualDartRegistrationNeeded = false;
     }
@@ -48,21 +50,22 @@ class SharedPreferences {
   /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
-      _completer = Completer<SharedPreferences>();
+      final completer = Completer<SharedPreferences>();
       try {
         final Map<String, Object> preferencesMap =
             await _getSharedPreferencesMap();
-        _completer.complete(SharedPreferences._(preferencesMap));
+        completer.complete(SharedPreferences._(preferencesMap));
       } on Exception catch (e) {
         // If there's an error, explicitly return the future with an error.
         // then set the completer to null so we can retry.
-        _completer.completeError(e);
-        final Future<SharedPreferences> sharedPrefsFuture = _completer.future;
+        completer.completeError(e);
+        final Future<SharedPreferences> sharedPrefsFuture = completer.future;
         _completer = null;
         return sharedPrefsFuture;
       }
+      _completer = completer;
     }
-    return _completer.future;
+    return _completer!.future;
   }
 
   /// The cache that holds all preferences.
@@ -79,86 +82,83 @@ class SharedPreferences {
   Set<String> getKeys() => Set<String>.from(_preferenceCache.keys);
 
   /// Reads a value of any type from persistent storage.
-  dynamic get(String key) => _preferenceCache[key];
+  Object? get(String key) => _preferenceCache[key];
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// bool.
-  bool getBool(String key) => _preferenceCache[key];
+  bool? getBool(String key) => _preferenceCache[key] as bool?;
 
   /// Reads a value from persistent storage, throwing an exception if it's not
   /// an int.
-  int getInt(String key) => _preferenceCache[key];
+  int? getInt(String key) => _preferenceCache[key] as int?;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// double.
-  double getDouble(String key) => _preferenceCache[key];
+  double? getDouble(String key) => _preferenceCache[key] as double?;
 
   /// Reads a value from persistent storage, throwing an exception if it's not a
   /// String.
-  String getString(String key) => _preferenceCache[key];
+  String? getString(String key) => _preferenceCache[key] as String?;
 
   /// Returns true if persistent storage the contains the given [key].
   bool containsKey(String key) => _preferenceCache.containsKey(key);
 
   /// Reads a set of string values from persistent storage, throwing an
   /// exception if it's not a string set.
-  List<String> getStringList(String key) {
-    List<Object> list = _preferenceCache[key];
+  List<String>? getStringList(String key) {
+    List<dynamic>? list = _preferenceCache[key] as List<dynamic>?;
     if (list != null && list is! List<String>) {
       list = list.cast<String>().toList();
       _preferenceCache[key] = list;
     }
     // Make a copy of the list so that later mutations won't propagate
-    return list?.toList();
+    return list?.toList() as List<String>?;
   }
 
   /// Saves a boolean [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   Future<bool> setBool(String key, bool value) => _setValue('Bool', key, value);
 
   /// Saves an integer [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   Future<bool> setInt(String key, int value) => _setValue('Int', key, value);
 
   /// Saves a double [value] to persistent storage in the background.
   ///
   /// Android doesn't support storing doubles, so it will be stored as a float.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   Future<bool> setDouble(String key, double value) =>
       _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
   ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
+  /// Note: Due to limitations in Android's SharedPreferences,
+  /// values cannot start with any one of the following:
+  ///
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu'
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy'
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu'
   Future<bool> setString(String key, String value) =>
       _setValue('String', key, value);
 
   /// Saves a list of strings [value] to persistent storage in the background.
-  ///
-  /// If [value] is null, this is equivalent to calling [remove()] on the [key].
   Future<bool> setStringList(String key, List<String> value) =>
       _setValue('StringList', key, value);
 
   /// Removes an entry from persistent storage.
-  Future<bool> remove(String key) => _setValue(null, key, null);
+  Future<bool> remove(String key) {
+    final String prefixedKey = '$_prefix$key';
+    _preferenceCache.remove(key);
+    return _store.remove(prefixedKey);
+  }
 
   Future<bool> _setValue(String valueType, String key, Object value) {
+    ArgumentError.checkNotNull(value, 'value');
     final String prefixedKey = '$_prefix$key';
-    if (value == null) {
-      _preferenceCache.remove(key);
-      return _store.remove(prefixedKey);
+    if (value is List<String>) {
+      // Make a copy of the list so that later mutations won't propagate
+      _preferenceCache[key] = value.toList();
     } else {
-      if (value is List<String>) {
-        // Make a copy of the list so that later mutations won't propagate
-        _preferenceCache[key] = value.toList();
-      } else {
-        _preferenceCache[key] = value;
-      }
-      return _store.setValue(valueType, prefixedKey, value);
+      _preferenceCache[key] = value;
     }
+    return _store.setValue(valueType, prefixedKey, value);
   }
 
   /// Always returns true.
@@ -190,7 +190,7 @@ class SharedPreferences {
     final Map<String, Object> preferencesMap = <String, Object>{};
     for (String key in fromSystem.keys) {
       assert(key.startsWith(_prefix));
-      preferencesMap[key.substring(_prefix.length)] = fromSystem[key];
+      preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
     }
     return preferencesMap;
   }
@@ -199,14 +199,14 @@ class SharedPreferences {
   ///
   /// If the singleton instance has been initialized already, it is nullified.
   @visibleForTesting
-  static void setMockInitialValues(Map<String, dynamic> values) {
-    final Map<String, dynamic> newValues =
-        values.map<String, dynamic>((String key, dynamic value) {
+  static void setMockInitialValues(Map<String, Object> values) {
+    final Map<String, Object> newValues =
+        values.map<String, Object>((String key, Object value) {
       String newKey = key;
       if (!key.startsWith(_prefix)) {
         newKey = '$_prefix$key';
       }
-      return MapEntry<String, dynamic>(newKey, value);
+      return MapEntry<String, Object>(newKey, value);
     });
     SharedPreferencesStorePlatform.instance =
         InMemorySharedPreferencesStore.withData(newValues);

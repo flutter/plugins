@@ -1,3 +1,40 @@
+## NEXT
+
+* Updated Android lint settings.
+
+## 2.0.3
+
+* Remove references to the Android V1 embedding.
+
+## 2.0.2
+
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 2.0.1
+
+* Make sure androidx.lifecycle.DefaultLifecycleObservable doesn't get shrunk away.
+
+## 2.0.0
+
+* Bump Dart SDK for null-safety compatibility.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 1.0.12
+
+* Update Flutter SDK constraint.
+
+## 1.0.11
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 1.0.10
+
+* Update android compileSdkVersion to 29.
+
+## 1.0.9
+
+* Let the no-op plugin implement the `FlutterPlugin` interface.
+
 ## 1.0.8
 
 * Post-v2 Android embedding cleanup.

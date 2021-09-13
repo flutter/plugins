@@ -1,4 +1,17 @@
-# integration_test
+# integration_test (deprecated)
+
+## DEPRECATED
+
+This package has been moved to the Flutter SDK. Starting with Flutter 2.0,
+it should be included as:
+
+```
+dev_dependencies:
+  integration_test:
+    sdk: flutter
+```
+
+## Old instructions
 
 This package enables self-driving testing of Flutter code on devices and emulators.
 It adapts flutter_test results into a format that is compatible with `flutter drive`
@@ -6,85 +19,104 @@ and native Android instrumentation testing.
 
 ## Usage
 
-Add a dependency on the `integration_test` package in the
-`dev_dependencies` section of pubspec.yaml. For plugins, do this in the
-pubspec.yaml of the example app.
+Add a dependency on the `integration_test` and `flutter_test` package in the
+`dev_dependencies` section of `pubspec.yaml`. For plugins, do this in the
+`pubspec.yaml` of the example app.
 
-Invoke `IntegrationTestWidgetsFlutterBinding.ensureInitialized()` at the start
-of a test file, e.g.
+Create a `integration_test/` directory for your package. In this directory,
+create a `<name>_test.dart`, using the following as a starting point to make
+assertions.
+
+Note: You should only use `testWidgets` to declare your tests, or errors will not be reported correctly.
 
 ```dart
+import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
   testWidgets("failing test example", (WidgetTester tester) async {
     expect(2 + 2, equals(5));
   });
 }
 ```
 
-## Test locations
+### Driver Entrypoint
 
-It is recommended to put integration_test tests in the `test/` folder of the app
-or package. For example apps, if the integration_test test references example
-app code, it should go in `example/test/`. It is also acceptable to put
-integration_test tests in `test_driver/` folder so that they're alongside the
-runner app (see below).
-
-## Using Flutter driver to run tests
-
-`IntegrationTestWidgetsTestBinding` supports launching the on-device tests with
-`flutter drive`. Note that the tests don't use the `FlutterDriver` API, they
-use `testWidgets` instead.
-
-Put the a file named `<package_name>_integration_test.dart` in the app'
-`test_driver` directory:
+An accompanying driver script will be needed that can be shared across all
+integration tests. Create a file named `integration_test.dart` in the
+`test_driver/` directory with the following contents:
 
 ```dart
-import 'dart:async';
-
 import 'package:integration_test/integration_test_driver.dart';
 
-Future<void> main() async => integrationDriver();
-
+Future<void> main() => integrationDriver();
 ```
 
-To run a example app test with Flutter driver:
+You can also use different driver scripts to customize the behavior of the app
+under test. For example, `FlutterDriver` can also be parameterized with
+different [options](https://api.flutter.dev/flutter/flutter_driver/FlutterDriver/connect.html).
+See the [extended driver](https://github.com/flutter/flutter/blob/master/packages/integration_test/example/test_driver/extended_integration_test.dart) for an example.
+
+### Package Structure
+
+Your package should have a structure that looks like this:
 
 ```
-cd example
-flutter drive test/<package_name>_integration.dart
+lib/
+  ...
+integration_test/
+  foo_test.dart
+  bar_test.dart
+test/
+  # Other unit tests go here.
+test_driver/
+  integration_test.dart
 ```
 
-To test plugin APIs using Flutter driver:
+[Example](https://github.com/flutter/plugins/tree/master/packages/integration_test/example)
 
+## Using Flutter Driver to Run Tests
+
+These tests can be launched with the `flutter drive` command.
+
+To run the `integration_test/foo_test.dart` test with the
+`test_driver/integration_test.dart` driver, use the following command:
+
+```sh
+flutter drive \
+  --driver=test_driver/integration_test.dart \
+  --target=integration_test/foo_test.dart
 ```
-cd example
-flutter drive --driver=test_driver/<package_name>_test.dart test/<package_name>_e2e.dart
+
+### Web
+
+Make sure you have [enabled web support](https://flutter.dev/docs/get-started/web#set-up)
+then [download and run](https://flutter.dev/docs/cookbook/testing/integration/introduction#6b-web)
+the web driver in another process.
+
+Use following command to execute the tests:
+
+```sh
+flutter drive \
+  --driver=test_driver/integration_test.dart \
+  --target=integration_test/foo_test.dart \
+  -d web-server
 ```
 
-You can run tests on web in release or profile mode.
-
-First you need to make sure you have downloaded the driver for the browser.
-
-```
-cd example
-flutter drive -v --target=test_driver/<package_name>dart -d web-server --release --browser-name=chrome
-```
-
-## Android device testing
+## Android Device Testing
 
 Create an instrumentation test file in your application's
 **android/app/src/androidTest/java/com/example/myapp/** directory (replacing
 com, example, and myapp with values from your app's package name). You can name
-this test file MainActivityTest.java or another name of your choice.
+this test file `MainActivityTest.java` or another name of your choice.
 
 ```java
 package com.example.myapp;
 
 import androidx.test.rule.ActivityTestRule;
-import dev.flutter.plugins.e2e.FlutterTestRunner;
+import dev.flutter.plugins.integration_test.FlutterTestRunner;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
@@ -96,10 +128,10 @@ public class MainActivityTest {
 ```
 
 Update your application's **myapp/android/app/build.gradle** to make sure it
-uses androidx's version of AndroidJUnitRunner and has androidx libraries as a
+uses androidx's version of `AndroidJUnitRunner` and has androidx libraries as a
 dependency.
 
-```
+```gradle
 android {
   ...
   defaultConfig {
@@ -117,10 +149,11 @@ dependencies {
 }
 ```
 
-To e2e test on a local Android device (emulated or physical):
+To run `integration_test/foo_test.dart` on a local Android device (emulated or
+physical):
 
-```
-./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../test_driver/<package_name>_e2e.dart
+```sh
+./gradlew app:connectedAndroidTest -Ptarget=`pwd`/../integration_test/foo_test.dart
 ```
 
 ## Firebase Test Lab
@@ -130,7 +163,7 @@ the guides in the [Firebase test lab
 documentation](https://firebase.google.com/docs/test-lab/?gclid=EAIaIQobChMIs5qVwqW25QIV8iCtBh3DrwyUEAAYASAAEgLFU_D_BwE)
 to set up a project.
 
-To run an e2e test on Android devices using Firebase Test Lab, use gradle commands to build an
+To run a test on Android devices using Firebase Test Lab, use gradle commands to build an
 instrumentation test for Android, after creating `androidTest` as suggested in the last section.
 
 ```bash
@@ -160,33 +193,73 @@ You can pass additional parameters on the command line, such as the
 devices you want to test on. See
 [gcloud firebase test android run](https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run).
 
-## iOS device testing
+## iOS Device Testing
 
-You need to change `iOS/Podfile` to avoid test target statically linking to the plugins. One way is to
-link all of the plugins dynamically:
+Open `ios/Runner.xcworkspace` in Xcode. Create a test target if you
+do not already have one via `File > New > Target...` and select `Unit Testing Bundle`.
+Change the `Product Name` to `RunnerTests`. Make sure `Target to be Tested` is set to `Runner` and language is set to `Objective-C`.
+Select `Finish`.
+Make sure that the **iOS Deployment Target** of `RunnerTests` within the **Build Settings** section is the same as `Runner`.
 
-```
+Add the new test target to `ios/Podfile` by embedding in the existing `Runner` target.
+
+```ruby
 target 'Runner' do
-  use_frameworks!
+  # Do not change existing lines.
   ...
+
+  target 'RunnerTests' do
+    inherit! :search_paths
+  end
 end
 ```
 
-To e2e test on your iOS device (simulator or real), rebuild your iOS targets with Flutter tool.
-
+To build `integration_test/foo_test.dart` from the command line, run:
+```sh
+flutter build ios --config-only integration_test/foo_test.dart
 ```
-flutter build ios -t test_driver/<package_name>_e2e.dart (--simulator)
-```
 
-Open Xcode project (by default, it's `ios/Runner.xcodeproj`). Create a test target
-(navigating `File > New > Target...` and set up the values) and a test file `RunnerTests.m` and
-change the code. You can change `RunnerTests.m` to the name of your choice.
+In Xcode, add a test file called `RunnerTests.m` (or any name of your choice) to the new target and
+replace the file:
 
 ```objective-c
-#import <XCTest/XCTest.h>
-#import <e2e/E2EIosTest.h>
+@import XCTest;
+@import integration_test;
 
-E2E_IOS_RUNNER(RunnerTests)
+INTEGRATION_TEST_IOS_RUNNER(RunnerTests)
 ```
 
-Now you can start RunnerTests to kick out e2e tests!
+Run `Product > Test` to run the integration tests on your selected device.
+
+To deploy it to Firebase Test Lab you can follow these steps:
+
+Execute this script at the root of your Flutter app:
+
+```sh
+output="../build/ios_integ"
+product="build/ios_integ/Build/Products"
+dev_target="14.3"
+
+# Pass --simulator if building for the simulator.
+flutter build ios integration_test/foo_test.dart --release
+
+pushd ios
+xcodebuild -workspace Runner.xcworkspace -scheme Runner -config Flutter/Release.xcconfig -derivedDataPath $output -sdk iphoneos build-for-testing
+popd
+
+pushd $product
+zip -r "ios_tests.zip" "Release-iphoneos" "Runner_iphoneos$dev_target-arm64.xctestrun"
+popd
+```
+
+You can verify locally that your tests are successful by running the following command:
+
+```sh
+xcodebuild test-without-building -xctestrun "build/ios_integ/Build/Products/Runner_iphoneos14.3-arm64.xctestrun" -destination id=<YOUR_DEVICE_ID>
+```
+
+Once everything is ok, you can upload the resulting zip to Firebase Test Lab (change the model with your values):
+
+```sh
+gcloud firebase test ios run --test "build/ios_integ/ios_tests.zip" --device model=iphone11pro,version=14.1,locale=fr_FR,orientation=portrait
+```

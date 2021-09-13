@@ -45,7 +45,7 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
     if (captionLines.length < 2) continue;
 
     // if caption has header equal metadata, ignore
-    String metadaType = captionLines[0]?.split(' ')[0];
+    String metadaType = captionLines[0].split(' ')[0];
     if (metadata.contains(metadaType)) continue;
 
     // Caption has header
@@ -61,7 +61,7 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
     final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
     // TODO: Handle text formats
-    // Some captions comes with anotations (information about who/how is the speech being delivered) and styles tags.
+    // Some captions comes with annotations (information about who/how is the speech being delivered) and styles tags.
     // E.g:
     // <v.first.loud Neil deGrasse Tyson><i>Laughs</i>
     final String textWithoutFormat = _parseHtmlString(text);
@@ -83,8 +83,9 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
 }
 
 class _StartAndEnd {
-  final Duration start;
-  final Duration end;
+  // When there's an error parsing the start or end, either could be null.
+  final Duration? start;
+  final Duration? end;
 
   _StartAndEnd(this.start, this.end);
 
@@ -101,8 +102,8 @@ class _StartAndEnd {
 
     final List<String> times = line.split(_webVttArrow);
 
-    final Duration start = _parseWebVttTimestamp(times[0]);
-    final Duration end = _parseWebVttTimestamp(times[1]);
+    final Duration? start = _parseWebVttTimestamp(times[0]);
+    final Duration? end = _parseWebVttTimestamp(times[1]);
 
     return _StartAndEnd(start, end);
   }
@@ -110,9 +111,15 @@ class _StartAndEnd {
 
 String _parseHtmlString(String htmlString) {
   final Document document = html_parser.parse(htmlString);
-  final String parsedString =
-      html_parser.parse(document.body.text).documentElement.text;
-  return parsedString;
+  final Element? body = document.body;
+  if (body == null) {
+    return '';
+  }
+  final Element? bodyElement = html_parser.parse(body.text).documentElement;
+  if (bodyElement == null) {
+    return '';
+  }
+  return bodyElement.text;
 }
 
 // Parses a time stamp in an Vtt file into a Duration.
@@ -121,7 +128,7 @@ String _parseHtmlString(String htmlString) {
 // _parseWebVttimestamp('00:01:08.430')
 // returns
 // Duration(hours: 0, minutes: 1, seconds: 8, milliseconds: 430)
-Duration _parseWebVttTimestamp(String timestampString) {
+Duration? _parseWebVttTimestamp(String timestampString) {
   if (!RegExp(_webVttTimeStamp).hasMatch(timestampString)) {
     return null;
   }

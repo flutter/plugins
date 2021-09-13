@@ -1,13 +1,16 @@
 name: video_player_web
-description: Web platform implementation of video_player
-homepage: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player_web
-# 0.1.y+z is compatible with 1.0.0, if you land a breaking change bump
-# the version to 2.0.0.
-# See more details: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0
-version: 0.1.3+2
+description: Web platform implementation of video_player.
+repository: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player_web
+issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+video_player%22
+version: 2.0.4
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
 
 flutter:
   plugin:
+    implements: video_player
     platforms:
       web:
         pluginClass: VideoPlayerPlugin
@@ -18,16 +21,10 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  meta: ^1.1.7
-  video_player_platform_interface: ^2.0.0
+  meta: ^1.3.0
+  video_player_platform_interface: ^4.2.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  video_player:
-    path: ../video_player
-  pedantic: ^1.8.0
-
-environment:
-  sdk: ">=2.1.0 <3.0.0"
-  flutter: ">=1.12.8 <2.0.0"
+  pedantic: ^1.10.0
