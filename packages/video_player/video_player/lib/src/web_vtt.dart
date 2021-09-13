@@ -60,10 +60,8 @@ List<Caption> _parseCaptionsFromWebVttString(String file) {
 
     final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
-    // TODO: Handle text formats
-    // Some captions comes with annotations (information about who/how is the speech being delivered) and styles tags.
-    // E.g:
-    // <v.first.loud Neil deGrasse Tyson><i>Laughs</i>
+    // TODO(cyanglaz): Handle special syntax in vtt captions.
+    // https://github.com/flutter/flutter/issues/90007.
     final String textWithoutFormat = _parseHtmlString(text);
 
     final Caption newCaption = Caption(
@@ -158,10 +156,8 @@ Duration? _parseWebVttTimestamp(String timestampString) {
 
   List<String> milisecondsStyles = dotSections[1].split(" ");
 
-  // TODO: Handle styles
-  // Some captions comes with styles about where/how the caption should be rendered.
-  // E.g:
-  // 00:32.500 --> 00:33.500 align:left size:50%
+  // TODO(cyanglaz): Handle caption styles.
+  // https://github.com/flutter/flutter/issues/90009.
   // if (milisecondsStyles.length > 1) {
   //  List<String> styles = milisecondsStyles.sublist(1);
   // }
