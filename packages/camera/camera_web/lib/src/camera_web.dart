@@ -64,6 +64,9 @@ class CameraPlugin extends CameraPlatform {
   final _cameraEndedSubscriptions =
       <int, StreamSubscription<html.MediaStreamTrack>>{};
 
+  final _cameraVideoRecordingErrorSubscriptions =
+      <int, StreamSubscription<html.ErrorEvent>>{};
+
   /// Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
       cameraEventStreamController.stream
@@ -426,8 +429,22 @@ class CameraPlugin extends CameraPlatform {
   @override
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
     try {
-      return getCamera(cameraId)
-          .startVideoRecording(maxVideoDuration: maxVideoDuration);
+      final camera = getCamera(cameraId);
+
+      // Add camera's video recording errors to the camera events stream.
+      // The error event fires when the video recording is not allowed or an unsupported
+      // codec is used.
+      _cameraVideoRecordingErrorSubscriptions[cameraId] =
+          camera.onVideoRecordingError.listen((html.ErrorEvent errorEvent) {
+        cameraEventStreamController.add(
+          CameraErrorEvent(
+            cameraId,
+            'Error code: ${errorEvent.type}, error message: ${errorEvent.message}.',
+          ),
+        );
+      });
+
+      return camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
     } on CameraWebException catch (e) {
@@ -437,9 +454,11 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<XFile> stopVideoRecording(int cameraId) {
+  Future<XFile> stopVideoRecording(int cameraId) async {
     try {
-      return getCamera(cameraId).stopVideoRecording();
+      final videoRecording = await getCamera(cameraId).stopVideoRecording();
+      await _cameraVideoRecordingErrorSubscriptions[cameraId]?.cancel();
+      return videoRecording;
     } on html.DomException catch (e) {
       throw PlatformException(code: e.name, message: e.message);
     } on CameraWebException catch (e) {
@@ -597,6 +616,7 @@ class CameraPlugin extends CameraPlatform {
       await _cameraVideoErrorSubscriptions[cameraId]?.cancel();
       await _cameraVideoAbortSubscriptions[cameraId]?.cancel();
       await _cameraEndedSubscriptions[cameraId]?.cancel();
+      await _cameraVideoRecordingErrorSubscriptions[cameraId]?.cancel();
 
       cameras.remove(cameraId);
       _cameraVideoErrorSubscriptions.remove(cameraId);
