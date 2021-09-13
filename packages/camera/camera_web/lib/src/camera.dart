@@ -86,6 +86,23 @@ class Camera {
 
   StreamSubscription<html.Event>? _onEndedSubscription;
 
+  /// The stream of the camera video recording errors.
+  ///
+  /// This occurs when the video recording is not allowed or an unsupported
+  /// codec is used.
+  ///
+  /// MediaRecorder.error:
+  /// https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder/error_event
+  Stream<html.ErrorEvent> get onVideoRecordingError =>
+      videoRecordingErrorController.stream;
+
+  /// The stream controller for the [onVideoRecordingError] stream.
+  @visibleForTesting
+  final videoRecordingErrorController =
+      StreamController<html.ErrorEvent>.broadcast();
+
+  StreamSubscription<html.Event>? _onVideoRecordingErrorSubscription;
+
   /// The camera flash mode.
   @visibleForTesting
   FlashMode? flashMode;
@@ -437,6 +454,14 @@ class Camera {
       _videoRecordingStoppedListener,
     );
 
+    _onVideoRecordingErrorSubscription =
+        mediaRecorder!.onError.listen((html.Event event) {
+      final error = event as html.ErrorEvent;
+      if (error != null) {
+        videoRecordingErrorController.add(error);
+      }
+    });
+
     if (maxVideoDuration != null) {
       mediaRecorder!.start(maxVideoDuration.inMilliseconds);
     } else {
@@ -463,10 +488,10 @@ class Camera {
     }
   }
 
-  void _onVideoRecordingStopped(
+  Future<void> _onVideoRecordingStopped(
     html.Event event, [
     Duration? maxVideoDuration,
-  ]) {
+  ]) async {
     if (_videoData.isNotEmpty) {
       // Concatenate all video data files into a single blob.
       final videoType = _videoData.first.type;
@@ -497,6 +522,8 @@ class Camera {
       'stop',
       _videoDataAvailableListener,
     );
+
+    await _onVideoRecordingErrorSubscription?.cancel();
 
     mediaRecorder = null;
     _videoDataAvailableListener = null;
@@ -554,8 +581,11 @@ class Camera {
 
     await _onEndedSubscription?.cancel();
     _onEndedSubscription = null;
-
     await onEndedController.close();
+
+    await _onVideoRecordingErrorSubscription?.cancel();
+    _onVideoRecordingErrorSubscription = null;
+    await videoRecordingErrorController.close();
   }
 
   /// Returns the first supported video mime type (amongst mp4 and webm)
