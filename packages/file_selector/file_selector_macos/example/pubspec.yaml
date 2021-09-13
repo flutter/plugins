@@ -1,0 +1,22 @@
+name: example
+description: Local testbed for desktop file_selector implementations.
+publish_to: 'none'
+version: 1.0.0
+
+environment:
+  sdk: ">=2.12.0-259.9.beta <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  file_selector_platform_interface: ^2.0.0
+  file_selector_macos:
+    path: ..
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
