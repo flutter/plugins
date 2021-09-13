@@ -134,6 +134,24 @@ class FakeBlobEvent extends Fake implements BlobEvent {
   Blob? get data => _blob;
 }
 
+/// A fake [DomException] that returns the provided error [_name] and [_message].
+class FakeErrorEvent extends Fake implements ErrorEvent {
+  FakeErrorEvent(
+    String type, [
+    String? message,
+  ])  : _type = type,
+        _message = message;
+
+  final String _type;
+  final String? _message;
+
+  @override
+  String get type => _type;
+
+  @override
+  String? get message => _message;
+}
+
 /// Returns a video element with a blank stream of size [videoSize].
 ///
 /// Can be used to mock a video stream:

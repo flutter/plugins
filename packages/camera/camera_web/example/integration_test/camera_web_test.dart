@@ -1001,17 +1001,42 @@ void main() {
     });
 
     group('startVideoRecording', () {
-      testWidgets('starts a video recording', (tester) async {
-        final camera = MockCamera();
+      late Camera camera;
+
+      setUp(() {
+        camera = MockCamera();
 
         when(camera.startVideoRecording).thenAnswer((_) async {});
 
+        when(() => camera.onVideoRecordingError)
+            .thenAnswer((_) => const Stream.empty());
+      });
+
+      testWidgets('starts a video recording', (tester) async {
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
 
         await CameraPlatform.instance.startVideoRecording(cameraId);
 
         verify(camera.startVideoRecording).called(1);
+      });
+
+      testWidgets('listens to the onVideoRecordingError stream',
+          (tester) async {
+        final videoRecordingErrorController = StreamController<ErrorEvent>();
+
+        when(() => camera.onVideoRecordingError)
+            .thenAnswer((_) => videoRecordingErrorController.stream);
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.startVideoRecording(cameraId);
+
+        expect(
+          videoRecordingErrorController.hasListener,
+          isTrue,
+        );
       });
 
       group('throws PlatformException', () {
@@ -1032,7 +1057,6 @@ void main() {
 
         testWidgets('when startVideoRecording throws DomException',
             (tester) async {
-          final camera = MockCamera();
           final exception = FakeDomException(DomException.INVALID_STATE);
 
           when(camera.startVideoRecording).thenThrow(exception);
@@ -1054,7 +1078,6 @@ void main() {
 
         testWidgets('when startVideoRecording throws CameraWebException',
             (tester) async {
-          final camera = MockCamera();
           final exception = CameraWebException(
             cameraId,
             CameraErrorCode.notStarted,
@@ -1097,6 +1120,31 @@ void main() {
         verify(camera.stopVideoRecording).called(1);
 
         expect(video, capturedVideo);
+      });
+
+      testWidgets('stops listening to the onVideoRecordingError stream',
+          (tester) async {
+        final camera = MockCamera();
+        final videoRecordingErrorController = StreamController<ErrorEvent>();
+
+        when(camera.startVideoRecording).thenAnswer((_) async => {});
+
+        when(camera.stopVideoRecording)
+            .thenAnswer((_) => Future.value(MockXFile()));
+
+        when(() => camera.onVideoRecordingError)
+            .thenAnswer((_) => videoRecordingErrorController.stream);
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.startVideoRecording(cameraId);
+        final _ = await CameraPlatform.instance.stopVideoRecording(cameraId);
+
+        expect(
+          videoRecordingErrorController.hasListener,
+          isFalse,
+        );
       });
 
       group('throws PlatformException', () {
@@ -1943,6 +1991,7 @@ void main() {
 
       late StreamController<Event> errorStreamController, abortStreamController;
       late StreamController<MediaStreamTrack> endedStreamController;
+      late StreamController<ErrorEvent> videoRecordingErrorController;
 
       setUp(() {
         camera = MockCamera();
@@ -1951,6 +2000,7 @@ void main() {
         errorStreamController = StreamController<Event>();
         abortStreamController = StreamController<Event>();
         endedStreamController = StreamController<MediaStreamTrack>();
+        videoRecordingErrorController = StreamController<ErrorEvent>();
 
         when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
@@ -1965,6 +2015,11 @@ void main() {
 
         when(() => camera.onEnded)
             .thenAnswer((_) => endedStreamController.stream);
+
+        when(() => camera.onVideoRecordingError)
+            .thenAnswer((_) => videoRecordingErrorController.stream);
+
+        when(camera.startVideoRecording).thenAnswer((_) async {});
       });
 
       testWidgets('disposes the correct camera', (tester) async {
@@ -2019,6 +2074,18 @@ void main() {
         await CameraPlatform.instance.dispose(cameraId);
 
         expect(endedStreamController.hasListener, isFalse);
+      });
+
+      testWidgets('cancels the camera video recording error subscriptions',
+          (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+        await CameraPlatform.instance.startVideoRecording(cameraId);
+        await CameraPlatform.instance.dispose(cameraId);
+
+        expect(videoRecordingErrorController.hasListener, isFalse);
       });
 
       group('throws PlatformException', () {
@@ -2099,6 +2166,7 @@ void main() {
 
       late StreamController<Event> errorStreamController, abortStreamController;
       late StreamController<MediaStreamTrack> endedStreamController;
+      late StreamController<ErrorEvent> videoRecordingErrorController;
 
       setUp(() {
         camera = MockCamera();
@@ -2107,6 +2175,7 @@ void main() {
         errorStreamController = StreamController<Event>();
         abortStreamController = StreamController<Event>();
         endedStreamController = StreamController<MediaStreamTrack>();
+        videoRecordingErrorController = StreamController<ErrorEvent>();
 
         when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
@@ -2120,6 +2189,11 @@ void main() {
 
         when(() => camera.onEnded)
             .thenAnswer((_) => endedStreamController.stream);
+
+        when(() => camera.onVideoRecordingError)
+            .thenAnswer((_) => videoRecordingErrorController.stream);
+
+        when(() => camera.startVideoRecording()).thenAnswer((_) async => {});
       });
 
       testWidgets(
@@ -2535,6 +2609,9 @@ void main() {
             'description',
           );
 
+          when(() => camera.onVideoRecordingError)
+              .thenAnswer((_) => const Stream.empty());
+
           when(
             () => camera.startVideoRecording(
               maxVideoDuration: any(named: 'maxVideoDuration'),
@@ -2560,6 +2637,34 @@ void main() {
               CameraErrorEvent(
                 cameraId,
                 'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on the camera video recording error event', (tester) async {
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          await CameraPlatform.instance.initializeCamera(cameraId);
+          await CameraPlatform.instance.startVideoRecording(cameraId);
+
+          final errorEvent = FakeErrorEvent('type', 'message');
+
+          videoRecordingErrorController.add(errorEvent);
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${errorEvent.type}, error message: ${errorEvent.message}.',
               ),
             ),
           );
