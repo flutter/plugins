@@ -2,43 +2,75 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "FLEFileSelectorPlugin.h"
+#import "FLTFileSelectorPlugin.h"
 
 #import <AppKit/AppKit.h>
 
-// See channel_controller.dart for documentation.
+// From method_channel_file_selector.dart:
 static NSString *const kChannelName = @"plugins.flutter.io/file_selector";
-
 static NSString *const kOpenFileMethod = @"openFile";
 static NSString *const kGetSavePathMethod = @"getSavePath";
 static NSString *const kGetDirectoryPathMethod = @"getDirectoryPath";
-
 static NSString *const kInitialDirectoryKey = @"initialDirectory";
 static NSString *const kSuggestedNameKey = @"suggestedName";
 static NSString *const kAcceptedTypeGroupsKey = @"acceptedTypeGroups";
 static NSString *const kConfirmButtonTextKey = @"confirmButtonText";
 static NSString *const kMultipleKey = @"multiple";
 
-// From x_type_group.dart
+// From x_type_group.dart:
 static NSString *const kTypeGroupExtensionsKey = @"extensions";
 static NSString *const kTypeGroupMimeTypesKey = @"mimeTypes";
 static NSString *const kTypeGroupUTIsKey = @"macUTIs";
 
 // Returns the value for |key| in |dict|, returning nil for NSNull.
-id GetNonNullValueForKey(NSDictionary<NSString *, id> *dict, NSString *key) {
+static id GetNonNullValueForKey(NSDictionary<NSString *, id> *dict, NSString *key) {
   id value = dict[key];
   return value == [NSNull null] ? nil : value;
 }
 
-@implementation FLEFileSelectorPlugin {
+@interface FLTDefaultPanelController : NSObject<FLTPanelController>
+@end
+
+@implementation FLTDefaultPanelController
+- (void)displaySavePanel:(NSSavePanel*)panel
+          forWindow:(NSWindow *)window
+       completionHandler:(void (^)(NSURL *URL))handler {
+  [panel beginSheetModalForWindow:window
+                    completionHandler:^(NSModalResponse panelResult) {
+    handler((panelResult == NSModalResponseOK) ? panel.URL : nil);
+                    }];
+}
+
+- (void)displayOpenPanel:(NSOpenPanel*)panel
+          forWindow:(NSWindow *)window
+completionHandler:(void (^)(NSArray<NSURL *> *URLs))handler {
+  [panel beginSheetModalForWindow:window
+                    completionHandler:^(NSModalResponse panelResult) {
+    handler(
+            (panelResult == NSModalResponseOK) ? panel.URLs : nil);
+                    }];
+}
+@end
+
+#pragma mark -
+
+@implementation FLTFileSelectorPlugin {
   // The plugin registrar, for obtaining the view.
   NSObject<FlutterPluginRegistrar> *_registrar;
+
+  // The controller for showing open/save panels.
+  id<FLTPanelController> _panelController;
 }
 
 - (instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
+  return [self initWithRegistrar:registrar panelController:[[FLTDefaultPanelController alloc] init]];
+}
+
+-(instancetype)initWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar panelController:(id<FLTPanelController>)panelController {
   self = [super init];
   if (self != nil) {
     _registrar = registrar;
+    _panelController = panelController;
   }
   return self;
 }
@@ -108,7 +140,7 @@ id GetNonNullValueForKey(NSDictionary<NSString *, id> *dict, NSString *key) {
 + (void)registerWithRegistrar:(id<FlutterPluginRegistrar>)registrar {
   FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:kChannelName
                                                               binaryMessenger:registrar.messenger];
-  FLEFileSelectorPlugin *instance = [[FLEFileSelectorPlugin alloc] initWithRegistrar:registrar];
+  FLTFileSelectorPlugin *instance = [[FLTFileSelectorPlugin alloc] initWithRegistrar:registrar];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -119,9 +151,7 @@ id GetNonNullValueForKey(NSDictionary<NSString *, id> *dict, NSString *key) {
     NSSavePanel *savePanel = [NSSavePanel savePanel];
     savePanel.canCreateDirectories = YES;
     [self configureSavePanel:savePanel withArguments:arguments];
-    [savePanel beginSheetModalForWindow:_registrar.view.window
-                      completionHandler:^(NSModalResponse panelResult) {
-                        NSURL *URL = (panelResult == NSModalResponseOK) ? savePanel.URL : nil;
+    [_panelController displaySavePanel:savePanel forWindow:_registrar.view.window completionHandler:^(NSURL *URL) {
                         result(URL.path);
                       }];
 
@@ -131,10 +161,7 @@ id GetNonNullValueForKey(NSDictionary<NSString *, id> *dict, NSString *key) {
     BOOL choosingDirectory = [call.method isEqualToString:kGetDirectoryPathMethod];
     [self configureSavePanel:openPanel withArguments:arguments];
     [self configureOpenPanel:openPanel withArguments:arguments choosingDirectory:choosingDirectory];
-    [openPanel beginSheetModalForWindow:_registrar.view.window
-                      completionHandler:^(NSModalResponse panelResult) {
-                        NSArray<NSURL *> *URLs =
-                            (panelResult == NSModalResponseOK) ? openPanel.URLs : nil;
+    [_panelController displayOpenPanel:openPanel forWindow:_registrar.view.window completionHandler:^(NSArray<NSURL *> *URLs) {
                         if (choosingDirectory) {
                           result(URLs.firstObject.path);
                         } else {

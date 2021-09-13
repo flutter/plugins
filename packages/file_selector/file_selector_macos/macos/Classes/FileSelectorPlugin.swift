@@ -7,6 +7,6 @@ import Foundation
 
 public class FileSelectorPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
-    FLEFileSelectorPlugin.register(with: registrar)
+    FLTFileSelectorPlugin.register(with: registrar)
   }
 }
