@@ -1117,10 +1117,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(
-                pluginExampleDirectory,
-                'macos',
-              ),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1198,10 +1195,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              _getTargetCheckCall(
-                pluginExampleDirectory,
-                'macos',
-              ),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
     });
