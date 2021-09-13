@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html';
 import 'dart:ui';
 
@@ -953,6 +954,9 @@ void main() {
 
       setUp(() {
         mediaRecorder = MockMediaRecorder();
+
+        when(() => mediaRecorder.onError)
+            .thenAnswer((_) => const Stream.empty());
       });
 
       group('startVideoRecording', () {
@@ -1406,6 +1410,35 @@ void main() {
             () => mediaRecorder.removeEventListener('stop', any()),
           ).called(1);
         });
+
+        testWidgets('stops listening to the media recorder errors',
+            (tester) async {
+          final onErrorStreamController = StreamController<ErrorEvent>();
+
+          final camera = Camera(
+            textureId: 1,
+            cameraService: cameraService,
+          )
+            ..mediaRecorder = mediaRecorder
+            ..isVideoTypeSupported = isVideoTypeSupported;
+
+          when(() => mediaRecorder.onError)
+              .thenAnswer((_) => onErrorStreamController.stream);
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          videoRecordingStoppedListener.call(Event('stop'));
+
+          await Future.microtask(() {});
+
+          expect(
+            onErrorStreamController.hasListener,
+            isFalse,
+          );
+        });
       });
     });
 
@@ -1451,6 +1484,21 @@ void main() {
           isTrue,
         );
       });
+
+      testWidgets('closes the onVideoRecordingError stream', (tester) async {
+        final camera = Camera(
+          textureId: textureId,
+          cameraService: cameraService,
+        );
+
+        await camera.initialize();
+        await camera.dispose();
+
+        expect(
+          camera.videoRecordingErrorController.isClosed,
+          isTrue,
+        );
+      });
     });
 
     group('events', () {
@@ -1462,6 +1510,8 @@ void main() {
           const supportedVideoType = 'video/webm';
 
           final mediaRecorder = MockMediaRecorder();
+          when(() => mediaRecorder.onError)
+              .thenAnswer((_) => const Stream.empty());
 
           final camera = Camera(
             textureId: 1,
@@ -1583,6 +1633,41 @@ void main() {
           expect(
             await streamQueue.next,
             equals(defaultVideoTrack),
+          );
+
+          await streamQueue.cancel();
+        });
+      });
+
+      group('onVideoRecordingError', () {
+        testWidgets(
+            'emits an ErrorEvent '
+            'when the media recorder fails '
+            'when recording a video', (tester) async {
+          final mediaRecorder = MockMediaRecorder();
+          final errorController = StreamController<ErrorEvent>();
+
+          final camera = Camera(
+            textureId: textureId,
+            cameraService: cameraService,
+          )..mediaRecorder = mediaRecorder;
+
+          when(() => mediaRecorder.onError)
+              .thenAnswer((_) => errorController.stream);
+
+          final streamQueue = StreamQueue(camera.onVideoRecordingError);
+
+          await camera.initialize();
+          await camera.play();
+
+          await camera.startVideoRecording();
+
+          final errorEvent = ErrorEvent('type');
+          errorController.add(errorEvent);
+
+          expect(
+            await streamQueue.next,
+            equals(errorEvent),
           );
 
           await streamQueue.cancel();
