@@ -126,7 +126,7 @@ void main() {
             'Runner',
             '-configuration',
             'Debug',
-            if (destination != null) ...['-destination', destination],
+            if (destination != null) ...<String>['-destination', destination],
             ...extraFlags,
             'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
           ],
