@@ -3,7 +3,7 @@ description: Flutter plugin for displaying inline video with other Flutter
   widgets on Android, iOS, and web.
 repository: https://github.com/flutter/plugins/tree/master/packages/video_player/video_player
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+video_player%22
-version: 2.1.14
+version: 2.2.0
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   meta: ^1.3.0
-  video_player_platform_interface: ^4.1.0
+  video_player_platform_interface: ^4.2.0
   # The design on https://flutter.dev/go/federated-plugins was to leave
   # this constraint as "any". We cannot do it right now as it fails pub publish
   # validation, so we set a ^ constraint. The exact value doesn't matter since

@@ -259,7 +259,6 @@ class MethodChannelImagePicker extends ImagePickerPlatform {
     final pathList = result['pathList'];
     if (pathList != null) {
       pickedFileList = [];
-      // In this case, multiRetrieve is invoked.
       for (String path in pathList) {
         pickedFileList.add(XFile(path));
       }
