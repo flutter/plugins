@@ -213,6 +213,7 @@ task:
         - cd web_installers/packages/web_drivers/
         - dart pub get
       chromedriver_background_script:
+        - cd web_installers/packages/web_drivers/
         - dart lib/web_driver_installer.dart chromedriver --install-only
         - ./chromedriver/chromedriver --port=4444
       build_script:
