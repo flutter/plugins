@@ -4,40 +4,46 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter/platform_interface.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_android/webview_surface_android.dart';
+import 'package:webview_flutter_example/main.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+
+  const bool _skipDueIssue86757 = false;
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          key: GlobalKey(),
-          initialUrl: 'https://flutter.dev/',
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
+      MaterialApp(
+        home: Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            key: GlobalKey(),
+            initialUrl: 'https://flutter.dev/',
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
         ),
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
-  }, skip: true);
+  }, skip: _skipDueIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl', (WidgetTester tester) async {
@@ -59,7 +65,7 @@ void main() {
     await controller.loadUrl('https://www.google.com/');
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
-  }, skip: true);
+  }, skip: _skipDueIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
@@ -101,7 +107,7 @@ void main() {
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
-  }, skip: Platform.isAndroid);
+  }, skip: _skipDueIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('JavaScriptChannel', (WidgetTester tester) async {
@@ -150,7 +156,7 @@ void main() {
     // https://github.com/flutter/flutter/issues/66318
     await controller.evaluateJavascript('Echo.postMessage("hello");1;');
     expect(messagesReceived, equals(<String>['hello']));
-  }, skip: Platform.isAndroid);
+  }, skip: _skipDueIssue86757);
 
   testWidgets('resize webview', (WidgetTester tester) async {
     final String resizeTest = '''
@@ -328,7 +334,7 @@ void main() {
 
     final String customUserAgent2 = await _getUserAgent(controller);
     expect(customUserAgent2, defaultPlatformUserAgent);
-  }, skip: Platform.isAndroid);
+  }, skip: _skipDueIssue86757);
 
   group('Video playback policy', () {
     late String videoTestBase64;
@@ -536,58 +542,6 @@ void main() {
           await controller.evaluateJavascript('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
-
-    // allowsInlineMediaPlayback is a noop on Android, so it is skipped.
-    testWidgets(
-        'Video plays full screen when allowsInlineMediaPlayback is false',
-        (WidgetTester tester) async {
-      Completer<WebViewController> controllerCompleter =
-          Completer<WebViewController>();
-      Completer<void> pageLoaded = Completer<void>();
-      Completer<void> videoPlaying = Completer<void>();
-
-      await tester.pumpWidget(
-        Directionality(
-          textDirection: TextDirection.ltr,
-          child: WebView(
-            initialUrl: 'data:text/html;charset=utf-8;base64,$videoTestBase64',
-            onWebViewCreated: (WebViewController controller) {
-              controllerCompleter.complete(controller);
-            },
-            javascriptMode: JavascriptMode.unrestricted,
-            javascriptChannels: <JavascriptChannel>{
-              JavascriptChannel(
-                name: 'VideoTestTime',
-                onMessageReceived: (JavascriptMessage message) {
-                  final double currentTime = double.parse(message.message);
-                  // Let it play for at least 1 second to make sure the related video's properties are set.
-                  if (currentTime > 1) {
-                    videoPlaying.complete(null);
-                  }
-                },
-              ),
-            },
-            onPageFinished: (String url) {
-              pageLoaded.complete(null);
-            },
-            initialMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-            allowsInlineMediaPlayback: false,
-          ),
-        ),
-      );
-      WebViewController controller = await controllerCompleter.future;
-      await pageLoaded.future;
-
-      // Pump once to trigger the video play.
-      await tester.pump();
-
-      // Makes sure we get the correct event that indicates the video is actually playing.
-      await videoPlaying.future;
-
-      String fullScreen =
-          await controller.evaluateJavascript('isFullScreen();');
-      expect(fullScreen, _webviewBool(true));
-    }, skip: Platform.isAndroid);
   });
 
   group('Audio playback policy', () {
@@ -877,7 +831,7 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(scrollPosX, X_SCROLL * 2);
       expect(scrollPosY, Y_SCROLL * 2);
-    }, skip: Platform.isAndroid);
+    }, skip: _skipDueIssue86757);
   });
 
   group('SurfaceAndroidWebView', () {
@@ -886,7 +840,7 @@ void main() {
     });
 
     tearDownAll(() {
-      WebView.platform = null;
+      WebView.platform = AndroidWebView();
     });
 
     // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
@@ -956,7 +910,7 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: true);
+    }, skip: _skipDueIssue86757);
 
     // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('inputs are scrolled into view when focused',
@@ -1062,7 +1016,7 @@ void main() {
           lastInputClientRectRelativeToViewport['right'] <=
               viewportRectRelativeToViewport['right'],
           isTrue);
-    }, skip: true);
+    }, skip: _skipDueIssue86757);
   });
 
   group('NavigationDelegate', () {
@@ -1125,14 +1079,9 @@ void main() {
       final WebResourceError error = await errorCompleter.future;
       expect(error, isNotNull);
 
-      if (Platform.isIOS) {
-        expect(error.domain, isNotNull);
-        expect(error.failingUrl, isNull);
-      } else if (Platform.isAndroid) {
-        expect(error.errorType, isNotNull);
-        expect(error.failingUrl?.startsWith('https://www.notawebsite..com'),
-            isTrue);
-      }
+      expect(error.errorType, isNotNull);
+      expect(
+          error.failingUrl?.startsWith('https://www.notawebsite..com'), isTrue);
     });
 
     testWidgets('onWebResourceError is not called with valid url',
@@ -1332,7 +1281,7 @@ void main() {
     expect(currentUrl, 'https://flutter.dev/');
   },
       // Flaky on Android: https://github.com/flutter/flutter/issues/86757
-      skip: Platform.isAndroid);
+      skip: _skipDueIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
@@ -1373,7 +1322,7 @@ void main() {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion('https://flutter.dev/'));
     },
-    skip: true,
+    skip: _skipDueIssue86757,
   );
 
   testWidgets(
@@ -1441,7 +1390,6 @@ void main() {
         completion('null'),
       );
     },
-    skip: !Platform.isAndroid,
   );
 }
 
@@ -1461,8 +1409,5 @@ Future<String> _getUserAgent(WebViewController controller) async {
 
 Future<String> _evaluateJavascript(
     WebViewController controller, String js) async {
-  if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.evaluateJavascript(js);
-  }
   return jsonDecode(await controller.evaluateJavascript(js));
 }
