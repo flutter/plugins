@@ -945,8 +945,10 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       return;
     }
 
-    final VideoPlayerController vController =
-        VideoPlayerController.file(File(videoFile!.path));
+    final VideoPlayerController vController = kIsWeb
+        ? VideoPlayerController.network(videoFile!.path)
+        : VideoPlayerController.file(File(videoFile!.path));
+
     videoPlayerListener = () {
       if (videoController != null && videoController!.value.size != null) {
         // Refreshing the state to update video player with the correct ratio.
