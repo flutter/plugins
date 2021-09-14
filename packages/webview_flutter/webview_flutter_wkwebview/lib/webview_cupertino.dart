@@ -8,9 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-
-import '../platform_interface.dart';
-import 'webview_method_channel.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 /// Builds an iOS webview.
 ///
@@ -23,6 +21,7 @@ class CupertinoWebView implements WebViewPlatform {
     required BuildContext context,
     required CreationParams creationParams,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    required JavascriptChannelRegistry javascriptChannelRegistry,
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
@@ -32,8 +31,11 @@ class CupertinoWebView implements WebViewPlatform {
         if (onWebViewPlatformCreated == null) {
           return;
         }
-        onWebViewPlatformCreated(
-            MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler));
+        onWebViewPlatformCreated(MethodChannelWebViewPlatform(
+          id,
+          webViewPlatformCallbacksHandler,
+          javascriptChannelRegistry,
+        ));
       },
       gestureRecognizers: gestureRecognizers,
       creationParams:
