@@ -1,4 +1,6 @@
-## NEXT
+## 5.1.0
+
+* Add reAuthenticate option to signInSilently to allow re-authentication to be requested
 
 * Updated Android lint settings.
 

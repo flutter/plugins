@@ -35,7 +35,10 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
 
   @override
   Future<void> init(int mapId) async {
-    _map(mapId).init();
+    // The internal instance of our controller is initialized eagerly in `buildView`,
+    // so we don't have to do anything in this method, which is left intentionally
+    // blank.
+    assert(_map(mapId) != null, 'Must call buildWidget before init!');
   }
 
   /// Updates the options of a given `mapId`.
@@ -305,11 +308,16 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
       polylines: polylines,
       circles: circles,
       mapOptions: mapOptions,
-    );
+    )..init(); // Initialize the controller
 
     _mapById[creationId] = mapController;
 
-    onPlatformViewCreated.call(creationId);
+    mapController.events.whereType<WebMapReadyEvent>().first.then((event) {
+      assert(creationId == event.mapId,
+          'Received WebMapReadyEvent for the wrong map');
+      // Notify the plugin now that there's a fully initialized controller.
+      onPlatformViewCreated.call(event.mapId);
+    });
 
     assert(mapController.widget != null,
         'The widget of a GoogleMapController cannot be null before calling dispose on it.');

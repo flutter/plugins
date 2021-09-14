@@ -9,6 +9,7 @@ import static org.mockito.Mockito.*;
 
 import android.content.Context;
 import android.view.View;
+import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -60,6 +61,7 @@ public class WebViewBuilderTest {
   public void build_should_set_values() throws IOException {
     WebSettings mockWebSettings = mock(WebSettings.class);
     WebChromeClient mockWebChromeClient = mock(WebChromeClient.class);
+    DownloadListener mockDownloadListener = mock(DownloadListener.class);
 
     when(mockWebView.getSettings()).thenReturn(mockWebSettings);
 
@@ -68,7 +70,8 @@ public class WebViewBuilderTest {
             .setDomStorageEnabled(true)
             .setJavaScriptCanOpenWindowsAutomatically(true)
             .setSupportMultipleWindows(true)
-            .setWebChromeClient(mockWebChromeClient);
+            .setWebChromeClient(mockWebChromeClient)
+            .setDownloadListener(mockDownloadListener);
 
     WebView webView = builder.build();
 
@@ -77,6 +80,7 @@ public class WebViewBuilderTest {
     verify(mockWebSettings).setJavaScriptCanOpenWindowsAutomatically(true);
     verify(mockWebSettings).setSupportMultipleWindows(true);
     verify(mockWebView).setWebChromeClient(mockWebChromeClient);
+    verify(mockWebView).setDownloadListener(mockDownloadListener);
   }
 
   @Test
@@ -95,5 +99,6 @@ public class WebViewBuilderTest {
     verify(mockWebSettings).setJavaScriptCanOpenWindowsAutomatically(false);
     verify(mockWebSettings).setSupportMultipleWindows(false);
     verify(mockWebView).setWebChromeClient(null);
+    verify(mockWebView).setDownloadListener(null);
   }
 }
