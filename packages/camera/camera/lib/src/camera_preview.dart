@@ -61,9 +61,9 @@ class CameraPreview extends StatelessWidget {
   int _getQuarterTurns() {
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
-      DeviceOrientation.landscapeLeft: 1,
+      DeviceOrientation.landscapeRight: 1,
       DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeRight: 3,
+      DeviceOrientation.landscapeLeft: 3,
     };
     return turns[_getApplicableOrientation()]!;
   }
@@ -71,7 +71,8 @@ class CameraPreview extends StatelessWidget {
   DeviceOrientation _getApplicableOrientation() {
     return controller.value.isRecordingVideo
         ? controller.value.recordingOrientation!
-        : (controller.value.lockedCaptureOrientation ??
+        : (controller.value.previewPauseOrientation ??
+            controller.value.lockedCaptureOrientation ??
             controller.value.deviceOrientation);
   }
 }

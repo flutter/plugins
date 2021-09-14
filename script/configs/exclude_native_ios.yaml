@@ -1,0 +1,7 @@
+# Deprecated; no plan to backfill the missing files
+- battery
+- connectivity/connectivity
+- device_info/device_info
+- package_info
+- sensors
+- wifi_info_flutter/wifi_info_flutter

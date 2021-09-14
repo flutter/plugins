@@ -15,7 +15,7 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class ZoomUtilsTest {
   @Test
-  public void setZoom_when_sensor_size_equals_zero_should_return_crop_region_of_zero() {
+  public void setZoom_whenSensorSizeEqualsZeroShouldReturnCropRegionOfZero() {
     final Rect sensorSize = new Rect(0, 0, 0, 0);
     final Rect computedZoom = ZoomUtils.computeZoom(18f, sensorSize, 1f, 20f);
 
@@ -27,7 +27,7 @@ public class ZoomUtilsTest {
   }
 
   @Test
-  public void setZoom_when_sensor_size_is_valid_should_return_crop_region() {
+  public void setZoom_whenSensorSizeIsValidShouldReturnCropRegion() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
     final Rect computedZoom = ZoomUtils.computeZoom(18f, sensorSize, 1f, 20f);
 
@@ -39,7 +39,7 @@ public class ZoomUtilsTest {
   }
 
   @Test
-  public void setZoom_when_zoom_is_greater_then_max_zoom_clamp_to_max_zoom() {
+  public void setZoom_whenZoomIsGreaterThenMaxZoomClampToMaxZoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
     final Rect computedZoom = ZoomUtils.computeZoom(25f, sensorSize, 1f, 10f);
 
@@ -51,7 +51,7 @@ public class ZoomUtilsTest {
   }
 
   @Test
-  public void setZoom_when_zoom_is_smaller_then_min_zoom_clamp_to_min_zoom() {
+  public void setZoom_whenZoomIsSmallerThenMinZoomClampToMinZoom() {
     final Rect sensorSize = new Rect(0, 0, 100, 100);
     final Rect computedZoom = ZoomUtils.computeZoom(0.5f, sensorSize, 1f, 10f);
 

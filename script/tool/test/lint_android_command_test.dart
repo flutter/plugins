@@ -43,8 +43,8 @@ void main() {
       final Directory pluginDir =
           createFakePlugin('plugin1', packagesDir, extraFiles: <String>[
         'example/android/gradlew',
-      ], platformSupport: <String, PlatformSupport>{
-        kPlatformAndroid: PlatformSupport.inline
+      ], platformSupport: <String, PlatformDetails>{
+        kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
       });
 
       final Directory androidDir =
@@ -74,8 +74,8 @@ void main() {
 
     test('fails if gradlew is missing', () async {
       createFakePlugin('plugin1', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           });
 
       Error? commandError;
@@ -96,12 +96,12 @@ void main() {
 
     test('fails if linting finds issues', () async {
       createFakePlugin('plugin1', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline)
           });
 
       processRunner.mockProcessesForExecutable['gradlew'] = <io.Process>[
-        MockProcess.failing(),
+        MockProcess(exitCode: 1),
       ];
 
       Error? commandError;
@@ -138,8 +138,8 @@ void main() {
 
     test('skips non-inline plugins', () async {
       createFakePlugin('plugin1', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.federated
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.federated)
           });
 
       final List<String> output =

@@ -696,20 +696,20 @@ void main() {
 
     group('mapResolutionPresetToSize', () {
       testWidgets(
-          'returns 3840x2160 '
+          'returns 4096x2160 '
           'when the resolution preset is max', (tester) async {
         expect(
           cameraService.mapResolutionPresetToSize(ResolutionPreset.max),
-          equals(Size(3840, 2160)),
+          equals(Size(4096, 2160)),
         );
       });
 
       testWidgets(
-          'returns 3840x2160 '
+          'returns 4096x2160 '
           'when the resolution preset is ultraHigh', (tester) async {
         expect(
           cameraService.mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
-          equals(Size(3840, 2160)),
+          equals(Size(4096, 2160)),
         );
       });
 

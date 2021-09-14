@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html' as html;
 import 'dart:ui';
 
@@ -67,6 +68,23 @@ class Camera {
   /// Initialized in [initialize] and [play], reset in [stop].
   html.MediaStream? stream;
 
+  /// The stream of the camera video tracks that have ended playing.
+  ///
+  /// This occurs when there is no more camera stream data, e.g.
+  /// the user has stopped the stream by changing the camera device,
+  /// revoked the camera permissions or ejected the camera device.
+  ///
+  /// MediaStreamTrack.onended:
+  /// https://developer.mozilla.org/en-US/docs/Web/API/MediaStreamTrack/onended
+  Stream<html.MediaStreamTrack> get onEnded => onEndedStreamController.stream;
+
+  /// The stream controller for the [onEnded] stream.
+  @visibleForTesting
+  final onEndedStreamController =
+      StreamController<html.MediaStreamTrack>.broadcast();
+
+  StreamSubscription<html.Event>? _onEndedSubscription;
+
   /// The camera flash mode.
   @visibleForTesting
   FlashMode? flashMode;
@@ -80,6 +98,7 @@ class Camera {
 
   /// Initializes the camera stream displayed in the [videoElement].
   /// Registers the camera view with [textureId] under [_getViewType] type.
+  /// Emits the camera default video track on the [onEnded] stream when it ends.
   Future<void> initialize() async {
     stream = await _cameraService.getMediaStreamForOptions(
       options,
@@ -87,7 +106,6 @@ class Camera {
     );
 
     videoElement = html.VideoElement();
-    _applyDefaultVideoStyles(videoElement);
 
     divElement = html.DivElement()
       ..style.setProperty('object-fit', 'cover')
@@ -100,9 +118,21 @@ class Camera {
 
     videoElement
       ..autoplay = false
-      ..muted = !options.audio.enabled
+      ..muted = true
       ..srcObject = stream
       ..setAttribute('playsinline', '');
+
+    _applyDefaultVideoStyles(videoElement);
+
+    final videoTracks = stream!.getVideoTracks();
+
+    if (videoTracks.isNotEmpty) {
+      final defaultVideoTrack = videoTracks.first;
+
+      _onEndedSubscription = defaultVideoTrack.onEnded.listen((html.Event _) {
+        onEndedStreamController.add(defaultVideoTrack);
+      });
+    }
   }
 
   /// Starts the camera stream.
@@ -120,13 +150,18 @@ class Camera {
   }
 
   /// Pauses the camera stream on the current frame.
-  void pause() async {
+  void pause() {
     videoElement.pause();
   }
 
   /// Stops the camera stream and resets the camera source.
   void stop() {
-    final tracks = videoElement.srcObject?.getTracks();
+    final videoTracks = stream!.getVideoTracks();
+    if (videoTracks.isNotEmpty) {
+      onEndedStreamController.add(videoTracks.first);
+    }
+
+    final tracks = stream?.getTracks();
     if (tracks != null) {
       for (final track in tracks) {
         track.stop();
@@ -151,11 +186,17 @@ class Camera {
     final videoWidth = videoElement.videoWidth;
     final videoHeight = videoElement.videoHeight;
     final canvas = html.CanvasElement(width: videoWidth, height: videoHeight);
+    final isBackCamera = getLensDirection() == CameraLensDirection.back;
+
+    // Flip the picture horizontally if it is not taken from a back camera.
+    if (!isBackCamera) {
+      canvas.context2D
+        ..translate(videoWidth, 0)
+        ..scale(-1, 1);
+    }
 
     canvas.context2D
-      ..translate(videoWidth, 0)
-      ..scale(-1, 1)
-      ..drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
+        .drawImageScaled(videoElement, 0, 0, videoWidth, videoHeight);
 
     final blob = await canvas.toBlob('image/jpeg');
 
@@ -170,7 +211,7 @@ class Camera {
   ///
   /// Returns [Size.zero] if the camera is missing a video track or
   /// the video track does not include the width or height setting.
-  Future<Size> getVideoSize() async {
+  Size getVideoSize() {
     final videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
 
     if (videoTracks.isEmpty) {
@@ -298,12 +339,35 @@ class Camera {
     });
   }
 
+  /// Returns a lens direction of this camera.
+  ///
+  /// Returns null if the camera is missing a video track or
+  /// the video track does not include the facing mode setting.
+  CameraLensDirection? getLensDirection() {
+    final videoTracks = videoElement.srcObject?.getVideoTracks() ?? [];
+
+    if (videoTracks.isEmpty) {
+      return null;
+    }
+
+    final defaultVideoTrack = videoTracks.first;
+    final defaultVideoTrackSettings = defaultVideoTrack.getSettings();
+
+    final facingMode = defaultVideoTrackSettings['facingMode'];
+
+    if (facingMode != null) {
+      return _cameraService.mapFacingModeToLensDirection(facingMode);
+    } else {
+      return null;
+    }
+  }
+
   /// Returns the registered view type of the camera.
   String getViewType() => _getViewType(textureId);
 
   /// Disposes the camera by stopping the camera stream
   /// and reloading the camera source.
-  void dispose() {
+  Future<void> dispose() async {
     /// Stop the camera stream.
     stop();
 
@@ -311,16 +375,27 @@ class Camera {
     videoElement
       ..srcObject = null
       ..load();
+
+    await _onEndedSubscription?.cancel();
+    _onEndedSubscription = null;
+
+    await onEndedStreamController.close();
   }
 
   /// Applies default styles to the video [element].
   void _applyDefaultVideoStyles(html.VideoElement element) {
+    final isBackCamera = getLensDirection() == CameraLensDirection.back;
+
+    // Flip the video horizontally if it is not taken from a back camera.
+    if (!isBackCamera) {
+      element.style.transform = 'scaleX(-1)';
+    }
+
     element.style
       ..transformOrigin = 'center'
       ..pointerEvents = 'none'
       ..width = '100%'
       ..height = '100%'
-      ..objectFit = 'cover'
-      ..transform = 'scaleX(-1)';
+      ..objectFit = 'cover';
   }
 }
