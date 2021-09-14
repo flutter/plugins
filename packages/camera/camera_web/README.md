@@ -9,7 +9,7 @@ The web implementation of [`camera`][camera].
 ### Depend on the package
 
 This package is not an [endorsed implementation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin)
-of the google_maps_flutter plugin yet, so you'll need to [add it explicitly](https://pub.dev/packages/camera_web/install).
+of the camera plugin yet, so you'll need to [add it explicitly](https://pub.dev/packages/camera_web/install).
 
 ## Example
 
