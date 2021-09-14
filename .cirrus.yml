@@ -208,10 +208,11 @@ task:
         matrix:
           CHANNEL: "master"
           CHANNEL: "stable"
-      install_background_script:
+      install_script:
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - dart pub get
+      chromedriver_background_script:
         - dart lib/web_driver_installer.dart chromedriver --install-only
         - ./chromedriver/chromedriver --port=4444
       build_script:
