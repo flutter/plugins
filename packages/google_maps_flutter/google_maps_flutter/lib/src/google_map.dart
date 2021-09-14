@@ -53,7 +53,7 @@ class AndroidGoogleMapsFlutter {
     assert(
       GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter,
       'This feature is only supported when `GoogleMapsFlutterPlatform.instance` '
-      'is a `MethodChannelGoogleMapsFlutter`. The default implementation for Android.',
+      'is a `MethodChannelGoogleMapsFlutter`; The default implementation for Android.',
     );
     return (GoogleMapsFlutterPlatform.instance
             as MethodChannelGoogleMapsFlutter)
@@ -73,7 +73,7 @@ class AndroidGoogleMapsFlutter {
     assert(
       GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter,
       'This feature is only supported when `GoogleMapsFlutterPlatform.instance` '
-      'is a `MethodChannelGoogleMapsFlutter`. The default implementation for Android.',
+      'is a `MethodChannelGoogleMapsFlutter`; The default implementation for Android.',
     );
     (GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter)
         .useAndroidViewSurface = useAndroidViewSurface;
