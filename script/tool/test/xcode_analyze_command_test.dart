@@ -57,8 +57,8 @@ void main() {
     group('iOS', () {
       test('skip if iOS is not supported', () async {
         createFakePlugin('plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformMacos: PlatformSupport.inline,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
             });
 
         final List<String> output =
@@ -70,8 +70,8 @@ void main() {
 
       test('skip if iOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformIos: PlatformSupport.federated
+            platformSupport: <String, PlatformDetails>{
+              kPlatformIos: const PlatformDetails(PlatformSupport.federated)
             });
 
         final List<String> output =
@@ -83,8 +83,8 @@ void main() {
 
       test('runs for iOS plugin', () async {
         final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir, platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
+            'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
         });
 
         final Directory pluginExampleDirectory =
@@ -126,12 +126,12 @@ void main() {
 
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformIos: PlatformSupport.inline
+            platformSupport: <String, PlatformDetails>{
+              kPlatformIos: const PlatformDetails(PlatformSupport.inline)
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -172,8 +172,8 @@ void main() {
 
       test('skip if macOS is implemented in a federated package', () async {
         createFakePlugin('plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformMacos: PlatformSupport.federated,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformMacos: const PlatformDetails(PlatformSupport.federated),
             });
 
         final List<String> output = await runCapturingPrint(
@@ -186,8 +186,8 @@ void main() {
       test('runs for macOS plugin', () async {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformMacos: PlatformSupport.inline,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -223,12 +223,12 @@ void main() {
 
       test('fails if xcrun fails', () async {
         createFakePlugin('plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformMacos: PlatformSupport.inline,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
             });
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess.failing()
+          MockProcess(exitCode: 1)
         ];
 
         Error? commandError;
@@ -253,9 +253,9 @@ void main() {
       test('runs both iOS and macOS when supported', () async {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformIos: PlatformSupport.inline,
-              kPlatformMacos: PlatformSupport.inline,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformIos: const PlatformDetails(PlatformSupport.inline),
+              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -313,8 +313,8 @@ void main() {
       test('runs only macOS for a macOS plugin', () async {
         final Directory pluginDirectory1 = createFakePlugin(
             'plugin', packagesDir,
-            platformSupport: <String, PlatformSupport>{
-              kPlatformMacos: PlatformSupport.inline,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
             });
 
         final Directory pluginExampleDirectory =
@@ -354,8 +354,8 @@ void main() {
 
       test('runs only iOS for a iOS plugin', () async {
         final Directory pluginDirectory = createFakePlugin(
-            'plugin', packagesDir, platformSupport: <String, PlatformSupport>{
-          kPlatformIos: PlatformSupport.inline
+            'plugin', packagesDir, platformSupport: <String, PlatformDetails>{
+          kPlatformIos: const PlatformDetails(PlatformSupport.inline)
         });
 
         final Directory pluginExampleDirectory =

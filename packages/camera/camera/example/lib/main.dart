@@ -399,6 +399,13 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                             onSetExposureModeButtonPressed(ExposureMode.locked)
                         : null,
                   ),
+                  TextButton(
+                    child: Text('RESET OFFSET'),
+                    style: styleLocked,
+                    onPressed: controller != null
+                        ? () => controller!.setExposureOffset(0.0)
+                        : null,
+                  ),
                 ],
               ),
               Center(
@@ -530,7 +537,16 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
                   cameraController.value.isRecordingVideo
               ? onStopButtonPressed
               : null,
-        )
+        ),
+        IconButton(
+          icon: const Icon(Icons.pause_presentation),
+          color:
+              cameraController != null && cameraController.value.isPreviewPaused
+                  ? Colors.red
+                  : Colors.blue,
+          onPressed:
+              cameraController == null ? null : onPausePreviewButtonPressed,
+        ),
       ],
     );
   }
@@ -597,12 +613,14 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
     if (controller != null) {
       await controller!.dispose();
     }
+
     final CameraController cameraController = CameraController(
       cameraDescription,
       ResolutionPreset.medium,
       enableAudio: enableAudio,
       imageFormatGroup: ImageFormatGroup.jpeg,
     );
+
     controller = cameraController;
 
     // If the controller is updated then update the UI.
@@ -739,6 +757,23 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
         _startVideoPlayer();
       }
     });
+  }
+
+  Future<void> onPausePreviewButtonPressed() async {
+    final CameraController? cameraController = controller;
+
+    if (cameraController == null || !cameraController.value.isInitialized) {
+      showInSnackBar('Error: select a camera first.');
+      return;
+    }
+
+    if (cameraController.value.isPreviewPaused) {
+      await cameraController.resumePreview();
+    } else {
+      await cameraController.pausePreview();
+    }
+
+    if (mounted) setState(() {});
   }
 
   void onPauseButtonPressed() {

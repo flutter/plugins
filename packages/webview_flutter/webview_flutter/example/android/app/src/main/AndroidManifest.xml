@@ -1,6 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.flutter.plugins.webviewflutterexample">
+
   <application
+    android:usesCleartextTraffic="true"
     android:icon="@mipmap/ic_launcher"
     android:label="webview_flutter_example">
     <meta-data
@@ -32,4 +34,9 @@
        to allow setting breakpoints, to provide hot reload, etc.
   -->
   <uses-permission android:name="android.permission.INTERNET"/>
+
+  <!-- When tests are ran on Firebase Test Lab, a wake lock
+       permission failure prevents tests from running.
+  -->
+  <uses-permission android:name="android.permission.WAKE_LOCK" />
 </manifest>

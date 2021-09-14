@@ -9,6 +9,7 @@ import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/plugin_utils.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 import 'common/xcode.dart';
 
 /// The command to run Xcode's static analyzer on plugins.
@@ -42,7 +43,7 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final bool testIos = getBoolArg(kPlatformIos) &&
         pluginSupportsPlatform(kPlatformIos, package,
             requiredMode: PlatformSupport.inline);
@@ -78,18 +79,18 @@ class XcodeAnalyzeCommand extends PackageLoopingCommand {
 
   /// Analyzes [plugin] for [platform], returning true if it passed analysis.
   Future<bool> _analyzePlugin(
-    Directory plugin,
+    RepositoryPackage plugin,
     String platform, {
     List<String> extraFlags = const <String>[],
   }) async {
     bool passing = true;
-    for (final Directory example in getExamplesForPlugin(plugin)) {
+    for (final RepositoryPackage example in plugin.getExamples()) {
       // Running tests and static analyzer.
-      final String examplePath =
-          getRelativePosixPath(example, from: plugin.parent);
+      final String examplePath = getRelativePosixPath(example.directory,
+          from: plugin.directory.parent);
       print('Running $platform tests and analyzer for $examplePath...');
       final int exitCode = await _xcode.runXcodeBuild(
-        example,
+        example.directory,
         actions: <String>['analyze'],
         workspace: '${platform.toLowerCase()}/Runner.xcworkspace',
         scheme: 'Runner',

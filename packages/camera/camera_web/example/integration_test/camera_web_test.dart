@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:async';
 import 'dart:html';
 import 'dart:ui';
 
@@ -9,9 +10,10 @@ import 'package:async/async.dart';
 import 'package:camera_platform_interface/camera_platform_interface.dart';
 import 'package:camera_web/camera_web.dart';
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart' as widgets;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -28,7 +30,12 @@ void main() {
     late Navigator navigator;
     late MediaDevices mediaDevices;
     late VideoElement videoElement;
-    late CameraSettings cameraSettings;
+    late Screen screen;
+    late ScreenOrientation screenOrientation;
+    late Document document;
+    late Element documentElement;
+
+    late CameraService cameraService;
 
     setUp(() async {
       window = MockWindow();
@@ -37,21 +44,41 @@ void main() {
 
       videoElement = getVideoElementWithBlankStream(Size(10, 10));
 
-      cameraSettings = MockCameraSettings();
-
       when(() => window.navigator).thenReturn(navigator);
       when(() => navigator.mediaDevices).thenReturn(mediaDevices);
+
+      screen = MockScreen();
+      screenOrientation = MockScreenOrientation();
+
+      when(() => screen.orientation).thenReturn(screenOrientation);
+      when(() => window.screen).thenReturn(screen);
+
+      document = MockDocument();
+      documentElement = MockElement();
+
+      when(() => document.documentElement).thenReturn(documentElement);
+      when(() => window.document).thenReturn(document);
+
+      cameraService = MockCameraService();
+
       when(
-        () => mediaDevices.getUserMedia(any()),
-      ).thenAnswer((_) async => videoElement.captureStream());
+        () => cameraService.getMediaStreamForOptions(
+          any(),
+          cameraId: any(named: 'cameraId'),
+        ),
+      ).thenAnswer(
+        (_) async => videoElement.captureStream(),
+      );
 
       CameraPlatform.instance = CameraPlugin(
-        cameraSettings: cameraSettings,
+        cameraService: cameraService,
       )..window = window;
     });
 
     setUpAll(() {
       registerFallbackValue<MediaStreamTrack>(MockMediaStreamTrack());
+      registerFallbackValue<CameraOptions>(MockCameraOptions());
+      registerFallbackValue<FlashMode>(FlashMode.off);
     });
 
     testWidgets('CameraPlugin is the live instance', (tester) async {
@@ -61,33 +88,31 @@ void main() {
     group('availableCameras', () {
       setUp(() {
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             any(),
           ),
         ).thenReturn(null);
-      });
 
-      testWidgets(
-          'throws CameraException '
-          'with notSupported error '
-          'when there are no media devices', (tester) async {
-        when(() => navigator.mediaDevices).thenReturn(null);
-
-        expect(
-          () => CameraPlatform.instance.availableCameras(),
-          throwsA(
-            isA<CameraException>().having(
-              (e) => e.code,
-              'code',
-              CameraErrorCodes.notSupported,
-            ),
-          ),
+        when(mediaDevices.enumerateDevices).thenAnswer(
+          (_) async => [],
         );
       });
 
+      testWidgets('requests video and audio permissions', (tester) async {
+        final _ = await CameraPlatform.instance.availableCameras();
+
+        verify(
+          () => cameraService.getMediaStreamForOptions(
+            CameraOptions(
+              audio: AudioConstraints(enabled: true),
+            ),
+          ),
+        ).called(1);
+      });
+
       testWidgets(
-          'calls MediaDevices.getUserMedia '
-          'on the video input device', (tester) async {
+          'gets a video stream '
+          'for a video input device', (tester) async {
         final videoDevice = FakeMediaDeviceInfo(
           '1',
           'Camera 1',
@@ -101,19 +126,47 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verify(
-          () => mediaDevices.getUserMedia(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(
                 deviceId: videoDevice.deviceId,
               ),
-            ).toJson(),
+            ),
           ),
         ).called(1);
       });
 
       testWidgets(
-          'calls CameraSettings.getLensDirectionForVideoTrack '
-          'on the first video track of the video input device', (tester) async {
+          'does not get a video stream '
+          'for the video input device '
+          'with an empty device id', (tester) async {
+        final videoDevice = FakeMediaDeviceInfo(
+          '',
+          'Camera 1',
+          MediaDeviceKind.videoInput,
+        );
+
+        when(mediaDevices.enumerateDevices).thenAnswer(
+          (_) => Future.value([videoDevice]),
+        );
+
+        final _ = await CameraPlatform.instance.availableCameras();
+
+        verifyNever(
+          () => cameraService.getMediaStreamForOptions(
+            CameraOptions(
+              video: VideoConstraints(
+                deviceId: videoDevice.deviceId,
+              ),
+            ),
+          ),
+        );
+      });
+
+      testWidgets(
+          'gets the facing mode '
+          'from the first available video track '
+          'of the video input device', (tester) async {
         final videoDevice = FakeMediaDeviceInfo(
           '1',
           'Camera 1',
@@ -124,10 +177,10 @@ void main() {
             FakeMediaStream([MockMediaStreamTrack(), MockMediaStreamTrack()]);
 
         when(
-          () => mediaDevices.getUserMedia(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: videoDevice.deviceId),
-            ).toJson(),
+            ),
           ),
         ).thenAnswer((_) => Future.value(videoStream));
 
@@ -138,7 +191,7 @@ void main() {
         final _ = await CameraPlatform.instance.availableCameras();
 
         verify(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             videoStream.getVideoTracks().first,
           ),
         ).called(1);
@@ -146,7 +199,8 @@ void main() {
 
       testWidgets(
           'returns appropriate camera descriptions '
-          'for multiple media devices', (tester) async {
+          'for multiple video devices '
+          'based on video streams', (tester) async {
         final firstVideoDevice = FakeMediaDeviceInfo(
           '1',
           'Camera 1',
@@ -173,58 +227,58 @@ void main() {
             firstVideoDevice,
             FakeMediaDeviceInfo(
               '2',
-              'Camera 2',
+              'Audio Input 2',
               MediaDeviceKind.audioInput,
             ),
             FakeMediaDeviceInfo(
               '3',
-              'Camera 3',
+              'Audio Output 3',
               MediaDeviceKind.audioOutput,
             ),
             secondVideoDevice,
           ]),
         );
 
-        // Mock media devices to return the first video stream
+        // Mock camera service to return the first video stream
         // for the first video device.
         when(
-          () => mediaDevices.getUserMedia(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: firstVideoDevice.deviceId),
-            ).toJson(),
+            ),
           ),
         ).thenAnswer((_) => Future.value(firstVideoStream));
 
-        // Mock media devices to return the second video stream
+        // Mock camera service to return the second video stream
         // for the second video device.
         when(
-          () => mediaDevices.getUserMedia(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: secondVideoDevice.deviceId),
-            ).toJson(),
+            ),
           ),
         ).thenAnswer((_) => Future.value(secondVideoStream));
 
-        // Mock camera settings to return a user facing mode
+        // Mock camera service to return a user facing mode
         // for the first video stream.
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             firstVideoStream.getVideoTracks().first,
           ),
         ).thenReturn('user');
 
-        when(() => cameraSettings.mapFacingModeToLensDirection('user'))
+        when(() => cameraService.mapFacingModeToLensDirection('user'))
             .thenReturn(CameraLensDirection.front);
 
-        // Mock camera settings to return an environment facing mode
+        // Mock camera service to return an environment facing mode
         // for the second video stream.
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             secondVideoStream.getVideoTracks().first,
           ),
         ).thenReturn('environment');
 
-        when(() => cameraSettings.mapFacingModeToLensDirection('environment'))
+        when(() => cameraService.mapFacingModeToLensDirection('environment'))
             .thenReturn(CameraLensDirection.back);
 
         final cameras = await CameraPlatform.instance.availableCameras();
@@ -264,20 +318,20 @@ void main() {
         );
 
         when(
-          () => mediaDevices.getUserMedia(
+          () => cameraService.getMediaStreamForOptions(
             CameraOptions(
               video: VideoConstraints(deviceId: videoDevice.deviceId),
-            ).toJson(),
+            ),
           ),
         ).thenAnswer((_) => Future.value(videoStream));
 
         when(
-          () => cameraSettings.getFacingModeForVideoTrack(
+          () => cameraService.getFacingModeForVideoTrack(
             videoStream.getVideoTracks().first,
           ),
         ).thenReturn('left');
 
-        when(() => cameraSettings.mapFacingModeToLensDirection('left'))
+        when(() => cameraService.mapFacingModeToLensDirection('left'))
             .thenReturn(CameraLensDirection.external);
 
         final camera = (await CameraPlatform.instance.availableCameras()).first;
@@ -292,33 +346,93 @@ void main() {
           }),
         );
       });
+
+      group('throws CameraException', () {
+        testWidgets(
+            'with notSupported error '
+            'when there are no media devices', (tester) async {
+          when(() => navigator.mediaDevices).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.availableCameras(),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when MediaDevices.enumerateDevices throws DomException',
+            (tester) async {
+          final exception = FakeDomException(DomException.UNKNOWN);
+
+          when(mediaDevices.enumerateDevices).thenThrow(exception);
+
+          expect(
+            () => CameraPlatform.instance.availableCameras(),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'when CameraService.getMediaStreamForOptions '
+            'throws CameraWebException', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.security,
+            'description',
+          );
+
+          when(() => cameraService.getMediaStreamForOptions(any()))
+              .thenThrow(exception);
+
+          expect(
+            () => CameraPlatform.instance.availableCameras(),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'when CameraService.getMediaStreamForOptions '
+            'throws PlatformException', (tester) async {
+          final exception = PlatformException(
+            code: CameraErrorCode.notSupported.toString(),
+            message: 'message',
+          );
+
+          when(() => cameraService.getMediaStreamForOptions(any()))
+              .thenThrow(exception);
+
+          expect(
+            () => CameraPlatform.instance.availableCameras(),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
     group('createCamera', () {
-      testWidgets(
-          'throws CameraException '
-          'with missingMetadata error '
-          'if there is no metadata '
-          'for the given camera description', (tester) async {
-        expect(
-          () => CameraPlatform.instance.createCamera(
-            CameraDescription(
-              name: 'name',
-              lensDirection: CameraLensDirection.back,
-              sensorOrientation: 0,
-            ),
-            ResolutionPreset.ultraHigh,
-          ),
-          throwsA(
-            isA<CameraException>().having(
-              (e) => e.code,
-              'code',
-              CameraErrorCodes.missingMetadata,
-            ),
-          ),
-        );
-      });
-
       group('creates a camera', () {
         const ultraHighResolutionSize = Size(3840, 2160);
         const maxResolutionSize = Size(3840, 2160);
@@ -340,13 +454,13 @@ void main() {
               .camerasMetadata[cameraDescription] = cameraMetadata;
 
           when(
-            () => cameraSettings.mapFacingModeToCameraType('user'),
+            () => cameraService.mapFacingModeToCameraType('user'),
           ).thenReturn(CameraType.user);
         });
 
         testWidgets('with appropriate options', (tester) async {
           when(
-            () => cameraSettings
+            () => cameraService
                 .mapResolutionPresetToSize(ResolutionPreset.ultraHigh),
           ).thenReturn(ultraHighResolutionSize);
 
@@ -363,11 +477,6 @@ void main() {
                   (camera) => camera.textureId,
                   'textureId',
                   cameraId,
-                )
-                .having(
-                  (camera) => camera.window,
-                  'window',
-                  window,
                 )
                 .having(
                   (camera) => camera.options,
@@ -394,8 +503,7 @@ void main() {
             'and enabled audio set to false '
             'when no options are specified', (tester) async {
           when(
-            () =>
-                cameraSettings.mapResolutionPresetToSize(ResolutionPreset.max),
+            () => cameraService.mapResolutionPresetToSize(ResolutionPreset.max),
           ).thenReturn(maxResolutionSize);
 
           final cameraId = await CameraPlatform.instance.createCamera(
@@ -425,32 +533,62 @@ void main() {
           );
         });
       });
-    });
 
-    group('initializeCamera', () {
       testWidgets(
           'throws CameraException '
-          'with notFound error '
-          'if the camera does not exist', (tester) async {
+          'with missingMetadata error '
+          'if there is no metadata '
+          'for the given camera description', (tester) async {
         expect(
-          () => CameraPlatform.instance.initializeCamera(cameraId),
+          () => CameraPlatform.instance.createCamera(
+            CameraDescription(
+              name: 'name',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 0,
+            ),
+            ResolutionPreset.ultraHigh,
+          ),
           throwsA(
             isA<CameraException>().having(
               (e) => e.code,
               'code',
-              CameraErrorCodes.notFound,
+              CameraErrorCode.missingMetadata.toString(),
             ),
           ),
         );
       });
+    });
 
-      testWidgets('initializes and plays the camera', (tester) async {
-        final camera = MockCamera();
+    group('initializeCamera', () {
+      late Camera camera;
+      late VideoElement videoElement;
 
-        when(camera.getVideoSize).thenAnswer((_) => Future.value(Size(10, 10)));
+      late StreamController<Event> errorStreamController, abortStreamController;
+      late StreamController<MediaStreamTrack> endedStreamController;
+
+      setUp(() {
+        camera = MockCamera();
+        videoElement = MockVideoElement();
+
+        errorStreamController = StreamController<Event>();
+        abortStreamController = StreamController<Event>();
+        endedStreamController = StreamController<MediaStreamTrack>();
+
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
         when(camera.initialize).thenAnswer((_) => Future.value());
         when(camera.play).thenAnswer((_) => Future.value());
 
+        when(() => camera.videoElement).thenReturn(videoElement);
+        when(() => videoElement.onError)
+            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
+        when(() => videoElement.onAbort)
+            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
+
+        when(() => camera.onEnded)
+            .thenAnswer((_) => endedStreamController.stream);
+      });
+
+      testWidgets('initializes and plays the camera', (tester) async {
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
 
@@ -459,32 +597,399 @@ void main() {
         verify(camera.initialize).called(1);
         verify(camera.play).called(1);
       });
+
+      testWidgets('starts listening to the camera video error and abort events',
+          (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(errorStreamController.hasListener, isFalse);
+        expect(abortStreamController.hasListener, isFalse);
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+
+        expect(errorStreamController.hasListener, isTrue);
+        expect(abortStreamController.hasListener, isTrue);
+      });
+
+      testWidgets('starts listening to the camera ended events',
+          (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(endedStreamController.hasListener, isFalse);
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+
+        expect(endedStreamController.hasListener, isTrue);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () => CameraPlatform.instance.initializeCamera(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when camera throws CameraWebException', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.permissionDenied,
+            'description',
+          );
+
+          when(camera.initialize).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.initializeCamera(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when camera throws DomException', (tester) async {
+          final exception = FakeDomException(DomException.NOT_ALLOWED);
+
+          when(camera.initialize).thenAnswer((_) => Future.value());
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.initializeCamera(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('lockCaptureOrientation throws UnimplementedError',
-        (tester) async {
-      expect(
-        () => CameraPlatform.instance.lockCaptureOrientation(
+    group('lockCaptureOrientation', () {
+      setUp(() {
+        when(
+          () => cameraService.mapDeviceOrientationToOrientationType(any()),
+        ).thenReturn(OrientationType.portraitPrimary);
+      });
+
+      testWidgets(
+          'requests full-screen mode '
+          'on documentElement', (tester) async {
+        await CameraPlatform.instance.lockCaptureOrientation(
           cameraId,
-          DeviceOrientation.landscapeLeft,
-        ),
-        throwsUnimplementedError,
-      );
+          DeviceOrientation.portraitUp,
+        );
+
+        verify(documentElement.requestFullscreen).called(1);
+      });
+
+      testWidgets(
+          'locks the capture orientation '
+          'based on the given device orientation', (tester) async {
+        when(
+          () => cameraService.mapDeviceOrientationToOrientationType(
+            DeviceOrientation.landscapeRight,
+          ),
+        ).thenReturn(OrientationType.landscapeSecondary);
+
+        await CameraPlatform.instance.lockCaptureOrientation(
+          cameraId,
+          DeviceOrientation.landscapeRight,
+        );
+
+        verify(
+          () => cameraService.mapDeviceOrientationToOrientationType(
+            DeviceOrientation.landscapeRight,
+          ),
+        ).called(1);
+
+        verify(
+          () => screenOrientation.lock(
+            OrientationType.landscapeSecondary,
+          ),
+        ).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with orientationNotSupported error '
+            'when screen is not supported', (tester) async {
+          when(() => window.screen).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.lockCaptureOrientation(
+              cameraId,
+              DeviceOrientation.portraitUp,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.orientationNotSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with orientationNotSupported error '
+            'when screen orientation is not supported', (tester) async {
+          when(() => screen.orientation).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.lockCaptureOrientation(
+              cameraId,
+              DeviceOrientation.portraitUp,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.orientationNotSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with orientationNotSupported error '
+            'when documentElement is not available', (tester) async {
+          when(() => document.documentElement).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.lockCaptureOrientation(
+              cameraId,
+              DeviceOrientation.portraitUp,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.orientationNotSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when lock throws DomException', (tester) async {
+          final exception = FakeDomException(DomException.NOT_ALLOWED);
+
+          when(() => screenOrientation.lock(any())).thenThrow(exception);
+
+          expect(
+            () => CameraPlatform.instance.lockCaptureOrientation(
+              cameraId,
+              DeviceOrientation.portraitDown,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('unlockCaptureOrientation throws UnimplementedError',
-        (tester) async {
-      expect(
-        () => CameraPlatform.instance.unlockCaptureOrientation(cameraId),
-        throwsUnimplementedError,
-      );
+    group('unlockCaptureOrientation', () {
+      setUp(() {
+        when(
+          () => cameraService.mapDeviceOrientationToOrientationType(any()),
+        ).thenReturn(OrientationType.portraitPrimary);
+      });
+
+      testWidgets('unlocks the capture orientation', (tester) async {
+        await CameraPlatform.instance.unlockCaptureOrientation(
+          cameraId,
+        );
+
+        verify(screenOrientation.unlock).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with orientationNotSupported error '
+            'when screen is not supported', (tester) async {
+          when(() => window.screen).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.unlockCaptureOrientation(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.orientationNotSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with orientationNotSupported error '
+            'when screen orientation is not supported', (tester) async {
+          when(() => screen.orientation).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.unlockCaptureOrientation(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.orientationNotSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets(
+            'with orientationNotSupported error '
+            'when documentElement is not available', (tester) async {
+          when(() => document.documentElement).thenReturn(null);
+
+          expect(
+            () => CameraPlatform.instance.unlockCaptureOrientation(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.orientationNotSupported.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when unlock throws DomException', (tester) async {
+          final exception = FakeDomException(DomException.NOT_ALLOWED);
+
+          when(screenOrientation.unlock).thenThrow(exception);
+
+          expect(
+            () => CameraPlatform.instance.unlockCaptureOrientation(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('takePicture throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.takePicture(cameraId),
-        throwsUnimplementedError,
-      );
+    group('takePicture', () {
+      testWidgets('captures a picture', (tester) async {
+        final camera = MockCamera();
+        final capturedPicture = MockXFile();
+
+        when(camera.takePicture)
+            .thenAnswer((_) => Future.value(capturedPicture));
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        final picture = await CameraPlatform.instance.takePicture(cameraId);
+
+        verify(camera.takePicture).called(1);
+
+        expect(picture, equals(capturedPicture));
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () => CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when takePicture throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.takePicture).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when takePicture throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.takePicture).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
     testWidgets('prepareForVideoRecording throws UnimplementedError',
@@ -526,14 +1031,94 @@ void main() {
       );
     });
 
-    testWidgets('setFlashMode throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.setFlashMode(
+    group('setFlashMode', () {
+      testWidgets('calls setFlashMode on the camera', (tester) async {
+        final camera = MockCamera();
+        const flashMode = FlashMode.always;
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.setFlashMode(
           cameraId,
-          FlashMode.auto,
-        ),
-        throwsUnimplementedError,
-      );
+          flashMode,
+        );
+
+        verify(() => camera.setFlashMode(flashMode)).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () => CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.always,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setFlashMode throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(() => camera.setFlashMode(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.always,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setFlashMode throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(() => camera.setFlashMode(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.torch,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
     testWidgets('setExposureMode throws UnimplementedError', (tester) async {
@@ -610,47 +1195,583 @@ void main() {
       );
     });
 
-    testWidgets('getMaxZoomLevel throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.getMaxZoomLevel(cameraId),
-        throwsUnimplementedError,
-      );
+    group('getMaxZoomLevel', () {
+      testWidgets('calls getMaxZoomLevel on the camera', (tester) async {
+        final camera = MockCamera();
+        const maximumZoomLevel = 100.0;
+
+        when(camera.getMaxZoomLevel).thenReturn(maximumZoomLevel);
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(
+          await CameraPlatform.instance.getMaxZoomLevel(
+            cameraId,
+          ),
+          equals(maximumZoomLevel),
+        );
+
+        verify(camera.getMaxZoomLevel).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMaxZoomLevel throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.getMaxZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMaxZoomLevel throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.getMaxZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('getMinZoomLevel throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.getMinZoomLevel(cameraId),
-        throwsUnimplementedError,
-      );
+    group('getMinZoomLevel', () {
+      testWidgets('calls getMinZoomLevel on the camera', (tester) async {
+        final camera = MockCamera();
+        const minimumZoomLevel = 100.0;
+
+        when(camera.getMinZoomLevel).thenReturn(minimumZoomLevel);
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        expect(
+          await CameraPlatform.instance.getMinZoomLevel(
+            cameraId,
+          ),
+          equals(minimumZoomLevel),
+        );
+
+        verify(camera.getMinZoomLevel).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMinZoomLevel throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.getMinZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when getMinZoomLevel throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.getMinZoomLevel).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
     });
 
-    testWidgets('setZoomLevel throws UnimplementedError', (tester) async {
+    group('setZoomLevel', () {
+      testWidgets('calls setZoomLevel on the camera', (tester) async {
+        final camera = MockCamera();
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        const zoom = 100.0;
+
+        await CameraPlatform.instance.setZoomLevel(cameraId, zoom);
+
+        verify(() => camera.setZoomLevel(zoom)).called(1);
+      });
+
+      group('throws CameraException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setZoomLevel throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setZoomLevel throws PlatformException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = PlatformException(
+            code: CameraErrorCode.notSupported.toString(),
+            message: 'message',
+          );
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when setZoomLevel throws CameraWebException',
+            (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
+    });
+
+    group('pausePreview', () {
+      testWidgets('calls pause on the camera', (tester) async {
+        final camera = MockCamera();
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.pausePreview(cameraId);
+
+        verify(camera.pause).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.pausePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when pause throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.pause).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.pausePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
+    });
+
+    group('resumePreview', () {
+      testWidgets('calls play on the camera', (tester) async {
+        final camera = MockCamera();
+
+        when(camera.play).thenAnswer((_) async => {});
+
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.resumePreview(cameraId);
+
+        verify(camera.play).called(1);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when play throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.NOT_SUPPORTED);
+
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when play throws CameraWebException', (tester) async {
+          final camera = MockCamera();
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'description',
+          );
+
+          when(camera.play).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.code.toString(),
+              ),
+            ),
+          );
+        });
+      });
+    });
+
+    testWidgets(
+        'buildPreview returns an HtmlElementView '
+        'with an appropriate view type', (tester) async {
+      final camera = Camera(
+        textureId: cameraId,
+        cameraService: cameraService,
+      );
+
+      // Save the camera in the camera plugin.
+      (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
       expect(
-        () => CameraPlatform.instance.setZoomLevel(
-          cameraId,
-          1.0,
+        CameraPlatform.instance.buildPreview(cameraId),
+        isA<widgets.HtmlElementView>().having(
+          (view) => view.viewType,
+          'viewType',
+          camera.getViewType(),
         ),
-        throwsUnimplementedError,
       );
     });
 
-    testWidgets('buildPreview throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.buildPreview(cameraId),
-        throwsUnimplementedError,
-      );
-    });
+    group('dispose', () {
+      late Camera camera;
+      late VideoElement videoElement;
 
-    testWidgets('dispose throws UnimplementedError', (tester) async {
-      expect(
-        () => CameraPlatform.instance.dispose(cameraId),
-        throwsUnimplementedError,
-      );
+      late StreamController<Event> errorStreamController, abortStreamController;
+      late StreamController<MediaStreamTrack> endedStreamController;
+
+      setUp(() {
+        camera = MockCamera();
+        videoElement = MockVideoElement();
+
+        errorStreamController = StreamController<Event>();
+        abortStreamController = StreamController<Event>();
+        endedStreamController = StreamController<MediaStreamTrack>();
+
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
+        when(camera.initialize).thenAnswer((_) => Future.value());
+        when(camera.play).thenAnswer((_) => Future.value());
+        when(camera.dispose).thenAnswer((_) => Future.value());
+
+        when(() => camera.videoElement).thenReturn(videoElement);
+        when(() => videoElement.onError)
+            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
+        when(() => videoElement.onAbort)
+            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
+
+        when(() => camera.onEnded)
+            .thenAnswer((_) => endedStreamController.stream);
+      });
+
+      testWidgets('disposes the correct camera', (tester) async {
+        const firstCameraId = 0;
+        const secondCameraId = 1;
+
+        final firstCamera = MockCamera();
+        final secondCamera = MockCamera();
+
+        when(firstCamera.dispose).thenAnswer((_) => Future.value());
+        when(secondCamera.dispose).thenAnswer((_) => Future.value());
+
+        // Save cameras in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras.addAll({
+          firstCameraId: firstCamera,
+          secondCameraId: secondCamera,
+        });
+
+        // Dispose the first camera.
+        await CameraPlatform.instance.dispose(firstCameraId);
+
+        // The first camera should be disposed.
+        verify(firstCamera.dispose).called(1);
+        verifyNever(secondCamera.dispose);
+
+        // The first camera should be removed from the camera plugin.
+        expect(
+          (CameraPlatform.instance as CameraPlugin).cameras,
+          equals({
+            secondCameraId: secondCamera,
+          }),
+        );
+      });
+
+      testWidgets('cancels the camera video error and abort subscriptions',
+          (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+        await CameraPlatform.instance.dispose(cameraId);
+
+        expect(errorStreamController.hasListener, isFalse);
+        expect(abortStreamController.hasListener, isFalse);
+      });
+
+      testWidgets('cancels the camera ended subscriptions', (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+        await CameraPlatform.instance.dispose(cameraId);
+
+        expect(endedStreamController.hasListener, isFalse);
+      });
+
+      group('throws PlatformException', () {
+        testWidgets(
+            'with notFound error '
+            'if the camera does not exist', (tester) async {
+          expect(
+            () => CameraPlatform.instance.dispose(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                CameraErrorCode.notFound.toString(),
+              ),
+            ),
+          );
+        });
+
+        testWidgets('when dispose throws DomException', (tester) async {
+          final camera = MockCamera();
+          final exception = FakeDomException(DomException.INVALID_ACCESS);
+
+          when(camera.dispose).thenThrow(exception);
+
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+          expect(
+            () => CameraPlatform.instance.dispose(cameraId),
+            throwsA(
+              isA<PlatformException>().having(
+                (e) => e.code,
+                'code',
+                exception.name,
+              ),
+            ),
+          );
+        });
+      });
     });
 
     group('getCamera', () {
       testWidgets('returns the correct camera', (tester) async {
-        final camera = Camera(textureId: cameraId, window: window);
+        final camera = Camera(
+          textureId: cameraId,
+          cameraService: cameraService,
+        );
 
         // Save the camera in the camera plugin.
         (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
@@ -662,16 +1783,16 @@ void main() {
       });
 
       testWidgets(
-          'throws CameraException '
+          'throws PlatformException '
           'with notFound error '
           'if the camera does not exist', (tester) async {
         expect(
           () => (CameraPlatform.instance as CameraPlugin).getCamera(cameraId),
           throwsA(
-            isA<CameraException>().having(
+            isA<PlatformException>().having(
               (e) => e.code,
               'code',
-              CameraErrorCodes.notFound,
+              CameraErrorCode.notFound.toString(),
             ),
           ),
         );
@@ -679,6 +1800,34 @@ void main() {
     });
 
     group('events', () {
+      late Camera camera;
+      late VideoElement videoElement;
+
+      late StreamController<Event> errorStreamController, abortStreamController;
+      late StreamController<MediaStreamTrack> endedStreamController;
+
+      setUp(() {
+        camera = MockCamera();
+        videoElement = MockVideoElement();
+
+        errorStreamController = StreamController<Event>();
+        abortStreamController = StreamController<Event>();
+        endedStreamController = StreamController<MediaStreamTrack>();
+
+        when(camera.getVideoSize).thenReturn(Size(10, 10));
+        when(camera.initialize).thenAnswer((_) => Future.value());
+        when(camera.play).thenAnswer((_) => Future.value());
+
+        when(() => camera.videoElement).thenReturn(videoElement);
+        when(() => videoElement.onError)
+            .thenAnswer((_) => FakeElementStream(errorStreamController.stream));
+        when(() => videoElement.onAbort)
+            .thenAnswer((_) => FakeElementStream(abortStreamController.stream));
+
+        when(() => camera.onEnded)
+            .thenAnswer((_) => endedStreamController.stream);
+      });
+
       testWidgets(
           'onCameraInitialized emits a CameraInitializedEvent '
           'on initializeCamera', (tester) async {
@@ -688,12 +1837,15 @@ void main() {
         videoElement = getVideoElementWithBlankStream(videoSize);
 
         when(
-          () => mediaDevices.getUserMedia(any()),
+          () => cameraService.getMediaStreamForOptions(
+            any(),
+            cameraId: cameraId,
+          ),
         ).thenAnswer((_) async => videoElement.captureStream());
 
         final camera = Camera(
           textureId: cameraId,
-          window: window,
+          cameraService: cameraService,
         );
 
         // Save the camera in the camera plugin.
@@ -708,40 +1860,377 @@ void main() {
 
         expect(
           await streamQueue.next,
-          CameraInitializedEvent(
-            cameraId,
-            videoSize.width,
-            videoSize.height,
-            ExposureMode.auto,
-            false,
-            FocusMode.auto,
-            false,
+          equals(
+            CameraInitializedEvent(
+              cameraId,
+              videoSize.width,
+              videoSize.height,
+              ExposureMode.auto,
+              false,
+              FocusMode.auto,
+              false,
+            ),
           ),
         );
 
         await streamQueue.cancel();
       });
 
-      testWidgets('onCameraResolutionChanged throws UnimplementedError',
+      testWidgets('onCameraResolutionChanged emits an empty stream',
           (tester) async {
         expect(
-          () => CameraPlatform.instance.onCameraResolutionChanged(cameraId),
-          throwsUnimplementedError,
+          CameraPlatform.instance.onCameraResolutionChanged(cameraId),
+          emits(isEmpty),
         );
       });
 
-      testWidgets('onCameraClosing throws UnimplementedError', (tester) async {
+      testWidgets(
+          'onCameraClosing emits a CameraClosingEvent '
+          'on the camera ended event', (tester) async {
+        // Save the camera in the camera plugin.
+        (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+
+        final Stream<CameraClosingEvent> eventStream =
+            CameraPlatform.instance.onCameraClosing(cameraId);
+
+        final streamQueue = StreamQueue(eventStream);
+
+        await CameraPlatform.instance.initializeCamera(cameraId);
+
+        endedStreamController.add(MockMediaStreamTrack());
+
         expect(
-          () => CameraPlatform.instance.onCameraClosing(cameraId),
-          throwsUnimplementedError,
+          await streamQueue.next,
+          equals(
+            CameraClosingEvent(cameraId),
+          ),
         );
+
+        await streamQueue.cancel();
       });
 
-      testWidgets('onCameraError throws UnimplementedError', (tester) async {
-        expect(
-          () => CameraPlatform.instance.onCameraError(cameraId),
-          throwsUnimplementedError,
-        );
+      group('onCameraError', () {
+        setUp(() {
+          // Save the camera in the camera plugin.
+          (CameraPlatform.instance as CameraPlugin).cameras[cameraId] = camera;
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on the camera video error event '
+            'with a message', (tester) async {
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          await CameraPlatform.instance.initializeCamera(cameraId);
+
+          final error = FakeMediaError(
+            MediaError.MEDIA_ERR_NETWORK,
+            'A network error occured.',
+          );
+
+          final errorCode = CameraErrorCode.fromMediaError(error);
+
+          when(() => videoElement.error).thenReturn(error);
+
+          errorStreamController.add(Event('error'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${errorCode}, error message: ${error.message}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on the camera video error event '
+            'with no message', (tester) async {
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          await CameraPlatform.instance.initializeCamera(cameraId);
+
+          final error = FakeMediaError(MediaError.MEDIA_ERR_NETWORK);
+          final errorCode = CameraErrorCode.fromMediaError(error);
+
+          when(() => videoElement.error).thenReturn(error);
+
+          errorStreamController.add(Event('error'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${errorCode}, error message: No further diagnostic information can be determined or provided.',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on the camera video abort event', (tester) async {
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          await CameraPlatform.instance.initializeCamera(cameraId);
+
+          abortStreamController.add(Event('abort'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${CameraErrorCode.abort}, error message: The video element\'s source has not fully loaded.',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on takePicture error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(camera.takePicture).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.takePicture(cameraId),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on setFlashMode error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.notStarted,
+            'description',
+          );
+
+          when(() => camera.setFlashMode(any())).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.setFlashMode(
+              cameraId,
+              FlashMode.always,
+            ),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on getMaxZoomLevel error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.zoomLevelNotSupported,
+            'description',
+          );
+
+          when(camera.getMaxZoomLevel).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.getMaxZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on getMinZoomLevel error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.zoomLevelNotSupported,
+            'description',
+          );
+
+          when(camera.getMinZoomLevel).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.getMinZoomLevel(
+              cameraId,
+            ),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on setZoomLevel error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.zoomLevelNotSupported,
+            'description',
+          );
+
+          when(() => camera.setZoomLevel(any())).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.setZoomLevel(
+              cameraId,
+              100.0,
+            ),
+            throwsA(
+              isA<CameraException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a CameraErrorEvent '
+            'on resumePreview error', (tester) async {
+          final exception = CameraWebException(
+            cameraId,
+            CameraErrorCode.unknown,
+            'description',
+          );
+
+          when(camera.play).thenThrow(exception);
+
+          final Stream<CameraErrorEvent> eventStream =
+              CameraPlatform.instance.onCameraError(cameraId);
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            () async => await CameraPlatform.instance.resumePreview(cameraId),
+            throwsA(
+              isA<PlatformException>(),
+            ),
+          );
+
+          expect(
+            await streamQueue.next,
+            equals(
+              CameraErrorEvent(
+                cameraId,
+                'Error code: ${exception.code}, error message: ${exception.description}',
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
       });
 
       testWidgets('onVideoRecordedEvent throws UnimplementedError',
@@ -752,12 +2241,121 @@ void main() {
         );
       });
 
-      testWidgets('onDeviceOrientationChanged throws UnimplementedError',
-          (tester) async {
-        expect(
-          () => CameraPlatform.instance.onDeviceOrientationChanged(),
-          throwsUnimplementedError,
-        );
+      group('onDeviceOrientationChanged', () {
+        group('emits an empty stream', () {
+          testWidgets('when screen is not supported', (tester) async {
+            when(() => window.screen).thenReturn(null);
+
+            expect(
+              CameraPlatform.instance.onDeviceOrientationChanged(),
+              emits(isEmpty),
+            );
+          });
+
+          testWidgets('when screen orientation is not supported',
+              (tester) async {
+            when(() => screen.orientation).thenReturn(null);
+
+            expect(
+              CameraPlatform.instance.onDeviceOrientationChanged(),
+              emits(isEmpty),
+            );
+          });
+        });
+
+        testWidgets('emits the initial DeviceOrientationChangedEvent',
+            (tester) async {
+          when(
+            () => cameraService.mapOrientationTypeToDeviceOrientation(
+              OrientationType.portraitPrimary,
+            ),
+          ).thenReturn(DeviceOrientation.portraitUp);
+
+          // Set the initial screen orientation to portraitPrimary.
+          when(() => screenOrientation.type)
+              .thenReturn(OrientationType.portraitPrimary);
+
+          final eventStreamController = StreamController<Event>();
+
+          when(() => screenOrientation.onChange)
+              .thenAnswer((_) => eventStreamController.stream);
+
+          final Stream<DeviceOrientationChangedEvent> eventStream =
+              CameraPlatform.instance.onDeviceOrientationChanged();
+
+          final streamQueue = StreamQueue(eventStream);
+
+          expect(
+            await streamQueue.next,
+            equals(
+              DeviceOrientationChangedEvent(
+                DeviceOrientation.portraitUp,
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
+
+        testWidgets(
+            'emits a DeviceOrientationChangedEvent '
+            'when the screen orientation is changed', (tester) async {
+          when(
+            () => cameraService.mapOrientationTypeToDeviceOrientation(
+              OrientationType.landscapePrimary,
+            ),
+          ).thenReturn(DeviceOrientation.landscapeLeft);
+
+          when(
+            () => cameraService.mapOrientationTypeToDeviceOrientation(
+              OrientationType.portraitSecondary,
+            ),
+          ).thenReturn(DeviceOrientation.portraitDown);
+
+          final eventStreamController = StreamController<Event>();
+
+          when(() => screenOrientation.onChange)
+              .thenAnswer((_) => eventStreamController.stream);
+
+          final Stream<DeviceOrientationChangedEvent> eventStream =
+              CameraPlatform.instance.onDeviceOrientationChanged();
+
+          final streamQueue = StreamQueue(eventStream);
+
+          // Change the screen orientation to landscapePrimary and
+          // emit an event on the screenOrientation.onChange stream.
+          when(() => screenOrientation.type)
+              .thenReturn(OrientationType.landscapePrimary);
+
+          eventStreamController.add(Event('change'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              DeviceOrientationChangedEvent(
+                DeviceOrientation.landscapeLeft,
+              ),
+            ),
+          );
+
+          // Change the screen orientation to portraitSecondary and
+          // emit an event on the screenOrientation.onChange stream.
+          when(() => screenOrientation.type)
+              .thenReturn(OrientationType.portraitSecondary);
+
+          eventStreamController.add(Event('change'));
+
+          expect(
+            await streamQueue.next,
+            equals(
+              DeviceOrientationChangedEvent(
+                DeviceOrientation.portraitDown,
+              ),
+            ),
+          );
+
+          await streamQueue.cancel();
+        });
       });
     });
   });

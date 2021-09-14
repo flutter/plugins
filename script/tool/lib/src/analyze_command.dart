@@ -10,7 +10,9 @@ import 'package:yaml/yaml.dart';
 
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
+import 'common/plugin_command.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 const int _exitPackagesGetFailed = 3;
 
@@ -54,8 +56,9 @@ class AnalyzeCommand extends PackageLoopingCommand {
   final bool hasLongOutput = false;
 
   /// Checks that there are no unexpected analysis_options.yaml files.
-  bool _hasUnexpecetdAnalysisOptions(Directory package) {
-    final List<FileSystemEntity> files = package.listSync(recursive: true);
+  bool _hasUnexpecetdAnalysisOptions(RepositoryPackage package) {
+    final List<FileSystemEntity> files =
+        package.directory.listSync(recursive: true);
     for (final FileSystemEntity file in files) {
       if (file.basename != 'analysis_options.yaml' &&
           file.basename != '.analysis_options') {
@@ -84,7 +87,10 @@ class AnalyzeCommand extends PackageLoopingCommand {
   /// Ensures that the dependent packages have been fetched for all packages
   /// (including their sub-packages) that will be analyzed.
   Future<bool> _runPackagesGetOnTargetPackages() async {
-    final List<Directory> packageDirectories = await getPackages().toList();
+    final List<Directory> packageDirectories =
+        await getTargetPackagesAndSubpackages()
+            .map((PackageEnumerationEntry entry) => entry.package.directory)
+            .toList();
     final Set<String> packagePaths =
         packageDirectories.map((Directory dir) => dir.path).toSet();
     packageDirectories.removeWhere((Directory directory) {
@@ -131,13 +137,13 @@ class AnalyzeCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     if (_hasUnexpecetdAnalysisOptions(package)) {
       return PackageResult.fail(<String>['Unexpected local analysis options']);
     }
     final int exitCode = await processRunner.runAndStream(
         _dartBinaryPath, <String>['analyze', '--fatal-infos'],
-        workingDir: package);
+        workingDir: package.directory);
     if (exitCode != 0) {
       return PackageResult.fail();
     }

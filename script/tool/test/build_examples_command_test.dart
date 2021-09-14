@@ -56,14 +56,14 @@ void main() {
 
     test('fails if building fails', () async {
       createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformIos: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
           });
 
       processRunner
               .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
           <io.Process>[
-        MockProcess.failing() // flutter packages get
+        MockProcess(exitCode: 1) // flutter packages get
       ];
 
       Error? commandError;
@@ -79,6 +79,35 @@ void main() {
             contains('The following packages had errors:'),
             contains('  plugin:\n'
                 '    plugin/example (iOS)'),
+          ]));
+    });
+
+    test('fails if a plugin has no examples', () async {
+      createFakePlugin('plugin', packagesDir,
+          examples: <String>[],
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline)
+          });
+
+      processRunner
+              .mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
+          <io.Process>[
+        MockProcess(exitCode: 1) // flutter packages get
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--ios'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('The following packages had errors:'),
+            contains('  plugin:\n'
+                '    No examples found'),
           ]));
     });
 
@@ -106,8 +135,8 @@ void main() {
     test('building for iOS', () async {
       mockPlatform.isMacOS = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformIos: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -163,8 +192,8 @@ void main() {
     test('building for Linux', () async {
       mockPlatform.isLinux = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformLinux: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -212,8 +241,8 @@ void main() {
     test('building for macOS', () async {
       mockPlatform.isMacOS = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformMacos: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -258,8 +287,8 @@ void main() {
 
     test('building for web', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformWeb: PlatformSupport.inline,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWeb: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -284,7 +313,7 @@ void main() {
     });
 
     test(
-        'building for Windows when plugin is not set up for Windows results in no-op',
+        'building for win32 when plugin is not set up for Windows results in no-op',
         () async {
       mockPlatform.isWindows = true;
       createFakePlugin('plugin', packagesDir);
@@ -296,7 +325,7 @@ void main() {
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for plugin'),
-          contains('Windows is not supported by this plugin'),
+          contains('Win32 is not supported by this plugin'),
         ]),
       );
 
@@ -305,11 +334,11 @@ void main() {
       expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
     });
 
-    test('building for Windows', () async {
+    test('building for win32', () async {
       mockPlatform.isWindows = true;
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformWindows: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -321,7 +350,7 @@ void main() {
       expect(
         output,
         containsAllInOrder(<String>[
-          '\nBUILDING plugin/example for Windows',
+          '\nBUILDING plugin/example for Win32 (windows)',
         ]),
       );
 
@@ -332,6 +361,88 @@ void main() {
                 getFlutterCommand(mockPlatform),
                 const <String>['build', 'windows'],
                 pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('building for UWP when plugin does not support UWP is a no-op',
+        () async {
+      createFakePlugin('plugin', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--winuwp']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for plugin'),
+          contains('UWP is not supported by this plugin'),
+        ]),
+      );
+
+      // Output should be empty since running build-examples --macos with no macos
+      // implementation is a no-op.
+      expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+    });
+
+    test('building for UWP', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformDetails>{
+        kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+            variants: <String>[platformVariantWinUwp]),
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--winuwp']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('BUILDING plugin/example for UWP (winuwp)'),
+        ]),
+      );
+
+      expect(
+          processRunner.recordedCalls,
+          containsAll(<ProcessCall>[
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'winuwp'], pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('building for UWP creates a folder if necessary', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, extraFiles: <String>[
+        'example/test',
+      ], platformSupport: <String, PlatformDetails>{
+        kPlatformWindows: const PlatformDetails(PlatformSupport.federated,
+            variants: <String>[platformVariantWinUwp]),
+      });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--winuwp']);
+
+      expect(
+        output,
+        contains('Creating temporary winuwp folder'),
+      );
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['create', '--platforms=winuwp', '.'],
+                pluginExampleDirectory.path),
+            ProcessCall(getFlutterCommand(mockPlatform),
+                const <String>['build', 'winuwp'], pluginExampleDirectory.path),
           ]));
     });
 
@@ -358,8 +469,8 @@ void main() {
 
     test('building for Android', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -387,8 +498,8 @@ void main() {
 
     test('enable-experiment flag for Android', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformAndroid: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -409,8 +520,8 @@ void main() {
 
     test('enable-experiment flag for ios', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
-          platformSupport: <String, PlatformSupport>{
-            kPlatformIos: PlatformSupport.inline
+          platformSupport: <String, PlatformDetails>{
+            kPlatformIos: const PlatformDetails(PlatformSupport.inline),
           });
 
       final Directory pluginExampleDirectory =
@@ -429,6 +540,184 @@ void main() {
                   '--no-codesign',
                   '--enable-experiment=exp1'
                 ],
+                pluginExampleDirectory.path),
+          ]));
+    });
+
+    test('logs skipped platforms', () async {
+      createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformAndroid: const PlatformDetails(PlatformSupport.inline),
+          });
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['build-examples', '--apk', '--ios', '--macos']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Skipping unsupported platform(s): iOS, macOS'),
+        ]),
+      );
+    });
+
+    group('packages', () {
+      test('builds when requested platform is supported by example', () async {
+        final Directory packageDirectory = createFakePackage(
+            'package', packagesDir, isFlutter: true, extraFiles: <String>[
+          'example/ios/Runner.xcodeproj/project.pbxproj'
+        ]);
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['build-examples', '--ios']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for package'),
+            contains('BUILDING package/example for iOS'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  getFlutterCommand(mockPlatform),
+                  const <String>[
+                    'build',
+                    'ios',
+                    '--no-codesign',
+                  ],
+                  packageDirectory.childDirectory('example').path),
+            ]));
+      });
+
+      test('skips non-Flutter examples', () async {
+        createFakePackage('package', packagesDir, isFlutter: false);
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['build-examples', '--ios']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for package'),
+            contains('No examples found supporting requested platform(s).'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('skips when there is no example', () async {
+        createFakePackage('package', packagesDir,
+            isFlutter: true, examples: <String>[]);
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['build-examples', '--ios']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for package'),
+            contains('No examples found supporting requested platform(s).'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('skip when example does not support requested platform', () async {
+        createFakePackage('package', packagesDir,
+            isFlutter: true,
+            extraFiles: <String>['example/linux/CMakeLists.txt']);
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['build-examples', '--ios']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for package'),
+            contains('Skipping iOS for package/example; not supported.'),
+            contains('No examples found supporting requested platform(s).'),
+          ]),
+        );
+
+        expect(processRunner.recordedCalls, orderedEquals(<ProcessCall>[]));
+      });
+
+      test('logs skipped platforms when only some are supported', () async {
+        final Directory packageDirectory = createFakePackage(
+            'package', packagesDir,
+            isFlutter: true,
+            extraFiles: <String>['example/linux/CMakeLists.txt']);
+
+        final List<String> output = await runCapturingPrint(
+            runner, <String>['build-examples', '--apk', '--linux']);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for package'),
+            contains('Building for: Android, Linux'),
+            contains('Skipping Android for package/example; not supported.'),
+          ]),
+        );
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              ProcessCall(
+                  getFlutterCommand(mockPlatform),
+                  const <String>['build', 'linux'],
+                  packageDirectory.childDirectory('example').path),
+            ]));
+      });
+    });
+
+    test('The .pluginToolsConfig.yaml file', () async {
+      mockPlatform.isLinux = true;
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir,
+          platformSupport: <String, PlatformDetails>{
+            kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
+            kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+          });
+
+      final Directory pluginExampleDirectory =
+          pluginDirectory.childDirectory('example');
+
+      final File pluginExampleConfigFile =
+          pluginExampleDirectory.childFile('.pluginToolsConfig.yaml');
+      pluginExampleConfigFile
+          .writeAsStringSync('buildFlags:\n  global:\n     - "test argument"');
+
+      final List<String> output = <String>[
+        ...await runCapturingPrint(
+            runner, <String>['build-examples', '--linux']),
+        ...await runCapturingPrint(
+            runner, <String>['build-examples', '--macos']),
+      ];
+
+      expect(
+        output,
+        containsAllInOrder(<String>[
+          '\nBUILDING plugin/example for Linux',
+          '\nBUILDING plugin/example for macOS',
+        ]),
+      );
+
+      expect(
+          processRunner.recordedCalls,
+          orderedEquals(<ProcessCall>[
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['build', 'linux', 'test argument'],
+                pluginExampleDirectory.path),
+            ProcessCall(
+                getFlutterCommand(mockPlatform),
+                const <String>['build', 'macos', 'test argument'],
                 pluginExampleDirectory.path),
           ]));
     });

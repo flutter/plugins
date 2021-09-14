@@ -14,6 +14,7 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
@@ -114,6 +115,22 @@ class FlutterWebViewClient {
     return true;
   }
 
+  /**
+   * Notifies the Flutter code that a download should start when a navigation delegate is set.
+   *
+   * @param view the webView the result of the navigation delegate will be send to.
+   * @param url the download url
+   * @return A boolean whether or not the request is forwarded to the Flutter code.
+   */
+  boolean notifyDownload(WebView view, String url) {
+    if (!hasNavigationDelegate) {
+      return false;
+    }
+
+    notifyOnNavigationRequest(url, null, view, true);
+    return true;
+  }
+
   private void onPageStarted(WebView view, String url) {
     Map<String, Object> args = new HashMap<>();
     args.put("url", url);
@@ -192,8 +209,10 @@ class FlutterWebViewClient {
       @Override
       public void onReceivedError(
           WebView view, WebResourceRequest request, WebResourceError error) {
-        FlutterWebViewClient.this.onWebResourceError(
-            error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        if (request.isForMainFrame()) {
+          FlutterWebViewClient.this.onWebResourceError(
+              error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        }
       }
 
       @Override
@@ -239,9 +258,13 @@ class FlutterWebViewClient {
       @SuppressLint("RequiresFeature")
       @Override
       public void onReceivedError(
-          WebView view, WebResourceRequest request, WebResourceErrorCompat error) {
-        FlutterWebViewClient.this.onWebResourceError(
-            error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+          @NonNull WebView view,
+          @NonNull WebResourceRequest request,
+          @NonNull WebResourceErrorCompat error) {
+        if (request.isForMainFrame()) {
+          FlutterWebViewClient.this.onWebResourceError(
+              error.getErrorCode(), error.getDescription().toString(), request.getUrl().toString());
+        }
       }
 
       @Override

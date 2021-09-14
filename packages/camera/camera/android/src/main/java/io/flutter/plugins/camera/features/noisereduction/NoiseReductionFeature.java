@@ -20,9 +20,15 @@ import java.util.HashMap;
 public class NoiseReductionFeature extends CameraFeature<NoiseReductionMode> {
   private NoiseReductionMode currentSetting = NoiseReductionMode.fast;
 
-  private static final HashMap<NoiseReductionMode, Integer> NOISE_REDUCTION_MODES = new HashMap<>();
+  private final HashMap<NoiseReductionMode, Integer> NOISE_REDUCTION_MODES = new HashMap<>();
 
-  static {
+  /**
+   * Creates a new instance of the {@link NoiseReductionFeature}.
+   *
+   * @param cameraProperties Collection of the characteristics for the current camera device.
+   */
+  public NoiseReductionFeature(CameraProperties cameraProperties) {
+    super(cameraProperties);
     NOISE_REDUCTION_MODES.put(NoiseReductionMode.off, CaptureRequest.NOISE_REDUCTION_MODE_OFF);
     NOISE_REDUCTION_MODES.put(NoiseReductionMode.fast, CaptureRequest.NOISE_REDUCTION_MODE_FAST);
     NOISE_REDUCTION_MODES.put(
@@ -33,15 +39,6 @@ public class NoiseReductionFeature extends CameraFeature<NoiseReductionMode> {
       NOISE_REDUCTION_MODES.put(
           NoiseReductionMode.zeroShutterLag, CaptureRequest.NOISE_REDUCTION_MODE_ZERO_SHUTTER_LAG);
     }
-  }
-
-  /**
-   * Creates a new instance of the {@link NoiseReductionFeature}.
-   *
-   * @param cameraProperties Collection of the characteristics for the current camera device.
-   */
-  public NoiseReductionFeature(CameraProperties cameraProperties) {
-    super(cameraProperties);
   }
 
   @Override

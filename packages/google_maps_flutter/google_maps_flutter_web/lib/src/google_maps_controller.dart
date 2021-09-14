@@ -53,6 +53,10 @@ class GoogleMapController {
   // The StreamController used by this controller and the geometry ones.
   final StreamController<MapEvent> _streamController;
 
+  /// The StreamController for the events of this Map. Only for integration testing.
+  @visibleForTesting
+  StreamController<MapEvent> get stream => _streamController;
+
   /// The Stream over which this controller broadcasts events.
   Stream<MapEvent> get events => _streamController.stream;
 
@@ -132,10 +136,27 @@ class GoogleMapController {
     return gmaps.GMap(div, options);
   }
 
-  /// Initializes the [gmaps.GMap] instance from the stored `rawOptions`.
+  /// A flag that returns true if the controller has been initialized or not.
+  @visibleForTesting
+  bool get isInitialized => _googleMap != null;
+
+  /// Starts the JS Maps SDK into the target [_div] with `rawOptions`.
   ///
-  /// This method actually renders the GMap into the cached `_div`. This is
-  /// called by the [GoogleMapsPlugin.init] method when appropriate.
+  /// (Also initializes the geometry/traffic layers.)
+  ///
+  /// The first part of this method starts the rendering of a [gmaps.GMap] inside
+  /// of the target [_div], with configuration from `rawOptions`. It then stores
+  /// the created GMap in the [_googleMap] attribute.
+  ///
+  /// Not *everything* is rendered with the initial `rawOptions` configuration,
+  /// geometry and traffic layers (and possibly others in the future) have their
+  /// own configuration and are rendered on top of a GMap instance later. This
+  /// happens in the second half of this method.
+  ///
+  /// This method is eagerly called from the [GoogleMapsPlugin.buildView] method
+  /// so the internal [GoogleMapsController] of a Web Map initializes as soon as
+  /// possible. Check [_attachMapEvents] to see how this controller notifies the
+  /// plugin of it being fully ready (through the `onTilesloaded.first` event).
   ///
   /// Failure to call this method would result in the GMap not rendering at all,
   /// and most of the public methods on this class no-op'ing.
@@ -151,6 +172,7 @@ class GoogleMapController {
     _attachMapEvents(map);
     _attachGeometryControllers(map);
 
+    // Now attach the geometry, traffic and any other layers...
     _renderInitialGeometry(
       markers: _markers,
       circles: _circles,
@@ -163,6 +185,10 @@ class GoogleMapController {
 
   // Funnels map gmap events into the plugin's stream controller.
   void _attachMapEvents(gmaps.GMap map) {
+    map.onTilesloaded.first.then((event) {
+      // Report the map as ready to go the first time the tiles load
+      _streamController.add(WebMapReadyEvent(_mapId));
+    });
     map.onClick.listen((event) {
       assert(event.latLng != null);
       _streamController.add(
@@ -292,14 +318,8 @@ class GoogleMapController {
   Future<ScreenCoordinate> getScreenCoordinate(LatLng latLng) async {
     assert(_googleMap != null,
         'Cannot get the screen coordinates with a null map.');
-    assert(_googleMap!.projection != null,
-        'Cannot compute screen coordinate with a null map or projection.');
 
-    final point =
-        _googleMap!.projection!.fromLatLngToPoint!(_latLngToGmLatLng(latLng))!;
-
-    assert(point.x != null && point.y != null,
-        'The x and y of a ScreenCoordinate cannot be null.');
+    final point = toScreenLocation(_googleMap!, _latLngToGmLatLng(latLng));
 
     return ScreenCoordinate(x: point.x!.toInt(), y: point.y!.toInt());
   }
@@ -402,4 +422,10 @@ class GoogleMapController {
     _markersController = null;
     _streamController.close();
   }
+}
+
+/// An event fired when a [mapId] on web is interactive.
+class WebMapReadyEvent extends MapEvent<void> {
+  /// Build a WebMapReady Event for the map represented by `mapId`.
+  WebMapReadyEvent(int mapId) : super(mapId, null);
 }
