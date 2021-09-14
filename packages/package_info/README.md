@@ -1,5 +1,20 @@
 # PackageInfo
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`package_info_plus`](https://pub.dev/packages/package_info_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 This Flutter plugin provides an API for querying information about an
 application package.
 
@@ -32,10 +47,10 @@ PackageInfo.fromPlatform().then((PackageInfo packageInfo) {
 
 ## Known Issue
 
-As noted on [issue 20761](https://github.com/flutter/flutter/issues/20761#issuecomment-493434578), package_info on iOS 
-requires the Xcode build folder to be rebuilt after changes to the version string in `pubspec.yaml`. 
-Clean the Xcode build folder with: 
-`XCode Menu -> Product -> (Holding Option Key) Clean build folder`. 
+As noted on [issue 20761](https://github.com/flutter/flutter/issues/20761#issuecomment-493434578), package_info on iOS
+requires the Xcode build folder to be rebuilt after changes to the version string in `pubspec.yaml`.
+Clean the Xcode build folder with:
+`XCode Menu -> Product -> (Holding Option Key) Clean build folder`.
 
 ## Issues and feedback
 

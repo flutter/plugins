@@ -1,3 +1,232 @@
+## 2.2.0
+
+* Add `contentUri` based VideoPlayerController.
+
+## 2.1.15
+
+* Ensured seekTo isn't called before video player is initialized. Fixes [#89259](https://github.com/flutter/flutter/issues/89259).
+* Updated Android lint settings.
+
+## 2.1.14
+
+* Removed dependency on the `flutter_test` package.
+
+## 2.1.13
+
+* Removed obsolete warning about not working in iOS simulators from README.
+
+## 2.1.12
+
+* Update the video url in the readme code sample
+
+## 2.1.11
+
+* Remove references to the Android V1 embedding.
+
+## 2.1.10
+
+* Ensure video pauses correctly when it finishes.
+
+## 2.1.9
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
+## 2.1.8
+
+* Refactor `FLTCMTimeToMillis` to support indefinite streams. Fixes [#48670](https://github.com/flutter/flutter/issues/48670).
+
+## 2.1.7
+
+* Update exoplayer to 2.14.1, removing dependency on Bintray.
+
+## 2.1.6
+
+* Remove obsolete pre-1.0 warning from README.
+* Add iOS unit and UI integration test targets.
+
+## 2.1.5
+
+* Update example code in README to fix broken url.
+
+## 2.1.4
+
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
+
+## 2.1.3
+
+* Fix pointer value to boolean conversion analyzer warnings.
+
+## 2.1.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.1.1
+
+* Update example code in README to reflect API changes.
+
+## 2.1.0
+
+* Add `httpHeaders` option to `VideoPlayerController.network`
+
+## 2.0.2
+
+* Fix `VideoPlayerValue` size and aspect ratio documentation
+
+## 2.0.1
+
+* Remove the deprecated API "exoPlayer.setAudioAttributes".
+
+## 2.0.0
+
+* Migrate to null safety.
+* Fix an issue where `isBuffering` was not updating on Android.
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+* Fix `VideoPlayerValue toString()` test.
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+* Migrate from deprecated `defaultBinaryMessenger`.
+* Fix an issue where a crash can occur after a closing a video player view on iOS.
+* Setting the `mixWithOthers` `VideoPlayerOptions` in web now is silently ignored instead of throwing an exception.
+
+## 1.0.2
+
+* Update Flutter SDK constraint.
+
+## 1.0.1
+
+* Android: Dispose video players when app is closed.
+
+## 1.0.0
+
+* Announce 1.0.0.
+
+## 0.11.1+5
+
+* Update Dart SDK constraint in example.
+* Remove `test` dependency.
+* Convert disabled driver test to integration_test.
+
+## 0.11.1+4
+
+* Add `toString()` to `Caption`.
+* Fix a bug on Android when loading videos from assets would crash.
+
+## 0.11.1+3
+
+* Android: Upgrade ExoPlayer to 2.12.1.
+
+## 0.11.1+2
+
+* Update android compileSdkVersion to 29.
+
+## 0.11.1+1
+
+* Fixed uncanceled timers when calling `play` on the controller multiple times before `pause`, which
+  caused value listeners to be called indefinitely (after `pause`) and more often than needed.
+
+## 0.11.1
+
+* Enable TLSv1.1 & TLSv1.2 for API 19 and below.
+
+## 0.11.0
+
+* Added option to set the video playback speed on the video controller.
+* **Minor breaking change**: fixed `VideoPlayerValue.toString` to insert a comma after `isBuffering`.
+
+## 0.10.12+5
+
+* Depend on `video_player_platform_interface` version that contains the new `TestHostVideoPlayerApi`
+  in order for tests to pass using the latest dependency.
+
+## 0.10.12+4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.10.12+3
+
+* Avoiding uses or overrides a deprecated API in `VideoPlayerPlugin` class.
+
+## 0.10.12+2
+
+* Fix `setMixWithOthers` test.
+
+## 0.10.12+1
+
+* Depend on the version of `video_player_platform_interface` that contains the new `VideoPlayerOptions` class.
+
+## 0.10.12
+
+* Introduce VideoPlayerOptions to set the audio mix mode.
+
+## 0.10.11+2
+
+* Fix aspectRatio calculation when size.width or size.height are zero.
+
+## 0.10.11+1
+
+* Post-v2 Android embedding cleanups.
+
+## 0.10.11
+
+* iOS: Fixed crash when detaching from a dying engine.
+* Android: Fixed exception when detaching from any engine.
+
+## 0.10.10
+
+* Migrated to [pigeon](https://pub.dev/packages/pigeon).
+
+## 0.10.9+2
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.10.9+1
+
+* Readme updated to include web support and details on how to use for web
+
+## 0.10.9
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.10.8+2
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.10.8+1
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.10.8
+
+* Added support for cleaning up the plugin if used for add-to-app (Flutter
+  v1.15.3 is required for that feature).
+
+
+## 0.10.7
+
+* `VideoPlayerController` support for reading closed caption files.
+* `VideoPlayerValue` has a `caption` field for reading the current closed caption at any given time.
+
+## 0.10.6
+
+* `ClosedCaptionFile` and `SubRipCaptionFile` classes added to read
+  [SubRip](https://en.wikipedia.org/wiki/SubRip) files into dart objects.
+
+## 0.10.5+3
+
+* Add integration instructions for the `web` platform.
+
+## 0.10.5+2
+
+* Make sure the plugin is correctly initialized
+
+## 0.10.5+1
+
+* Fixes issue where `initialize()` `Future` stalls when failing to load source
+  data and does not throw an error.
+
 ## 0.10.5
 
 * Support `web` by default.

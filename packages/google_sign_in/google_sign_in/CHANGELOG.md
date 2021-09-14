@@ -1,3 +1,131 @@
+## 5.1.0
+
+* Add reAuthenticate option to signInSilently to allow re-authentication to be requested
+
+* Updated Android lint settings.
+
+## 5.0.7
+
+* Mark iOS arm64 simulators as unsupported.
+
+## 5.0.6
+
+* Remove references to the Android V1 embedding.
+
+## 5.0.5
+
+* Add iOS unit and UI integration test targets.
+* Add iOS unit test module map.
+* Exclude arm64 simulators in example app.
+
+## 5.0.4
+
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 5.0.3
+
+* Fixed links in `README.md`.
+* Added documentation for usage on the web.
+
+## 5.0.2
+
+* Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.
+
+## 5.0.1
+
+* Update platforms `init` function to prioritize `clientId` property when available;
+* Updates `google_sign_in_platform_interface` version.
+
+## 5.0.0
+
+* Migrate to null safety.
+
+## 4.5.9
+
+* Update the example app: remove the deprecated `RaisedButton` and `FlatButton` widgets.
+
+## 4.5.8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 4.5.7
+
+* Update Flutter SDK constraint.
+
+## 4.5.6
+
+* Fix deprecated member warning in tests.
+
+## 4.5.5
+
+* Update android compileSdkVersion to 29.
+
+## 4.5.4
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 4.5.3
+
+* Update package:e2e -> package:integration_test
+
+## 4.5.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 4.5.1
+
+* Add note on Apple sign in requirement in README.
+
+## 4.5.0
+
+* Add support for getting `serverAuthCode`.
+
+## 4.4.6
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 4.4.5
+
+* Fix requestScopes to allow subsequent calls on Android.
+
+## 4.4.4
+
+* OCMock module import -> #import, unit tests compile generated as library.
+* Fix CocoaPods podspec lint warnings.
+
+## 4.4.3
+
+* Upgrade google_sign_in_web to version ^0.9.1
+
+## 4.4.2
+
+* Android: make the Delegate non-final to allow overriding.
+
+## 4.4.1
+
+* Android: Move `GoogleSignInWrapper` to a separate class.
+
+## 4.4.0
+
+* Migrate to Android v2 embedder.
+
+## 4.3.0
+
+* Add support for method introduced in `google_sign_in_platform_interface` 1.1.0.
+
+## 4.2.0
+
+* Migrate to AndroidX.
+
+## 4.1.5
+
+* Remove unused variable.
+
+## 4.1.4
+
+* Make the pedantic dev_dependency explicit.
+
 ## 4.1.3
 
 * Make plugin example meet naming convention.

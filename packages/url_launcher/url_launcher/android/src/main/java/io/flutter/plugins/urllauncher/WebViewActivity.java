@@ -1,5 +1,10 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.urllauncher;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,11 +12,15 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.provider.Browser;
 import android.view.KeyEvent;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,6 +47,11 @@ public class WebViewActivity extends Activity {
   private final WebViewClient webViewClient =
       new WebViewClient() {
 
+        /*
+         * This method is deprecated in API 24. Still overridden to support
+         * earlier Android versions.
+         */
+        @SuppressWarnings("deprecation")
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
@@ -47,6 +61,7 @@ public class WebViewActivity extends Activity {
           return super.shouldOverrideUrlLoading(view, url);
         }
 
+        @RequiresApi(Build.VERSION_CODES.N)
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
           if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -59,6 +74,44 @@ public class WebViewActivity extends Activity {
   private WebView webview;
 
   private IntentFilter closeIntentFilter = new IntentFilter(ACTION_CLOSE);
+
+  // Verifies that a url opened by `Window.open` has a secure url.
+  private class FlutterWebChromeClient extends WebChromeClient {
+    @Override
+    public boolean onCreateWindow(
+        final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      final WebViewClient webViewClient =
+          new WebViewClient() {
+            @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+            @Override
+            public boolean shouldOverrideUrlLoading(
+                @NonNull WebView view, @NonNull WebResourceRequest request) {
+              webview.loadUrl(request.getUrl().toString());
+              return true;
+            }
+
+            /*
+             * This method is deprecated in API 24. Still overridden to support
+             * earlier Android versions.
+             */
+            @SuppressWarnings("deprecation")
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              webview.loadUrl(url);
+              return true;
+            }
+          };
+
+      final WebView newWebView = new WebView(webview.getContext());
+      newWebView.setWebViewClient(webViewClient);
+
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(newWebView);
+      resultMsg.sendToTarget();
+
+      return true;
+    }
+  }
 
   @Override
   public void onCreate(Bundle savedInstanceState) {
@@ -80,6 +133,10 @@ public class WebViewActivity extends Activity {
 
     // Open new urls inside the webview itself.
     webview.setWebViewClient(webViewClient);
+
+    // Multi windows is set with FlutterWebChromeClient by default to handle internal bug: b/159892679.
+    webview.getSettings().setSupportMultipleWindows(true);
+    webview.setWebChromeClient(new FlutterWebChromeClient());
 
     // Register receiver that may finish this Activity.
     registerReceiver(broadcastReceiver, closeIntentFilter);

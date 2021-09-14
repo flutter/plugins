@@ -1,3 +1,14 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
   package="io.flutter.plugins.share">
+    <application>
+      <provider
+        android:name="io.flutter.plugins.share.ShareFileProvider"
+        android:authorities="${applicationId}.flutter.share_provider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+          android:name="android.support.FILE_PROVIDER_PATHS"
+          android:resource="@xml/flutter_share_file_paths"/>
+      </provider>
+    </application>
 </manifest>

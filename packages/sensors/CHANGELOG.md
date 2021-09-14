@@ -1,3 +1,84 @@
+## NEXT
+
+* Remove references to the Android V1 embedding.
+* Updated Android lint settings.
+
+## 2.0.3
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.2
+
+* Fix -Wstrict-prototypes analyzer warning in iOS plugin.
+
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.2+8
+
+* Fix outdated links across a number of markdown files ([#3276](https://github.com/flutter/plugins/pull/3276))
+
+## 0.4.2+7
+
+* Update Flutter SDK constraint.
+
+## 0.4.2+6
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.2+5
+
+* Keep handling deprecated Android v1 classes for backward compatibility.
+
+## 0.4.2+4
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2+3
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.2+2
+
+* Post-v2 Android embedding cleanup.
+
+## 0.4.2+1
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.2
+
+* Remove Android dependencies fallback.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.1+10
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.1+9
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.1+8
+
+* Make the pedantic dev_dependency explicit.
+
+## 0.4.1+7
+
+* Fixed example userAccelerometerEvent in documentation
+
+## 0.4.1+6
+
+* Migrate from deprecated BinaryMessages to ServicesBinding.instance.defaultBinaryMessenger.
+* Require Flutter SDK 1.12.13+hotfix.5 or greater (current stable).
+
 ## 0.4.1+5
 
 * Fix example `setState()` called after `dispose()` by canceling the timer.

@@ -4,14 +4,15 @@
 Pod::Spec.new do |s|
   s.name             = 'shared_preferences'
   s.version          = '0.0.1'
-  s.summary          = 'A Flutter plugin for reading and writing simple key-value pairs.'
+  s.summary          = 'Flutter Shared Preferences'
   s.description      = <<-DESC
-A Flutter plugin for reading and writing simple key-value pairs.
+Wraps NSUserDefaults, providing a persistent store for simple key-value pairs.
                        DESC
-  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/shared_preferences'
-  s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :path => '.' }
+  s.homepage         = 'https://github.com/flutter/plugins'
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
+  s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/shared_preferences/shared_preferences' }
+  s.documentation_url = 'https://pub.dev/packages/shared_preferences'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'

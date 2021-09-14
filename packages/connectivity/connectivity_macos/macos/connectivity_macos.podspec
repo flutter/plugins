@@ -9,13 +9,14 @@ Pod::Spec.new do |s|
   Desktop implementation of the connectivity plugin
                        DESC
   s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_macos'
-  s.license          = { :file => '../LICENSE' }
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
   s.author           = { 'Flutter Team' => 'flutter-dev@googlegroups.com' }
-  s.source           = { :path => '.' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/connectivity/connectivity_macos' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
   s.dependency 'Reachability'
 
   s.platform = :osx
   s.osx.deployment_target = '10.11'
+  s.swift_version = '5.0'
 end

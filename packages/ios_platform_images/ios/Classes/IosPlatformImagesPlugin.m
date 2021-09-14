@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 #import "IosPlatformImagesPlugin.h"
 
 #if !__has_feature(objc_arc)
@@ -31,7 +35,8 @@
     } else if ([@"resolveURL" isEqualToString:call.method]) {
       NSArray* args = call.arguments;
       NSString* name = args[0];
-      NSString* extension = args[1];
+      NSString* extension = (args[1] == (id)NSNull.null) ? nil : args[1];
+
       NSURL* url = [[NSBundle mainBundle] URLForResource:name withExtension:extension];
       result(url.absoluteString);
       return;

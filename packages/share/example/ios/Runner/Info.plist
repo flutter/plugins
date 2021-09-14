@@ -45,5 +45,11 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app requires access to the photo library for sharing images.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>This app does not require access to the microphone for sharing images.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>This app requires access to the camera for sharing images.</string>
 </dict>
 </plist>

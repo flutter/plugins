@@ -1,10 +1,11 @@
 group 'io.flutter.plugins.androidalarmmanager'
 version '1.0-SNAPSHOT'
+def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
 
 buildscript {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
 
     dependencies {
@@ -15,14 +16,18 @@ buildscript {
 rootProject.allprojects {
     repositories {
         google()
-        jcenter()
+        mavenCentral()
     }
+}
+
+project.getTasks().withType(JavaCompile){
+    options.compilerArgs.addAll(args)
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
@@ -33,36 +38,25 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        disable 'GradleDependency'
+        baseline file("lint-baseline.xml")
+    }
+
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
     }
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     api 'androidx.core:core:1.0.1'
-}
-
-// TODO(bkonyi): Remove this hack once androidx.lifecycle is included on stable. https://github.com/flutter/flutter/issues/42348
-afterEvaluate {
-    def containsEmbeddingDependencies = false
-    for (def configuration : configurations.all) {
-        for (def dependency : configuration.dependencies) {
-            if (dependency.group == 'io.flutter' &&
-                dependency.name.startsWith('flutter_embedding') &&
-                dependency.isTransitive())
-            {
-                containsEmbeddingDependencies = true
-                break
-            }
-        }
-    }
-    if (!containsEmbeddingDependencies) {
-        android {
-            dependencies {
-                def lifecycle_version = "1.1.1"
-                api 'android.arch.lifecycle:runtime:$lifecycle_version'
-                api 'android.arch.lifecycle:common:$lifecycle_version'
-                api 'android.arch.lifecycle:common-java8:$lifecycle_version'
-            }
-        }
-    }
 }

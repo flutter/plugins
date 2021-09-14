@@ -4,14 +4,16 @@
 Pod::Spec.new do |s|
   s.name             = 'local_auth'
   s.version          = '0.0.1'
-  s.summary          = 'A new flutter plugin project.'
+  s.summary          = 'Flutter Local Auth'
   s.description      = <<-DESC
-A new flutter plugin project.
+This Flutter plugin provides means to perform local, on-device authentication of the user.
+Downloaded by pub (not CocoaPods).
                        DESC
-  s.homepage         = 'http://example.com'
-  s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
-  s.source           = { :path => '.' }
+  s.homepage         = 'https://github.com/flutter/plugins'
+  s.license          = { :type => 'BSD', :file => '../LICENSE' }
+  s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/local_auth' }
+  s.documentation_url = 'https://pub.dev/packages/local_auth'
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'

@@ -1,3 +1,73 @@
+## NEXT
+
+* Remove references to the Android v1 embedding.
+* Updated Android lint settings.
+
+## 2.0.2
+
+* Update README to point to Plus Plugins version.
+
+## 2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
+## 2.0.0
+
+* Migrate to null safety.
+
+## 0.4.3+4
+
+* Ensure `IntegrationTestPlugin` is registered in `example` app, so Firebase Test Lab tests report test results correctly. [Issue](https://github.com/flutter/flutter/issues/74944).
+
+## 0.4.3+3
+
+* Update Flutter SDK constraint.
+
+## 0.4.3+2
+
+* Remove unused `test` dependency.
+* Update Dart SDK constraint in example.
+
+## 0.4.3+1
+
+* Update android compileSdkVersion to 29.
+
+## 0.4.3
+
+* Update package:e2e -> package:integration_test
+
+## 0.4.2
+
+* Update package:e2e reference to use the local version in the flutter/plugins
+  repository.
+
+## 0.4.1
+
+* Add support for macOS.
+
+## 0.4.0+18
+
+* Update lower bound of dart dependency to 2.1.0.
+
+## 0.4.0+17
+
+* Bump the minimum Flutter version to 1.12.13+hotfix.5.
+* Clean up various Android workarounds no longer needed after framework v1.12.
+* Complete v2 embedding support.
+* Fix CocoaPods podspec lint warnings.
+
+## 0.4.0+16
+
+* Declare API stability and compatibility with `1.0.0` (more details at: https://github.com/flutter/flutter/wiki/Package-migration-to-1.0.0).
+
+## 0.4.0+15
+
+* Replace deprecated `getFlutterEngine` call on Android.
+
+## 0.4.0+14
+
+* Make the pedantic dev_dependency explicit.
+
 ## 0.4.0+13
 
 * Remove the deprecated `author:` field from pubspec.yaml

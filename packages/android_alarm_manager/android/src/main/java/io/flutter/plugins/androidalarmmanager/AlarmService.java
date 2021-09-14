@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -13,11 +13,9 @@ import android.os.Handler;
 import android.util.Log;
 import androidx.core.app.AlarmManagerCompat;
 import androidx.core.app.JobIntentService;
-import io.flutter.plugin.common.PluginRegistry.PluginRegistrantCallback;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -51,8 +49,6 @@ public class AlarmService extends JobIntentService {
    * <ul>
    *   <li>The given {@code callbackHandle} must correspond to a registered Dart callback. If the
    *       handle does not resolve to a Dart callback then this method does nothing.
-   *   <li>A static {@link #pluginRegistrantCallback} must exist, otherwise a {@link
-   *       PluginRegistrantException} will be thrown.
    * </ul>
    */
   public static void startBackgroundIsolate(Context context, long callbackHandle) {
@@ -76,9 +72,8 @@ public class AlarmService extends JobIntentService {
     synchronized (alarmQueue) {
       // Handle all the alarm events received before the Dart isolate was
       // initialized, then clear the queue.
-      Iterator<Intent> i = alarmQueue.iterator();
-      while (i.hasNext()) {
-        flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(i.next(), null);
+      for (Intent intent : alarmQueue) {
+        flutterBackgroundExecutor.executeDartCallbackInBackgroundIsolate(intent, null);
       }
       alarmQueue.clear();
     }
@@ -90,20 +85,6 @@ public class AlarmService extends JobIntentService {
    */
   public static void setCallbackDispatcher(Context context, long callbackHandle) {
     FlutterBackgroundExecutor.setCallbackDispatcher(context, callbackHandle);
-  }
-
-  /**
-   * Sets the {@link PluginRegistrantCallback} used to register the plugins used by an application
-   * with the newly spawned background isolate.
-   *
-   * <p>This should be invoked in {@link Application.onCreate} with {@link
-   * GeneratedPluginRegistrant} in applications using the V1 embedding API in order to use other
-   * plugins in the background isolate. For applications using the V2 embedding API, it is not
-   * necessary to set a {@link PluginRegistrantCallback} as plugins are registered automatically.
-   */
-  public static void setPluginRegistrant(PluginRegistrantCallback callback) {
-    // Indirectly set in FlutterBackgroundExecutor for backwards compatibility.
-    FlutterBackgroundExecutor.setPluginRegistrant(callback);
   }
 
   private static void scheduleAlarm(
@@ -231,7 +212,7 @@ public class AlarmService extends JobIntentService {
   }
 
   private static String getPersistentAlarmKey(int requestCode) {
-    return "android_alarm_manager/persistent_alarm_" + Integer.toString(requestCode);
+    return "android_alarm_manager/persistent_alarm_" + requestCode;
   }
 
   private static void addPersistentAlarm(
@@ -276,13 +257,14 @@ public class AlarmService extends JobIntentService {
   }
 
   private static void clearPersistentAlarm(Context context, int requestCode) {
+    String request = String.valueOf(requestCode);
     SharedPreferences p = context.getSharedPreferences(SHARED_PREFERENCES_KEY, 0);
     synchronized (persistentAlarmsLock) {
       Set<String> persistentAlarms = p.getStringSet(PERSISTENT_ALARMS_SET_KEY, null);
-      if ((persistentAlarms == null) || !persistentAlarms.contains(requestCode)) {
+      if ((persistentAlarms == null) || !persistentAlarms.contains(request)) {
         return;
       }
-      persistentAlarms.remove(requestCode);
+      persistentAlarms.remove(request);
       String key = getPersistentAlarmKey(requestCode);
       p.edit().remove(key).putStringSet(PERSISTENT_ALARMS_SET_KEY, persistentAlarms).apply();
 
@@ -301,14 +283,12 @@ public class AlarmService extends JobIntentService {
         return;
       }
 
-      Iterator<String> it = persistentAlarms.iterator();
-      while (it.hasNext()) {
-        int requestCode = Integer.parseInt(it.next());
+      for (String persistentAlarm : persistentAlarms) {
+        int requestCode = Integer.parseInt(persistentAlarm);
         String key = getPersistentAlarmKey(requestCode);
         String json = p.getString(key, null);
         if (json == null) {
-          Log.e(
-              TAG, "Data for alarm request code " + Integer.toString(requestCode) + " is invalid.");
+          Log.e(TAG, "Data for alarm request code " + requestCode + " is invalid.");
           continue;
         }
         try {
