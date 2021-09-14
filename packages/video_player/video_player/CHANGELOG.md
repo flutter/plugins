@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Fix a disposed `VideoPlayerController` throwing an exception when being replaced in the `VideoPlayer`.
+
 ## 2.2.0
 
 * Add `contentUri` based VideoPlayerController.
