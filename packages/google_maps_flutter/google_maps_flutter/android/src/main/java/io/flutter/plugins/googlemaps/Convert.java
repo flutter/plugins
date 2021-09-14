@@ -696,4 +696,59 @@ class Convert {
     }
     return new Tile(width, height, dataArray);
   }
+
+  static String interpretGroundOverlayOptions(Map<String, ?> data, GroundOverlaySink sink) {
+    final Object bearing = data.get("bearing");
+    if (bearing != null) {
+      sink.setBearing(toFloat(bearing));
+    }
+
+    final Object image = data.get("image");
+    if (image != null) {
+      sink.setImage(toBitmapDescriptor(image));
+    }
+
+    final Object isClickable = data.get("isClickable");
+    if (isClickable != null) {
+      sink.setClickable(toBoolean(isClickable));
+    }
+
+    final Object anchorU = data.get("anchorU");
+    final Object anchorV = data.get("anchorV");
+    sink.setAnchor(anchorU != null ? toFloat(anchorU) : 0,
+        anchorV != null ? toFloat(anchorV) : 0);
+
+    final Object bounds = data.get("positionFromBounds");
+    if (bounds != null) {
+      sink.setPositionFromBounds(toLatLngBounds(bounds));
+    } else {
+      final Object height = data.get("height");
+      final Object width = data.get("width");
+      final Object position = data.get("position");
+      if (height == null && width != null && position != null) {
+        sink.setPosition(toLatLng(position), toFloat(width));
+      } else if (height != null && width != null && position != null) {
+        sink.setPosition(toLatLng(position), toFloat(width), toFloat(height));
+      }
+    }
+
+    final Object transparency = data.get("transparency");
+    if (transparency != null) {
+      sink.setTransparency(toFloat(transparency));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final String groundOverlayId = (String) data.get("groundOverlayId");
+    if (groundOverlayId == null) {
+      throw new IllegalArgumentException("groundOverlayId was null");
+    } else {
+      return groundOverlayId;
+    }
+  }
 }

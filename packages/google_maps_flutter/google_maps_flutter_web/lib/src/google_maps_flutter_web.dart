@@ -95,6 +95,14 @@ class GoogleMapsPlugin extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Future<void> updateGroundOverlays({
+    required Set<GroundOverlay> newGroundOverlays,
+    required int mapId,
+  }) async {
+    return; // Noop for now!
+  }
+
+  @override
   Future<void> clearTileCache(
     TileOverlayId tileOverlayId, {
     required int mapId,

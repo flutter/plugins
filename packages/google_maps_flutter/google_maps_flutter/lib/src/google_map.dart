@@ -73,6 +73,7 @@ class GoogleMap extends StatefulWidget {
     this.circles = const <Circle>{},
     this.onCameraMoveStarted,
     this.tileOverlays = const <TileOverlay>{},
+    this.groundOverlays = const {},
     this.onCameraMove,
     this.onCameraIdle,
     this.onTap,
@@ -145,6 +146,9 @@ class GoogleMap extends StatefulWidget {
 
   /// Tile overlays to be placed on the map.
   final Set<TileOverlay> tileOverlays;
+
+  /// Ground overlays to be placed on the map.
+  final Set<GroundOverlay> groundOverlays;
 
   /// Called when the camera starts moving.
   ///
@@ -289,6 +293,7 @@ class _GoogleMapState extends State<GoogleMap> {
     _updatePolylines();
     _updateCircles();
     _updateTileOverlays();
+    _updateGroundOverlays();
   }
 
   void _updateOptions() async {
@@ -340,6 +345,12 @@ class _GoogleMapState extends State<GoogleMap> {
     final GoogleMapController controller = await _controller.future;
     // ignore: unawaited_futures
     controller._updateTileOverlays(widget.tileOverlays);
+  }
+
+  void _updateGroundOverlays() async {
+    final GoogleMapController controller = await _controller.future;
+    // ignore: unawaited_futures
+    controller._updateGroundOverlays(widget.groundOverlays);
   }
 
   Future<void> onPlatformViewCreated(int id) async {

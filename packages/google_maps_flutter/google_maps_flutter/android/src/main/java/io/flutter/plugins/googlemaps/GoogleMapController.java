@@ -77,11 +77,13 @@ final class GoogleMapController
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
   private final TileOverlaysController tileOverlaysController;
+  private final GroundOverlaysController groundOverlaysController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
   private List<Map<String, ?>> initialTileOverlays;
+  private List<Map<String, ?>> initialGroundOverlays;
 
   GoogleMapController(
       int id,
@@ -102,6 +104,7 @@ final class GoogleMapController
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel, density);
     this.tileOverlaysController = new TileOverlaysController(methodChannel);
+    this.groundOverlaysController = new GroundOverlaysController(methodChannel);
   }
 
   @Override
@@ -144,11 +147,13 @@ final class GoogleMapController
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
     tileOverlaysController.setGoogleMap(googleMap);
+    groundOverlaysController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
     updateInitialTileOverlays();
+    updateInitialGroundOverlays();
   }
 
   @Override
@@ -412,6 +417,17 @@ final class GoogleMapController
         {
           String tileOverlayId = call.argument("tileOverlayId");
           result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
+          break;
+        }
+      case "groundOverlays#update":
+        {
+          List<Map<String, ?>> groundOverlaysToAdd = call.argument("groundOverlaysToAdd");
+          groundOverlaysController.addGroundOverlays(groundOverlaysToAdd);
+          List<Map<String, ?>> groundOverlaysToChange = call.argument("groundOverlaysToChange");
+          groundOverlaysController.changeGroundOverlays(groundOverlaysToChange);
+          List<String> groundOverlaysToRemove = call.argument("groundOverlayIdsToRemove");
+          groundOverlaysController.removeGroundOverlays(groundOverlaysToRemove);
+          result.success(null);
           break;
         }
       default:
@@ -769,8 +785,20 @@ final class GoogleMapController
     }
   }
 
+  @Override
+  public void setInitialGroundOverlays(List<Map<String, ?>> initialGroundOverlays) {
+    this.initialGroundOverlays = initialGroundOverlays;
+    if (googleMap != null) {
+      updateInitialGroundOverlays();
+    }
+  }
+
   private void updateInitialTileOverlays() {
     tileOverlaysController.addTileOverlays(initialTileOverlays);
+  }
+
+  private void updateInitialGroundOverlays() {
+    groundOverlaysController.addGroundOverlays(initialGroundOverlays);
   }
 
   @SuppressLint("MissingPermission")

@@ -124,6 +124,12 @@ class TestGoogleMapsFlutterPlatform extends GoogleMapsFlutterPlatform {
   }) async {}
 
   @override
+  Future<void> updateGroundOverlays({
+    required Set<GroundOverlay> newGroundOverlays,
+    required int mapId,
+  }) async {}
+
+  @override
   Future<void> clearTileCache(
     TileOverlayId tileOverlayId, {
     required int mapId,

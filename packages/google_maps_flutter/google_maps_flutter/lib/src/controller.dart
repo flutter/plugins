@@ -161,6 +161,17 @@ class GoogleMapController {
         .updateTileOverlays(newTileOverlays: newTileOverlays, mapId: mapId);
   }
 
+  /// Updates ground overlays configuration.
+  ///
+  /// Change listeners are notified once the update has been made onn the
+  /// platform side.
+  ///
+  /// The returned [Future] completes after listeners have been notified.
+  Future<void> _updateGroundOverlays(Set<GroundOverlay> newGroundOverlays) {
+    return GoogleMapsFlutterPlatform.instance.updateGroundOverlays(
+        newGroundOverlays: newGroundOverlays, mapId: mapId);
+  }
+
   /// Clears the tile cache so that all tiles will be requested again from the
   /// [TileProvider].
   ///
