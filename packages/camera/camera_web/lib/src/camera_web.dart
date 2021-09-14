@@ -422,8 +422,8 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> prepareForVideoRecording() {
-    throw UnimplementedError('prepareForVideoRecording() is not implemented.');
+  Future<void> prepareForVideoRecording() async {
+    // This is a no-op as it is not required for the web.
   }
 
   @override

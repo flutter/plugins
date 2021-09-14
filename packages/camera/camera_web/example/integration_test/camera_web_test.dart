@@ -992,14 +992,6 @@ void main() {
       });
     });
 
-    testWidgets('prepareForVideoRecording throws UnimplementedError',
-        (tester) async {
-      expect(
-        () => CameraPlatform.instance.prepareForVideoRecording(),
-        throwsUnimplementedError,
-      );
-    });
-
     group('startVideoRecording', () {
       late Camera camera;
 
