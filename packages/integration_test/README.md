@@ -2,7 +2,7 @@
 
 ## MOVED
 
-This package has been [moved to the Flutter
+This package has [moved to the Flutter
 SDK](https://github.com/flutter/flutter/tree/master/packages/integration_test).
 Starting with Flutter 2.0, it should be included as:
 
