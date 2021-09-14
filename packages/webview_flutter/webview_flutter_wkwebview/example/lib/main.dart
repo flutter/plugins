@@ -9,7 +9,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:webview_flutter_wkwebview/webview_cupertino.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 void main() {
@@ -96,7 +96,6 @@ class _WebViewExampleState extends State<_WebViewExample> {
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
-          userAgent: 'Custom_User_Agent',
         );
       }),
       floatingActionButton: favoriteButton(),
