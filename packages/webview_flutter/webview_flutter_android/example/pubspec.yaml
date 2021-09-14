@@ -1,5 +1,5 @@
-name: webview_flutter_example
-description: Demonstrates how to use the webview_flutter plugin.
+name: webview_flutter_android_example
+description: Demonstrates how to use the webview_flutter_android plugin.
 publish_to: none
 
 environment:
