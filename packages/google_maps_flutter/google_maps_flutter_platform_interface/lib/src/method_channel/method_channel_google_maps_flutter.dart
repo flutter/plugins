@@ -13,7 +13,9 @@ import 'package:flutter/services.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:stream_transform/stream_transform.dart';
 
+import '../types/ground_overlay_updates.dart';
 import '../types/tile_overlay_updates.dart';
+import '../types/utils/ground_overlay.dart';
 import '../types/utils/tile_overlay.dart';
 
 /// Error thrown when an unknown map ID is provided to a method channel API.
@@ -62,6 +64,9 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
 
   // Keep a collection of mapId to a map of TileOverlays.
   final Map<int, Map<TileOverlayId, TileOverlay>> _tileOverlays = {};
+
+  // Keep a collection of mapId to a map of GroundOverlays.
+  final Map<int, Map<GroundOverlayId, GroundOverlay>> _groundOverlays = {};
 
   /// Returns the channel for [mapId], creating it if it doesn't already exist.
   @visibleForTesting
@@ -320,6 +325,25 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Future<void> updateGroundOverlays({
+    required Set<GroundOverlay> newGroundOverlays,
+    required int mapId,
+  }) {
+    final Map<GroundOverlayId, GroundOverlay>? currentGroundOverlays =
+        _groundOverlays[mapId];
+    Set<GroundOverlay> previousSet = currentGroundOverlays != null
+        ? currentGroundOverlays.values.toSet()
+        : <GroundOverlay>{};
+    final GroundOverlayUpdates updates =
+        GroundOverlayUpdates.from(previousSet, newGroundOverlays);
+    _groundOverlays[mapId] = keyGroundOverlayId(newGroundOverlays);
+    return channel(mapId).invokeMethod<void>(
+      'groundOverlays#update',
+      updates.toJson(),
+    );
+  }
+
+  @override
   Future<void> clearTileCache(
     TileOverlayId tileOverlayId, {
     required int mapId,
@@ -473,6 +497,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
+    Set<GroundOverlay> groundOverlays = const {},
   }) {
     if (defaultTargetPlatform == TargetPlatform.android &&
         useAndroidViewSurface) {
@@ -484,6 +509,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
         'polylinesToAdd': serializePolylineSet(polylines),
         'circlesToAdd': serializeCircleSet(circles),
         'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+        'groundOverlaysToAdd': serializeGroundOverlaySet(groundOverlays),
       };
       return PlatformViewLink(
         viewType: 'plugins.flutter.io/google_maps',
@@ -531,6 +557,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       tileOverlays: tileOverlays,
       gestureRecognizers: gestureRecognizers,
       mapOptions: mapOptions,
+      groundOverlays: groundOverlays,
     );
   }
 
@@ -546,6 +573,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
     Set<TileOverlay> tileOverlays = const <TileOverlay>{},
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     Map<String, dynamic> mapOptions = const <String, dynamic>{},
+    Set<GroundOverlay> groundOverlays = const <GroundOverlay>{},
   }) {
     final Map<String, dynamic> creationParams = <String, dynamic>{
       'initialCameraPosition': initialCameraPosition.toMap(),
@@ -555,6 +583,7 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       'polylinesToAdd': serializePolylineSet(polylines),
       'circlesToAdd': serializeCircleSet(circles),
       'tileOverlaysToAdd': serializeTileOverlaySet(tileOverlays),
+      'groundOverlaysToAdd': serializeGroundOverlaySet(groundOverlays),
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
       return AndroidView(
