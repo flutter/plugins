@@ -62,17 +62,10 @@ Future<void> getLostData() async {
   if (response.isEmpty) {
     return;
   }
-  if (response.file != null) {
-    if (response.files.length >= 2 ) {
-      _imageFileList = response.files
-    } else {
-      setState(() {
-        if (response.type == RetrieveType.video) {
-          _handleVideo(response.file);
-        } else {
-          _handleImage(response.file);
-        }
-    }});
+  if (response.files != null) {
+    for(final XFile file in response.files) {
+      _handleFile(file);
+    }
   } else {
     _handleError(response.exception);
   }
