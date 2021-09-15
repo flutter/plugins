@@ -107,38 +107,11 @@
     return nil;
   }
   NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
-
-  [map setObject:[locale objectForKey:NSLocaleIdentifier] ?: [NSNull null]
-          forKey:@"localeIdentifier"];
-  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
-  [map setObject:[locale objectForKey:NSLocaleLanguageCode] ?: [NSNull null]
-          forKey:@"languageCode"];
-  [map setObject:[locale objectForKey:NSLocaleScriptCode] ?: [NSNull null] forKey:@"scriptCode"];
-  [map setObject:[locale objectForKey:NSLocaleVariantCode] ?: [NSNull null] forKey:@"variantCode"];
-  [map setObject:[locale objectForKey:NSLocaleCollationIdentifier] ?: [NSNull null]
-          forKey:@"collationIdentifier"];
-  [map setObject:[locale objectForKey:NSLocaleCollatorIdentifier] ?: [NSNull null]
-          forKey:@"collatorIdentifier"];
-  [map setObject:[locale objectForKey:NSLocaleUsesMetricSystem] ?: [NSNull null]
-          forKey:@"usesMetricSystem"];
-  [map setObject:[locale objectForKey:NSLocaleMeasurementSystem] ?: [NSNull null]
-          forKey:@"measurementSystem"];
-  [map setObject:[locale objectForKey:NSLocaleDecimalSeparator] ?: [NSNull null]
-          forKey:@"decimalSeparator"];
-  [map setObject:[locale objectForKey:NSLocaleGroupingSeparator] ?: [NSNull null]
-          forKey:@"groupingSeparator"];
   [map setObject:[locale objectForKey:NSLocaleCurrencySymbol] ?: [NSNull null]
           forKey:@"currencySymbol"];
   [map setObject:[locale objectForKey:NSLocaleCurrencyCode] ?: [NSNull null]
           forKey:@"currencyCode"];
-  [map setObject:[locale objectForKey:NSLocaleQuotationEndDelimiterKey] ?: [NSNull null]
-          forKey:@"endDelimiterKey"];
-  [map setObject:[locale objectForKey:NSLocaleQuotationBeginDelimiterKey] ?: [NSNull null]
-          forKey:@"beginDelimiterKey"];
-  [map setObject:[locale objectForKey:NSLocaleAlternateQuotationEndDelimiterKey] ?: [NSNull null]
-          forKey:@"alternateQuotationEndDelimiterKey"];
-  [map setObject:[locale objectForKey:NSLocaleAlternateQuotationBeginDelimiterKey] ?: [NSNull null]
-          forKey:@"alternateQuotationBeginDelimiterKey"];
+  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
   return map;
 }
 
@@ -195,6 +168,33 @@
     }
   }
   return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront {
+  if (!storefront) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"countryCode" : storefront.countryCode,
+    @"identifier" : storefront.identifier
+  }];
+
+  return map;
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
+                 andSKPaymentTransaction:(SKPaymentTransaction *)transaction {
+  if (!storefront || !transaction) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"storefront" : [FIAObjectTranslator getMapFromSKStorefront:storefront],
+    @"transaction" : [FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]
+  }];
+
+  return map;
 }
 
 @end

@@ -20,6 +20,8 @@ PurchaseWrapper _$PurchaseWrapperFromJson(Map json) {
     isAcknowledged: json['isAcknowledged'] as bool? ?? false,
     purchaseState:
         const PurchaseStateConverter().fromJson(json['purchaseState'] as int?),
+    obfuscatedAccountId: json['obfuscatedAccountId'] as String?,
+    obfuscatedProfileId: json['obfuscatedProfileId'] as String?,
   );
 }
 
@@ -37,6 +39,8 @@ Map<String, dynamic> _$PurchaseWrapperToJson(PurchaseWrapper instance) =>
       'isAcknowledged': instance.isAcknowledged,
       'purchaseState':
           const PurchaseStateConverter().toJson(instance.purchaseState),
+      'obfuscatedAccountId': instance.obfuscatedAccountId,
+      'obfuscatedProfileId': instance.obfuscatedProfileId,
     };
 
 PurchaseHistoryRecordWrapper _$PurchaseHistoryRecordWrapperFromJson(Map json) {

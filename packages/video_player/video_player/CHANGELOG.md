@@ -1,6 +1,62 @@
-## 2.1.4
+## 2.2.1
 
 * Specify Java 8 for Android build.
+
+## 2.2.0
+
+* Add `contentUri` based VideoPlayerController.
+
+## 2.1.15
+
+* Ensured seekTo isn't called before video player is initialized. Fixes [#89259](https://github.com/flutter/flutter/issues/89259).
+* Updated Android lint settings.
+
+## 2.1.14
+
+* Removed dependency on the `flutter_test` package.
+
+## 2.1.13
+
+* Removed obsolete warning about not working in iOS simulators from README.
+
+## 2.1.12
+
+* Update the video url in the readme code sample
+
+## 2.1.11
+
+* Remove references to the Android V1 embedding.
+
+## 2.1.10
+
+* Ensure video pauses correctly when it finishes.
+
+## 2.1.9
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
+## 2.1.8
+
+* Refactor `FLTCMTimeToMillis` to support indefinite streams. Fixes [#48670](https://github.com/flutter/flutter/issues/48670).
+
+## 2.1.7
+
+* Update exoplayer to 2.14.1, removing dependency on Bintray.
+
+## 2.1.6
+
+* Remove obsolete pre-1.0 warning from README.
+* Add iOS unit and UI integration test targets.
+
+## 2.1.5
+
+* Update example code in README to fix broken url.
+
+## 2.1.4
+
+* Add an exoplayer URL to the maven repositories to address
+  a possible build regression in 2.1.2.
 
 ## 2.1.3
 

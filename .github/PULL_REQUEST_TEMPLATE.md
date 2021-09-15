@@ -8,11 +8,11 @@
 
 - [ ] I read the [Contributor Guide] and followed the process outlined there for submitting PRs.
 - [ ] I read the [Tree Hygiene] wiki page, which explains my responsibilities.
-- [ ] I read and followed the [Flutter Style Guide] and the [C++, Objective-C, Java style guides]. (Note that unlike the flutter/flutter repo, the flutter/plugins repo does use `dart format`. See [plugin_tool format](../script/tool/README.md#format-code))
+- [ ] I read and followed the [relevant style guides] and ran [the auto-formatter]. (Note that unlike the flutter/flutter repo, the flutter/plugins repo does use `dart format`.)
 - [ ] I signed the [CLA].
 - [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. `[shared_preferences]`
 - [ ] I listed at least one issue that this PR fixes in the description above.
-- [ ] I updated pubspec.yaml with an appropriate new version according to the [pub versioning philosophy].
+- [ ] I [updated pubspec.yaml](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#version-and-changelog-updates) with an appropriate new version according to the [pub versioning philosophy].
 - [ ] I updated CHANGELOG.md to add a description of the change.
 - [ ] I updated/added relevant documentation (doc comments with `///`).
 - [ ] I added new tests to check the change I am making or feature I am adding, or Hixie said the PR is test exempt.
@@ -21,12 +21,12 @@
 If you need help, consider asking for advice on the #hackers-new channel on [Discord].
 
 <!-- Links -->
-[Contributor Guide]: https://github.com/flutter/flutter/wiki/Tree-hygiene#overview
+[Contributor Guide]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
 [Tree Hygiene]: https://github.com/flutter/flutter/wiki/Tree-hygiene
-[Flutter Style Guide]: https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo
-[C++, Objective-C, Java style guides]: https://github.com/flutter/engine/blob/master/CONTRIBUTING.md#style
+[relevant style guides]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md#style
 [CLA]: https://cla.developers.google.com/
 [flutter/tests]: https://github.com/flutter/tests
 [breaking change policy]: https://github.com/flutter/flutter/wiki/Tree-hygiene#handling-breaking-changes
 [Discord]: https://github.com/flutter/flutter/wiki/Chat
 [pub versioning philosophy]: https://dart.dev/tools/pub/versioning
+[the auto-formatter]: https://github.com/flutter/plugins/blob/master/script/tool/README.md#format-code

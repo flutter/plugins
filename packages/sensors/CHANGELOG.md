@@ -1,3 +1,12 @@
+## NEXT
+
+* Remove references to the Android V1 embedding.
+* Updated Android lint settings.
+
+## 2.0.3
+
+* Update README to point to Plus Plugins version.
+
 ## 2.0.2
 
 * Fix -Wstrict-prototypes analyzer warning in iOS plugin.

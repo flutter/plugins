@@ -33,24 +33,16 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale = SKPriceLocaleWrapper(
-  localeIdentifier: 'en_US',
-  countryCode: 'US',
-  languageCode: 'en',
-  scriptCode: 'Latn',
-  variantCode: 'POSIX',
-  collationIdentifier: '',
-  collatorIdentifier: 'en',
-  usesMetricSystem: true,
-  measurementSystem: 'Metric',
-  decimalSeparator: '.',
-  groupingSeparator: ',',
+final SKPriceLocaleWrapper dollarLocale = SKPriceLocaleWrapper(
   currencySymbol: '\$',
   currencyCode: 'USD',
-  endDelimiterKey: '”',
-  beginDelimiterKey: '“',
-  alternateQuotationEndDelimiterKey: '”',
-  alternateQuotationBeginDelimiterKey: '“',
+  countryCode: 'US',
+);
+
+final SKPriceLocaleWrapper noSymbolLocale = SKPriceLocaleWrapper(
+  currencySymbol: '',
+  currencyCode: 'EUR',
+  countryCode: 'UK',
 );
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
@@ -61,7 +53,7 @@ final SKProductSubscriptionPeriodWrapper dummySubscription =
 
 final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   price: '1.0',
-  priceLocale: dummyLocale,
+  priceLocale: dollarLocale,
   numberOfPeriods: 1,
   paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
@@ -71,7 +63,7 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   productIdentifier: 'id',
   localizedTitle: 'title',
   localizedDescription: 'description',
-  priceLocale: dummyLocale,
+  priceLocale: dollarLocale,
   subscriptionGroupIdentifier: 'com.group',
   price: '1.0',
   subscriptionPeriod: dummySubscription,
@@ -86,25 +78,9 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
 
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   return {
-    'localeIdentifier': local.localeIdentifier,
-    'countryCode': local.countryCode,
-    'languageCode': local.languageCode,
-    'scriptCode': local.scriptCode,
-    'variantCode': local.variantCode,
-    'collationIdentifier': local.collationIdentifier,
-    'collatorIdentifier': local.collatorIdentifier,
-    'usesMetricSystem': local.usesMetricSystem,
-    'measurementSystem': local.measurementSystem,
-    'decimalSeparator': local.decimalSeparator,
-    'groupingSeparator': local.groupingSeparator,
     'currencySymbol': local.currencySymbol,
     'currencyCode': local.currencyCode,
-    'endDelimiterKey': local.endDelimiterKey,
-    'beginDelimiterKey': local.beginDelimiterKey,
-    'alternateQuotationEndDelimiterKey':
-        local.alternateQuotationEndDelimiterKey,
-    'alternateQuotationBeginDelimiterKey':
-        local.alternateQuotationBeginDelimiterKey
+    'countryCode': local.countryCode,
   };
 }
 

@@ -2,6 +2,10 @@ name: in_app_purchase_ios_example
 description: Demonstrates how to use the in_app_purchase_ios plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.9.1+hotfix.2"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -25,7 +29,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.9.1+hotfix.2"

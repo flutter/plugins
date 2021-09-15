@@ -1,5 +1,20 @@
 # connectivity
 
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`connectivity_plus`](https://pub.dev/packages/connectivity_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
 This plugin allows Flutter apps to discover network connectivity and configure
 themselves accordingly. It can distinguish between cellular vs WiFi connection.
 This plugin works for iOS and Android.

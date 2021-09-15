@@ -47,23 +47,9 @@ void main() {
       expect(
           wrapper.priceLocale,
           SKPriceLocaleWrapper(
-            localeIdentifier: '',
-            countryCode: '',
-            languageCode: '',
-            scriptCode: '',
-            variantCode: '',
-            collationIdentifier: '',
-            collatorIdentifier: '',
-            usesMetricSystem: true,
-            measurementSystem: '',
-            decimalSeparator: '',
-            groupingSeparator: '',
-            currencySymbol: '',
             currencyCode: '',
-            endDelimiterKey: '',
-            beginDelimiterKey: '',
-            alternateQuotationEndDelimiterKey: '',
-            alternateQuotationBeginDelimiterKey: '',
+            currencySymbol: '',
+            countryCode: '',
           ));
       expect(wrapper.numberOfPeriods, 0);
       expect(wrapper.paymentMode, SKProductDiscountPaymentMode.payAsYouGo);
@@ -91,23 +77,9 @@ void main() {
       expect(
           wrapper.priceLocale,
           SKPriceLocaleWrapper(
-            localeIdentifier: '',
-            countryCode: '',
-            languageCode: '',
-            scriptCode: '',
-            variantCode: '',
-            collationIdentifier: '',
-            collatorIdentifier: '',
-            usesMetricSystem: true,
-            measurementSystem: '',
-            decimalSeparator: '',
-            groupingSeparator: '',
-            currencySymbol: '',
             currencyCode: '',
-            endDelimiterKey: '',
-            beginDelimiterKey: '',
-            alternateQuotationEndDelimiterKey: '',
-            alternateQuotationBeginDelimiterKey: '',
+            currencySymbol: '',
+            countryCode: '',
           ));
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, '');
@@ -147,8 +119,8 @@ void main() {
 
     test('LocaleWrapper should have property values consistent with map', () {
       final SKPriceLocaleWrapper wrapper =
-          SKPriceLocaleWrapper.fromJson(buildLocaleMap(dummyLocale));
-      expect(wrapper, equals(dummyLocale));
+          SKPriceLocaleWrapper.fromJson(buildLocaleMap(dollarLocale));
+      expect(wrapper, equals(dollarLocale));
     });
   });
 

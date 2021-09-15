@@ -1,3 +1,12 @@
+## NEXT
+
+* Remove references to the Android V1 embedding.
+* Updated Android lint settings.
+
+## 3.0.6
+
+* Update README to point to Plus Plugins version.
+
 ## 3.0.5
 
 * Ignore Reachability pointer to int cast warning.
