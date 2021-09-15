@@ -8,3 +8,9 @@
 
 # This is a permament entry, as it should never be a direct app dependency.
 - plugin_platform_interface
+# TODO(mvanbeusekom): Remove the exclusion of the webview_flutter_android and 
+#                     webview_flutter_wkwebview packages once the native 
+#                     implementation is removed from the webview_flutter 
+#                     package (see https://github.com/flutter/flutter/issues/86286).
+- webview_flutter_android
+- webview_flutter_wkwebview
