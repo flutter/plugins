@@ -14,13 +14,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter_android/webview_android.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
-import 'package:webview_flutter_example/main.dart';
+import 'package:webview_flutter_android_example/main.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  const bool _skipDueIssue86757 = false;
+  const bool _skipDueIssue86757 = true;
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
