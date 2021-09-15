@@ -1,6 +1,10 @@
-## 2.2.1
+## 2.2.2
 
 * iOS: Update texture on `seekTo`.
+
+## 2.2.1
+
+* Specify Java 8 for Android build.
 
 ## 2.2.0
 
