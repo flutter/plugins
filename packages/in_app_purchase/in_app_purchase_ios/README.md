@@ -24,6 +24,6 @@ If you would like to contribute to the plugin, check out our
 [contribution guide](https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md).
 
 
-[1]: ../in_app_purchase/in_app_purchase
+[1]: ../../in_app_purchase
 [2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
 [3]: https://pub.dev/packages/in_app_purchase_ios/install
