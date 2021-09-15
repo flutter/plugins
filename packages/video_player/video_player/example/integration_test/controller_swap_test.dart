@@ -38,9 +38,7 @@ void main() {
           startedBuffering = true;
           started.complete();
         }
-        if (startedBuffering &&
-            !another.value.isBuffering &&
-            !endedBuffering) {
+        if (startedBuffering && !another.value.isBuffering && !endedBuffering) {
           endedBuffering = true;
           ended.complete();
         }
