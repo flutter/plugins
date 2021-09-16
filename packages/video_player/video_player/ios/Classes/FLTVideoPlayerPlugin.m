@@ -48,7 +48,6 @@
 - (void)play;
 - (void)pause;
 - (void)setIsLooping:(bool)isLooping;
-- (void)setInternalPlaybackSpeed:(double)speed;
 - (void)updatePlayingState;
 @end
 
@@ -244,7 +243,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
   _player = [AVPlayer playerWithPlayerItem:item];
   _player.actionAtItemEnd = AVPlayerActionAtItemEndNone;
-  [self setInternalPlaybackSpeed:1.0f];
 
   [self createVideoOutputAndDisplayLink:frameUpdater];
 
@@ -373,10 +371,6 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
 
 - (void)setIsLooping:(bool)isLooping {
   _isLooping = isLooping;
-}
-
-- (void)setInternalPlaybackSpeed:(double)speed {
-  _internalPlaybackSpeed = speed;
 }
 
 - (void)setVolume:(double)volume {
