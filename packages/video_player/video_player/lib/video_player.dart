@@ -599,6 +599,15 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
     value = value.copyWith(caption: _getCaptionAt(position));
   }
 
+  @override
+  void removeListener(VoidCallback listener) {
+    // Prevent VideoPlayer from causing an exception to be thrown when attempting to
+    // remove its own listener after the controller has already been disposed.
+    if (!_isDisposed) {
+      super.removeListener(listener);
+    }
+  }
+
   bool get _isDisposedOrNotInitialized => _isDisposed || !value.isInitialized;
 }
 
@@ -942,11 +951,12 @@ class ClosedCaption extends StatelessWidget {
   /// Creates a a new closed caption, designed to be used with
   /// [VideoPlayerValue.caption].
   ///
-  /// If [text] is null, nothing will be displayed.
+  /// If [text] is null or empty, nothing will be displayed.
   const ClosedCaption({Key? key, this.text, this.textStyle}) : super(key: key);
 
   /// The text that will be shown in the closed caption, or null if no caption
   /// should be shown.
+  /// If the text is empty the caption will not be shown.
   final String? text;
 
   /// Specifies how the text in the closed caption should look.
@@ -957,15 +967,16 @@ class ClosedCaption extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final text = this.text;
+    if (text == null || text.isEmpty) {
+      return SizedBox.shrink();
+    }
+
     final TextStyle effectiveTextStyle = textStyle ??
         DefaultTextStyle.of(context).style.copyWith(
               fontSize: 36.0,
               color: Colors.white,
             );
-
-    if (text == null) {
-      return SizedBox.shrink();
-    }
 
     return Align(
       alignment: Alignment.bottomCenter,
@@ -978,7 +989,7 @@ class ClosedCaption extends StatelessWidget {
           ),
           child: Padding(
             padding: EdgeInsets.symmetric(horizontal: 2.0),
-            child: Text(text!, style: effectiveTextStyle),
+            child: Text(text, style: effectiveTextStyle),
           ),
         ),
       ),
