@@ -62,14 +62,10 @@ Future<void> getLostData() async {
   if (response.isEmpty) {
     return;
   }
-  if (response.file != null) {
-    setState(() {
-      if (response.type == RetrieveType.video) {
-        _handleVideo(response.file);
-      } else {
-        _handleImage(response.file);
-      }
-    });
+  if (response.files != null) {
+    for(final XFile file in response.files) {
+      _handleFile(file);
+    }
   } else {
     _handleError(response.exception);
   }
@@ -77,8 +73,6 @@ Future<void> getLostData() async {
 ```
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
-
-On Android, `retrieveLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
 ## Migrating to 0.8.2+
 

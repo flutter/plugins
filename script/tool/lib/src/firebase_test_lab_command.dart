@@ -27,7 +27,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
   }) : super(packagesDir, processRunner: processRunner, platform: platform) {
     argParser.addOption(
       'project',
-      defaultsTo: 'flutter-infra',
+      defaultsTo: 'flutter-cirrus',
       help: 'The Firebase project name.',
     );
     final String? homeDir = io.Platform.environment['HOME'];
