@@ -105,7 +105,7 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       return PackageResult.skip('Not a plugin.');
     }
 
-    if (package.directory.parent.basename == 'packages') {
+    if (!package.isFederated) {
       return PackageResult.skip('Not a federated plugin.');
     }
 
@@ -157,10 +157,11 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       return PackageResult.success();
     }
 
-    printError('Dart changes are not allowed to other packages in foo in the '
-        'same PR as changes to public Dart code in foo_platform_interface, '
-        'as this can cause accidental breaking changes to be missed by '
-        'automated checks. Please move these changes to a separate PR.\n\n'
+    printError('Dart changes are not allowed to other packages in '
+        '$basePackageName in the same PR as changes to public Dart code in '
+        '$platformInterfacePackageName, as this can cause accidental breaking '
+        'changes to be missed by automated checks. Please split the changes to '
+        'these two packages into separate PRs.\n\n'
         'If you believe that this is a false positive, please file a bug.');
     return PackageResult.fail(
         <String>['$platformInterfacePackageName changed.']);

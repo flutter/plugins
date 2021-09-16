@@ -188,7 +188,8 @@ void main() {
         contains('Dart changes are not allowed to other packages in foo in the '
             'same PR as changes to public Dart code in foo_platform_interface, '
             'as this can cause accidental breaking changes to be missed by '
-            'automated checks. Please move these changes to a separate PR.'),
+            'automated checks. Please split the changes to these two packages '
+            'into separate PRs.'),
         contains('Running for foo_bar...'),
         contains('Dart changes are not allowed to other packages in foo'),
         contains('The following packages had errors:'),
