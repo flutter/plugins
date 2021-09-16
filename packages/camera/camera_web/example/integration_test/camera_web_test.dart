@@ -111,6 +111,33 @@ void main() {
       });
 
       testWidgets(
+          'releases the camera stream '
+          'used to request video and audio permissions', (tester) async {
+        final videoTrack = MockMediaStreamTrack();
+
+        var videoTrackStopped = false;
+        when(videoTrack.stop).thenAnswer((_) {
+          videoTrackStopped = true;
+        });
+
+        when(
+          () => cameraService.getMediaStreamForOptions(
+            CameraOptions(
+              audio: AudioConstraints(enabled: true),
+            ),
+          ),
+        ).thenAnswer(
+          (_) => Future.value(
+            FakeMediaStream([videoTrack]),
+          ),
+        );
+
+        final _ = await CameraPlatform.instance.availableCameras();
+
+        expect(videoTrackStopped, isTrue);
+      });
+
+      testWidgets(
           'gets a video stream '
           'for a video input device', (tester) async {
         final videoDevice = FakeMediaDeviceInfo(
