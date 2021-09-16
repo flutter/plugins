@@ -1,3 +1,7 @@
+## 2.2.3
+
+* Fixed empty caption text still showing the caption widget.
+
 ## 2.2.2
 
 * Fix a disposed `VideoPlayerController` throwing an exception when being replaced in the `VideoPlayer`.
