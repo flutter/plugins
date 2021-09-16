@@ -1,3 +1,7 @@
+## 2.0.9
+
+* Fix Android `NullPointerException` caused by the `GoogleMapController` being disposed before `GoogleMap` was ready.
+
 ## 2.0.8
 
 * Mark iOS arm64 simulators as unsupported.

@@ -130,7 +130,7 @@ void main() {
                   .split(' '),
               null),
           ProcessCall(
-              'gcloud', 'config set project flutter-infra'.split(' '), null),
+              'gcloud', 'config set project flutter-cirrus'.split(' '), null),
           ProcessCall(
               '/packages/plugin1/example/android/gradlew',
               'app:assembleAndroidTest -Pverbose=true'.split(' '),
@@ -207,7 +207,7 @@ void main() {
                   .split(' '),
               null),
           ProcessCall(
-              'gcloud', 'config set project flutter-infra'.split(' '), null),
+              'gcloud', 'config set project flutter-cirrus'.split(' '), null),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
               'app:assembleAndroidTest -Pverbose=true'.split(' '),
@@ -433,7 +433,7 @@ void main() {
                   .split(' '),
               null),
           ProcessCall(
-              'gcloud', 'config set project flutter-infra'.split(' '), null),
+              'gcloud', 'config set project flutter-cirrus'.split(' '), null),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
               'app:assembleAndroidTest -Pverbose=true'.split(' '),
@@ -588,7 +588,7 @@ void main() {
                   .split(' '),
               null),
           ProcessCall(
-              'gcloud', 'config set project flutter-infra'.split(' '), null),
+              'gcloud', 'config set project flutter-cirrus'.split(' '), null),
           ProcessCall(
               '/packages/plugin/example/android/gradlew',
               'app:assembleAndroidTest -Pverbose=true -Pextra-front-end-options=--enable-experiment%3Dexp1 -Pextra-gen-snapshot-options=--enable-experiment%3Dexp1'
