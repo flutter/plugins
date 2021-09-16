@@ -96,11 +96,10 @@ abstract class CameraPlatform extends PlatformInterface {
     throw UnimplementedError('onCameraTimeLimitReached() is not implemented.');
   }
 
-  /// The device orientation changed.
+  /// The ui orientation changed.
   ///
   /// Implementations for this:
   /// - Should support all 4 orientations.
-  /// - Should not emit new values when the screen orientation is locked.
   Stream<DeviceOrientationChangedEvent> onDeviceOrientationChanged() {
     throw UnimplementedError(
         'onDeviceOrientationChanged() is not implemented.');
@@ -233,6 +232,16 @@ abstract class CameraPlatform extends PlatformInterface {
   /// when an illegal zoom level is supplied.
   Future<void> setZoomLevel(int cameraId, double zoom) {
     throw UnimplementedError('setZoomLevel() is not implemented.');
+  }
+
+  /// Pause the active preview on the current frame for the selected camera.
+  Future<void> pausePreview(int cameraId) {
+    throw UnimplementedError('pausePreview() is not implemented.');
+  }
+
+  /// Resume the paused preview for the selected camera.
+  Future<void> resumePreview(int cameraId) {
+    throw UnimplementedError('pausePreview() is not implemented.');
   }
 
   /// Returns a widget showing a live camera preview.

@@ -6,9 +6,10 @@ package io.flutter.plugins.camera.features.exposurepoint;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
@@ -17,41 +18,60 @@ import static org.mockito.Mockito.when;
 
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
+import android.util.Size;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
+import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.Point;
-import io.flutter.plugins.camera.types.CameraRegions;
+import io.flutter.plugins.camera.features.sensororientation.DeviceOrientationManager;
+import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
+import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class ExposurePointFeatureTest {
+
+  Size mockCameraBoundaries;
+  SensorOrientationFeature mockSensorOrientationFeature;
+  DeviceOrientationManager mockDeviceOrientationManager;
+
+  @Before
+  public void setUp() {
+    this.mockCameraBoundaries = mock(Size.class);
+    when(this.mockCameraBoundaries.getWidth()).thenReturn(100);
+    when(this.mockCameraBoundaries.getHeight()).thenReturn(100);
+    mockSensorOrientationFeature = mock(SensorOrientationFeature.class);
+    mockDeviceOrientationManager = mock(DeviceOrientationManager.class);
+    when(mockSensorOrientationFeature.getDeviceOrientationManager())
+        .thenReturn(mockDeviceOrientationManager);
+    when(mockDeviceOrientationManager.getLastUIOrientation())
+        .thenReturn(PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT);
+  }
+
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
 
     assertEquals("ExposurePointFeature", exposurePointFeature.getDebugName());
   }
 
   @Test
-  public void getValue_should_return_default_point_if_not_set() {
+  public void getValue_shouldReturnNullIfNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
-    Point expectedPoint = new Point(0.0, 0.0);
-    Point actualPoint = exposurePointFeature.getValue();
-
-    assertEquals(expectedPoint.x, actualPoint.x);
-    assertEquals(expectedPoint.y, actualPoint.y);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    assertNull(exposurePointFeature.getValue());
   }
 
   @Test
-  public void getValue_should_echo_the_set_value() {
+  public void getValue_shouldEchoTheSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(this.mockCameraBoundaries);
     Point expectedPoint = new Point(0.0, 0.0);
 
     exposurePointFeature.setValue(expectedPoint);
@@ -61,47 +81,133 @@ public class ExposurePointFeatureTest {
   }
 
   @Test
-  public void setValue_should_reset_point_when_x_coord_is_null() {
+  public void setValue_shouldResetPointWhenXCoordIsNull() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(this.mockCameraBoundaries);
 
     exposurePointFeature.setValue(new Point(null, 0.0));
 
-    verify(mockCameraRegions, times(1)).resetAutoExposureMeteringRectangle();
+    assertNull(exposurePointFeature.getValue());
   }
 
   @Test
-  public void setValue_should_reset_point_when_y_coord_is_null() {
+  public void setValue_shouldResetPointWhenYCoordIsNull() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(this.mockCameraBoundaries);
 
     exposurePointFeature.setValue(new Point(0.0, null));
 
-    verify(mockCameraRegions, times(1)).resetAutoExposureMeteringRectangle();
+    assertNull(exposurePointFeature.getValue());
   }
 
   @Test
-  public void setValue_should_reset_point_when_valid_coords_are_supplied() {
+  public void setValue_shouldSetPointWhenValidCoordsAreSupplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(this.mockCameraBoundaries);
     Point point = new Point(0.0, 0.0);
 
     exposurePointFeature.setValue(point);
 
-    verify(mockCameraRegions, times(1)).setAutoExposureMeteringRectangleFromPoint(point.x, point.y);
+    assertEquals(point, exposurePointFeature.getValue());
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_max_regions_is_null() {
+  public void setValue_shouldDetermineMeteringRectangleWhenValidBoundariesAndCoordsAreSupplied() {
+    CameraProperties mockCameraProperties = mock(CameraProperties.class);
+    when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    Size mockedCameraBoundaries = mock(Size.class);
+    exposurePointFeature.setCameraBoundaries(mockedCameraBoundaries);
+
+    try (MockedStatic<CameraRegionUtils> mockedCameraRegionUtils =
+        Mockito.mockStatic(CameraRegionUtils.class)) {
+
+      exposurePointFeature.setValue(new Point(0.5, 0.5));
+
+      mockedCameraRegionUtils.verify(
+          () ->
+              CameraRegionUtils.convertPointToMeteringRectangle(
+                  mockedCameraBoundaries,
+                  0.5,
+                  0.5,
+                  PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT),
+          times(1));
+    }
+  }
+
+  @Test(expected = AssertionError.class)
+  public void setValue_shouldThrowAssertionErrorWhenNoValidBoundariesAreSet() {
+    CameraProperties mockCameraProperties = mock(CameraProperties.class);
+    when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+
+    try (MockedStatic<CameraRegionUtils> mockedCameraRegionUtils =
+        Mockito.mockStatic(CameraRegionUtils.class)) {
+      exposurePointFeature.setValue(new Point(0.5, 0.5));
+    }
+  }
+
+  @Test
+  public void setValue_shouldNotDetermineMeteringRectangleWhenNullCoordsAreSet() {
+    CameraProperties mockCameraProperties = mock(CameraProperties.class);
+    when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    Size mockedCameraBoundaries = mock(Size.class);
+    exposurePointFeature.setCameraBoundaries(mockedCameraBoundaries);
+
+    try (MockedStatic<CameraRegionUtils> mockedCameraRegionUtils =
+        Mockito.mockStatic(CameraRegionUtils.class)) {
+
+      exposurePointFeature.setValue(null);
+      exposurePointFeature.setValue(new Point(null, 0.5));
+      exposurePointFeature.setValue(new Point(0.5, null));
+
+      mockedCameraRegionUtils.verifyNoInteractions();
+    }
+  }
+
+  @Test
+  public void
+      setCameraBoundaries_shouldDetermineMeteringRectangleWhenValidBoundariesAndCoordsAreSupplied() {
+    CameraProperties mockCameraProperties = mock(CameraProperties.class);
+    when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(this.mockCameraBoundaries);
+    exposurePointFeature.setValue(new Point(0.5, 0.5));
+    Size mockedCameraBoundaries = mock(Size.class);
+
+    try (MockedStatic<CameraRegionUtils> mockedCameraRegionUtils =
+        Mockito.mockStatic(CameraRegionUtils.class)) {
+
+      exposurePointFeature.setCameraBoundaries(mockedCameraBoundaries);
+
+      mockedCameraRegionUtils.verify(
+          () ->
+              CameraRegionUtils.convertPointToMeteringRectangle(
+                  mockedCameraBoundaries,
+                  0.5,
+                  0.5,
+                  PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT),
+          times(1));
+    }
+  }
+
+  @Test
+  public void checkIsSupported_shouldReturnFalseWhenMaxRegionsIsNull() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, null);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(new Size(100, 100));
 
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(null);
 
@@ -109,10 +215,11 @@ public class ExposurePointFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_false_when_max_regions_is_zero() {
+  public void checkIsSupported_shouldReturnFalseWhenMaxRegionsIsZero() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, null);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(new Size(100, 100));
 
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(0);
 
@@ -120,10 +227,11 @@ public class ExposurePointFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_true_when_max_regions_is_bigger_then_zero() {
+  public void checkIsSupported_shouldReturnTrueWhenMaxRegionsIsBiggerThenZero() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, null);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(new Size(100, 100));
 
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
 
@@ -131,66 +239,78 @@ public class ExposurePointFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_return_when_checkIsSupported_is_false() {
+  public void updateBuilder_shouldReturnWhenCheckIsSupportedIsFalse() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
+    CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
     ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
 
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(0);
 
-    exposurePointFeature.updateBuilder(null);
+    exposurePointFeature.updateBuilder(mockCaptureRequestBuilder);
 
-    verify(mockCameraRegions, never()).getAEMeteringRectangle();
+    verify(mockCaptureRequestBuilder, never()).set(any(), any());
   }
 
   @Test
-  public void updateBuilder_should_set_ae_regions_to_null_when_ae_metering_rectangle_is_null() {
+  public void updateBuilder_shouldSetMeteringRectangleWhenValidBoundariesAndCoordsAreSupplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
-
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
-    when(mockCameraRegions.getAEMeteringRectangle()).thenReturn(null);
+    CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    Size mockedCameraBoundaries = mock(Size.class);
+    MeteringRectangle mockedMeteringRectangle = mock(MeteringRectangle.class);
 
-    exposurePointFeature.updateBuilder(mockBuilder);
+    try (MockedStatic<CameraRegionUtils> mockedCameraRegionUtils =
+        Mockito.mockStatic(CameraRegionUtils.class)) {
+      mockedCameraRegionUtils
+          .when(
+              () ->
+                  CameraRegionUtils.convertPointToMeteringRectangle(
+                      mockedCameraBoundaries,
+                      0.5,
+                      0.5,
+                      PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT))
+          .thenReturn(mockedMeteringRectangle);
+      exposurePointFeature.setCameraBoundaries(mockedCameraBoundaries);
+      exposurePointFeature.setValue(new Point(0.5, 0.5));
 
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_REGIONS, null);
+      exposurePointFeature.updateBuilder(mockCaptureRequestBuilder);
+    }
+
+    verify(mockCaptureRequestBuilder, times(1))
+        .set(CaptureRequest.CONTROL_AE_REGIONS, new MeteringRectangle[] {mockedMeteringRectangle});
   }
 
   @Test
-  public void updateBuilder_should_set_ae_regions_with_metering_rectangle() {
+  public void updateBuilder_shouldNotSetMeteringRectangleWhenNoValidBoundariesAreSupplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
-    MeteringRectangle meteringRectangle = new MeteringRectangle(0, 0, 0, 0, 0);
-
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
-    when(mockCameraRegions.getAEMeteringRectangle()).thenReturn(meteringRectangle);
+    CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
 
-    exposurePointFeature.updateBuilder(mockBuilder);
+    exposurePointFeature.updateBuilder(mockCaptureRequestBuilder);
 
-    verify(mockBuilder, times(1))
-        .set(eq(CaptureRequest.CONTROL_AE_REGIONS), any(MeteringRectangle[].class));
+    verify(mockCaptureRequestBuilder, times(1)).set(any(), isNull());
   }
 
   @Test
-  public void updateBuilder_should_silently_fail_when_exception_occurs() {
+  public void updateBuilder_shouldNotSetMeteringRectangleWhenNoValidCoordsAreSupplied() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
-    CameraRegions mockCameraRegions = mock(CameraRegions.class);
-    CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
-    ExposurePointFeature exposurePointFeature =
-        new ExposurePointFeature(mockCameraProperties, mockCameraRegions);
-
     when(mockCameraProperties.getControlMaxRegionsAutoExposure()).thenReturn(1);
-    when(mockCameraRegions.getAEMeteringRectangle()).thenThrow(new IllegalArgumentException());
+    CaptureRequest.Builder mockCaptureRequestBuilder = mock(CaptureRequest.Builder.class);
+    ExposurePointFeature exposurePointFeature =
+        new ExposurePointFeature(mockCameraProperties, mockSensorOrientationFeature);
+    exposurePointFeature.setCameraBoundaries(this.mockCameraBoundaries);
 
-    exposurePointFeature.updateBuilder(mockBuilder);
-
-    verify(mockBuilder, times(1)).set(CaptureRequest.CONTROL_AE_REGIONS, null);
+    exposurePointFeature.setValue(null);
+    exposurePointFeature.updateBuilder(mockCaptureRequestBuilder);
+    exposurePointFeature.setValue(new Point(0d, null));
+    exposurePointFeature.updateBuilder(mockCaptureRequestBuilder);
+    exposurePointFeature.setValue(new Point(null, 0d));
+    exposurePointFeature.updateBuilder(mockCaptureRequestBuilder);
+    verify(mockCaptureRequestBuilder, times(3)).set(any(), isNull());
   }
 }

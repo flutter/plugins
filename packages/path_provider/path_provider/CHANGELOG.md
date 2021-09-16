@@ -1,6 +1,12 @@
-## NEXT
+## 2.0.4
+
+* Updated Android lint settings.
+* Specify Java 8 for Android build.
+
+## 2.0.3
 
 * Add iOS unit test target.
+* Remove references to the Android V1 embedding.
 
 ## 2.0.2
 
