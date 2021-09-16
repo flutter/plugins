@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Specify Java 8 for Android build.
+
 ## 2.2.0
 
 * Add `contentUri` based VideoPlayerController.
