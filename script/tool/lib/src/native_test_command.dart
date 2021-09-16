@@ -242,7 +242,8 @@ this command.
 
     final Iterable<RepositoryPackage> examples = plugin.getExamples();
 
-    bool ranTests = false;
+    bool ranUnitTests = false;
+    bool ranAnyTests = false;
     bool failed = false;
     bool hasMissingBuild = false;
     for (final RepositoryPackage example in examples) {
@@ -250,8 +251,6 @@ this command.
       final bool hasIntegrationTests =
           exampleHasNativeIntegrationTests(example);
 
-      // TODO(stuartmorgan): Make !hasUnitTests fatal. See
-      // https://github.com/flutter/flutter/issues/85469
       if (mode.unit && !hasUnitTests) {
         _printNoExampleTestsMessage(example, 'Android unit');
       }
@@ -289,7 +288,8 @@ this command.
           printError('$exampleName unit tests failed.');
           failed = true;
         }
-        ranTests = true;
+        ranUnitTests = true;
+        ranAnyTests = true;
       }
 
       if (runIntegrationTests) {
@@ -311,7 +311,7 @@ this command.
           printError('$exampleName integration tests failed.');
           failed = true;
         }
-        ranTests = true;
+        ranAnyTests = true;
       }
     }
 
@@ -321,7 +321,12 @@ this command.
               ? 'Examples must be built before testing.'
               : null);
     }
-    if (!ranTests) {
+    if (!mode.integrationOnly && !ranUnitTests) {
+      printError('No unit tests ran. Plugins are required to have unit tests.');
+      return _PlatformResult(RunState.failed,
+          error: 'No unit tests ran (use --exclude if this is intentional).');
+    }
+    if (!ranAnyTests) {
       return _PlatformResult(RunState.skipped);
     }
     return _PlatformResult(RunState.succeeded);
@@ -348,33 +353,40 @@ this command.
     List<String> extraFlags = const <String>[],
   }) async {
     String? testTarget;
+    const String unitTestTarget = 'RunnerTests';
     if (mode.unitOnly) {
-      testTarget = 'RunnerTests';
+      testTarget = unitTestTarget;
     } else if (mode.integrationOnly) {
       testTarget = 'RunnerUITests';
     }
 
+    bool ranUnitTests = false;
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
     for (final RepositoryPackage example in plugin.getExamples()) {
       final String exampleName = example.displayName;
 
-      // TODO(stuartmorgan): Always check for RunnerTests, and make it fatal if
-      // no examples have it. See
-      // https://github.com/flutter/flutter/issues/85469
-      if (testTarget != null) {
-        final Directory project = example.directory
-            .childDirectory(platform.toLowerCase())
-            .childDirectory('Runner.xcodeproj');
+      // If running a specific target, check that. Otherwise, check if there
+      // are unit tests, since having no unit tests for a plugin is fatal
+      // (by repo policy) even if there are integration tests.
+      bool exampleHasUnitTests = false;
+      final String? targetToCheck =
+          testTarget ?? (mode.unit ? unitTestTarget : null);
+      final Directory xcodeProject = example.directory
+          .childDirectory(platform.toLowerCase())
+          .childDirectory('Runner.xcodeproj');
+      if (targetToCheck != null) {
         final bool? hasTarget =
-            await _xcode.projectHasTarget(project, testTarget);
+            await _xcode.projectHasTarget(xcodeProject, targetToCheck);
         if (hasTarget == null) {
           printError('Unable to check targets for $exampleName.');
           overallResult = RunState.failed;
           continue;
         } else if (!hasTarget) {
-          print('No "$testTarget" target in $exampleName; skipping.');
+          print('No "$targetToCheck" target in $exampleName; skipping.');
           continue;
+        } else if (targetToCheck == unitTestTarget) {
+          exampleHasUnitTests = true;
         }
       }
 
@@ -397,20 +409,39 @@ this command.
       switch (exitCode) {
         case _xcodebuildNoTestExitCode:
           _printNoExampleTestsMessage(example, platform);
-          continue;
+          break;
         case 0:
           printSuccess('Successfully ran $platform xctest for $exampleName');
           // If this is the first test, assume success until something fails.
           if (overallResult == RunState.skipped) {
             overallResult = RunState.succeeded;
           }
+          if (exampleHasUnitTests) {
+            ranUnitTests = true;
+          }
           break;
         default:
           // Any failure means a failure overall.
           overallResult = RunState.failed;
+          // If unit tests ran, note that even if they failed.
+          if (exampleHasUnitTests) {
+            ranUnitTests = true;
+          }
           break;
       }
     }
+
+    if (!mode.integrationOnly && !ranUnitTests) {
+      printError('No unit tests ran. Plugins are required to have unit tests.');
+      // Only return a specific summary error message about the missing unit
+      // tests if there weren't also failures, to avoid having a misleadingly
+      // specific message.
+      if (overallResult != RunState.failed) {
+        return _PlatformResult(RunState.failed,
+            error: 'No unit tests ran (use --exclude if this is intentional).');
+      }
+    }
+
     return _PlatformResult(overallResult);
   }
 

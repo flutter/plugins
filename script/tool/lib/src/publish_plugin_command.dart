@@ -433,7 +433,6 @@ final String _credentialsPath = () {
   // https://github.com/dart-lang/pub/blob/d99b0d58f4059d7bb4ac4616fd3d54ec00a2b5d4/lib/src/system_cache.dart#L34-L43
   String? cacheDir;
   final String? pubCache = io.Platform.environment['PUB_CACHE'];
-  print(pubCache);
   if (pubCache != null) {
     cacheDir = pubCache;
   } else if (io.Platform.isWindows) {
