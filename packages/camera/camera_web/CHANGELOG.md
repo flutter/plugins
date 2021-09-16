@@ -1,4 +1,4 @@
-## 0.2.1
+## 0.2.0+1
 
 * Fix cameraNotReadable error that prevented access to the camera on some Android devices.
 
