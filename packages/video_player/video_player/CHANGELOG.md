@@ -1,3 +1,7 @@
+## 2.2.4
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
 ## 2.2.3
 
 * Fixed empty caption text still showing the caption widget.
