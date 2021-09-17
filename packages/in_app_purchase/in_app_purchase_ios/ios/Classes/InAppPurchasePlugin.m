@@ -198,12 +198,10 @@
   payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
   NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
   payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
-  if (@available(iOS 8.3, *)) {
-    NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
-    payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
-                                             ? NO
-                                             : [simulatesAskToBuyInSandbox boolValue];
-  }
+  NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
+  payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
+                                           ? NO
+                                           : [simulatesAskToBuyInSandbox boolValue];
 
   if (![self.paymentQueueHandler addPayment:payment]) {
     result([FlutterError
