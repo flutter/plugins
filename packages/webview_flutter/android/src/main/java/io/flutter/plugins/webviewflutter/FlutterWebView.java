@@ -343,6 +343,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getHistory":
         getHistory(result);
         break;
+      case "getCurrentHistoryUrlIndex":
+        getCurrentHistoryUrlIndex(result);
+        break;
       default:
         result.notImplemented();
     }
@@ -492,12 +495,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private void getHistory(Result result) {
     WebBackForwardList backForwardList = webView.copyBackForwardList();
     List<String> history = new ArrayList<>();
-    for (int i = 0; i < backForwardList.getCurrentIndex(); i++) {
+    for (int i = 0; i < backForwardList.getSize(); i++) {
       WebHistoryItem currentItem = backForwardList.getItemAtIndex(i);
       String url = currentItem.getUrl();
       history.add(url);
     }
     result.success(history);
+  }
+
+  private void getCurrentHistoryUrlIndex(Result result) {
+    int index = webView.copyBackForwardList().getCurrentIndex();
+    result.success(index);
   }
 
   private void takeScreenshot(Result result){
