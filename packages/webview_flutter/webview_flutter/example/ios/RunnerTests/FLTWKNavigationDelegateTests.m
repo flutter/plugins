@@ -27,12 +27,12 @@
 - (void)testWebViewWebContentProcessDidTerminateCallsRecourseErrorChannel {
   WKWebView *webview = OCMClassMock(WKWebView.class);
   [self.navigationDelegate webViewWebContentProcessDidTerminate:webview];
-  OCMVerify([self.mockMethodChannel
-      invokeMethod:@"onWebResourceError"
-         arguments:[OCMArg checkWithBlock:^BOOL(NSDictionary *args) {
-           XCTAssertEqualObjects(args[@"errorType"], @"webContentProcessTerminated");
-           return true;
-         }]]);
+  OCMVerify([self.mockMethodChannel invokeMethod:@"onWebResourceError"
+                                       arguments:[OCMArg checkWithBlock:^BOOL(NSDictionary *args) {
+                                         XCTAssertEqualObjects(args[@"errorType"],
+                                                               @"webContentProcessTerminated");
+                                         return true;
+                                       }]]);
 }
 
 @end
