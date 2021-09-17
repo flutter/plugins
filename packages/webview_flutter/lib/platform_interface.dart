@@ -371,6 +371,13 @@ abstract class WebViewPlatformController {
     throw UnimplementedError(
         "WebView getHistory is not implemented on the current platform");
   }
+
+  /// Return the index od current history url.
+  /// Returns -1 if there is no history.
+  Future<int> getCurrentHistoryUrlIndex() {
+    throw UnimplementedError(
+        "WebView getScrollY is not implemented on the current platform");
+  }
 }
 
 /// A single setting for configuring a WebViewPlatform which may be absent.

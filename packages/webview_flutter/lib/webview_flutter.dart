@@ -927,6 +927,12 @@ class WebViewController {
     final historyObjects = await _webViewPlatformController.getHistory();
     return historyObjects.map((e) => e as String).toList();
   }
+
+  /// Return the index od current history url.
+  /// Returns -1 if there is no history.
+  Future<int> getCurrentHistoryUrlIndex() {
+    return _webViewPlatformController.getCurrentHistoryUrlIndex();
+  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.

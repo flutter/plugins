@@ -234,6 +234,8 @@
     [self getLastScreenshot:call result:result];
   } else if ([[call method] isEqualToString:@"getHistory"]) {
     [self getHistory:call result:result];
+  } else if ([[call method] isEqualToString:@"getCurrentHistoryUrlIndex"]) {
+    [self getCurrentHistoryUrlIndex:call result:result];
   } else if ([[call method] isEqualToString:@"refreshWhiteListing"]) {
     [self onRefreshWhiteListing:call result:result];
   } else {
@@ -442,16 +444,42 @@
     [self debounce:@selector(updateScreenshotData) delay:_updateScreenshotThreshold];
 }
 
-- (void)getLastScreenshot:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)getLastScreenshot:(FlutterMethodCall *)call result:(FlutterResult)result {
     result(_lastScreenshootData);
 }
 
-- (void)getHistory:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSMutableArray *history = [NSMutableArray new];
+- (void)getHistory:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSMutableArray<NSString *> *historyUrls = [NSMutableArray new];
     for (WKBackForwardListItem *item in _webView.backForwardList.backList) {
-        [history addObject:item.initialURL.absoluteString];
+        [historyUrls addObject:item.initialURL.absoluteString];
     }
-    result(history);
+    WKBackForwardListItem *currentItem = _webView.backForwardList.currentItem;
+    if (currentItem) {
+        [historyUrls addObject:currentItem.initialURL.absoluteString];
+    }
+    for (WKBackForwardListItem *item in _webView.backForwardList.forwardList) {
+        [historyUrls addObject:item.initialURL.absoluteString];
+    }
+    result(historyUrls);
+}
+
+- (void)getCurrentHistoryUrlIndex:(FlutterMethodCall *)call result:(FlutterResult)result {
+    NSMutableArray<WKBackForwardListItem *> *historyItems = [NSMutableArray new];
+    [historyItems addObjectsFromArray:_webView.backForwardList.backList];
+    WKBackForwardListItem *currentItem = _webView.backForwardList.currentItem;
+    if (currentItem) {
+        [historyItems addObject:currentItem];
+    }
+    [historyItems addObjectsFromArray:_webView.backForwardList.forwardList];
+
+    if (currentItem) {
+        NSInteger index = [historyItems indexOfObject:currentItem];
+        if (index != NSNotFound) {
+            result([NSNumber numberWithInteger:index]);
+            return;
+        }
+    }
+    result(@-1);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.

@@ -193,6 +193,11 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       .invokeMethod<List<dynamic>>("getHistory")
       .then((result) => result!);
 
+  @override
+  Future<int> getCurrentHistoryUrlIndex() => _channel
+      .invokeMethod<int>("getCurrentHistoryUrlIndex")
+      .then((result) => result!);
+
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
