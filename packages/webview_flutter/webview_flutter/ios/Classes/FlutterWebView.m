@@ -392,7 +392,10 @@
       break;
     case 1:  // always_allow
       if (@available(iOS 10.0, *)) {
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
+#pragma clang diagnostic pop
       } else {
         configuration.requiresUserActionForMediaPlayback = false;
       }

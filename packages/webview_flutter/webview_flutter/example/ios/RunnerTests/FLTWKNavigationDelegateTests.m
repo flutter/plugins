@@ -25,7 +25,6 @@
 }
 
 - (void)testWebViewWebContentProcessDidTerminateCallsRecourseErrorChannel {
-  // `webViewWebContentProcessDidTerminate` is only available on iOS 9.0 and above.
   WKWebView *webview = OCMClassMock(WKWebView.class);
   [self.navigationDelegate webViewWebContentProcessDidTerminate:webview];
   OCMVerify([self.mockMethodChannel
