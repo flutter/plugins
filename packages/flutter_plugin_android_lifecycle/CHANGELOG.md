@@ -1,6 +1,18 @@
+## NEXT
+
+* Updated Android lint settings.
+
+## 2.0.3
+
+* Remove references to the Android V1 embedding.
+
+## 2.0.2
+
+* Migrate maven repo from jcenter to mavenCentral.
+
 ## 2.0.1
-* Make sure androidx.lifecycle.DefaultLifecycleObservable doesn't get shrunk
-  away.
+
+* Make sure androidx.lifecycle.DefaultLifecycleObservable doesn't get shrunk away.
 
 ## 2.0.0
 

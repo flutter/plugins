@@ -1,0 +1,7 @@
+tasks:
+  - name: prepare tool
+    script: .ci/scripts/prepare_tool.sh
+  - name: create all_plugins app
+    script: .ci/scripts/create_all_plugins_app.sh
+  - name: build all_plugins
+    script: .ci/scripts/build_all_plugins.sh

@@ -6,7 +6,7 @@ A Flutter plugin for iOS and Android allowing access to the device cameras.
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. We are working on a refactor which can be followed here: [issue](https://github.com/flutter/flutter/issues/31225)
 
-## Features:
+## Features
 
 * Display live camera preview in a widget.
 * Snapshots can be captured and saved to a file.
@@ -19,7 +19,9 @@ First, add `camera` as a [dependency in your pubspec.yaml file](https://flutter.
 
 ### iOS
 
-iOS 10.0 of higher is needed to use the camera plugin. If compiling for any version lower than 10.0 make sure to check the iOS version before using the camera plugin. For example, using the [device_info](https://pub.dev/packages/device_info) plugin.
+The camera plugin functionality works on iOS 10.0 or higher. If compiling for any version lower than 10.0,
+make sure to programmatically check the version of iOS running on the device before using any camera plugin features.
+The [device_info_plus](https://pub.dev/packages/device_info_plus) plugin, for example, can be used to check the iOS version.
 
 Add two rows to the `ios/Runner/Info.plist`:
 

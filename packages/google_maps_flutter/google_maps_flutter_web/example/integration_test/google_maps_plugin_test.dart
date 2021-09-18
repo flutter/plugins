@@ -28,16 +28,18 @@ void main() {
   group('GoogleMapsPlugin', () {
     late MockGoogleMapController controller;
     late GoogleMapsPlugin plugin;
-    int? reportedMapId;
+    late Completer<int> reportedMapIdCompleter;
+    int numberOnPlatformViewCreatedCalls = 0;
 
     void onPlatformViewCreated(int id) {
-      reportedMapId = id;
+      reportedMapIdCompleter.complete(id);
+      numberOnPlatformViewCreatedCalls++;
     }
 
     setUp(() {
       controller = MockGoogleMapController();
       plugin = GoogleMapsPlugin();
-      reportedMapId = null;
+      reportedMapIdCompleter = Completer<int>();
     });
 
     group('init/dispose', () {
@@ -50,12 +52,6 @@ void main() {
       group('after buildWidget', () {
         setUp(() {
           plugin.debugSetMapById({0: controller});
-        });
-
-        testWidgets('init initializes controller', (WidgetTester tester) async {
-          await plugin.init(0);
-
-          verify(controller.init());
         });
 
         testWidgets('cannot call methods after dispose',
@@ -95,16 +91,16 @@ void main() {
           reason:
               'view type should contain the mapId passed when creating the map.',
         );
-        expect(
-          reportedMapId,
-          testMapId,
-          reason: 'Should call onPlatformViewCreated with the mapId',
-        );
         expect(cache, contains(testMapId));
         expect(
           cache[testMapId],
           isNotNull,
           reason: 'cached controller cannot be null.',
+        );
+        expect(
+          cache[testMapId]!.isInitialized,
+          isTrue,
+          reason: 'buildView calls init on the controller',
         );
       });
 
@@ -121,11 +117,41 @@ void main() {
         );
 
         expect(widget, equals(expected));
+      });
+
+      testWidgets(
+          'asynchronously reports onPlatformViewCreated the first time it happens',
+          (WidgetTester tester) async {
+        final Map<int, GoogleMapController> cache = {};
+        plugin.debugSetMapById(cache);
+
+        plugin.buildView(
+          testMapId,
+          onPlatformViewCreated,
+          initialCameraPosition: initialCameraPosition,
+        );
+
+        // Simulate Google Maps JS SDK being "ready"
+        cache[testMapId]!.stream.add(WebMapReadyEvent(testMapId));
+
         expect(
-          reportedMapId,
-          isNull,
+          cache[testMapId]!.isInitialized,
+          isTrue,
+          reason: 'buildView calls init on the controller',
+        );
+        expect(
+          await reportedMapIdCompleter.future,
+          testMapId,
+          reason: 'Should call onPlatformViewCreated with the mapId',
+        );
+
+        // Fire repeated event again...
+        cache[testMapId]!.stream.add(WebMapReadyEvent(testMapId));
+        expect(
+          numberOnPlatformViewCreatedCalls,
+          equals(1),
           reason:
-              'onPlatformViewCreated should not be called when returning a cached controller',
+              'Should not call onPlatformViewCreated for the same controller multiple times',
         );
       });
     });
