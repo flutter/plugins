@@ -6,19 +6,13 @@ A Flutter plugin for iOS, Android and Web for playing back video on a Widget sur
 
 ![The example app running in iOS](https://github.com/flutter/plugins/blob/master/packages/video_player/video_player/doc/demo_ipod.gif?raw=true)
 
-*Note*: This plugin is still under development, and some APIs might not be available yet.
-[Feedback welcome](https://github.com/flutter/flutter/issues) and
-[Pull Requests](https://github.com/flutter/plugins/pulls) are most welcome!
-
 ## Installation
 
 First, add `video_player` as a [dependency in your pubspec.yaml file](https://flutter.dev/using-packages/).
 
 ### iOS
 
-Warning: The video player is not functional on iOS simulators. An iOS device must be used during development/testing.
-
-Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
+This plugin requires iOS 9.0 or higher. Add the following entry to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
 ```xml
 <key>NSAppTransportSecurity</key>
@@ -79,7 +73,7 @@ class _VideoAppState extends State<VideoApp> {
   void initState() {
     super.initState();
     _controller = VideoPlayerController.network(
-        'https://sample-videos.com/video123/mp4/720/big_buck_bunny_720p_20mb.mp4')
+        'https://flutter.github.io/assets-for-api-docs/assets/videos/bee.mp4')
       ..initialize().then((_) {
         // Ensure the first frame is shown after the video is initialized, even before the play button has been pressed.
         setState(() {});
@@ -133,7 +127,7 @@ This is not complete as of now. You can contribute to this section by [opening a
 ### Playback speed
 
 You can set the playback speed on your `_controller` (instance of `VideoPlayerController`) by
-calling `_controller.setPlaybackSpeed`. `setPlaybackSpeed` takes a `double` speed value indicating 
+calling `_controller.setPlaybackSpeed`. `setPlaybackSpeed` takes a `double` speed value indicating
 the rate of playback for your video.  
 For example, when given a value of `2.0`, your video will play at 2x the regular playback speed
 and so on.

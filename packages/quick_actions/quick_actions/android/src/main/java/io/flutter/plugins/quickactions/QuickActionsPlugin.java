@@ -13,11 +13,10 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugin.common.PluginRegistry;
+import io.flutter.plugin.common.PluginRegistry.NewIntentListener;
 
 /** QuickActionsPlugin */
-public class QuickActionsPlugin
-    implements FlutterPlugin, ActivityAware, PluginRegistry.NewIntentListener {
+public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewIntentListener {
   private static final String CHANNEL_ID = "plugins.flutter.io/quick_actions";
 
   private MethodChannel channel;
@@ -48,6 +47,7 @@ public class QuickActionsPlugin
   public void onAttachedToActivity(ActivityPluginBinding binding) {
     handler.setActivity(binding.getActivity());
     binding.addOnNewIntentListener(this);
+    onNewIntent(binding.getActivity().getIntent());
   }
 
   @Override
@@ -66,6 +66,20 @@ public class QuickActionsPlugin
     onDetachedFromActivity();
   }
 
+  @Override
+  public boolean onNewIntent(Intent intent) {
+    // Do nothing for anything lower than API 25 as the functionality isn't supported.
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+      return false;
+    }
+    // Notify the Dart side if the launch intent has the intent extra relevant to quick actions.
+    if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
+      channel.invokeMethod(MethodCallHandlerImpl.GET_LAUNCH_ACTION, null);
+      channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
+    }
+    return false;
+  }
+
   private void setupChannel(BinaryMessenger messenger, Context context, Activity activity) {
     channel = new MethodChannel(messenger, CHANNEL_ID);
     handler = new MethodCallHandlerImpl(context, activity);
@@ -76,16 +90,5 @@ public class QuickActionsPlugin
     channel.setMethodCallHandler(null);
     channel = null;
     handler = null;
-  }
-
-  @Override
-  public boolean onNewIntent(Intent intent) {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-      if (intent.hasExtra(MethodCallHandlerImpl.EXTRA_ACTION) && channel != null) {
-        channel.invokeMethod(MethodCallHandlerImpl.GET_LAUNCH_ACTION, null);
-        channel.invokeMethod("launch", intent.getStringExtra(MethodCallHandlerImpl.EXTRA_ACTION));
-      }
-    }
-    return false;
   }
 }

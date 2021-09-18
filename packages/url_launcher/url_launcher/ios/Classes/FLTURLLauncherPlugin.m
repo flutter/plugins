@@ -23,10 +23,8 @@ API_AVAILABLE(ios(9.0))
   if (self) {
     self.url = url;
     self.flutterResult = result;
-    if (@available(iOS 9.0, *)) {
-      self.safari = [[SFSafariViewController alloc] initWithURL:url];
-      self.safari.delegate = self;
-    }
+    self.safari = [[SFSafariViewController alloc] initWithURL:url];
+    self.safari.delegate = self;
   }
   return self;
 }
@@ -78,23 +76,12 @@ API_AVAILABLE(ios(9.0))
   } else if ([@"launch" isEqualToString:call.method]) {
     NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
     if (useSafariVC.boolValue) {
-      if (@available(iOS 9.0, *)) {
-        [self launchURLInVC:url result:result];
-      } else {
-        [self launchURL:url call:call result:result];
-      }
+      [self launchURLInVC:url result:result];
     } else {
       [self launchURL:url call:call result:result];
     }
   } else if ([@"closeWebView" isEqualToString:call.method]) {
-    if (@available(iOS 9.0, *)) {
-      [self closeWebViewWithResult:result];
-    } else {
-      result([FlutterError
-          errorWithCode:@"API_NOT_AVAILABLE"
-                message:@"SafariViewController related api is not availabe for version <= IOS9"
-                details:nil]);
-    }
+    [self closeWebViewWithResult:result];
   } else {
     result(FlutterMethodNotImplemented);
   }

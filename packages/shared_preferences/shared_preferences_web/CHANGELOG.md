@@ -1,3 +1,12 @@
+## 2.0.2
+
+* Add `implements` to pubspec.
+
+## 2.0.1
+
+* Updated installation instructions in README.
+* Move tests to `example` directory, so they run as integration_tests with `flutter drive`.
+
 ## 2.0.0
 
 * Migrate to null-safety.

@@ -135,4 +135,22 @@ class InAppPurchaseAndroidPlatformAddition
     return QueryPurchaseDetailsResponse(
         pastPurchases: pastPurchases, error: error);
   }
+
+  /// Checks if the specified feature or capability is supported by the Play Store.
+  /// Call this to check if a [BillingClientFeature] is supported by the device.
+  Future<bool> isFeatureSupported(BillingClientFeature feature) async {
+    return _billingClient.isFeatureSupported(feature);
+  }
+
+  /// Initiates a flow to confirm the change of price for an item subscribed by the user.
+  ///
+  /// When the price of a user subscribed item has changed, launch this flow to take users to
+  /// a screen with price change information. User can confirm the new price or cancel the flow.
+  ///
+  /// The skuDetails needs to have already been fetched in a
+  /// [InAppPurchaseAndroidPlatform.queryProductDetails] call.
+  Future<BillingResultWrapper> launchPriceChangeConfirmationFlow(
+      {required String sku}) {
+    return _billingClient.launchPriceChangeConfirmationFlow(sku: sku);
+  }
 }

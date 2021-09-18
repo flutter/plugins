@@ -5,6 +5,7 @@
 #import "InAppPurchasePlugin.h"
 #import <StoreKit/StoreKit.h>
 #import "FIAObjectTranslator.h"
+#import "FIAPPaymentQueueDelegate.h"
 #import "FIAPReceiptManager.h"
 #import "FIAPRequestHandler.h"
 #import "FIAPaymentQueueHandler.h"
@@ -19,13 +20,19 @@
 // for purchase.
 @property(strong, nonatomic, readonly) NSMutableDictionary *productsCache;
 
-// Call back channel to dart used for when a listener function is triggered.
-@property(strong, nonatomic, readonly) FlutterMethodChannel *callbackChannel;
+// Callback channel to dart used for when a function from the transaction observer is triggered.
+@property(strong, nonatomic, readonly) FlutterMethodChannel *transactionObserverCallbackChannel;
+
+// Callback channel to dart used for when a function from the payment queue delegate is triggered.
+@property(strong, nonatomic, readonly) FlutterMethodChannel *paymentQueueDelegateCallbackChannel;
+
 @property(strong, nonatomic, readonly) NSObject<FlutterTextureRegistry> *registry;
 @property(strong, nonatomic, readonly) NSObject<FlutterBinaryMessenger> *messenger;
 @property(strong, nonatomic, readonly) NSObject<FlutterPluginRegistrar> *registrar;
 
 @property(strong, nonatomic, readonly) FIAPReceiptManager *receiptManager;
+@property(strong, nonatomic, readonly)
+    FIAPPaymentQueueDelegate *paymentQueueDelegate API_AVAILABLE(ios(13));
 
 @end
 
@@ -73,8 +80,8 @@
       updatedDownloads:^void(NSArray<SKDownload *> *_Nonnull downloads) {
         [weakSelf updatedDownloads:downloads];
       }];
-  [_paymentQueueHandler startObservingPaymentQueue];
-  _callbackChannel =
+
+  _transactionObserverCallbackChannel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/in_app_purchase"
                                   binaryMessenger:[registrar messenger]];
   return self;
@@ -100,6 +107,16 @@
     [self retrieveReceiptData:call result:result];
   } else if ([@"-[InAppPurchasePlugin refreshReceipt:result:]" isEqualToString:call.method]) {
     [self refreshReceipt:call result:result];
+  } else if ([@"-[SKPaymentQueue startObservingTransactionQueue]" isEqualToString:call.method]) {
+    [self startObservingPaymentQueue:result];
+  } else if ([@"-[SKPaymentQueue stopObservingTransactionQueue]" isEqualToString:call.method]) {
+    [self stopObservingPaymentQueue:result];
+  } else if ([@"-[SKPaymentQueue registerDelegate]" isEqualToString:call.method]) {
+    [self registerPaymentQueueDelegate:result];
+  } else if ([@"-[SKPaymentQueue removeDelegate]" isEqualToString:call.method]) {
+    [self removePaymentQueueDelegate:result];
+  } else if ([@"-[SKPaymentQueue showPriceConsentIfNeeded]" isEqualToString:call.method]) {
+    [self showPriceConsentIfNeeded:result];
   } else {
     result(FlutterMethodNotImplemented);
   }
@@ -181,12 +198,10 @@
   payment.applicationUsername = [paymentMap objectForKey:@"applicationUsername"];
   NSNumber *quantity = [paymentMap objectForKey:@"quantity"];
   payment.quantity = (quantity != nil) ? quantity.integerValue : 1;
-  if (@available(iOS 8.3, *)) {
-    NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
-    payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
-                                             ? NO
-                                             : [simulatesAskToBuyInSandbox boolValue];
-  }
+  NSNumber *simulatesAskToBuyInSandbox = [paymentMap objectForKey:@"simulatesAskToBuyInSandbox"];
+  payment.simulatesAskToBuyInSandbox = (id)simulatesAskToBuyInSandbox == (id)[NSNull null]
+                                           ? NO
+                                           : [simulatesAskToBuyInSandbox boolValue];
 
   if (![self.paymentQueueHandler addPayment:payment]) {
     result([FlutterError
@@ -298,14 +313,53 @@
   }];
 }
 
-#pragma mark - delegates:
+- (void)startObservingPaymentQueue:(FlutterResult)result {
+  [_paymentQueueHandler startObservingPaymentQueue];
+  result(nil);
+}
+
+- (void)stopObservingPaymentQueue:(FlutterResult)result {
+  [_paymentQueueHandler stopObservingPaymentQueue];
+  result(nil);
+}
+
+- (void)registerPaymentQueueDelegate:(FlutterResult)result {
+  if (@available(iOS 13.0, *)) {
+    _paymentQueueDelegateCallbackChannel = [FlutterMethodChannel
+        methodChannelWithName:@"plugins.flutter.io/in_app_purchase_payment_queue_delegate"
+              binaryMessenger:_messenger];
+
+    _paymentQueueDelegate = [[FIAPPaymentQueueDelegate alloc]
+        initWithMethodChannel:_paymentQueueDelegateCallbackChannel];
+    _paymentQueueHandler.delegate = _paymentQueueDelegate;
+  }
+  result(nil);
+}
+
+- (void)removePaymentQueueDelegate:(FlutterResult)result {
+  if (@available(iOS 13.0, *)) {
+    _paymentQueueHandler.delegate = nil;
+  }
+  _paymentQueueDelegate = nil;
+  _paymentQueueDelegateCallbackChannel = nil;
+  result(nil);
+}
+
+- (void)showPriceConsentIfNeeded:(FlutterResult)result {
+  if (@available(iOS 13.4, *)) {
+    [_paymentQueueHandler showPriceConsentIfNeeded];
+  }
+  result(nil);
+}
+
+#pragma mark - transaction observer:
 
 - (void)handleTransactionsUpdated:(NSArray<SKPaymentTransaction *> *)transactions {
   NSMutableArray *maps = [NSMutableArray new];
   for (SKPaymentTransaction *transaction in transactions) {
     [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
   }
-  [self.callbackChannel invokeMethod:@"updatedTransactions" arguments:maps];
+  [self.transactionObserverCallbackChannel invokeMethod:@"updatedTransactions" arguments:maps];
 }
 
 - (void)handleTransactionsRemoved:(NSArray<SKPaymentTransaction *> *)transactions {
@@ -313,17 +367,19 @@
   for (SKPaymentTransaction *transaction in transactions) {
     [maps addObject:[FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]];
   }
-  [self.callbackChannel invokeMethod:@"removedTransactions" arguments:maps];
+  [self.transactionObserverCallbackChannel invokeMethod:@"removedTransactions" arguments:maps];
 }
 
 - (void)handleTransactionRestoreFailed:(NSError *)error {
-  [self.callbackChannel invokeMethod:@"restoreCompletedTransactionsFailed"
-                           arguments:[FIAObjectTranslator getMapFromNSError:error]];
+  [self.transactionObserverCallbackChannel
+      invokeMethod:@"restoreCompletedTransactionsFailed"
+         arguments:[FIAObjectTranslator getMapFromNSError:error]];
 }
 
 - (void)restoreCompletedTransactionsFinished {
-  [self.callbackChannel invokeMethod:@"paymentQueueRestoreCompletedTransactionsFinished"
-                           arguments:nil];
+  [self.transactionObserverCallbackChannel
+      invokeMethod:@"paymentQueueRestoreCompletedTransactionsFinished"
+         arguments:nil];
 }
 
 - (void)updatedDownloads:(NSArray<SKDownload *> *)downloads {
@@ -335,11 +391,12 @@
   // have a interception method that deciding if the payment should be processed (implemented by the
   // programmer).
   [self.productsCache setObject:product forKey:product.productIdentifier];
-  [self.callbackChannel invokeMethod:@"shouldAddStorePayment"
-                           arguments:@{
-                             @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
-                             @"product" : [FIAObjectTranslator getMapFromSKProduct:product]
-                           }];
+  [self.transactionObserverCallbackChannel
+      invokeMethod:@"shouldAddStorePayment"
+         arguments:@{
+           @"payment" : [FIAObjectTranslator getMapFromSKPayment:payment],
+           @"product" : [FIAObjectTranslator getMapFromSKProduct:product]
+         }];
   return NO;
 }
 

@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_ios_example/example_payment_queue_delegate.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'consumable_store.dart';
 
@@ -40,6 +41,9 @@ class _MyApp extends StatefulWidget {
 class _MyAppState extends State<_MyApp> {
   final InAppPurchaseIosPlatform _iapIosPlatform =
       InAppPurchasePlatform.instance as InAppPurchaseIosPlatform;
+  final InAppPurchaseIosPlatformAddition _iapIosPlatformAddition =
+      InAppPurchasePlatformAddition.instance
+          as InAppPurchaseIosPlatformAddition;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
@@ -61,6 +65,10 @@ class _MyAppState extends State<_MyApp> {
     }, onError: (error) {
       // handle error here.
     });
+
+    // Register the example payment queue delegate
+    _iapIosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
+
     initStoreInfo();
     super.initState();
   }
@@ -110,8 +118,6 @@ class _MyAppState extends State<_MyApp> {
       return;
     }
 
-    await _iapIosPlatform.restorePurchases();
-
     List<String> consumables = await ConsumableStore.load();
     setState(() {
       _isAvailable = isAvailable;
@@ -139,6 +145,7 @@ class _MyAppState extends State<_MyApp> {
             _buildConnectionCheckTile(),
             _buildProductList(),
             _buildConsumableBox(),
+            _buildRestoreButton(),
           ],
         ),
       );
@@ -242,7 +249,11 @@ class _MyAppState extends State<_MyApp> {
               productDetails.description,
             ),
             trailing: previousPurchase != null
-                ? Icon(Icons.check)
+                ? IconButton(
+                    onPressed: () {
+                      _iapIosPlatformAddition.showPriceConsentIfNeeded();
+                    },
+                    icon: Icon(Icons.upgrade))
                 : TextButton(
                     child: Text(productDetails.price),
                     style: TextButton.styleFrom(
@@ -308,6 +319,30 @@ class _MyAppState extends State<_MyApp> {
         padding: EdgeInsets.all(16.0),
       )
     ]));
+  }
+
+  Widget _buildRestoreButton() {
+    if (_loading) {
+      return Container();
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(4.0),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          TextButton(
+            child: Text('Restore purchases'),
+            style: TextButton.styleFrom(
+              backgroundColor: Theme.of(context).primaryColor,
+              primary: Colors.white,
+            ),
+            onPressed: () => _iapIosPlatform.restorePurchases(),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> consume(String id) async {

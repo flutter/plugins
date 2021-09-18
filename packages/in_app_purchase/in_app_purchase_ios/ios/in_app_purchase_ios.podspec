@@ -19,11 +19,6 @@ Downloaded by pub (not CocoaPods).
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  s.platform = :ios, '8.0'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS' => 'armv7 arm64 x86_64' }
-
-  s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'Tests/**/*'
-    test_spec.dependency 'OCMock','3.5'
-  end
+  s.platform = :ios, '9.0'
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES' }
 end

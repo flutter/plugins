@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "FIAPaymentQueueHandler.h"
+#import "FIAPPaymentQueueDelegate.h"
 
 @interface FIAPaymentQueueHandler ()
 
@@ -36,12 +37,20 @@
     _paymentQueueRestoreCompletedTransactionsFinished = restoreCompletedTransactionsFinished;
     _shouldAddStorePayment = shouldAddStorePayment;
     _updatedDownloads = updatedDownloads;
+
+    if (@available(iOS 13.0, macOS 10.15, *)) {
+      queue.delegate = self.delegate;
+    }
   }
   return self;
 }
 
 - (void)startObservingPaymentQueue {
   [_queue addTransactionObserver:self];
+}
+
+- (void)stopObservingPaymentQueue {
+  [_queue removeTransactionObserver:self];
 }
 
 - (BOOL)addPayment:(SKPayment *)payment {
@@ -72,6 +81,10 @@
   } else {
     NSLog(@"presentCodeRedemptionSheet is only available on iOS 14 or newer");
   }
+}
+
+- (void)showPriceConsentIfNeeded {
+  [self.queue showPriceConsentIfNeeded];
 }
 
 #pragma mark - observing

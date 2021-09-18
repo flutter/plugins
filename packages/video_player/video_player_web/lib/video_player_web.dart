@@ -88,6 +88,9 @@ class VideoPlayerPlugin extends VideoPlayerPlatform {
       case DataSourceType.file:
         return Future.error(UnimplementedError(
             'web implementation of video_player cannot play local files'));
+      case DataSourceType.contentUri:
+        return Future.error(UnimplementedError(
+            'web implementation of video_player cannot play content uri'));
     }
 
     final _VideoPlayer player = _VideoPlayer(
@@ -181,10 +184,15 @@ class _VideoPlayer {
       ..src = uri
       ..autoplay = false
       ..controls = false
-      ..style.border = 'none';
+      ..style.border = 'none'
+      ..style.height = '100%'
+      ..style.width = '100%';
 
     // Allows Safari iOS to play the video inline
     videoElement.setAttribute('playsinline', 'true');
+
+    // Set autoplay to false since most browsers won't autoplay a video unless it is muted
+    videoElement.setAttribute('autoplay', 'false');
 
     // TODO(hterkelsen): Use initialization parameters once they are available
     ui.platformViewRegistry.registerViewFactory(

@@ -96,9 +96,7 @@
     @"quantity" : @(payment.quantity),
     @"applicationUsername" : payment.applicationUsername ?: [NSNull null]
   }];
-  if (@available(iOS 8.3, *)) {
-    [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
-  }
+  [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
   return map;
 }
 
@@ -111,6 +109,7 @@
           forKey:@"currencySymbol"];
   [map setObject:[locale objectForKey:NSLocaleCurrencyCode] ?: [NSNull null]
           forKey:@"currencyCode"];
+  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
   return map;
 }
 
@@ -124,9 +123,7 @@
   payment.requestData = [utf8String dataUsingEncoding:NSUTF8StringEncoding];
   payment.quantity = [map[@"quantity"] integerValue];
   payment.applicationUsername = map[@"applicationUsername"];
-  if (@available(iOS 8.3, *)) {
-    payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
-  }
+  payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
   return payment;
 }
 
@@ -167,6 +164,33 @@
     }
   }
   return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront {
+  if (!storefront) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"countryCode" : storefront.countryCode,
+    @"identifier" : storefront.identifier
+  }];
+
+  return map;
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
+                 andSKPaymentTransaction:(SKPaymentTransaction *)transaction {
+  if (!storefront || !transaction) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"storefront" : [FIAObjectTranslator getMapFromSKStorefront:storefront],
+    @"transaction" : [FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]
+  }];
+
+  return map;
 }
 
 @end
