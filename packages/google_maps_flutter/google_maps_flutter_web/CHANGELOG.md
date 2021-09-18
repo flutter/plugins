@@ -1,3 +1,26 @@
+## 0.3.1
+
+* Fix the `getScreenCoordinate(LatLng)` method. [#80710](https://github.com/flutter/flutter/issues/80710)
+* Wait until the map tiles have loaded before calling `onPlatformViewCreated`, so
+the returned controller is 100% functional (has bounds, a projection, etc...)
+* Use zIndex property when initializing Circle objects. [#89374](https://github.com/flutter/flutter/issues/89374)
+
+## 0.3.0+4
+
+* Add `implements` to pubspec.
+
+## 0.3.0+3
+
+* Update the `README.md` usage instructions to not be tied to explicit package versions.
+
+## 0.3.0+2
+
+* Document `liteModeEnabled` is not available on the web. [#83737](https://github.com/flutter/flutter/issues/83737).
+
+## 0.3.0+1
+
+* Change sizing code of `GoogleMap` widget's `HtmlElementView` so it works well when slotted.
+
 ## 0.3.0
 
 * Migrate package to null-safety.

@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:ui';
+import 'dart:ui' as ui;
 
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
 
 /// Signature for a function provided by the [Link] widget that instructs it to
 /// follow the link.
@@ -73,45 +73,40 @@ abstract class LinkInfo {
   bool get isDisabled;
 }
 
+typedef _SendMessage = Function(String, ByteData?, void Function(ByteData?));
+
 /// Pushes the [routeName] into Flutter's navigation system via a platform
 /// message.
-Future<ByteData> pushRouteNameToFramework(
-  BuildContext context,
-  String routeName, {
-  @visibleForTesting bool debugForceRouter = false,
-}) {
-  final PlatformMessageCallback? onPlatformMessage = window.onPlatformMessage;
-  if (onPlatformMessage == null) {
-    return Future<ByteData>.value(null);
-  }
+///
+/// The platform is notified using [SystemNavigator.routeInformationUpdated]. On
+/// older versions of Flutter, this means it will not work unless the
+/// application uses a [Router] (e.g. using [MaterialApp.router]).
+///
+/// Returns the raw data returned by the framework.
+// TODO(ianh): Remove the first argument.
+Future<ByteData> pushRouteNameToFramework(Object? _, String routeName) {
   final Completer<ByteData> completer = Completer<ByteData>();
-  if (debugForceRouter || _hasRouter(context)) {
-    SystemNavigator.routeInformationUpdated(location: routeName);
-    onPlatformMessage(
-      'flutter/navigation',
-      _codec.encodeMethodCall(
-        MethodCall('pushRouteInformation', <dynamic, dynamic>{
-          'location': routeName,
-          'state': null,
-        }),
-      ),
-      completer.complete,
-    );
-  } else {
-    onPlatformMessage(
-      'flutter/navigation',
-      _codec.encodeMethodCall(MethodCall('pushRoute', routeName)),
-      completer.complete,
-    );
-  }
+  SystemNavigator.routeInformationUpdated(location: routeName);
+  final _SendMessage sendMessage = _ambiguate(WidgetsBinding.instance)
+          ?.platformDispatcher
+          .onPlatformMessage ??
+      ui.channelBuffers.push;
+  sendMessage(
+    'flutter/navigation',
+    _codec.encodeMethodCall(
+      MethodCall('pushRouteInformation', <dynamic, dynamic>{
+        'location': routeName,
+        'state': null,
+      }),
+    ),
+    completer.complete,
+  );
   return completer.future;
 }
 
-bool _hasRouter(BuildContext context) {
-  try {
-    return Router.of(context) != null;
-  } on AssertionError {
-    // When a `Router` can't be found, an assertion error is thrown.
-    return false;
-  }
-}
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

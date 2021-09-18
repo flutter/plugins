@@ -11,9 +11,12 @@ export 'package:quick_actions_platform_interface/types/types.dart';
 
 /// Quick actions plugin.
 class QuickActions {
+  /// Creates a new instance of [QuickActions].
+  const QuickActions();
+
   /// Initializes this plugin.
   ///
-  /// Call this once before any further interaction with the the plugin.
+  /// Call this once before any further interaction with the plugin.
   Future<void> initialize(QuickActionHandler handler) async =>
       QuickActionsPlatform.instance.initialize(handler);
 
