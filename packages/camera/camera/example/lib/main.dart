@@ -521,43 +521,38 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
               ? onTakePictureButtonPressed
               : null,
         ),
-        // Video recording is currently not supported on the web.
-        ...(!kIsWeb
-            ? [
-                IconButton(
-                  icon: const Icon(Icons.videocam),
-                  color: Colors.blue,
-                  onPressed: cameraController != null &&
-                          cameraController.value.isInitialized &&
-                          !cameraController.value.isRecordingVideo
-                      ? onVideoRecordButtonPressed
-                      : null,
-                ),
-                IconButton(
-                  icon: cameraController != null &&
-                          cameraController.value.isRecordingPaused
-                      ? Icon(Icons.play_arrow)
-                      : Icon(Icons.pause),
-                  color: Colors.blue,
-                  onPressed: cameraController != null &&
-                          cameraController.value.isInitialized &&
-                          cameraController.value.isRecordingVideo
-                      ? (cameraController.value.isRecordingPaused)
-                          ? onResumeButtonPressed
-                          : onPauseButtonPressed
-                      : null,
-                ),
-                IconButton(
-                  icon: const Icon(Icons.stop),
-                  color: Colors.red,
-                  onPressed: cameraController != null &&
-                          cameraController.value.isInitialized &&
-                          cameraController.value.isRecordingVideo
-                      ? onStopButtonPressed
-                      : null,
-                ),
-              ]
-            : []),
+        IconButton(
+          icon: const Icon(Icons.videocam),
+          color: Colors.blue,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  !cameraController.value.isRecordingVideo
+              ? onVideoRecordButtonPressed
+              : null,
+        ),
+        IconButton(
+          icon: cameraController != null &&
+                  cameraController.value.isRecordingPaused
+              ? Icon(Icons.play_arrow)
+              : Icon(Icons.pause),
+          color: Colors.blue,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  cameraController.value.isRecordingVideo
+              ? (cameraController.value.isRecordingPaused)
+                  ? onResumeButtonPressed
+                  : onPauseButtonPressed
+              : null,
+        ),
+        IconButton(
+          icon: const Icon(Icons.stop),
+          color: Colors.red,
+          onPressed: cameraController != null &&
+                  cameraController.value.isInitialized &&
+                  cameraController.value.isRecordingVideo
+              ? onStopButtonPressed
+              : null,
+        ),
         IconButton(
           icon: const Icon(Icons.pause_presentation),
           color:
