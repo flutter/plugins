@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 import 'package:xdg_directories/xdg_directories.dart' as xdg;
@@ -12,6 +13,17 @@ import 'package:xdg_directories/xdg_directories.dart' as xdg;
 ///
 /// This class implements the `package:path_provider` functionality for linux
 class PathProviderLinux extends PathProviderPlatform {
+  /// Constructs an instance of [PathProviderLinux]
+  PathProviderLinux() : _environment = Platform.environment;
+
+  /// Constructs an instance of [PathProviderLinux] with the given [environment]
+  @visibleForTesting
+  PathProviderLinux.private({
+    required Map<String, String> environment,
+  }) : _environment = environment;
+
+  final Map<String, String> _environment;
+
   /// Registers this class as the default instance of [PathProviderPlatform]
   static void registerWith() {
     PathProviderPlatform.instance = PathProviderLinux();
@@ -19,7 +31,10 @@ class PathProviderLinux extends PathProviderPlatform {
 
   @override
   Future<String?> getTemporaryPath() {
-    return Future<String?>.value('/tmp');
+    final String environmentTmpDir = _environment['TMPDIR'] ?? '';
+    return Future<String?>.value(
+      environmentTmpDir.isEmpty ? '/tmp' : environmentTmpDir,
+    );
   }
 
   @override

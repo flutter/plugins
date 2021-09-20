@@ -8,6 +8,9 @@ jobs:
   release:
     if: github.repository_owner == 'flutter'
     name: release
+    permissions:
+      # Release needs to push a tag back to the repo.
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: "Install Flutter"

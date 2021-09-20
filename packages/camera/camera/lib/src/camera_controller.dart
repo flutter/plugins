@@ -335,7 +335,7 @@ class CameraController extends ValueNotifier<CameraValue> {
   /// Preparing audio can cause a minor delay in the CameraPreview view on iOS.
   /// If video recording is intended, calling this early eliminates this delay
   /// that would otherwise be experienced when video recording is started.
-  /// This operation is a no-op on Android.
+  /// This operation is a no-op on Android and Web.
   ///
   /// Throws a [CameraException] if the prepare fails.
   Future<void> prepareForVideoRecording() async {

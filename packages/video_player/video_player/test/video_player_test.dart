@@ -162,6 +162,11 @@ void main() {
       expect(find.byType(Text), findsNothing);
     });
 
+    testWidgets('handles empty text', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: '')));
+      expect(find.byType(Text), findsNothing);
+    });
+
     testWidgets('Passes text contrast ratio guidelines',
         (WidgetTester tester) async {
       final String text = 'foo';
