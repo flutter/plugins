@@ -1,3 +1,7 @@
+## 2.0.14
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
 ## 2.0.13
 
 * Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.

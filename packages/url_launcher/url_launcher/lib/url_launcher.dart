@@ -16,7 +16,7 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// schemes which cannot be handled, that is when [canLaunch] would complete
 /// with false.
 ///
-/// [forceSafariVC] is only used in iOS with iOS version >= 9.0. By default (when unset), the launcher
+/// By default when [forceSafariVC] is unset, the launcher
 /// opens web URLs in the Safari View Controller, anything else is opened
 /// using the default handler on the platform. If set to true, it opens the
 /// URL in the Safari View Controller. If false, the URL is opened in the
@@ -138,9 +138,6 @@ Future<bool> canLaunch(String urlString) async {
 /// Or on IOS systems, if [launch] was called without `forceSafariVC` being set to `true`,
 /// this call will not do anything either, simply because there is no
 /// WebView/SafariViewController available to be closed.
-///
-/// SafariViewController is only available on IOS version >= 9.0, this method does not do anything
-/// on IOS version below 9.0
 Future<void> closeWebView() async {
   return await UrlLauncherPlatform.instance.closeWebView();
 }

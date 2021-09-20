@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -245,42 +246,36 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-// A breaking change to the ImageStreamListener API affects this sample.
-// I've updates the sample to use the new API, but as we cannot use the new
-// API before it makes it to stable I'm commenting out this sample for now
-// TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-// https://github.com/flutter/flutter/issues/33438
-//
-//  void _setMarkerIcon(BitmapDescriptor assetIcon) {
-//    if (selectedMarker == null) {
-//      return;
-//    }
-//
-//    final Marker marker = markers[selectedMarker];
-//    setState(() {
-//      markers[selectedMarker] = marker.copyWith(
-//        iconParam: assetIcon,
-//      );
-//    });
-//  }
-//
-//  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-//    final Completer<BitmapDescriptor> bitmapIcon =
-//        Completer<BitmapDescriptor>();
-//    final ImageConfiguration config = createLocalImageConfiguration(context);
-//
-//    const AssetImage('assets/red_square.png')
-//        .resolve(config)
-//        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
-//      final ByteData bytes =
-//          await image.image.toByteData(format: ImageByteFormat.png);
-//      final BitmapDescriptor bitmap =
-//          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-//      bitmapIcon.complete(bitmap);
-//    }));
-//
-//    return await bitmapIcon.future;
-//  }
+  void _setMarkerIcon(MarkerId markerId, BitmapDescriptor assetIcon) {
+    final Marker marker = markers[markerId]!;
+    setState(() {
+      markers[markerId] = marker.copyWith(
+        iconParam: assetIcon,
+      );
+    });
+  }
+
+  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
+    final Completer<BitmapDescriptor> bitmapIcon =
+        Completer<BitmapDescriptor>();
+    final ImageConfiguration config = createLocalImageConfiguration(context);
+
+    const AssetImage('assets/red_square.png')
+        .resolve(config)
+        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
+      final ByteData? bytes =
+          await image.image.toByteData(format: ImageByteFormat.png);
+      if (bytes == null) {
+        bitmapIcon.completeError(Exception('Unable to encode icon'));
+        return;
+      }
+      final BitmapDescriptor bitmap =
+          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+      bitmapIcon.complete(bitmap);
+    }));
+
+    return await bitmapIcon.future;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -386,22 +381,18 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
                               ? null
                               : () => _changeZIndex(selectedId),
                         ),
-                        // A breaking change to the ImageStreamListener API affects this sample.
-                        // I've updates the sample to use the new API, but as we cannot use the new
-                        // API before it makes it to stable I'm commenting out this sample for now
-                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-                        // https://github.com/flutter/flutter/issues/33438
-                        //
-                        // TextButton(
-                        //   child: const Text('set marker icon'),
-                        //   onPressed: () {
-                        //     _getAssetIcon(context).then(
-                        //       (BitmapDescriptor icon) {
-                        //         _setMarkerIcon(icon);
-                        //       },
-                        //     );
-                        //   },
-                        // ),
+                        TextButton(
+                          child: const Text('set marker icon'),
+                          onPressed: selectedId == null
+                              ? null
+                              : () {
+                                  _getAssetIcon(context).then(
+                                    (BitmapDescriptor icon) {
+                                      _setMarkerIcon(selectedId, icon);
+                                    },
+                                  );
+                                },
+                        ),
                       ],
                     ),
                   ],

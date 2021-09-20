@@ -64,6 +64,9 @@ class CameraPlugin extends CameraPlatform {
   final _cameraEndedSubscriptions =
       <int, StreamSubscription<html.MediaStreamTrack>>{};
 
+  final _cameraVideoRecordingErrorSubscriptions =
+      <int, StreamSubscription<html.ErrorEvent>>{};
+
   /// Returns a stream of camera events for the given [cameraId].
   Stream<CameraEvent> _cameraEvents(int cameraId) =>
       cameraEventStreamController.stream
@@ -338,7 +341,7 @@ class CameraPlugin extends CameraPlatform {
 
   @override
   Stream<VideoRecordedEvent> onVideoRecordedEvent(int cameraId) {
-    throw UnimplementedError('onVideoRecordedEvent() is not implemented.');
+    return getCamera(cameraId).onVideoRecordedEvent;
   }
 
   @override
@@ -422,28 +425,73 @@ class CameraPlugin extends CameraPlatform {
   }
 
   @override
-  Future<void> prepareForVideoRecording() {
-    throw UnimplementedError('prepareForVideoRecording() is not implemented.');
+  Future<void> prepareForVideoRecording() async {
+    // This is a no-op as it is not required for the web.
   }
 
   @override
   Future<void> startVideoRecording(int cameraId, {Duration? maxVideoDuration}) {
-    throw UnimplementedError('startVideoRecording() is not implemented.');
+    try {
+      final camera = getCamera(cameraId);
+
+      // Add camera's video recording errors to the camera events stream.
+      // The error event fires when the video recording is not allowed or an unsupported
+      // codec is used.
+      _cameraVideoRecordingErrorSubscriptions[cameraId] =
+          camera.onVideoRecordingError.listen((html.ErrorEvent errorEvent) {
+        cameraEventStreamController.add(
+          CameraErrorEvent(
+            cameraId,
+            'Error code: ${errorEvent.type}, error message: ${errorEvent.message}.',
+          ),
+        );
+      });
+
+      return camera.startVideoRecording(maxVideoDuration: maxVideoDuration);
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
-  Future<XFile> stopVideoRecording(int cameraId) {
-    throw UnimplementedError('stopVideoRecording() is not implemented.');
+  Future<XFile> stopVideoRecording(int cameraId) async {
+    try {
+      final videoRecording = await getCamera(cameraId).stopVideoRecording();
+      await _cameraVideoRecordingErrorSubscriptions[cameraId]?.cancel();
+      return videoRecording;
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
   Future<void> pauseVideoRecording(int cameraId) {
-    throw UnimplementedError('pauseVideoRecording() is not implemented.');
+    try {
+      return getCamera(cameraId).pauseVideoRecording();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
   Future<void> resumeVideoRecording(int cameraId) {
-    throw UnimplementedError('resumeVideoRecording() is not implemented.');
+    try {
+      return getCamera(cameraId).resumeVideoRecording();
+    } on html.DomException catch (e) {
+      throw PlatformException(code: e.name, message: e.message);
+    } on CameraWebException catch (e) {
+      _addCameraErrorEvent(e);
+      throw PlatformException(code: e.code.toString(), message: e.description);
+    }
   }
 
   @override
@@ -571,6 +619,7 @@ class CameraPlugin extends CameraPlatform {
       await _cameraVideoErrorSubscriptions[cameraId]?.cancel();
       await _cameraVideoAbortSubscriptions[cameraId]?.cancel();
       await _cameraEndedSubscriptions[cameraId]?.cancel();
+      await _cameraVideoRecordingErrorSubscriptions[cameraId]?.cancel();
 
       cameras.remove(cameraId);
       _cameraVideoErrorSubscriptions.remove(cameraId);
