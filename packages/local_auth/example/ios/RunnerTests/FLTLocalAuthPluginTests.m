@@ -194,7 +194,6 @@ static const NSTimeInterval kTimeout = 30.0;
   [self waitForExpectationsWithTimeout:kTimeout handler:nil];
 }
 
-
 - (void)testLocalizedFallbackTitle {
   FLTLocalAuthPlugin* plugin = [[FLTLocalAuthPlugin alloc] init];
   id mockAuthContext = OCMClassMock([LAContext class]);
