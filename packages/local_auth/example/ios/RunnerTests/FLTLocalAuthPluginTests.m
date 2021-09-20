@@ -64,7 +64,7 @@ static const NSTimeInterval kTimeout = 30.0;
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      OCMVerify([mockAuthContext setLocalizedFallbackTitle: @""]);
+                      OCMVerify([mockAuthContext setLocalizedFallbackTitle:@""]);
                       XCTAssertTrue([result boolValue]);
                       [expectation fulfill];
                     }];
@@ -105,7 +105,7 @@ static const NSTimeInterval kTimeout = 30.0;
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      OCMVerify([mockAuthContext setLocalizedFallbackTitle: @""]);
+                      OCMVerify([mockAuthContext setLocalizedFallbackTitle:@""]);
                       XCTAssertTrue([result boolValue]);
                       [expectation fulfill];
                     }];
@@ -146,7 +146,7 @@ static const NSTimeInterval kTimeout = 30.0;
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      OCMVerify([mockAuthContext setLocalizedFallbackTitle: @""]);
+                      OCMVerify([mockAuthContext setLocalizedFallbackTitle:@""]);
                       XCTAssertFalse([result boolValue]);
                       [expectation fulfill];
                     }];
@@ -187,7 +187,7 @@ static const NSTimeInterval kTimeout = 30.0;
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      OCMVerify([mockAuthContext setLocalizedFallbackTitle: @""]);
+                      OCMVerify([mockAuthContext setLocalizedFallbackTitle:@""]);
                       XCTAssertFalse([result boolValue]);
                       [expectation fulfill];
                     }];
@@ -218,19 +218,20 @@ static const NSTimeInterval kTimeout = 30.0;
   OCMStub([mockAuthContext evaluatePolicy:policy localizedReason:reason reply:[OCMArg any]])
       .andDo(backgroundThreadReplyCaller);
 
-  FlutterMethodCall* call = [FlutterMethodCall methodCallWithMethodName:@"authenticate"
-                                                              arguments:@{
-                                                                @"biometricOnly" : @(NO),
-                                                                @"localizedReason" : reason,
-                                                                @"localizedFallbackTitle" : localizedFallbackTitle,
-                                                              }];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"authenticate"
+                                        arguments:@{
+                                          @"biometricOnly" : @(NO),
+                                          @"localizedReason" : reason,
+                                          @"localizedFallbackTitle" : localizedFallbackTitle,
+                                        }];
 
   XCTestExpectation* expectation = [self expectationWithDescription:@"Result is called"];
   [plugin handleMethodCall:call
                     result:^(id _Nullable result) {
                       XCTAssertTrue([NSThread isMainThread]);
                       XCTAssertTrue([result isKindOfClass:[NSNumber class]]);
-                      OCMVerify([mockAuthContext setLocalizedFallbackTitle: localizedFallbackTitle]);
+                      OCMVerify([mockAuthContext setLocalizedFallbackTitle:localizedFallbackTitle]);
                       XCTAssertFalse([result boolValue]);
                       [expectation fulfill];
                     }];
