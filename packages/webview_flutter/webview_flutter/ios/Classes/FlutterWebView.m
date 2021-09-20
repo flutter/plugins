@@ -272,19 +272,14 @@
 }
 
 - (void)clearCache:(FlutterResult)result {
-  if (@available(iOS 9.0, *)) {
-    NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
-    WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
-    NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
-    [dataStore removeDataOfTypes:cacheDataTypes
-                   modifiedSince:dateFrom
-               completionHandler:^{
-                 result(nil);
-               }];
-  } else {
-    // support for iOS8 tracked in https://github.com/flutter/flutter/issues/27624.
-    NSLog(@"Clearing cache is not supported for Flutter WebViews prior to iOS 9.");
-  }
+  NSSet* cacheDataTypes = [WKWebsiteDataStore allWebsiteDataTypes];
+  WKWebsiteDataStore* dataStore = [WKWebsiteDataStore defaultDataStore];
+  NSDate* dateFrom = [NSDate dateWithTimeIntervalSince1970:0];
+  [dataStore removeDataOfTypes:cacheDataTypes
+                 modifiedSince:dateFrom
+             completionHandler:^{
+               result(nil);
+             }];
 }
 
 - (void)onGetTitle:(FlutterResult)result {
@@ -391,25 +386,18 @@
     case 0:  // require_user_action_for_all_media_types
       if (@available(iOS 10.0, *)) {
         configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeAll;
-      } else if (@available(iOS 9.0, *)) {
-        configuration.requiresUserActionForMediaPlayback = true;
       } else {
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        configuration.mediaPlaybackRequiresUserAction = true;
-#pragma clang diagnostic pop
+        configuration.requiresUserActionForMediaPlayback = true;
       }
       break;
     case 1:  // always_allow
       if (@available(iOS 10.0, *)) {
-        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
-      } else if (@available(iOS 9.0, *)) {
-        configuration.requiresUserActionForMediaPlayback = false;
-      } else {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        configuration.mediaPlaybackRequiresUserAction = false;
+        configuration.mediaTypesRequiringUserActionForPlayback = WKAudiovisualMediaTypeNone;
 #pragma clang diagnostic pop
+      } else {
+        configuration.requiresUserActionForMediaPlayback = false;
       }
       break;
     default:
@@ -468,11 +456,7 @@
 }
 
 - (void)updateUserAgent:(NSString*)userAgent {
-  if (@available(iOS 9.0, *)) {
-    [_webView setCustomUserAgent:userAgent];
-  } else {
-    NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
-  }
+  [_webView setCustomUserAgent:userAgent];
 }
 
 #pragma mark WKUIDelegate
