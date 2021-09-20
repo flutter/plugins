@@ -11,15 +11,17 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_wkwebview_example/main.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:webview_flutter_wkwebview_example/navigation_decision.dart';
+import 'package:webview_flutter_wkwebview_example/navigation_request.dart';
+import 'package:webview_flutter_wkwebview_example/web_view.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   // Set to `false` to include all flaky tests in the test run. See also https://github.com/flutter/flutter/issues/86757.
-  const bool _skipDueIssue86757 = false;
+  const bool _skipDueToIssue86757 = false;
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
@@ -40,7 +42,7 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
-  }, skip: _skipDueIssue86757);
+  }, skip: _skipDueToIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl', (WidgetTester tester) async {
@@ -62,7 +64,7 @@ void main() {
     await controller.loadUrl('https://www.google.com/');
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
-  }, skip: _skipDueIssue86757);
+  }, skip: _skipDueToIssue86757);
 
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -1184,7 +1186,7 @@ void main() {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion('https://flutter.dev/'));
     },
-    skip: _skipDueIssue86757,
+    skip: _skipDueToIssue86757,
   );
 }
 
