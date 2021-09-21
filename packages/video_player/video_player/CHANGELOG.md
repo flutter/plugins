@@ -1,6 +1,6 @@
 ## 2.2.1
 
-* Support to closed caption web vtt format added.
+* Support to closed caption WebVTT format added.
 
 ## 2.2.0
 

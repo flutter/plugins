@@ -6,7 +6,7 @@ import 'sub_rip.dart';
 export 'sub_rip.dart' show SubRipCaptionFile;
 
 import 'web_vtt.dart';
-export 'web_vtt.dart' show WebVttCaptionFile;
+export 'web_vtt.dart' show WebVTTCaptionFile;
 
 /// A structured representation of a parsed closed caption file.
 ///
@@ -18,7 +18,7 @@ export 'web_vtt.dart' show WebVttCaptionFile;
 ///
 /// See:
 /// * [SubRipCaptionFile].
-/// * [WebVttCaptionFile].
+/// * [WebVTTCaptionFile].
 abstract class ClosedCaptionFile {
   /// The full list of captions from a given file.
   ///
@@ -48,12 +48,12 @@ class Caption {
   /// When in the given video should this [Caption] begin displaying.
   ///
   /// When the value is null, the caption object is invalid.
-  final Duration? start;
+  final Duration start;
 
   /// When in the given video should this [Caption] be dismissed.
   ///
   /// When the value is null, the caption object is invalid.
-  final Duration? end;
+  final Duration end;
 
   /// The actual text that should appear on screen to be read between [start]
   /// and [end].

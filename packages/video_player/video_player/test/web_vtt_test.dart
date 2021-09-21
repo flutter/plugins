@@ -8,10 +8,10 @@ import 'package:video_player/video_player.dart';
 
 void main() {
   group('Parse VTT file', () {
-    WebVttCaptionFile parsedFile;
+    WebVTTCaptionFile parsedFile;
 
     test('with Metadata', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_with_metadata);
+      parsedFile = WebVTTCaptionFile(_valid_vtt_with_metadata);
       expect(parsedFile.captions.length, 1);
 
       expect(parsedFile.captions[0].start, Duration(seconds: 1));
@@ -21,7 +21,7 @@ void main() {
     });
 
     test('with Multiline', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_with_multiline);
+      parsedFile = WebVTTCaptionFile(_valid_vtt_with_multiline);
       expect(parsedFile.captions.length, 1);
 
       expect(parsedFile.captions[0].start,
@@ -33,7 +33,7 @@ void main() {
     });
 
     test('with styles tags', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_with_styles);
+      parsedFile = WebVTTCaptionFile(_valid_vtt_with_styles);
       expect(parsedFile.captions.length, 3);
 
       expect(parsedFile.captions[0].start,
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('with subtitling features', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_with_subtitling_features);
+      parsedFile = WebVTTCaptionFile(_valid_vtt_with_subtitling_features);
       expect(parsedFile.captions.length, 3);
 
       expect(parsedFile.captions[0].number, 1);
@@ -54,8 +54,8 @@ void main() {
       expect(parsedFile.captions.last.text, "Transcrit par Célestes™");
     });
 
-    test('with [hours]:[minutes]:[seconds].[milliseconds]', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_with_hours);
+    test('with [hours]:[minutes]:[seconds].[milliseconds].', () {
+      parsedFile = WebVTTCaptionFile(_valid_vtt_with_hours);
       expect(parsedFile.captions.length, 1);
 
       expect(parsedFile.captions[0].number, 1);
@@ -64,18 +64,8 @@ void main() {
       expect(parsedFile.captions.last.text, "This is a test.");
     });
 
-    test('with [hours]:[minutes].[milliseconds]', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_without_seconds);
-      expect(parsedFile.captions.length, 1);
-
-      expect(parsedFile.captions[0].number, 1);
-      expect(parsedFile.captions.last.start, Duration(hours: 60));
-      expect(parsedFile.captions.last.end, Duration(hours: 60, minutes: 2));
-      expect(parsedFile.captions.last.text, "This is a test.");
-    });
-
-    test('with [minutes]:[seconds].[milliseconds]', () {
-      parsedFile = WebVttCaptionFile(_valid_vtt_without_hours);
+    test('with [minutes]:[seconds].[milliseconds].', () {
+      parsedFile = WebVTTCaptionFile(_valid_vtt_without_hours);
       expect(parsedFile.captions.length, 1);
 
       expect(parsedFile.captions[0].number, 1);
@@ -83,10 +73,33 @@ void main() {
       expect(parsedFile.captions.last.end, Duration(seconds: 4));
       expect(parsedFile.captions.last.text, "This is a test.");
     });
+
+    test('with invalid seconds format returns empty captions.', () {
+      parsedFile = WebVTTCaptionFile(_invalid_seconds);
+      expect(parsedFile.captions, isEmpty);
+    });
+
+    test('with invalid minutes format returns empty captions.', () {
+      parsedFile = WebVTTCaptionFile(_invalid_minutes);
+      expect(parsedFile.captions, isEmpty);
+    });
+
+    test('with invalid hours format returns empty captions.', () {
+      parsedFile = WebVTTCaptionFile(_invalid_hours);
+      expect(parsedFile.captions, isEmpty);
+    });
+
+    test('with invalid component length returns empty captions.', () {
+      parsedFile = WebVTTCaptionFile(_time_component_too_long);
+      expect(parsedFile.captions, isEmpty);
+
+      parsedFile = WebVTTCaptionFile(_time_component_too_short);
+      expect(parsedFile.captions, isEmpty);
+    });
   });
 
-  test('Parses VTT file with malformed input', () {
-    final ClosedCaptionFile parsedFile = WebVttCaptionFile(_malformedVTT);
+  test('Parses VTT file with malformed input.', () {
+    final ClosedCaptionFile parsedFile = WebVTTCaptionFile(_malformedVTT);
 
     expect(parsedFile.captions.length, 1);
 
@@ -178,8 +191,44 @@ This is a test.
 
 ''';
 
-/// With format [hours]:[minutes].[milliseconds]
-const String _valid_vtt_without_seconds = '''
+/// Invalid seconds format.
+const String _invalid_seconds = '''
+WEBVTT
+
+60:00:000.000 --> 60:02:000.000
+This is a test.
+
+''';
+
+/// Invalid minutes format.
+const String _invalid_minutes = '''
+WEBVTT
+
+60:60:00.000 --> 60:70:00.000
+This is a test.
+
+''';
+
+/// Invalid hours format.
+const String _invalid_hours = '''
+WEBVTT
+
+5:00:00.000 --> 5:02:00.000
+This is a test.
+
+''';
+
+/// Invalid seconds format.
+const String _time_component_too_long = '''
+WEBVTT
+
+60:00:00:00.000 --> 60:02:00:00.000
+This is a test.
+
+''';
+
+/// Invalid seconds format.
+const String _time_component_too_short = '''
 WEBVTT
 
 60:00.000 --> 60:02.000

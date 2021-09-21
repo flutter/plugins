@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,17 +9,14 @@ import 'package:html/dom.dart';
 import 'closed_caption_file.dart';
 import 'package:html/parser.dart' as html_parser;
 
-/// Represents a [ClosedCaptionFile], parsed from the WebVtt file format.
-/// See: https://en.wikipedia.org/wiki/WebVtt
-class WebVttCaptionFile extends ClosedCaptionFile {
+/// Represents a [ClosedCaptionFile], parsed from the WebVTT file format.
+/// See: https://en.wikipedia.org/wiki/WebVTT
+class WebVTTCaptionFile extends ClosedCaptionFile {
   /// Parses a string into a [ClosedCaptionFile], assuming [fileContents] is in
-  /// the WebVtt file format.
-  /// * See: https://en.wikipedia.org/wiki/WebVtt
-  WebVttCaptionFile(this.fileContents)
-      : _captions = _parseCaptionsFromWebVttString(fileContents);
-
-  /// The entire body of the Vtt file.
-  final String fileContents;
+  /// the WebVTT file format.
+  /// * See: https://en.wikipedia.org/wiki/WebVTT
+  WebVTTCaptionFile(String fileContents)
+      : _captions = _parseCaptionsFromWebVTTString(fileContents);
 
   @override
   List<Caption> get captions => _captions;
@@ -27,140 +24,153 @@ class WebVttCaptionFile extends ClosedCaptionFile {
   final List<Caption> _captions;
 }
 
-List<Caption> _parseCaptionsFromWebVttString(String file) {
+List<Caption> _parseCaptionsFromWebVTTString(String file) {
   final List<Caption> captions = <Caption>[];
 
   // Ignore metadata
-  List<String> metadata = ['HEADER', 'NOTE', 'REGION', 'WEBVTT'];
+  Set<String> metadata = {'HEADER', 'NOTE', 'REGION', 'WEBVTT'};
 
   int captionNumber = 1;
-  for (List<String> captionLines in _readWebVttFile(file)) {
-    // CaptionLines represent a complete caption
+  for (List<String> captionLines in _readWebVTTFile(file)) {
+    // CaptionLines represent a complete caption.
     // E.g
     // [
     //  [00:00.000 --> 01:24.000 align:center]
     //  ['Introduction']
     // ]
-    // if caption has just header or time, but no text, captionLines.length will be 1
+    // If caption has just header or time, but no text, `captionLines.length` will be 1.
     if (captionLines.length < 2) continue;
 
-    // if caption has header equal metadata, ignore
+    // If caption has header equal metadata, ignore.
     String metadaType = captionLines[0].split(' ')[0];
     if (metadata.contains(metadaType)) continue;
 
     // Caption has header
     bool hasHeader = captionLines.length > 2;
-    if (hasHeader && int.tryParse(captionLines[0]) != null) {
-      captionNumber = int.parse(captionLines[0]);
+    if (hasHeader) {
+      final int? tryParseCaptionNumber = int.tryParse(captionLines[0]);
+      if (tryParseCaptionNumber != null) {
+        captionNumber = tryParseCaptionNumber;
+      }
     }
 
-    final _StartAndEnd startAndEnd = _StartAndEnd.fromWebVttString(
+    final _CaptionRange? captionRange = _CaptionRange.fromWebVTTString(
       hasHeader ? captionLines[1] : captionLines[0],
     );
 
+    if (captionRange == null) {
+      continue;
+    }
+
     final String text = captionLines.sublist(hasHeader ? 2 : 1).join('\n');
 
-    // TODO(cyanglaz): Handle special syntax in vtt captions.
+    // TODO(cyanglaz): Handle special syntax in VTT captions.
     // https://github.com/flutter/flutter/issues/90007.
-    final String textWithoutFormat = _parseHtmlString(text);
+    final String textWithoutFormat = _extractTextFromHtml(text);
 
     final Caption newCaption = Caption(
       number: captionNumber,
-      start: startAndEnd.start,
-      end: startAndEnd.end,
+      start: captionRange.start,
+      end: captionRange.end,
       text: textWithoutFormat,
     );
-
-    if (newCaption.start != null && newCaption.end != null) {
-      captions.add(newCaption);
-      captionNumber++;
-    }
+    captions.add(newCaption);
+    captionNumber++;
   }
 
   return captions;
 }
 
-class _StartAndEnd {
-  // When there's an error parsing the start or end, either could be null.
-  final Duration? start;
-  final Duration? end;
+class _CaptionRange {
+  final Duration start;
+  final Duration end;
 
-  _StartAndEnd(this.start, this.end);
+  _CaptionRange(this.start, this.end);
 
-  // Assumes format from an Vtt file.
+  // Assumes format from an VTT file.
   // For example:
   // 00:09.000 --> 00:11.000
-  static _StartAndEnd fromWebVttString(String line) {
+  static _CaptionRange? fromWebVTTString(String line) {
     final RegExp format =
-        RegExp(_webVttTimeStamp + _webVttArrow + _webVttTimeStamp);
+        RegExp(_webVTTTimeStamp + _webVTTArrow + _webVTTTimeStamp);
 
     if (!format.hasMatch(line)) {
-      return _StartAndEnd(null, null);
+      return null;
     }
 
-    final List<String> times = line.split(_webVttArrow);
+    final List<String> times = line.split(_webVTTArrow);
 
-    final Duration? start = _parseWebVttTimestamp(times[0]);
-    final Duration? end = _parseWebVttTimestamp(times[1]);
+    final Duration? start = _parseWebVTTTimestamp(times[0]);
+    final Duration? end = _parseWebVTTTimestamp(times[1]);
 
-    return _StartAndEnd(start, end);
+    if (start == null || end == null) {
+      return null;
+    }
+
+    return _CaptionRange(start, end);
   }
 }
 
-String _parseHtmlString(String htmlString) {
+String _extractTextFromHtml(String htmlString) {
   final Document document = html_parser.parse(htmlString);
   final Element? body = document.body;
   if (body == null) {
     return '';
   }
   final Element? bodyElement = html_parser.parse(body.text).documentElement;
-  if (bodyElement == null) {
-    return '';
-  }
-  return bodyElement.text;
+  return bodyElement?.text ?? '';
 }
 
-// Parses a time stamp in an Vtt file into a Duration.
+// Parses a time stamp in an VTT file into a Duration.
 // For example:
 //
-// _parseWebVttimestamp('00:01:08.430')
+// _parseWebVTTTimestamp('00:01:08.430')
 // returns
 // Duration(hours: 0, minutes: 1, seconds: 8, milliseconds: 430)
-Duration? _parseWebVttTimestamp(String timestampString) {
-  if (!RegExp(_webVttTimeStamp).hasMatch(timestampString)) {
+Duration? _parseWebVTTTimestamp(String timestampString) {
+  if (!RegExp(_webVTTTimeStamp).hasMatch(timestampString)) {
     return null;
   }
 
   final List<String> dotSections = timestampString.split('.');
-  final List<String> hoursMinutesSeconds = dotSections[0].split(':');
-
+  final List<String> timeComponents = dotSections[0].split(':');
+  if (timeComponents.length > 3 || timeComponents.length < 2) {
+    // Invalid WebVTT timestamp format, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
+    // WebVTT timestamp format.
+    return null;
+  }
   int hours = 0;
-  int minutes = 0;
-  int seconds = 0;
-
-  if (hoursMinutesSeconds.length > 2) {
-    // Timestamp takes the form of [hours]:[minutes]:[seconds].[milliseconds]
-    hours = int.parse(hoursMinutesSeconds[0]);
-    minutes = int.parse(hoursMinutesSeconds[1]);
-    seconds = int.parse(hoursMinutesSeconds[2]);
-  } else if (int.parse(hoursMinutesSeconds[0]) > 59) {
-    // Timestamp takes the form of [hours]:[minutes].[milliseconds]
-    // First position is hours as it's over 59.
-    hours = int.parse(hoursMinutesSeconds[0]);
-    minutes = int.parse(hoursMinutesSeconds[1]);
-  } else {
-    // Timestamp takes the form of [minutes]:[seconds].[milliseconds]
-    minutes = int.parse(hoursMinutesSeconds[0]);
-    seconds = int.parse(hoursMinutesSeconds[1]);
+  if (timeComponents.length == 3) {
+    final String hourString = timeComponents.removeAt(0);
+    if (hourString.length < 2) {
+      // Invalid hour component, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
+      // WebVTT timestamp format.
+      return null;
+    }
+    hours = int.parse(hourString);
+  }
+  final int minutes = int.parse(timeComponents.removeAt(0));
+  if (minutes < 0 || minutes > 59) {
+    // Invalid minutes component, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
+    // WebVTT timestamp format.
+    return null;
+  }
+  final int seconds = int.parse(timeComponents.removeAt(0));
+  if (seconds < 0 || seconds > 59) {
+    // Invalid seconds component, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
+    // WebVTT timestamp format.
+    return null;
   }
 
   List<String> milisecondsStyles = dotSections[1].split(" ");
 
   // TODO(cyanglaz): Handle caption styles.
   // https://github.com/flutter/flutter/issues/90009.
+  // ```dart
   // if (milisecondsStyles.length > 1) {
   //  List<String> styles = milisecondsStyles.sublist(1);
   // }
+  // ```
   int milliseconds = int.parse(milisecondsStyles[0]);
 
   return Duration(
@@ -171,9 +181,9 @@ Duration? _parseWebVttTimestamp(String timestampString) {
   );
 }
 
-// Reads on Vtt file and splits it into Lists of strings where each list is one
+// Reads on VTT file and splits it into Lists of strings where each list is one
 // caption.
-List<List<String>> _readWebVttFile(String file) {
+List<List<String>> _readWebVTTFile(String file) {
   final List<String> lines = LineSplitter.split(file).toList();
 
   final List<List<String>> captionStrings = <List<String>>[];
@@ -196,5 +206,5 @@ List<List<String>> _readWebVttFile(String file) {
   return captionStrings;
 }
 
-const String _webVttTimeStamp = r'(\d+):(\d{2})(:\d{2})?\.(\d{3})';
-const String _webVttArrow = r' --> ';
+const String _webVTTTimeStamp = r'(\d+):(\d{2})(:\d{2})?\.(\d{3})';
+const String _webVTTArrow = r' --> ';
