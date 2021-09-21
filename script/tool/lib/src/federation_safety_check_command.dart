@@ -135,6 +135,13 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       return PackageResult.success();
     }
 
+    final List<String> changedPackageFiles =
+        _changedDartFiles[package.directory.basename] ?? <String>[];
+    if (changedPackageFiles.isEmpty) {
+      print('No Dart changes.');
+      return PackageResult.success();
+    }
+
     // If the change would be flagged, but it appears to be a mass change
     // rather than a plugin-specific change, allow it with a warning.
     //
