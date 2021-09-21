@@ -1,6 +1,7 @@
-## NEXT
+## 2.0.4
 
 * Updated Android lint settings.
+* Specify Java 8 for Android build.
 
 ## 2.0.3
 

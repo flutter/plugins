@@ -78,6 +78,61 @@ void main() {
       runner.addCommand(command);
     });
 
+    // Returns a MockProcess to provide for "xcrun xcodebuild -list" for a
+    // project that contains [targets].
+    MockProcess _getMockXcodebuildListProcess(List<String> targets) {
+      final Map<String, dynamic> projects = <String, dynamic>{
+        'project': <String, dynamic>{
+          'targets': targets,
+        }
+      };
+      return MockProcess(stdout: jsonEncode(projects));
+    }
+
+    // Returns the ProcessCall to expect for checking the targets present in
+    // the [package]'s [platform]/Runner.xcodeproj.
+    ProcessCall _getTargetCheckCall(Directory package, String platform) {
+      return ProcessCall(
+          'xcrun',
+          <String>[
+            'xcodebuild',
+            '-list',
+            '-json',
+            '-project',
+            package
+                .childDirectory(platform)
+                .childDirectory('Runner.xcodeproj')
+                .path,
+          ],
+          null);
+    }
+
+    // Returns the ProcessCall to expect for running the tests in the
+    // workspace [platform]/Runner.xcworkspace, with the given extra flags.
+    ProcessCall _getRunTestCall(
+      Directory package,
+      String platform, {
+      String? destination,
+      List<String> extraFlags = const <String>[],
+    }) {
+      return ProcessCall(
+          'xcrun',
+          <String>[
+            'xcodebuild',
+            'test',
+            '-workspace',
+            '$platform/Runner.xcworkspace',
+            '-scheme',
+            'Runner',
+            '-configuration',
+            'Debug',
+            if (destination != null) ...<String>['-destination', destination],
+            ...extraFlags,
+            'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
+          ],
+          package.path);
+    }
+
     test('fails if no platforms are provided', () async {
       Error? commandError;
       final List<String> output = await runCapturingPrint(
@@ -124,31 +179,26 @@ void main() {
           pluginDirectory1.childDirectory('example');
 
       processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+        _getMockXcodebuildListProcess(<String>['RunnerTests', 'RunnerUITests']),
         // Exit code 66 from testing indicates no tests.
         MockProcess(exitCode: 66),
       ];
-      final List<String> output =
-          await runCapturingPrint(runner, <String>['native-test', '--macos']);
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['native-test', '--macos', '--no-unit']);
 
-      expect(output, contains(contains('No tests found.')));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('No tests found.'),
+            contains('Skipped 1 package(s)'),
+          ]));
 
       expect(
           processRunner.recordedCalls,
           orderedEquals(<ProcessCall>[
-            ProcessCall(
-                'xcrun',
-                const <String>[
-                  'xcodebuild',
-                  'test',
-                  '-workspace',
-                  'macos/Runner.xcworkspace',
-                  '-scheme',
-                  'Runner',
-                  '-configuration',
-                  'Debug',
-                  'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                ],
-                pluginExampleDirectory.path),
+            _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+            _getRunTestCall(pluginExampleDirectory, 'macos',
+                extraFlags: <String>['-only-testing:RunnerUITests']),
           ]));
     });
 
@@ -196,6 +246,11 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
 
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
+        ];
+
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
           '--ios',
@@ -213,22 +268,9 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'ios/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    '-destination',
-                    'foo_destination',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              _getRunTestCall(pluginExampleDirectory, 'ios',
+                  destination: 'foo_destination'),
             ]));
       });
 
@@ -243,6 +285,8 @@ void main() {
 
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
           MockProcess(stdout: jsonEncode(_kDeviceListMap)), // simctl
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
         ];
 
         await runCapturingPrint(runner, <String>['native-test', '--ios']);
@@ -261,22 +305,9 @@ void main() {
                     '--json',
                   ],
                   null),
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'ios/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    '-destination',
-                    'id=1E76A0FD-38AC-4537-A989-EA639D7D012A',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              _getRunTestCall(pluginExampleDirectory, 'ios',
+                  destination: 'id=1E76A0FD-38AC-4537-A989-EA639D7D012A'),
             ]));
       });
     });
@@ -325,6 +356,11 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
+        ];
+
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
           '--macos',
@@ -338,20 +374,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'macos/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              _getRunTestCall(pluginExampleDirectory, 'macos'),
             ]));
       });
     });
@@ -999,13 +1023,9 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        const Map<String, dynamic> projects = <String, dynamic>{
-          'project': <String, dynamic>{
-            'targets': <String>['RunnerTests', 'RunnerUITests']
-          }
-        };
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
         ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -1023,34 +1043,9 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  <String>[
-                    'xcodebuild',
-                    '-list',
-                    '-json',
-                    '-project',
-                    pluginExampleDirectory
-                        .childDirectory('macos')
-                        .childDirectory('Runner.xcodeproj')
-                        .path,
-                  ],
-                  null),
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'macos/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    '-only-testing:RunnerTests',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              _getRunTestCall(pluginExampleDirectory, 'macos',
+                  extraFlags: <String>['-only-testing:RunnerTests']),
             ]));
       });
 
@@ -1064,13 +1059,9 @@ void main() {
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
 
-        const Map<String, dynamic> projects = <String, dynamic>{
-          'project': <String, dynamic>{
-            'targets': <String>['RunnerTests', 'RunnerUITests']
-          }
-        };
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
         ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -1088,34 +1079,9 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  <String>[
-                    'xcodebuild',
-                    '-list',
-                    '-json',
-                    '-project',
-                    pluginExampleDirectory
-                        .childDirectory('macos')
-                        .childDirectory('Runner.xcodeproj')
-                        .path,
-                  ],
-                  null),
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'macos/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    '-only-testing:RunnerUITests',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              _getRunTestCall(pluginExampleDirectory, 'macos',
+                  extraFlags: <String>['-only-testing:RunnerUITests']),
             ]));
       });
 
@@ -1130,13 +1096,8 @@ void main() {
             pluginDirectory1.childDirectory('example');
 
         // Simulate a project with unit tests but no integration tests...
-        const Map<String, dynamic> projects = <String, dynamic>{
-          'project': <String, dynamic>{
-            'targets': <String>['RunnerTests']
-          }
-        };
         processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
-          MockProcess(stdout: jsonEncode(projects)), // xcodebuild -list
+          _getMockXcodebuildListProcess(<String>['RunnerTests']),
         ];
 
         // ... then try to run only integration tests.
@@ -1156,19 +1117,47 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  <String>[
-                    'xcodebuild',
-                    '-list',
-                    '-json',
-                    '-project',
-                    pluginExampleDirectory
-                        .childDirectory('macos')
-                        .childDirectory('Runner.xcodeproj')
-                        .path,
-                  ],
-                  null),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+            ]));
+      });
+
+      test('fails if there are no unit tests', () async {
+        final Directory pluginDirectory1 = createFakePlugin(
+            'plugin', packagesDir,
+            platformSupport: <String, PlatformDetails>{
+              kPlatformMacos: const PlatformDetails(PlatformSupport.inline),
+            });
+
+        final Directory pluginExampleDirectory =
+            pluginDirectory1.childDirectory('example');
+
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(<String>['RunnerUITests']),
+        ];
+
+        Error? commandError;
+        final List<String> output =
+            await runCapturingPrint(runner, <String>['native-test', '--macos'],
+                errorHandler: (Error e) {
+          commandError = e;
+        });
+
+        expect(commandError, isA<ToolExit>());
+        expect(
+            output,
+            containsAllInOrder(<Matcher>[
+              contains('No "RunnerTests" target in plugin/example; skipping.'),
+              contains(
+                  'No unit tests ran. Plugins are required to have unit tests.'),
+              contains('The following packages had errors:'),
+              contains('plugin:\n'
+                  '    No unit tests ran (use --exclude if this is intentional).'),
+            ]));
+
+        expect(
+            processRunner.recordedCalls,
+            orderedEquals(<ProcessCall>[
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1206,19 +1195,7 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  <String>[
-                    'xcodebuild',
-                    '-list',
-                    '-json',
-                    '-project',
-                    pluginExampleDirectory
-                        .childDirectory('macos')
-                        .childDirectory('Runner.xcodeproj')
-                        .path,
-                  ],
-                  null),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
             ]));
       });
     });
@@ -1244,6 +1221,15 @@ void main() {
         final Directory androidFolder =
             pluginExampleDirectory.childDirectory('android');
 
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']), // iOS list
+          MockProcess(), // iOS run
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']), // macOS list
+          MockProcess(), // macOS run
+        ];
+
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
           '--android',
@@ -1266,36 +1252,11 @@ void main() {
             orderedEquals(<ProcessCall>[
               ProcessCall(androidFolder.childFile('gradlew').path,
                   const <String>['testDebugUnitTest'], androidFolder.path),
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'ios/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    '-destination',
-                    'foo_destination',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'macos/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              _getRunTestCall(pluginExampleDirectory, 'ios',
+                  destination: 'foo_destination'),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              _getRunTestCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1308,6 +1269,11 @@ void main() {
 
         final Directory pluginExampleDirectory =
             pluginDirectory1.childDirectory('example');
+
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
+        ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -1327,20 +1293,8 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'macos/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'macos'),
+              _getRunTestCall(pluginExampleDirectory, 'macos'),
             ]));
       });
 
@@ -1352,6 +1306,11 @@ void main() {
 
         final Directory pluginExampleDirectory =
             pluginDirectory.childDirectory('example');
+
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
+        ];
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -1371,22 +1330,9 @@ void main() {
         expect(
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
-              ProcessCall(
-                  'xcrun',
-                  const <String>[
-                    'xcodebuild',
-                    'test',
-                    '-workspace',
-                    'ios/Runner.xcworkspace',
-                    '-scheme',
-                    'Runner',
-                    '-configuration',
-                    'Debug',
-                    '-destination',
-                    'foo_destination',
-                    'GCC_TREAT_WARNINGS_AS_ERRORS=YES',
-                  ],
-                  pluginExampleDirectory.path),
+              _getTargetCheckCall(pluginExampleDirectory, 'ios'),
+              _getRunTestCall(pluginExampleDirectory, 'ios',
+                  destination: 'foo_destination'),
             ]));
       });
 
@@ -1459,6 +1405,11 @@ void main() {
             'example/android/app/src/test/example_test.java',
           ],
         );
+
+        processRunner.mockProcessesForExecutable['xcrun'] = <io.Process>[
+          _getMockXcodebuildListProcess(
+              <String>['RunnerTests', 'RunnerUITests']),
+        ];
 
         // Simulate failing Android, but not iOS.
         final String gradlewPath = pluginDir

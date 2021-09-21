@@ -1,7 +1,7 @@
 ## NEXT
 
-- `native-test --android` now fails plugins that don't have unit tests,
-  rather than skipping them.
+- `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
+  have unit tests, rather than skipping them.
 
 ## 0.7.1
 

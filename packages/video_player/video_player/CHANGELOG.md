@@ -1,6 +1,18 @@
-## 2.2.1
+## 2.2.4
 
 * Support to closed caption WebVTT format added.
+
+## 2.2.3
+
+* Fixed empty caption text still showing the caption widget.
+
+## 2.2.2
+
+* Fix a disposed `VideoPlayerController` throwing an exception when being replaced in the `VideoPlayer`.
+
+## 2.2.1
+
+* Specify Java 8 for Android build.
 
 ## 2.2.0
 
