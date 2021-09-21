@@ -99,13 +99,16 @@ void main() {
         examples,
         unorderedEquals(<String>[
           '/packages/plugin1/pubspec.yaml',
+          '/packages/plugin1/AUTHORS',
           '/packages/plugin1/CHANGELOG.md',
           '/packages/plugin1/example/pubspec.yaml',
           '/packages/plugin2/pubspec.yaml',
+          '/packages/plugin2/AUTHORS',
           '/packages/plugin2/CHANGELOG.md',
           '/packages/plugin2/example/example1/pubspec.yaml',
           '/packages/plugin2/example/example2/pubspec.yaml',
           '/packages/plugin3/pubspec.yaml',
+          '/packages/plugin3/AUTHORS',
           '/packages/plugin3/CHANGELOG.md',
         ]),
       );
