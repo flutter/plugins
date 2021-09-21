@@ -122,6 +122,9 @@ String _extractTextFromHtml(String htmlString) {
 }
 
 // Parses a time stamp in an VTT file into a Duration.
+//
+// Returns `null` if `timestampString` is in an invalid format.
+//
 // For example:
 //
 // _parseWebVTTTimestamp('00:01:08.430')
@@ -134,31 +137,27 @@ Duration? _parseWebVTTTimestamp(String timestampString) {
 
   final List<String> dotSections = timestampString.split('.');
   final List<String> timeComponents = dotSections[0].split(':');
+
+  // Validating and parsing the `timestampString`, invalid format will result this method
+  // to return `null`. See https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
+  // WebVTT timestamp format.
   if (timeComponents.length > 3 || timeComponents.length < 2) {
-    // Invalid WebVTT timestamp format, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
-    // WebVTT timestamp format.
     return null;
   }
   int hours = 0;
   if (timeComponents.length == 3) {
     final String hourString = timeComponents.removeAt(0);
     if (hourString.length < 2) {
-      // Invalid hour component, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
-      // WebVTT timestamp format.
       return null;
     }
     hours = int.parse(hourString);
   }
   final int minutes = int.parse(timeComponents.removeAt(0));
   if (minutes < 0 || minutes > 59) {
-    // Invalid minutes component, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
-    // WebVTT timestamp format.
     return null;
   }
   final int seconds = int.parse(timeComponents.removeAt(0));
   if (seconds < 0 || seconds > 59) {
-    // Invalid seconds component, see https://www.w3.org/TR/webvtt1/#webvtt-timestamp for valid
-    // WebVTT timestamp format.
     return null;
   }
 
@@ -171,6 +170,8 @@ Duration? _parseWebVTTTimestamp(String timestampString) {
   //  List<String> styles = milisecondsStyles.sublist(1);
   // }
   // ```
+  // For a better readable code style, style parsing should happen before
+  // calling this method. See: https://github.com/flutter/plugins/pull/2878/files#r713381134.
   int milliseconds = int.parse(milisecondsStyles[0]);
 
   return Duration(

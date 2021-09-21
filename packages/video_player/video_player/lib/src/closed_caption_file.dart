@@ -46,13 +46,9 @@ class Caption {
   final int number;
 
   /// When in the given video should this [Caption] begin displaying.
-  ///
-  /// When the value is null, the caption object is invalid.
   final Duration start;
 
   /// When in the given video should this [Caption] be dismissed.
-  ///
-  /// When the value is null, the caption object is invalid.
   final Duration end;
 
   /// The actual text that should appear on screen to be read between [start]

@@ -581,12 +581,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
     // TODO: This would be more efficient as a binary search.
     for (final caption in _closedCaptionFile!.captions) {
-      final Duration? start = caption.start;
-      final Duration? end = caption.end;
-      if (start == null || end == null) {
-        continue;
-      }
-      if (start <= position && end >= position) {
+      if (caption.start <= position && caption.end >= position) {
         return caption;
       }
     }
