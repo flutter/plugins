@@ -13,6 +13,7 @@ import 'build_examples_command.dart';
 import 'common/core.dart';
 import 'create_all_plugins_app_command.dart';
 import 'drive_examples_command.dart';
+import 'federation_safety_check_command.dart';
 import 'firebase_test_lab_command.dart';
 import 'format_command.dart';
 import 'license_check_command.dart';
@@ -49,6 +50,7 @@ void main(List<String> args) {
     ..addCommand(BuildExamplesCommand(packagesDir))
     ..addCommand(CreateAllPluginsAppCommand(packagesDir))
     ..addCommand(DriveExamplesCommand(packagesDir))
+    ..addCommand(FederationSafetyCheckCommand(packagesDir))
     ..addCommand(FirebaseTestLabCommand(packagesDir))
     ..addCommand(FormatCommand(packagesDir))
     ..addCommand(LicenseCheckCommand(packagesDir))

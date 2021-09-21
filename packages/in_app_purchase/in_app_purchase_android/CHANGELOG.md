@@ -1,6 +1,11 @@
-## 0.1.4+7
+## 0.1.4+8
 
 * Fix broken link in packages/in_app_purchase/in_app_purchase_android/README.
+
+## 0.1.4+7
+
+* Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.
+
 ## 0.1.4+6
 
 * Ensure that purchases correctly indicate whether they are acknowledged or not. The `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed.
