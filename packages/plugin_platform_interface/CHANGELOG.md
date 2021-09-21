@@ -1,7 +1,3 @@
-## 3.0.0
-
-* Testing
-
 ## 2.0.1
 
 * Fix `federated flutter plugins` link in the README.md.
