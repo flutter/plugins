@@ -3,45 +3,19 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:webview_flutter_android/webview_android.dart';
+import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
-import 'platform_interface.dart';
-import 'src/webview_android.dart';
-import 'src/webview_cupertino.dart';
-import 'src/webview_method_channel.dart';
+import '../platform_interface.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
 typedef void WebViewCreatedCallback(WebViewController controller);
-
-/// Describes the state of JavaScript support in a given web view.
-enum JavascriptMode {
-  /// JavaScript execution is disabled.
-  disabled,
-
-  /// JavaScript execution is not restricted.
-  unrestricted,
-}
-
-/// A message that was sent by JavaScript code running in a [WebView].
-class JavascriptMessage {
-  /// Constructs a JavaScript message object.
-  ///
-  /// The `message` parameter must not be null.
-  const JavascriptMessage(this.message) : assert(message != null);
-
-  /// The contents of the message that was sent by the JavaScript code.
-  final String message;
-}
-
-/// Callback type for handling messages sent from Javascript running in a web view.
-typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 /// Information about a navigation action that is about to be executed.
 class NavigationRequest {
@@ -68,68 +42,6 @@ enum NavigationDecision {
   navigate,
 }
 
-/// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
-///
-/// To use this, set [WebView.platform] to an instance of this class.
-///
-/// This implementation uses hybrid composition to render the [WebView] on
-/// Android. It solves multiple issues related to accessibility and interaction
-/// with the [WebView] at the cost of some performance on Android versions below
-/// 10. See https://github.com/flutter/flutter/wiki/Hybrid-Composition for more
-/// information.
-class SurfaceAndroidWebView extends AndroidWebView {
-  @override
-  Widget build({
-    required BuildContext context,
-    required CreationParams creationParams,
-    WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-    required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
-  }) {
-    assert(Platform.isAndroid);
-    assert(webViewPlatformCallbacksHandler != null);
-    return PlatformViewLink(
-      viewType: 'plugins.flutter.io/webview',
-      surfaceFactory: (
-        BuildContext context,
-        PlatformViewController controller,
-      ) {
-        return AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: gestureRecognizers ??
-              const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (PlatformViewCreationParams params) {
-        return PlatformViewsService.initSurfaceAndroidView(
-          id: params.id,
-          viewType: 'plugins.flutter.io/webview',
-          // WebView content is not affected by the Android view's layout direction,
-          // we explicitly set it here so that the widget doesn't require an ambient
-          // directionality.
-          layoutDirection: TextDirection.rtl,
-          creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
-            creationParams,
-            usesHybridComposition: true,
-          ),
-          creationParamsCodec: const StandardMessageCodec(),
-        )
-          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-          ..addOnPlatformViewCreatedListener((int id) {
-            if (onWebViewPlatformCreated == null) {
-              return;
-            }
-            onWebViewPlatformCreated(
-              MethodChannelWebViewPlatform(id, webViewPlatformCallbacksHandler),
-            );
-          })
-          ..create();
-      },
-    );
-  }
-}
-
 /// Decides how to handle a specific navigation request.
 ///
 /// The returned [NavigationDecision] determines how the navigation described by
@@ -150,56 +62,6 @@ typedef void PageLoadingCallback(int progress);
 
 /// Signature for when a [WebView] has failed to load a resource.
 typedef void WebResourceErrorCallback(WebResourceError error);
-
-/// Specifies possible restrictions on automatic media playback.
-///
-/// This is typically used in [WebView.initialMediaPlaybackPolicy].
-// The method channel implementation is marshalling this enum to the value's index, so the order
-// is important.
-enum AutoMediaPlaybackPolicy {
-  /// Starting any kind of media playback requires a user action.
-  ///
-  /// For example: JavaScript code cannot start playing media unless the code was executed
-  /// as a result of a user action (like a touch event).
-  require_user_action_for_all_media_types,
-
-  /// Starting any kind of media playback is always allowed.
-  ///
-  /// For example: JavaScript code that's triggered when the page is loaded can start playing
-  /// video or audio.
-  always_allow,
-}
-
-final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9_]*\$');
-
-/// A named channel for receiving messaged from JavaScript code running inside a web view.
-class JavascriptChannel {
-  /// Constructs a Javascript channel.
-  ///
-  /// The parameters `name` and `onMessageReceived` must not be null.
-  JavascriptChannel({
-    required this.name,
-    required this.onMessageReceived,
-  })  : assert(name != null),
-        assert(onMessageReceived != null),
-        assert(_validChannelNames.hasMatch(name));
-
-  /// The channel's name.
-  ///
-  /// Passing this channel object as part of a [WebView.javascriptChannels] adds a channel object to
-  /// the Javascript window object's property named `name`.
-  ///
-  /// The name must start with a letter or underscore(_), followed by any combination of those
-  /// characters plus digits.
-  ///
-  /// Note that any JavaScript existing `window` property with this name will be overriden.
-  ///
-  /// See also [WebView.javascriptChannels] for more details on the channel registration mechanism.
-  final String name;
-
-  /// A callback that's invoked when a message is received through the channel.
-  final JavascriptMessageHandler onMessageReceived;
-}
 
 /// A web view widget for showing html content.
 ///
@@ -422,6 +284,7 @@ class _WebViewState extends State<WebView> {
   final Completer<WebViewController> _controller =
       Completer<WebViewController>();
 
+  late JavascriptChannelRegistry _javascriptChannelRegistry;
   late _PlatformCallbacksHandler _platformCallbacksHandler;
 
   @override
@@ -430,6 +293,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated: _onWebViewPlatformCreated,
       webViewPlatformCallbacksHandler: _platformCallbacksHandler,
+      javascriptChannelRegistry: _javascriptChannelRegistry,
       gestureRecognizers: widget.gestureRecognizers,
       creationParams: _creationParamsfromWidget(widget),
     );
@@ -440,6 +304,8 @@ class _WebViewState extends State<WebView> {
     super.initState();
     _assertJavascriptChannelNamesAreUnique();
     _platformCallbacksHandler = _PlatformCallbacksHandler(widget);
+    _javascriptChannelRegistry =
+        JavascriptChannelRegistry(widget.javascriptChannels);
   }
 
   @override
@@ -454,7 +320,11 @@ class _WebViewState extends State<WebView> {
 
   void _onWebViewPlatformCreated(WebViewPlatformController? webViewPlatform) {
     final WebViewController controller = WebViewController._(
-        widget, webViewPlatform!, _platformCallbacksHandler);
+      widget,
+      webViewPlatform!,
+      _javascriptChannelRegistry,
+      _platformCallbacksHandler,
+    );
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
       widget.onWebViewCreated!(controller);
@@ -544,20 +414,9 @@ Set<String> _extractChannelNames(Set<JavascriptChannel>? channels) {
 }
 
 class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
-  _PlatformCallbacksHandler(this._widget) {
-    _updateJavascriptChannelsFromSet(_widget.javascriptChannels);
-  }
+  _PlatformCallbacksHandler(this._widget);
 
   WebView _widget;
-
-  // Maps a channel name to a channel.
-  final Map<String, JavascriptChannel> _javascriptChannels =
-      <String, JavascriptChannel>{};
-
-  @override
-  void onJavaScriptChannelMessage(String channel, String message) {
-    _javascriptChannels[channel]!.onMessageReceived(JavascriptMessage(message));
-  }
 
   @override
   FutureOr<bool> onNavigationRequest({
@@ -598,16 +457,6 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
       _widget.onWebResourceError!(error);
     }
   }
-
-  void _updateJavascriptChannelsFromSet(Set<JavascriptChannel>? channels) {
-    _javascriptChannels.clear();
-    if (channels == null) {
-      return;
-    }
-    for (JavascriptChannel channel in channels) {
-      _javascriptChannels[channel.name] = channel;
-    }
-  }
 }
 
 /// Controls a [WebView].
@@ -618,13 +467,14 @@ class WebViewController {
   WebViewController._(
     this._widget,
     this._webViewPlatformController,
+    this._javascriptChannelRegistry,
     this._platformCallbacksHandler,
   ) : assert(_webViewPlatformController != null) {
     _settings = _webSettingsFromWidget(_widget);
   }
 
   final WebViewPlatformController _webViewPlatformController;
-
+  final JavascriptChannelRegistry _javascriptChannelRegistry;
   final _PlatformCallbacksHandler _platformCallbacksHandler;
 
   late WebSettings _settings;
@@ -709,23 +559,10 @@ class WebViewController {
     return reload();
   }
 
-  Future<void> _updateWidget(WebView widget) async {
-    _widget = widget;
-    await _updateSettings(_webSettingsFromWidget(widget));
-    await _updateJavascriptChannels(widget.javascriptChannels);
-  }
-
-  Future<void> _updateSettings(WebSettings newSettings) {
-    final WebSettings update =
-        _clearUnchangedWebSettings(_settings, newSettings);
-    _settings = newSettings;
-    return _webViewPlatformController.updateSettings(update);
-  }
-
   Future<void> _updateJavascriptChannels(
       Set<JavascriptChannel>? newChannels) async {
     final Set<String> currentChannels =
-        _platformCallbacksHandler._javascriptChannels.keys.toSet();
+        _javascriptChannelRegistry.channels.keys.toSet();
     final Set<String> newChannelNames = _extractChannelNames(newChannels);
     final Set<String> channelsToAdd =
         newChannelNames.difference(currentChannels);
@@ -738,7 +575,20 @@ class WebViewController {
     if (channelsToAdd.isNotEmpty) {
       await _webViewPlatformController.addJavascriptChannels(channelsToAdd);
     }
-    _platformCallbacksHandler._updateJavascriptChannelsFromSet(newChannels);
+    _javascriptChannelRegistry.updateJavascriptChannelsFromSet(newChannels);
+  }
+
+  Future<void> _updateWidget(WebView widget) async {
+    _widget = widget;
+    await _updateSettings(_webSettingsFromWidget(widget));
+    await _updateJavascriptChannels(widget.javascriptChannels);
+  }
+
+  Future<void> _updateSettings(WebSettings newSettings) {
+    final WebSettings update =
+        _clearUnchangedWebSettings(_settings, newSettings);
+    _settings = newSettings;
+    return _webViewPlatformController.updateSettings(update);
   }
 
   /// Evaluates a JavaScript expression in the context of the current page.
