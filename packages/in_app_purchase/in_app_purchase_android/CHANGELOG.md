@@ -1,6 +1,6 @@
 ## 0.1.4+8
 
-* Fix broken link in packages/in_app_purchase/in_app_purchase_android/README.
+* Fix a broken link in the README.
 
 ## 0.1.4+7
 
