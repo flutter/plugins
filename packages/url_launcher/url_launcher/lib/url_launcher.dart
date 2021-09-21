@@ -71,14 +71,18 @@ Future<bool> launch(
   Brightness? statusBarBrightness,
   String? webOnlyWindowName,
 }) async {
-  final Uri url = Uri.parse(urlString.trimLeft());
-  final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
-  if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
-    throw PlatformException(
-        code: 'NOT_A_WEB_SCHEME',
-        message: 'To use webview or safariVC, you need to pass'
-            'in a web URL. This $urlString is not a web URL.');
-  }
+  bool isWebURL = false;
+  try {
+    final Uri url = Uri.parse(urlString.trimLeft());
+
+    isWebURL = url.scheme == 'http' || url.scheme == 'https';
+    if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
+      throw PlatformException(
+          code: 'NOT_A_WEB_SCHEME',
+          message: 'To use webview or safariVC, you need to pass'
+              'in a web URL. This $urlString is not a web URL.');
+    }
+  } catch (e) {}
 
   /// [true] so that ui is automatically computed if [statusBarBrightness] is set.
   bool previousAutomaticSystemUiAdjustment = true;
