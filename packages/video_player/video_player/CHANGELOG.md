@@ -1,6 +1,10 @@
-## 2.2.4
+## 2.2.5
 
 * Support to closed caption WebVTT format added.
+
+## 2.2.4
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
 
 ## 2.2.3
 

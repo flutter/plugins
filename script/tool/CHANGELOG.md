@@ -2,6 +2,9 @@
 
 - `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
   have unit tests, rather than skipping them.
+- Added a new `federation-safety-check` command to help catch changes to
+  federated packages that have been done in such a way that they will pass in
+  CI, but fail once the change is landed and published.
 
 ## 0.7.1
 

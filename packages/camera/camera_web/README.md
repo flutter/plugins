@@ -83,11 +83,24 @@ if (kIsWeb) {
 }
 ```
 
+### Video recording 
+
+The video recording implementation is backed by [MediaRecorder Web API](https://developer.mozilla.org/en-US/docs/Web/API/MediaRecorder) with the following [browser support](https://caniuse.com/mdn-api_mediarecorder):
+
+![Data on support for the MediaRecorder feature across the major browsers from caniuse.com](https://caniuse.bitsofco.de/image/mediarecorder.png).
+
+A video is recorded in one of the following video MIME types: 
+- video/webm (e.g. on Chrome or Firefox)
+- video/mp4 (e.g. on Safari)
+
+Pausing, resuming or stopping the video recording throws a `PlatformException` with the `videoRecordingNotStarted` error code if the video recording was not started.
+
+For the browsers that do not support the video recording:
+- `CameraPlatform.startVideoRecording` throws a `PlatformException` with the `notSupported` error code.
+
 ## Missing implementation
 
 The web implementation of [`camera`][camera] is missing the following features:
-
-- Video recording ([in progress](https://github.com/flutter/plugins/pull/4210))
 - Exposure mode, point and offset
 - Focus mode and point
 - Sensor orientation
