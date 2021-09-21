@@ -323,7 +323,6 @@ class _WebViewState extends State<WebView> {
       widget,
       webViewPlatform!,
       _javascriptChannelRegistry,
-      _platformCallbacksHandler,
     );
     _controller.complete(controller);
     if (widget.onWebViewCreated != null) {
@@ -468,14 +467,12 @@ class WebViewController {
     this._widget,
     this._webViewPlatformController,
     this._javascriptChannelRegistry,
-    this._platformCallbacksHandler,
   ) : assert(_webViewPlatformController != null) {
     _settings = _webSettingsFromWidget(_widget);
   }
 
   final WebViewPlatformController _webViewPlatformController;
   final JavascriptChannelRegistry _javascriptChannelRegistry;
-  final _PlatformCallbacksHandler _platformCallbacksHandler;
 
   late WebSettings _settings;
 
