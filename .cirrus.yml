@@ -68,7 +68,21 @@ task:
         - cd script/tool
         - dart pub run test
     - name: publishable
-      version_check_script: ./script/tool_runner.sh version-check
+      env:
+        CHANGE_DESC: "$TMPDIR/change-description.txt"
+      version_check_script:
+        # For pre-submit, pass the PR description to the script to allow for
+        # platform version breaking version change justifications.
+        # For post-submit, ignore platform version breaking version changes.
+        # The PR description isn't reliably part of the commit message, so using
+        # the same flags as for presubmit would likely result in false-positive
+        # post-submit failures.
+        - if [[ $CIRRUS_PR == "" ]]; then
+        -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
+        - else
+        -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
+        -   ./script/tool_runner.sh version-check --change-description-file="$CHANGE_DESC"
+        - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
       format_script: ./script/tool_runner.sh format --fail-on-change
