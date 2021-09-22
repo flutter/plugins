@@ -6,6 +6,7 @@
   federated packages that have been done in such a way that they will pass in
   CI, but fail once the change is landed and published.
 - `publish-check` now validates that there is an `AUTHORS` file.
+- `license-check` now validates Kotlin files.
 
 ## 0.7.1
 
