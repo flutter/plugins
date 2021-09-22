@@ -74,15 +74,15 @@ Future<bool> launch(
   bool isWebURL = false;
   try {
     final Uri url = Uri.parse(urlString.trimLeft());
-
     isWebURL = url.scheme == 'http' || url.scheme == 'https';
-    if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
-      throw PlatformException(
-          code: 'NOT_A_WEB_SCHEME',
-          message: 'To use webview or safariVC, you need to pass'
-              'in a web URL. This $urlString is not a web URL.');
-    }
-  } catch (e) {}
+  } on FormatException {}
+  
+  if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
+    throw PlatformException(
+        code: 'NOT_A_WEB_SCHEME',
+        message: 'To use webview or safariVC, you need to pass'
+            'in a web URL. This $urlString is not a web URL.');
+  }
 
   /// [true] so that ui is automatically computed if [statusBarBrightness] is set.
   bool previousAutomaticSystemUiAdjustment = true;
