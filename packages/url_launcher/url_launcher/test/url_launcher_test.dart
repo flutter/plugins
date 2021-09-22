@@ -282,7 +282,7 @@ void main() {
       expect(binding.renderView.automaticSystemUiAdjustment, true);
     });
 
-    test('open remote desktop url', () async {
+    test('open non-parseable url', () async {
       mock
         ..setLaunchExpectations(
           url:
@@ -302,7 +302,7 @@ void main() {
           isTrue);
     });
 
-    test('cannot open remote desktop url with forceSafariVC: true', () async {
+    test('cannot open non-parseable url with forceSafariVC: true', () async {
       expect(
           () async => await launch(
               'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
@@ -310,7 +310,7 @@ void main() {
           throwsA(isA<PlatformException>()));
     });
 
-    test('cannot open remote desktop url with forceWebView: true', () async {
+    test('cannot open non-parseable url with forceWebView: true', () async {
       expect(
           () async => await launch(
               'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
