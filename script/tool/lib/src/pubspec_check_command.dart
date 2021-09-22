@@ -39,6 +39,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     'flutter:',
     'dependencies:',
     'dev_dependencies:',
+    'false_secrets:',
   ];
 
   static const List<String> _majorPackageSections = <String>[
@@ -46,6 +47,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     'dependencies:',
     'dev_dependencies:',
     'flutter:',
+    'false_secrets:',
   ];
 
   static const String _expectedIssueLinkFormat =

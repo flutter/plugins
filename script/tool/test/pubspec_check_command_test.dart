@@ -113,6 +113,13 @@ dev_dependencies:
 ''';
     }
 
+    String falseSecretsSection() {
+      return '''
+false_secrets:
+  - /lib/main.dart
+''';
+    }
+
     test('passes for a plugin following conventions', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
@@ -122,6 +129,7 @@ ${environmentSection()}
 ${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
 ${devDependenciesSection()}
+${falseSecretsSection()}
 ''');
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -147,6 +155,7 @@ ${environmentSection()}
 ${dependenciesSection()}
 ${devDependenciesSection()}
 ${flutterSection()}
+${falseSecretsSection()}
 ''');
 
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -399,7 +408,7 @@ ${dependenciesSection()}
       );
     });
 
-    test('fails when devDependencies section is out of order', () async {
+    test('fails when dev_dependencies section is out of order', () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
@@ -408,6 +417,34 @@ ${environmentSection()}
 ${devDependenciesSection()}
 ${flutterSection(isPlugin: true)}
 ${dependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Major sections should follow standard repository ordering:'),
+        ]),
+      );
+    });
+
+    test('fails when false_secrets section is out of order', () async {
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin', isPlugin: true)}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${falseSecretsSection()}
+${devDependenciesSection()}
 ''');
 
       Error? commandError;
