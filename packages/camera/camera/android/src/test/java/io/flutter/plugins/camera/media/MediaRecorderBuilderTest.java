@@ -24,7 +24,7 @@ public class MediaRecorderBuilderTest {
   }
 
   @Test
-  public void build_Should_set_values_in_correct_order_When_audio_is_disabled() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabled() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
@@ -55,7 +55,7 @@ public class MediaRecorderBuilderTest {
   }
 
   @Test
-  public void build_Should_set_values_in_correct_order_When_audio_is_enabled() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);

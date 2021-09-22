@@ -10,12 +10,16 @@ import android.net.Uri;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 import io.flutter.plugin.common.MethodCall;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 class ImagePickerCache {
 
   static final String MAP_KEY_PATH = "path";
+  static final String MAP_KEY_PATH_LIST = "pathList";
   static final String MAP_KEY_MAX_WIDTH = "maxWidth";
   static final String MAP_KEY_MAX_HEIGHT = "maxHeight";
   static final String MAP_KEY_IMAGE_QUALITY = "imageQuality";
@@ -50,7 +54,8 @@ class ImagePickerCache {
   }
 
   void saveTypeWithMethodCallName(String methodCallName) {
-    if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_IMAGE)) {
+    if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_IMAGE)
+        | methodCallName.equals(ImagePickerPlugin.METHOD_CALL_MULTI_IMAGE)) {
       setType("image");
     } else if (methodCallName.equals(ImagePickerPlugin.METHOD_CALL_VIDEO)) {
       setType("video");
@@ -99,11 +104,13 @@ class ImagePickerCache {
   }
 
   void saveResult(
-      @Nullable String path, @Nullable String errorCode, @Nullable String errorMessage) {
+      @Nullable ArrayList<String> path, @Nullable String errorCode, @Nullable String errorMessage) {
 
+    Set<String> imageSet = new HashSet<>();
+    imageSet.addAll(path);
     SharedPreferences.Editor editor = prefs.edit();
     if (path != null) {
-      editor.putString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, path);
+      editor.putStringSet(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, imageSet);
     }
     if (errorCode != null) {
       editor.putString(SHARED_PREFERENCE_ERROR_CODE_KEY, errorCode);
@@ -121,12 +128,17 @@ class ImagePickerCache {
   Map<String, Object> getCacheMap() {
 
     Map<String, Object> resultMap = new HashMap<>();
+    ArrayList<String> pathList = new ArrayList<>();
     boolean hasData = false;
 
     if (prefs.contains(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY)) {
-      final String imagePathValue = prefs.getString(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, "");
-      resultMap.put(MAP_KEY_PATH, imagePathValue);
-      hasData = true;
+      final Set<String> imagePathList =
+          prefs.getStringSet(FLUTTER_IMAGE_PICKER_IMAGE_PATH_KEY, null);
+      if (imagePathList != null) {
+        pathList.addAll(imagePathList);
+        resultMap.put(MAP_KEY_PATH_LIST, pathList);
+        hasData = true;
+      }
     }
 
     if (prefs.contains(SHARED_PREFERENCE_ERROR_CODE_KEY)) {
@@ -159,7 +171,6 @@ class ImagePickerCache {
         resultMap.put(MAP_KEY_IMAGE_QUALITY, 100);
       }
     }
-
     return resultMap;
   }
 }
