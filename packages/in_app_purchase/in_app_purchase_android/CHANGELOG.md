@@ -1,6 +1,6 @@
-## 0.1.4+7
+## 0.1.5
 
-* Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.
+* Introduced the `SkuDetailsWrapper.introductoryPriceAmountMicros` field of the correct type (`int`) and deprecated the `SkuDetailsWrapper.introductoryPriceMicros` field.
 
 ## 0.1.4+6
 
