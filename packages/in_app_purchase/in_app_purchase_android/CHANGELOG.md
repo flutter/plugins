@@ -2,6 +2,10 @@
 
 * Introduced the `SkuDetailsWrapper.introductoryPriceAmountMicros` field of the correct type (`int`) and deprecated the `SkuDetailsWrapper.introductoryPriceMicros` field.
 
+## 0.1.4+7
+
+* Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.
+
 ## 0.1.4+6
 
 * Ensure that purchases correctly indicate whether they are acknowledged or not. The `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed.
