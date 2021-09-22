@@ -79,9 +79,7 @@ class SkuDetailsWrapper {
   @Deprecated('Use `introductoryPriceAmountMicros` instead.')
   @JsonKey(ignore: true)
   String get introductoryPriceMicros => _introductoryPriceMicros.isEmpty
-      ? introductoryPriceAmountMicros != 0
-          ? introductoryPriceAmountMicros.toString()
-          : ''
+      ? introductoryPriceAmountMicros.toString()
       : _introductoryPriceMicros;
 
   /// The number of subscription billing periods for which the user will be given the introductory price, such as 3.
