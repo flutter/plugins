@@ -75,8 +75,8 @@ Future<bool> launch(
   try {
     final Uri url = Uri.parse(urlString.trimLeft());
     isWebURL = url.scheme == 'http' || url.scheme == 'https';
-  } on FormatException {}
-  
+  } on FormatException catch (_) {}
+
   if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
     throw PlatformException(
         code: 'NOT_A_WEB_SCHEME',
