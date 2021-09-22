@@ -36,3 +36,11 @@ dev_dependencies:
   integration_test:
     sdk: flutter
   pedantic: ^1.10.0
+
+# The example deliberately includes limited-use secrets.
+false_secrets:
+  - /example/android/app/google-services.json
+  - /example/ios/Runner/GoogleService-Info.plist
+  - /example/ios/RunnerTests/GoogleSignInTests.m
+  - /example/lib/main.dart
+  - /example/web/index.html
