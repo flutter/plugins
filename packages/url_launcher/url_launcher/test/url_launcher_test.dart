@@ -281,11 +281,12 @@ void main() {
       await launchResult;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
     });
-    
+
     test('open remote desktop url', () async {
       mock
         ..setLaunchExpectations(
-          url: 'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+          url:
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
           useSafariVC: false,
           useWebView: false,
           enableJavaScript: false,
@@ -295,7 +296,9 @@ void main() {
           webOnlyWindowName: null,
         )
         ..setResponse(true);
-      expect(await launch('rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1'),
+      expect(
+          await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1'),
           isTrue);
     });
 
