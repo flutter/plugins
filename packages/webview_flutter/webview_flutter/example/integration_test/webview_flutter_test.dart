@@ -18,7 +18,7 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  const bool _skipDueToIssue86757 = false;
+  const bool _skipDueToIssue86757 = true;
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
@@ -958,7 +958,7 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: _skipDueToIssue86757);
+    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
 
     // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('inputs are scrolled into view when focused',
@@ -1064,7 +1064,7 @@ void main() {
           lastInputClientRectRelativeToViewport['right'] <=
               viewportRectRelativeToViewport['right'],
           isTrue);
-    }, skip: _skipDueToIssue86757);
+    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
   });
 
   group('NavigationDelegate', () {
