@@ -1,3 +1,7 @@
+## 0.2.1+1
+
+* Update usage documentation.
+
 ## 0.2.1
 
 * Add video recording functionality.

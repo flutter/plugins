@@ -39,6 +39,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     'flutter:',
     'dependencies:',
     'dev_dependencies:',
+    'false_secrets:',
   ];
 
   static const List<String> _majorPackageSections = <String>[
@@ -46,6 +47,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     'dependencies:',
     'dev_dependencies:',
     'flutter:',
+    'false_secrets:',
   ];
 
   static const String _expectedIssueLinkFormat =
@@ -210,17 +212,11 @@ class PubspecCheckCommand extends PackageLoopingCommand {
   // Returns true if [packageName] appears to be an implementation package
   // according to repository conventions.
   bool _isImplementationPackage(RepositoryPackage package) {
-    // An implementation package should be in a group folder...
-    final Directory parentDir = package.directory.parent;
-    if (parentDir.path == packagesDir.path) {
+    if (!package.isFederated) {
       return false;
     }
     final String packageName = package.directory.basename;
-    final String parentName = parentDir.basename;
-    // ... whose name is a prefix of the package name.
-    if (!packageName.startsWith(parentName)) {
-      return false;
-    }
+    final String parentName = package.directory.parent.basename;
     // A few known package names are not implementation packages; assume
     // anything else is. (This is done instead of listing known implementation
     // suffixes to allow for non-standard suffixes; e.g., to put several

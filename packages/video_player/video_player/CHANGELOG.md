@@ -1,6 +1,10 @@
-## 2.2.5
+## 2.2.6
 
 * iOS: Update texture on `seekTo`.
+
+## 2.2.5
+
+* Support to closed caption WebVTT format added.
 
 ## 2.2.4
 

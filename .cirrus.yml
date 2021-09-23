@@ -74,6 +74,11 @@ task:
       format_script: ./script/tool_runner.sh format --fail-on-change
       pubspec_script: ./script/tool_runner.sh pubspec-check
       license_script: dart $PLUGIN_TOOL license-check
+    - name: federated_safety
+      # This check is only meaningful for PRs, as it validates changes
+      # rather than state.
+      only_if: $CIRRUS_PR != ""
+      script: ./script/tool_runner.sh federation-safety-check
     - name: dart_unit_tests
       env:
         matrix:
