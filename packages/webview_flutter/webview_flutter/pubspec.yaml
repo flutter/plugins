@@ -12,14 +12,16 @@ flutter:
   plugin:
     platforms:
       android:
-        package: io.flutter.plugins.webviewflutter
-        pluginClass: WebViewFlutterPlugin
+        default_package: webview_flutter_android
       ios:
-        pluginClass: FLTWebViewFlutterPlugin
+        default_package: webview_flutter_wkwebview
 
 dependencies:
   flutter:
     sdk: flutter
+  webview_flutter_platform_interface: ^1.0.0
+  webview_flutter_android: ^2.0.13
+  webview_flutter_wkwebview: ^2.0.13
 
 dev_dependencies:
   flutter_driver:

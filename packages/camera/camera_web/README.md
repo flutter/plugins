@@ -8,8 +8,9 @@ The web implementation of [`camera`][camera].
 
 ### Depend on the package
 
-This package is not an [endorsed implementation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin)
-of the camera plugin yet, so you'll need to [add it explicitly](https://pub.dev/packages/camera_web/install).
+This package is [endorsed](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin),
+which means you can simply use `camera`
+normally. This package will be automatically included in your app when you do.
 
 ## Example
 
