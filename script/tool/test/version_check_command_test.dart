@@ -46,7 +46,7 @@ class MockProcessResult extends Mock implements io.ProcessResult {}
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
-    FileSystem fileSystem;
+    late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
@@ -252,7 +252,8 @@ void main() {
           ]));
     });
 
-    test('disallows breaking changes to platform interfaces', () async {
+    test('disallows breaking changes to platform interfaces by default',
+        () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -274,6 +275,92 @@ void main() {
               'master:packages/plugin_platform_interface/pubspec.yaml'
             ]),
           ]));
+    });
+
+    test('allows breaking changes to platform interfaces with explanation',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+      final File changeDescriptionFile =
+          fileSystem.file('change_description.txt');
+      changeDescriptionFile.writeAsStringSync('''
+Some general PR description
+
+## Breaking change justification
+
+This is necessary because of X, Y, and Z
+
+## Another section''');
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--change-description-file=${changeDescriptionFile.path}'
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Allowing breaking change to plugin_platform_interface '
+              'due to "## Breaking change justification" in the change '
+              'description.'),
+          contains('Ran for 1 package(s) (1 with warnings)'),
+        ]),
+      );
+    });
+
+    test('throws if a nonexistent change description file is specified',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--change-description-file=a_missing_file.txt'
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No such file: a_missing_file.txt'),
+        ]),
+      );
+    });
+
+    test('allows breaking changes to platform interfaces with bypass flag',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--ignore-platform-interface-breaks'
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Allowing breaking change to plugin_platform_interface due '
+              'to --ignore-platform-interface-breaks'),
+          contains('Ran for 1 package(s) (1 with warnings)'),
+        ]),
+      );
     });
 
     test('Allow empty lines in front of the first version in CHANGELOG',
