@@ -18,6 +18,8 @@ import 'package:integration_test/integration_test.dart';
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  const bool _skipDueToIssue86757 = true;
+
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -37,7 +39,7 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
-  }, skip: true);
+  }, skip: _skipDueToIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl', (WidgetTester tester) async {
@@ -59,7 +61,7 @@ void main() {
     await controller.loadUrl('https://www.google.com/');
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://www.google.com/');
-  }, skip: true);
+  }, skip: _skipDueToIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
@@ -101,7 +103,7 @@ void main() {
     final String content = await controller
         .evaluateJavascript('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
-  }, skip: Platform.isAndroid);
+  }, skip: Platform.isAndroid && _skipDueToIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('JavaScriptChannel', (WidgetTester tester) async {
@@ -150,7 +152,7 @@ void main() {
     // https://github.com/flutter/flutter/issues/66318
     await controller.evaluateJavascript('Echo.postMessage("hello");1;');
     expect(messagesReceived, equals(<String>['hello']));
-  }, skip: Platform.isAndroid);
+  }, skip: Platform.isAndroid && _skipDueToIssue86757);
 
   testWidgets('resize webview', (WidgetTester tester) async {
     final String resizeTest = '''
@@ -328,7 +330,7 @@ void main() {
 
     final String customUserAgent2 = await _getUserAgent(controller);
     expect(customUserAgent2, defaultPlatformUserAgent);
-  }, skip: Platform.isAndroid);
+  }, skip: Platform.isAndroid && _skipDueToIssue86757);
 
   group('Video playback policy', () {
     late String videoTestBase64;
@@ -877,7 +879,7 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(scrollPosX, X_SCROLL * 2);
       expect(scrollPosY, Y_SCROLL * 2);
-    }, skip: Platform.isAndroid);
+    }, skip: Platform.isAndroid && _skipDueToIssue86757);
   });
 
   group('SurfaceAndroidWebView', () {
@@ -956,7 +958,7 @@ void main() {
       scrollPosY = await controller.getScrollY();
       expect(X_SCROLL * 2, scrollPosX);
       expect(Y_SCROLL * 2, scrollPosY);
-    }, skip: true);
+    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
 
     // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
     testWidgets('inputs are scrolled into view when focused',
@@ -1062,7 +1064,7 @@ void main() {
           lastInputClientRectRelativeToViewport['right'] <=
               viewportRectRelativeToViewport['right'],
           isTrue);
-    }, skip: true);
+    }, skip: !Platform.isAndroid || _skipDueToIssue86757);
   });
 
   group('NavigationDelegate', () {
@@ -1332,7 +1334,7 @@ void main() {
     expect(currentUrl, 'https://flutter.dev/');
   },
       // Flaky on Android: https://github.com/flutter/flutter/issues/86757
-      skip: Platform.isAndroid);
+      skip: Platform.isAndroid && _skipDueToIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
@@ -1373,7 +1375,7 @@ void main() {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion('https://flutter.dev/'));
     },
-    skip: true,
+    skip: _skipDueToIssue86757,
   );
 
   testWidgets(

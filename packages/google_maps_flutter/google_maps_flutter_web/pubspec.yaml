@@ -31,3 +31,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pedantic: ^1.10.0
+
+# The example deliberately includes limited-use secrets.
+false_secrets:
+  - /example/web/index.html
