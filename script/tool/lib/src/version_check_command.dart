@@ -362,7 +362,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (versionString == null) {
       printError('${indentation}Unable to find a version in CHANGELOG.md');
       print('${indentation}The current version should be on a line starting '
-          ' with "## ", either on the first non-empty line or after a "## NEXT" '
+          'with "## ", either on the first non-empty line or after a "## NEXT" '
           'section.');
       return false;
     }
