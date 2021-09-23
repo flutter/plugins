@@ -1,3 +1,8 @@
+## 2.1.2
+
+* `LatLng` constructor maintains longitude precision when given within
+  acceptable range
+
 ## 2.1.1
 
 * Method `buildViewWithTextDirection` has been added to the platform interface.
