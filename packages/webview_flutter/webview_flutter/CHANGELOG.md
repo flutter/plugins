@@ -1,3 +1,7 @@
+## 2.0.15
+
+* Fixed `_CastError` that was thrown when running the example App.
+
 ## 2.0.14
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
