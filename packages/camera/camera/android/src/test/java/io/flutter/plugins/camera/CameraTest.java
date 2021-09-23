@@ -5,6 +5,7 @@
 package io.flutter.plugins.camera;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,6 +28,7 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import androidx.annotation.NonNull;
+import androidx.lifecycle.LifecycleObserver;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugins.camera.features.CameraFeatureFactory;
@@ -110,6 +112,13 @@ public class CameraTest {
     TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", 0);
     mockHandlerThreadFactory.close();
     mockHandlerFactory.close();
+  }
+
+  @Test
+  public void shouldNotImplementLifecycleObserverInterface() {
+    Class<Camera> cameraClass = Camera.class;
+
+    assertFalse(LifecycleObserver.class.isAssignableFrom(cameraClass));
   }
 
   @Test

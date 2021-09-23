@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.camera;
 
+import static org.junit.Assert.assertFalse;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.hardware.camera2.CameraAccessException;
+import androidx.lifecycle.LifecycleObserver;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -37,6 +39,13 @@ public class MethodCallHandlerImplTest {
     mockResult = mock(MethodChannel.Result.class);
     mockCamera = mock(Camera.class);
     TestUtils.setPrivateField(handler, "camera", mockCamera);
+  }
+
+  @Test
+  public void shouldNotImplementLifecycleObserverInterface() {
+    Class<MethodCallHandlerImpl> methodCallHandlerClass = MethodCallHandlerImpl.class;
+
+    assertFalse(LifecycleObserver.class.isAssignableFrom(methodCallHandlerClass));
   }
 
   @Test
