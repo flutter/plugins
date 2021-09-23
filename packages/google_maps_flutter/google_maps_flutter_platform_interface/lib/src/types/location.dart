@@ -14,13 +14,13 @@ class LatLng {
   /// The latitude is clamped to the inclusive interval from -90.0 to +90.0.
   ///
   /// The longitude is normalized to the half-open interval from -180.0
-  /// (inclusive) to +180.0 (exclusive). Avoids normalization if possible to
-  /// avoid unnecessary loss of precision
+  /// (inclusive) to +180.0 (exclusive).
   const LatLng(double latitude, double longitude)
       : assert(latitude != null),
         assert(longitude != null),
         latitude =
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
+        // Avoids normalization if possible to prevent unnecessary loss of precision
         longitude = longitude >= -180 && longitude < 180
             ? longitude
             : (longitude + 180.0) % 360.0 - 180.0;

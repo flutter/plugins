@@ -9,7 +9,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('LanLng constructor', () {
-    test('Maintains longitude precision  if within acceptable range', () async {
+    test('Maintains longitude precision if within acceptable range', () async {
       const lat = -34.509981;
       const lng = 150.792384;
 
