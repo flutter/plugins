@@ -18,6 +18,8 @@ import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 import 'common/repository_package.dart';
 
+const int _exitMissingChangeDescriptionFile = 3;
+
 /// Categories of version change types.
 enum NextVersionType {
   /// A breaking change.
@@ -319,7 +321,10 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
         !_validateBreakingChange(package)) {
       printError('${indentation}Breaking change detected.\n'
           '${indentation}Breaking changes to platform interfaces are not '
-          'allowed without explicit justification.\n');
+          'allowed without explicit justification.\n'
+          '${indentation}See '
+          'https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages '
+          'for more information.');
       return _CurrentVersionState.invalidChange;
     }
 
@@ -453,6 +458,11 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     if (path.isEmpty) {
       return '';
     }
-    return packagesDir.fileSystem.file(path).readAsStringSync();
+    final File file = packagesDir.fileSystem.file(path);
+    if (!file.existsSync()) {
+      printError('${indentation}No such file: $path');
+      throw ToolExit(_exitMissingChangeDescriptionFile);
+    }
+    return file.readAsStringSync();
   }
 }

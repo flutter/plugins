@@ -312,6 +312,33 @@ This is necessary because of X, Y, and Z
       );
     });
 
+    test('throws if a nonexistent change description file is specified',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--change-description-file=a_missing_file.txt'
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No such file: a_missing_file.txt'),
+        ]),
+      );
+    });
+
     test('allows breaking changes to platform interfaces with bypass flag',
         () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
