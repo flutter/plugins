@@ -41,7 +41,12 @@ class TestTextureRegistry: NSObject, FlutterTextureRegistry {
 }
 
 class TestRegistrar: NSObject, FlutterPluginRegistrar {
-  var view: NSView?
+  var view: NSView? {
+    get {
+      window?.contentView
+    }
+  }
+  var window: NSWindow? = NSWindow()
 
   // Unused.
   var messenger: FlutterBinaryMessenger = TestMessenger()
@@ -57,9 +62,7 @@ class exampleTests: XCTestCase {
   }
 
   func testOpenSimple() throws {
-    let window = NSWindow()
     let registrar = TestRegistrar()
-    registrar.view = window.contentView
     let panelController = TestPanelController()
     let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
 
@@ -68,21 +71,167 @@ class exampleTests: XCTestCase {
 
     let called = XCTestExpectation()
     let call = FlutterMethodCall(methodName: "openFile", arguments: [:])
-    var response : [String]?
-    plugin.handle(call, result: { result in
-      response = result as! [String]?
+    plugin.handle(call) { result in
+      XCTAssertEqual((result as! [String]?)![0], returnPath)
       called.fulfill()
-    })
+    }
 
     wait(for: [called], timeout: 0.5)
-    XCTAssertEqual(response![0], returnPath)
+    XCTAssertNotNil(panelController.openPanel)
+    if let panel = panelController.openPanel {
+      XCTAssertTrue(panel.canChooseFiles)
+      // For consistency across platforms, directory selection is disabled.
+      XCTAssertFalse(panel.canChooseDirectories)
+    }
+  }
+
+  func testOpenWithArguments() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let returnPath = "/foo/bar"
+    panelController.openURLs = [URL(fileURLWithPath: returnPath)]
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(
+      methodName: "openFile",
+      arguments: [
+        "initialDirectory": "/some/dir",
+        "suggestedName": "a name",
+        "confirmButtonText": "Open it!",
+      ]
+    )
+    plugin.handle(call) { result in
+      XCTAssertEqual((result as! [String]?)![0], returnPath)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+    if let panel = panelController.openPanel {
+      XCTAssertEqual(panel.directoryURL?.path, "/some/dir")
+      XCTAssertEqual(panel.nameFieldStringValue, "a name")
+      XCTAssertEqual(panel.prompt, "Open it!")
+    }
+  }
+
+  func testOpenMultiple() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let returnPaths = ["/foo/bar", "/foo/baz"]
+    panelController.openURLs = returnPaths.map({ path in URL(fileURLWithPath: path) })
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(
+      methodName: "openFile",
+      arguments: ["multiple": true]
+    )
+    plugin.handle(call) { result in
+      let paths = (result as! [String]?)!
+      XCTAssertEqual(paths.count, returnPaths.count)
+      XCTAssertEqual(paths[0], returnPaths[0])
+      XCTAssertEqual(paths[1], returnPaths[1])
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+  }
+
+  func testOpenWithWildcardFilter() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let returnPath = "/foo/bar"
+    panelController.openURLs = [URL(fileURLWithPath: returnPath)]
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(
+      methodName: "openFile",
+      arguments: [
+        "acceptedTypeGroups": [
+          [
+            "extensions": ["txt", "json"],
+            "macUTIs": ["public.text"],
+          ],
+          [
+            "macUTIs": ["public.image"],
+          ],
+          // An empty filter group allows anything. Since macOS doesn't support filter groups,
+          // groups are unioned, so this should disable all filtering.
+          [:]
+        ]
+      ]
+    )
+    plugin.handle(call) { result in
+      XCTAssertEqual((result as! [String]?)![0], returnPath)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+    if let panel = panelController.openPanel {
+      XCTAssertNil(panel.allowedFileTypes)
+    }
+  }
+
+  func testOpenWithFilter() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let returnPath = "/foo/bar"
+    panelController.openURLs = [URL(fileURLWithPath: returnPath)]
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(
+      methodName: "openFile",
+      arguments: [
+        "acceptedTypeGroups": [
+          [
+            "extensions": ["txt", "json"],
+            "macUTIs": ["public.text"],
+          ],
+          [
+            "macUTIs": ["public.image"],
+          ],
+        ]
+      ]
+    )
+    plugin.handle(call) { result in
+      XCTAssertEqual((result as! [String]?)![0], returnPath)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+    if let panel = panelController.openPanel {
+      XCTAssertEqual(panel.allowedFileTypes, ["txt", "json", "public.text", "public.image"])
+    }
+  }
+
+  func testOpenCancel() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(methodName: "openFile", arguments: [:])
+    plugin.handle(call) { result in
+      XCTAssertNil(result)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
     XCTAssertNotNil(panelController.openPanel)
   }
 
   func testSaveSimple() throws {
-    let window = NSWindow()
     let registrar = TestRegistrar()
-    registrar.view = window.contentView
     let panelController = TestPanelController()
     let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
 
@@ -91,15 +240,101 @@ class exampleTests: XCTestCase {
 
     let called = XCTestExpectation()
     let call = FlutterMethodCall(methodName: "getSavePath", arguments: [:])
-    var response : String?
-    plugin.handle(call, result: { result in
-      response = result as! String?
+    plugin.handle(call) { result in
+      XCTAssertEqual(result as! String?, returnPath)
       called.fulfill()
-    })
+    }
 
     wait(for: [called], timeout: 0.5)
-    XCTAssertEqual(response, returnPath)
     XCTAssertNotNil(panelController.savePanel)
+  }
+
+  func testSaveWithArguments() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let returnPath = "/foo/bar"
+    panelController.saveURL = URL(fileURLWithPath: returnPath)
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(
+      methodName: "getSavePath",
+      arguments: [
+        "initialDirectory": "/some/dir",
+        "confirmButtonText": "Save it!",
+      ]
+    )
+    plugin.handle(call) { result in
+      XCTAssertEqual(result as! String?, returnPath)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.savePanel)
+    if let panel = panelController.savePanel {
+      XCTAssertEqual(panel.directoryURL?.path, "/some/dir")
+      XCTAssertEqual(panel.prompt, "Save it!")
+    }
+  }
+
+  func testSaveCancel() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(methodName: "getSavePath", arguments: [:])
+    plugin.handle(call) { result in
+      XCTAssertNil(result)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.savePanel)
+  }
+
+  func testGetDirectorySimple() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let returnPath = "/foo/bar"
+    panelController.openURLs = [URL(fileURLWithPath: returnPath)]
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: [:])
+    plugin.handle(call) { result in
+      XCTAssertEqual(result as! String?, returnPath)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
+    if let panel = panelController.openPanel {
+      XCTAssertTrue(panel.canChooseDirectories)
+      // For consistency across platforms, file selection is disabled.
+      XCTAssertFalse(panel.canChooseFiles)
+      // The Dart API only allows a single directory to be returned, so users shouldn't be allowed
+      // to select multiple.
+      XCTAssertFalse(panel.allowsMultipleSelection)
+    }
+  }
+
+  func testGetDirectoryCancel() throws {
+    let registrar = TestRegistrar()
+    let panelController = TestPanelController()
+    let plugin = FLTFileSelectorPlugin(registrar: registrar, panelController: panelController)
+
+    let called = XCTestExpectation()
+    let call = FlutterMethodCall(methodName: "getDirectoryPath", arguments: [:])
+    plugin.handle(call) { result in
+      XCTAssertNil(result)
+      called.fulfill()
+    }
+
+    wait(for: [called], timeout: 0.5)
+    XCTAssertNotNil(panelController.openPanel)
   }
 
 }
