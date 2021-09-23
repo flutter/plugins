@@ -374,8 +374,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       print(
           '${indentation}Found NEXT; validating next version in the CHANGELOG.');
       // Ensure that the version in pubspec hasn't changed without updating
-      // CHANGELOG. That means the next version entry in the CHANGELOG pass the
-      // normal validation.
+      // CHANGELOG. That means the next version entry in the CHANGELOG should
+      // pass the normal validation.
+      versionString = null;
       while (iterator.moveNext()) {
         if (iterator.current.trim().startsWith('## ')) {
           versionString = iterator.current.trim().split(' ').last;
@@ -384,11 +385,19 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       }
     }
 
-    final Version? fromChangeLog =
-        versionString == null ? null : Version.parse(versionString);
-    if (fromChangeLog == null) {
-      printError(
-          '${indentation}Cannot find version on the first line CHANGELOG.md');
+    if (versionString == null) {
+      printError('${indentation}Unable to find a version in CHANGELOG.md');
+      print('${indentation}The current version should be on a line starting '
+          'with "## ", either on the first non-empty line or after a "## NEXT" '
+          'section.');
+      return false;
+    }
+
+    final Version fromChangeLog;
+    try {
+      fromChangeLog = Version.parse(versionString);
+    } on FormatException {
+      printError('"$versionString" could not be parsed as a version.');
       return false;
     }
 

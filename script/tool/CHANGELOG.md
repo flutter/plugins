@@ -8,6 +8,7 @@
 - `publish-check` now validates that there is an `AUTHORS` file.
 - Added flags to `version-check` to allow overriding the platform interface
   major version change restriction.
+- Improved error handling and error messages in CHANGELOG version checks.
 
 ## 0.7.1
 
