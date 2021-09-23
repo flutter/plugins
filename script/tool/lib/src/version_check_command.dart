@@ -18,6 +18,8 @@ import 'common/process_runner.dart';
 import 'common/pub_version_finder.dart';
 import 'common/repository_package.dart';
 
+const int _exitMissingChangeDescriptionFile = 3;
+
 /// Categories of version change types.
 enum NextVersionType {
   /// A breaking change.
@@ -108,13 +110,36 @@ class VersionCheckCommand extends PackageLoopingCommand {
     argParser.addFlag(
       _againstPubFlag,
       help: 'Whether the version check should run against the version on pub.\n'
-          'Defaults to false, which means the version check only run against the previous version in code.',
+          'Defaults to false, which means the version check only run against '
+          'the previous version in code.',
       defaultsTo: false,
       negatable: true,
     );
+    argParser.addOption(_changeDescriptionFile,
+        help: 'The path to a file containing the description of the change '
+            '(e.g., PR description or commit message).\n\n'
+            'If supplied, this is used to allow overrides to some version '
+            'checks.');
+    argParser.addFlag(_ignorePlatformInterfaceBreaks,
+        help: 'Bypasses the check that platform interfaces do not contain '
+            'breaking changes.\n\n'
+            'This is only intended for use in post-submit CI checks, to '
+            'prevent the possibility of post-submit breakage if a change '
+            'description justification is not transferred into the commit '
+            'message. Pre-submit checks should always use '
+            '--$_changeDescriptionFile instead.',
+        hide: true);
   }
 
   static const String _againstPubFlag = 'against-pub';
+  static const String _changeDescriptionFile = 'change-description-file';
+  static const String _ignorePlatformInterfaceBreaks =
+      'ignore-platform-interface-breaks';
+
+  /// The string that must be in [_changeDescriptionFile] to allow a breaking
+  /// change to a platform interface.
+  static const String _breakingChangeJustificationMarker =
+      '## Breaking change justification';
 
   final PubVersionFinder _pubVersionFinder;
 
@@ -292,16 +317,17 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       return _CurrentVersionState.invalidChange;
     }
 
-    final bool isPlatformInterface =
-        pubspec.name.endsWith('_platform_interface');
-    // TODO(stuartmorgan): Relax this check. See
-    // https://github.com/flutter/flutter/issues/85391
-    if (isPlatformInterface &&
-        allowedNextVersions[currentVersion] == NextVersionType.BREAKING_MAJOR) {
+    if (allowedNextVersions[currentVersion] == NextVersionType.BREAKING_MAJOR &&
+        !_validateBreakingChange(package)) {
       printError('${indentation}Breaking change detected.\n'
-          '${indentation}Breaking changes to platform interfaces are strongly discouraged.\n');
+          '${indentation}Breaking changes to platform interfaces are not '
+          'allowed without explicit justification.\n'
+          '${indentation}See '
+          'https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages '
+          'for more information.');
       return _CurrentVersionState.invalidChange;
     }
+
     return _CurrentVersionState.validChange;
   }
 
@@ -397,5 +423,46 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       printError('${indentation}Failed to parse `pubspec.yaml`: $exception}');
       return null;
     }
+  }
+
+  /// Checks whether the current breaking change to [package] should be allowed,
+  /// logging extra information for auditing when allowing unusual cases.
+  bool _validateBreakingChange(RepositoryPackage package) {
+    // Only platform interfaces have breaking change restrictions.
+    if (!package.isPlatformInterface) {
+      return true;
+    }
+
+    if (getBoolArg(_ignorePlatformInterfaceBreaks)) {
+      logWarning(
+          '${indentation}Allowing breaking change to ${package.displayName} '
+          'due to --$_ignorePlatformInterfaceBreaks');
+      return true;
+    }
+
+    if (_getChangeDescription().contains(_breakingChangeJustificationMarker)) {
+      logWarning(
+          '${indentation}Allowing breaking change to ${package.displayName} '
+          'due to "$_breakingChangeJustificationMarker" in the change '
+          'description.');
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Returns the contents of the file pointed to by [_changeDescriptionFile],
+  /// or an empty string if that flag is not provided.
+  String _getChangeDescription() {
+    final String path = getStringArg(_changeDescriptionFile);
+    if (path.isEmpty) {
+      return '';
+    }
+    final File file = packagesDir.fileSystem.file(path);
+    if (!file.existsSync()) {
+      printError('${indentation}No such file: $path');
+      throw ToolExit(_exitMissingChangeDescriptionFile);
+    }
+    return file.readAsStringSync();
   }
 }
