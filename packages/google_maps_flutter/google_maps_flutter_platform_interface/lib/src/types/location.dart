@@ -21,7 +21,7 @@ class LatLng {
         assert(longitude != null),
         latitude =
             (latitude < -90.0 ? -90.0 : (90.0 < latitude ? 90.0 : latitude)),
-        longitude = longitude >= -180 || longitude < 180
+        longitude = longitude >= -180 && longitude < 180
             ? longitude
             : (longitude + 180.0) % 360.0 - 180.0;
 
