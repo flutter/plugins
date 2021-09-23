@@ -601,6 +601,73 @@ This is necessary because of X, Y, and Z
       );
     });
 
+    test(
+        'fails gracefully if the version headers are not found due to using the wrong style',
+        () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+      const String changelog = '''
+## NEXT
+* Some changes for a later release.
+# 1.0.0
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Unable to find a version in CHANGELOG.md'),
+          contains('The current version should be on a line starting with '
+              '"## ", either on the first non-empty line or after a "## NEXT" '
+              'section.'),
+        ]),
+      );
+    });
+
+    test('fails gracefully if the version is unparseable', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+      const String changelog = '''
+## Alpha
+* Some changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('"Alpha" could not be parsed as a version.'),
+        ]),
+      );
+    });
+
     test('allows valid against pub', () async {
       mockHttpResponse = <String, dynamic>{
         'name': 'some_package',
