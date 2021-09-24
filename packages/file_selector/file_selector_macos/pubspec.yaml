@@ -4,16 +4,16 @@ repository: https://github.com/flutter/plugins/tree/master/packages/file_selecto
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+file_selector%22
 version: 0.8.2
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=2.0.0"
+
 flutter:
   plugin:
     implements: file_selector
     platforms:
       macos:
         pluginClass: FileSelectorPlugin
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.0.0"
 
 dependencies:
   flutter:
