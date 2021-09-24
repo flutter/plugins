@@ -1,3 +1,9 @@
+## 0.8.2
+
+* Moved to flutter/plugins
+* Added native unit tests
+* Rewrote in Swift
+
 ## 0.0.4+1
 
 * Update README
