@@ -9,9 +9,9 @@ Pod::Spec.new do |s|
 Displays native macOS open and save panels.
                        DESC
   s.license          = { :type => 'BSD', :file => '../LICENSE' }
-  s.homepage         = 'https://github.com/google/flutter-desktop-embedding/tree/master/plugins/file_selector'
-  s.author           = { 'Flutter Desktop Embedding Developers' => 'flutter-desktop-embedding-dev@googlegroups.com' }
-  s.source           = { :http => 'https://github.com/google/flutter-desktop-embedding/tree/master/plugins/file_selector/file_selector_macos' }
+  s.homepage         = 'https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_macos'
+  s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
+  s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/file_selector/file_selector_macos' }
   s.source_files     = 'Classes/**/*'
   s.dependency 'FlutterMacOS'
 
