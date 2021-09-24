@@ -8,17 +8,18 @@ import 'package:flutter/material.dart';
 /// Screen that shows an example of openFile
 class OpenTextPage extends StatelessWidget {
   void _openTextFile(BuildContext context) async {
-    final typeGroup = XTypeGroup(
+    final XTypeGroup typeGroup = XTypeGroup(
       label: 'text',
       extensions: ['txt', 'json'],
     );
-    final file = await FileSelectorPlatform.instance
+    final XFile? file = await FileSelectorPlatform.instance
         .openFile(acceptedTypeGroups: [typeGroup]);
     if (file == null) {
+      // Operation was canceled by the user.
       return;
     }
-    final fileName = file.name;
-    final fileContent = await file.readAsString();
+    final String fileName = file.name;
+    final String fileContent = await file.readAsString();
 
     await showDialog(
       context: context,
@@ -37,6 +38,10 @@ class OpenTextPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: const Text('Press to open a text file (json, txt)'),
               onPressed: () => _openTextFile(context),
             ),

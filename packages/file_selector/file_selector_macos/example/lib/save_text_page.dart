@@ -12,17 +12,18 @@ class SaveTextPage extends StatelessWidget {
   final TextEditingController _contentController = TextEditingController();
 
   void _saveFile() async {
-    final fileName = _nameController.text;
-    final path = await FileSelectorPlatform.instance.getSavePath(
+    final String fileName = _nameController.text;
+    final String? path = await FileSelectorPlatform.instance.getSavePath(
+      // Operation was canceled by the user.
       suggestedName: fileName,
     );
     if (path == null) {
       return;
     }
-    final text = _contentController.text;
-    final fileData = Uint8List.fromList(text.codeUnits);
-    const fileMimeType = 'text/plain';
-    final textFile =
+    final String text = _contentController.text;
+    final Uint8List fileData = Uint8List.fromList(text.codeUnits);
+    const String fileMimeType = 'text/plain';
+    final XFile textFile =
         XFile.fromData(fileData, mimeType: fileMimeType, name: fileName);
     await textFile.saveTo(path);
   }
@@ -61,6 +62,10 @@ class SaveTextPage extends StatelessWidget {
             ),
             SizedBox(height: 10),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: const Text('Press to save a text file'),
               onPressed: _saveFile,
             ),

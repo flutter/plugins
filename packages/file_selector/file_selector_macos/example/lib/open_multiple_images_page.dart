@@ -10,19 +10,23 @@ import 'package:flutter/material.dart';
 /// Screen that shows an example of openFiles
 class OpenMultipleImagesPage extends StatelessWidget {
   void _openImageFile(BuildContext context) async {
-    final jpgsTypeGroup = XTypeGroup(
+    final XTypeGroup jpgsTypeGroup = XTypeGroup(
       label: 'JPEGs',
       extensions: ['jpg', 'jpeg'],
     );
-    final pngTypeGroup = XTypeGroup(
+    final XTypeGroup pngTypeGroup = XTypeGroup(
       label: 'PNGs',
       extensions: ['png'],
     );
-    final files =
+    final List<XFile> files =
         await FileSelectorPlatform.instance.openFiles(acceptedTypeGroups: [
       jpgsTypeGroup,
       pngTypeGroup,
     ]);
+    if (files.isEmpty) {
+      // Operation was canceled by the user.
+      return;
+    }
     await showDialog(
       context: context,
       builder: (context) => MultipleImagesDisplay(files),
@@ -40,6 +44,10 @@ class OpenMultipleImagesPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: const Text('Press to open multiple images (png, jpg)'),
               onPressed: () => _openImageFile(context),
             ),

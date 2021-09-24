@@ -8,13 +8,18 @@ import 'package:flutter/material.dart';
 /// Screen that shows an example of getDirectoryPath
 class GetDirectoryPage extends StatelessWidget {
   void _getDirectoryPath(BuildContext context) async {
-    const confirmButtonText = 'Choose';
-    final directoryPath = await FileSelectorPlatform.instance.getDirectoryPath(
+    const String confirmButtonText = 'Choose';
+    final String? directoryPath =
+        await FileSelectorPlatform.instance.getDirectoryPath(
       confirmButtonText: confirmButtonText,
     );
+    if (directoryPath == null) {
+      // Operation was canceled by the user.
+      return;
+    }
     await showDialog(
       context: context,
-      builder: (context) => TextDisplay(directoryPath ?? 'Unknown'),
+      builder: (context) => TextDisplay(directoryPath),
     );
   }
 
@@ -29,6 +34,10 @@ class GetDirectoryPage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: const Text('Press to ask user to choose a directory'),
               onPressed: () => _getDirectoryPath(context),
             ),

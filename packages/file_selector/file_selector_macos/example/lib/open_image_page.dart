@@ -10,15 +10,19 @@ import 'package:flutter/material.dart';
 /// Screen that shows an example of openFiles
 class OpenImagePage extends StatelessWidget {
   void _openImageFile(BuildContext context) async {
-    final typeGroup = XTypeGroup(
+    final XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
       extensions: ['jpg', 'png'],
     );
-    final files = await FileSelectorPlatform.instance
+    final List<XFile> files = await FileSelectorPlatform.instance
         .openFiles(acceptedTypeGroups: [typeGroup]);
-    final file = files[0];
-    final fileName = file.name;
-    final filePath = file.path;
+    if (files.isEmpty) {
+      // Operation was canceled by the user.
+      return;
+    }
+    final XFile file = files[0];
+    final String fileName = file.name;
+    final String filePath = file.path;
 
     await showDialog(
       context: context,
@@ -37,6 +41,10 @@ class OpenImagePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                primary: Colors.blue,
+                onPrimary: Colors.white,
+              ),
               child: const Text('Press to open an image file(png, jpg)'),
               onPressed: () => _openImageFile(context),
             ),
