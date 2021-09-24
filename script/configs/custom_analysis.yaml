@@ -17,15 +17,12 @@
 # https://github.com/flutter/flutter/issues/76229
 - camera
 - file_selector
-- flutter_plugin_android_lifecycle
 - google_maps_flutter
 - google_sign_in
 - image_picker
 - in_app_purchase
-- integration_test
 - ios_platform_images
 - local_auth
-- plugin_platform_interface
 - quick_actions
 - shared_preferences
 - url_launcher

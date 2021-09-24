@@ -1,3 +1,11 @@
+## 2.1.2
+
+* Add additional marker drag events
+
+## 2.1.1
+
+* Method `buildViewWithTextDirection` has been added to the platform interface.
+
 ## 2.1.0
 
 * Add support for Hybrid Composition when building the Google Maps widget on Android. Set

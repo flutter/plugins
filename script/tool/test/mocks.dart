@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
@@ -32,22 +33,32 @@ class MockPlatform extends Mock implements Platform {
 }
 
 class MockProcess extends Mock implements io.Process {
-  MockProcess();
-
-  /// A mock process that terminates with exitCode 0.
-  MockProcess.succeeding() {
-    exitCodeCompleter.complete(0);
+  /// Creates a mock process with the given results.
+  ///
+  /// The default encodings match the ProcessRunner defaults; mocks for
+  /// processes run with a different encoding will need to be created with
+  /// the matching encoding.
+  MockProcess({
+    int exitCode = 0,
+    String? stdout,
+    String? stderr,
+    Encoding stdoutEncoding = io.systemEncoding,
+    Encoding stderrEncoding = io.systemEncoding,
+  }) : _exitCode = exitCode {
+    if (stdout != null) {
+      _stdoutController.add(stdoutEncoding.encoder.convert(stdout));
+    }
+    if (stderr != null) {
+      _stderrController.add(stderrEncoding.encoder.convert(stderr));
+    }
+    _stdoutController.close();
+    _stderrController.close();
   }
 
-  /// A mock process that terminates with exitCode 1.
-  MockProcess.failing() {
-    exitCodeCompleter.complete(1);
-  }
-
-  final Completer<int> exitCodeCompleter = Completer<int>();
-  final StreamController<List<int>> stdoutController =
+  final int _exitCode;
+  final StreamController<List<int>> _stdoutController =
       StreamController<List<int>>();
-  final StreamController<List<int>> stderrController =
+  final StreamController<List<int>> _stderrController =
       StreamController<List<int>>();
   final MockIOSink stdinMock = MockIOSink();
 
@@ -55,13 +66,13 @@ class MockProcess extends Mock implements io.Process {
   int get pid => 99;
 
   @override
-  Future<int> get exitCode => exitCodeCompleter.future;
+  Future<int> get exitCode async => _exitCode;
 
   @override
-  Stream<List<int>> get stdout => stdoutController.stream;
+  Stream<List<int>> get stdout => _stdoutController.stream;
 
   @override
-  Stream<List<int>> get stderr => stderrController.stream;
+  Stream<List<int>> get stderr => _stderrController.stream;
 
   @override
   IOSink get stdin => stdinMock;

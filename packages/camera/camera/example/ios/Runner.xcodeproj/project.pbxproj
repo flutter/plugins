@@ -18,6 +18,7 @@
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		A513685080F868CF2695CE75 /* libPods-RunnerTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5555DD51E06E67921CFA83DD /* libPods-RunnerTests.a */; };
 		D065CD815D405ECB22FB1BBA /* libPods-Runner.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A4F2DE74AE0C572296A00BF /* libPods-Runner.a */; };
+		E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */ = {isa = PBXBuildFile; fileRef = E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -68,6 +69,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A4725B4F24805CD3CA67828F /* Pods-Runner.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Runner.release.xcconfig"; path = "Target Support Files/Pods-Runner/Pods-Runner.release.xcconfig"; sourceTree = "<group>"; };
 		D1FF8C34CA9E9BE702C5EC06 /* Pods-RunnerTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-RunnerTests.release.xcconfig"; path = "Target Support Files/Pods-RunnerTests/Pods-RunnerTests.release.xcconfig"; sourceTree = "<group>"; };
+		E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CameraPreviewPauseTests.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -96,6 +98,7 @@
 				03BB766A2665316900CE5A93 /* CameraFocusTests.m */,
 				03BB767226653ABE00CE5A93 /* CameraOrientationTests.m */,
 				03BB766C2665316900CE5A93 /* Info.plist */,
+				E487C85F26D686A10034AC92 /* CameraPreviewPauseTests.m */,
 			);
 			path = RunnerTests;
 			sourceTree = "<group>";
@@ -359,6 +362,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				03BB766B2665316900CE5A93 /* CameraFocusTests.m in Sources */,
+				E487C86026D686A10034AC92 /* CameraPreviewPauseTests.m in Sources */,
 				334733EA2668111C00DCC49E /* CameraOrientationTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -500,7 +504,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -550,7 +554,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";

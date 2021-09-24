@@ -5,9 +5,13 @@
 package io.flutter.plugins.imagepicker;
 
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -16,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -23,9 +28,13 @@ import android.net.Uri;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
@@ -42,7 +51,6 @@ public class ImagePickerDelegateTest {
   @Mock MethodCall mockMethodCall;
   @Mock MethodChannel.Result mockResult;
   @Mock ImagePickerDelegate.PermissionManager mockPermissionManager;
-  @Mock ImagePickerDelegate.IntentResolver mockIntentResolver;
   @Mock FileUtils mockFileUtils;
   @Mock Intent mockIntent;
   @Mock ImagePickerCache cache;
@@ -164,7 +172,6 @@ public class ImagePickerDelegateTest {
   @Test
   public void takeImageWithCamera_WhenCameraPermissionNotPresent_RequestsForPermission() {
     when(mockPermissionManager.needRequestCameraPermission()).thenReturn(false);
-    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
     delegate.takeImageWithCamera(mockMethodCall, mockResult);
@@ -178,7 +185,6 @@ public class ImagePickerDelegateTest {
   public void
       takeImageWithCamera_WhenHasCameraPermission_AndAnActivityCanHandleCameraIntent_LaunchesTakeWithCameraIntent() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
-    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
     delegate.takeImageWithCamera(mockMethodCall, mockResult);
@@ -192,8 +198,9 @@ public class ImagePickerDelegateTest {
   public void
       takeImageWithCamera_WhenHasCameraPermission_AndNoActivityToHandleCameraIntent_FinishesWithNoCamerasAvailableError() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
-    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(false);
-
+    doThrow(ActivityNotFoundException.class)
+        .when(mockActivity)
+        .startActivityForResult(any(Intent.class), anyInt());
     ImagePickerDelegate delegate = createDelegate();
     delegate.takeImageWithCamera(mockMethodCall, mockResult);
 
@@ -205,7 +212,6 @@ public class ImagePickerDelegateTest {
   @Test
   public void takeImageWithCamera_WritesImageToCacheDirectory() {
     when(mockPermissionManager.isPermissionGranted(Manifest.permission.CAMERA)).thenReturn(true);
-    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegate();
     delegate.takeImageWithCamera(mockMethodCall, mockResult);
@@ -231,7 +237,6 @@ public class ImagePickerDelegateTest {
   @Test
   public void
       onRequestTakeVideoPermissionsResult_WhenCameraPermissionGranted_LaunchesTakeVideoWithCameraIntent() {
-    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onRequestPermissionsResult(
@@ -247,7 +252,6 @@ public class ImagePickerDelegateTest {
   @Test
   public void
       onRequestTakeImagePermissionsResult_WhenCameraPermissionGranted_LaunchesTakeWithCameraIntent() {
-    when(mockIntentResolver.resolveActivity(any(Intent.class))).thenReturn(true);
 
     ImagePickerDelegate delegate = createDelegateWithPendingResultAndMethodCall();
     delegate.onRequestPermissionsResult(
@@ -370,6 +374,34 @@ public class ImagePickerDelegateTest {
     verifyNoMoreInteractions(mockResult);
   }
 
+  @Test
+  public void
+      retrieveLostImage_ShouldBeAbleToReturnLastItemFromResultMapWhenSingleFileIsRecovered() {
+    Map<String, Object> resultMap = new HashMap<>();
+    ArrayList<String> pathList = new ArrayList<>();
+    pathList.add("/example/first_item");
+    pathList.add("/example/last_item");
+    resultMap.put("pathList", pathList);
+
+    when(mockImageResizer.resizeImageIfNeeded(pathList.get(0), null, null, 100))
+        .thenReturn(pathList.get(0));
+    when(mockImageResizer.resizeImageIfNeeded(pathList.get(1), null, null, 100))
+        .thenReturn(pathList.get(1));
+    when(cache.getCacheMap()).thenReturn(resultMap);
+
+    MethodChannel.Result mockResult = mock(MethodChannel.Result.class);
+
+    ImagePickerDelegate mockDelegate = createDelegate();
+
+    ArgumentCaptor<Map<String, Object>> valueCapture = ArgumentCaptor.forClass(Map.class);
+
+    doNothing().when(mockResult).success(valueCapture.capture());
+
+    mockDelegate.retrieveLostImage(mockResult);
+
+    assertEquals("/example/last_item", valueCapture.getValue().get("path"));
+  }
+
   private ImagePickerDelegate createDelegate() {
     return new ImagePickerDelegate(
         mockActivity,
@@ -379,7 +411,6 @@ public class ImagePickerDelegateTest {
         null,
         cache,
         mockPermissionManager,
-        mockIntentResolver,
         mockFileUriResolver,
         mockFileUtils);
   }
@@ -393,7 +424,6 @@ public class ImagePickerDelegateTest {
         mockMethodCall,
         cache,
         mockPermissionManager,
-        mockIntentResolver,
         mockFileUriResolver,
         mockFileUtils);
   }
