@@ -49,16 +49,24 @@ const Set<String> _ignoredFullBasenameList = <String>{
 // When adding license regexes here, include the copyright info to ensure that
 // any new additions are flagged for added scrutiny in review.
 final List<RegExp> _thirdPartyLicenseBlockRegexes = <RegExp>[
-// Third-party code used in url_launcher_web.
+  // Third-party code used in url_launcher_web.
   RegExp(
-      r'^// Copyright 2017 Workiva Inc\..*'
-      r'^// Licensed under the Apache License, Version 2\.0',
-      multiLine: true,
-      dotAll: true),
+    r'^// Copyright 2017 Workiva Inc\..*'
+    r'^// Licensed under the Apache License, Version 2\.0',
+    multiLine: true,
+    dotAll: true,
+  ),
+  // Third-party code used in google_maps_flutter_web.
+  RegExp(
+    r'^// The MIT License [^C]+ Copyright \(c\) 2008 Krasimir Tsonev',
+    multiLine: true,
+  ),
   // bsdiff in flutter/packages.
-  RegExp(r'// Copyright 2003-2005 Colin Percival\. All rights reserved\.\n'
-      r'// Use of this source code is governed by a BSD-style license that can be\n'
-      r'// found in the LICENSE file\.\n'),
+  RegExp(
+    r'// Copyright 2003-2005 Colin Percival\. All rights reserved\.\n'
+    r'// Use of this source code is governed by a BSD-style license that can be\n'
+    r'// found in the LICENSE file\.\n',
+  ),
 ];
 
 // The exact format of the BSD license that our license files should contain.

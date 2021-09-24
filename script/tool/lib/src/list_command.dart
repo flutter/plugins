@@ -6,6 +6,7 @@ import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
 import 'common/plugin_command.dart';
+import 'common/repository_package.dart';
 
 /// A command to list different types of repository content.
 class ListCommand extends PluginCommand {
@@ -39,23 +40,22 @@ class ListCommand extends PluginCommand {
   Future<void> run() async {
     switch (getStringArg(_type)) {
       case _plugin:
-        await for (final PackageEnumerationEntry package
-            in getTargetPackages()) {
-          print(package.directory.path);
+        await for (final PackageEnumerationEntry entry in getTargetPackages()) {
+          print(entry.package.path);
         }
         break;
       case _example:
-        final Stream<Directory> examples = getTargetPackages()
-            .map((PackageEnumerationEntry entry) => entry.directory)
-            .expand<Directory>(getExamplesForPlugin);
-        await for (final Directory package in examples) {
+        final Stream<RepositoryPackage> examples = getTargetPackages()
+            .expand<RepositoryPackage>(
+                (PackageEnumerationEntry entry) => entry.package.getExamples());
+        await for (final RepositoryPackage package in examples) {
           print(package.path);
         }
         break;
       case _package:
-        await for (final PackageEnumerationEntry package
+        await for (final PackageEnumerationEntry entry
             in getTargetPackagesAndSubpackages()) {
-          print(package.directory.path);
+          print(entry.package.path);
         }
         break;
       case _file:

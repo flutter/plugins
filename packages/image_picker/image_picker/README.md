@@ -11,8 +11,10 @@ First, add `image_picker` as a [dependency in your pubspec.yaml file](https://fl
 
 ### iOS
 
+This plugin requires iOS 9.0 or higher.
+
 Starting with version **0.8.1** the iOS implementation uses PHPicker to pick (multiple) images on iOS 14 or higher.
-As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS 14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue.[63426347 - Apple known issue](https://www.google.com/search?q=63426347+apple&sxsrf=ALeKk01YnTMid5S0PYvhL8GbgXJ40ZS[…]t=gws-wiz&ved=0ahUKEwjKh8XH_5HwAhWL_rsIHUmHDN8Q4dUDCA8&uact=5)
+As a result of implementing PHPicker it becomes impossible to pick HEIC images on the iOS simulator in iOS 14+. This is a known issue. Please test this on a real device, or test with non-HEIC images until Apple solves this issue. [63426347 - Apple known issue](https://www.google.com/search?q=63426347+apple&sxsrf=ALeKk01YnTMid5S0PYvhL8GbgXJ40ZS[…]t=gws-wiz&ved=0ahUKEwjKh8XH_5HwAhWL_rsIHUmHDN8Q4dUDCA8&uact=5)
 
 Add the following keys to your _Info.plist_ file, located in `<project root>/ios/Runner/Info.plist`:
 
@@ -62,14 +64,10 @@ Future<void> getLostData() async {
   if (response.isEmpty) {
     return;
   }
-  if (response.file != null) {
-    setState(() {
-      if (response.type == RetrieveType.video) {
-        _handleVideo(response.file);
-      } else {
-        _handleImage(response.file);
-      }
-    });
+  if (response.files != null) {
+    for(final XFile file in response.files) {
+      _handleFile(file);
+    }
   } else {
     _handleError(response.exception);
   }
@@ -77,8 +75,6 @@ Future<void> getLostData() async {
 ```
 
 There's no way to detect when this happens, so calling this method at the right place is essential. We recommend to wire this into some kind of start up check. Please refer to the example app to see how we used it.
-
-On Android, `retrieveLostData` will only get the last picked image when picking multiple images, see: [#84634](https://github.com/flutter/flutter/issues/84634).
 
 ## Migrating to 0.8.2+
 

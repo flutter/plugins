@@ -13,8 +13,24 @@ void main() {
     expect(PathProviderPlatform.instance, isA<PathProviderLinux>());
   });
 
-  test('getTemporaryPath', () async {
-    final PathProviderPlatform plugin = PathProviderPlatform.instance;
+  test('getTemporaryPath defaults to TMPDIR', () async {
+    final PathProviderPlatform plugin = PathProviderLinux.private(
+      environment: <String, String>{'TMPDIR': '/run/user/0/tmp'},
+    );
+    expect(await plugin.getTemporaryPath(), '/run/user/0/tmp');
+  });
+
+  test('getTemporaryPath uses fallback if TMPDIR is empty', () async {
+    final PathProviderPlatform plugin = PathProviderLinux.private(
+      environment: <String, String>{'TMPDIR': ''},
+    );
+    expect(await plugin.getTemporaryPath(), '/tmp');
+  });
+
+  test('getTemporaryPath uses fallback if TMPDIR is unset', () async {
+    final PathProviderPlatform plugin = PathProviderLinux.private(
+      environment: <String, String>{},
+    );
     expect(await plugin.getTemporaryPath(), '/tmp');
   });
 
