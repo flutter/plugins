@@ -10,11 +10,11 @@ class FileSelectorPlugin : public flutter::Plugin {
  public:
   static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
+  FileSelectorPlugin(flutter::PluginRegistrarWindows *registrar);
+
   virtual ~FileSelectorPlugin();
 
  private:
-  FileSelectorPlugin(flutter::PluginRegistrarWindows *registrar);
-
   // Called when a method is called on plugin channel;
   void HandleMethodCall(const flutter::MethodCall<> &method_call,
                         std::unique_ptr<flutter::MethodResult<>> result);
