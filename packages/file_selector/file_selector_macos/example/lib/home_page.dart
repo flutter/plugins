@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
     );
     return Scaffold(
       appBar: AppBar(
-        title: Text('File Selector Demo Home Page'),
+        title: const Text('File Selector Demo Home Page'),
       ),
       body: Center(
         child: Column(
@@ -25,25 +25,25 @@ class HomePage extends StatelessWidget {
               child: const Text('Open a text file'),
               onPressed: () => Navigator.pushNamed(context, '/open/text'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: style,
               child: const Text('Open an image'),
               onPressed: () => Navigator.pushNamed(context, '/open/image'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: style,
               child: const Text('Open multiple images'),
               onPressed: () => Navigator.pushNamed(context, '/open/images'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: style,
               child: const Text('Save a file'),
               onPressed: () => Navigator.pushNamed(context, '/save/text'),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: style,
               child: const Text('Open a get directory dialog'),

@@ -11,7 +11,7 @@ class SaveTextPage extends StatelessWidget {
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
-  void _saveFile() async {
+  Future<void> _saveFile() async {
     final String fileName = _nameController.text;
     final String? path = await FileSelectorPlatform.instance.getSavePath(
       // Operation was canceled by the user.
@@ -32,7 +32,7 @@ class SaveTextPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Save text into a file'),
+        title: const Text('Save text into a file'),
       ),
       body: Center(
         child: Column(
@@ -44,7 +44,7 @@ class SaveTextPage extends StatelessWidget {
                 minLines: 1,
                 maxLines: 12,
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: '(Optional) Suggest File Name',
                 ),
               ),
@@ -55,12 +55,12 @@ class SaveTextPage extends StatelessWidget {
                 minLines: 1,
                 maxLines: 12,
                 controller: _contentController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   hintText: 'Enter File Contents',
                 ),
               ),
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 primary: Colors.blue,
