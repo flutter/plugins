@@ -133,6 +133,18 @@ final class VideoPlayer {
     setUpVideoPlayer(exoPlayer, eventSink);
   }
 
+  @VisibleForTesting
+  VideoPlayer(
+      EventChannel eventChannel,
+      TextureRegistry.SurfaceTextureEntry textureEntry,
+      VideoPlayerOptions options,
+      SimpleExoPlayer exoPlayer) {
+    this.eventChannel = eventChannel;
+    this.textureEntry = textureEntry;
+    this.options = options;
+    this.exoPlayer = exoPlayer;
+  }
+
   private static boolean isHTTP(Uri uri) {
     if (uri == null || uri.getScheme() == null) {
       return false;
@@ -318,9 +330,6 @@ final class VideoPlayer {
         if (rotationDegrees == 90 || rotationDegrees == 270) {
           width = exoPlayer.getVideoFormat().height;
           height = exoPlayer.getVideoFormat().width;
-        }
-        if (rotationDegrees == 180) {
-          event.put("rotation", Math.PI);
         }
         event.put("width", width);
         event.put("height", height);

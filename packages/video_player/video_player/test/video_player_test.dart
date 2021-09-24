@@ -151,16 +151,17 @@ void main() {
         findsOneWidget);
   });
 
-  testWidgets('rotation value is used', (WidgetTester tester) async {
-    final double expectedRotation = 3.14;
-    final FakeController controller = FakeController.value(
-        VideoPlayerValue(duration: Duration.zero, rotation: expectedRotation));
+  testWidgets('rotationCorrection value is used', (WidgetTester tester) async {
+    final double expectedRotationCorrection = 3.14;
+    final FakeController controller = FakeController.value(VideoPlayerValue(
+        duration: Duration.zero,
+        rotationCorrection: expectedRotationCorrection));
     controller.textureId = 1;
     await tester.pumpWidget(VideoPlayer(controller));
-    Transform actualRotation =
+    Transform actualRotationCorrection =
         find.byType(Transform).evaluate().single.widget as Transform;
-    expect(
-        actualRotation.transform, equals(Matrix4.rotationZ(expectedRotation)));
+    expect(actualRotationCorrection.transform,
+        equals(Matrix4.rotationZ(expectedRotationCorrection)));
   });
 
   group('ClosedCaption widget', () {
