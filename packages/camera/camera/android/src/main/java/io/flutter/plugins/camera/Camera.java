@@ -574,15 +574,17 @@ class Camera
 
   /** Starts a background thread and its {@link Handler}. */
   public void startBackgroundThread() {
-    if (backgroundHandlerThread == null) {
-      backgroundHandlerThread = HandlerThreadFactory.create("CameraBackground");
-      try {
-        backgroundHandlerThread.start();
-      } catch (IllegalThreadStateException e) {
-        // Ignore exception in case the thread has already started.
-      }
-      backgroundHandler = HandlerFactory.create(backgroundHandlerThread.getLooper());
+    if (backgroundHandlerThread != null) {
+      return;
     }
+
+    backgroundHandlerThread = HandlerThreadFactory.create("CameraBackground");
+    try {
+      backgroundHandlerThread.start();
+    } catch (IllegalThreadStateException e) {
+      // Ignore exception in case the thread has already started.
+    }
+    backgroundHandler = HandlerFactory.create(backgroundHandlerThread.getLooper());
   }
 
   /** Stops the background thread and its {@link Handler}. */
