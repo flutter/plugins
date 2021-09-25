@@ -26,7 +26,6 @@ apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
     compileSdkVersion 29
-    testOptions.unitTests.includeAndroidResources = true
 
     lintOptions {
         disable 'InvalidPackage'
