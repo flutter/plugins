@@ -25,14 +25,17 @@ public class ImageResizerTest {
 
   ImageResizer resizer;
   File imageFile;
+  File gifImageFile;
   File externalDirectory;
   Bitmap originalImageBitmap;
-
+  Bitmap originalGifImageBitmap;
   @Before
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
     imageFile = new File(getClass().getClassLoader().getResource("pngImage.png").getFile());
+    gifImageFile = new File(getClass().getClassLoader().getResource("gifImage.gif").getFile());
     originalImageBitmap = BitmapFactory.decodeFile(imageFile.getPath());
+    originalGifImageBitmap = BitmapFactory.decodeFile(gifImageFile.getPath());
     TemporaryFolder temporaryFolder = new TemporaryFolder();
     temporaryFolder.create();
     externalDirectory = temporaryFolder.newFolder("image_picker_testing_path");
