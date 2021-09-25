@@ -121,6 +121,9 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     List<XFile> files = await getFiles(
       accept: _kAcceptImageMimeType,
       capture: capture,
+      maxWidth: maxWidth,
+      maxHeight: maxHeight,
+      imageQuality: imageQuality,
     );
     return files.first;
   }
@@ -158,7 +161,12 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) {
-    return getFiles(accept: _kAcceptImageMimeType, multiple: true);
+    return getFiles(
+        accept: _kAcceptImageMimeType,
+        multiple: true,
+        imageQuality: imageQuality,
+        maxHeight: maxHeight,
+        maxWidth: maxWidth);
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
@@ -171,11 +179,13 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ///
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
-  Future<List<XFile>> getFiles({
-    String? accept,
-    String? capture,
-    bool multiple = false,
-  }) {
+  Future<List<XFile>> getFiles(
+      {String? accept,
+      String? capture,
+      bool multiple = false,
+      double? maxWidth,
+      double? maxHeight,
+      int? imageQuality}) {
     html.FileUploadInputElement input = createInputElement(
       accept,
       capture,
@@ -183,7 +193,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     ) as html.FileUploadInputElement;
     _injectAndActivate(input);
 
-    return _getSelectedXFiles(input);
+    return _getSelectedXFiles(input,
+        maxWidth: maxWidth, maxHeight: maxHeight, imageQuality: imageQuality);
   }
 
   // DOM methods
@@ -238,23 +249,29 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   /// Monitors an <input type="file"> and returns the selected file(s).
-  Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
+  Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input,
+      {double? maxWidth, double? maxHeight, int? imageQuality}) {
     final Completer<List<XFile>> _completer = Completer<List<XFile>>();
     // Observe the input until we can return something
-    input.onChange.first.then((event) {
+    input.onChange.first.then((event) async {
       final files = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && files != null) {
-        _completer.complete(files
-            .map((file) => XFile(
-                  html.Url.createObjectUrl(file),
-                  name: file.name,
-                  length: file.size,
-                  lastModified: DateTime.fromMillisecondsSinceEpoch(
-                    file.lastModified ?? DateTime.now().millisecondsSinceEpoch,
-                  ),
-                  mimeType: file.type,
-                ))
-            .toList());
+        //Convert the file  if one of the parameter is not null
+        if (imageQuality != null || maxWidth != null || maxHeight != null) {
+          final convertedFileUris = await Future.wait(files.map((e) async =>
+              await _getCompressedUri(e, imageQuality, maxHeight, maxWidth)));
+
+          int index = 0;
+          _completer.complete(files.map((file) {
+            index += 1;
+            final xFile = file.toXFile(path: convertedFileUris[index - 1]);
+            return xFile;
+          }).toList());
+        } else {
+          _completer.complete(files.map((file) {
+            return file.toXFile();
+          }).toList());
+        }
       }
     });
     input.onError.first.then((event) {
@@ -310,6 +327,72 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     _target.children.add(element);
     element.click();
   }
+
+  Future<String> _getCompressedUri(html.File file, int? imageQuality,
+      double? maxHeight, double? maxWidth) async {
+    //max width, max height, imageQuality are not supported for gif
+    if (file.type == "image/gif") {
+      return html.Url.createObjectUrl(file);
+    }
+
+    final Completer<String> _completer = Completer<String>();
+    final blobUrl = html.Url.createObjectUrl(file);
+    final image = html.ImageElement(src: blobUrl);
+    image.onLoad.listen((event) async {
+      html.Url.revokeObjectUrl(blobUrl);
+      final canvas = html.CanvasElement();
+      final size = _calculateSize(image, maxWidth ?? image.width!.toDouble(),
+          maxHeight ?? image.height!.toDouble());
+      canvas.width = size[0];
+      canvas.height = size[1];
+      final ctx = canvas.context2D;
+      if (maxHeight == null && maxWidth == null) {
+        ctx.drawImage(image, 0, 0);
+      } else {
+        ctx.drawImageScaled(image, 0, 0, canvas.width!, canvas.height!);
+      }
+      final blob =
+          await canvas.toBlob(file.type, (imageQuality ?? 100) / 100.0); // Image quality only works for jpeg images
+      _completer.complete(html.Url.createObjectUrlFromBlob(blob));
+    });
+    image.onError.listen((event) {
+      //Return the original image if error comes
+      _completer.complete(html.Url.createObjectUrl(file));
+    });
+    return _completer.future;
+  }
+
+  List<int> _calculateSize(
+      html.ImageElement img, double maxWidth, double maxHeight) {
+    var width = img.width!;
+    var height = img.height!;
+
+    // calculate the width and height, constraining the proportions
+    if (width > height) {
+      if (width > maxWidth) {
+        height = ((height * maxWidth) / width).round();
+        width = maxWidth.toInt();
+      }
+    } else {
+      if (height > maxHeight) {
+        width = ((width * maxHeight) / height).round();
+        height = maxHeight.toInt();
+      }
+    }
+    return [width, height];
+  }
+}
+
+extension on html.File {
+  XFile toXFile({String? path}) => XFile(
+        path ?? html.Url.createObjectUrl(this),
+        name: this.name,
+        length: this.size,
+        lastModified: DateTime.fromMillisecondsSinceEpoch(
+          this.lastModified ?? DateTime.now().millisecondsSinceEpoch,
+        ),
+        mimeType: this.type,
+      );
 }
 
 // Some tools to override behavior for unit-testing
