@@ -62,8 +62,8 @@ public class ImageResizerTest {
 
   @Test
   public void onResizeImageIfNeeded_WhenHeightIsNotNull_ShoulResize_ReturnResizedFile() {
-    String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
-    assertThat(outoutFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
+    String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
+    assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
   }
 
   @Test
