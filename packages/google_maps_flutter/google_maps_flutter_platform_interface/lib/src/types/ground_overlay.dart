@@ -4,6 +4,7 @@
 
 import 'dart:ui' show hashValues;
 
+import 'package:collection/collection.dart';
 import 'package:flutter/foundation.dart';
 import 'package:meta/meta.dart' show immutable;
 
@@ -177,12 +178,19 @@ class GroundOverlay implements MapsObject {
 
   @override
   bool operator ==(Object other) {
-    if (other.runtimeType != runtimeType) {
+    if (other is! GroundOverlay) {
       return false;
     }
-    return other is GroundOverlay &&
-        groundOverlayId == other.groundOverlayId &&
-        image == other.image &&
+    bool isImageSame = false;
+    if (image != null && other.image != null) {
+      List<dynamic> thisImage = image.toJson() as List<dynamic>;
+      List<dynamic> otherImage = other.image.toJson() as List<dynamic>;
+      isImageSame = ListEquality().equals(thisImage, otherImage);
+    } else {
+      return false;
+    }
+    return groundOverlayId == other.groundOverlayId &&
+        isImageSame &&
         anchorU == other.anchorU &&
         anchorV == other.anchorV &&
         bearing == other.bearing &&

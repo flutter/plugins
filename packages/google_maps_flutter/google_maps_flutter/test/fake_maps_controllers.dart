@@ -91,6 +91,12 @@ class FakePlatformGoogleMap {
 
   Set<TileOverlay> tileOverlaysToChange = <TileOverlay>{};
 
+  Set<GroundOverlay> groundOverlaysToAdd = {};
+
+  Set<GroundOverlay> groundOverlaysToChange = {};
+
+  Set<GroundOverlayId> groundOverlayIdsToRemove = {};
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'map#update':
@@ -107,6 +113,10 @@ class FakePlatformGoogleMap {
         return Future<void>.sync(() {});
       case 'tileOverlays#update':
         updateTileOverlays(
+            Map.castFrom<dynamic, dynamic, String, dynamic>(call.arguments));
+        return Future<void>.sync(() {});
+      case 'groundOverlays#update':
+        updateGroundOverlays(
             Map.castFrom<dynamic, dynamic, String, dynamic>(call.arguments));
         return Future<void>.sync(() {});
       case 'circles#update':
@@ -305,6 +315,32 @@ class FakePlatformGoogleMap {
     tileOverlaysToChange = _deserializeTileOverlays(tileOverlaysToChangeList);
   }
 
+  void updateGroundOverlays(Map<String, dynamic> updateGroundOverlayUpdates) {
+    if (updateGroundOverlayUpdates == null) {
+      return;
+    }
+    final List<Map<dynamic, dynamic>>? groundOverlaysToAddList =
+        updateGroundOverlayUpdates['groundOverlaysToAdd'] != null
+            ? List.castFrom<dynamic, Map<dynamic, dynamic>>(
+                updateGroundOverlayUpdates['groundOverlaysToAdd'])
+            : null;
+    final List<String>? groundOverlayIdsToRemoveList =
+        updateGroundOverlayUpdates['groundOverlayIdsToRemove'] != null
+            ? List.castFrom<dynamic, String>(
+                updateGroundOverlayUpdates['groundOverlayIdsToRemove'])
+            : null;
+    final List<Map<dynamic, dynamic>>? groundOverlaysToChangeList =
+        updateGroundOverlayUpdates['groundOverlaysToChange'] != null
+            ? List.castFrom<dynamic, Map<dynamic, dynamic>>(
+                updateGroundOverlayUpdates['groundOverlaysToChange'])
+            : null;
+    groundOverlaysToAdd = _deserializeGroundOverlays(groundOverlaysToAddList);
+    groundOverlayIdsToRemove =
+        _deserializeGroundOverlayIds(groundOverlayIdsToRemoveList);
+    groundOverlaysToChange =
+        _deserializeGroundOverlays(groundOverlaysToChangeList);
+  }
+
   Set<CircleId> _deserializeCircleIds(List<dynamic>? circleIds) {
     if (circleIds == null) {
       return <CircleId>{};
@@ -362,6 +398,53 @@ class FakePlatformGoogleMap {
         transparency: transparency,
         zIndex: zIndex,
         visible: visible,
+      ));
+    }
+
+    return result;
+  }
+
+  Set<GroundOverlayId> _deserializeGroundOverlayIds(
+      List<String>? groundOverlayIds) {
+    if (groundOverlayIds == null || groundOverlayIds.isEmpty) {
+      return {};
+    }
+    return groundOverlayIds
+        .map((String groundOverlayId) => GroundOverlayId(groundOverlayId))
+        .toSet();
+  }
+
+  Set<GroundOverlay> _deserializeGroundOverlays(
+      List<Map<dynamic, dynamic>>? groundOverlays) {
+    if (groundOverlays == null || groundOverlays.isEmpty) {
+      return {};
+    }
+    final Set<GroundOverlay> result = <GroundOverlay>{};
+    for (Map<dynamic, dynamic> groundOverlayData in groundOverlays) {
+      final BitmapDescriptor image =
+          BitmapDescriptor.fromJson(groundOverlayData['image']);
+      final LatLng? position = groundOverlayData.containsKey('position')
+          ? LatLng.fromJson(groundOverlayData['position'])
+          : null;
+      final LatLngBounds? positionFromBounds =
+          groundOverlayData.containsKey('positionFromBounds')
+              ? LatLngBounds.fromList(groundOverlayData['positionFromBounds'])
+              : null;
+
+      result.add(GroundOverlay(
+        groundOverlayId: GroundOverlayId(groundOverlayData['groundOverlayId']),
+        image: image,
+        anchorU: groundOverlayData['anchorU'],
+        anchorV: groundOverlayData['anchorV'],
+        bearing: groundOverlayData['bearing'] ?? 0,
+        isClickable: groundOverlayData['isClickable'] ?? false,
+        position: position,
+        width: groundOverlayData['width'],
+        height: groundOverlayData['height'],
+        positionFromBounds: positionFromBounds,
+        transparency: groundOverlayData['transparency'] ?? 0,
+        isVisible: groundOverlayData['isVisible'] ?? true,
+        zIndex: groundOverlayData['zIndex'] ?? 0,
       ));
     }
 
