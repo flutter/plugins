@@ -160,9 +160,9 @@ public class GifDecoder {
   }
 
   public Bitmap getFrame(int n) {
-      if (frameCount <= 0) {
-          return null;
-      }
+    if (frameCount <= 0) {
+      return null;
+    }
     n = n % frameCount;
     return ((GifFrame) frames.elementAt(n)).image;
   }
