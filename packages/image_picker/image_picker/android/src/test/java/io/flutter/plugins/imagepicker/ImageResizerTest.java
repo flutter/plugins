@@ -68,14 +68,16 @@ public class ImageResizerTest {
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenHeightIsNotNullAndImageIsGif_ShouldResize_ReturnResizedFile() {
+  public void
+      onResizeImageIfNeeded_WhenHeightIsNotNullAndImageIsGif_ShouldResize_ReturnResizedFile() {
     String outputFile = resizer.resizeImageIfNeeded(gifImageFile.getPath(), null, 50.0, null);
     assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_gifImage.gif"));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenWidthIsNotNullAndImageIsGif_ShouldResize_ReturnResizedFile() {
-    String outputFile = resizer.resizeImageIfNeeded(gifImageFile.getPath(), 50.0`, null, null);
+  public void
+      onResizeImageIfNeeded_WhenWidthIsNotNullAndImageIsGif_ShouldResize_ReturnResizedFile() {
+    String outputFile = resizer.resizeImageIfNeeded(gifImageFile.getPath(), 50.0, null, null);
     assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_gifImage.gif"));
   }
 
