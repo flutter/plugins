@@ -71,7 +71,10 @@ class SkuDetailsWrapper {
   @JsonKey(defaultValue: '')
   final String introductoryPrice;
 
-  /// [introductoryPrice] in micro-units 990000
+  /// [introductoryPrice] in micro-units 990000.
+  ///
+  /// Returns 0 if the SKU is not a subscription or doesn't have an introductory
+  /// period.
   @JsonKey(name: 'introductoryPriceAmountMicros', defaultValue: 0)
   final int introductoryPriceAmountMicros;
 
