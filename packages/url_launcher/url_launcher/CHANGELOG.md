@@ -1,6 +1,6 @@
 ## 6.0.13
 
-* Fix crashes on a lot of devices.
+* Fix NullPointerException crashes on a lot of Android devices. (see https://github.com/flutter/flutter/issues/72863 for details)
 
 ## 6.0.12
 
