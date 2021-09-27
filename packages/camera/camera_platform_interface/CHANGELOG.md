@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Add web-relevant docs to platform interface code.
+
 ## 2.1.0
 
 * Introduces interface methods for pausing and resuming the camera preview.

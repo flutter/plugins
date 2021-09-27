@@ -1,3 +1,11 @@
+## 0.9.4
+
+* Add web support by endorsing `package:camera_web`.
+
+## 0.9.3+1
+
+* Remove iOS 9 availability check around ultra high capture sessions.
+
 ## 0.9.3
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.

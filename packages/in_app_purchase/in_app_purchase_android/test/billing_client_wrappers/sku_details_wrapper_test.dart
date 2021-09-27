@@ -134,7 +134,7 @@ Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
     'description': original.description,
     'freeTrialPeriod': original.freeTrialPeriod,
     'introductoryPrice': original.introductoryPrice,
-    'introductoryPriceMicros': original.introductoryPriceMicros,
+    'introductoryPriceAmountMicros': original.introductoryPriceMicros,
     'introductoryPriceCycles': original.introductoryPriceCycles,
     'introductoryPricePeriod': original.introductoryPricePeriod,
     'price': original.price,

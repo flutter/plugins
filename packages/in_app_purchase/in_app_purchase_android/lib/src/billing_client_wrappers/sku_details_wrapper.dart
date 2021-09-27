@@ -68,7 +68,7 @@ class SkuDetailsWrapper {
   final String introductoryPrice;
 
   /// [introductoryPrice] in micro-units 990000
-  @JsonKey(defaultValue: '')
+  @JsonKey(name: 'introductoryPriceAmountMicros', defaultValue: '')
   final String introductoryPriceMicros;
 
   /// The number of subscription billing periods for which the user will be given the introductory price, such as 3.
