@@ -389,7 +389,7 @@ WebSettings _clearUnchangedWebSettings(
   bool? hasProgressTracking;
   bool? debuggingEnabled;
   WebSetting<String?> userAgent = WebSetting.absent();
-  WebSetting<bool?> zoomEnabled = WebSetting.absent();
+  bool? zoomEnabled;
   if (currentValue.javascriptMode != newValue.javascriptMode) {
     javascriptMode = newValue.javascriptMode;
   }

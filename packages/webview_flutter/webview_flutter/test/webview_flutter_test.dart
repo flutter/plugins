@@ -10,8 +10,8 @@ import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 typedef void VoidCallback();
 
@@ -917,7 +917,7 @@ void main() {
               debuggingEnabled: false,
               userAgent: WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
-              zoomEnabled: WebSetting<bool?>.of(true),
+              zoomEnabled: true,
             ),
           )));
     });

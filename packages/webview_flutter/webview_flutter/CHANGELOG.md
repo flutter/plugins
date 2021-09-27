@@ -1,3 +1,6 @@
+## 2.1.1
+* Add ability to enable/disable zoom functionality
+
 ## 2.1.0
 
 * Migrated to fully federated architecture.
@@ -10,7 +13,6 @@
 
 * Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
-* Enable native double-tap to zoom, and pinch to zoom functionality on Android
 
 ## 2.0.12
 
