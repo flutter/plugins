@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:image/image.dart';
 import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
@@ -334,7 +335,6 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     if (file.type == "image/gif") {
       return html.Url.createObjectUrl(file);
     }
-
     final Completer<String> _completer = Completer<String>();
     final blobUrl = html.Url.createObjectUrl(file);
     final image = html.ImageElement(src: blobUrl);
