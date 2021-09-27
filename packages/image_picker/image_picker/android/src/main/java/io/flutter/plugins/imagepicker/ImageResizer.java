@@ -8,9 +8,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
@@ -106,23 +108,11 @@ class ImageResizer {
       }
     }
     if (imagePath.endsWith(".gif")) {
-      FileInputStream fileInputStream = new FileInputStream(imagePath);
-      GifDecoder gifDecoder = new GifDecoder();
-      gifDecoder.read(fileInputStream);
-      GifEncoder gifEncoder = new GifEncoder();
-      gifEncoder.setSize(width.intValue(), height.intValue());
-      gifEncoder.setRepeat(gifDecoder.getLoopCount());
-      ByteArrayOutputStream bos = new ByteArrayOutputStream();
-      gifEncoder.start(bos);
-
-      for (int i = 0; i < gifDecoder.getFrameCount(); i++) {
-        Bitmap frame = gifDecoder.getFrame(i);
-        gifEncoder.setDelay(gifDecoder.getDelay(i));
-        Bitmap scaledBmp = createScaledBitmap(frame, width.intValue(), height.intValue(), false);
-        gifEncoder.addFrame(scaledBmp);
-      }
-      gifEncoder.finish();
-      File file = createImageOnExternalDirectory("/scaled_" + outputImageName, bos);
+      ByteArrayOutputStream scaledGifByteArrayOutputStream =
+          createScaledGif(imagePath, width.intValue(), height.intValue());
+      File file =
+          createImageOnExternalDirectory(
+              "/scaled_" + outputImageName, scaledGifByteArrayOutputStream);
       return file;
 
     } else {
@@ -139,6 +129,28 @@ class ImageResizer {
       image.getParentFile().mkdirs();
     }
     return image;
+  }
+
+  @VisibleForTesting
+  ByteArrayOutputStream createScaledGif(String imagePath, int width, int height)
+      throws FileNotFoundException {
+    FileInputStream fileInputStream = new FileInputStream(imagePath);
+    GifDecoder gifDecoder = new GifDecoder();
+    gifDecoder.read(fileInputStream);
+    GifEncoder gifEncoder = new GifEncoder();
+    gifEncoder.setSize(width, height);
+    gifEncoder.setRepeat(gifDecoder.getLoopCount());
+    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+    gifEncoder.start(byteArrayOutputStream);
+
+    for (int i = 0; i < gifDecoder.getFrameCount(); i++) {
+      Bitmap frame = gifDecoder.getFrame(i);
+      gifEncoder.setDelay(gifDecoder.getDelay(i));
+      Bitmap scaledBmp = createScaledBitmap(frame, width, height, false);
+      gifEncoder.addFrame(scaledBmp);
+    }
+    gifEncoder.finish();
+    return byteArrayOutputStream;
   }
 
   private FileOutputStream createOutputStream(File imageFile) throws IOException {
