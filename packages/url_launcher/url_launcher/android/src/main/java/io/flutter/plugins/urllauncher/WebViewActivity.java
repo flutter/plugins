@@ -142,7 +142,7 @@ public class WebViewActivity extends Activity {
     registerReceiver(broadcastReceiver, closeIntentFilter);
   }
 
-  private Map<String, String> extractHeaders(Bundle headersBundle) {
+  static Map<String, String> extractHeaders(Bundle headersBundle) {
     if (headersBundle == null) {
       return new HashMap<>();
     }
