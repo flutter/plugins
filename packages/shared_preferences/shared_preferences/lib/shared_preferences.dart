@@ -128,6 +128,13 @@ class SharedPreferences {
       _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
+  ///
+  /// Note: Due to limitations in Android's SharedPreferences,
+  /// values cannot start with any one of the following:
+  ///
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu'
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy'
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu'
   Future<bool> setString(String key, String value) =>
       _setValue('String', key, value);
 

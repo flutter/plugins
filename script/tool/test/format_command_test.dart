@@ -8,6 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/format_command.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -49,10 +50,10 @@ void main() {
   /// Returns a modified version of a list of [relativePaths] that are relative
   /// to [package] to instead be relative to [packagesDir].
   List<String> _getPackagesDirRelativePaths(
-      Directory package, List<String> relativePaths) {
+      Directory packageDir, List<String> relativePaths) {
     final p.Context path = analyzeCommand.path;
     final String relativeBase =
-        path.relative(package.path, from: packagesDir.path);
+        path.relative(packageDir.path, from: packagesDir.path);
     return relativePaths
         .map((String relativePath) => path.join(relativeBase, relativePath))
         .toList();
@@ -106,6 +107,42 @@ void main() {
         ]));
   });
 
+  test('does not format .dart files with pragma', () async {
+    const List<String> formattedFiles = <String>[
+      'lib/a.dart',
+      'lib/src/b.dart',
+      'lib/src/c.dart',
+    ];
+    const String unformattedFile = 'lib/src/d.dart';
+    final Directory pluginDir = createFakePlugin(
+      'a_plugin',
+      packagesDir,
+      extraFiles: <String>[
+        ...formattedFiles,
+        unformattedFile,
+      ],
+    );
+
+    final p.Context posixContext = p.posix;
+    childFileWithSubcomponents(pluginDir, posixContext.split(unformattedFile))
+        .writeAsStringSync(
+            '// copyright bla bla\n// This file is hand-formatted.\ncode...');
+
+    await runCapturingPrint(runner, <String>['format']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              getFlutterCommand(mockPlatform),
+              <String>[
+                'format',
+                ..._getPackagesDirRelativePaths(pluginDir, formattedFiles)
+              ],
+              packagesDir.path),
+        ]));
+  });
+
   test('fails if flutter format fails', () async {
     const List<String> files = <String>[
       'lib/a.dart',
@@ -115,7 +152,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable[getFlutterCommand(mockPlatform)] =
-        <io.Process>[MockProcess.failing()];
+        <io.Process>[MockProcess(exitCode: 1)];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
         runner, <String>['format'], errorHandler: (Error e) {
@@ -167,7 +204,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['java'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess(exitCode: 1)
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -193,8 +230,8 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['java'] = <io.Process>[
-      MockProcess.succeeding(), // check for working java
-      MockProcess.failing(), // format
+      MockProcess(), // check for working java
+      MockProcess(exitCode: 1), // format
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -280,7 +317,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess(exitCode: 1)
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -335,8 +372,8 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['clang-format'] = <io.Process>[
-      MockProcess.succeeding(), // check for working clang-format
-      MockProcess.failing(), // format
+      MockProcess(), // check for working clang-format
+      MockProcess(exitCode: 1), // format
     ];
     Error? commandError;
     final List<String> output = await runCapturingPrint(
@@ -418,11 +455,11 @@ void main() {
     ];
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
-    processRunner.mockProcessesForExecutable['git'] = <io.Process>[
-      MockProcess.succeeding(),
-    ];
     const String changedFilePath = 'packages/a_plugin/linux/foo_plugin.cc';
-    processRunner.resultStdout = changedFilePath;
+    processRunner.mockProcessesForExecutable['git'] = <io.Process>[
+      MockProcess(stdout: changedFilePath),
+    ];
+
     Error? commandError;
     final List<String> output =
         await runCapturingPrint(runner, <String>['format', '--fail-on-change'],
@@ -448,7 +485,7 @@ void main() {
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
     processRunner.mockProcessesForExecutable['git'] = <io.Process>[
-      MockProcess.failing()
+      MockProcess(exitCode: 1)
     ];
     Error? commandError;
     final List<String> output =
@@ -472,12 +509,12 @@ void main() {
     ];
     createFakePlugin('a_plugin', packagesDir, extraFiles: files);
 
-    processRunner.mockProcessesForExecutable['git'] = <io.Process>[
-      MockProcess.succeeding(), // ls-files
-      MockProcess.failing(), // diff
-    ];
     const String changedFilePath = 'packages/a_plugin/linux/foo_plugin.cc';
-    processRunner.resultStdout = changedFilePath;
+    processRunner.mockProcessesForExecutable['git'] = <io.Process>[
+      MockProcess(stdout: changedFilePath), // ls-files
+      MockProcess(exitCode: 1), // diff
+    ];
+
     Error? commandError;
     final List<String> output =
         await runCapturingPrint(runner, <String>['format', '--fail-on-change'],
