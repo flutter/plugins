@@ -1,3 +1,7 @@
+## NEXT
+
+* Internal changes.
+
 ## 0.1.4+7
 
 * Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.
