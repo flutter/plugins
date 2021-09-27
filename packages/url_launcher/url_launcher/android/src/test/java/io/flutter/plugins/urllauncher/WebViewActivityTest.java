@@ -31,7 +31,7 @@ public class WebViewActivityTest {
   private static final String CHANNEL_NAME = "plugins.flutter.io/url_launcher";
 
   @Test
-  public void extractHeaders() {
+  public void extractHeaders_returnsEmptyMapWhenArgumentIsNull() {
     Map<String, String> result = WebViewActivity.extractHeaders(null);
     Assert.assertEquals(new HashMap<>(), result);
   }
