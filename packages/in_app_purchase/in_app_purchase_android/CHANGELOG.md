@@ -1,3 +1,7 @@
+## 0.1.6
+
+* Require Dart SDK >= 2.14.
+
 ## 0.1.5+1
 
 * Fix a broken link in the README.
