@@ -366,7 +366,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
-    zoomEnabled: WebSetting<bool?>.of(widget.zoomEnabled),
+    zoomEnabled: widget.zoomEnabled,
   );
 }
 
