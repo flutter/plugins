@@ -44,27 +44,39 @@ public class ImageResizerTest {
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenQualityIsNull_ShoultNotResize_ReturnTheUnscaledFile() {
+  public void onResizeImageIfNeeded_WhenQualityIsNull_ShouldNotResize_ReturnTheUnscaledFile() {
     String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
     assertThat(outputFile, equalTo(imageFile.getPath()));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenQualityIsNotNull_ShoulResize_ReturnResizedFile() {
+  public void onResizeImageIfNeeded_WhenQualityIsNotNull_ShouldResize_ReturnResizedFile() {
     String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, 50);
     assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenWidthIsNotNull_ShoulResize_ReturnResizedFile() {
+  public void onResizeImageIfNeeded_WhenWidthIsNotNull_ShouldResize_ReturnResizedFile() {
     String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), 50.0, null, null);
     assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenHeightIsNotNull_ShoulResize_ReturnResizedFile() {
+  public void onResizeImageIfNeeded_WhenHeightIsNotNull_ShouldResize_ReturnResizedFile() {
     String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
     assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
+  }
+
+  @Test
+  public void onResizeImageIfNeeded_WhenHeightIsNotNullAndImageIsGif_ShouldResize_ReturnResizedFile() {
+    String outputFile = resizer.resizeImageIfNeeded(gifImageFile.getPath(), null, 50.0, null);
+    assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_gifImage.gif"));
+  }
+
+  @Test
+  public void onResizeImageIfNeeded_WhenWidthIsNotNullAndImageIsGif_ShouldResize_ReturnResizedFile() {
+    String outputFile = resizer.resizeImageIfNeeded(gifImageFile.getPath(), 50.0`, null, null);
+    assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_gifImage.gif"));
   }
 
   @Test
