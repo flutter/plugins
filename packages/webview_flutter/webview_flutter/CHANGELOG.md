@@ -1,6 +1,10 @@
+## 2.1.0
+
+* Migrated to fully federated architecture.
+
 ## 2.0.14
 
-* Fixed platform exception being thrown on iOS 14+ when evaluating any JavaScript evaluating to null or undefined.
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
 
 ## 2.0.13
 
