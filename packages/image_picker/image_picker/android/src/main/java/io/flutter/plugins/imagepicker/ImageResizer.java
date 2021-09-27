@@ -108,7 +108,7 @@ class ImageResizer {
             GifDecoder gifDecoder = new GifDecoder();
             gifDecoder.read(fileInputStream);
             GifEncoder gifEncoder = new GifEncoder();
-            gifEncoder.setSize(width.intValue(),height.intValue());
+            gifEncoder.setSize(width.intValue(), height.intValue());
             gifEncoder.setRepeat(gifDecoder.getLoopCount());
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
             gifEncoder.start(bos);
@@ -181,7 +181,7 @@ class ImageResizer {
         fileOutput.close();
         return imageFile;
     }
-    
+
     private File createImageOnExternalDirectory(String name, ByteArrayOutputStream outputStream)
             throws IOException {
         File imageFile = createFile(externalFilesDirectory, name);
