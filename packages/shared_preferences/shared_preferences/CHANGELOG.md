@@ -1,3 +1,7 @@
+## 2.0.8
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
 ## 2.0.7
 
 * Add iOS unit test target.

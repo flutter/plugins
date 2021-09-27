@@ -1,4 +1,4 @@
-gcp_credentials: ENCRYPTED[!0e63b52bd7e4fda1cd7b7bf2b4fe515a27fadbeaced01f5ad8b699b81d3611ed64c5d3271bcd8426dd914ef41cba48a0!]
+gcp_credentials: ENCRYPTED[!48cff44dd32e9cc412d4d381c7fe68d373ca04cf2639f8192d21cb1a9ab5e21129651423a1cf88f3fd7fe2125c1cabd9!]
 
 # Don't run on release tags since it creates O(n^2) tasks where n is the
 # number of plugins
@@ -68,12 +68,31 @@ task:
         - cd script/tool
         - dart pub run test
     - name: publishable
-      version_check_script: ./script/tool_runner.sh version-check
+      env:
+        CHANGE_DESC: "$TMPDIR/change-description.txt"
+      version_check_script:
+        # For pre-submit, pass the PR description to the script to allow for
+        # platform version breaking version change justifications.
+        # For post-submit, ignore platform version breaking version changes.
+        # The PR description isn't reliably part of the commit message, so using
+        # the same flags as for presubmit would likely result in false-positive
+        # post-submit failures.
+        - if [[ $CIRRUS_PR == "" ]]; then
+        -   ./script/tool_runner.sh version-check --ignore-platform-interface-breaks
+        - else
+        -   echo "$CIRRUS_CHANGE_MESSAGE" > "$CHANGE_DESC"
+        -   ./script/tool_runner.sh version-check --change-description-file="$CHANGE_DESC"
+        - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
       format_script: ./script/tool_runner.sh format --fail-on-change
       pubspec_script: ./script/tool_runner.sh pubspec-check
       license_script: dart $PLUGIN_TOOL license-check
+    - name: federated_safety
+      # This check is only meaningful for PRs, as it validates changes
+      # rather than state.
+      only_if: $CIRRUS_PR != ""
+      script: ./script/tool_runner.sh federation-safety-check
     - name: dart_unit_tests
       env:
         matrix:
@@ -159,7 +178,7 @@ task:
           CHANNEL: "master"
           CHANNEL: "stable"
         MAPS_API_KEY: ENCRYPTED[596a9f6bca436694625ac50851dc5da6b4d34cba8025f7db5bc9465142e8cd44e15f69e3507787753accebfc4910d550]
-        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[07586610af1fdfc894e5969f70ef2458341b9b7e9c3b7c4225a663b4a48732b7208a4d91c3b7d45305a6b55fa2a37fc4]
+        GCLOUD_FIREBASE_TESTLAB_KEY: ENCRYPTED[!c9446a7b11d5520c2ebce3c64ccc82fe6d146272cb06a4a4590e22c389f33153f951347a25422522df1a81fe2f085e9a!]
       build_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -182,7 +201,8 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         # Native integration tests are handled by firebase-test-lab below, so
         # only run unit tests.
-        - ./script/tool_runner.sh native-test --android --no-integration  # must come after apk build
+        # Must come after build-examples.
+        - ./script/tool_runner.sh native-test --android --no-integration --exclude script/configs/exclude_native_unit_android.yaml
       firebase_test_lab_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
@@ -211,8 +231,10 @@ task:
         - git clone https://github.com/flutter/web_installers.git
         - cd web_installers/packages/web_drivers/
         - dart pub get
+      chromedriver_background_script:
+        - cd web_installers/packages/web_drivers/
         - dart lib/web_driver_installer.dart chromedriver --install-only
-        - ./chromedriver/chromedriver --port=4444 &
+        - ./chromedriver/chromedriver --port=4444
       build_script:
         - ./script/tool_runner.sh build-examples --web
       drive_script:
@@ -255,7 +277,7 @@ task:
       xcode_analyze_script:
         - ./script/tool_runner.sh xcode-analyze --ios
       native_test_script:
-        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest"
+        - ./script/tool_runner.sh native-test --ios --ios-destination "platform=iOS Simulator,name=iPhone 11,OS=latest" --exclude=script/configs/exclude_native_ios.yaml
       drive_script:
         # `drive-examples` contains integration tests, which changes the UI of the application.
         # This UI change sometimes affects `xctest`.
