@@ -1,6 +1,6 @@
 ## NEXT
 
-* Internal changes.
+* Update dev_dependency `build_runner` to ^2.0.0 and `json_serializable` to ^5.0.2.
 
 ## 0.1.3+4
 
