@@ -1,4 +1,4 @@
- // Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -42,6 +42,7 @@ void main() {
       group('#pickImage', () {
         test('passes the image source argument correctly', () async {
           await picker.pickImage(source: ImageSource.camera);
+          await picker.pickImage(source: ImageSource.gallery);
 
           expect(
             log,
