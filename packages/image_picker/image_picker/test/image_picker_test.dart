@@ -42,6 +42,7 @@ void main() {
       group('#pickImage', () {
         test('passes the image source argument correctly', () async {
           await picker.pickImage(source: ImageSource.camera);
+          await picker.pickImage(source: ImageSource.gallery);
 
           expect(
             log,
