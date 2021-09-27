@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -154,9 +153,9 @@ public class GifEncoder {
    * not closed.
    */
   public boolean finish() {
-      if (!started) {
-          return false;
-      }
+    if (!started) {
+      return false;
+    }
     boolean ok = true;
     started = false;
     try {
@@ -203,9 +202,9 @@ public class GifEncoder {
    * @return
    */
   public void setQuality(int quality) {
-      if (quality < 1) {
-          quality = 1;
-      }
+    if (quality < 1) {
+      quality = 1;
+    }
     sample = quality;
   }
 
@@ -219,12 +218,12 @@ public class GifEncoder {
   public void setSize(int w, int h) {
     width = w;
     height = h;
-      if (width < 1) {
-          width = 320;
-      }
-      if (height < 1) {
-          height = 240;
-      }
+    if (width < 1) {
+      width = 320;
+    }
+    if (height < 1) {
+      height = 240;
+    }
     sizeSet = true;
   }
 
@@ -247,9 +246,9 @@ public class GifEncoder {
    * @return false if initial write failed.
    */
   public boolean start(OutputStream os) {
-      if (os == null) {
-          return false;
-      }
+    if (os == null) {
+      return false;
+    }
     boolean ok = true;
     closeStream = false;
     out = os;
@@ -261,9 +260,7 @@ public class GifEncoder {
     return started = ok;
   }
 
-  /**
-   * Analyzes image colors and creates color map.
-   */
+  /** Analyzes image colors and creates color map. */
   protected void analyzePixels() {
     int len = pixels.length;
     int nPix = len / 3;
@@ -294,13 +291,11 @@ public class GifEncoder {
     }
   }
 
-  /**
-   * Returns index of palette color closest to c
-   */
+  /** Returns index of palette color closest to c */
   protected int findClosest(int c) {
-      if (colorTab == null) {
-          return -1;
-      }
+    if (colorTab == null) {
+      return -1;
+    }
     int r = (c >> 16) & 0xff;
     int g = (c >> 8) & 0xff;
     int b = (c >> 0) & 0xff;
@@ -322,9 +317,7 @@ public class GifEncoder {
     return minpos;
   }
 
-  /**
-   * Extracts image pixels into byte array "pixels"
-   */
+  /** Extracts image pixels into byte array "pixels" */
   protected void getImagePixels() {
     int w = image.getWidth();
     int h = image.getHeight();
@@ -355,9 +348,7 @@ public class GifEncoder {
     return data;
   }
 
-  /**
-   * Writes Graphic Control Extension
-   */
+  /** Writes Graphic Control Extension */
   protected void writeGraphicCtrlExt() throws IOException {
     out.write(0x21); // extension introducer
     out.write(0xf9); // GCE label
@@ -387,9 +378,7 @@ public class GifEncoder {
     out.write(0); // block terminator
   }
 
-  /**
-   * Writes Image Descriptor
-   */
+  /** Writes Image Descriptor */
   protected void writeImageDesc() throws IOException {
     out.write(0x2c); // image separator
     writeShort(x); // image position x,y = 0,0
@@ -411,9 +400,7 @@ public class GifEncoder {
     }
   }
 
-  /**
-   * Writes Logical Screen Descriptor
-   */
+  /** Writes Logical Screen Descriptor */
   protected void writeLSD() throws IOException {
     // logical screen size
     writeShort(width);
@@ -429,9 +416,7 @@ public class GifEncoder {
     out.write(0); // pixel aspect ratio - assume 1:1
   }
 
-  /**
-   * Writes Netscape application extension to define repeat count.
-   */
+  /** Writes Netscape application extension to define repeat count. */
   protected void writeNetscapeExt() throws IOException {
     out.write(0x21); // extension introducer
     out.write(0xff); // app extension label
@@ -443,9 +428,7 @@ public class GifEncoder {
     out.write(0); // block terminator
   }
 
-  /**
-   * Writes color table
-   */
+  /** Writes color table */
   protected void writePalette() throws IOException {
     out.write(colorTab, 0, colorTab.length);
     int n = (3 * 256) - colorTab.length;
@@ -454,25 +437,19 @@ public class GifEncoder {
     }
   }
 
-  /**
-   * Encodes and writes pixel data
-   */
+  /** Encodes and writes pixel data */
   protected void writePixels() throws IOException {
     LZWEncoder encoder = new LZWEncoder(width, height, indexedPixels, colorDepth);
     encoder.encode(out);
   }
 
-  /**
-   * Write 16-bit value to output stream, LSB first
-   */
+  /** Write 16-bit value to output stream, LSB first */
   protected void writeShort(int value) throws IOException {
     out.write(value & 0xff);
     out.write((value >> 8) & 0xff);
   }
 
-  /**
-   * Writes string to output stream
-   */
+  /** Writes string to output stream */
   protected void writeString(String s) throws IOException {
     for (int i = 0; i < s.length(); i++) {
       out.write((byte) s.charAt(i));
@@ -639,9 +616,9 @@ class NeuQuant {
   public byte[] colorMap() {
     byte[] map = new byte[3 * netsize];
     int[] index = new int[netsize];
-      for (int i = 0; i < netsize; i++) {
-          index[network[i][3]] = i;
-      }
+    for (int i = 0; i < netsize; i++) {
+      index[network[i][3]] = i;
+    }
     int k = 0;
     for (int i = 0; i < netsize; i++) {
       int j = index[i];
@@ -698,17 +675,17 @@ class NeuQuant {
       /* smallval entry is now in position i */
       if (smallval != previouscol) {
         netindex[previouscol] = (startpos + i) >> 1;
-          for (j = previouscol + 1; j < smallval; j++) {
-              netindex[j] = i;
-          }
+        for (j = previouscol + 1; j < smallval; j++) {
+          netindex[j] = i;
+        }
         previouscol = smallval;
         startpos = i;
       }
     }
     netindex[previouscol] = (startpos + maxnetpos) >> 1;
-      for (j = previouscol + 1; j < 256; j++) {
-          netindex[j] = maxnetpos; /* really 256 */
-      }
+    for (j = previouscol + 1; j < 256; j++) {
+      netindex[j] = maxnetpos; /* really 256 */
+    }
   }
 
   /*
@@ -721,9 +698,9 @@ class NeuQuant {
     byte[] p;
     int pix, lim;
 
-      if (lengthcount < minpicturebytes) {
-          samplefac = 1;
-      }
+    if (lengthcount < minpicturebytes) {
+      samplefac = 1;
+    }
     alphadec = 30 + ((samplefac - 1) / 3);
     p = thepicture;
     pix = 0;
@@ -734,30 +711,30 @@ class NeuQuant {
     radius = initradius;
 
     rad = radius >> radiusbiasshift;
-      if (rad <= 1) {
-          rad = 0;
-      }
-      for (i = 0; i < rad; i++) {
-          radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
-      }
+    if (rad <= 1) {
+      rad = 0;
+    }
+    for (i = 0; i < rad; i++) {
+      radpower[i] = alpha * (((rad * rad - i * i) * radbias) / (rad * rad));
+    }
 
     // fprintf(stderr,"beginning 1D learning: initial radius=%d\n", rad);
 
-      if (lengthcount < minpicturebytes) {
-          step = 3;
-      } else if ((lengthcount % prime1) != 0) {
-          step = 3 * prime1;
+    if (lengthcount < minpicturebytes) {
+      step = 3;
+    } else if ((lengthcount % prime1) != 0) {
+      step = 3 * prime1;
+    } else {
+      if ((lengthcount % prime2) != 0) {
+        step = 3 * prime2;
       } else {
-          if ((lengthcount % prime2) != 0) {
-              step = 3 * prime2;
-          } else {
-              if ((lengthcount % prime3) != 0) {
-                  step = 3 * prime3;
-              } else {
-                  step = 3 * prime4;
-              }
-          }
+        if ((lengthcount % prime3) != 0) {
+          step = 3 * prime3;
+        } else {
+          step = 3 * prime4;
+        }
       }
+    }
 
     i = 0;
     while (i < samplepixels) {
@@ -767,29 +744,29 @@ class NeuQuant {
       j = contest(b, g, r);
 
       altersingle(alpha, j, b, g, r);
-        if (rad != 0) {
-            alterneigh(rad, j, b, g, r); /* alter neighbours */
-        }
+      if (rad != 0) {
+        alterneigh(rad, j, b, g, r); /* alter neighbours */
+      }
 
       pix += step;
-        if (pix >= lim) {
-            pix -= lengthcount;
-        }
+      if (pix >= lim) {
+        pix -= lengthcount;
+      }
 
       i++;
-        if (delta == 0) {
-            delta = 1;
-        }
+      if (delta == 0) {
+        delta = 1;
+      }
       if (i % delta == 0) {
         alpha -= alpha / alphadec;
         radius -= radius / radiusdec;
         rad = radius >> radiusbiasshift;
-          if (rad <= 1) {
-              rad = 0;
-          }
-          for (j = 0; j < rad; j++) {
-              radpower[j] = alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
-          }
+        if (rad <= 1) {
+          rad = 0;
+        }
+        for (j = 0; j < rad; j++) {
+          radpower[j] = alpha * (((rad * rad - j * j) * radbias) / (rad * rad));
+        }
       }
     }
     // fprintf(stderr,"finished 1D learning: final alpha=%f
@@ -816,58 +793,58 @@ class NeuQuant {
       if (i < netsize) {
         p = network[i];
         dist = p[1] - g; /* inx key */
-          if (dist >= bestd) {
-              i = netsize; /* stop iter */
-          } else {
-              i++;
-              if (dist < 0) {
-                  dist = -dist;
-              }
-              a = p[0] - b;
-              if (a < 0) {
-                  a = -a;
-              }
-              dist += a;
-              if (dist < bestd) {
-                  a = p[2] - r;
-                  if (a < 0) {
-                      a = -a;
-                  }
-                  dist += a;
-                  if (dist < bestd) {
-                      bestd = dist;
-                      best = p[3];
-                  }
-              }
+        if (dist >= bestd) {
+          i = netsize; /* stop iter */
+        } else {
+          i++;
+          if (dist < 0) {
+            dist = -dist;
           }
+          a = p[0] - b;
+          if (a < 0) {
+            a = -a;
+          }
+          dist += a;
+          if (dist < bestd) {
+            a = p[2] - r;
+            if (a < 0) {
+              a = -a;
+            }
+            dist += a;
+            if (dist < bestd) {
+              bestd = dist;
+              best = p[3];
+            }
+          }
+        }
       }
       if (j >= 0) {
         p = network[j];
         dist = g - p[1]; /* inx key - reverse dif */
-          if (dist >= bestd) {
-              j = -1; /* stop iter */
-          } else {
-              j--;
-              if (dist < 0) {
-                  dist = -dist;
-              }
-              a = p[0] - b;
-              if (a < 0) {
-                  a = -a;
-              }
-              dist += a;
-              if (dist < bestd) {
-                  a = p[2] - r;
-                  if (a < 0) {
-                      a = -a;
-                  }
-                  dist += a;
-                  if (dist < bestd) {
-                      bestd = dist;
-                      best = p[3];
-                  }
-              }
+        if (dist >= bestd) {
+          j = -1; /* stop iter */
+        } else {
+          j--;
+          if (dist < 0) {
+            dist = -dist;
           }
+          a = p[0] - b;
+          if (a < 0) {
+            a = -a;
+          }
+          dist += a;
+          if (dist < bestd) {
+            a = p[2] - r;
+            if (a < 0) {
+              a = -a;
+            }
+            dist += a;
+            if (dist < bestd) {
+              bestd = dist;
+              best = p[3];
+            }
+          }
+        }
       }
     }
     return (best);
@@ -908,13 +885,13 @@ class NeuQuant {
     int[] p;
 
     lo = i - rad;
-      if (lo < -1) {
-          lo = -1;
-      }
+    if (lo < -1) {
+      lo = -1;
+    }
     hi = i + rad;
-      if (hi > netsize) {
-          hi = netsize;
-      }
+    if (hi > netsize) {
+      hi = netsize;
+    }
 
     j = i + 1;
     k = i - 1;
@@ -977,18 +954,18 @@ class NeuQuant {
     for (i = 0; i < netsize; i++) {
       n = network[i];
       dist = n[0] - b;
-        if (dist < 0) {
-            dist = -dist;
-        }
+      if (dist < 0) {
+        dist = -dist;
+      }
       a = n[1] - g;
-        if (a < 0) {
-            a = -a;
-        }
+      if (a < 0) {
+        a = -a;
+      }
       dist += a;
       a = n[2] - r;
-        if (a < 0) {
-            a = -a;
-        }
+      if (a < 0) {
+        a = -a;
+      }
       dist += a;
       if (dist < bestd) {
         bestd = dist;
@@ -1107,9 +1084,8 @@ class LZWEncoder {
   int cur_bits = 0;
 
   int masks[] = {
-      0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF, 0x01FF, 0x03FF,
-      0x07FF,
-      0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF
+    0x0000, 0x0001, 0x0003, 0x0007, 0x000F, 0x001F, 0x003F, 0x007F, 0x00FF, 0x01FF, 0x03FF, 0x07FF,
+    0x0FFF, 0x1FFF, 0x3FFF, 0x7FFF, 0xFFFF
   };
 
   // Number of characters so far in this 'packet'
@@ -1130,9 +1106,9 @@ class LZWEncoder {
   // characters, flush the packet to disk.
   void char_out(byte c, OutputStream outs) throws IOException {
     accum[a_count++] = c;
-      if (a_count >= 254) {
-          flush_char(outs);
-      }
+    if (a_count >= 254) {
+      flush_char(outs);
+    }
   }
 
   // Clear out the hash table
@@ -1148,9 +1124,9 @@ class LZWEncoder {
 
   // reset code table
   void cl_hash(int hsize) {
-      for (int i = 0; i < hsize; ++i) {
-          htab[i] = -1;
-      }
+    for (int i = 0; i < hsize; ++i) {
+      htab[i] = -1;
+    }
   }
 
   void compress(int init_bits, OutputStream outs) throws IOException {
@@ -1179,9 +1155,9 @@ class LZWEncoder {
     ent = nextPixel();
 
     hshift = 0;
-      for (fcode = hsize; fcode < 65536; fcode *= 2) {
-          ++hshift;
-      }
+    for (fcode = hsize; fcode < 65536; fcode *= 2) {
+      ++hshift;
+    }
     hshift = 8 - hshift; // set hash code range bound
 
     hsize_reg = hsize;
@@ -1200,13 +1176,13 @@ class LZWEncoder {
       } else if (htab[i] >= 0) // non-empty slot
       {
         disp = hsize_reg - i; // secondary hash (after G. Knott)
-          if (i == 0) {
-              disp = 1;
-          }
+        if (i == 0) {
+          disp = 1;
+        }
         do {
-            if ((i -= disp) < 0) {
-                i += hsize_reg;
-            }
+          if ((i -= disp) < 0) {
+            i += hsize_reg;
+          }
 
           if (htab[i] == fcode) {
             ent = codetab[i];
@@ -1216,12 +1192,12 @@ class LZWEncoder {
       }
       output(ent, outs);
       ent = c;
-        if (free_ent < maxmaxcode) {
-            codetab[i] = free_ent++; // code -> hashtable
-            htab[i] = fcode;
-        } else {
-            cl_block(outs);
-        }
+      if (free_ent < maxmaxcode) {
+        codetab[i] = free_ent++; // code -> hashtable
+        htab[i] = fcode;
+      } else {
+        cl_block(outs);
+      }
     }
     // Put out the final code.
     output(ent, outs);
@@ -1257,9 +1233,9 @@ class LZWEncoder {
   // Return the next pixel from the image
   // ----------------------------------------------------------------------------
   private int nextPixel() {
-      if (remaining == 0) {
-          return EOF;
-      }
+    if (remaining == 0) {
+      return EOF;
+    }
 
     --remaining;
 
@@ -1271,11 +1247,11 @@ class LZWEncoder {
   void output(int code, OutputStream outs) throws IOException {
     cur_accum &= masks[cur_bits];
 
-      if (cur_bits > 0) {
-          cur_accum |= (code << cur_bits);
-      } else {
-          cur_accum = code;
-      }
+    if (cur_bits > 0) {
+      cur_accum |= (code << cur_bits);
+    } else {
+      cur_accum = code;
+    }
 
     cur_bits += n_bits;
 
@@ -1293,11 +1269,11 @@ class LZWEncoder {
         clear_flg = false;
       } else {
         ++n_bits;
-          if (n_bits == maxbits) {
-              maxcode = maxmaxcode;
-          } else {
-              maxcode = MAXCODE(n_bits);
-          }
+        if (n_bits == maxbits) {
+          maxcode = maxmaxcode;
+        } else {
+          maxcode = MAXCODE(n_bits);
+        }
       }
     }
 

@@ -1,7 +1,6 @@
 package io.flutter.plugins.imagepicker;
 
 import android.graphics.Bitmap;
-
 import java.io.InputStream;
 import java.util.Vector;
 
