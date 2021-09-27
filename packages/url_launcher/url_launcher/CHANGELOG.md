@@ -1,6 +1,6 @@
 ## 6.0.13
 
-* Fix NullPointerException crashes on a lot of Android devices. (see https://github.com/flutter/flutter/issues/72863 for details)
+* Fix NullPointerException crashes on a lot of Android devices. For example, when user is in the app, in a WebView using webview_flutter package, then leaves the app (to retrieve verification code from text messages), and then immediately upon returning to the app, the app crashes. (see https://github.com/flutter/flutter/issues/72863 for details)
 
 ## 6.0.12
 
