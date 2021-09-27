@@ -29,6 +29,7 @@ public class ImageResizerTest {
   File externalDirectory;
   Bitmap originalImageBitmap;
   Bitmap originalGifImageBitmap;
+
   @Before
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
