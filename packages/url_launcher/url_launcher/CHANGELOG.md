@@ -1,3 +1,7 @@
+## 6.0.11
+
+* Fix crashes on a lot of devices.
+
 ## 6.0.10
 
 * Remove references to the Android v1 embedding.
