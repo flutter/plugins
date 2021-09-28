@@ -1,3 +1,7 @@
+## NEXT
+
+* Minor code cleanup for new analysis rules.
+
 ## 0.8.1+2
 
 * Add `implements` to pubspec.

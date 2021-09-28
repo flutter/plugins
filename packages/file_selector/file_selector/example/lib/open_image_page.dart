@@ -3,18 +3,20 @@
 // found in the LICENSE file.
 
 import 'dart:io';
-import 'package:flutter/foundation.dart';
+
 import 'package:file_selector/file_selector.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// Screen that shows an example of openFiles
 class OpenImagePage extends StatelessWidget {
-  void _openImageFile(BuildContext context) async {
+  Future<void> _openImageFile(BuildContext context) async {
     final XTypeGroup typeGroup = XTypeGroup(
       label: 'images',
-      extensions: ['jpg', 'png'],
+      extensions: <String>['jpg', 'png'],
     );
-    final List<XFile> files = await openFiles(acceptedTypeGroups: [typeGroup]);
+    final List<XFile> files =
+        await openFiles(acceptedTypeGroups: <XTypeGroup>[typeGroup]);
     if (files.isEmpty) {
       // Operation was canceled by the user.
       return;
@@ -23,9 +25,9 @@ class OpenImagePage extends StatelessWidget {
     final String fileName = file.name;
     final String filePath = file.path;
 
-    await showDialog(
+    await showDialog<void>(
       context: context,
-      builder: (context) => ImageDisplay(fileName, filePath),
+      builder: (BuildContext context) => ImageDisplay(fileName, filePath),
     );
   }
 
@@ -33,7 +35,7 @@ class OpenImagePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Open an image"),
+        title: const Text('Open an image'),
       ),
       body: Center(
         child: Column(
@@ -44,7 +46,7 @@ class OpenImagePage extends StatelessWidget {
                 primary: Colors.blue,
                 onPrimary: Colors.white,
               ),
-              child: Text('Press to open an image file(png, jpg)'),
+              child: const Text('Press to open an image file(png, jpg)'),
               onPressed: () => _openImageFile(context),
             ),
           ],
@@ -56,14 +58,14 @@ class OpenImagePage extends StatelessWidget {
 
 /// Widget that displays a text file in a dialog
 class ImageDisplay extends StatelessWidget {
+  /// Default Constructor
+  const ImageDisplay(this.fileName, this.filePath);
+
   /// Image's name
   final String fileName;
 
   /// Image's path
   final String filePath;
-
-  /// Default Constructor
-  ImageDisplay(this.fileName, this.filePath);
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +74,7 @@ class ImageDisplay extends StatelessWidget {
       // On web the filePath is a blob url
       // while on other platforms it is a system path.
       content: kIsWeb ? Image.network(filePath) : Image.file(File(filePath)),
-      actions: [
+      actions: <Widget>[
         TextButton(
           child: const Text('Close'),
           onPressed: () {
