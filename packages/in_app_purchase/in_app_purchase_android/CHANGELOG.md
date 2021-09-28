@@ -1,3 +1,8 @@
+## 0.1.5
+
+* Introduced the `SkuDetailsWrapper.introductoryPriceAmountMicros` field of the correct type (`int`) and deprecated the `SkuDetailsWrapper.introductoryPriceMicros` field.
+* Update dev_dependency `build_runner` to ^2.0.0 and `json_serializable` to ^5.0.2.
+
 ## 0.1.4+7
 
 * Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.

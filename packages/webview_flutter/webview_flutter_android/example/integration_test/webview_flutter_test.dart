@@ -64,9 +64,9 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    await controller.loadUrl('https://www.google.com/');
+    await controller.loadUrl('https://www.example.com/');
     final String? currentUrl = await controller.currentUrl();
-    expect(currentUrl, 'https://www.google.com/');
+    expect(currentUrl, 'https://www.example.com/');
   }, skip: _skipDueToIssue86757);
 
   // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
@@ -1054,11 +1054,11 @@ void main() {
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
       await controller
-          .evaluateJavascript('location.href = "https://www.google.com/"');
+          .evaluateJavascript('location.href = "https://www.example.com/"');
 
       await pageLoads.stream.first; // Wait for the next page load.
       final String? currentUrl = await controller.currentUrl();
-      expect(currentUrl, 'https://www.google.com/');
+      expect(currentUrl, 'https://www.example.com/');
     });
 
     testWidgets('onWebResourceError', (WidgetTester tester) async {
@@ -1221,11 +1221,11 @@ void main() {
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
       await controller
-          .evaluateJavascript('location.href = "https://www.google.com"');
+          .evaluateJavascript('location.href = "https://www.example.com"');
 
       await pageLoads.stream.first; // Wait for second page to load.
       final String? currentUrl = await controller.currentUrl();
-      expect(currentUrl, 'https://www.google.com/');
+      expect(currentUrl, 'https://www.example.com/');
     });
   });
 
@@ -1314,10 +1314,10 @@ void main() {
       pageLoaded = Completer<void>();
 
       await controller
-          .evaluateJavascript('window.open("https://www.google.com/")');
+          .evaluateJavascript('window.open("https://www.example.com/")');
       await pageLoaded.future;
       pageLoaded = Completer<void>();
-      expect(controller.currentUrl(), completion('https://www.google.com/'));
+      expect(controller.currentUrl(), completion('https://www.example.com/'));
 
       expect(controller.canGoBack(), completion(true));
       await controller.goBack();
