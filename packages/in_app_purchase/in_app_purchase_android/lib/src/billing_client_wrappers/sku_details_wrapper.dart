@@ -32,7 +32,9 @@ class SkuDetailsWrapper {
     required this.description,
     required this.freeTrialPeriod,
     required this.introductoryPrice,
-    required this.introductoryPriceMicros,
+    @Deprecated('Use `introductoryPriceAmountMicros` parameter instead')
+        String introductoryPriceMicros = '',
+    this.introductoryPriceAmountMicros = 0,
     required this.introductoryPriceCycles,
     required this.introductoryPricePeriod,
     required this.price,
@@ -45,7 +47,9 @@ class SkuDetailsWrapper {
     required this.type,
     required this.originalPrice,
     required this.originalPriceAmountMicros,
-  });
+  }) : _introductoryPriceMicros = introductoryPriceMicros;
+
+  final String _introductoryPriceMicros;
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -67,9 +71,19 @@ class SkuDetailsWrapper {
   @JsonKey(defaultValue: '')
   final String introductoryPrice;
 
-  /// [introductoryPrice] in micro-units 990000
-  @JsonKey(name: 'introductoryPriceAmountMicros', defaultValue: '')
-  final String introductoryPriceMicros;
+  /// [introductoryPrice] in micro-units 990000.
+  ///
+  /// Returns 0 if the SKU is not a subscription or doesn't have an introductory
+  /// period.
+  @JsonKey(name: 'introductoryPriceAmountMicros', defaultValue: 0)
+  final int introductoryPriceAmountMicros;
+
+  /// String representation of [introductoryPrice] in micro-units 990000
+  @Deprecated('Use `introductoryPriceAmountMicros` instead.')
+  @JsonKey(ignore: true)
+  String get introductoryPriceMicros => _introductoryPriceMicros.isEmpty
+      ? introductoryPriceAmountMicros.toString()
+      : _introductoryPriceMicros;
 
   /// The number of subscription billing periods for which the user will be given the introductory price, such as 3.
   /// Returns 0 if the SKU is not a subscription or doesn't have an introductory period.
@@ -131,7 +145,7 @@ class SkuDetailsWrapper {
         other.description == description &&
         other.freeTrialPeriod == freeTrialPeriod &&
         other.introductoryPrice == introductoryPrice &&
-        other.introductoryPriceMicros == introductoryPriceMicros &&
+        other.introductoryPriceAmountMicros == introductoryPriceAmountMicros &&
         other.introductoryPriceCycles == introductoryPriceCycles &&
         other.introductoryPricePeriod == introductoryPricePeriod &&
         other.price == price &&
@@ -150,7 +164,7 @@ class SkuDetailsWrapper {
         description.hashCode,
         freeTrialPeriod.hashCode,
         introductoryPrice.hashCode,
-        introductoryPriceMicros.hashCode,
+        introductoryPriceAmountMicros.hashCode,
         introductoryPriceCycles.hashCode,
         introductoryPricePeriod.hashCode,
         price.hashCode,
