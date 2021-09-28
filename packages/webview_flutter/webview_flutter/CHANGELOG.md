@@ -1,6 +1,10 @@
-## 2.0.15
+## 2.1.1
 
 * Fixed `_CastError` that was thrown when running the example App.
+
+## 2.1.0
+
+* Migrated to fully federated architecture.
 
 ## 2.0.14
 

@@ -109,7 +109,7 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       return PackageResult.skip('Not a federated plugin.');
     }
 
-    if (package.directory.basename.endsWith('_platform_interface')) {
+    if (package.isPlatformInterface) {
       // As the leaf nodes in the graph, a published package interface change is
       // assumed to be correct, and other changes are validated against that.
       return PackageResult.skip(

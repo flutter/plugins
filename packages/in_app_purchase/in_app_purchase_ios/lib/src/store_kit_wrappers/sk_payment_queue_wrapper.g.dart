@@ -6,16 +6,14 @@ part of 'sk_payment_queue_wrapper.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-SKError _$SKErrorFromJson(Map json) {
-  return SKError(
-    code: json['code'] as int? ?? 0,
-    domain: json['domain'] as String? ?? '',
-    userInfo: (json['userInfo'] as Map?)?.map(
-          (k, e) => MapEntry(k as String, e),
-        ) ??
-        {},
-  );
-}
+SKError _$SKErrorFromJson(Map json) => SKError(
+      code: json['code'] as int? ?? 0,
+      domain: json['domain'] as String? ?? '',
+      userInfo: (json['userInfo'] as Map?)?.map(
+            (k, e) => MapEntry(k as String, e),
+          ) ??
+          {},
+    );
 
 Map<String, dynamic> _$SKErrorToJson(SKError instance) => <String, dynamic>{
       'code': instance.code,
@@ -23,16 +21,14 @@ Map<String, dynamic> _$SKErrorToJson(SKError instance) => <String, dynamic>{
       'userInfo': instance.userInfo,
     };
 
-SKPaymentWrapper _$SKPaymentWrapperFromJson(Map json) {
-  return SKPaymentWrapper(
-    productIdentifier: json['productIdentifier'] as String? ?? '',
-    applicationUsername: json['applicationUsername'] as String?,
-    requestData: json['requestData'] as String?,
-    quantity: json['quantity'] as int? ?? 0,
-    simulatesAskToBuyInSandbox:
-        json['simulatesAskToBuyInSandbox'] as bool? ?? false,
-  );
-}
+SKPaymentWrapper _$SKPaymentWrapperFromJson(Map json) => SKPaymentWrapper(
+      productIdentifier: json['productIdentifier'] as String? ?? '',
+      applicationUsername: json['applicationUsername'] as String?,
+      requestData: json['requestData'] as String?,
+      quantity: json['quantity'] as int? ?? 0,
+      simulatesAskToBuyInSandbox:
+          json['simulatesAskToBuyInSandbox'] as bool? ?? false,
+    );
 
 Map<String, dynamic> _$SKPaymentWrapperToJson(SKPaymentWrapper instance) =>
     <String, dynamic>{
