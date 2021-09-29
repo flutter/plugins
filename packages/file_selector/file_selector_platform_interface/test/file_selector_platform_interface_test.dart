@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:flutter_test/flutter_test.dart';
-
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_platform_interface/src/method_channel/method_channel_file_selector.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('$FileSelectorPlatform', () {

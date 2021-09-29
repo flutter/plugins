@@ -16,7 +16,6 @@
 # TODO(ecosystem): Remove everything from this list. See:
 # https://github.com/flutter/flutter/issues/76229
 - camera
-- file_selector
 - google_maps_flutter
 - google_sign_in
 - image_picker
