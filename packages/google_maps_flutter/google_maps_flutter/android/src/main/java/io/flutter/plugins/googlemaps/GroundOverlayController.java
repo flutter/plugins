@@ -2,11 +2,8 @@ package io.flutter.plugins.googlemaps;
 
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.GroundOverlay;
-import com.google.android.gms.maps.model.GroundOverlayOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GroundOverlayController implements GroundOverlaySink {
   private final GroundOverlay groundOverlay;
