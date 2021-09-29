@@ -80,7 +80,7 @@ void main() {
           isMethodCall('setValue', arguments: <dynamic>[
             'String',
             'flutter.String',
-            testList2,
+            testString2,
           ]),
           isMethodCall('setValue', arguments: <dynamic>[
             'Bool',
