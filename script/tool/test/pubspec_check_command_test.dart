@@ -332,6 +332,36 @@ ${devDependenciesSection()}
     });
 
     test('fails when description is too short', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin', isPlugin: true, description: 'Too short')}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('"description" is too short. pub.dev recommends package '
+              'descriptions of 60-180 characters.'),
+        ]),
+      );
+    });
+
+    test(
+        'allows short descriptions for non-app-facing parts of federated plugins',
+        () async {
       final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
 
       pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''

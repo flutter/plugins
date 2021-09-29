@@ -127,11 +127,16 @@ class PubspecCheckCommand extends PackageLoopingCommand {
         passing = false;
       }
 
-      final String? descriptionError =
-          _checkDescription(pubspec, package: package);
-      if (descriptionError != null) {
-        printError('$indentation$descriptionError');
-        passing = false;
+      // Don't check descriptions for federated package components other than
+      // the app-facing package, since they are unlisted, and are expected to
+      // have short descriptions.
+      if (!package.isPlatformInterface && !package.isPlatformImplementation) {
+        final String? descriptionError =
+            _checkDescription(pubspec, package: package);
+        if (descriptionError != null) {
+          printError('$indentation$descriptionError');
+          passing = false;
+        }
       }
     }
 
