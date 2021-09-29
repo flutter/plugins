@@ -188,48 +188,28 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     return webView;
   }
 
-  // @Override
-  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
-  // annotation would cause compile time failures in versions of Flutter too old to include the new
-  // method. However leaving it raw like this means that the method will be ignored in old versions
-  // of Flutter but used as an override anyway wherever it's actually defined.
-  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
+  @Override
   public void onInputConnectionUnlocked() {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).unlockInputConnection();
     }
   }
 
-  // @Override
-  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
-  // annotation would cause compile time failures in versions of Flutter too old to include the new
-  // method. However leaving it raw like this means that the method will be ignored in old versions
-  // of Flutter but used as an override anyway wherever it's actually defined.
-  // TODO(mklim): Add the @Override annotation once flutter/engine#9727 rolls to stable.
+  @Override
   public void onInputConnectionLocked() {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).lockInputConnection();
     }
   }
 
-  // @Override
-  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
-  // annotation would cause compile time failures in versions of Flutter too old to include the new
-  // method. However leaving it raw like this means that the method will be ignored in old versions
-  // of Flutter but used as an override anyway wherever it's actually defined.
-  // TODO(mklim): Add the @Override annotation once stable passes v1.10.9.
+  @Override
   public void onFlutterViewAttached(View flutterView) {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).setContainerView(flutterView);
     }
   }
 
-  // @Override
-  // This is overriding a method that hasn't rolled into stable Flutter yet. Including the
-  // annotation would cause compile time failures in versions of Flutter too old to include the new
-  // method. However leaving it raw like this means that the method will be ignored in old versions
-  // of Flutter but used as an override anyway wherever it's actually defined.
-  // TODO(mklim): Add the @Override annotation once stable passes v1.10.9.
+  @Override
   public void onFlutterViewDetached() {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).setContainerView(null);
