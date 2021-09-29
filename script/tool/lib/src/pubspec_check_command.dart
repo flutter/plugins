@@ -126,6 +126,13 @@ class PubspecCheckCommand extends PackageLoopingCommand {
             '${indentation * 2}$_expectedIssueLinkFormat<package label>');
         passing = false;
       }
+
+      final String? descriptionError =
+          _checkDescription(pubspec, package: package);
+      if (descriptionError != null) {
+        printError('$indentation$descriptionError');
+        passing = false;
+      }
     }
 
     return passing;
@@ -178,6 +185,27 @@ class PubspecCheckCommand extends PackageLoopingCommand {
     }
 
     return errorMessages;
+  }
+
+  // Validates the "description" field for a package, returning an error
+  // string if there are any issues.
+  String? _checkDescription(
+    Pubspec pubspec, {
+    required RepositoryPackage package,
+  }) {
+    final String? description = pubspec.description;
+    if (description == null) {
+      return 'Missing "description"';
+    }
+
+    if (description.length < 60) {
+      return '"description" is too short. pub.dev recommends package '
+          'descriptions of 60-180 characters.';
+    }
+    if (description.length > 180) {
+      return '"description" is too long. pub.dev recommends package '
+          'descriptions of 60-180 characters.';
+    }
   }
 
   bool _checkIssueLink(Pubspec pubspec) {
