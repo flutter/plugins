@@ -188,28 +188,28 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     return webView;
   }
 
-   @Override
+  @Override
   public void onInputConnectionUnlocked() {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).unlockInputConnection();
     }
   }
 
-   @Override
+  @Override
   public void onInputConnectionLocked() {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).lockInputConnection();
     }
   }
 
-   @Override
+  @Override
   public void onFlutterViewAttached(View flutterView) {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).setContainerView(flutterView);
     }
   }
 
-   @Override
+  @Override
   public void onFlutterViewDetached() {
     if (webView instanceof InputAwareWebView) {
       ((InputAwareWebView) webView).setContainerView(null);
