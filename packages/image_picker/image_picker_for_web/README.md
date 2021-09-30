@@ -43,7 +43,8 @@ Each browser may implement `capture` any way they please, so it may (or may not)
 difference in your users' experience.
 
 ### pickImage()
-The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported on the web.
+The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported for gif images.
+THe argument  `imageQuality` only works for jpeg  and webp images.
 
 ### pickVideo()
 The argument `maxDuration` is not supported on the web.

@@ -8,7 +8,6 @@ import 'dart:html' as html;
 class ImageResizer {
   /// Resizes the image if needed
   /// Does not support gif image
-  ///
   Future<XFile> resizeImageIfNeeded(XFile file, double? maxWidth,
       double? maxHeight, int? imageQuality) async {
     if (!imageResizeNeeded(maxWidth, maxHeight, imageQuality) ||
@@ -19,13 +18,20 @@ class ImageResizer {
     final imageLoadCompleter = Completer();
     final imageElement = html.ImageElement();
     imageElement.src = file.path;
+    bool hasError = false;
+
     imageElement.onLoad.listen((event) {
       html.Url.revokeObjectUrl(file.path);
       imageLoadCompleter.complete();
     });
-
+    imageElement.onError.listen((event) {
+      imageLoadCompleter.complete();
+      hasError = true;
+    });
     await imageLoadCompleter.future;
-
+    if (hasError) {
+      return file;
+    }
     final newImageSize = calculateSizeOfScaledImage(
         imageElement.width!.toDouble(),
         imageElement.height!.toDouble(),

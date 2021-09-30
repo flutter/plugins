@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:html' as html;
 import 'dart:typed_data';
@@ -14,20 +13,14 @@ import 'package:integration_test/integration_test.dart';
 
 final String expectedStringContents = 'Hello, world!';
 final String otherStringContents = 'Hello again, world!';
-final String pngFileBase64Contents =
-    "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAACXBIWXMAAAcTAAAHEwHOIA8IAAAB0mlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczpwaG90b3Nob3A9Imh0dHA6Ly9ucy5hZG9iZS5jb20vcGhvdG9zaG9wLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIj4KICAgICAgICAgPHBob3Rvc2hvcDpDcmVkaXQ+wqkgR29vZ2xlPC9waG90b3Nob3A6Q3JlZGl0PgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICA8L3JkZjpEZXNjcmlwdGlvbj4KICAgPC9yZGY6UkRGPgo8L3g6eG1wbWV0YT4K43gerQAAAA1JREFUCB1jeOVs+h8ABd8CYkMBAJAAAAAASUVORK5CYII=";
-
 final Uint8List bytes = utf8.encode(expectedStringContents) as Uint8List;
 final Uint8List otherBytes = utf8.encode(otherStringContents) as Uint8List;
-final Uint8List pngFileBytes = utf8.encode(pngFileBase64Contents) as Uint8List;
-
 final Map<String, dynamic> options = {
   'type': 'text/plain',
   'lastModified': DateTime.utc(2017, 12, 13).millisecondsSinceEpoch,
 };
 final html.File textFile = html.File([bytes], 'hello.txt', options);
 final html.File secondTextFile = html.File([otherBytes], 'secondFile.txt');
-final html.File pngImageFile = html.File([pngFileBytes], 'testimage.png');
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -119,46 +112,6 @@ void main() {
     expect(secondFile.length(), completion(secondTextFile.size));
   });
 
-  testWidgets(
-      'image is not scaled when maxWidth, maxHeight and imageQuality is not set',
-      (WidgetTester tester) async {
-    final mockInput = html.FileUploadInputElement();
-    final overrides = ImagePickerPluginTestOverrides()
-      ..createInputElement = ((_, __) => mockInput)
-      ..getMultipleFilesFromInput = ((_) => [pngImageFile]);
-
-    final plugin = ImagePickerPlugin(overrides: overrides);
-
-    // Init the pick file dialog...
-    final file = plugin.getImage(
-      source: ImageSource.gallery,
-    );
-    mockInput.dispatchEvent(html.Event('change'));
-    final image = (await file);
-    expect(image.name, "testimage.png");
-  });
-
-  testWidgets(
-      'image is scaled when any of maxWidth, maxHeight or imageQuality is set',
-      (WidgetTester tester) async {
-    final mockInput = html.FileUploadInputElement();
-    final mockImageElement = html.ImageElement();
-    final overrides = ImagePickerPluginTestOverrides()
-      ..createInputElement = ((_, __) => mockInput)
-      ..getMultipleFilesFromInput = ((_) => [pngImageFile]);
-
-    final plugin = ImagePickerPlugin(overrides: overrides);
-
-    // Init the pick file dialog...
-    final file = plugin.getImage(
-      source: ImageSource.gallery,
-      maxWidth: 500
-    );
-    mockInput.dispatchEvent(html.Event('change'));
-    final image = (await file);
-    expect(image.name, "scaled_testimage.png");
-  });
-
   // There's no good way of detecting when the user has "aborted" the selection.
 
   testWidgets('computeCaptureAttribute', (WidgetTester tester) async {
@@ -198,23 +151,23 @@ void main() {
     });
 
     testWidgets('accept: any, capture: null, multi: true',
-        (WidgetTester tester) async {
-      html.Element input =
+            (WidgetTester tester) async {
+          html.Element input =
           plugin.createInputElement('any', null, multiple: true);
 
-      expect(input.attributes, containsPair('accept', 'any'));
-      expect(input.attributes, isNot(contains('capture')));
-      expect(input.attributes, contains('multiple'));
-    });
+          expect(input.attributes, containsPair('accept', 'any'));
+          expect(input.attributes, isNot(contains('capture')));
+          expect(input.attributes, contains('multiple'));
+        });
 
     testWidgets('accept: any, capture: something, multi: true',
-        (WidgetTester tester) async {
-      html.Element input =
+            (WidgetTester tester) async {
+          html.Element input =
           plugin.createInputElement('any', 'something', multiple: true);
 
-      expect(input.attributes, containsPair('accept', 'any'));
-      expect(input.attributes, containsPair('capture', 'something'));
-      expect(input.attributes, contains('multiple'));
-    });
+          expect(input.attributes, containsPair('accept', 'any'));
+          expect(input.attributes, containsPair('capture', 'something'));
+          expect(input.attributes, contains('multiple'));
+        });
   });
 }
