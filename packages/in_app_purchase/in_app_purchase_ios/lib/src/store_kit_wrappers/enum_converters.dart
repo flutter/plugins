@@ -101,6 +101,7 @@ class SKProductDiscountPaymentModeConverter
 }
 
 // Define a class so we generate serializer helper methods for the enums
+// See https://github.com/google/json_serializable.dart/issues/778
 @JsonSerializable()
 class _SerializedEnums {
   late SKPaymentTransactionStateWrapper response;

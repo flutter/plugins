@@ -9,6 +9,7 @@
 - Added flags to `version-check` to allow overriding the platform interface
   major version change restriction.
 - Improved error handling and error messages in CHANGELOG version checks.
+- `license-check` now validates Kotlin files.
 
 ## 0.7.1
 
