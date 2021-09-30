@@ -32,6 +32,10 @@
 * Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
 
+## 2.0.13
+
+* Add an option to set a transparent background for the webview.
+
 ## 2.0.12
 
 * Improved the documentation on using the different Android Platform View modes.
