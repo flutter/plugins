@@ -31,3 +31,8 @@ dev_dependencies:
   pigeon: 1.0.9
   pedantic: ^1.10.0
 
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  webview_flutter_platform_interface:
+    path:
+      ../webview_flutter_platform_interface

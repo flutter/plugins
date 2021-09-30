@@ -257,6 +257,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
       'userAgent': creationParams.userAgent,
       'autoMediaPlaybackPolicy': creationParams.autoMediaPlaybackPolicy.index,
       'usesHybridComposition': usesHybridComposition,
+      'opaque': creationParams.opaque,
     };
   }
 }

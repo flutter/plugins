@@ -31,3 +31,9 @@ dev_dependencies:
     sdk: flutter
   mockito: ^5.0.16
   pedantic: ^1.10.0
+
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides:
+  webview_flutter_platform_interface:
+    path:
+      ../webview_flutter_platform_interface
