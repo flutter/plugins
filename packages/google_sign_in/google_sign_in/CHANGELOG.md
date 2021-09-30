@@ -1,3 +1,7 @@
+## 5.1.2
+
+Change the placeholder of the GoogleUserCircleAvatar to a transparent image.
+
 ## 5.1.1
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
