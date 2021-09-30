@@ -7,12 +7,13 @@ import 'dart:html' as html;
 
 /// Resizes images
 class ImageResizer {
-  /// Resizes images if needed
+  /// Resizes the image if needed
+  /// Does not support gif image
   Future<XFile> resizeImageIfNeeded(XFile file, double? maxWidth,
       double? maxHeight, int? imageQuality) async {
-    if (maxWidth == null &&
-            maxHeight == null &&
-            _isImageQualityValid(imageQuality) ||
+    if ((maxWidth == null &&
+        maxHeight == null
+    ) || !_isImageQualityValid(imageQuality) ||
         file.mimeType == "image/gif") {
       //TODO Implement maxWidth and maxHeight for image/gif
       return file;
@@ -39,10 +40,11 @@ class ImageResizer {
       context.drawImageScaled(
           imageElement, 0, 0, canvas.width!, canvas.height!);
     }
+    final calculatedImageQuality = ((min(imageQuality ?? 100, 100)) /
+        100.0);
     final blob = await canvas.toBlob(
         file.mimeType,
-        (min(imageQuality ?? 100, 100)) /
-            100.0); // Image quality only works for jpeg images
+        calculatedImageQuality); // Image quality only works for jpeg and webp images
     return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: file.mimeType,
         name: file.name,
@@ -50,7 +52,7 @@ class ImageResizer {
         length: blob.size);
   }
 
-  /// Calculates the size of the scaled image.
+  /// Calculates the size of the scaled image from [maxWidth] and [maxHeigth.
   Size calculateSize(double imageWidth, double imageHeight, double? maxWidth,
       double? maxHeight) {
     double originalWidth = imageWidth;
@@ -60,15 +62,15 @@ class ImageResizer {
     bool hasMaxHeight = maxHeight != null;
     double width = hasMaxWidth ? min(maxWidth, originalWidth) : originalWidth;
     double height =
-        hasMaxHeight ? min(maxHeight, originalHeight) : originalHeight;
+    hasMaxHeight ? min(maxHeight, originalHeight) : originalHeight;
     bool shouldDownscaleWidth = hasMaxWidth && maxWidth < originalWidth;
     bool shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;
     bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
     if (shouldDownscale) {
       double downscaledWidth =
-          ((height / originalHeight) * originalWidth).floorToDouble();
+      ((height / originalHeight) * originalWidth).floorToDouble();
       double downscaledHeight =
-          ((width / originalWidth) * originalHeight).floorToDouble();
+      ((width / originalWidth) * originalHeight).floorToDouble();
 
       if (width < height) {
         if (!hasMaxWidth) {
