@@ -54,16 +54,23 @@ See also the codelab for [in-app purchases in Flutter](https://codelabs.develope
 
 This section has examples of code for the following tasks:
 
-* [Initializing the plugin](#initializing-the-plugin)
-* [Listening to purchase updates](#listening-to-purchase-updates)
-* [Connecting to the underlying store](#connecting-to-the-underlying-store)
-* [Loading products for sale](#loading-products-for-sale)
-* [Restoring previous purchases](#restoring-previous-purchases)
-* [Making a purchase](#making-a-purchase)
-* [Completing a purchase](#completing-a-purchase)
-* [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
-* [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
-* [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
+- [Features](#features)
+- [Getting started](#getting-started)
+- [Usage](#usage)
+  - [Initializing the plugin](#initializing-the-plugin)
+  - [Listening to purchase updates](#listening-to-purchase-updates)
+  - [Connecting to the underlying store](#connecting-to-the-underlying-store)
+  - [Loading products for sale](#loading-products-for-sale)
+  - [Restoring previous purchases](#restoring-previous-purchases)
+  - [Making a purchase](#making-a-purchase)
+  - [Completing a purchase](#completing-a-purchase)
+  - [Upgrading or downgrading an existing in-app subscription](#upgrading-or-downgrading-an-existing-in-app-subscription)
+  - [Confirming subscription price changes](#confirming-subscription-price-changes)
+    - [Google Play Store (Android)](#google-play-store-android)
+    - [Apple App Store (iOS)](#apple-app-store-ios)
+  - [Accessing platform specific product or purchase properties](#accessing-platform-specific-product-or-purchase-properties)
+  - [Presenting a code redemption sheet (iOS 14)](#presenting-a-code-redemption-sheet-ios-14)
+- [Contributing to this plugin](#contributing-to-this-plugin)
 
 ### Initializing the plugin
 
@@ -98,7 +105,7 @@ To listen to the update:
 
 ```dart
 class _MyAppState extends State<MyApp> {
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late final StreamSubscription<List<PurchaseDetails>> _subscription;
 
   @override
   void initState() {
