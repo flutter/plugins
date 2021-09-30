@@ -19,6 +19,8 @@ class MarkerController {
     required gmaps.Marker marker,
     gmaps.InfoWindow? infoWindow,
     bool consumeTapEvents = false,
+    LatLngCallback? onDragStart,
+    LatLngCallback? onDrag,
     LatLngCallback? onDragEnd,
     ui.VoidCallback? onTap,
   })  : _marker = marker,
@@ -27,6 +29,22 @@ class MarkerController {
     if (onTap != null) {
       marker.onClick.listen((event) {
         onTap.call();
+      });
+    }
+    if (onDragStart != null) {
+      marker.onDragstart.listen((event) {
+        if (marker != null) {
+          marker.position = event.latLng;
+        }
+        onDragStart.call(event.latLng ?? _nullGmapsLatLng);
+      });
+    }
+    if (onDrag != null) {
+      marker.onDrag.listen((event) {
+        if (marker != null) {
+          marker.position = event.latLng;
+        }
+        onDrag.call(event.latLng ?? _nullGmapsLatLng);
       });
     }
     if (onDragEnd != null) {
