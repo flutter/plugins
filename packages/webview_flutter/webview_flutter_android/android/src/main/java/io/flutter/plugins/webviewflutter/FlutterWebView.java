@@ -112,8 +112,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     flutterDownloadListener.setWebView(webView);
 
     // Transparent background
-    boolean opaque = (boolean) params.get("opaque");
-    if (!opaque) {
+    boolean transparent = (boolean) params.get("transparent");
+    if (transparent) {
       webView.setBackgroundColor(0x00000000);
     }
 

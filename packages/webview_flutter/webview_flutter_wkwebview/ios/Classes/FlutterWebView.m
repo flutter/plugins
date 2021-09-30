@@ -96,7 +96,7 @@
                         inConfiguration:configuration];
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
-    if (![args[@"opaque"] boolValue]) {
+    if ([args[@"transparent"] boolValue]) {
       _webView.opaque = NO;
       _webView.backgroundColor = UIColor.clearColor;
       _webView.scrollView.backgroundColor = UIColor.clearColor;

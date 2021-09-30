@@ -1474,9 +1474,9 @@ void main() {
     skip: !Platform.isAndroid,
   );
 
-  group('transparent background', () {
+  group('Transparent background', () {
     testWidgets(
-      'have an opaque background by default',
+      'Have an opaque background by default',
       (WidgetTester tester) async {
         final String transparentBackgroundTest = '''
           <!DOCTYPE html>
@@ -1525,7 +1525,7 @@ void main() {
     );
 
     testWidgets(
-      'can have a transparent background',
+      'Can have a transparent background',
       (WidgetTester tester) async {
         final String transparentBackgroundTest = '''
           <!DOCTYPE html>
@@ -1556,7 +1556,7 @@ void main() {
               child: Container(
                 color: Color.fromRGBO(0, 255, 0, 1),
                 child: WebView(
-                  opaque: false,
+                  transparent: true,
                   initialUrl:
                       'data:text/html;charset=utf-8;base64,$transparentBackgroundTestBase64',
                   onPageFinished: (String url) {
