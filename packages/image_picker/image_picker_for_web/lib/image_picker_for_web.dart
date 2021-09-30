@@ -24,12 +24,15 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   late html.Element _target;
 
-  final _imageResizer = ImageResizer();
+  late ImageResizer _imageResizer;
 
   /// A constructor that allows tests to override the function that creates file inputs.
   ImagePickerPlugin({
     @visibleForTesting ImagePickerPluginTestOverrides? overrides,
-  }) : _overrides = overrides {
+    @visibleForTesting ImageResizer? imageResizer,
+  }) : _overrides = overrides
+  {
+    _imageResizer = imageResizer ?? ImageResizer();
     _target = _ensureInitialized(_kImagePickerInputsDomId);
   }
 
@@ -95,7 +98,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     String? capture,
   }) {
     html.FileUploadInputElement input =
-    createInputElement(accept, capture) as html.FileUploadInputElement;
+        createInputElement(accept, capture) as html.FileUploadInputElement;
     _injectAndActivate(input);
     return _getSelectedFile(input);
   }
@@ -125,7 +128,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       accept: _kAcceptImageMimeType,
       capture: capture,
     );
-    return _imageResizer.resizeImageIfNeeded(files.first, maxWidth, maxHeight, imageQuality);
+    return _imageResizer.resizeImageIfNeeded(
+        files.first, maxWidth, maxHeight, imageQuality);
   }
 
   /// Returns an [XFile] containing the video that was picked.
@@ -161,10 +165,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    return await Future.wait((await  getFiles(
-        accept: _kAcceptImageMimeType, multiple: true))
-        .map((e) =>
-        _imageResizer.resizeImageIfNeeded(e, maxWidth, maxHeight, imageQuality)));
+    return await Future.wait(
+        (await getFiles(accept: _kAcceptImageMimeType, multiple: true)).map(
+            (e) => _imageResizer.resizeImageIfNeeded(
+                e, maxWidth, maxHeight, imageQuality)));
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
@@ -216,7 +220,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Returns a list of selected files.
   List<html.File>? _handleOnChangeEvent(html.Event event) {
     final html.FileUploadInputElement input =
-    event.target as html.FileUploadInputElement;
+        event.target as html.FileUploadInputElement;
     return _getFilesFromInput(input);
   }
 
@@ -256,9 +260,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
             name: file.name,
             length: file.size,
             lastModified: DateTime.fromMillisecondsSinceEpoch(
-              file.lastModified ?? DateTime
-                  .now()
-                  .millisecondsSinceEpoch,
+              file.lastModified ?? DateTime.now().millisecondsSinceEpoch,
             ),
             mimeType: file.type,
           );
@@ -281,8 +283,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     var target = html.querySelector('#${id}');
     if (target == null) {
       final html.Element targetElement =
-      html.Element.tag('flt-image-picker-inputs')
-        ..id = id;
+          html.Element.tag('flt-image-picker-inputs')..id = id;
 
       html.querySelector('body')!.children.add(targetElement);
       target = targetElement;
@@ -293,10 +294,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Creates an input element that accepts certain file types, and
   /// allows to `capture` from the device's cameras (where supported)
   @visibleForTesting
-  html.Element createInputElement(String? accept,
-      String? capture, {
-        bool multiple = false,
-      }) {
+  html.Element createInputElement(
+    String? accept,
+    String? capture, {
+    bool multiple = false,
+  }) {
     if (_hasOverrides) {
       return _overrides!.createInputElement(accept, capture);
     }
@@ -320,19 +322,18 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 }
 
-
 // Some tools to override behavior for unit-testing
 /// A function that creates a file input with the passed in `accept` and `capture` attributes.
 @visibleForTesting
 typedef OverrideCreateInputFunction = html.Element Function(
-    String? accept,
-    String? capture,
-    );
+  String? accept,
+  String? capture,
+);
 
 /// A function that extracts list of files from the file `input` passed in.
 @visibleForTesting
 typedef OverrideExtractMultipleFilesFromInputFunction = List<html.File>
-Function(html.Element? input);
+    Function(html.Element? input);
 
 /// Overrides for some of the functionality above.
 @visibleForTesting
