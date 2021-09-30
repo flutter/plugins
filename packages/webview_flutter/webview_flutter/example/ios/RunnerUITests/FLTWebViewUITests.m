@@ -5,11 +5,12 @@
 @import XCTest;
 @import os.log;
 
-UIColor* getPixelColorInImage(UIImage* image, int x, int y) {
+static UIColor* getPixelColorInImage(UIImage* image, int x, int y) {
   CFDataRef pixelData = CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage));
   const UInt8* data = CFDataGetBytePtr(pixelData);
 
-  int pixelInfo = ((image.size.width * image.scale * y) + x) * 4;  // 4 bytes per pixel
+  int imageWidth = floor(image.size.width * image.scale);
+  int pixelInfo = ((imageWidth * y) + x) * 4;  // 4 bytes per pixel
 
   UInt8 red = data[pixelInfo + 0];
   UInt8 green = data[pixelInfo + 1];
@@ -23,7 +24,7 @@ UIColor* getPixelColorInImage(UIImage* image, int x, int y) {
                          alpha:alpha / 255.0f];
 }
 
-bool compareColors(CIColor* aColor, CIColor* bColor) {
+static bool compareColors(CIColor* aColor, CIColor* bColor) {
   return aColor.red == bColor.red && aColor.green == bColor.green && aColor.blue == bColor.blue &&
          aColor.alpha == bColor.alpha;
 }
@@ -60,36 +61,40 @@ bool compareColors(CIColor* aColor, CIColor* bColor) {
   sleep(5);
 
   XCUIScreenshot* screenshot = [[XCUIScreen mainScreen] screenshot];
-  XCTAttachment* attachment = [XCTAttachment attachmentWithScreenshot:screenshot];
-  [attachment setLifetime:XCTAttachmentLifetimeKeepAlways];
-  [attachment setName:@"Transparent background test screen"];
-  [self addAttachment:attachment];
+  XCTAttachment* screenshotAttachment = [XCTAttachment attachmentWithScreenshot:screenshot];
+  [screenshotAttachment setLifetime:XCTAttachmentLifetimeKeepAlways];
+  [screenshotAttachment setName:@"Transparent background test screen"];
+  [self addAttachment:screenshotAttachment];
 
-  UIImage* image = screenshot.image;
-  UIColor* leftcolor = getPixelColorInImage(image, 0, (image.scale * image.size.height) / 2);
-  UIColor* centercolor = getPixelColorInImage(image, (image.scale * image.size.width) / 2,
-                                              (image.scale * image.size.height) / 2);
-  CIColor* leftcicolor = [CIColor colorWithCGColor:leftcolor.CGColor];
-  CIColor* centercicolor = [CIColor colorWithCGColor:centercolor.CGColor];
+  UIImage* screenshotImage = screenshot.image;
+  UIColor* centerLeftColor = getPixelColorInImage(
+      screenshotImage, 0, (screenshotImage.scale * screenshotImage.size.height) / 2);
+  UIColor* centerColor = getPixelColorInImage(
+      screenshotImage, (screenshotImage.scale * screenshotImage.size.width) / 2,
+      (screenshotImage.scale * screenshotImage.size.height) / 2);
+  CIColor* centerLeftCIColor = [CIColor colorWithCGColor:centerLeftColor.CGColor];
+  CIColor* centerCIColor = [CIColor colorWithCGColor:centerColor.CGColor];
 
-  XCTAttachment* colorLeftAtt =
-      [XCTAttachment attachmentWithString:leftcicolor.stringRepresentation];
-  [colorLeftAtt setLifetime:XCTAttachmentLifetimeKeepAlways];
-  [colorLeftAtt setName:@"Left color"];
-  [self addAttachment:colorLeftAtt];
-  XCTAttachment* colorCenterAtt =
-      [XCTAttachment attachmentWithString:centercicolor.stringRepresentation];
-  [colorCenterAtt setLifetime:XCTAttachmentLifetimeKeepAlways];
-  [colorCenterAtt setName:@"Center color"];
-  [self addAttachment:colorCenterAtt];
+  XCTAttachment* centerLeftColorAttachment =
+      [XCTAttachment attachmentWithString:centerLeftCIColor.stringRepresentation];
+  [centerLeftColorAttachment setLifetime:XCTAttachmentLifetimeKeepAlways];
+  [centerLeftColorAttachment setName:@"Left color"];
+  [self addAttachment:centerLeftColorAttachment];
+  XCTAttachment* centerColorAttachment =
+      [XCTAttachment attachmentWithString:centerCIColor.stringRepresentation];
+  [centerColorAttachment setLifetime:XCTAttachmentLifetimeKeepAlways];
+  [centerColorAttachment setName:@"Center color"];
+  [self addAttachment:centerColorAttachment];
 
+  // Flutter Colors.green color : 0xFF4CAF50 -> rgba(76, 175, 80, 1)
+  // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
   CIColor* flutterGreenColor = [CIColor colorWithRed:76.0f / 255.0f
                                                green:175.0f / 255.0f
                                                 blue:80.0f / 255.0f
                                                alpha:1.0f];
 
-  XCTAssertTrue(compareColors(flutterGreenColor, leftcicolor));
-  XCTAssertTrue(compareColors(CIColor.redColor, centercicolor));
+  XCTAssertTrue(compareColors(flutterGreenColor, centerLeftCIColor));
+  XCTAssertTrue(compareColors(CIColor.redColor, centerCIColor));
 }
 
 - (void)testUserAgent {
