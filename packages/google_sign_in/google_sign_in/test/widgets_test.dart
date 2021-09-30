@@ -201,7 +201,7 @@ class _MockHttpRequest extends HttpClientRequest {
 }
 
 /// This is an transparent 1x1 gif image
-final Uint8List _kTransparentImage = Uint8List.fromList(
+final Uint8List _transparentImage = Uint8List.fromList(
   [
     71,
     73,
@@ -253,7 +253,7 @@ final Uint8List _kTransparentImage = Uint8List.fromList(
 /// and returns a 1x1 transparent image.
 class _MockHttpResponse implements HttpClientResponse {
   final Stream<Uint8List> _delegate =
-      Stream<Uint8List>.value(_kTransparentImage);
+      Stream<Uint8List>.value(_transparentImage);
 
   @override
   final HttpHeaders headers = _MockHttpHeaders();
