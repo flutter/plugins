@@ -1,17 +1,20 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'dart:html' as html;
-
 
 /// Resizes images
 class ImageResizer {
   /// Resizes images if needed
   Future<XFile> resizeImageIfNeeded(XFile file, double? maxWidth,
       double? maxHeight, int? imageQuality) async {
-    if (maxWidth == null && maxHeight == null && imageQuality == null ||
+    if (maxWidth == null &&
+        maxHeight == null &&
+        _isImageQualityValid(imageQuality) &&
         file.mimeType == "image/gif") {
+      //TODO Implement maxWidth and maxHeight for image/gif
       return file;
     }
     final imageLoadCompleter = Completer();
@@ -22,16 +25,10 @@ class ImageResizer {
       imageLoadCompleter.complete();
     });
 
-    //Return the original image if error comes
-    imageElement.onError.listen((event) {
-      imageLoadCompleter.complete();
-    });
     await imageLoadCompleter.future;
 
-    final newImageSize = calculateSize(
-        imageElement.width!.toDouble(), imageElement.height!.toDouble(),
-        maxWidth ?? imageElement.width!.toDouble(),
-        maxHeight ?? imageElement.height!.toDouble());
+    final newImageSize = calculateSize(imageElement.width!.toDouble(),
+        imageElement.height!.toDouble(), maxWidth, maxHeight);
     final canvas = html.CanvasElement();
     canvas.width = newImageSize.width.toInt();
     canvas.height = newImageSize.height.toInt();
@@ -44,34 +41,65 @@ class ImageResizer {
     }
     final blob = await canvas.toBlob(
         file.mimeType,
-        (imageQuality ?? 100) /
+        (min(imageQuality ?? 100, 100)) /
             100.0); // Image quality only works for jpeg images
-    return XFile(
-        html.Url.createObjectUrlFromBlob(blob),
+    return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: file.mimeType,
         name: file.name,
         lastModified: DateTime.now(),
-        length: blob.size
-    );
+        length: blob.size);
   }
 
-
   /// Calculates the size of the scaled image.
-  Size calculateSize(double imageWidth, double imageHeight, double maxWidth,
-      double maxHeight) {
-    var width = imageWidth;
-    var height = imageHeight;
-    var scaledHeight = height;
-    var scaledWidth = width;
-    if (width > height) {
-      if (width > maxWidth) {
-        scaledHeight = ((height * maxWidth) / width);
-      }
-    } else {
-      if (height > maxHeight) {
-        scaledWidth = ((width * maxHeight) / height);
+  Size calculateSize(double imageWidth, double imageHeight, double? maxWidth,
+      double? maxHeight) {
+    double originalWidth = imageWidth;
+    double originalHeight = imageHeight;
+
+    bool hasMaxWidth = maxWidth != null;
+    bool hasMaxHeight = maxHeight != null;
+    double width = hasMaxWidth ? min(maxWidth, originalWidth) : originalWidth;
+    double height =
+        hasMaxHeight ? min(maxHeight, originalHeight) : originalHeight;
+    bool shouldDownscaleWidth = hasMaxWidth && maxWidth < originalWidth;
+    bool shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;
+    bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
+    if (shouldDownscale) {
+      double downscaledWidth =
+          ((height / originalHeight) * originalWidth).floorToDouble();
+      double downscaledHeight =
+          ((width / originalWidth) * originalHeight).floorToDouble();
+
+      if (width < height) {
+        if (!hasMaxWidth) {
+          width = downscaledWidth;
+        } else {
+          height = downscaledHeight;
+        }
+      } else if (height < width) {
+        if (!hasMaxHeight) {
+          height = downscaledHeight;
+        } else {
+          width = downscaledWidth;
+        }
+      } else {
+        if (originalWidth < originalHeight) {
+          width = downscaledWidth;
+        } else if (originalHeight < originalWidth) {
+          height = downscaledHeight;
+        }
       }
     }
-    return Size(scaledWidth, scaledHeight);
+    if (hasMaxHeight) {
+      assert(height <= maxHeight);
+    }
+    if (hasMaxWidth) {
+      assert(width <= maxWidth);
+    }
+    return Size(width, height);
+  }
+
+  bool _isImageQualityValid(int? imageQuality) {
+    return imageQuality == null || (imageQuality >= 0 && imageQuality <= 100);
   }
 }
