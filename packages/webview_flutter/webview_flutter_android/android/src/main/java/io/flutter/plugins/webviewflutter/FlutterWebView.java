@@ -6,8 +6,6 @@ package io.flutter.plugins.webviewflutter;
 
 import android.annotation.TargetApi;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
@@ -283,8 +281,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getScrollY":
         getScrollY(result);
         break;
-      case "getPixelColorAt":
-        getPixelColorAt(methodCall, result);
       default:
         result.notImplemented();
     }
@@ -411,28 +407,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void getScrollY(Result result) {
     result.success(webView.getScrollY());
-  }
-
-  private void getPixelColorAt(MethodCall methodCall, Result result) {
-    // Parameters
-    Map<String, Object> request = methodCall.arguments();
-    double x = (double) request.get("x");
-    double y = (double) request.get("y");
-
-    // Get an image of the WebView
-    Bitmap webviewBitmap =
-        Bitmap.createBitmap(webView.getWidth(), webView.getHeight(), Bitmap.Config.ARGB_8888);
-    Canvas bitmapCanvas = new Canvas(webviewBitmap);
-    webView.draw(bitmapCanvas);
-
-    // Find the pixel at the given position
-    int pixelColor =
-        webviewBitmap.getPixel(
-            (int) Math.floor(x * webviewBitmap.getWidth()),
-            (int) Math.floor(y * webviewBitmap.getHeight()));
-
-    // Send the result
-    result.success(String.format("#%08X", pixelColor));
   }
 
   private void applySettings(Map<String, Object> settings) {

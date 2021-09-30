@@ -719,13 +719,6 @@ class WebViewController {
   Future<int> getScrollY() {
     return _webViewPlatformController.getScrollY();
   }
-
-  /// Get the color's hexadecimal code at the given position.
-  ///
-  /// The parameters `x` and `y` must be in the interval [0,1]
-  Future<String> getPixelColorAt(double x, double y) {
-    return _webViewPlatformController.getPixelColorAt(x, y);
-  }
 }
 
 /// Manages cookies pertaining to all [WebView]s.
