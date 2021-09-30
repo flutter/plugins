@@ -20,7 +20,7 @@ bool imageResizeNeeded(double? maxWidth, double? maxHeight, int? imageQuality) {
   }
 }
 
-/// a function that checks if image quality is between [0,100] or null
+/// a function that checks if image quality is between 0 to 100
 bool isImageQualityValid(int imageQuality) {
   return (imageQuality >= 0 && imageQuality <= 100);
 }
