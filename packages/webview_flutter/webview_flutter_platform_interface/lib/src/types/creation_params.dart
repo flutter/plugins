@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/widgets.dart';
 import 'auto_media_playback_policy.dart';
 import 'web_settings.dart';
 
@@ -20,7 +21,7 @@ class CreationParams {
     this.userAgent,
     this.autoMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
-    this.transparent = false,
+    this.backgroundColor,
   }) : assert(autoMediaPlaybackPolicy != null);
 
   /// The initialUrl to load in the webview.
@@ -54,8 +55,8 @@ class CreationParams {
   /// Which restrictions apply on automatic media playback.
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
-  /// If set to `true`, the webview background will be transparent.
-  final bool transparent;
+  /// The background color of the webview.
+  final Color? backgroundColor;
 
   @override
   String toString() {

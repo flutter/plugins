@@ -96,11 +96,20 @@
                         inConfiguration:configuration];
 
     _webView = [[FLTWKWebView alloc] initWithFrame:frame configuration:configuration];
-    if ([args[@"transparent"] boolValue]) {
+
+    // Background color
+    NSNumber* backgroundColorNSNumber = args[@"backgroundColor"];
+    if ([backgroundColorNSNumber isKindOfClass:[NSNumber class]]) {
+      int backgroundColorInt = [backgroundColorNSNumber intValue];
+      UIColor* backgroundColor = [UIColor colorWithRed:(backgroundColorInt >> 16 & 0xff) / 255.f
+                                                 green:(backgroundColorInt >> 8 & 0xff) / 255.f
+                                                  blue:(backgroundColorInt & 0xff) / 255.f
+                                                 alpha:(backgroundColorInt >> 24 & 0xff) / 255.f];
       _webView.opaque = NO;
-      _webView.backgroundColor = UIColor.clearColor;
-      _webView.scrollView.backgroundColor = UIColor.clearColor;
+      _webView.backgroundColor = backgroundColor;
+      _webView.scrollView.backgroundColor = backgroundColor;
     }
+
     _navigationDelegate = [[FLTWKNavigationDelegate alloc] initWithChannel:_channel];
     _webView.UIDelegate = self;
     _webView.navigationDelegate = _navigationDelegate;

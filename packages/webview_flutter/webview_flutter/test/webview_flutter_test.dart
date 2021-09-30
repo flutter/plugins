@@ -926,8 +926,8 @@ void main() {
     });
   });
 
-  group('Transparent background', () {
-    testWidgets('Defaults to false', (WidgetTester tester) async {
+  group('Background color', () {
+    testWidgets('Defaults to null', (WidgetTester tester) async {
       await tester.pumpWidget(const WebView());
 
       final CreationParams params = captureBuildArgs(
@@ -935,18 +935,20 @@ void main() {
         creationParams: true,
       ).single;
 
-      expect(params.transparent, isFalse);
+      expect(params.backgroundColor, isNull);
     });
 
     testWidgets('Can be transparent', (WidgetTester tester) async {
-      await tester.pumpWidget(const WebView(transparent: true));
+      const transparentColor = Color(0x00000000);
+
+      await tester.pumpWidget(const WebView(backgroundColor: transparentColor));
 
       final CreationParams params = captureBuildArgs(
         mockWebViewPlatform,
         creationParams: true,
       ).single;
 
-      expect(params.transparent, isTrue);
+      expect(params.backgroundColor!.value, transparentColor.value);
     });
   });
 

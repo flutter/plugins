@@ -1474,7 +1474,7 @@ void main() {
     skip: !Platform.isAndroid,
   );
 
-  group('Transparent background', () {
+  group('Background color', () {
     testWidgets(
       'Have an opaque background by default',
       (WidgetTester tester) async {
@@ -1575,7 +1575,7 @@ void main() {
                   onWebViewCreated: (WebViewController controller) {
                     controllerCompleter.complete(controller);
                   },
-                  transparent: true,
+                  backgroundColor: Color(0x00000000),
                   initialUrl:
                       'data:text/html;charset=utf-8;base64,$transparentBackgroundTestBase64',
                   onPageFinished: (String url) {
