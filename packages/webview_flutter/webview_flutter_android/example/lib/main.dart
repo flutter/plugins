@@ -10,10 +10,13 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
+import 'package:flutter_driver/driver_extension.dart';
 
 import 'web_view.dart';
 
 void main() {
+  enableFlutterDriverExtension();
+
   // Configure the [WebView] to use the [SurfaceAndroidWebView]
   // implementation instead of the default [AndroidWebView].
   WebView.platform = SurfaceAndroidWebView();
@@ -36,6 +39,27 @@ The navigation delegate is set to block navigation to the youtube website.
 </html>
 ''';
 
+const String kTransparentBackgroundPage = '''
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <title>Transparent background test</title>
+  </head>
+  <style type="text/css">
+    body { background: transparent; margin: 0; padding: 0; }
+    #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+    #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
+    p { text-align: center; }
+  </style>
+  <body>
+    <div id="container">
+      <p>Transparent background test</p>
+      <div id="shape"></div>
+    </div>
+  </body>
+  </html>
+''';
+
 class _WebViewExample extends StatefulWidget {
   const _WebViewExample({Key? key}) : super(key: key);
 
@@ -50,6 +74,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.green,
       appBar: AppBar(
         title: const Text('Flutter WebView example'),
         // This drop down menu demonstrates that Flutter widgets can be shown over the web view.
@@ -69,6 +94,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
           javascriptChannels: _createJavascriptChannels(context),
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
+          backgroundColor: Color(0x00000000),
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -116,6 +142,7 @@ enum _MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  transparentBackground,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -130,6 +157,7 @@ class _SampleMenu extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<_MenuOptions>(
+          key: ValueKey('ShowPopupMenu'),
           onSelected: (_MenuOptions value) {
             switch (value) {
               case _MenuOptions.showUserAgent:
@@ -152,6 +180,9 @@ class _SampleMenu extends StatelessWidget {
                 break;
               case _MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
+                break;
+              case _MenuOptions.transparentBackground:
+                _onTransparentBackground(controller.data!, context);
                 break;
             }
           },
@@ -184,6 +215,11 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              key: ValueKey('ShowTransparentBackgroundExample'),
+              value: _MenuOptions.transparentBackground,
+              child: Text('Transparent background example'),
             ),
           ],
         );
@@ -271,6 +307,13 @@ class _SampleMenu extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: cookieWidgets.toList(),
     );
+  }
+
+  void _onTransparentBackground(
+      WebViewController controller, BuildContext context) async {
+    final String contentBase64 =
+        base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
+    await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 }
 

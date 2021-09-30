@@ -13,24 +13,16 @@ import static org.junit.Assert.assertEquals;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import androidx.test.core.app.ActivityScenario;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
-import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.screenshot.ScreenCapture;
 import androidx.test.runner.screenshot.Screenshot;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 
-@RunWith(AndroidJUnit4.class)
+// @RunWith(AndroidJUnit4.class)
 public class BackgroundColorTest {
-  @Rule
-  public ActivityTestRule<DriverExtensionActivity> myActivityTestRule =
-      new ActivityTestRule<>(DriverExtensionActivity.class, true, false);
-
   @Before
   public void setUp() {
-    ActivityScenario.launch(DriverExtensionActivity.class);
+    ActivityScenario.launch(WebViewTestActivity.class);
   }
 
   @Test
