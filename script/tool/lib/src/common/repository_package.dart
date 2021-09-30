@@ -62,7 +62,7 @@ class RepositoryPackage {
   /// repository conventions.
   bool get isPlatformImplementation =>
       // Any part of a federated plugin that isn't the platform interface and
-      // isn't the app-facing packagke should be an implementation package.
+      // isn't the app-facing package should be an implementation package.
       isFederated &&
       !isPlatformInterface &&
       directory.basename != directory.parent.basename;
