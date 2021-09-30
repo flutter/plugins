@@ -19,9 +19,14 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  webview_flutter_platform_interface: ^1.0.1
-  webview_flutter_android: ^2.0.15
-  webview_flutter_wkwebview: ^2.0.16
+
+  # FOR TESTING ONLY. DO NOT MERGE.
+  webview_flutter_platform_interface:
+    path: ../webview_flutter_platform_interface
+  webview_flutter_android:
+    path: ../webview_flutter_android
+  webview_flutter_wkwebview:
+    path: ../webview_flutter_wkwebview
 
 dev_dependencies:
   flutter_driver:

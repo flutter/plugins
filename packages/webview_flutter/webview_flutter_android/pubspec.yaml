@@ -20,7 +20,9 @@ dependencies:
   flutter:
     sdk: flutter
 
-  webview_flutter_platform_interface: ^1.0.1
+  # FOR TESTING ONLY. DO NOT MERGE.
+  webview_flutter_platform_interface:
+    path: ../webview_flutter_platform_interface
 
 dev_dependencies:
   flutter_driver:
