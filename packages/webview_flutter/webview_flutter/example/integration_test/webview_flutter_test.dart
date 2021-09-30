@@ -1473,6 +1473,107 @@ void main() {
     },
     skip: !Platform.isAndroid,
   );
+
+  group('transparent background', () {
+    testWidgets(
+      'have an opaque background by default',
+      (WidgetTester tester) async {
+        final String transparentBackgroundTest = '''
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Transparent background test</title>
+          </head>
+          <style type="text/css">
+            body { background: transparent; margin: 0; padding: 0; }
+            #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+            #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
+          </style>
+          <body>
+            <div id="container">
+              <div id="shape"></div>
+            </div>
+          </body>
+          </html>
+        ''';
+        final String transparentBackgroundTestBase64 = base64Encode(
+            const Utf8Encoder().convert(transparentBackgroundTest));
+        Completer<void> pageLoadCompleter = Completer<void>();
+
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: RepaintBoundary(
+              child: Container(
+                color: Color.fromRGBO(0, 255, 0, 1),
+                child: WebView(
+                  initialUrl:
+                      'data:text/html;charset=utf-8;base64,$transparentBackgroundTestBase64',
+                  onPageFinished: (String url) {
+                    pageLoadCompleter.complete(null);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ));
+
+        await pageLoadCompleter.future;
+        await tester.pumpAndSettle();
+      },
+      skip: !Platform.isAndroid,
+    );
+
+    testWidgets(
+      'can have a transparent background',
+      (WidgetTester tester) async {
+        final String transparentBackgroundTest = '''
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>Transparent background test</title>
+          </head>
+          <style type="text/css">
+            body { background: transparent; margin: 0; padding: 0; }
+            #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
+            #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
+          </style>
+          <body>
+            <div id="container">
+              <div id="shape"></div>
+            </div>
+          </body>
+          </html>
+        ''';
+        final String transparentBackgroundTestBase64 = base64Encode(
+            const Utf8Encoder().convert(transparentBackgroundTest));
+        Completer<void> pageLoadCompleter = Completer<void>();
+
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: Center(
+            child: RepaintBoundary(
+              child: Container(
+                color: Color.fromRGBO(0, 255, 0, 1),
+                child: WebView(
+                  opaque: false,
+                  initialUrl:
+                      'data:text/html;charset=utf-8;base64,$transparentBackgroundTestBase64',
+                  onPageFinished: (String url) {
+                    pageLoadCompleter.complete(null);
+                  },
+                ),
+              ),
+            ),
+          ),
+        ));
+
+        await pageLoadCompleter.future;
+        await tester.pumpAndSettle();
+      },
+      skip: !Platform.isAndroid,
+    );
+  });
 }
 
 // JavaScript booleans evaluate to different string values on Android and iOS.
