@@ -10,7 +10,7 @@ void main() {
   group('Image Resizer Utils', () {
     group("calculateSizeOfScaledImage", () {
       test(
-          "scaled image height and width are same if max width and max height are same as image's width and height ",
+          "scaled image height and width are same if max width and max height are same as image's width and height",
           () {
         expect(calculateSizeOfScaledImage(500, 300, 500, 300), Size(500, 300));
       });
@@ -51,15 +51,15 @@ void main() {
       });
     });
     group("imageResizeNeeded", () {
-      test("image needs to be  resized when maxWidth is set", () {
+      test("image needs to be resized when maxWidth is set", () {
         expect(imageResizeNeeded(50, null, null), true);
       });
 
-      test("image needs to be  resized when maxHeight is set", () {
+      test("image needs to be resized when maxHeight is set", () {
         expect(imageResizeNeeded(null, 50, null), true);
       });
 
-      test("image needs to be  resized  when imageQuality is set", () {
+      test("image needs to be resized  when imageQuality is set", () {
         expect(imageResizeNeeded(null, null, 100), true);
       });
 
@@ -77,7 +77,7 @@ void main() {
       });
 
       test(
-          "image quality is not valid when imageQuality is less than  0  or greater than 100",
+          "image quality is not valid when imageQuality is less than 0 or greater than 100",
           () {
         expect(isImageQualityValid(-1), false);
         expect(isImageQualityValid(101), false);
