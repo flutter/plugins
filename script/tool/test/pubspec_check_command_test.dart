@@ -56,6 +56,7 @@ void main() {
       bool includeHomepage = false,
       bool includeIssueTracker = true,
       bool publishable = true,
+      String? description,
     }) {
       final String repositoryPath = repositoryPackagesDirRelativePath ?? name;
       final String repoLink = 'https://github.com/flutter/'
@@ -64,8 +65,11 @@ void main() {
       final String issueTrackerLink =
           'https://github.com/flutter/flutter/issues?'
           'q=is%3Aissue+is%3Aopen+label%3A%22p%3A+$name%22';
+      description ??= 'A test package for validating that the pubspec.yaml '
+          'follows repo best practices.';
       return '''
 name: $name
+description: $description
 ${includeRepository ? 'repository: $repoLink' : ''}
 ${includeHomepage ? 'homepage: $repoLink' : ''}
 ${includeIssueTracker ? 'issue_tracker: $issueTrackerLink' : ''}
@@ -323,6 +327,95 @@ ${devDependenciesSection()}
         output,
         containsAllInOrder(<Matcher>[
           contains('A package should have an "issue_tracker" link'),
+        ]),
+      );
+    });
+
+    test('fails when description is too short', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin', isPlugin: true, description: 'Too short')}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('"description" is too short. pub.dev recommends package '
+              'descriptions of 60-180 characters.'),
+        ]),
+      );
+    });
+
+    test(
+        'allows short descriptions for non-app-facing parts of federated plugins',
+        () async {
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin', isPlugin: true, description: 'Too short')}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('"description" is too short. pub.dev recommends package '
+              'descriptions of 60-180 characters.'),
+        ]),
+      );
+    });
+
+    test('fails when description is too long', () async {
+      final Directory pluginDirectory = createFakePlugin('plugin', packagesDir);
+
+      const String description = 'This description is too long. It just goes '
+          'on and on and on and on and on. pub.dev will down-score it because '
+          'there is just too much here. Someone shoul really cut this down to just '
+          'the core description so that search results are more useful and the '
+          'package does not lose pub points.';
+      pluginDirectory.childFile('pubspec.yaml').writeAsStringSync('''
+${headerSection('plugin', isPlugin: true, description: description)}
+${environmentSection()}
+${flutterSection(isPlugin: true)}
+${dependenciesSection()}
+${devDependenciesSection()}
+''');
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['pubspec-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('"description" is too long. pub.dev recommends package '
+              'descriptions of 60-180 characters.'),
         ]),
       );
     });

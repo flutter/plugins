@@ -303,7 +303,7 @@ class NavigationControls extends StatelessWidget {
           (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
         final bool webViewReady =
             snapshot.connectionState == ConnectionState.done;
-        final WebViewController controller = snapshot.data!;
+        final WebViewController? controller = snapshot.data;
         return Row(
           children: <Widget>[
             IconButton(
@@ -311,7 +311,7 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                      if (await controller.canGoBack()) {
+                      if (await controller!.canGoBack()) {
                         await controller.goBack();
                       } else {
                         // ignore: deprecated_member_use
@@ -327,7 +327,7 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                      if (await controller.canGoForward()) {
+                      if (await controller!.canGoForward()) {
                         await controller.goForward();
                       } else {
                         // ignore: deprecated_member_use
@@ -344,7 +344,7 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () {
-                      controller.reload();
+                      controller!.reload();
                     },
             ),
           ],

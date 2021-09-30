@@ -10,8 +10,8 @@ SkuDetailsWrapper _$SkuDetailsWrapperFromJson(Map json) => SkuDetailsWrapper(
       description: json['description'] as String? ?? '',
       freeTrialPeriod: json['freeTrialPeriod'] as String? ?? '',
       introductoryPrice: json['introductoryPrice'] as String? ?? '',
-      introductoryPriceMicros:
-          json['introductoryPriceAmountMicros'] as String? ?? '',
+      introductoryPriceAmountMicros:
+          json['introductoryPriceAmountMicros'] as int? ?? 0,
       introductoryPriceCycles: json['introductoryPriceCycles'] as int? ?? 0,
       introductoryPricePeriod: json['introductoryPricePeriod'] as String? ?? '',
       price: json['price'] as String? ?? '',
@@ -31,7 +31,7 @@ Map<String, dynamic> _$SkuDetailsWrapperToJson(SkuDetailsWrapper instance) =>
       'description': instance.description,
       'freeTrialPeriod': instance.freeTrialPeriod,
       'introductoryPrice': instance.introductoryPrice,
-      'introductoryPriceAmountMicros': instance.introductoryPriceMicros,
+      'introductoryPriceAmountMicros': instance.introductoryPriceAmountMicros,
       'introductoryPriceCycles': instance.introductoryPriceCycles,
       'introductoryPricePeriod': instance.introductoryPricePeriod,
       'price': instance.price,
