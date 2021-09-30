@@ -206,6 +206,14 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   Future<int> getScrollY() =>
       _channel.invokeMethod<int>("getScrollY").then((result) => result!);
 
+  @override
+  Future<String> getPixelColorAt(double x, double y) {
+    return _channel.invokeMethod<String>('getPixelColorAt', <String, double>{
+      'x': x,
+      'y': y,
+    }).then((result) => result!);
+  }
+
   /// Method channel implementation for [WebViewPlatform.clearCookies].
   static Future<bool> clearCookies() {
     return _cookieManagerChannel
