@@ -170,6 +170,7 @@ class SampleMenu extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<WebViewController> controller) {
         return PopupMenuButton<MenuOptions>(
+          key: ValueKey('ShowPopupMenu'),
           onSelected: (MenuOptions value) {
             switch (value) {
               case MenuOptions.showUserAgent:
@@ -229,6 +230,7 @@ class SampleMenu extends StatelessWidget {
               child: Text('Navigation Delegate example'),
             ),
             const PopupMenuItem<MenuOptions>(
+              key: ValueKey('ShowTransparentBackgroundExample'),
               value: MenuOptions.transparentBackground,
               child: Text('Transparent background example'),
             ),

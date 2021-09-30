@@ -10,10 +10,17 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_driver/driver_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:webview_flutter/platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_example/main.dart' as app;
+
+void appMain() {
+  enableFlutterDriverExtension();
+  app.main();
+}
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
