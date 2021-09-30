@@ -34,7 +34,7 @@
 
 ## 2.0.13
 
-* Add an option to set a transparent background for the webview.
+* Add an option to set the background color of the webview.
 
 ## 2.0.12
 
