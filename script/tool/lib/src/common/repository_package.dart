@@ -58,6 +58,15 @@ class RepositoryPackage {
   bool get isPlatformInterface =>
       directory.basename.endsWith('_platform_interface');
 
+  /// True if this appears to be a platform implementation package, according to
+  /// repository conventions.
+  bool get isPlatformImplementation =>
+      // Any part of a federated plugin that isn't the platform interface and
+      // isn't the app-facing package should be an implementation package.
+      isFederated &&
+      !isPlatformInterface &&
+      directory.basename != directory.parent.basename;
+
   /// Returns the Flutter example packages contained in the package, if any.
   Iterable<RepositoryPackage> getExamples() {
     final Directory exampleDirectory = directory.childDirectory('example');

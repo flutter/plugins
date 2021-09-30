@@ -10,6 +10,8 @@
   major version change restriction.
 - Improved error handling and error messages in CHANGELOG version checks.
 - `license-check` now validates Kotlin files.
+- `pubspec-check` now checks that the description is of the pub-recommended
+  length.
 
 ## 0.7.1
 
