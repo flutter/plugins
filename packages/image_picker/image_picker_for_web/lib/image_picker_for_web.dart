@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:image_picker_for_web/image_resizer.dart';
 import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
@@ -22,6 +23,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   bool get _hasOverrides => _overrides != null;
 
   late html.Element _target;
+
+  final _imageResizer = ImageResizer();
 
   /// A constructor that allows tests to override the function that creates file inputs.
   ImagePickerPlugin({
@@ -92,7 +95,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     String? capture,
   }) {
     html.FileUploadInputElement input =
-        createInputElement(accept, capture) as html.FileUploadInputElement;
+    createInputElement(accept, capture) as html.FileUploadInputElement;
     _injectAndActivate(input);
     return _getSelectedFile(input);
   }
@@ -121,11 +124,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     List<XFile> files = await getFiles(
       accept: _kAcceptImageMimeType,
       capture: capture,
-      maxWidth: maxWidth,
-      maxHeight: maxHeight,
-      imageQuality: imageQuality,
     );
-    return files.first;
+    return _imageResizer.resizeImageIfNeeded(files.first, maxWidth, maxHeight, imageQuality);
   }
 
   /// Returns an [XFile] containing the video that was picked.
@@ -160,13 +160,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-  }) {
-    return getFiles(
-        accept: _kAcceptImageMimeType,
-        multiple: true,
-        imageQuality: imageQuality,
-        maxHeight: maxHeight,
-        maxWidth: maxWidth);
+  }) async {
+    return await Future.wait((await  getFiles(
+        accept: _kAcceptImageMimeType, multiple: true))
+        .map((e) =>
+        _imageResizer.resizeImageIfNeeded(e, maxWidth, maxHeight, imageQuality)));
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
@@ -179,13 +177,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ///
   /// See https://caniuse.com/#feat=html-media-capture
   @visibleForTesting
-  Future<List<XFile>> getFiles(
-      {String? accept,
-      String? capture,
-      bool multiple = false,
-      double? maxWidth,
-      double? maxHeight,
-      int? imageQuality}) {
+  Future<List<XFile>> getFiles({
+    String? accept,
+    String? capture,
+    bool multiple = false,
+  }) {
     html.FileUploadInputElement input = createInputElement(
       accept,
       capture,
@@ -193,8 +189,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     ) as html.FileUploadInputElement;
     _injectAndActivate(input);
 
-    return _getSelectedXFiles(input,
-        maxWidth: maxWidth, maxHeight: maxHeight, imageQuality: imageQuality);
+    return _getSelectedXFiles(input);
   }
 
   // DOM methods
@@ -221,7 +216,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Returns a list of selected files.
   List<html.File>? _handleOnChangeEvent(html.Event event) {
     final html.FileUploadInputElement input =
-        event.target as html.FileUploadInputElement;
+    event.target as html.FileUploadInputElement;
     return _getFilesFromInput(input);
   }
 
@@ -249,29 +244,25 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   }
 
   /// Monitors an <input type="file"> and returns the selected file(s).
-  Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input,
-      {double? maxWidth, double? maxHeight, int? imageQuality}) {
+  Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
     final Completer<List<XFile>> _completer = Completer<List<XFile>>();
     // Observe the input until we can return something
     input.onChange.first.then((event) async {
       final files = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && files != null) {
-        //Convert the file  if one of the parameter is not null
-        if (imageQuality != null || maxWidth != null || maxHeight != null) {
-          final convertedFileUris = await Future.wait(files.map((e) async =>
-              await _getCompressedUri(e, imageQuality, maxHeight, maxWidth)));
-
-          int index = 0;
-          _completer.complete(files.map((file) {
-            index += 1;
-            final xFile = file.toXFile(path: convertedFileUris[index - 1]);
-            return xFile;
-          }).toList());
-        } else {
-          _completer.complete(files.map((file) {
-            return file.toXFile();
-          }).toList());
-        }
+        _completer.complete(files.map((file) {
+          return XFile(
+            html.Url.createObjectUrl(file),
+            name: file.name,
+            length: file.size,
+            lastModified: DateTime.fromMillisecondsSinceEpoch(
+              file.lastModified ?? DateTime
+                  .now()
+                  .millisecondsSinceEpoch,
+            ),
+            mimeType: file.type,
+          );
+        }).toList());
       }
     });
     input.onError.first.then((event) {
@@ -290,7 +281,8 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     var target = html.querySelector('#${id}');
     if (target == null) {
       final html.Element targetElement =
-          html.Element.tag('flt-image-picker-inputs')..id = id;
+      html.Element.tag('flt-image-picker-inputs')
+        ..id = id;
 
       html.querySelector('body')!.children.add(targetElement);
       target = targetElement;
@@ -301,11 +293,10 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   /// Creates an input element that accepts certain file types, and
   /// allows to `capture` from the device's cameras (where supported)
   @visibleForTesting
-  html.Element createInputElement(
-    String? accept,
-    String? capture, {
-    bool multiple = false,
-  }) {
+  html.Element createInputElement(String? accept,
+      String? capture, {
+        bool multiple = false,
+      }) {
     if (_hasOverrides) {
       return _overrides!.createInputElement(accept, capture);
     }
@@ -327,87 +318,21 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     _target.children.add(element);
     element.click();
   }
-
-  Future<String> _getCompressedUri(html.File file, int? imageQuality,
-      double? maxHeight, double? maxWidth) async {
-    //max width, max height, imageQuality are not supported for gif
-    if (file.type == "image/gif") {
-      return html.Url.createObjectUrl(file);
-    }
-    final Completer<String> _completer = Completer<String>();
-    final blobUrl = html.Url.createObjectUrl(file);
-    final image = html.ImageElement(src: blobUrl);
-    image.onLoad.listen((event) async {
-      html.Url.revokeObjectUrl(blobUrl);
-      final canvas = html.CanvasElement();
-      final size = _calculateSize(image, maxWidth ?? image.width!.toDouble(),
-          maxHeight ?? image.height!.toDouble());
-      canvas.width = size[0];
-      canvas.height = size[1];
-      final ctx = canvas.context2D;
-      if (maxHeight == null && maxWidth == null) {
-        ctx.drawImage(image, 0, 0);
-      } else {
-        ctx.drawImageScaled(image, 0, 0, canvas.width!, canvas.height!);
-      }
-      final blob = await canvas.toBlob(
-          file.type,
-          (imageQuality ?? 100) /
-              100.0); // Image quality only works for jpeg images
-      _completer.complete(html.Url.createObjectUrlFromBlob(blob));
-    });
-    image.onError.listen((event) {
-      //Return the original image if error comes
-      _completer.complete(html.Url.createObjectUrl(file));
-    });
-    return _completer.future;
-  }
-
-  List<int> _calculateSize(
-      html.ImageElement img, double maxWidth, double maxHeight) {
-    var width = img.width!;
-    var height = img.height!;
-
-    // calculate the width and height, constraining the proportions
-    if (width > height) {
-      if (width > maxWidth) {
-        height = ((height * maxWidth) / width).round();
-        width = maxWidth.toInt();
-      }
-    } else {
-      if (height > maxHeight) {
-        width = ((width * maxHeight) / height).round();
-        height = maxHeight.toInt();
-      }
-    }
-    return [width, height];
-  }
 }
 
-extension on html.File {
-  XFile toXFile({String? path}) => XFile(
-        path ?? html.Url.createObjectUrl(this),
-        name: this.name,
-        length: this.size,
-        lastModified: DateTime.fromMillisecondsSinceEpoch(
-          this.lastModified ?? DateTime.now().millisecondsSinceEpoch,
-        ),
-        mimeType: this.type,
-      );
-}
 
 // Some tools to override behavior for unit-testing
 /// A function that creates a file input with the passed in `accept` and `capture` attributes.
 @visibleForTesting
 typedef OverrideCreateInputFunction = html.Element Function(
-  String? accept,
-  String? capture,
-);
+    String? accept,
+    String? capture,
+    );
 
 /// A function that extracts list of files from the file `input` passed in.
 @visibleForTesting
 typedef OverrideExtractMultipleFilesFromInputFunction = List<html.File>
-    Function(html.Element? input);
+Function(html.Element? input);
 
 /// Overrides for some of the functionality above.
 @visibleForTesting
