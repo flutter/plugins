@@ -289,6 +289,8 @@ class WebView extends StatefulWidget {
 
   /// The background color of the webview.
   ///
+  /// When null the platform's webview default background color is used.
+  ///
   /// By default `backgroundColor` is null.
   final Color? backgroundColor;
 

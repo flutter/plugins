@@ -56,6 +56,8 @@ class CreationParams {
   final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy;
 
   /// The background color of the webview.
+  ///
+  /// When null the platform's webview default background color is used.
   final Color? backgroundColor;
 
   @override
