@@ -1,5 +1,8 @@
-import 'dart:math';
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
+import 'dart:math';
 import 'dart:ui';
 
 ///a function that checks if an image needs to be resized or not

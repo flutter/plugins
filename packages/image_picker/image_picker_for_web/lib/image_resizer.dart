@@ -1,10 +1,14 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'dart:async';
 import 'dart:math';
 import 'package:image_picker_for_web/image_resizer_utils.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'dart:html' as html;
 
-/// Resizes images
+/// Helper class that resizes image
 class ImageResizer {
   /// Resizes the image if needed
   /// Does not support gif image
