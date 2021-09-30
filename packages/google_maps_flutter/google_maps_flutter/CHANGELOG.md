@@ -1,3 +1,7 @@
+## 2.0.11
+
+* Add additional marker drag events.
+
 ## 2.0.10
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
