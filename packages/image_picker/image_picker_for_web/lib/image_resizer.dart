@@ -11,8 +11,8 @@ class ImageResizer {
   Future<XFile> resizeImageIfNeeded(XFile file, double? maxWidth,
       double? maxHeight, int? imageQuality) async {
     if (maxWidth == null &&
-        maxHeight == null &&
-        _isImageQualityValid(imageQuality) &&
+            maxHeight == null &&
+            _isImageQualityValid(imageQuality) ||
         file.mimeType == "image/gif") {
       //TODO Implement maxWidth and maxHeight for image/gif
       return file;
