@@ -115,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
             maxHeight: maxHeight,
             imageQuality: quality,
           );
-          print(pickedFile?.name ??"");
           setState(() {
             _imageFile = pickedFile;
           });
