@@ -10,7 +10,7 @@ static UIColor* getPixelColorInImage(UIImage* image, int x, int y) {
   const UInt8* data = CFDataGetBytePtr(pixelData);
 
   size_t bytesPerRow = CGImageGetBytesPerRow(image.CGImage);
-  size_t pixelInfo = (bytesPerRow * y) + (x * 4); // 4 bytes per pixel
+  size_t pixelInfo = (bytesPerRow * y) + (x * 4);  // 4 bytes per pixel
 
   UInt8 red = data[pixelInfo + 0];
   UInt8 green = data[pixelInfo + 1];
@@ -84,6 +84,52 @@ static bool compareColors(CIColor* aColor, CIColor* bColor) {
                                                alpha:1.0f];
 
   XCTAssertTrue(compareColors(flutterGreenColor, centerLeftCIColor));
+  XCTAssertTrue(compareColors(CIColor.redColor, centerCIColor));
+}
+
+- (void)testColoredBackground {
+  XCUIApplication* app = self.app;
+  XCUIElement* menu = app.buttons[@"Show menu"];
+  if (![menu waitForExistenceWithTimeout:30.0]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+    XCTFail(@"Failed due to not able to find menu");
+  }
+  [menu tap];
+
+  XCUIElement* coloredBackground = app.buttons[@"Colored background example"];
+  if (![coloredBackground waitForExistenceWithTimeout:30.0]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+    XCTFail(@"Failed due to not able to find Colored background example");
+  }
+  [coloredBackground tap];
+
+  XCUIElement* coloredBackgroundLoaded = app.webViews.staticTexts[@"Colored background test"];
+  if (![coloredBackgroundLoaded waitForExistenceWithTimeout:30.0]) {
+    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
+    XCTFail(@"Failed due to not able to find Colored background test");
+  }
+
+  XCUIScreenshot* screenshot = [[XCUIScreen mainScreen] screenshot];
+
+  UIImage* screenshotImage = screenshot.image;
+  UIColor* centerLeftColor = getPixelColorInImage(
+      screenshotImage, 0, (screenshotImage.scale * screenshotImage.size.height) / 2);
+  UIColor* centerColor = getPixelColorInImage(
+      screenshotImage, (screenshotImage.scale * screenshotImage.size.width) / 2,
+      (screenshotImage.scale * screenshotImage.size.height) / 2);
+  CIColor* centerLeftCIColor = [CIColor colorWithCGColor:centerLeftColor.CGColor];
+  CIColor* centerCIColor = [CIColor colorWithCGColor:centerColor.CGColor];
+
+  // Flutter Colors.green color : 0xFF4CAF50 -> rgba(76, 175, 80, 1)
+  // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
+  // The background color of the webview is : rgba(0, 0, 0, 0.5)
+  // The expected color is : rgba(38, 87, 40, 1)
+  CIColor* expectedColor = [CIColor colorWithRed:38.0f / 255.0f
+                                           green:87.0f / 255.0f
+                                            blue:40.0f / 255.0f
+                                           alpha:1.0f];
+
+  XCTAssertTrue(compareColors(expectedColor, centerLeftCIColor));
   XCTAssertTrue(compareColors(CIColor.redColor, centerCIColor));
 }
 
