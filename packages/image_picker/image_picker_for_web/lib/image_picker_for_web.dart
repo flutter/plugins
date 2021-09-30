@@ -30,8 +30,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   ImagePickerPlugin({
     @visibleForTesting ImagePickerPluginTestOverrides? overrides,
     @visibleForTesting ImageResizer? imageResizer,
-  }) : _overrides = overrides
-  {
+  }) : _overrides = overrides {
     _imageResizer = imageResizer ?? ImageResizer();
     _target = _ensureInitialized(_kImagePickerInputsDomId);
   }

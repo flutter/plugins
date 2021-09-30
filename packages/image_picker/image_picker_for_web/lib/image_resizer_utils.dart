@@ -36,15 +36,15 @@ Size calculateSizeOfScaledImage(double imageWidth, double imageHeight,
   bool hasMaxHeight = maxHeight != null;
   double width = hasMaxWidth ? min(maxWidth, originalWidth) : originalWidth;
   double height =
-  hasMaxHeight ? min(maxHeight, originalHeight) : originalHeight;
+      hasMaxHeight ? min(maxHeight, originalHeight) : originalHeight;
   bool shouldDownscaleWidth = hasMaxWidth && maxWidth < originalWidth;
   bool shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;
   bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
   if (shouldDownscale) {
     double downscaledWidth =
-    ((height / originalHeight) * originalWidth).floorToDouble();
+        ((height / originalHeight) * originalWidth).floorToDouble();
     double downscaledHeight =
-    ((width / originalWidth) * originalHeight).floorToDouble();
+        ((width / originalWidth) * originalHeight).floorToDouble();
 
     if (width < height) {
       if (!hasMaxWidth) {

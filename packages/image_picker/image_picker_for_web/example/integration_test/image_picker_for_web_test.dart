@@ -151,23 +151,23 @@ void main() {
     });
 
     testWidgets('accept: any, capture: null, multi: true',
-            (WidgetTester tester) async {
-          html.Element input =
+        (WidgetTester tester) async {
+      html.Element input =
           plugin.createInputElement('any', null, multiple: true);
 
-          expect(input.attributes, containsPair('accept', 'any'));
-          expect(input.attributes, isNot(contains('capture')));
-          expect(input.attributes, contains('multiple'));
-        });
+      expect(input.attributes, containsPair('accept', 'any'));
+      expect(input.attributes, isNot(contains('capture')));
+      expect(input.attributes, contains('multiple'));
+    });
 
     testWidgets('accept: any, capture: something, multi: true',
-            (WidgetTester tester) async {
-          html.Element input =
+        (WidgetTester tester) async {
+      html.Element input =
           plugin.createInputElement('any', 'something', multiple: true);
 
-          expect(input.attributes, containsPair('accept', 'any'));
-          expect(input.attributes, containsPair('capture', 'something'));
-          expect(input.attributes, contains('multiple'));
-        });
+      expect(input.attributes, containsPair('accept', 'any'));
+      expect(input.attributes, containsPair('capture', 'something'));
+      expect(input.attributes, contains('multiple'));
+    });
   });
 }
