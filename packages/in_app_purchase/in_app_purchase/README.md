@@ -98,7 +98,7 @@ To listen to the update:
 
 ```dart
 class _MyAppState extends State<MyApp> {
-  StreamSubscription<List<PurchaseDetails>> _subscription;
+  late final StreamSubscription<List<PurchaseDetails>> _subscription;
 
   @override
   void initState() {
