@@ -926,6 +926,30 @@ void main() {
     });
   });
 
+  group('opaque', () {
+    testWidgets('defaults to true', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single;
+
+      expect(params.opaque, isTrue);
+    });
+
+    testWidgets('can be transparent', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(opaque: false));
+
+      final CreationParams params = captureBuildArgs(
+        mockWebViewPlatform,
+        creationParams: true,
+      ).single;
+
+      expect(params.opaque, isFalse);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUp(() {
       WebView.platform = MyWebViewPlatform();
