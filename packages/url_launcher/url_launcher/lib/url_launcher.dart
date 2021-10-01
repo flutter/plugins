@@ -71,8 +71,10 @@ Future<bool> launch(
   Brightness? statusBarBrightness,
   String? webOnlyWindowName,
 }) async {
-  final Uri url = Uri.parse(urlString.trimLeft());
-  final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
+  final Uri? url = Uri.tryParse(urlString.trimLeft());
+  final bool isWebURL =
+      url != null && (url.scheme == 'http' || url.scheme == 'https');
+
   if ((forceSafariVC == true || forceWebView == true) && !isWebURL) {
     throw PlatformException(
         code: 'NOT_A_WEB_SCHEME',

@@ -125,6 +125,16 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
   }
 
   @override
+  Stream<MarkerDragStartEvent> onMarkerDragStart({required int mapId}) {
+    return _events(mapId).whereType<MarkerDragStartEvent>();
+  }
+
+  @override
+  Stream<MarkerDragEvent> onMarkerDrag({required int mapId}) {
+    return _events(mapId).whereType<MarkerDragEvent>();
+  }
+
+  @override
   Stream<MarkerDragEndEvent> onMarkerDragEnd({required int mapId}) {
     return _events(mapId).whereType<MarkerDragEndEvent>();
   }
@@ -171,6 +181,20 @@ class MethodChannelGoogleMapsFlutter extends GoogleMapsFlutterPlatform {
       case 'marker#onTap':
         _mapEventStreamController.add(MarkerTapEvent(
           mapId,
+          MarkerId(call.arguments['markerId']),
+        ));
+        break;
+      case 'marker#onDragStart':
+        _mapEventStreamController.add(MarkerDragStartEvent(
+          mapId,
+          LatLng.fromJson(call.arguments['position'])!,
+          MarkerId(call.arguments['markerId']),
+        ));
+        break;
+      case 'marker#onDrag':
+        _mapEventStreamController.add(MarkerDragEvent(
+          mapId,
+          LatLng.fromJson(call.arguments['position'])!,
           MarkerId(call.arguments['markerId']),
         ));
         break;
