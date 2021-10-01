@@ -1060,8 +1060,7 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller
-          .evaluateJavascript('location.href = "$secondaryUrl"');
+      await controller.evaluateJavascript('location.href = "$secondaryUrl"');
 
       await pageLoads.stream.first; // Wait for the next page load.
       final String? currentUrl = await controller.currentUrl();
@@ -1227,8 +1226,7 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller
-          .evaluateJavascript('location.href = "$secondaryUrl"');
+      await controller.evaluateJavascript('location.href = "$secondaryUrl"');
 
       await pageLoads.stream.first; // Wait for second page to load.
       final String? currentUrl = await controller.currentUrl();
@@ -1283,8 +1281,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    await controller
-        .evaluateJavascript('window.open("$primaryUrl", "_blank")');
+    await controller.evaluateJavascript('window.open("$primaryUrl", "_blank")');
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
@@ -1320,8 +1317,7 @@ void main() {
       await pageLoaded.future;
       pageLoaded = Completer<void>();
 
-      await controller
-          .evaluateJavascript('window.open("$secondaryUrl")');
+      await controller.evaluateJavascript('window.open("$secondaryUrl")');
       await pageLoaded.future;
       pageLoaded = Completer<void>();
       expect(controller.currentUrl(), completion(secondaryUrl));
