@@ -11,7 +11,7 @@
         <!-- Update this value to your google maps api key. -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyDQjd6rvI5IYfpjcIT4PzAdSvO02NeJ7Pw" />
+            android:value="${mapsApiKey}" />
         <activity android:name="io.flutter.embedding.android.FlutterActivity"
             android:theme="@style/LaunchTheme"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|layoutDirection|fontScale"
