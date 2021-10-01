@@ -350,7 +350,7 @@
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else if ([key isEqualToString:@"zoomEnabled"]) {
       NSNumber* zoomEnabled = settings[key];
-      [self updateZoomEnabled:zoomEnabled];
+      _navigationDelegate.shouldEnableZoom = [zoomEnabled boolValue];
     } else {
       [unknownKeys addObject:key];
     }
@@ -475,24 +475,6 @@
     [_webView setCustomUserAgent:userAgent];
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
-  }
-}
-
-- (void)updateZoomEnabled:(NSNumber*)zoomEnabled {
-  BOOL enabled = [zoomEnabled boolValue];
-  __typeof__(self) __strong wSelf = self;
-  if (!enabled) {
-    _navigationDelegate.didFinishLoad = ^(WKNavigation* view) {
-      NSString* source =
-          @"var meta = document.createElement('meta');meta.name = 'viewport';meta.content = "
-          @"'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';var head "
-          @"= document.getElementsByTagName('head')[0];head.appendChild(meta);";
-
-      [wSelf->_webView evaluateJavaScript:source completionHandler:nil];
-    };
-  } else {
-    _navigationDelegate.didFinishLoad = ^(WKNavigation* view) {
-    };
   }
 }
 
