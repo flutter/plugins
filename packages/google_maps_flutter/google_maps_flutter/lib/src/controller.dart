@@ -69,6 +69,12 @@ class GoogleMapController {
     GoogleMapsFlutterPlatform.instance
         .onMarkerTap(mapId: mapId)
         .listen((MarkerTapEvent e) => _googleMapState.onMarkerTap(e.value));
+    GoogleMapsFlutterPlatform.instance.onMarkerDragStart(mapId: mapId).listen(
+        (MarkerDragStartEvent e) =>
+            _googleMapState.onMarkerDragStart(e.value, e.position));
+    GoogleMapsFlutterPlatform.instance.onMarkerDrag(mapId: mapId).listen(
+        (MarkerDragEvent e) =>
+            _googleMapState.onMarkerDrag(e.value, e.position));
     GoogleMapsFlutterPlatform.instance.onMarkerDragEnd(mapId: mapId).listen(
         (MarkerDragEndEvent e) =>
             _googleMapState.onMarkerDragEnd(e.value, e.position));
