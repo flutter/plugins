@@ -26,7 +26,7 @@ void main() {
   // always be accessible, and won't do redirection. (E.g., just
   // 'https://www.google.com/' will sometimes redirect traffic that looks
   // like it's coming from a bot, which is true of these tests).
-  const String primaryUrl = 'https://flutter.dev';
+  const String primaryUrl = 'https://flutter.dev/';
   const String secondaryUrl = 'https://www.google.com/robots.txt';
 
   const bool _skipDueToIssue86757 = true;
