@@ -26,7 +26,7 @@ enum AudioFormatGroup {
 extension AudioFormatGroupName on AudioFormatGroup {
   /// returns a String value for [AudioFormatGroup]
   String name() {
-    switch(this) {
+    switch (this) {
       case AudioFormatGroup.aac:
         return 'aac';
     }
