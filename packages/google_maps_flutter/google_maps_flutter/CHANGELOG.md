@@ -1,5 +1,9 @@
 ## 2.0.10
 
+* Suppress unchecked cast warning
+
+## 2.0.10
+
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
 
 ## 2.0.9
