@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add GroundOverlay support for Android.
+
 ## 2.0.11
 
 * Add additional marker drag events.
