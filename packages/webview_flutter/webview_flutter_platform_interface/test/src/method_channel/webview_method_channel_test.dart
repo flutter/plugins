@@ -280,6 +280,42 @@ void main() {
       );
     });
 
+    test('evaluateJavascript', () async {
+      final String evaluateJavascript =
+          await webViewPlatform.evaluateJavascript(
+        'This simulates some Javascript code.',
+      );
+
+      expect('This simulates some Javascript code.', evaluateJavascript);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'evaluateJavascript',
+            arguments: 'This simulates some Javascript code.',
+          ),
+        ],
+      );
+    });
+
+    test('evaluateJavascript', () async {
+      final String evaluateJavascript =
+          await webViewPlatform.evaluateJavascript(
+        'This simulates some Javascript code.',
+      );
+
+      expect('This simulates some Javascript code.', evaluateJavascript);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'evaluateJavascript',
+            arguments: 'This simulates some Javascript code.',
+          ),
+        ],
+      );
+    });
+
     test('addJavascriptChannels', () async {
       final Set<String> channels = <String>{'channel one', 'channel two'};
       await webViewPlatform.addJavascriptChannels(channels);

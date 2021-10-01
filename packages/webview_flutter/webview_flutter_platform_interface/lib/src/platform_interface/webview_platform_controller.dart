@@ -112,6 +112,23 @@ abstract class WebViewPlatformController {
         "WebView evaluateJavascript is not implemented on the current platform");
   }
 
+  /// Runs the given JavaScript in the context of the current page.
+  ///
+  /// The Future completes with an error if a JavaScript error occurred.
+  Future<void> runJavaScript(String javaScriptString) {
+    throw UnimplementedError(
+        "WebView runJavaScript is not implemented on the current platform");
+  }
+
+  /// Runs the given JavaScript in the context of the current page, and returns the result.
+  ///
+  /// The Future completes with an error if a JavaScript error occurred, or successfully completes with a null value
+  /// if the type of the value is not supported(e.g on iOS not all non primitive type can be evaluated).
+  Future<String> runJavaScriptForResult(String javaScriptString) {
+    throw UnimplementedError(
+        "WebView runJavaScriptForResult is not implemented on the current platform");
+  }
+
   /// Adds new JavaScript channels to the set of enabled channels.
   ///
   /// For each value in this list the platform's webview should make sure that a corresponding
