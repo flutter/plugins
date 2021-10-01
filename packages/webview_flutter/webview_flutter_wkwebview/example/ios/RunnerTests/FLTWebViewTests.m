@@ -273,44 +273,8 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
                                   binaryMessenger:self.mockBinaryMessenger];
   XCTestExpectation *resultExpectation =
       [self expectationWithDescription:@"Should return error result over the method channel."];
-  NSError *testError =
-      [NSError errorWithDomain:@""
-                          // Any error code but WKErrorJavaScriptResultTypeIsUnsupported
-                          code:WKErrorJavaScriptResultTypeIsUnsupported + 1
-                      userInfo:@{NSLocalizedDescriptionKey : @"Test Error"}];
-  FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
-  [OCMStub([mockView evaluateJavaScript:[OCMArg any]
-                      completionHandler:[OCMArg any]]) andDo:^(NSInvocation *invocation) {
-    // __unsafe_unretained: https://github.com/erikdoe/ocmock/issues/384#issuecomment-589376668
-    __unsafe_unretained void (^evalResultHandler)(id, NSError *);
-    [invocation getArgument:&evalResultHandler atIndex:3];
-    evalResultHandler(nil, testError);
-  }];
-  controller.webView = mockView;
-
-  // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScriptForResult"
-                                                             arguments:@"Test JavaScript String"]
-                    result:^(id _Nullable result) {
-                      XCTAssertTrue([result class] == [FlutterError class]);
-                      [resultExpectation fulfill];
-                    }];
-
-  // Verify
-  [self waitForExpectationsWithTimeout:30.0 handler:nil];
-}
-
-- (void)testRunJavaScriptForResultReturnsNilForWKErrorJavaScriptResultTypeIsUnsupported {
-  // Setup
-  FLTWebViewController *controller =
-      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
-                                   viewIdentifier:1
-                                        arguments:nil
-                                  binaryMessenger:self.mockBinaryMessenger];
-  XCTestExpectation *resultExpectation =
-      [self expectationWithDescription:@"Should return nil result over the method channel."];
   NSError *testError = [NSError errorWithDomain:@""
-                                           code:WKErrorJavaScriptResultTypeIsUnsupported
+                                           code:5
                                        userInfo:@{NSLocalizedDescriptionKey : @"Test Error"}];
   FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
   [OCMStub([mockView evaluateJavaScript:[OCMArg any]
@@ -326,7 +290,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScriptForResult"
                                                              arguments:@"Test JavaScript String"]
                     result:^(id _Nullable result) {
-                      XCTAssertNil(result);
+                      XCTAssertTrue([result class] == [FlutterError class]);
                       [resultExpectation fulfill];
                     }];
 

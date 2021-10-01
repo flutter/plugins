@@ -281,15 +281,11 @@
   [_webView evaluateJavaScript:jsString
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
                if (error) {
-                 if (error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
-                   result([FlutterError
-                       errorWithCode:@"runJavaScriptForResult_failed"
-                             message:@"Failed running JavaScript"
-                             details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
-                                                                jsString, error]]);
-                 } else {
-                   result(nil);
-                 }
+                 result([FlutterError
+                     errorWithCode:@"runJavaScriptForResult_failed"
+                           message:@"Failed running JavaScript"
+                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
+                                                              jsString, error]]);
                } else {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
                }
