@@ -147,7 +147,7 @@ public class WebViewBuilder {
    * @param flag {@code true} if built in zoom controls are allowed.
    * @return This builder. This value cannot be {@code null}.
    */
-  public WebViewBuilder setBuiltInZoomControls(boolean flag) {
+  public WebViewBuilder enableBuiltInZoomControls(boolean flag) {
     this.builtInZoomControls = flag;
     return this;
   }

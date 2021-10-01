@@ -39,7 +39,7 @@ public class FlutterWebViewTest {
     when(mockWebViewBuilder.setUsesHybridComposition(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setLoadWithOverviewMode(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setUseWideViewPort(anyBoolean())).thenReturn(mockWebViewBuilder);
-    when(mockWebViewBuilder.setBuiltInZoomControls(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.enableBuiltInZoomControls(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setDisplayZoomControls(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
         .thenReturn(mockWebViewBuilder);
@@ -61,7 +61,7 @@ public class FlutterWebViewTest {
     verify(mockWebViewBuilder, times(1)).setWebChromeClient(mockWebChromeClient);
     verify(mockWebViewBuilder, times(1)).setLoadWithOverviewMode(true);
     verify(mockWebViewBuilder, times(1)).setUseWideViewPort(true);
-    verify(mockWebViewBuilder, times(1)).setBuiltInZoomControls(true);
+    verify(mockWebViewBuilder, times(1)).enableBuiltInZoomControls(true);
     verify(mockWebViewBuilder, times(1)).setDisplayZoomControls(false);
   }
 
