@@ -1,3 +1,7 @@
+## 2.2.0
+
+*
+
 ## 2.1.1
 
 * Fixed `_CastError` that was thrown when running the example App.

@@ -394,6 +394,74 @@ void main() {
     );
   });
 
+  testWidgets('runJavaScript', (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    await controller.runJavaScript('fake js string');
+    expect(fakePlatformViewsController.lastCreatedView?.lastRunJavaScriptString,
+        'fake js string');
+  });
+
+  testWidgets('runJavaScript with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.runJavaScript('fake js string'),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('runJavaScriptForResult', (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(await controller.runJavaScriptForResult("fake js string"),
+        "fake js string",
+        reason: 'should get the argument');
+  });
+
+  testWidgets('runJavaScriptForResult with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.runJavaScriptForResult('fake js string'),
+      throwsA(anything),
+    );
+  });
+
   testWidgets('Cookies can be cleared once', (WidgetTester tester) async {
     await tester.pumpWidget(
       const WebView(
@@ -960,6 +1028,8 @@ class FakePlatformWebView {
   bool? debuggingEnabled;
   String? userAgent;
 
+  String? lastRunJavaScriptString;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
@@ -994,6 +1064,11 @@ class FakePlatformWebView {
       case 'currentUrl':
         return Future<String?>.value(currentUrl);
       case 'evaluateJavascript':
+        return Future<dynamic>.value(call.arguments);
+      case 'runJavaScript':
+        lastRunJavaScriptString = call.arguments;
+        return Future<void>.sync(() {});
+      case 'runJavaScriptForResult':
         return Future<dynamic>.value(call.arguments);
       case 'addJavascriptChannels':
         final List<String> channelNames = List<String>.from(call.arguments);

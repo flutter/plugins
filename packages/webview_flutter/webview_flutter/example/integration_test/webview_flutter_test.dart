@@ -101,7 +101,7 @@ void main() {
     await pageLoads.stream.firstWhere((String url) => url == currentUrl);
 
     final String content = await controller
-        .evaluateJavascript('document.documentElement.innerText');
+        .runJavaScriptForResult('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
   }, skip: Platform.isAndroid && _skipDueToIssue86757);
 
@@ -146,11 +146,7 @@ void main() {
     await pageLoaded.future;
 
     expect(messagesReceived, isEmpty);
-    // Append a return value "1" in the end will prevent an iOS platform exception.
-    // See: https://github.com/flutter/flutter/issues/66318#issuecomment-701105380
-    // TODO(cyanglaz): remove the workaround "1" in the end when the below issue is fixed.
-    // https://github.com/flutter/flutter/issues/66318
-    await controller.evaluateJavascript('Echo.postMessage("hello");1;');
+    await controller.runJavaScript('Echo.postMessage("hello");');
     expect(messagesReceived, equals(<String>['hello']));
   }, skip: Platform.isAndroid && _skipDueToIssue86757);
 
@@ -397,7 +393,7 @@ void main() {
       WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       controllerCompleter = Completer<WebViewController>();
@@ -426,7 +422,7 @@ void main() {
       controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(true));
     });
 
@@ -457,7 +453,7 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       pageLoaded = Completer<void>();
@@ -485,7 +481,7 @@ void main() {
 
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(false));
     });
 
@@ -535,7 +531,7 @@ void main() {
       await videoPlaying.future;
 
       String fullScreen =
-          await controller.evaluateJavascript('isFullScreen();');
+          await controller.runJavaScriptForResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
 
@@ -587,7 +583,7 @@ void main() {
       await videoPlaying.future;
 
       String fullScreen =
-          await controller.evaluateJavascript('isFullScreen();');
+          await controller.runJavaScriptForResult('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
     }, skip: Platform.isAndroid);
   });
@@ -653,7 +649,7 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       controllerCompleter = Completer<WebViewController>();
@@ -687,7 +683,7 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(true));
     });
 
@@ -723,7 +719,7 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       pageStarted = Completer<void>();
@@ -756,7 +752,7 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavaScriptForResult('isPaused();');
       expect(isPaused, _webviewBool(false));
     });
   });
@@ -1021,14 +1017,14 @@ void main() {
 
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
-      final String viewportRectJSON = await _evaluateJavascript(
+      final String viewportRectJSON = await _runJavaScriptForResult(
           controller, 'JSON.stringify(viewport.getBoundingClientRect())');
       final Map<String, dynamic> viewportRectRelativeToViewport =
           jsonDecode(viewportRectJSON);
 
       // Check that the input is originally outside of the viewport.
 
-      final String initialInputClientRectJSON = await _evaluateJavascript(
+      final String initialInputClientRectJSON = await _runJavaScriptForResult(
           controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
       final Map<String, dynamic> initialInputClientRectRelativeToViewport =
           jsonDecode(initialInputClientRectJSON);
@@ -1038,11 +1034,11 @@ void main() {
               viewportRectRelativeToViewport['bottom'],
           isFalse);
 
-      await controller.evaluateJavascript('inputEl.focus()');
+      await controller.runJavaScript('inputEl.focus()');
 
       // Check that focusing the input brought it into view.
 
-      final String lastInputClientRectJSON = await _evaluateJavascript(
+      final String lastInputClientRectJSON = await _runJavaScriptForResult(
           controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
       final Map<String, dynamic> lastInputClientRectRelativeToViewport =
           jsonDecode(lastInputClientRectJSON);
@@ -1100,7 +1096,7 @@ void main() {
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
       await controller
-          .evaluateJavascript('location.href = "https://www.example.com/"');
+          .runJavaScript('location.href = "https://www.example.com/"');
 
       await pageLoads.stream.first; // Wait for the next page load.
       final String? currentUrl = await controller.currentUrl();
@@ -1231,7 +1227,7 @@ void main() {
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
       await controller
-          .evaluateJavascript('location.href = "https://www.youtube.com/"');
+          .runJavaScript('location.href = "https://www.youtube.com/"');
 
       // There should never be any second page load, since our new URL is
       // blocked. Still wait for a potential page change for some time in order
@@ -1272,7 +1268,7 @@ void main() {
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
       await controller
-          .evaluateJavascript('location.href = "https://www.example.com"');
+          .runJavaScript('location.href = "https://www.example.com"');
 
       await pageLoads.stream.first; // Wait for second page to load.
       final String? currentUrl = await controller.currentUrl();
@@ -1328,7 +1324,7 @@ void main() {
     );
     final WebViewController controller = await controllerCompleter.future;
     await controller
-        .evaluateJavascript('window.open("https://flutter.dev/", "_blank")');
+        .runJavaScript('window.open("https://flutter.dev/", "_blank")');
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, 'https://flutter.dev/');
@@ -1364,8 +1360,7 @@ void main() {
       await pageLoaded.future;
       pageLoaded = Completer<void>();
 
-      await controller
-          .evaluateJavascript('window.open("https://www.example.com/")');
+      await controller.runJavaScript('window.open("https://www.example.com/")');
       await pageLoaded.future;
       pageLoaded = Completer<void>();
       expect(controller.currentUrl(), completion('https://www.example.com/'));
@@ -1436,9 +1431,10 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoadCompleter.future;
 
-      expect(controller.evaluateJavascript('iframeLoaded'), completion('true'));
+      expect(controller.runJavaScriptForResult('iframeLoaded'),
+          completion('true'));
       expect(
-        controller.evaluateJavascript(
+        controller.runJavaScriptForResult(
             'document.querySelector("p") && document.querySelector("p").textContent'),
         completion('null'),
       );
@@ -1458,13 +1454,13 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return _evaluateJavascript(controller, 'navigator.userAgent;');
+  return _runJavaScriptForResult(controller, 'navigator.userAgent;');
 }
 
-Future<String> _evaluateJavascript(
+Future<String> _runJavaScriptForResult(
     WebViewController controller, String js) async {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.evaluateJavascript(js);
+    return await controller.runJavaScriptForResult(js);
   }
-  return jsonDecode(await controller.evaluateJavascript(js));
+  return jsonDecode(await controller.runJavaScriptForResult(js));
 }
