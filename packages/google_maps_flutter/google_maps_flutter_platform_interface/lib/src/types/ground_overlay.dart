@@ -92,11 +92,19 @@ class GroundOverlay implements MapsObject {
   /// The width of the overlay (in meters). Must be provided along with the
   /// [position]. The [height], if not specified, will be determined
   /// automatically based on the image aspect ratio if not specified.
+  ///
+  /// [width] and [height] can not be updated once a [GroundOverlay] is created
+  /// and added to the map. In order to have the changes to [width] and [height]
+  /// take effect, existing [GroundOverlay] must be removed first.
   final double? width;
 
   /// The height of the overlay (in meters). May be provided along with the
   /// [position]. If not specified, it'll will be determined automatically based
   /// on the image aspect ratio.
+  ///
+  /// [width] and [height] can not be updated once a [GroundOverlay] is created
+  /// and added to the map. In order to have the changes to [width] and [height]
+  /// take effect, existing [GroundOverlay] must be removed first.
   final double? height;
 
   /// Specifies the position for this ground overlay.

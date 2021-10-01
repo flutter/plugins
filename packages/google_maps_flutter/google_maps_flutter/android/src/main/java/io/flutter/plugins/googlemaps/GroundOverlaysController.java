@@ -57,6 +57,18 @@ class GroundOverlaysController {
     }
   }
 
+  Map<String, Object> getGroundOverlayInfo(String groundOverlayId) {
+    if (groundOverlayId == null) {
+      return null;
+    }
+    GroundOverlayController groundOverlayController = groundOverlayIdToController
+        .get(groundOverlayId);
+    if (groundOverlayController == null) {
+      return null;
+    }
+    return groundOverlayController.getGroundOverlayInfo();
+  }
+
   private void addGroundOverlay(Map<String, ?> groundOverlayOptions) {
     if (groundOverlayOptions == null) {
       return;

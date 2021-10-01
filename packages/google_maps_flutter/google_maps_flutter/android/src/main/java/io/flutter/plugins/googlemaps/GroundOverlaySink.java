@@ -4,7 +4,9 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 
-/** Receiver of GroundOverlayOptions configuration. */
+/**
+ * Receiver of GroundOverlayOptions configuration.
+ */
 public interface GroundOverlaySink {
 
   void setAnchor(float u, float v);

@@ -419,6 +419,12 @@ final class GoogleMapController
           result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
           break;
         }
+      case "map#getGroundOverlayInfo":
+      {
+        String groundOverlayId = call.argument("groundOverlayId");
+        result.success(groundOverlaysController.getGroundOverlayInfo(groundOverlayId));
+        break;
+      }
       case "groundOverlays#update":
         {
           List<Map<String, ?>> groundOverlaysToAdd = call.argument("groundOverlaysToAdd");

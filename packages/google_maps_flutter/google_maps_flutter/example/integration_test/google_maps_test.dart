@@ -1183,6 +1183,235 @@ void main() {
       expect(tileOverlayInfo1, isNull);
     },
   );
+
+  testWidgets(
+    'set groundOverlay correctly',
+    (WidgetTester tester) async {
+      final inspectorCompleter = Completer<GoogleMapInspector>();
+      final groundOverlay1 = const GroundOverlay(
+        groundOverlayId: GroundOverlayId("ground_overlay_1"),
+        image: BitmapDescriptor.defaultMarker,
+        position: LatLng(59, 30),
+        width: 200,
+        zIndex: 5,
+        transparency: 0.5,
+        bearing: 10,
+        isVisible: true,
+        isClickable: false,
+      );
+
+      final groundOverlay2 = const GroundOverlay(
+        groundOverlayId: GroundOverlayId("ground_overlay_2"),
+        image: BitmapDescriptor.defaultMarker,
+        position: LatLng(60, 35),
+        width: 300,
+        zIndex: 15,
+        transparency: 0.8,
+        bearing: 20,
+        isVisible: false,
+        isClickable: true,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            initialCameraPosition: _kInitialCameraPosition,
+            groundOverlays: {
+              groundOverlay1,
+              groundOverlay2,
+            },
+            onMapCreated: (GoogleMapController controller) {
+              final GoogleMapInspector inspector =
+                  // ignore: invalid_use_of_visible_for_testing_member
+                  GoogleMapInspector(controller.channel!);
+              inspectorCompleter.complete(inspector);
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      final inspector = await inspectorCompleter.future;
+
+      final groundOverlayInfo1 =
+          (await inspector.getGroundOverlayInfo('ground_overlay_1'))!;
+      final groundOverlayInfo2 =
+          (await inspector.getGroundOverlayInfo('ground_overlay_2'))!;
+
+      expect(groundOverlayInfo1['width'], 200);
+      expect(groundOverlayInfo1['visible'], isTrue);
+      expect(groundOverlayInfo1['clickable'], isFalse);
+      expect(groundOverlayInfo1['transparency'],
+          moreOrLessEquals(0.5, epsilon: 0.001));
+      expect(groundOverlayInfo1['zIndex'], 5);
+      expect(groundOverlayInfo1['bearing'], 10);
+
+      expect(groundOverlayInfo2['width'], 300);
+      expect(groundOverlayInfo2['visible'], isFalse);
+      expect(groundOverlayInfo2['clickable'], isTrue);
+      expect(groundOverlayInfo2['transparency'],
+          moreOrLessEquals(0.8, epsilon: 0.001));
+      expect(groundOverlayInfo2['zIndex'], 15);
+      expect(groundOverlayInfo2['bearing'], 20);
+    },
+  );
+
+  testWidgets(
+    'update groundOverlays correctly',
+    (WidgetTester tester) async {
+      final inspectorCompleter = Completer<GoogleMapInspector>();
+      final key = GlobalKey();
+      final groundOverlay1 = const GroundOverlay(
+        groundOverlayId: GroundOverlayId("ground_overlay_1"),
+        image: BitmapDescriptor.defaultMarker,
+        position: LatLng(59, 30),
+        width: 200,
+        zIndex: 5,
+        transparency: 0.5,
+        bearing: 10,
+        isVisible: true,
+        isClickable: false,
+      );
+
+      final groundOverlay2 = GroundOverlay(
+        groundOverlayId: const GroundOverlayId("ground_overlay_2"),
+        image: BitmapDescriptor.defaultMarker,
+        position: LatLng(60, 35),
+        width: 300,
+        zIndex: 15,
+        transparency: 0.8,
+        bearing: 20,
+        isVisible: false,
+        isClickable: true,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            groundOverlays: {
+              groundOverlay1,
+              groundOverlay2,
+            },
+            onMapCreated: (GoogleMapController controller) {
+              final GoogleMapInspector inspector =
+                  // ignore: invalid_use_of_visible_for_testing_member
+                  GoogleMapInspector(controller.channel!);
+              inspectorCompleter.complete(inspector);
+            },
+          ),
+        ),
+      );
+
+      final inspector = await inspectorCompleter.future;
+
+      final groundOverlay1New = GroundOverlay(
+        groundOverlayId: GroundOverlayId("ground_overlay_1"),
+        image: BitmapDescriptor.defaultMarker,
+        position: LatLng(60, 35),
+        width: 300,
+        zIndex: 15,
+        transparency: 0.8,
+        bearing: 20,
+        isVisible: false,
+        isClickable: true,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            groundOverlays: {
+              groundOverlay1New,
+            },
+            onMapCreated: (GoogleMapController controller) {
+              fail('update: OnMapCreated should get called only once.');
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      final groundOverlayInfo1 =
+          (await inspector.getGroundOverlayInfo('ground_overlay_1'))!;
+      final groundOverlayInfo2 =
+          await inspector.getGroundOverlayInfo('ground_overlay_2');
+
+      expect(groundOverlayInfo1['visible'], isFalse);
+      expect(groundOverlayInfo1['clickable'], isTrue);
+      expect(groundOverlayInfo1['transparency'],
+          moreOrLessEquals(0.8, epsilon: 0.001));
+      expect(groundOverlayInfo1['zIndex'], 15);
+      expect(groundOverlayInfo1['bearing'], 20);
+
+      expect(groundOverlayInfo2, isNull);
+    },
+  );
+
+  testWidgets(
+    'remove groundOverlays correctly',
+    (WidgetTester tester) async {
+      final inspectorCompleter = Completer<GoogleMapInspector>();
+      final key = GlobalKey();
+      final groundOverlay1 = GroundOverlay(
+        groundOverlayId: GroundOverlayId("ground_overlay_1"),
+        image: BitmapDescriptor.defaultMarker,
+        position: LatLng(59, 30),
+        width: 200,
+        zIndex: 5,
+        transparency: 0.5,
+        bearing: 10,
+        isVisible: true,
+        isClickable: false,
+      );
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            groundOverlays: {
+              groundOverlay1,
+            },
+            onMapCreated: (GoogleMapController controller) {
+              final GoogleMapInspector inspector =
+                  // ignore: invalid_use_of_visible_for_testing_member
+                  GoogleMapInspector(controller.channel!);
+              inspectorCompleter.complete(inspector);
+            },
+          ),
+        ),
+      );
+
+      final inspector = await inspectorCompleter.future;
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            onMapCreated: (GoogleMapController controller) {
+              fail('OnMapCreated should get called only once.');
+            },
+          ),
+        ),
+      );
+
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+      final groundOverlayInfo1 =
+          await inspector.getGroundOverlayInfo('ground_overlay_1');
+
+      expect(groundOverlayInfo1, isNull);
+    },
+  );
 }
 
 class _DebugTileProvider implements TileProvider {

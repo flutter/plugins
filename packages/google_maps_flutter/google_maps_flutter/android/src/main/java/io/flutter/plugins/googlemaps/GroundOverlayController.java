@@ -4,8 +4,11 @@ import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.GroundOverlay;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GroundOverlayController implements GroundOverlaySink {
+
   private final GroundOverlay groundOverlay;
 
   public GroundOverlayController(GroundOverlay groundOverlay) {
@@ -64,5 +67,18 @@ public class GroundOverlayController implements GroundOverlaySink {
   @Override
   public void setZIndex(float zIndex) {
     groundOverlay.setZIndex(zIndex);
+  }
+
+  Map<String, Object> getGroundOverlayInfo() {
+    Map<String, Object> groundOverlayInfo = new HashMap<>();
+    groundOverlayInfo.put("height", groundOverlay.getHeight());
+    groundOverlayInfo.put("width", groundOverlay.getWidth());
+    groundOverlayInfo.put("bearing", groundOverlay.getBearing());
+    groundOverlayInfo.put("transparency", groundOverlay.getTransparency());
+    groundOverlayInfo.put("id", groundOverlay.getId());
+    groundOverlayInfo.put("zIndex", groundOverlay.getZIndex());
+    groundOverlayInfo.put("visible", groundOverlay.isVisible());
+    groundOverlayInfo.put("clickable", groundOverlay.isClickable());
+    return groundOverlayInfo;
   }
 }

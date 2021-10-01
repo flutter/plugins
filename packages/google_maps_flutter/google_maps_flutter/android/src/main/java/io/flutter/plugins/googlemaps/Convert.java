@@ -740,7 +740,7 @@ class Convert {
     if (zIndex != null) {
       sink.setZIndex(toFloat(zIndex));
     }
-    final Object visible = data.get("visible");
+    final Object visible = data.get("isVisible");
     if (visible != null) {
       sink.setVisible(toBoolean(visible));
     }

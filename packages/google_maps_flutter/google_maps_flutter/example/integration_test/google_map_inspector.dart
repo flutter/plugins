@@ -83,4 +83,11 @@ class GoogleMapInspector {
       'tileOverlayId': id,
     }));
   }
+
+  Future<Map<String, dynamic>?> getGroundOverlayInfo(String id) async {
+    return (await _channel.invokeMapMethod<String, dynamic>(
+        'map#getGroundOverlayInfo', <String, String>{
+      'groundOverlayId': id,
+    }));
+  }
 }
