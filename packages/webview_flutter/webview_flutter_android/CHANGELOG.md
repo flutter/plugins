@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Implemented new `runJavaScript` and `runJavaScriptForResult` methods in platform interface.
+
 ## 2.0.15
 
 * Added Overrides in  FlutterWebView.java 

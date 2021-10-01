@@ -151,6 +151,10 @@
     [self onCurrentUrl:call result:result];
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
     [self onEvaluateJavaScript:call result:result];
+  } else if ([[call method] isEqualToString:@"runJavaScript"]) {
+    [self onRunJavaScript:call result:result];
+  } else if ([[call method] isEqualToString:@"runJavaScriptForResult"]) {
+    [self onRunJavaScriptForResult:call result:result];
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
@@ -234,10 +238,58 @@
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
                if (error) {
                  result([FlutterError
-                     errorWithCode:@"evaluateJavaScript_failed"
+                     errorWithCode:@"evaluateJavascript_failed"
                            message:@"Failed evaluating JavaScript"
                            details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
                                                               jsString, error]]);
+               } else {
+                 result([NSString stringWithFormat:@"%@", evaluateResult]);
+               }
+             }];
+}
+
+- (void)onRunJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* jsString = [call arguments];
+  if (!jsString) {
+    result([FlutterError errorWithCode:@"runJavaScript_failed"
+                               message:@"JavaScript String cannot be null"
+                               details:nil]);
+    return;
+  }
+  [_webView evaluateJavaScript:jsString
+             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+               if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
+                 result([FlutterError
+                     errorWithCode:@"runJavaScript_failed"
+                           message:@"Failed running JavaScript"
+                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
+                                                              jsString, error]]);
+               } else {
+                 result(nil);
+               }
+             }];
+}
+
+- (void)onRunJavaScriptForResult:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* jsString = [call arguments];
+  if (!jsString) {
+    result([FlutterError errorWithCode:@"runJavaScriptForResult_failed"
+                               message:@"JavaScript String cannot be null"
+                               details:nil]);
+    return;
+  }
+  [_webView evaluateJavaScript:jsString
+             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+               if (error) {
+                 if (error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
+                   result([FlutterError
+                       errorWithCode:@"runJavaScriptForResult_failed"
+                             message:@"Failed running JavaScript"
+                             details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
+                                                                jsString, error]]);
+                 } else {
+                   result(nil);
+                 }
                } else {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
                }

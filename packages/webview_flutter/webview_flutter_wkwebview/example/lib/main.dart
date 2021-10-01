@@ -199,14 +199,14 @@ class _SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Snackbar JavaScript channel we registered
     // with the WebView.
-    await controller.evaluateJavascript(
+    await controller.runJavaScript(
         'Snackbar.postMessage("User Agent: " + navigator.userAgent);');
   }
 
   void _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
-        await controller.evaluateJavascript('document.cookie');
+        await controller.runJavaScriptForResult('document.cookie');
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Column(
         mainAxisAlignment: MainAxisAlignment.end,
@@ -220,7 +220,7 @@ class _SampleMenu extends StatelessWidget {
   }
 
   void _onAddToCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript(
+    await controller.runJavaScript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
       content: Text('Added a test entry to cache.'),
@@ -228,7 +228,7 @@ class _SampleMenu extends StatelessWidget {
   }
 
   void _onListCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript('caches.keys()'
+    await controller.runJavaScript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Snackbar.postMessage(caches))');
   }
