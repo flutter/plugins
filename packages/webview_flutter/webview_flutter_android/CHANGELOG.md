@@ -1,4 +1,4 @@
-## 2.0.16
+## 2.1.0
 
 * Add `zoomEnabled` functionality.
 

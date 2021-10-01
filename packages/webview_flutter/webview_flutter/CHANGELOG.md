@@ -1,4 +1,4 @@
-## 2.1.2
+## 2.2.0
 * Add ability to enable/disable zoom functionality
 
 ## 2.1.1
