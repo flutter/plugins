@@ -4,9 +4,9 @@
 
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
@@ -65,10 +65,12 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
   })  : assert(javascriptMode != null),
+        assert(zoomEnabled != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
@@ -212,6 +214,11 @@ class WebView extends StatefulWidget {
   ///
   /// By default `userAgent` is null.
   final String? userAgent;
+
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// By default 'zoomEnabled' is true
+  final bool zoomEnabled;
 
   /// Which restrictions apply on automatic media playback.
   ///
@@ -542,6 +549,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
+    zoomEnabled: widget.zoomEnabled,
   );
 }
 
