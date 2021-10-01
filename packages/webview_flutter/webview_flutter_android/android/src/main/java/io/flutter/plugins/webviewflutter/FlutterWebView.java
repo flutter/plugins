@@ -179,10 +179,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         .setWebChromeClient(
             webChromeClient) // Always use {@link FlutterWebChromeClient} as web Chrome client.
         .setDownloadListener(downloadListener)
-        .enableBuiltInZoomControls(true) //Always use built-in zoom mechanisms.
-        .setLoadWithOverviewMode(true) //Always zooms out the content to fit on screen by width.
-        .setUseWideViewPort(true) //Always support using a wide viewport
-        .setDisplayZoomControls(false); //Never display on-screen zoom controls.
+        .enableBuiltInZoomControls(true); //Always use built-in zoom mechanisms.
 
     return webViewBuilder.build();
   }

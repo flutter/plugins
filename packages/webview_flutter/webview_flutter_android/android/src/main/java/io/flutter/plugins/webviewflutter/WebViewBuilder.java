@@ -153,42 +153,6 @@ public class WebViewBuilder {
   }
 
   /**
-   * Sets whether the {@link WebView} loads pages zoomed out so the content will fit on screen by
-   * width The default value is {@code true}.
-   *
-   * @param flag {@code true} if should allow pages to load in overview mode.
-   * @return This builder. This value cannot be {@code null}.
-   */
-  public WebViewBuilder setLoadWithOverviewMode(boolean flag) {
-    this.loadWithOverviewMode = flag;
-    return this;
-  }
-
-  /**
-   * Sets whether the {@link WebView} should enable support for the "viewport" HTML meta tag or
-   * should use a wide viewport. The default value is {@code true}.
-   *
-   * @param flag {@code true} if should use wide viewport.
-   * @return This builder. This value cannot be {@code null}.
-   */
-  public WebViewBuilder setUseWideViewPort(boolean flag) {
-    this.useWideViewPort = flag;
-    return this;
-  }
-
-  /**
-   * Sets whether the {@link WebView} should display on-screen zoom controls when using the built-in
-   * zoom mechanisms. The default value is {@code false} as on-screen zoom controls are deprecated
-   *
-   * @param flag {@code true} if should display zoom controls
-   * @return This builder. This value cannot be {@code null}.
-   */
-  public WebViewBuilder setDisplayZoomControls(boolean flag) {
-    this.displayZoomControls = flag;
-    return this;
-  }
-
-  /**
    * Build the {@link android.webkit.WebView} using the current settings.
    *
    * @return The {@link android.webkit.WebView} using the current settings.
@@ -200,10 +164,10 @@ public class WebViewBuilder {
     webSettings.setDomStorageEnabled(enableDomStorage);
     webSettings.setJavaScriptCanOpenWindowsAutomatically(javaScriptCanOpenWindowsAutomatically);
     webSettings.setSupportMultipleWindows(supportMultipleWindows);
-    webSettings.setLoadWithOverviewMode(loadWithOverviewMode);
-    webSettings.setUseWideViewPort(useWideViewPort);
+    webSettings.setLoadWithOverviewMode(true);
+    webSettings.setUseWideViewPort(true);
+    webSettings.setDisplayZoomControls(false);
     webSettings.setBuiltInZoomControls(builtInZoomControls);
-    webSettings.setDisplayZoomControls(displayZoomControls);
     webView.setWebChromeClient(webChromeClient);
     webView.setDownloadListener(downloadListener);
     return webView;
