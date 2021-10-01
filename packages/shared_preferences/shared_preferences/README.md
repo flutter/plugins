@@ -7,6 +7,20 @@ Wraps platform-specific persistent storage for simple data
 and there is no guarantee that writes will be persisted to disk after
 returning, so this plugin must not be used for storing critical data.
 
+## Installation
+
+  In the `pubspec.yaml` of your flutter project, add the following dependency:
+
+  ```yaml
+  dependencies:
+    ...
+    shared_preferences: <latest_version>
+  ```
+  Or Run this command in `Root` directory
+  ```
+  flutter pub add shared_preferences
+  ```
+
 ## Usage
 To use this plugin, add `shared_preferences` as a [dependency in your pubspec.yaml file](https://flutter.dev/docs/development/platform-integration/platform-channels).
 
@@ -44,3 +58,5 @@ You can populate `SharedPreferences` with initial values in your tests by runnin
 ```dart
 SharedPreferences.setMockInitialValues (Map<String, dynamic> values);
 ```
+
+> For help getting started with Flutter, view the online [documentation](https://pub.dev/packages/shared_preferences).
