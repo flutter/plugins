@@ -633,11 +633,13 @@ class WebViewController {
   /// On Android returns the evaluation result as a JSON formatted string.
   ///
   /// On iOS depending on the value type the return value would be one of:
+  ///
   ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
   ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
-  ///  - Other non-primitive types are not supported on iOS and will return as null.
+  ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
   ///
-  /// The Future completes with an error if a JavaScript error occurred.
+  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
+  /// evaluated expression is not supported as described above.
   ///
   /// When evaluating Javascript in a [WebView], it is best practice to wait for
   /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
