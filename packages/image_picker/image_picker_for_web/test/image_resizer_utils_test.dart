@@ -12,21 +12,22 @@ void main() {
       test(
           "scaled image height and width are same if max width and max height are same as image's width and height",
           () {
-        expect(calculateSizeOfScaledImage(500, 300, 500, 300), Size(500, 300));
+        expect(calculateSizeOfDownScaledImage(Size(500, 300), 500, 300),
+            Size(500, 300));
       });
 
       test(
           "scaled image height and width are same if max width and max height are null",
           () {
-        expect(
-            calculateSizeOfScaledImage(500, 300, null, null), Size(500, 300));
+        expect(calculateSizeOfDownScaledImage(Size(500, 300), null, null),
+            Size(500, 300));
       });
 
       test("image size is scaled when maxWidth is set", () {
         final imageSize = Size(500, 300);
         final maxWidth = 400;
-        final scaledSize = calculateSizeOfScaledImage(
-            imageSize.width, imageSize.height, maxWidth.toDouble(), null);
+        final scaledSize = calculateSizeOfDownScaledImage(
+            Size(imageSize.width, imageSize.height), maxWidth.toDouble(), null);
         expect(scaledSize.height <= imageSize.height, true);
         expect(scaledSize.width <= maxWidth, true);
       });
@@ -34,8 +35,10 @@ void main() {
       test("image size is scaled when maxHeight is set", () {
         final imageSize = Size(500, 300);
         final maxHeight = 400;
-        final scaledSize = calculateSizeOfScaledImage(
-            imageSize.width, imageSize.height, null, maxHeight.toDouble());
+        final scaledSize = calculateSizeOfDownScaledImage(
+            Size(imageSize.width, imageSize.height),
+            null,
+            maxHeight.toDouble());
         expect(scaledSize.height <= maxHeight, true);
         expect(scaledSize.width <= imageSize.width, true);
       });
@@ -44,8 +47,10 @@ void main() {
         final imageSize = Size(1120, 2000);
         final maxHeight = 1200;
         final maxWidth = 99;
-        final scaledSize = calculateSizeOfScaledImage(imageSize.width,
-            imageSize.height, maxWidth.toDouble(), maxHeight.toDouble());
+        final scaledSize = calculateSizeOfDownScaledImage(
+            Size(imageSize.width, imageSize.height),
+            maxWidth.toDouble(),
+            maxHeight.toDouble());
         expect(scaledSize.height <= maxHeight, true);
         expect(scaledSize.width <= maxWidth, true);
       });

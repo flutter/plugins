@@ -7,17 +7,9 @@ import 'dart:ui';
 
 ///a function that checks if an image needs to be resized or not
 bool imageResizeNeeded(double? maxWidth, double? maxHeight, int? imageQuality) {
-  bool resizeNeeded =
-      (maxWidth != null || maxHeight != null || imageQuality != null);
-  if (resizeNeeded) {
-    if (imageQuality != null) {
-      return isImageQualityValid(imageQuality);
-    } else {
-      return true;
-    }
-  } else {
-    return false;
-  }
+  return imageQuality != null
+      ? isImageQualityValid(imageQuality)
+      : (maxWidth != null || maxHeight != null);
 }
 
 /// a function that checks if image quality is between 0 to 100
@@ -25,15 +17,15 @@ bool isImageQualityValid(int imageQuality) {
   return (imageQuality >= 0 && imageQuality <= 100);
 }
 
-/// a functions that calculates the size of the scaled image.
+/// a functions that calculates the size of the downScaled image.
 /// imageWidth is the width of the image
 /// imageHeight is the height of  the image
 /// maxWidth is the maximum width of the scaled image
 /// maxHeight is the maximum height of the scaled image
-Size calculateSizeOfScaledImage(double imageWidth, double imageHeight,
-    double? maxWidth, double? maxHeight) {
-  double originalWidth = imageWidth;
-  double originalHeight = imageHeight;
+Size calculateSizeOfDownScaledImage(
+    Size imageSize, double? maxWidth, double? maxHeight) {
+  double originalWidth = imageSize.width;
+  double originalHeight = imageSize.height;
 
   bool hasMaxWidth = maxWidth != null;
   bool hasMaxHeight = maxHeight != null;
