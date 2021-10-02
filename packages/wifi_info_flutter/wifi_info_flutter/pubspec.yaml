@@ -1,5 +1,5 @@
 name: wifi_info_flutter
-description: A new flutter plugin project.
+description: A Flutter plugin to get WiFi information such as connection status and network identifiers.
 repository: https://github.com/flutter/plugins/tree/master/packages/wifi_info_flutter/wifi_info_flutter
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+wifi_info_flutter%22
 version: 2.0.2
