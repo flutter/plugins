@@ -123,21 +123,21 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<String> evaluateJavascript(String javascriptString) {
+  Future<String> evaluateJavascript(String javascript) {
     return _channel
-        .invokeMethod<String>('evaluateJavascript', javascriptString)
+        .invokeMethod<String>('evaluateJavascript', javascript)
         .then((result) => result!);
   }
 
   @override
-  Future<void> runJavaScript(String javaScriptString) async {
-    await _channel.invokeMethod<String>('runJavaScript', javaScriptString);
+  Future<void> runJavascript(String javascript) async {
+    await _channel.invokeMethod<String>('runJavascript', javascript);
   }
 
   @override
-  Future<String> runJavaScriptForResult(String javaScriptString) {
+  Future<String> runJavascriptReturningResult(String javascript) {
     return _channel
-        .invokeMethod<String>('runJavaScriptForResult', javaScriptString)
+        .invokeMethod<String>('runJavascriptReturningResult', javascript)
         .then((result) => result!);
   }
 

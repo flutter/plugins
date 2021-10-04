@@ -193,16 +193,16 @@ class _SampleMenu extends StatelessWidget {
 
   void _onShowUserAgent(
       WebViewController controller, BuildContext context) async {
-    // Send a message with the user agent string to the Snackbar JavaScript channel we registered
+    // Send a message with the user agent string to the Snackbar Javascript channel we registered
     // with the WebView.
-    await controller.runJavaScript(
+    await controller.runJavascript(
         'Snackbar.postMessage("User Agent: " + navigator.userAgent);');
   }
 
   void _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
-        await controller.runJavaScriptForResult('document.cookie');
+        await controller.runJavascriptReturningResult('document.cookie');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
@@ -217,7 +217,7 @@ class _SampleMenu extends StatelessWidget {
   }
 
   void _onAddToCache(WebViewController controller, BuildContext context) async {
-    await controller.runJavaScript(
+    await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
@@ -226,7 +226,7 @@ class _SampleMenu extends StatelessWidget {
   }
 
   void _onListCache(WebViewController controller, BuildContext context) async {
-    await controller.runJavaScript('caches.keys()'
+    await controller.runJavascript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Snackbar.postMessage(caches))');
   }

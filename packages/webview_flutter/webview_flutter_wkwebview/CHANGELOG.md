@@ -1,6 +1,6 @@
 ## 2.1.0
 
-* Implemented new `runJavaScript` and `runJavaScriptForResult` methods in platform interface.
+* Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
 
 ## 2.0.14
 

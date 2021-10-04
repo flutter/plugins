@@ -17,21 +17,21 @@ import java.util.HashMap;
  * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message over a method
  * channel to the Dart code.
  */
-class JavaScriptChannel {
+class JavascriptChannel {
   private final MethodChannel methodChannel;
-  private final String javaScriptChannelName;
+  private final String javascriptChannelName;
   private final Handler platformThreadHandler;
 
   /**
    * @param methodChannel the Flutter WebView method channel to which JS messages are sent
-   * @param javaScriptChannelName the name of the JavaScript channel, this is sent over the method
+   * @param javascriptChannelName the name of the JavaScript channel, this is sent over the method
    *     channel with each message to let the Dart code know which JavaScript channel the message
    *     was sent through
    */
-  JavaScriptChannel(
-      MethodChannel methodChannel, String javaScriptChannelName, Handler platformThreadHandler) {
+  JavascriptChannel(
+      MethodChannel methodChannel, String javascriptChannelName, Handler platformThreadHandler) {
     this.methodChannel = methodChannel;
-    this.javaScriptChannelName = javaScriptChannelName;
+    this.javascriptChannelName = javascriptChannelName;
     this.platformThreadHandler = platformThreadHandler;
   }
 
@@ -44,7 +44,7 @@ class JavaScriptChannel {
           @Override
           public void run() {
             HashMap<String, String> arguments = new HashMap<>();
-            arguments.put("channel", javaScriptChannelName);
+            arguments.put("channel", javascriptChannelName);
             arguments.put("message", message);
             methodChannel.invokeMethod("javascriptChannelMessage", arguments);
           }
