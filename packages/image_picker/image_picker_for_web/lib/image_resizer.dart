@@ -41,9 +41,7 @@ class ImageResizer {
       imageLoadCompleter.complete(imageElement);
     });
     imageElement.onError.listen((event) {
-      final excpetion = Exception(
-          "Error while loading image."
-      );
+      final excpetion = Exception("Error while loading image.");
       imageElement.remove();
       imageLoadCompleter.completeError(excpetion);
     });
@@ -51,8 +49,8 @@ class ImageResizer {
   }
 
   /// Draws image to a canvas while resizing the image to fit the [maxWidth],[maxHeight] constraints
-  html.CanvasElement resizeImageElement(html.ImageElement source,
-      double? maxWidth, double? maxHeight) {
+  html.CanvasElement resizeImageElement(
+      html.ImageElement source, double? maxWidth, double? maxHeight) {
     final newImageSize = calculateSizeOfDownScaledImage(
         Size(source.width!.toDouble(), source.height!.toDouble()),
         maxWidth,
@@ -71,11 +69,11 @@ class ImageResizer {
 
   /// function that converts a canvas element to Xfile
   /// [imageQuality] is only supported for jpeg and webp images.
-  Future<XFile> writeCanvasToFile(XFile originalFile,
-      html.CanvasElement canvas, int? imageQuality) async {
+  Future<XFile> writeCanvasToFile(
+      XFile originalFile, html.CanvasElement canvas, int? imageQuality) async {
     final calculatedImageQuality = ((min(imageQuality ?? 100, 100)) / 100.0);
-    final blob = await canvas.toBlob(
-        originalFile.mimeType, calculatedImageQuality);
+    final blob =
+        await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
     return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: originalFile.mimeType,
         name: "scaled_" + originalFile.name,
