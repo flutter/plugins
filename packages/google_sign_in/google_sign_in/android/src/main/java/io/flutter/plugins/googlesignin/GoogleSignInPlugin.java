@@ -60,24 +60,12 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
   private MethodChannel channel;
   private ActivityPluginBinding activityPluginBinding;
 
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    GoogleSignInPlugin instance = new GoogleSignInPlugin();
-    instance.initInstance(registrar.messenger(), registrar.context(), new GoogleSignInWrapper());
-    instance.setUpRegistrar(registrar);
-  }
-
   @VisibleForTesting
   public void initInstance(
       BinaryMessenger messenger, Context context, GoogleSignInWrapper googleSignInWrapper) {
     channel = new MethodChannel(messenger, CHANNEL_NAME);
     delegate = new Delegate(context, googleSignInWrapper);
     channel.setMethodCallHandler(this);
-  }
-
-  @VisibleForTesting
-  public void setUpRegistrar(PluginRegistry.Registrar registrar) {
-    delegate.setUpRegistrar(registrar);
   }
 
   private void dispose() {
@@ -266,8 +254,6 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
     private static final String DEFAULT_GAMES_SIGN_IN = "SignInOption.games";
 
     private final Context context;
-    // Only set registrar for v1 embedder.
-    private PluginRegistry.Registrar registrar;
     // Only set activity for v2 embedder. Always access activity from getActivity() method.
     private Activity activity;
     private final BackgroundTaskRunner backgroundTaskRunner = new BackgroundTaskRunner(1);
@@ -282,18 +268,13 @@ public class GoogleSignInPlugin implements MethodCallHandler, FlutterPlugin, Act
       this.googleSignInWrapper = googleSignInWrapper;
     }
 
-    public void setUpRegistrar(PluginRegistry.Registrar registrar) {
-      this.registrar = registrar;
-      registrar.addActivityResultListener(this);
-    }
-
     public void setActivity(Activity activity) {
       this.activity = activity;
     }
 
     // Only access activity with this method.
     public Activity getActivity() {
-      return registrar != null ? registrar.activity() : activity;
+      return activity;
     }
 
     private void checkAndSetPendingOperation(String method, Result result) {
