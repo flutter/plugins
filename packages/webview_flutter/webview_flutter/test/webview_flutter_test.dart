@@ -405,7 +405,7 @@ void main() {
         },
       ),
     );
-    await controller.runJavaScript('fake js string');
+    await controller.runJavascript('fake js string');
     expect(fakePlatformViewsController.lastCreatedView?.lastRunJavaScriptString,
         'fake js string');
   });
@@ -423,7 +423,7 @@ void main() {
       ),
     );
     expect(
-      () => controller.runJavaScript('fake js string'),
+      () => controller.runJavascript('fake js string'),
       throwsA(anything),
     );
   });
@@ -439,7 +439,7 @@ void main() {
         },
       ),
     );
-    expect(await controller.runJavaScriptForResult("fake js string"),
+    expect(await controller.runJavascriptReturningResult("fake js string"),
         "fake js string",
         reason: 'should get the argument');
   });
@@ -457,7 +457,7 @@ void main() {
       ),
     );
     expect(
-      () => controller.runJavaScriptForResult('fake js string'),
+      () => controller.runJavascriptReturningResult('fake js string'),
       throwsA(anything),
     );
   });
