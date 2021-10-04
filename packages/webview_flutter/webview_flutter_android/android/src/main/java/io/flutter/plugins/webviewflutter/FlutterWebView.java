@@ -123,7 +123,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       List<String> names = (List<String>) params.get(JS_CHANNEL_NAMES_FIELD);
       if (names != null) {
-        registerJavaScriptChannelNames(names);
+        registerJavascriptChannelNames(names);
       }
     }
 
@@ -149,7 +149,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
    *
    * <ul>
    *   <li>always enable the DOM storage API;
-   *   <li>always allow JavaScript to automatically open windows;
+   *   <li>always allow Javascript to automatically open windows;
    *   <li>always allow support for multiple windows;
    *   <li>always use the {@link FlutterWebChromeClient} as web Chrome client.
    * </ul>
@@ -244,17 +244,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         currentUrl(result);
         break;
       case "evaluateJavascript":
-      case "runJavaScriptForResult":
-        evaluateJavaScript(methodCall, result, true);
+      case "runJavascriptReturningResult":
+        evaluateJavascript(methodCall, result, true);
         break;
-      case "runJavaScript":
-        evaluateJavaScript(methodCall, result, false);
+      case "runJavascript":
+        evaluateJavascript(methodCall, result, false);
         break;
       case "addJavascriptChannels":
-        addJavaScriptChannels(methodCall, result);
+        addJavascriptChannels(methodCall, result);
         break;
       case "removeJavascriptChannels":
-        removeJavaScriptChannels(methodCall, result);
+        removeJavascriptChannels(methodCall, result);
         break;
       case "clearCache":
         clearCache(result);
@@ -329,11 +329,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void evaluateJavaScript(
+  private void evaluateJavascript(
       MethodCall methodCall, final Result result, final boolean returnValue) {
     String jsString = (String) methodCall.arguments;
     if (jsString == null) {
-      throw new UnsupportedOperationException("JavaScript string cannot be null");
+      throw new UnsupportedOperationException("Javascript string cannot be null");
     }
     webView.evaluateJavascript(
         jsString,
@@ -350,14 +350,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @SuppressWarnings("unchecked")
-  private void addJavaScriptChannels(MethodCall methodCall, Result result) {
+  private void addJavascriptChannels(MethodCall methodCall, Result result) {
     List<String> channelNames = (List<String>) methodCall.arguments;
-    registerJavaScriptChannelNames(channelNames);
+    registerJavascriptChannelNames(channelNames);
     result.success(null);
   }
 
   @SuppressWarnings("unchecked")
-  private void removeJavaScriptChannels(MethodCall methodCall, Result result) {
+  private void removeJavascriptChannels(MethodCall methodCall, Result result) {
     List<String> channelNames = (List<String>) methodCall.arguments;
     for (String channelName : channelNames) {
       webView.removeJavascriptInterface(channelName);
@@ -452,7 +452,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         webView.getSettings().setJavaScriptEnabled(true);
         break;
       default:
-        throw new IllegalArgumentException("Trying to set unknown JavaScript mode: " + mode);
+        throw new IllegalArgumentException("Trying to set unknown Javascript mode: " + mode);
     }
   }
 
@@ -465,10 +465,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void registerJavaScriptChannelNames(List<String> channelNames) {
+  private void registerJavascriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
+          new JavascriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 

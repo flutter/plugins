@@ -88,7 +88,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
-- (void)testRunJavaScriptFailsForNullString {
+- (void)testRunJavascriptFailsForNullString {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -99,7 +99,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
       [self expectationWithDescription:@"Should return error result over the method channel."];
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScript"
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
                                                              arguments:nil]
                     result:^(id _Nullable result) {
                       XCTAssertTrue([result class] == [FlutterError class]);
@@ -110,7 +110,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testRunJavaScriptRunsStringWithSuccessResult {
+- (void)testRunJavascriptRunsStringWithSuccessResult {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -130,8 +130,8 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   controller.webView = mockView;
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScript"
-                                                             arguments:@"Test JavaScript String"]
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
+                                                             arguments:@"Test Javascript String"]
                     result:^(id _Nullable result) {
                       XCTAssertNil(result);
                       [resultExpectation fulfill];
@@ -141,7 +141,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testRunJavaScriptReturnsErrorResultForWKError {
+- (void)testRunJavascriptReturnsErrorResultForWKError {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -152,7 +152,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
       [self expectationWithDescription:@"Should return error result over the method channel."];
   NSError *testError =
       [NSError errorWithDomain:@""
-                          // Any error code but WKErrorJavaScriptResultTypeIsUnsupported
+                          // Any error code but WKErrorJavascriptResultTypeIsUnsupported
                           code:WKErrorJavaScriptResultTypeIsUnsupported + 1
                       userInfo:@{NSLocalizedDescriptionKey : @"Test Error"}];
   FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
@@ -166,8 +166,8 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   controller.webView = mockView;
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScript"
-                                                             arguments:@"Test JavaScript String"]
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
+                                                             arguments:@"Test Javascript String"]
                     result:^(id _Nullable result) {
                       XCTAssertTrue([result class] == [FlutterError class]);
                       [resultExpectation fulfill];
@@ -177,7 +177,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testRunJavaScriptReturnsSuccessForWKErrorJavaScriptResultTypeIsUnsupported {
+- (void)testRunJavascriptReturnsSuccessForWKErrorJavascriptResultTypeIsUnsupported {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -200,8 +200,8 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   controller.webView = mockView;
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScript"
-                                                             arguments:@"Test JavaScript String"]
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
+                                                             arguments:@"Test Javascript String"]
                     result:^(id _Nullable result) {
                       XCTAssertNil(result);
                       [resultExpectation fulfill];
@@ -211,7 +211,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testRunJavaScriptForResultFailsForNullString {
+- (void)testRunJavascriptReturningResultFailsForNullString {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -222,18 +222,19 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
       [self expectationWithDescription:@"Should return error result over the method channel."];
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScriptForResult"
-                                                             arguments:nil]
-                    result:^(id _Nullable result) {
-                      XCTAssertTrue([result class] == [FlutterError class]);
-                      [resultExpectation fulfill];
-                    }];
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascriptReturningResult"
+                                                     arguments:nil]
+            result:^(id _Nullable result) {
+              XCTAssertTrue([result class] == [FlutterError class]);
+              [resultExpectation fulfill];
+            }];
 
   // Verify
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testRunJavaScriptForResultRunsStringWithSuccessResult {
+- (void)testRunJavascriptReturningResultRunsStringWithSuccessResult {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -253,18 +254,19 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   controller.webView = mockView;
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScriptForResult"
-                                                             arguments:@"Test JavaScript String"]
-                    result:^(id _Nullable result) {
-                      XCTAssertTrue([@"RESULT" isEqualToString:result]);
-                      [resultExpectation fulfill];
-                    }];
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascriptReturningResult"
+                                                     arguments:@"Test Javascript String"]
+            result:^(id _Nullable result) {
+              XCTAssertTrue([@"RESULT" isEqualToString:result]);
+              [resultExpectation fulfill];
+            }];
 
   // Verify
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
-- (void)testRunJavaScriptForResultReturnsErrorResultForWKError {
+- (void)testRunJavascriptReturningResultReturnsErrorResultForWKError {
   // Setup
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
@@ -287,12 +289,13 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   controller.webView = mockView;
 
   // Run
-  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavaScriptForResult"
-                                                             arguments:@"Test JavaScript String"]
-                    result:^(id _Nullable result) {
-                      XCTAssertTrue([result class] == [FlutterError class]);
-                      [resultExpectation fulfill];
-                    }];
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascriptReturningResult"
+                                                     arguments:@"Test Javascript String"]
+            result:^(id _Nullable result) {
+              XCTAssertTrue([result class] == [FlutterError class]);
+              [resultExpectation fulfill];
+            }];
 
   // Verify
   [self waitForExpectationsWithTimeout:30.0 handler:nil];

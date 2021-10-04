@@ -72,7 +72,7 @@ public class FlutterWebViewTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void evaluateJavaScript_shouldThrowForNullString() {
+  public void evaluateJavascript_shouldThrowForNullString() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -92,12 +92,12 @@ public class FlutterWebViewTest {
           new FlutterWebView(mockContext, mockMethodChannel, new HashMap<String, Object>(), null);
 
       // Run
-      flutterWebView.onMethodCall(new MethodCall("runJavaScript", null), mockResult);
+      flutterWebView.onMethodCall(new MethodCall("runJavascript", null), mockResult);
     }
   }
 
   @Test
-  public void evaluateJavaScript_shouldReturnValueOnSuccessForReturnValue() {
+  public void evaluateJavascript_shouldReturnValueOnSuccessForReturnValue() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -112,25 +112,25 @@ public class FlutterWebViewTest {
       doAnswer(
               invocation -> {
                 android.webkit.ValueCallback<String> callback = invocation.getArgument(1);
-                callback.onReceiveValue("Test JavaScript Result");
+                callback.onReceiveValue("Test Javascript Result");
                 return null;
               })
           .when(mockWebView)
-          .evaluateJavascript(eq("Test JavaScript String"), any());
+          .evaluateJavascript(eq("Test Javascript String"), any());
       FlutterWebView flutterWebView =
           new FlutterWebView(mockContext, mockMethodChannel, new HashMap<String, Object>(), null);
 
       // Run
       flutterWebView.onMethodCall(
-          new MethodCall("runJavaScriptForResult", "Test JavaScript String"), mockResult);
+          new MethodCall("runJavascriptReturningResult", "Test Javascript String"), mockResult);
 
       // Verify
-      verify(mockResult, times(1)).success("Test JavaScript Result");
+      verify(mockResult, times(1)).success("Test Javascript Result");
     }
   }
 
   @Test
-  public void evaluateJavaScript_shouldReturnNilOnSuccessForNoReturnValue() {
+  public void evaluateJavascript_shouldReturnNilOnSuccessForNoReturnValue() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -145,17 +145,17 @@ public class FlutterWebViewTest {
       doAnswer(
               invocation -> {
                 android.webkit.ValueCallback<String> callback = invocation.getArgument(1);
-                callback.onReceiveValue("Test JavaScript Result");
+                callback.onReceiveValue("Test Javascript Result");
                 return null;
               })
           .when(mockWebView)
-          .evaluateJavascript(eq("Test JavaScript String"), any());
+          .evaluateJavascript(eq("Test Javascript String"), any());
       FlutterWebView flutterWebView =
           new FlutterWebView(mockContext, mockMethodChannel, new HashMap<String, Object>(), null);
 
       // Run
       flutterWebView.onMethodCall(
-          new MethodCall("runJavaScript", "Test JavaScript String"), mockResult);
+          new MethodCall("runJavascript", "Test Javascript String"), mockResult);
 
       // Verify
       verify(mockResult, times(1)).success(isNull());
