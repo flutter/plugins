@@ -41,9 +41,9 @@ class ImageResizer {
       imageLoadCompleter.complete(imageElement);
     });
     imageElement.onError.listen((event) {
-      final excpetion = Exception("Error while loading image.");
+      final exception = Exception("Error while loading image.");
       imageElement.remove();
-      imageLoadCompleter.completeError(excpetion);
+      imageLoadCompleter.completeError(exception);
     });
     return imageLoadCompleter.future;
   }
