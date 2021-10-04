@@ -1,6 +1,7 @@
-## NEXT
+## 2.0.3+1
 
 * Updated Android lint settings.
+* Remove placeholder Dart file.
 
 ## 2.0.3
 
