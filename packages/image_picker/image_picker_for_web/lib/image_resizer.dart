@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:html';
 import 'dart:math';
 import 'dart:ui';
+import 'package:flutter/services.dart';
 import 'package:image_picker_for_web/image_resizer_utils.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'dart:html' as html;
@@ -20,18 +22,19 @@ class ImageResizer {
       //TODO Implement maxWidth and maxHeight for image/gif
       return file;
     }
-    final imageElement = await loadImage(file.path);
-    if (imageElement == null) {
+    try {
+      final imageElement = await loadImage(file.path);
+      final canvas = resizeImageElement(imageElement, maxWidth, maxHeight);
+      return writeCanvasToFile(file, canvas, imageQuality);
+    }catch(e){
       return file;
     }
-    final canvas = resizeImageElement(imageElement, maxWidth, maxHeight);
-    return writeCanvasToFile(file, canvas, imageQuality);
   }
 
   /// function that loads the blobUrl into an imageElement
   /// returns null if error comes while loading the image
-  Future<html.ImageElement?> loadImage(String blobUrl) {
-    final imageLoadCompleter = Completer<html.ImageElement?>();
+  Future<html.ImageElement> loadImage(String blobUrl) {
+    final imageLoadCompleter = Completer<html.ImageElement>();
     final imageElement = html.ImageElement();
     imageElement.src = blobUrl;
 
@@ -40,14 +43,18 @@ class ImageResizer {
       imageLoadCompleter.complete(imageElement);
     });
     imageElement.onError.listen((event) {
-      imageLoadCompleter.complete(null);
+      final excpetion = Exception(
+          "Error while loading image."
+      );
+      imageElement.remove();
+      imageLoadCompleter.completeError(excpetion);
     });
     return imageLoadCompleter.future;
   }
 
   /// Draws image to a canvas while resizing the image to fit the [maxWidth],[maxHeight] constraints
-  html.CanvasElement resizeImageElement(
-      html.ImageElement source, double? maxWidth, double? maxHeight) {
+  html.CanvasElement resizeImageElement(html.ImageElement source,
+      double? maxWidth, double? maxHeight) {
     final newImageSize = calculateSizeOfDownScaledImage(
         Size(source.width!.toDouble(), source.height!.toDouble()),
         maxWidth,
@@ -66,11 +73,11 @@ class ImageResizer {
 
   /// function that converts a canvas element to Xfile
   /// [imageQuality] is only supported for jpeg and webp images.
-  Future<XFile> writeCanvasToFile(
-      XFile originalFile, html.CanvasElement canvas, int? imageQuality) async {
+  Future<XFile> writeCanvasToFile(XFile originalFile,
+      html.CanvasElement canvas, int? imageQuality) async {
     final calculatedImageQuality = ((min(imageQuality ?? 100, 100)) / 100.0);
     final blob =
-        await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
+    await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
     return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: originalFile.mimeType,
         name: "scaled_" + originalFile.name,

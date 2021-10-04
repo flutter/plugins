@@ -40,7 +40,6 @@ Size calculateSizeOfDownScaledImage(
         ((height / originalHeight) * originalWidth).floorToDouble();
     double downscaledHeight =
         ((width / originalWidth) * originalHeight).floorToDouble();
-
     if (width < height) {
       if (!hasMaxWidth) {
         width = downscaledWidth;
