@@ -106,8 +106,8 @@ abstract class WebViewPlatformController {
   /// Evaluates a JavaScript expression in the context of the current page.
   ///
   /// The Future completes with an error if a JavaScript error occurred, or if the type of the
-  /// evaluated expression is not supported(e.g on iOS not all non primitive type can be evaluated).
-  Future<String> evaluateJavascript(String javascriptString) {
+  /// evaluated expression is not supported (e.g on iOS not all non primitive types can be evaluated).
+  Future<String> evaluateJavascript(String javaScript) {
     throw UnimplementedError(
         "WebView evaluateJavascript is not implemented on the current platform");
   }
@@ -115,16 +115,17 @@ abstract class WebViewPlatformController {
   /// Runs the given JavaScript in the context of the current page.
   ///
   /// The Future completes with an error if a JavaScript error occurred.
-  Future<void> runJavaScript(String javaScriptString) {
+  Future<void> runJavaScript(String javaScript) {
     throw UnimplementedError(
         "WebView runJavaScript is not implemented on the current platform");
   }
 
   /// Runs the given JavaScript in the context of the current page, and returns the result.
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or if the type of the
-  /// evaluated expression is not supported(e.g on iOS not all non primitive type can be evaluated).
-  Future<String> runJavaScriptForResult(String javaScriptString) {
+  /// The Future completes with an error if a JavaScript error occurred, or if the
+  /// type the given expression evaluates to is unsupported. Unsupported values include
+  /// certain non primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
+  Future<String> runJavaScriptForResult(String javaScript) {
     throw UnimplementedError(
         "WebView runJavaScriptForResult is not implemented on the current platform");
   }
