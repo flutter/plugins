@@ -3,10 +3,8 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'dart:html';
 import 'dart:math';
 import 'dart:ui';
-import 'package:flutter/services.dart';
 import 'package:image_picker_for_web/image_resizer_utils.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'dart:html' as html;
@@ -26,7 +24,7 @@ class ImageResizer {
       final imageElement = await loadImage(file.path);
       final canvas = resizeImageElement(imageElement, maxWidth, maxHeight);
       return writeCanvasToFile(file, canvas, imageQuality);
-    }catch(e){
+    } catch (e) {
       return file;
     }
   }
@@ -76,8 +74,8 @@ class ImageResizer {
   Future<XFile> writeCanvasToFile(XFile originalFile,
       html.CanvasElement canvas, int? imageQuality) async {
     final calculatedImageQuality = ((min(imageQuality ?? 100, 100)) / 100.0);
-    final blob =
-    await canvas.toBlob(originalFile.mimeType, calculatedImageQuality);
+    final blob = await canvas.toBlob(
+        originalFile.mimeType, calculatedImageQuality);
     return XFile(html.Url.createObjectUrlFromBlob(blob),
         mimeType: originalFile.mimeType,
         name: "scaled_" + originalFile.name,
