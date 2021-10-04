@@ -17,7 +17,7 @@ bool isImageQualityValid(int imageQuality) {
   return (imageQuality >= 0 && imageQuality <= 100);
 }
 
-/// a functions that calculates the size of the downScaled image.
+/// a function that calculates the size of the downScaled image.
 /// imageWidth is the width of the image
 /// imageHeight is the height of  the image
 /// maxWidth is the maximum width of the scaled image
