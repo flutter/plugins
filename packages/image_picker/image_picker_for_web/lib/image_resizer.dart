@@ -30,7 +30,6 @@ class ImageResizer {
   }
 
   /// function that loads the blobUrl into an imageElement
-  /// returns null if error comes while loading the image
   Future<html.ImageElement> loadImage(String blobUrl) {
     final imageLoadCompleter = Completer<html.ImageElement>();
     final imageElement = html.ImageElement();
@@ -41,7 +40,7 @@ class ImageResizer {
       imageLoadCompleter.complete(imageElement);
     });
     imageElement.onError.listen((event) {
-      final exception = Exception("Error while loading image.");
+      final exception = ("Error while loading image.");
       imageElement.remove();
       imageLoadCompleter.completeError(exception);
     });
