@@ -1,4 +1,4 @@
-## 2.0.3+1
+## 2.0.4
 
 * Updated Android lint settings.
 * Remove placeholder Dart file.
