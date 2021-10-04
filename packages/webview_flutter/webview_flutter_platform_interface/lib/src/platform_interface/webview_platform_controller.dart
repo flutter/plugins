@@ -103,37 +103,38 @@ abstract class WebViewPlatformController {
         "WebView clearCache is not implemented on the current platform");
   }
 
-  /// Evaluates a JavaScript expression in the context of the current page.
+  /// Evaluates a Javascript expression in the context of the current page.
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or if the type of the
-  /// evaluated expression is not supported(e.g on iOS not all non primitive type can be evaluated).
-  Future<String> evaluateJavascript(String javascriptString) {
+  /// The Future completes with an error if a Javascript error occurred, or if the type of the
+  /// evaluated expression is not supported (e.g on iOS not all non primitive types can be evaluated).
+  Future<String> evaluateJavascript(String javascript) {
     throw UnimplementedError(
         "WebView evaluateJavascript is not implemented on the current platform");
   }
 
-  /// Runs the given JavaScript in the context of the current page.
+  /// Runs the given Javascript in the context of the current page.
   ///
-  /// The Future completes with an error if a JavaScript error occurred.
-  Future<void> runJavaScript(String javaScriptString) {
+  /// The Future completes with an error if a Javascript error occurred.
+  Future<void> runJavascript(String javascript) {
     throw UnimplementedError(
-        "WebView runJavaScript is not implemented on the current platform");
+        "WebView runJavascript is not implemented on the current platform");
   }
 
-  /// Runs the given JavaScript in the context of the current page, and returns the result.
+  /// Runs the given Javascript in the context of the current page, and returns the result.
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or if the type of the
-  /// evaluated expression is not supported(e.g on iOS not all non primitive type can be evaluated).
-  Future<String> runJavaScriptForResult(String javaScriptString) {
+  /// The Future completes with an error if a Javascript error occurred, or if the
+  /// type the given expression evaluates to is unsupported. Unsupported values include
+  /// certain non primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
+  Future<String> runJavascriptReturningResult(String javascript) {
     throw UnimplementedError(
-        "WebView runJavaScriptForResult is not implemented on the current platform");
+        "WebView runJavascriptReturningResult is not implemented on the current platform");
   }
 
-  /// Adds new JavaScript channels to the set of enabled channels.
+  /// Adds new Javascript channels to the set of enabled channels.
   ///
   /// For each value in this list the platform's webview should make sure that a corresponding
-  /// property with a postMessage method is set on `window`. For example for a JavaScript channel
-  /// named `Foo` it should be possible for JavaScript code executing in the webview to do
+  /// property with a postMessage method is set on `window`. For example for a Javascript channel
+  /// named `Foo` it should be possible for Javascript code executing in the webview to do
   ///
   /// ```javascript
   /// Foo.postMessage('hello');
@@ -145,9 +146,9 @@ abstract class WebViewPlatformController {
         "WebView addJavascriptChannels is not implemented on the current platform");
   }
 
-  /// Removes JavaScript channel names from the set of enabled channels.
+  /// Removes Javascript channel names from the set of enabled channels.
   ///
-  /// This disables channels that were previously enabled by [addJavaScriptChannels] or through
+  /// This disables channels that were previously enabled by [addJavascriptChannels] or through
   /// [CreationParams.javascriptChannelNames].
   Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
     throw UnimplementedError(
