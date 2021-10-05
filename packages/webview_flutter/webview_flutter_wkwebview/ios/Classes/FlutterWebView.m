@@ -348,6 +348,9 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+    } else if ([key isEqualToString:@"zoomEnabled"]) {
+      NSNumber* zoomEnabled = settings[key];
+      _navigationDelegate.shouldEnableZoom = [zoomEnabled boolValue];
     } else {
       [unknownKeys addObject:key];
     }
