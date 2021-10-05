@@ -9,6 +9,17 @@ enabled_branches:
   - master
 
 platform_properties:
+  linux:
+    properties:
+      caches: >-
+        [
+        ]
+      dependencies: >
+        [
+          {"dependency": "curl"}
+        ]
+      device_type: none
+      os: Linux
   windows:
     properties:
       caches: >-
@@ -24,23 +35,79 @@ platform_properties:
       os: Windows
 
 targets:
-  - name: Windows Plugins master channel
+  - name: Windows win32-platform_tests master
     recipe: plugins/plugins
     timeout: 30
     properties:
+      add_recipes_cq: "true"
+      target_file: windows_build_and_platform_tests.yaml
       dependencies: >
         [
           {"dependency": "vs_build"}
         ]
     scheduler: luci
 
-  - name: Windows Plugins stable channel
+  - name: Windows win32-platform_tests stable
     recipe: plugins/plugins
     timeout: 30
     properties:
+      add_recipes_cq: "true"
+      target_file: windows_build_and_platform_tests.yaml
       channel: stable
       dependencies: >
         [
           {"dependency": "vs_build"}
         ]
     scheduler: luci
+
+  - name: Windows windows-build_all_plugins master
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      target_file: build_all_plugins.yaml
+      dependencies: >
+        [
+          {"dependency": "vs_build"}
+        ]
+    scheduler: luci
+
+  - name: Windows windows-build_all_plugins stable
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      target_file: build_all_plugins.yaml
+      channel: stable
+      dependencies: >
+        [
+          {"dependency": "vs_build"}
+        ]
+    scheduler: luci
+
+  - name: Windows uwp-platform_tests master
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      target_file: uwp_build_and_platform_tests.yaml
+      dependencies: >
+        [
+          {"dependency": "vs_build"}
+        ]
+    scheduler: luci
+
+  - name: Windows plugin_tools_tests
+    recipe: plugins/plugins
+    timeout: 30
+    properties:
+      add_recipes_cq: "true"
+      target_file: plugin_tools_tests.yaml
+    scheduler: luci
+
+  - name: Linux ci_yaml plugins roller
+    recipe: infra/ci_yaml
+    timeout: 30
+    scheduler: luci
+    runIf:
+      - .ci.yaml

@@ -196,6 +196,9 @@ enum DataSourceType {
 
   /// The video was loaded off of the local filesystem.
   file,
+
+  /// The video is available via contentUri. Android only.
+  contentUri,
 }
 
 /// The file format of the given video.

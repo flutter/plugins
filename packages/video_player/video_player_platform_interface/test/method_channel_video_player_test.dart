@@ -92,10 +92,12 @@ class _ApiLogger implements TestHostVideoPlayerApi {
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Store the initial instance before any tests change it.
+  final VideoPlayerPlatform initialInstance = VideoPlayerPlatform.instance;
+
   group('$VideoPlayerPlatform', () {
     test('$MethodChannelVideoPlayer() is the default instance', () {
-      expect(VideoPlayerPlatform.instance,
-          isInstanceOf<MethodChannelVideoPlayer>());
+      expect(initialInstance, isInstanceOf<MethodChannelVideoPlayer>());
     });
   });
 

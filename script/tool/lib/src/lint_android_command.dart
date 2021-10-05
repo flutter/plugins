@@ -10,6 +10,7 @@ import 'common/core.dart';
 import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 /// Lint the CocoaPod podspecs and run unit tests.
 ///
@@ -30,22 +31,22 @@ class LintAndroidCommand extends PackageLoopingCommand {
       'Requires the example to have been build at least once before running.';
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     if (!pluginSupportsPlatform(kPlatformAndroid, package,
         requiredMode: PlatformSupport.inline)) {
       return PackageResult.skip(
           'Plugin does not have an Android implemenatation.');
     }
 
-    final Directory exampleDirectory = package.childDirectory('example');
-    final GradleProject project = GradleProject(exampleDirectory,
+    final RepositoryPackage example = package.getSingleExampleDeprecated();
+    final GradleProject project = GradleProject(example.directory,
         processRunner: processRunner, platform: platform);
 
     if (!project.isConfigured()) {
       return PackageResult.fail(<String>['Build example before linting']);
     }
 
-    final String packageName = package.basename;
+    final String packageName = package.directory.basename;
 
     // Only lint one build mode to avoid extra work.
     // Only lint the plugin project itself, to avoid failing due to errors in

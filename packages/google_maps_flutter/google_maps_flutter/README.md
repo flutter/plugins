@@ -60,7 +60,7 @@ if (defaultTargetPlatform == TargetPlatform.android) {
 
 ### iOS
 
-Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
+This plugin requires iOS 9.0 or higher. To set up, specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
 
 ```objectivec
 #include "AppDelegate.h"

@@ -1,4 +1,12 @@
-## 0.1.0
+## 0.2.1+1
 
-* Initial release
-  * Added CameraOptions used to constrain the camera audio and video.
+* Update usage documentation.
+
+## 0.2.1
+
+* Add video recording functionality.
+* Fix cameraNotReadable error that prevented access to the camera on some Android devices.
+
+## 0.2.0
+
+* Initial release, adapted from the Flutter [I/O Photobooth](https://photobooth.flutter.dev/) project.

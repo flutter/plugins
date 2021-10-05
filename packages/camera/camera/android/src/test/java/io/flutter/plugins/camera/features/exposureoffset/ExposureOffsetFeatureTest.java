@@ -17,7 +17,7 @@ import org.junit.Test;
 
 public class ExposureOffsetFeatureTest {
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
 
@@ -25,7 +25,7 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void getValue_should_return_zero_if_not_set() {
+  public void getValue_shouldReturnZeroIfNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
 
@@ -35,7 +35,7 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_the_set_value() {
+  public void getValue_shouldEchoTheSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
     double expectedValue = 4.0;
@@ -49,8 +49,7 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void
-      getExposureOffsetStepSize_should_return_the_control_exposure_compensation_step_value() {
+  public void getExposureOffsetStepSize_shouldReturnTheControlExposureCompensationStepValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
 
@@ -60,7 +59,7 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_true() {
+  public void checkIsSupported_shouldReturnTrue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);
 
@@ -68,7 +67,7 @@ public class ExposureOffsetFeatureTest {
   }
 
   @Test
-  public void updateBuilder_should_set_control_ae_exposure_compensation_to_offset() {
+  public void updateBuilder_shouldSetControlAeExposureCompensationToOffset() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     ExposureOffsetFeature exposureOffsetFeature = new ExposureOffsetFeature(mockCameraProperties);

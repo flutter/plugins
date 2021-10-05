@@ -19,7 +19,7 @@ void main() {
     });
     final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
     final PubVersionFinderResponse response =
-        await finder.getPackageVersion(package: 'some_package');
+        await finder.getPackageVersion(packageName: 'some_package');
 
     expect(response.versions, isEmpty);
     expect(response.result, PubVersionFinderResult.noPackageFound);
@@ -33,7 +33,7 @@ void main() {
     });
     final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
     final PubVersionFinderResponse response =
-        await finder.getPackageVersion(package: 'some_package');
+        await finder.getPackageVersion(packageName: 'some_package');
 
     expect(response.versions, isEmpty);
     expect(response.result, PubVersionFinderResult.fail);
@@ -64,7 +64,7 @@ void main() {
     });
     final PubVersionFinder finder = PubVersionFinder(httpClient: mockClient);
     final PubVersionFinderResponse response =
-        await finder.getPackageVersion(package: 'some_package');
+        await finder.getPackageVersion(packageName: 'some_package');
 
     expect(response.versions, <Version>[
       Version.parse('2.0.0'),
