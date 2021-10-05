@@ -219,16 +219,17 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
-      case "loadUrl": {
-        Map<String, Object> request = methodCall.arguments();
-        String url = (String) request.get("url");
-        Map<String, String> headers = (Map<String, String>) request.get("headers");
-        if (headers == null) {
-          headers = Collections.emptyMap();
+      case "loadUrl":
+        {
+          Map<String, Object> request = methodCall.arguments();
+          String url = (String) request.get("url");
+          Map<String, String> headers = (Map<String, String>) request.get("headers");
+          if (headers == null) {
+            headers = Collections.emptyMap();
+          }
+          loadUrl(webView, url, headers);
+          break;
         }
-        loadUrl(webView, url, headers);
-        break;
-      }
       case "updateSettings":
         updateSettings(webView, methodCall.<Map<String, Object>>arguments());
         break;
@@ -265,16 +266,18 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "getTitle":
         getTitle(webView);
         break;
-      case "scrollTo": {
-        Map<String, Object> request = methodCall.arguments();
-        scrollTo(webView, (int) request.get("x"), (int) request.get("y"));
-        break;
-      }
-      case "scrollBy": {
-        Map<String, Object> request = methodCall.arguments();
-        scrollBy(webView, (int) request.get("x"), (int) request.get("y"));
-        break;
-      }
+      case "scrollTo":
+        {
+          Map<String, Object> request = methodCall.arguments();
+          scrollTo(webView, (int) request.get("x"), (int) request.get("y"));
+          break;
+        }
+      case "scrollBy":
+        {
+          Map<String, Object> request = methodCall.arguments();
+          scrollBy(webView, (int) request.get("x"), (int) request.get("y"));
+          break;
+        }
       case "getScrollX":
         result.success(getScrollX(webView));
         break;
