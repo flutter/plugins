@@ -1,6 +1,6 @@
 ## 1.1.0
 
-* Added `runJavascript` and `runJavascriptReturningResult` interface methods to supersede `evaluateJavaScript`.
+* Added `runJavascript` and `runJavascriptReturningResult` interface methods to supersede `evaluateJavascript`.
 
 ## 1.0.0
 
