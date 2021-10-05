@@ -393,7 +393,8 @@ void main() {
       WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.runJavascriptReturningResult('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       controllerCompleter = Completer<WebViewController>();
@@ -453,7 +454,8 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.runJavascriptReturningResult('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       pageLoaded = Completer<void>();
@@ -649,7 +651,8 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.runJavascriptReturningResult('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       controllerCompleter = Completer<WebViewController>();
@@ -719,7 +722,8 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.runJavascriptReturningResult('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       pageStarted = Completer<void>();
@@ -1024,8 +1028,9 @@ void main() {
 
       // Check that the input is originally outside of the viewport.
 
-      final String initialInputClientRectJSON = await _runJavascriptReturningResult(
-          controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+      final String initialInputClientRectJSON =
+          await _runJavascriptReturningResult(
+              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
       final Map<String, dynamic> initialInputClientRectRelativeToViewport =
           jsonDecode(initialInputClientRectJSON);
 
@@ -1038,8 +1043,9 @@ void main() {
 
       // Check that focusing the input brought it into view.
 
-      final String lastInputClientRectJSON = await _runJavascriptReturningResult(
-          controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
+      final String lastInputClientRectJSON =
+          await _runJavascriptReturningResult(
+              controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
       final Map<String, dynamic> lastInputClientRectRelativeToViewport =
           jsonDecode(lastInputClientRectJSON);
 
@@ -1374,7 +1380,7 @@ void main() {
   );
 
   testWidgets(
-    'javascript does not run in parent window',
+    'JavaScript does not run in parent window',
     (WidgetTester tester) async {
       final String iframe = '''
         <!DOCTYPE html>
@@ -1443,7 +1449,7 @@ void main() {
   );
 }
 
-// Javascript booleans evaluate to different string values on Android and iOS.
+// JavaScript booleans evaluate to different string values on Android and iOS.
 // This utility method returns the string boolean value of the current platform.
 String _webviewBool(bool value) {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
