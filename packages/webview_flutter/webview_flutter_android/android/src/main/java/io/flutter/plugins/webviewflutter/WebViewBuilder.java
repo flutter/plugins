@@ -46,10 +46,7 @@ public class WebViewBuilder {
   private boolean usesHybridComposition;
   private WebChromeClient webChromeClient;
   private DownloadListener downloadListener;
-  private boolean builtInZoomControls;
-  private boolean loadWithOverviewMode;
-  private boolean useWideViewPort;
-  private boolean displayZoomControls;
+  private boolean enableBuiltInZoomControls;
 
   /**
    * Constructs a new {@link WebViewBuilder} object with a custom implementation of the {@link
@@ -147,8 +144,8 @@ public class WebViewBuilder {
    * @param flag {@code true} if built in zoom controls are allowed.
    * @return This builder. This value cannot be {@code null}.
    */
-  public WebViewBuilder enableBuiltInZoomControls(boolean flag) {
-    this.builtInZoomControls = flag;
+  public WebViewBuilder setZoomControlsEnabled(boolean flag) {
+    this.enableBuiltInZoomControls = flag;
     return this;
   }
 
@@ -167,7 +164,7 @@ public class WebViewBuilder {
     webSettings.setLoadWithOverviewMode(true);
     webSettings.setUseWideViewPort(true);
     webSettings.setDisplayZoomControls(false);
-    webSettings.setBuiltInZoomControls(builtInZoomControls);
+    webSettings.setBuiltInZoomControls(enableBuiltInZoomControls);
     webView.setWebChromeClient(webChromeClient);
     webView.setDownloadListener(downloadListener);
     return webView;

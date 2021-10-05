@@ -269,7 +269,7 @@ class WebView extends StatefulWidget {
   /// By default `userAgent` is null.
   final String? userAgent;
 
-  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  /// A Boolean value indicating whether the WebView should support zooming using its on-screen zoom controls and gestures.
   ///
   /// By default 'zoomEnabled' is true
   final bool zoomEnabled;
