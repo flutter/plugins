@@ -30,7 +30,7 @@ class PlaceMarkerBody extends StatefulWidget {
   State<StatefulWidget> createState() => PlaceMarkerBodyState();
 }
 
-typedef Marker MarkerUpdateAction(Marker marker);
+typedef MarkerUpdateAction = Marker Function(Marker marker);
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();

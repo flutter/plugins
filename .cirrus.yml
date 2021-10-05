@@ -69,6 +69,9 @@ task:
         - dart pub run test
     - name: publishable
       env:
+        # TODO (mvanbeusekom): Temporary override to "stable" because of failure on "master". 
+        # Remove override once https://github.com/dart-lang/pub/issues/3152 is resolved. 
+        CHANNEL: stable
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
         # For pre-submit, pass the PR description to the script to allow for
