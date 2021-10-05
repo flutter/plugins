@@ -250,7 +250,7 @@ class ImagePickerPlugin extends ImagePickerPlatform {
   Future<List<XFile>> _getSelectedXFiles(html.FileUploadInputElement input) {
     final Completer<List<XFile>> _completer = Completer<List<XFile>>();
     // Observe the input until we can return something
-    input.onChange.first.then((event) async {
+    input.onChange.first.then((event) {
       final files = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && files != null) {
         _completer.complete(files.map((file) {

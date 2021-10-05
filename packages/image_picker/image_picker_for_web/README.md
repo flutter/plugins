@@ -44,7 +44,7 @@ difference in your users' experience.
 
 ### pickImage()
 The arguments `maxWidth`, `maxHeight` and `imageQuality` are not supported for gif images.
-THe argument `imageQuality` only works for jpeg and webp images.
+The argument `imageQuality` only works for jpeg and webp images.
 
 ### pickVideo()
 The argument `maxDuration` is not supported on the web.
