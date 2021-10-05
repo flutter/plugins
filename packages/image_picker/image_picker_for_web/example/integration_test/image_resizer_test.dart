@@ -29,6 +29,39 @@ void main() {
         name: pngHtmlFile.name, mimeType: pngHtmlFile.type);
   });
 
+  testWidgets("image is loaded correctly ", (WidgetTester tester) async {
+    final imageElement = await imageResizer.loadImage(pngFile.path);
+    expect(imageElement.width!, 10);
+    expect(imageElement.height!, 10);
+  });
+
+  testWidgets(
+      "canvas is loaded with image's width and height when max width and max height are null",
+      (widgetTester) async {
+    final imageElement = await imageResizer.loadImage(pngFile.path);
+    final canvas = imageResizer.resizeImageElement(imageElement, null, null);
+    expect(canvas.width, imageElement.width);
+    expect(canvas.height, imageElement.height);
+  });
+
+  testWidgets(
+      "canvas size is scaled when max width and max height are not null",
+      (widgetTester) async {
+    final imageElement = await imageResizer.loadImage(pngFile.path);
+    final canvas = imageResizer.resizeImageElement(imageElement, 8, 8);
+    expect(canvas.width, 8);
+    expect(canvas.height, 8);
+  });
+
+  testWidgets("resized image is returned after converting canvas to file",
+      (widgetTester) async {
+    final imageElement = await imageResizer.loadImage(pngFile.path);
+    final canvas = imageResizer.resizeImageElement(imageElement, null, null);
+    final resizedImage =
+        await imageResizer.writeCanvasToFile(pngFile, canvas, null);
+    expect(resizedImage.name, "scaled_${pngFile.name}");
+  });
+
   testWidgets("image is scaled when maxWidth is set",
       (WidgetTester tester) async {
     final scaledImage =
@@ -37,6 +70,7 @@ void main() {
     final scaledImageSize = await _getImageSize(scaledImage);
     expect(scaledImageSize, Size(5, 5));
   });
+
   testWidgets("image is scaled when maxHeight is set",
       (WidgetTester tester) async {
     final scaledImage =

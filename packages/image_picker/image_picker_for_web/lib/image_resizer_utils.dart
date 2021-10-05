@@ -5,6 +5,8 @@
 import 'dart:math';
 import 'dart:ui';
 
+import 'package:flutter/material.dart';
+
 ///a function that checks if an image needs to be resized or not
 bool imageResizeNeeded(double? maxWidth, double? maxHeight, int? imageQuality) {
   return imageQuality != null
@@ -24,41 +26,8 @@ bool isImageQualityValid(int imageQuality) {
 /// maxHeight is the maximum height of the scaled image
 Size calculateSizeOfDownScaledImage(
     Size imageSize, double? maxWidth, double? maxHeight) {
-  double originalWidth = imageSize.width;
-  double originalHeight = imageSize.height;
-
-  bool hasMaxWidth = maxWidth != null;
-  bool hasMaxHeight = maxHeight != null;
-  double width = hasMaxWidth ? min(maxWidth, originalWidth) : originalWidth;
-  double height =
-      hasMaxHeight ? min(maxHeight, originalHeight) : originalHeight;
-  bool shouldDownscaleWidth = hasMaxWidth && maxWidth < originalWidth;
-  bool shouldDownscaleHeight = hasMaxHeight && maxHeight < originalHeight;
-  bool shouldDownscale = shouldDownscaleWidth || shouldDownscaleHeight;
-  if (shouldDownscale) {
-    double downscaledWidth =
-        ((height / originalHeight) * originalWidth).floorToDouble();
-    double downscaledHeight =
-        ((width / originalWidth) * originalHeight).floorToDouble();
-    if (width < height) {
-      if (!hasMaxWidth) {
-        width = downscaledWidth;
-      } else {
-        height = downscaledHeight;
-      }
-    } else if (height < width) {
-      if (!hasMaxHeight) {
-        height = downscaledHeight;
-      } else {
-        width = downscaledWidth;
-      }
-    } else {
-      if (originalWidth < originalHeight) {
-        width = downscaledWidth;
-      } else if (originalHeight < originalWidth) {
-        height = downscaledHeight;
-      }
-    }
-  }
-  return Size(width, height);
+  double widthFactor = maxWidth != null ? imageSize.width / maxWidth : 1;
+  double heightFactor = maxHeight != null ? imageSize.height / maxHeight : 1;
+  double resizeFactor = max(widthFactor, heightFactor);
+  return (resizeFactor > 1 ? imageSize ~/ resizeFactor : imageSize);
 }
