@@ -1329,7 +1329,7 @@ void main() {
   );
 
   testWidgets(
-    'javascript does not run in parent window',
+    'JavaScript does not run in parent window',
     (WidgetTester tester) async {
       final String iframe = '''
         <!DOCTYPE html>
@@ -1397,7 +1397,7 @@ void main() {
   );
 }
 
-// Javascript booleans evaluate to different string values on Android and iOS.
+// JavaScript booleans evaluate to different string values on Android and iOS.
 // This utility method returns the string boolean value of the current platform.
 String _webviewBool(bool value) {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
