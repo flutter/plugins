@@ -117,23 +117,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
     if (settings != null) {
-      applySettings(settings);
+      applySettings(webView, settings);
     }
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       List<String> names = (List<String>) params.get(JS_CHANNEL_NAMES_FIELD);
       if (names != null) {
-        registerJavaScriptChannelNames(names);
+        registerJavaScriptChannelNames(webView, names);
       }
     }
 
     Integer autoMediaPlaybackPolicy = (Integer) params.get("autoMediaPlaybackPolicy");
     if (autoMediaPlaybackPolicy != null) {
-      updateAutoMediaPlaybackPolicy(autoMediaPlaybackPolicy);
+      updateAutoMediaPlaybackPolicy(webView, autoMediaPlaybackPolicy);
     }
     if (params.containsKey("userAgent")) {
       String userAgent = (String) params.get("userAgent");
-      updateUserAgent(userAgent);
+      updateUserAgent(webView, userAgent);
     }
     if (params.containsKey("initialUrl")) {
       String url = (String) params.get("initialUrl");
@@ -219,114 +219,111 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @Override
   public void onMethodCall(MethodCall methodCall, Result result) {
     switch (methodCall.method) {
-      case "loadUrl":
-        loadUrl(methodCall, result);
+      case "loadUrl": {
+        Map<String, Object> request = methodCall.arguments();
+        String url = (String) request.get("url");
+        Map<String, String> headers = (Map<String, String>) request.get("headers");
+        if (headers == null) {
+          headers = Collections.emptyMap();
+        }
+        loadUrl(webView, url, headers);
         break;
+      }
       case "updateSettings":
-        updateSettings(methodCall, result);
+        updateSettings(webView, methodCall.<Map<String, Object>>arguments());
         break;
       case "canGoBack":
-        canGoBack(result);
+        result.success(canGoBack(webView));
         break;
       case "canGoForward":
-        canGoForward(result);
+        result.success(canGoForward(webView));
         break;
       case "goBack":
-        goBack(result);
+        goBack(webView);
         break;
       case "goForward":
-        goForward(result);
+        goForward(webView);
         break;
       case "reload":
-        reload(result);
+        reload(webView);
         break;
       case "currentUrl":
-        currentUrl(result);
+        currentUrl(webView);
         break;
       case "evaluateJavascript":
-        evaluateJavaScript(methodCall, result);
-        break;
+        evaluateJavaScript(webView, methodCall.<String>arguments(), result);
+        return;
       case "addJavascriptChannels":
-        addJavaScriptChannels(methodCall, result);
+        addJavaScriptChannels(webView, methodCall.<List<String>>arguments());
         break;
       case "removeJavascriptChannels":
-        removeJavaScriptChannels(methodCall, result);
+        removeJavaScriptChannels(webView, methodCall.<List<String>>arguments());
         break;
       case "clearCache":
-        clearCache(result);
+        clearCache(webView);
         break;
       case "getTitle":
-        getTitle(result);
+        getTitle(webView);
         break;
-      case "scrollTo":
-        scrollTo(methodCall, result);
+      case "scrollTo": {
+        Map<String, Object> request = methodCall.arguments();
+        scrollTo(webView, (int) request.get("x"), (int) request.get("y"));
         break;
-      case "scrollBy":
-        scrollBy(methodCall, result);
+      }
+      case "scrollBy": {
+        Map<String, Object> request = methodCall.arguments();
+        scrollBy(webView, (int) request.get("x"), (int) request.get("y"));
         break;
+      }
       case "getScrollX":
-        getScrollX(result);
+        result.success(getScrollX(webView));
         break;
       case "getScrollY":
-        getScrollY(result);
+        result.success(getScrollY(webView));
         break;
       default:
         result.notImplemented();
     }
+
+    result.success(null);
   }
 
   @SuppressWarnings("unchecked")
-  private void loadUrl(MethodCall methodCall, Result result) {
-    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
-    String url = (String) request.get("url");
-    Map<String, String> headers = (Map<String, String>) request.get("headers");
-    if (headers == null) {
-      headers = Collections.emptyMap();
-    }
+  private void loadUrl(WebView webView, String url, Map<String, String> headers) {
     webView.loadUrl(url, headers);
-    result.success(null);
   }
 
-  private void canGoBack(Result result) {
-    result.success(webView.canGoBack());
+  private boolean canGoBack(WebView webView) {
+    return webView.canGoBack();
   }
 
-  private void canGoForward(Result result) {
-    result.success(webView.canGoForward());
+  private boolean canGoForward(WebView webView) {
+    return webView.canGoForward();
   }
 
-  private void goBack(Result result) {
-    if (webView.canGoBack()) {
-      webView.goBack();
-    }
-    result.success(null);
+  private void goBack(WebView webView) {
+    if (webView.canGoBack()) webView.goBack();
   }
 
-  private void goForward(Result result) {
-    if (webView.canGoForward()) {
-      webView.goForward();
-    }
-    result.success(null);
+  private void goForward(WebView webView) {
+    if (!webView.canGoForward()) webView.goForward();
   }
 
-  private void reload(Result result) {
+  private void reload(WebView webView) {
     webView.reload();
-    result.success(null);
   }
 
-  private void currentUrl(Result result) {
-    result.success(webView.getUrl());
+  private String currentUrl(WebView webView) {
+    return webView.getUrl();
   }
 
   @SuppressWarnings("unchecked")
-  private void updateSettings(MethodCall methodCall, Result result) {
-    applySettings((Map<String, Object>) methodCall.arguments);
-    result.success(null);
+  private void updateSettings(WebView webView, Map<String, Object> settings) {
+    applySettings(webView, settings);
   }
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void evaluateJavaScript(MethodCall methodCall, final Result result) {
-    String jsString = (String) methodCall.arguments;
+  private void evaluateJavaScript(WebView webView, String jsString, final Result result) {
     if (jsString == null) {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
     }
@@ -341,65 +338,49 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @SuppressWarnings("unchecked")
-  private void addJavaScriptChannels(MethodCall methodCall, Result result) {
-    List<String> channelNames = (List<String>) methodCall.arguments;
-    registerJavaScriptChannelNames(channelNames);
-    result.success(null);
+  private void addJavaScriptChannels(WebView webView, List<String> channelNames) {
+    registerJavaScriptChannelNames(webView, channelNames);
   }
 
   @SuppressWarnings("unchecked")
-  private void removeJavaScriptChannels(MethodCall methodCall, Result result) {
-    List<String> channelNames = (List<String>) methodCall.arguments;
+  private void removeJavaScriptChannels(WebView webView, List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.removeJavascriptInterface(channelName);
     }
-    result.success(null);
   }
 
-  private void clearCache(Result result) {
+  private void clearCache(WebView webView) {
     webView.clearCache(true);
     WebStorage.getInstance().deleteAllData();
-    result.success(null);
   }
 
-  private void getTitle(Result result) {
-    result.success(webView.getTitle());
+  private String getTitle(WebView webView) {
+    return webView.getTitle();
   }
 
-  private void scrollTo(MethodCall methodCall, Result result) {
-    Map<String, Object> request = methodCall.arguments();
-    int x = (int) request.get("x");
-    int y = (int) request.get("y");
-
+  private void scrollTo(WebView webView, int x, int y) {
     webView.scrollTo(x, y);
-
-    result.success(null);
   }
 
-  private void scrollBy(MethodCall methodCall, Result result) {
-    Map<String, Object> request = methodCall.arguments();
-    int x = (int) request.get("x");
-    int y = (int) request.get("y");
-
+  private void scrollBy(WebView webView, int x, int y) {
     webView.scrollBy(x, y);
-    result.success(null);
   }
 
-  private void getScrollX(Result result) {
-    result.success(webView.getScrollX());
+  private int getScrollX(WebView webView) {
+    return webView.getScrollX();
   }
 
-  private void getScrollY(Result result) {
-    result.success(webView.getScrollY());
+  private int getScrollY(WebView webView) {
+    return webView.getScrollY();
   }
 
-  private void applySettings(Map<String, Object> settings) {
+  private void applySettings(WebView webView, Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
         case "jsMode":
           Integer mode = (Integer) settings.get(key);
           if (mode != null) {
-            updateJsMode(mode);
+            updateJsMode(webView, mode);
           }
           break;
         case "hasNavigationDelegate":
@@ -423,7 +404,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "gestureNavigationEnabled":
           break;
         case "userAgent":
-          updateUserAgent((String) settings.get(key));
+          updateUserAgent(webView, (String) settings.get(key));
           break;
         case "allowsInlineMediaPlayback":
           // no-op inline media playback is always allowed on Android.
@@ -434,7 +415,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void updateJsMode(int mode) {
+  private void updateJsMode(WebView webView, int mode) {
     switch (mode) {
       case 0: // disabled
         webView.getSettings().setJavaScriptEnabled(false);
@@ -447,7 +428,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void updateAutoMediaPlaybackPolicy(int mode) {
+  private void updateAutoMediaPlaybackPolicy(WebView webView, int mode) {
     // This is the index of the AutoMediaPlaybackPolicy enum, index 1 is always_allow, for all
     // other values we require a user gesture.
     boolean requireUserGesture = mode != 1;
@@ -456,14 +437,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void registerJavaScriptChannelNames(List<String> channelNames) {
+  private void registerJavaScriptChannelNames(WebView webView, List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
           new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 
-  private void updateUserAgent(String userAgent) {
+  private void updateUserAgent(WebView webView, String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
   }
 
