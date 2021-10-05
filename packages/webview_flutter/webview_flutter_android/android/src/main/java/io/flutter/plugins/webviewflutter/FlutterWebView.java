@@ -228,10 +228,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
             headers = Collections.emptyMap();
           }
           loadUrl(webView, url, headers);
+          result.success(null);
           break;
         }
       case "updateSettings":
         updateSettings(webView, methodCall.<Map<String, Object>>arguments());
+        result.success(null);
         break;
       case "canGoBack":
         result.success(canGoBack(webView));
@@ -241,41 +243,49 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "goBack":
         goBack(webView);
+        result.success(null);
         break;
       case "goForward":
         goForward(webView);
+        result.success(null);
         break;
       case "reload":
         reload(webView);
+        result.success(null);
         break;
       case "currentUrl":
-        currentUrl(webView);
+        result.success(currentUrl(webView));
         break;
       case "evaluateJavascript":
         evaluateJavaScript(webView, methodCall.<String>arguments(), result);
-        return;
+        break;
       case "addJavascriptChannels":
         addJavaScriptChannels(webView, methodCall.<List<String>>arguments());
+        result.success(null);
         break;
       case "removeJavascriptChannels":
         removeJavaScriptChannels(webView, methodCall.<List<String>>arguments());
+        result.success(null);
         break;
       case "clearCache":
         clearCache(webView);
+        result.success(null);
         break;
       case "getTitle":
-        getTitle(webView);
+        result.success(getTitle(webView));
         break;
       case "scrollTo":
         {
           Map<String, Object> request = methodCall.arguments();
           scrollTo(webView, (int) request.get("x"), (int) request.get("y"));
+          result.success(null);
           break;
         }
       case "scrollBy":
         {
           Map<String, Object> request = methodCall.arguments();
           scrollBy(webView, (int) request.get("x"), (int) request.get("y"));
+          result.success(null);
           break;
         }
       case "getScrollX":
@@ -287,8 +297,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       default:
         result.notImplemented();
     }
-
-    result.success(null);
   }
 
   @SuppressWarnings("unchecked")
