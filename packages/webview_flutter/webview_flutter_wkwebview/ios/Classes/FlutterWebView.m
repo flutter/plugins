@@ -304,11 +304,11 @@
 }
 
 - (NSNumber *)getScrollX:(WKWebView *)webView {
-  return @((int) webView.scrollView.contentOffset.x);
+  return @((int)webView.scrollView.contentOffset.x);
 }
 
 - (NSNumber *)getScrollY:(WKWebView *)webView {
-  return @((int) webView.scrollView.contentOffset.y);
+  return @((int)webView.scrollView.contentOffset.y);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
