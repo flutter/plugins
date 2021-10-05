@@ -93,14 +93,14 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String? initialUrl;
 
-  /// Whether Javascript execution is enabled.
+  /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
 
-  /// The set of [JavascriptChannel]s available to Javascript code running in the web view.
+  /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
   /// For each [JavascriptChannel] in the set, a channel object is made available for the
-  /// Javascript code in a window property named [JavascriptChannel.name].
-  /// The Javascript code can then call `postMessage` on that object to send a message that will be
+  /// JavaScript code in a window property named [JavascriptChannel.name].
+  /// The JavaScript code can then call `postMessage` on that object to send a message that will be
   /// passed to [JavascriptChannel.onMessageReceived].
   ///
   /// For example for the following JavascriptChannel:
@@ -109,7 +109,7 @@ class WebView extends StatefulWidget {
   /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message.message); });
   /// ```
   ///
-  /// Javascript code can call:
+  /// JavaScript code can call:
   ///
   /// ```javascript
   /// Print.postMessage('Hello');
@@ -117,7 +117,7 @@ class WebView extends StatefulWidget {
   ///
   /// To asynchronously invoke the message handler which will print the message to standard output.
   ///
-  /// Adding a new Javascript channel only takes affect after the next page is loaded.
+  /// Adding a new JavaScript channel only takes affect after the next page is loaded.
   ///
   /// Set values must not be null. A [JavascriptChannel.name] cannot be the same for multiple
   /// channels in the list.
@@ -166,7 +166,7 @@ class WebView extends StatefulWidget {
   /// When [onPageFinished] is invoked on Android, the page being rendered may
   /// not be updated yet.
   ///
-  /// When invoked on iOS or Android, any Javascript code that is embedded
+  /// When invoked on iOS or Android, any JavaScript code that is embedded
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback? onPageFinished;
@@ -410,12 +410,12 @@ class WebViewController {
     _javascriptChannelRegistry.updateJavascriptChannelsFromSet(newChannels);
   }
 
-  /// Runs the given Javascript in the context of the current page.
+  /// Runs the given JavaScript in the context of the current page.
   /// If you are looking for the result, use [runJavascriptReturningResult] instead.
-  /// The Future completes with an error if a Javascript error occurred.
+  /// The Future completes with an error if a JavaScript error occurred.
   ///
-  /// When running Javascript in a [WebView], it is best practice to wait for
-  ///  the [WebView.onPageFinished] callback. This guarantees all the Javascript
+  /// When running JavaScript in a [WebView], it is best practice to wait for
+  ///  the [WebView.onPageFinished] callback. This guarantees all the JavaScript
   ///  embedded in the main frame HTML has been loaded.
   Future<void> runJavascript(String javaScriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
@@ -425,19 +425,18 @@ class WebViewController {
     return _webViewPlatformController.runJavascript(javaScriptString);
   }
 
-  /// Runs the given Javascript in the context of the current page, and returns the result.
+  /// Runs the given JavaScript in the context of the current page, and returns the result.
   ///
-  /// On Android returns the evaluation result as a JSON formatted string.
+  /// Depending on the value type the return value would be one of:
+  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
   ///
-  /// On iOS depending on the value type the return value would be one of:
-  ///  - For primitive Javascript types: the value string formatted (e.g Javascript 100 returns '100').
-  ///  - For Javascript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
-  ///  - Other non-primitive types are not supported on iOS and will return as null.
+  /// The Future completes with an error if a JavaScript error occurred, or if the
+  /// type the given expression evaluates to is unsupported. Unsupported values include
+  /// certain non primitive types, as well as `undefined` or `null` on iOS 14+.
   ///
-  /// The Future completes with an error if a Javascript error occurred.
-  ///
-  /// When evaluating Javascript in a [WebView], it is best practice to wait for
-  /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
+  /// When evaluating JavaScript in a [WebView], it is best practice to wait for
+  /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
   /// embedded in the main frame HTML has been loaded.
   Future<String> runJavascriptReturningResult(String javaScriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {

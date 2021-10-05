@@ -62,7 +62,7 @@
   int64_t _viewId;
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
-  // The set of registered Javascript channel names.
+  // The set of registered JavaScript channel names.
   NSMutableSet* _javascriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
   FLTWKProgressionDelegate* _progressionDelegate;
@@ -230,7 +230,7 @@
   NSString* jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavascript_failed"
-                               message:@"Javascript String cannot be null"
+                               message:@"JavaScript String cannot be null"
                                details:nil]);
     return;
   }
@@ -239,8 +239,8 @@
                if (error) {
                  result([FlutterError
                      errorWithCode:@"evaluateJavascript_failed"
-                           message:@"Failed evaluating Javascript"
-                           details:[NSString stringWithFormat:@"Javascript string was: '%@'\n%@",
+                           message:@"Failed evaluating JavaScript"
+                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
                                                               jsString, error]]);
                } else {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
@@ -252,7 +252,7 @@
   NSString* jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"runJavascript_failed"
-                               message:@"Javascript String cannot be null"
+                               message:@"JavaScript String cannot be null"
                                details:nil]);
     return;
   }
@@ -261,8 +261,8 @@
                if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
                  result([FlutterError
                      errorWithCode:@"runJavascript_failed"
-                           message:@"Failed running Javascript"
-                           details:[NSString stringWithFormat:@"Javascript string was: '%@'\n%@",
+                           message:@"Failed running JavaScript"
+                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
                                                               jsString, error]]);
                } else {
                  result(nil);
@@ -274,7 +274,7 @@
   NSString* jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"runJavascriptReturningResult_failed"
-                               message:@"Javascript String cannot be null"
+                               message:@"JavaScript String cannot be null"
                                details:nil]);
     return;
   }
@@ -283,8 +283,8 @@
                if (error) {
                  result([FlutterError
                      errorWithCode:@"runJavascriptReturningResult_failed"
-                           message:@"Failed running Javascript"
-                           details:[NSString stringWithFormat:@"Javascript string was: '%@'\n%@",
+                           message:@"Failed running JavaScript"
+                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
                                                               jsString, error]]);
                } else {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
@@ -429,7 +429,7 @@
       [preferences setJavaScriptEnabled:YES];
       break;
     default:
-      NSLog(@"webview_flutter: unknown Javascript mode: %@", mode);
+      NSLog(@"webview_flutter: unknown JavaScript mode: %@", mode);
   }
 }
 

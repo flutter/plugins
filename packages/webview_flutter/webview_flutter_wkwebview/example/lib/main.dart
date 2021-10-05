@@ -197,7 +197,7 @@ class _SampleMenu extends StatelessWidget {
 
   void _onShowUserAgent(
       WebViewController controller, BuildContext context) async {
-    // Send a message with the user agent string to the Snackbar Javascript channel we registered
+    // Send a message with the user agent string to the Snackbar JavaScript channel we registered
     // with the WebView.
     await controller.runJavascript(
         'Snackbar.postMessage("User Agent: " + navigator.userAgent);');
@@ -340,5 +340,5 @@ class _NavigationControls extends StatelessWidget {
   }
 }
 
-/// Callback type for handling messages sent from Javascript running in a web view.
+/// Callback type for handling messages sent from JavaScript running in a web view.
 typedef void JavascriptMessageHandler(JavascriptMessage message);

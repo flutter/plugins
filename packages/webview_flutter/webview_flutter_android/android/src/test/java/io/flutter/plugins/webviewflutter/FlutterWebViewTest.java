@@ -112,20 +112,20 @@ public class FlutterWebViewTest {
       doAnswer(
               invocation -> {
                 android.webkit.ValueCallback<String> callback = invocation.getArgument(1);
-                callback.onReceiveValue("Test Javascript Result");
+                callback.onReceiveValue("Test JavaScript Result");
                 return null;
               })
           .when(mockWebView)
-          .evaluateJavascript(eq("Test Javascript String"), any());
+          .evaluateJavascript(eq("Test JavaScript String"), any());
       FlutterWebView flutterWebView =
           new FlutterWebView(mockContext, mockMethodChannel, new HashMap<String, Object>(), null);
 
       // Run
       flutterWebView.onMethodCall(
-          new MethodCall("runJavascriptReturningResult", "Test Javascript String"), mockResult);
+          new MethodCall("runJavascriptReturningResult", "Test JavaScript String"), mockResult);
 
       // Verify
-      verify(mockResult, times(1)).success("Test Javascript Result");
+      verify(mockResult, times(1)).success("Test JavaScript Result");
     }
   }
 
@@ -145,17 +145,17 @@ public class FlutterWebViewTest {
       doAnswer(
               invocation -> {
                 android.webkit.ValueCallback<String> callback = invocation.getArgument(1);
-                callback.onReceiveValue("Test Javascript Result");
+                callback.onReceiveValue("Test JavaScript Result");
                 return null;
               })
           .when(mockWebView)
-          .evaluateJavascript(eq("Test Javascript String"), any());
+          .evaluateJavascript(eq("Test JavaScript String"), any());
       FlutterWebView flutterWebView =
           new FlutterWebView(mockContext, mockMethodChannel, new HashMap<String, Object>(), null);
 
       // Run
       flutterWebView.onMethodCall(
-          new MethodCall("runJavascript", "Test Javascript String"), mockResult);
+          new MethodCall("runJavascript", "Test JavaScript String"), mockResult);
 
       // Verify
       verify(mockResult, times(1)).success(isNull());

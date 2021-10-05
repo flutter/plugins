@@ -23,9 +23,9 @@
 
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
-  NSAssert(_methodChannel != nil, @"Can't send a message to an unitialized Javascript channel.");
+  NSAssert(_methodChannel != nil, @"Can't send a message to an unitialized JavaScript channel.");
   NSAssert(_javascriptChannelName != nil,
-           @"Can't send a message to an unitialized Javascript channel.");
+           @"Can't send a message to an unitialized JavaScript channel.");
   NSDictionary* arguments = @{
     @"channel" : _javascriptChannelName,
     @"message" : [NSString stringWithFormat:@"%@", message.body]

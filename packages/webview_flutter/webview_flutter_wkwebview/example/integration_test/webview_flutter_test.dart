@@ -1194,7 +1194,7 @@ void main() {
   );
 }
 
-// Javascript booleans evaluate to different string values on Android and iOS.
+// JavaScript booleans evaluate to different string values on Android and iOS.
 // This utility method returns the string boolean value of the current platform.
 String _webviewBool(bool value) {
   if (defaultTargetPlatform == TargetPlatform.iOS) {

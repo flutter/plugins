@@ -131,7 +131,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
   // Run
   [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
-                                                             arguments:@"Test Javascript String"]
+                                                             arguments:@"Test JavaScript String"]
                     result:^(id _Nullable result) {
                       XCTAssertNil(result);
                       [resultExpectation fulfill];
@@ -167,7 +167,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
   // Run
   [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
-                                                             arguments:@"Test Javascript String"]
+                                                             arguments:@"Test JavaScript String"]
                     result:^(id _Nullable result) {
                       XCTAssertTrue([result class] == [FlutterError class]);
                       [resultExpectation fulfill];
@@ -201,7 +201,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
   // Run
   [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascript"
-                                                             arguments:@"Test Javascript String"]
+                                                             arguments:@"Test JavaScript String"]
                     result:^(id _Nullable result) {
                       XCTAssertNil(result);
                       [resultExpectation fulfill];
@@ -256,7 +256,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   // Run
   [controller
       onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascriptReturningResult"
-                                                     arguments:@"Test Javascript String"]
+                                                     arguments:@"Test JavaScript String"]
             result:^(id _Nullable result) {
               XCTAssertTrue([@"RESULT" isEqualToString:result]);
               [resultExpectation fulfill];
@@ -291,7 +291,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   // Run
   [controller
       onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"runJavascriptReturningResult"
-                                                     arguments:@"Test Javascript String"]
+                                                     arguments:@"Test JavaScript String"]
             result:^(id _Nullable result) {
               XCTAssertTrue([result class] == [FlutterError class]);
               [resultExpectation fulfill];

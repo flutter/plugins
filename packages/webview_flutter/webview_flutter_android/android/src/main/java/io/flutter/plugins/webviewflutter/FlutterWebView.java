@@ -149,7 +149,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
    *
    * <ul>
    *   <li>always enable the DOM storage API;
-   *   <li>always allow Javascript to automatically open windows;
+   *   <li>always allow JavaScript to automatically open windows;
    *   <li>always allow support for multiple windows;
    *   <li>always use the {@link FlutterWebChromeClient} as web Chrome client.
    * </ul>
