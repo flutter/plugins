@@ -14,6 +14,8 @@
 #include <memory>
 #include <string>
 
+#include "file_dialog_controller.h"
+
 namespace file_selector_windows {
 namespace test {
 
@@ -25,6 +27,28 @@ using ::testing::DoAll;
 using ::testing::Pointee;
 using ::testing::Return;
 using ::testing::SetArgPointee;
+
+// An extension of the normal file dialog controller that:
+// - Allows for inspection of set values.
+// - Allows faking the 'Show' interaction.
+class TestFileDialogController : public FileDialogController {};
+
+class TestFileDialogControllerFactory : public FileDialogControllerFactory {
+ public:
+  TestFileDialogControllerFactory() {}
+  virtual ~TestFileDialogControllerFactory() {}
+
+  // Disallow copy and assign.
+  TestFileDialogControllerFactory(const TestFileDialogControllerFactory&) =
+      delete;
+  TestFileDialogControllerFactory& operator=(
+      const TestFileDialogControllerFactory&) = delete;
+
+  std::unique_ptr<FileDialogController> CreateController(
+      IFileDialog* dialog) override {
+    return std::make_unique<FileDialogController>(dialog);
+  }
+};
 
 class MockMethodResult : public flutter::MethodResult<> {
  public:
@@ -40,7 +64,8 @@ class MockMethodResult : public flutter::MethodResult<> {
 }  // namespace
 
 TEST(FileSelectorPlugin, Placeholder) {
-  FileSelectorPlugin plugin(nullptr);
+  FileSelectorPlugin plugin(
+      nullptr, std::make_unique<TestFileDialogControllerFactory>());
 
   EXPECT_TRUE(true);
 }

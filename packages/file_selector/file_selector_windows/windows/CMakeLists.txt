@@ -5,6 +5,8 @@ project(${PROJECT_NAME} LANGUAGES CXX)
 set(PLUGIN_NAME "${PROJECT_NAME}_plugin")
 
 list(APPEND PLUGIN_SOURCES
+  "file_dialog_controller.cpp"
+  "file_dialog_controller.h"
   "file_selector_plugin.cpp"
   "file_selector_plugin.h"
 )

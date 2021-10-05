@@ -12,8 +12,11 @@
 
 #include <cassert>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
+
+#include "file_dialog_controller.h"
 
 namespace file_selector_windows {
 
@@ -109,20 +112,35 @@ std::string GetPathForShellItem(IShellItem *shell_item) {
   return path;
 }
 
+// Implementation of FileDialogControllerFactory that makes standard
+// FileDialogController instances.
+class DefaultFileDialogControllerFactory : public FileDialogControllerFactory {
+ public:
+  DefaultFileDialogControllerFactory() {}
+  virtual ~DefaultFileDialogControllerFactory() {}
+
+  // Disallow copy and assign.
+  DefaultFileDialogControllerFactory(
+      const DefaultFileDialogControllerFactory &) = delete;
+  DefaultFileDialogControllerFactory &operator=(
+      const DefaultFileDialogControllerFactory &) = delete;
+
+  std::unique_ptr<FileDialogController> CreateController(
+      IFileDialog *dialog) override {
+    return std::make_unique<FileDialogController>(dialog);
+  }
+};
+
 // Wraps an IFileDialog, managing object lifetime as a scoped object and
 // providing a simplified API for interacting with it as needed for the plugin.
 class DialogWrapper {
  public:
   explicit DialogWrapper(IID type) {
     is_open_dialog_ = type == CLSID_FileOpenDialog;
+    IFileDialog *dialog = nullptr;
     last_result_ = CoCreateInstance(type, nullptr, CLSCTX_INPROC_SERVER,
-                                    IID_PPV_ARGS(&dialog_));
-  }
-
-  ~DialogWrapper() {
-    if (dialog_) {
-      dialog_->Release();
-    }
+                                    IID_PPV_ARGS(&dialog));
+    dialog_controller_.emplace(dialog);
   }
 
   // Attempts to set the default folder for the dialog to |path|,
@@ -135,26 +153,26 @@ class DialogWrapper {
     if (!SUCCEEDED(last_result_)) {
       return;
     }
-    dialog_->SetDefaultFolder(item);
+    dialog_controller_->SetDefaultFolder(item);
     item->Release();
   }
 
   // Sets the file name that is initially shown in the dialog.
   void SetFileName(const std::string &name) {
     std::wstring wide_name = Utf16FromUtf8(name);
-    last_result_ = dialog_->SetFileName(wide_name.c_str());
+    last_result_ = dialog_controller_->SetFileName(wide_name.c_str());
   }
 
   // Sets the label of the confirmation button.
   void SetOkButtonLabel(const std::string &label) {
     std::wstring wide_label = Utf16FromUtf8(label);
-    last_result_ = dialog_->SetOkButtonLabel(wide_label.c_str());
+    last_result_ = dialog_controller_->SetOkButtonLabel(wide_label.c_str());
   }
 
   // Adds the given options to the dialog's current option set.
   void AddOptions(FILEOPENDIALOGOPTIONS new_options) {
     FILEOPENDIALOGOPTIONS options;
-    last_result_ = dialog_->GetOptions(&options);
+    last_result_ = dialog_controller_->GetOptions(&options);
     if (!SUCCEEDED(last_result_)) {
       return;
     }
@@ -162,7 +180,7 @@ class DialogWrapper {
     if (options & FOS_PICKFOLDERS) {
       opening_directory_ = true;
     }
-    last_result_ = dialog_->SetOptions(options);
+    last_result_ = dialog_controller_->SetOptions(options);
   }
 
   // Sets the filters for allowed file types to select.
@@ -199,29 +217,23 @@ class DialogWrapper {
       }
       filter_specs.push_back({filter_names.back().c_str(), spec.c_str()});
     }
-    last_result_ = dialog_->SetFileTypes(static_cast<UINT>(filter_specs.size()),
-                                         filter_specs.data());
+    last_result_ = dialog_controller_->SetFileTypes(
+        static_cast<UINT>(filter_specs.size()), filter_specs.data());
   }
 
   // Displays the dialog, and returns the selected file or files as an
   // EncodableValue of type List (for open) or String (for save), or a null
   // EncodableValue on cancel or error.
   EncodableValue Show(HWND parent_window) {
-    assert(dialog_);
-    last_result_ = dialog_->Show(parent_window);
+    assert(dialog_controller_.has_value());
+    last_result_ = dialog_controller_->Show(parent_window);
     if (!SUCCEEDED(last_result_)) {
       return EncodableValue();
     }
 
     if (is_open_dialog_) {
-      IFileOpenDialog *open_dialog;
-      last_result_ = dialog_->QueryInterface(IID_PPV_ARGS(&open_dialog));
-      if (!SUCCEEDED(last_result_)) {
-        return EncodableValue();
-      }
       IShellItemArray *shell_items;
-      last_result_ = open_dialog->GetResults(&shell_items);
-      open_dialog->Release();
+      last_result_ = dialog_controller_->GetResults(&shell_items);
       if (!SUCCEEDED(last_result_)) {
         return EncodableValue();
       }
@@ -250,7 +262,7 @@ class DialogWrapper {
       }
     } else {
       IShellItem *shell_item;
-      last_result_ = dialog_->GetResult(&shell_item);
+      last_result_ = dialog_controller_->GetResult(&shell_item);
       if (!SUCCEEDED(last_result_)) {
         return EncodableValue();
       }
@@ -264,7 +276,9 @@ class DialogWrapper {
   HRESULT last_result() { return last_result_; }
 
  private:
-  IFileDialog *dialog_ = nullptr;
+  // The dialog controller that all interactions are mediated through, to allow
+  // for unit testing.
+  std::optional<FileDialogController> dialog_controller_;
   bool is_open_dialog_;
   bool opening_directory_ = false;
   HRESULT last_result_;
@@ -346,8 +360,10 @@ void FileSelectorPlugin::RegisterWithRegistrar(
       registrar->messenger(), "plugins.flutter.io/file_selector",
       &flutter::StandardMethodCodec::GetInstance());
 
-  // Uses new instead of make_unique due to private constructor.
-  std::unique_ptr<FileSelectorPlugin> plugin(new FileSelectorPlugin(registrar));
+  std::unique_ptr<FileSelectorPlugin> plugin =
+      std::make_unique<FileSelectorPlugin>(
+          [registrar] { return GetRootWindow(registrar->GetView()); },
+          std::make_unique<DefaultFileDialogControllerFactory>());
 
   channel->SetMethodCallHandler(
       [plugin_pointer = plugin.get()](const auto &call, auto result) {
@@ -358,8 +374,10 @@ void FileSelectorPlugin::RegisterWithRegistrar(
 }
 
 FileSelectorPlugin::FileSelectorPlugin(
-    flutter::PluginRegistrarWindows *registrar)
-    : registrar_(registrar) {}
+    FlutterRootWindowProvider window_provider,
+    std::unique_ptr<FileDialogControllerFactory> dialog_controller_factory)
+    : get_root_window_(std::move(window_provider)),
+      controller_factory_(std::move(dialog_controller_factory)) {}
 
 FileSelectorPlugin::~FileSelectorPlugin() = default;
 
@@ -373,8 +391,7 @@ void FileSelectorPlugin::HandleMethodCall(
     const auto *arguments =
         std::get_if<flutter::EncodableMap>(method_call.arguments());
     assert(arguments);
-    ShowDialog(GetRootWindow(registrar_->GetView()), method_name, *arguments,
-               std::move(result));
+    ShowDialog(get_root_window_(), method_name, *arguments, std::move(result));
   } else {
     result->NotImplemented();
   }
