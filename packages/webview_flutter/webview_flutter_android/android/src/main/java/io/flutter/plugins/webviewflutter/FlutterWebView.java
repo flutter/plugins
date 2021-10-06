@@ -328,7 +328,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     return webView.getUrl();
   }
 
-  @SuppressWarnings("unchecked")
   private void updateSettings(WebView webView, Map<String, Object> settings) {
     applySettings(webView, settings);
   }
