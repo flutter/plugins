@@ -1,4 +1,4 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #ifndef PACKAGES_FILE_SELECTOR_FILE_SELECTOR_WINDOWS_WINDOWS_FILE_DIALOG_CONTROLLER_H_
@@ -30,14 +30,14 @@ class FileDialogController {
   virtual HRESULT SetFileName(const wchar_t* name);
   virtual HRESULT SetFileTypes(UINT count, COMDLG_FILTERSPEC* filters);
   virtual HRESULT SetOkButtonLabel(const wchar_t* text);
-  virtual HRESULT GetOptions(FILEOPENDIALOGOPTIONS* out_options);
+  virtual HRESULT GetOptions(FILEOPENDIALOGOPTIONS* out_options) const;
   virtual HRESULT SetOptions(FILEOPENDIALOGOPTIONS options);
   virtual HRESULT Show(HWND parent);
-  virtual HRESULT GetResult(IShellItem** out_item);
+  virtual HRESULT GetResult(IShellItem** out_item) const;
 
   // IFileOpenDialog wrapper. This will fail if the IFileDialog* provided to the
   // constructor was not an IFileOpenDialog instance.
-  virtual HRESULT GetResults(IShellItemArray** out_items);
+  virtual HRESULT GetResults(IShellItemArray** out_items) const;
 
  private:
   IFileDialog* dialog_ = nullptr;
@@ -50,7 +50,7 @@ class FileDialogControllerFactory {
   virtual ~FileDialogControllerFactory();
 
   virtual std::unique_ptr<FileDialogController> CreateController(
-      IFileDialog* dialog) = 0;
+      IFileDialog* dialog) const = 0;
 };
 
 }  // namespace file_selector_windows

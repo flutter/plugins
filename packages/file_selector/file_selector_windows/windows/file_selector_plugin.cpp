@@ -1,4 +1,4 @@
-// Copyright 2020 The Flutter Authors. All rights reserved.
+// Copyright 2013 The Flutter Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include "file_selector_plugin.h"
@@ -12,11 +12,11 @@
 
 #include <cassert>
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
 #include "file_dialog_controller.h"
+#include "string_utils.h"
 
 namespace file_selector_windows {
 
@@ -44,52 +44,6 @@ const char kSuggestedNameKey[] = "suggestedName";
 const char kTypeGroupLabelKey[] = "label";
 const char kTypeGroupExtensionsKey[] = "extensions";
 
-// Converts the given UTF-16 string to UTF-8.
-std::string Utf8FromUtf16(const std::wstring &utf16_string) {
-  if (utf16_string.empty()) {
-    return std::string();
-  }
-  int target_length = ::WideCharToMultiByte(
-      CP_UTF8, WC_ERR_INVALID_CHARS, utf16_string.data(),
-      static_cast<int>(utf16_string.length()), nullptr, 0, nullptr, nullptr);
-  if (target_length == 0) {
-    return std::string();
-  }
-  std::string utf8_string;
-  utf8_string.resize(target_length);
-  int converted_length = ::WideCharToMultiByte(
-      CP_UTF8, WC_ERR_INVALID_CHARS, utf16_string.data(),
-      static_cast<int>(utf16_string.length()), utf8_string.data(),
-      target_length, nullptr, nullptr);
-  if (converted_length == 0) {
-    return std::string();
-  }
-  return utf8_string;
-}
-
-// Converts the given UTF-8 string to UTF-16.
-std::wstring Utf16FromUtf8(const std::string &utf8_string) {
-  if (utf8_string.empty()) {
-    return std::wstring();
-  }
-  int target_length =
-      ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string.data(),
-                            static_cast<int>(utf8_string.length()), nullptr, 0);
-  if (target_length == 0) {
-    return std::wstring();
-  }
-  std::wstring utf16_string;
-  utf16_string.resize(target_length);
-  int converted_length =
-      ::MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, utf8_string.data(),
-                            static_cast<int>(utf8_string.length()),
-                            utf16_string.data(), target_length);
-  if (converted_length == 0) {
-    return std::wstring();
-  }
-  return utf16_string;
-}
-
 // Looks for |key| in |map|, returning the associated value if it is present, or
 // a nullptr if not.
 const EncodableValue *ValueOrNull(const EncodableMap &map, const char *key) {
@@ -108,7 +62,7 @@ std::string GetPathForShellItem(IShellItem *shell_item) {
     return "";
   }
   std::string path = Utf8FromUtf16(wide_path);
-  CoTaskMemFree(wide_path);
+  ::CoTaskMemFree(wide_path);
   return path;
 }
 
@@ -126,7 +80,7 @@ class DefaultFileDialogControllerFactory : public FileDialogControllerFactory {
       const DefaultFileDialogControllerFactory &) = delete;
 
   std::unique_ptr<FileDialogController> CreateController(
-      IFileDialog *dialog) override {
+      IFileDialog *dialog) const override {
     return std::make_unique<FileDialogController>(dialog);
   }
 };
@@ -135,12 +89,14 @@ class DefaultFileDialogControllerFactory : public FileDialogControllerFactory {
 // providing a simplified API for interacting with it as needed for the plugin.
 class DialogWrapper {
  public:
-  explicit DialogWrapper(IID type) {
+  explicit DialogWrapper(const FileDialogControllerFactory &dialog_factory,
+                         IID type) {
     is_open_dialog_ = type == CLSID_FileOpenDialog;
     IFileDialog *dialog = nullptr;
     last_result_ = CoCreateInstance(type, nullptr, CLSCTX_INPROC_SERVER,
                                     IID_PPV_ARGS(&dialog));
-    dialog_controller_.emplace(dialog);
+    dialog_controller_ = dialog_factory.CreateController(dialog);
+    dialog->Release();
   }
 
   // Attempts to set the default folder for the dialog to |path|,
@@ -225,7 +181,7 @@ class DialogWrapper {
   // EncodableValue of type List (for open) or String (for save), or a null
   // EncodableValue on cancel or error.
   EncodableValue Show(HWND parent_window) {
-    assert(dialog_controller_.has_value());
+    assert(dialog_controller_);
     last_result_ = dialog_controller_->Show(parent_window);
     if (!SUCCEEDED(last_result_)) {
       return EncodableValue();
@@ -278,7 +234,7 @@ class DialogWrapper {
  private:
   // The dialog controller that all interactions are mediated through, to allow
   // for unit testing.
-  std::optional<FileDialogController> dialog_controller_;
+  std::unique_ptr<FileDialogController> dialog_controller_;
   bool is_open_dialog_;
   bool opening_directory_ = false;
   HRESULT last_result_;
@@ -289,13 +245,14 @@ class DialogWrapper {
 // error on failure.
 //
 // |result| is guaranteed to be resolved by this function.
-void ShowDialog(HWND parent_window, const std::string &method,
+void ShowDialog(const FileDialogControllerFactory &dialog_factory,
+                HWND parent_window, const std::string &method,
                 const EncodableMap &args,
                 std::unique_ptr<flutter::MethodResult<>> result) {
   IID dialog_type = method.compare(kGetSavePathMethod) == 0
                         ? CLSID_FileSaveDialog
                         : CLSID_FileOpenDialog;
-  DialogWrapper dialog(dialog_type);
+  DialogWrapper dialog(dialog_factory, dialog_type);
   if (!SUCCEEDED(dialog.last_result())) {
     result->Error("System error", "Could not create dialog",
                   EncodableValue(dialog.last_result()));
@@ -348,7 +305,7 @@ void ShowDialog(HWND parent_window, const std::string &method,
 
 // Returns the top-level window that owns |view|.
 HWND GetRootWindow(flutter::FlutterView *view) {
-  return GetAncestor(view->GetNativeWindow(), GA_ROOT);
+  return ::GetAncestor(view->GetNativeWindow(), GA_ROOT);
 }
 
 }  // namespace
@@ -391,7 +348,8 @@ void FileSelectorPlugin::HandleMethodCall(
     const auto *arguments =
         std::get_if<flutter::EncodableMap>(method_call.arguments());
     assert(arguments);
-    ShowDialog(get_root_window_(), method_name, *arguments, std::move(result));
+    ShowDialog(*controller_factory_, get_root_window_(), method_name,
+               *arguments, std::move(result));
   } else {
     result->NotImplemented();
   }

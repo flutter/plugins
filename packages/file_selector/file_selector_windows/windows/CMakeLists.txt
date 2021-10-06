@@ -9,6 +9,8 @@ list(APPEND PLUGIN_SOURCES
   "file_dialog_controller.h"
   "file_selector_plugin.cpp"
   "file_selector_plugin.h"
+  "string_utils.cpp"
+  "string_utils.h"
 )
 
 add_library(${PLUGIN_NAME} SHARED
@@ -54,12 +56,17 @@ FetchContent_MakeAvailable(googletest)
 # directly into the test binary rather than using the DLL.
 add_executable(${TEST_RUNNER}
   test/file_selector_plugin_test.cpp
+  test/test_main.cpp
+  test/test_file_dialog_controller.cpp
+  test/test_file_dialog_controller.h
+  test/test_utils.cpp
+  test/test_utils.h
   ${PLUGIN_SOURCES}
 )
 apply_standard_settings(${TEST_RUNNER})
 target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
-target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)
+target_link_libraries(${TEST_RUNNER} PRIVATE gtest gmock)
 # flutter_wrapper_plugin has link dependencies on the Flutter DLL.
 add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
