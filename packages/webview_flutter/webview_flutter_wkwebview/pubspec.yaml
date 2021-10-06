@@ -18,10 +18,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-
-  # TODO (BeMacized): Change to version dependency once interface is published
-  webview_flutter_platform_interface:
-    path: ../webview_flutter_platform_interface
+  webview_flutter_platform_interface: ^1.2.0
 
 dev_dependencies:
   flutter_driver:
