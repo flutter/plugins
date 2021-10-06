@@ -30,6 +30,7 @@ void main() {
         case 'canGoBack':
         case 'canGoForward':
           return true;
+        case 'runJavascriptReturningResult':
         case 'evaluateJavascript':
           return methodCall.arguments as String;
         case 'getScrollX':
@@ -266,16 +267,50 @@ void main() {
     test('evaluateJavascript', () async {
       final String evaluateJavascript =
           await webViewPlatform.evaluateJavascript(
-        'This simulates some Javascript code.',
+        'This simulates some JavaScript code.',
       );
 
-      expect('This simulates some Javascript code.', evaluateJavascript);
+      expect('This simulates some JavaScript code.', evaluateJavascript);
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'evaluateJavascript',
-            arguments: 'This simulates some Javascript code.',
+            arguments: 'This simulates some JavaScript code.',
+          ),
+        ],
+      );
+    });
+
+    test('runJavascript', () async {
+      await webViewPlatform.runJavascript(
+        'This simulates some JavaScript code.',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'runJavascript',
+            arguments: 'This simulates some JavaScript code.',
+          ),
+        ],
+      );
+    });
+
+    test('runJavascriptReturningResult', () async {
+      final String evaluateJavascript =
+          await webViewPlatform.runJavascriptReturningResult(
+        'This simulates some JavaScript code.',
+      );
+
+      expect('This simulates some JavaScript code.', evaluateJavascript);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'runJavascriptReturningResult',
+            arguments: 'This simulates some JavaScript code.',
           ),
         ],
       );
