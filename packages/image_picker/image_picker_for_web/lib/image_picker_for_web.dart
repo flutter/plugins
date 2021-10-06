@@ -6,7 +6,7 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
-import 'package:image_picker_for_web/image_resizer.dart';
+import 'package:image_picker_for_web/src/image_resizer.dart';
 import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 

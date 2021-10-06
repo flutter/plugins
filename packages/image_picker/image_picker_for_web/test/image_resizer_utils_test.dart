@@ -4,7 +4,7 @@
 import 'dart:ui';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:image_picker_for_web/image_resizer_utils.dart';
+import 'package:image_picker_for_web/src/image_resizer_utils.dart';
 
 void main() {
   group('Image Resizer Utils', () {

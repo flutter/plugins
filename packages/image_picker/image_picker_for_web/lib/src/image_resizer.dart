@@ -5,7 +5,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
-import 'package:image_picker_for_web/image_resizer_utils.dart';
+import 'package:image_picker_for_web/src/image_resizer_utils.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'dart:html' as html;
 
@@ -23,7 +23,9 @@ class ImageResizer {
     try {
       final imageElement = await loadImage(file.path);
       final canvas = resizeImageElement(imageElement, maxWidth, maxHeight);
-      return writeCanvasToFile(file, canvas, imageQuality);
+      final resizedImage = await  writeCanvasToFile(file, canvas, imageQuality);
+      html.Url.revokeObjectUrl(file.path);
+      return resizedImage;
     } catch (e) {
       return file;
     }
@@ -36,7 +38,6 @@ class ImageResizer {
     imageElement.src = blobUrl;
 
     imageElement.onLoad.listen((event) {
-      html.Url.revokeObjectUrl(blobUrl);
       imageLoadCompleter.complete(imageElement);
     });
     imageElement.onError.listen((event) {
