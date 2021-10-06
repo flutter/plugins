@@ -118,7 +118,7 @@ class WebView extends StatefulWidget {
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
 
-  /// The set of [JavascriptChannel]s available to Javascript code running in the web view.
+  /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
   /// For each [JavascriptChannel] in the set, a channel object is made available for the
   /// JavaScript code in a window property named [JavascriptChannel.name].
