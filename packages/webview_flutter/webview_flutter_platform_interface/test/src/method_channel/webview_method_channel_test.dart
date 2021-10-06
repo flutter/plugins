@@ -5,7 +5,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-
 import 'package:webview_flutter_platform_interface/src/method_channel/webview_method_channel.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -230,6 +229,7 @@ void main() {
         debuggingEnabled: true,
         gestureNavigationEnabled: true,
         allowsInlineMediaPlayback: true,
+        zoomEnabled: false,
       );
       await webViewPlatform.updateSettings(settings);
 
@@ -246,6 +246,7 @@ void main() {
               'debuggingEnabled': true,
               'gestureNavigationEnabled': true,
               'allowsInlineMediaPlayback': true,
+              'zoomEnabled': false,
             },
           ),
         ],
