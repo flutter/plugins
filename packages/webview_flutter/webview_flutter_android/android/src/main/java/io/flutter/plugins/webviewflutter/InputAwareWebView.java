@@ -158,7 +158,7 @@ final class InputAwareWebView extends WebView {
    * <p>{@code targetView} should have a {@link View#getHandler} method with the thread that future
    * InputConnections should be created on.
    */
-  private void setInputConnectionTarget(final View targetView) {
+  void setInputConnectionTarget(final View targetView) {
     if (containerView == null) {
       Log.e(
           TAG,
