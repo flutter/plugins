@@ -350,7 +350,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         });
   }
 
-  @SuppressWarnings("unchecked")
   private void addJavaScriptChannels(WebView webView, List<String> channelNames) {
     registerJavaScriptChannelNames(webView, channelNames);
   }
