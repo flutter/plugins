@@ -66,11 +66,12 @@ public class CameraUtilsTest {
   }
 
   @Test
-  public void getAvailableCameras_retrievesValidCameras() throws CameraAccessException {
+  public void getAvailableCameras_retrievesValidCameras()
+      throws CameraAccessException, NumberFormatException {
     final Activity mockActivity = mock(Activity.class);
     final CameraManager mockCameraManager = mock(CameraManager.class);
     final CameraCharacteristics mockCameraCharacteristics = mock(CameraCharacteristics.class);
-    final String[] mockCameraIds = {"1394902", "-192930", "0283835"};
+    final String[] mockCameraIds = {"1394902", "-192930", "0283835", "foobar"};
     final int mockSensorOrientation0 = 90;
     final int mockSensorOrientation2 = 270;
     final int mockLensFacing0 = CameraMetadata.LENS_FACING_FRONT;

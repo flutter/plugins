@@ -97,9 +97,16 @@ public final class CameraUtils {
     String[] cameraNames = cameraManager.getCameraIdList();
     List<Map<String, Object>> cameras = new ArrayList<>();
     for (String cameraName : cameraNames) {
-      if (Integer.parseInt(cameraName, 10) < 0) {
+      int cameraId;
+      try {
+        cameraId = Integer.parseInt(cameraName, 10);
+      } catch (Exception e) {
+        cameraId = -1;
+      }
+      if (cameraId < 0) {
         continue;
       }
+
       HashMap<String, Object> details = new HashMap<>();
       CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
       details.put("name", cameraName);
