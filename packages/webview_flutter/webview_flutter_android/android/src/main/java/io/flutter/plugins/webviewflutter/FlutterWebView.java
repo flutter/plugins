@@ -318,7 +318,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void goForward(WebView webView) {
-    if (!webView.canGoForward()) webView.goForward();
+    if (!webView.canGoForward()) {
+      webView.goForward();
+    }
   }
 
   private void reload(WebView webView) {
