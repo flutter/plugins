@@ -1,8 +1,30 @@
+## 2.1.2
+
+* Fix `NullPointerException` on Android from a race condition when changing focus. This only affects
+WebView when it is created without Hybrid Composition.
+
+## 2.1.1
+
+* Fixed `_CastError` that was thrown when running the example App.
+
+## 2.1.0
+
+* Migrated to fully federated architecture.
+
+## 2.0.14
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 2.0.13
+
+* Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
+* Updated Android lint settings.
+
 ## 2.0.12
 
 * Improved the documentation on using the different Android Platform View modes.
-* Fix `NullPointerException` on Android from a race condition when changing focus. This only effects
-WebView when it is created without Hybrid Composition.
+* So that Android and iOS behave the same, `onWebResourceError` is now only called for the main
+  page.
 
 ## 2.0.11
 

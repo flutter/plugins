@@ -11,6 +11,7 @@ import android.hardware.camera2.CaptureResult;
 import android.hardware.camera2.TotalCaptureResult;
 import android.util.Log;
 import androidx.annotation.NonNull;
+import io.flutter.plugins.camera.types.CameraCaptureProperties;
 import io.flutter.plugins.camera.types.CaptureTimeoutsWrapper;
 
 /**
@@ -22,13 +23,16 @@ class CameraCaptureCallback extends CaptureCallback {
   private final CameraCaptureStateListener cameraStateListener;
   private CameraState cameraState;
   private final CaptureTimeoutsWrapper captureTimeouts;
+  private final CameraCaptureProperties captureProps;
 
   private CameraCaptureCallback(
       @NonNull CameraCaptureStateListener cameraStateListener,
-      @NonNull CaptureTimeoutsWrapper captureTimeouts) {
+      @NonNull CaptureTimeoutsWrapper captureTimeouts,
+      @NonNull CameraCaptureProperties captureProps) {
     cameraState = CameraState.STATE_PREVIEW;
     this.cameraStateListener = cameraStateListener;
     this.captureTimeouts = captureTimeouts;
+    this.captureProps = captureProps;
   }
 
   /**
@@ -41,8 +45,9 @@ class CameraCaptureCallback extends CaptureCallback {
    */
   public static CameraCaptureCallback create(
       @NonNull CameraCaptureStateListener cameraStateListener,
-      @NonNull CaptureTimeoutsWrapper captureTimeouts) {
-    return new CameraCaptureCallback(cameraStateListener, captureTimeouts);
+      @NonNull CaptureTimeoutsWrapper captureTimeouts,
+      @NonNull CameraCaptureProperties captureProps) {
+    return new CameraCaptureCallback(cameraStateListener, captureTimeouts, captureProps);
   }
 
   /**
@@ -66,6 +71,16 @@ class CameraCaptureCallback extends CaptureCallback {
   private void process(CaptureResult result) {
     Integer aeState = result.get(CaptureResult.CONTROL_AE_STATE);
     Integer afState = result.get(CaptureResult.CONTROL_AF_STATE);
+
+    // Update capture properties
+    if (result instanceof TotalCaptureResult) {
+      Float lensAperture = result.get(CaptureResult.LENS_APERTURE);
+      Long sensorExposureTime = result.get(CaptureResult.SENSOR_EXPOSURE_TIME);
+      Integer sensorSensitivity = result.get(CaptureResult.SENSOR_SENSITIVITY);
+      this.captureProps.setLastLensAperture(lensAperture);
+      this.captureProps.setLastSensorExposureTime(sensorExposureTime);
+      this.captureProps.setLastSensorSensitivity(sensorSensitivity);
+    }
 
     if (cameraState != CameraState.STATE_PREVIEW) {
       Log.d(
