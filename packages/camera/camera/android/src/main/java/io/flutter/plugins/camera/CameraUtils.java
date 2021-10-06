@@ -97,27 +97,28 @@ public final class CameraUtils {
     String[] cameraNames = cameraManager.getCameraIdList();
     List<Map<String, Object>> cameras = new ArrayList<>();
     for (String cameraName : cameraNames) {
-      if (Integer.parseInt(cameraName, 10) >= 0) {
-        HashMap<String, Object> details = new HashMap<>();
-        CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-        details.put("name", cameraName);
-        int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-        details.put("sensorOrientation", sensorOrientation);
-
-        int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
-        switch (lensFacing) {
-          case CameraMetadata.LENS_FACING_FRONT:
-            details.put("lensFacing", "front");
-            break;
-          case CameraMetadata.LENS_FACING_BACK:
-            details.put("lensFacing", "back");
-            break;
-          case CameraMetadata.LENS_FACING_EXTERNAL:
-            details.put("lensFacing", "external");
-            break;
-        }
-        cameras.add(details);
+      if (Integer.parseInt(cameraName, 10) < 0) {
+        continue;
       }
+      HashMap<String, Object> details = new HashMap<>();
+      CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
+      details.put("name", cameraName);
+      int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+      details.put("sensorOrientation", sensorOrientation);
+
+      int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
+      switch (lensFacing) {
+        case CameraMetadata.LENS_FACING_FRONT:
+          details.put("lensFacing", "front");
+          break;
+        case CameraMetadata.LENS_FACING_BACK:
+          details.put("lensFacing", "back");
+          break;
+        case CameraMetadata.LENS_FACING_EXTERNAL:
+          details.put("lensFacing", "external");
+          break;
+      }
+      cameras.add(details);
     }
     return cameras;
   }
