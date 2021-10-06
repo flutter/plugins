@@ -19,12 +19,11 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-
   # FOR TESTING ONLY. DO NOT MERGE.
-  webview_flutter_platform_interface:
-    path: ../webview_flutter_platform_interface
   webview_flutter_android:
     path: ../webview_flutter_android
+  webview_flutter_platform_interface: ^1.2.0
+  # FOR TESTING ONLY. DO NOT MERGE.
   webview_flutter_wkwebview:
     path: ../webview_flutter_wkwebview
 
