@@ -5,25 +5,33 @@
 package io.flutter.plugins.camera;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import android.app.Activity;
+import android.content.Context;
+import android.hardware.camera2.CameraAccessException;
+import android.hardware.camera2.CameraCharacteristics;
+import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
+import java.util.List;
+import java.util.Map;
 import org.junit.Test;
 
 public class CameraUtilsTest {
 
   @Test
   public void serializeDeviceOrientation_serializesCorrectly() {
-    assertEquals(
-        "portraitUp",
-        CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_UP));
-    assertEquals(
-        "portraitDown",
+    assertEquals("portraitUp", CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_UP));
+    assertEquals("portraitDown",
         CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.PORTRAIT_DOWN));
-    assertEquals(
-        "landscapeLeft",
+    assertEquals("landscapeLeft",
         CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT));
-    assertEquals(
-        "landscapeRight",
+    assertEquals("landscapeRight",
         CameraUtils.serializeDeviceOrientation(PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT));
   }
 
@@ -34,22 +42,44 @@ public class CameraUtilsTest {
 
   @Test
   public void deserializeDeviceOrientation_deserializesCorrectly() {
-    assertEquals(
-        PlatformChannel.DeviceOrientation.PORTRAIT_UP,
-        CameraUtils.deserializeDeviceOrientation("portraitUp"));
-    assertEquals(
-        PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
+    assertEquals(PlatformChannel.DeviceOrientation.PORTRAIT_UP, CameraUtils.deserializeDeviceOrientation("portraitUp"));
+    assertEquals(PlatformChannel.DeviceOrientation.PORTRAIT_DOWN,
         CameraUtils.deserializeDeviceOrientation("portraitDown"));
-    assertEquals(
-        PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
+    assertEquals(PlatformChannel.DeviceOrientation.LANDSCAPE_LEFT,
         CameraUtils.deserializeDeviceOrientation("landscapeLeft"));
-    assertEquals(
-        PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
+    assertEquals(PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT,
         CameraUtils.deserializeDeviceOrientation("landscapeRight"));
   }
 
   @Test(expected = UnsupportedOperationException.class)
   public void deserializeDeviceOrientation_throwsForNull() {
     CameraUtils.deserializeDeviceOrientation(null);
+  }
+
+  @Test
+  public void getAvailableCameras_retrievesValidCameras() throws CameraAccessException {
+    final Activity mockActivity = mock(Activity.class);
+    final CameraManager mockCameraManager = mock(CameraManager.class);
+    final CameraCharacteristics mockCameraCharacteristics = mock(CameraCharacteristics.class);
+    final String[] mockCameraIds = {"1394902", "-192930", "0283835"};
+    final int mockSensorOrientation = 270;
+    final int mockLensFacing = CameraMetadata.LENS_FACING_FRONT;
+
+    when(mockActivity.getSystemService(Context.CAMERA_SERVICE)).thenReturn(mockCameraManager);
+    when(mockCameraManager.getCameraIdList()).thenReturn(mockCameraIds);
+    when(mockCameraManager.getCameraCharacteristics(anyString())).thenReturn(mockCameraCharacteristics);
+    when(mockCameraCharacteristics.get(CameraCharacteristics.SENSOR_ORIENTATION)).thenReturn(mockSensorOrientation);
+    when(mockCameraCharacteristics.get(CameraCharacteristics.LENS_FACING)).thenReturn(mockLensFacing);
+
+    List<Map<String, Object>> availableCameras = CameraUtils.getAvailableCameras(mockActivity);
+
+    System.out.println(availableCameras);
+    assertEquals(availableCameras.size(), 2);
+    assertEquals(availableCameras.get(0).get("name"), "1394902");
+    assertEquals(availableCameras.get(0).get("sensorOrientation"), 0);
+    assertEquals(availableCameras.get(0).get("lensFacing"), "front");
+    assertEquals(availableCameras.get(1).get("name"), "0283835");
+    assertEquals(availableCameras.get(1).get("sensorOrientation"), 0);
+    assertEquals(availableCameras.get(1).get("lensFacing"), "front");
   }
 }

@@ -19,7 +19,8 @@ import java.util.Map;
 /** Provides various utilities for camera. */
 public final class CameraUtils {
 
-  private CameraUtils() {}
+  private CameraUtils() {
+  }
 
   /**
    * Gets the {@link CameraManager} singleton.
@@ -36,8 +37,8 @@ public final class CameraUtils {
    *
    * @param orientation The orientation to serialize.
    * @return The serialized orientation.
-   * @throws UnsupportedOperationException when the provided orientation not have a corresponding
-   *     string value.
+   * @throws UnsupportedOperationException when the provided orientation not have
+   *                                       a corresponding string value.
    */
   static String serializeDeviceOrientation(PlatformChannel.DeviceOrientation orientation) {
     if (orientation == null)
@@ -52,19 +53,19 @@ public final class CameraUtils {
       case LANDSCAPE_RIGHT:
         return "landscapeRight";
       default:
-        throw new UnsupportedOperationException(
-            "Could not serialize device orientation: " + orientation.toString());
+        throw new UnsupportedOperationException("Could not serialize device orientation: " + orientation.toString());
     }
   }
 
   /**
-   * Deserializes a string value to its corresponding {@link PlatformChannel.DeviceOrientation}
-   * value.
+   * Deserializes a string value to its corresponding
+   * {@link PlatformChannel.DeviceOrientation} value.
    *
    * @param orientation The string value to deserialize.
    * @return The deserialized orientation.
-   * @throws UnsupportedOperationException when the provided string value does not have a
-   *     corresponding {@link PlatformChannel.DeviceOrientation}.
+   * @throws UnsupportedOperationException when the provided string value does not
+   *                                       have a corresponding
+   *                                       {@link PlatformChannel.DeviceOrientation}.
    */
   static PlatformChannel.DeviceOrientation deserializeDeviceOrientation(String orientation) {
     if (orientation == null)
@@ -79,8 +80,7 @@ public final class CameraUtils {
       case "landscapeRight":
         return PlatformChannel.DeviceOrientation.LANDSCAPE_RIGHT;
       default:
-        throw new UnsupportedOperationException(
-            "Could not deserialize device orientation: " + orientation);
+        throw new UnsupportedOperationException("Could not deserialize device orientation: " + orientation);
     }
   }
 
@@ -91,31 +91,32 @@ public final class CameraUtils {
    * @return A map of all the available cameras, with their name as their key.
    * @throws CameraAccessException when the camera could not be accessed.
    */
-  public static List<Map<String, Object>> getAvailableCameras(Activity activity)
-      throws CameraAccessException {
+  public static List<Map<String, Object>> getAvailableCameras(Activity activity) throws CameraAccessException {
     CameraManager cameraManager = (CameraManager) activity.getSystemService(Context.CAMERA_SERVICE);
     String[] cameraNames = cameraManager.getCameraIdList();
     List<Map<String, Object>> cameras = new ArrayList<>();
     for (String cameraName : cameraNames) {
-      HashMap<String, Object> details = new HashMap<>();
-      CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
-      details.put("name", cameraName);
-      int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
-      details.put("sensorOrientation", sensorOrientation);
+      if (Integer.parseInt(cameraName, 10) >= 0) {
+        HashMap<String, Object> details = new HashMap<>();
+        CameraCharacteristics characteristics = cameraManager.getCameraCharacteristics(cameraName);
+        details.put("name", cameraName);
+        int sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
+        details.put("sensorOrientation", sensorOrientation);
 
-      int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
-      switch (lensFacing) {
-        case CameraMetadata.LENS_FACING_FRONT:
-          details.put("lensFacing", "front");
-          break;
-        case CameraMetadata.LENS_FACING_BACK:
-          details.put("lensFacing", "back");
-          break;
-        case CameraMetadata.LENS_FACING_EXTERNAL:
-          details.put("lensFacing", "external");
-          break;
+        int lensFacing = characteristics.get(CameraCharacteristics.LENS_FACING);
+        switch (lensFacing) {
+          case CameraMetadata.LENS_FACING_FRONT:
+            details.put("lensFacing", "front");
+            break;
+          case CameraMetadata.LENS_FACING_BACK:
+            details.put("lensFacing", "back");
+            break;
+          case CameraMetadata.LENS_FACING_EXTERNAL:
+            details.put("lensFacing", "external");
+            break;
+        }
+        cameras.add(details);
       }
-      cameras.add(details);
     }
     return cameras;
   }
