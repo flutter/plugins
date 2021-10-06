@@ -299,7 +299,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  @SuppressWarnings("unchecked")
   private void loadUrl(WebView webView, String url, Map<String, String> headers) {
     webView.loadUrl(url, headers);
   }
