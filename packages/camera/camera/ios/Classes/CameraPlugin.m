@@ -704,7 +704,81 @@ NSString *const errorMethod = @"error";
 
       CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
-      [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+
+      if ([_captureDevice position] == AVCaptureDevicePositionFront) {
+        CVPixelBufferLockBaseAddress(nextBuffer, kCVPixelBufferLock_ReadOnly);
+          
+        const Boolean isPlanar = CVPixelBufferIsPlanar(nextBuffer);
+        size_t planeCount;
+        if (isPlanar) {
+          planeCount = CVPixelBufferGetPlaneCount(nextBuffer);
+        } else {
+          planeCount = 1;
+        }
+
+        if (planeCount == 1) {
+          OSType formatType = CVPixelBufferGetPixelFormatType(nextBuffer);
+          void *planeAddress = CVPixelBufferGetBaseAddress(nextBuffer);
+          size_t bytesPerRow = CVPixelBufferGetBytesPerRow(nextBuffer);
+          size_t height = CVPixelBufferGetHeight(nextBuffer);
+          size_t width = CVPixelBufferGetWidth(nextBuffer);
+
+          void* targetBytes = malloc(height * bytesPerRow);
+          size_t targetBytesPerRow = bytesPerRow;
+
+          vImage_Buffer inBuffer;
+          inBuffer.data = planeAddress;
+          inBuffer.rowBytes = bytesPerRow;
+          inBuffer.width = width;
+          inBuffer.height = height;
+
+          vImage_Buffer outBuffer;
+          outBuffer.data = targetBytes;
+          outBuffer.rowBytes = targetBytesPerRow;
+          outBuffer.width = width;
+          outBuffer.height = height;
+
+          vImage_Error err;
+
+          err = vImageHorizontalReflect_ARGB8888(&inBuffer, &outBuffer, kvImageNoFlags);
+
+          if (err != kvImageNoError) {
+            NSLog (@"vImageHorizontalReflect_ARGB8888 returned %ld", err);
+
+            free(targetBytes);
+            targetBytes = NULL;
+
+            return;
+          }
+
+          CVReturn status;
+          CVPixelBufferRef nnb = NULL;
+
+          status = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, formatType, outBuffer.data, outBuffer.rowBytes, NULL, NULL, NULL, &nnb);
+          
+          if (status != kCVReturnSuccess) {
+            NSLog (@"CVPixelBufferCreateWithBytes returned %d", status);
+
+            free(targetBytes);
+            targetBytes = NULL;
+
+            return;
+          }
+
+          [_videoAdaptor appendPixelBuffer:nnb withPresentationTime:nextSampleTime];
+
+          free(targetBytes);
+          targetBytes = NULL;
+
+          CVBufferRelease(nnb);
+        } else {
+
+        }
+        
+        CVPixelBufferUnlockBaseAddress(nextBuffer, kCVPixelBufferLock_ReadOnly);
+      } else {
+        [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+      }
     } else {
       CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
 
