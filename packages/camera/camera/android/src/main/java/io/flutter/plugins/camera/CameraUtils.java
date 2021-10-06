@@ -100,7 +100,7 @@ public final class CameraUtils {
       int cameraId;
       try {
         cameraId = Integer.parseInt(cameraName, 10);
-      } catch (Exception e) {
+      } catch (NumberFormatException e) {
         cameraId = -1;
       }
       if (cameraId < 0) {
