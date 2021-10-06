@@ -544,6 +544,12 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
           break;
         case "gestureNavigationEnabled":
           break;
+        case "forceDark":
+          Integer forceDark = (Integer) settings.get(key);
+          if (forceDark != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            updateForceDark(forceDark);
+          }
+          break;
         case "userAgent":
           updateUserAgent((String) settings.get(key));
           break;
@@ -587,6 +593,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
+  }
+
+  private void updateForceDark(int forceDark) {
+    webView.getSettings().setForceDark(forceDark);
   }
 
   @Override

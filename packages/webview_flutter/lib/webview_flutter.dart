@@ -1,6 +1,7 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+export 'src/types/force_dark.dart';
 
 import 'dart:async';
 import 'dart:io';
@@ -12,6 +13,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:webview_flutter/src/types/force_dark.dart';
 
 import 'platform_interface.dart';
 import 'src/webview_android.dart';
@@ -256,6 +258,7 @@ class WebView extends StatefulWidget {
     this.onWebResourceError,
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
+    this.forceDark = ForceDark.AUTO,
     this.userAgent,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
@@ -429,6 +432,13 @@ class WebView extends StatefulWidget {
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
 
+  /// A force dark value to force a dark theme on WebView
+  ///
+  /// This only works on Android 29+.
+  ///
+  /// By default `forceDark` is [ForceDark.AUTO].
+  final ForceDark forceDark;
+
   /// The value used for the HTTP User-Agent: request header.
   ///
   /// When null the platform's webview default is used for the User-Agent header.
@@ -570,6 +580,7 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     hasProgressTracking: widget.onProgress != null,
     debuggingEnabled: widget.debuggingEnabled,
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
+    forceDark: widget.forceDark,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
   );

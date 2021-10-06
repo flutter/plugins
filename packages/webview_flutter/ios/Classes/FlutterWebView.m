@@ -512,6 +512,9 @@
     } else if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
       NSNumber* allowsInlineMediaPlayback = settings[key];
       _webView.configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
+    } else if ([key isEqualToString:@"forceDark"]) {
+     // dark mode is set to default on iOS and can't be forced
+     //TODO: investigate a workaround
     } else {
       [unknownKeys addObject:key];
     }

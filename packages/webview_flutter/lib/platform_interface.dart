@@ -8,6 +8,7 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
+import 'package:webview_flutter/src/types/force_dark.dart';
 
 import 'webview_flutter.dart';
 
@@ -451,6 +452,7 @@ class WebSettings {
     this.hasProgressTracking,
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
+    this.forceDark = ForceDark.AUTO,
     this.allowsInlineMediaPlayback,
     required this.userAgent,
   }) : assert(userAgent != null);
@@ -490,9 +492,16 @@ class WebSettings {
   /// See also: [WebView.gestureNavigationEnabled]
   final bool? gestureNavigationEnabled;
 
+  /// A force dark value to force a dark theme on WebView
+  ///
+  /// This only works on Android 29+.
+  ///
+  /// See also: [WebView.forceDark]
+  final ForceDark forceDark;
+
   @override
   String toString() {
-    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
+    return 'WebSettings(javascriptMode: $javascriptMode, hasNavigationDelegate: $hasNavigationDelegate, hasProgressTracking: $hasProgressTracking, debuggingEnabled: $debuggingEnabled, gestureNavigationEnabled: $gestureNavigationEnabled, forceDark: $forceDark, userAgent: $userAgent, allowsInlineMediaPlayback: $allowsInlineMediaPlayback)';
   }
 }
 

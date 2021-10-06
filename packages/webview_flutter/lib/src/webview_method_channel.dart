@@ -227,6 +227,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull('debuggingEnabled', settings.debuggingEnabled);
     _addIfNonNull(
         'gestureNavigationEnabled', settings.gestureNavigationEnabled);
+    _addIfNonNull('forceDark', settings.forceDark.toValue());
     _addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
     _addSettingIfPresent('userAgent', settings.userAgent);
