@@ -1,3 +1,7 @@
+## 2.5.0
+
+* Add an option to set the background color of the webview.
+
 ## 2.4.0
 
 * Implemented new `loadFile` and `loadHtmlString` methods from the platform interface.

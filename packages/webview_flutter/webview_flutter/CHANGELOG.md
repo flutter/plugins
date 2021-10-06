@@ -1,3 +1,7 @@
+## 2.4.0
+
+* Add an option to set the background color of the webview.
+
 ## 2.3.1
 
 * Add iOS-specific note to set `JavascriptMode.unrestricted` in order to set `zoomEnabled: false`.
@@ -31,10 +35,6 @@
 
 * Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
-
-## 2.0.13
-
-* Add an option to set the background color of the webview.
 
 ## 2.0.12
 

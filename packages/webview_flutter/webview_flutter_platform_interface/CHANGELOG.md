@@ -1,3 +1,7 @@
+## 1.5.0
+
+* Add an option to set the background color of the webview.
+
 ## 1.4.0
 
 * Added `loadFile` and `loadHtml` interface methods.

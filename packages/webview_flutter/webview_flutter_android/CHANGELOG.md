@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Add an option to set the background color of the webview.
+
 ## 2.2.1
 
 * Fix `NullPointerException` from a race condition when changing focus. This only affects `WebView`
