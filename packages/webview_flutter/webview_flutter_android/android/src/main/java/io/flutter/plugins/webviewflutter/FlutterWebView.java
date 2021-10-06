@@ -354,7 +354,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     registerJavaScriptChannelNames(webView, channelNames);
   }
 
-  @SuppressWarnings("unchecked")
   private void removeJavaScriptChannels(WebView webView, List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.removeJavascriptInterface(channelName);
