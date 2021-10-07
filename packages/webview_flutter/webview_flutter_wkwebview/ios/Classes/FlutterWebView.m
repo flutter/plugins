@@ -258,7 +258,12 @@
   }
   [_webView evaluateJavaScript:jsString
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
-               if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
+               BOOL unsupportedTypeError = false;
+               if (@available(iOS 9, *)) {
+                 unsupportedTypeError =
+                     error && error.code == WKErrorJavaScriptResultTypeIsUnsupported;
+               }
+               if (error && !unsupportedTypeError) {
                  result([FlutterError
                      errorWithCode:@"runJavascript_failed"
                            message:@"Failed running JavaScript"
