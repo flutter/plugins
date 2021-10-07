@@ -117,13 +117,13 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
     Map<String, Object> settings = (Map<String, Object>) params.get("settings");
     if (settings != null) {
-      applySettings(webView, settings);
+      updateSettings(webView, settings);
     }
 
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       List<String> names = (List<String>) params.get(JS_CHANNEL_NAMES_FIELD);
       if (names != null) {
-        registerJavaScriptChannelNames(webView, names);
+        addJavaScriptChannels(webView, names);
       }
     }
 
@@ -223,6 +223,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         {
           Map<String, Object> request = methodCall.arguments();
           String url = (String) request.get("url");
+          @SuppressWarnings("unchecked")
           Map<String, String> headers = (Map<String, String>) request.get("headers");
           if (headers == null) {
             headers = Collections.emptyMap();
@@ -332,60 +333,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   private void updateSettings(WebView webView, Map<String, Object> settings) {
-    applySettings(webView, settings);
-  }
-
-  @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void evaluateJavaScript(WebView webView, String jsString, final Result result) {
-    if (jsString == null) {
-      throw new UnsupportedOperationException("JavaScript string cannot be null");
-    }
-    webView.evaluateJavascript(
-        jsString,
-        new android.webkit.ValueCallback<String>() {
-          @Override
-          public void onReceiveValue(String value) {
-            result.success(value);
-          }
-        });
-  }
-
-  private void addJavaScriptChannels(WebView webView, List<String> channelNames) {
-    registerJavaScriptChannelNames(webView, channelNames);
-  }
-
-  private void removeJavaScriptChannels(WebView webView, List<String> channelNames) {
-    for (String channelName : channelNames) {
-      webView.removeJavascriptInterface(channelName);
-    }
-  }
-
-  private void clearCache(WebView webView) {
-    webView.clearCache(true);
-    WebStorage.getInstance().deleteAllData();
-  }
-
-  private String getTitle(WebView webView) {
-    return webView.getTitle();
-  }
-
-  private void scrollTo(WebView webView, int x, int y) {
-    webView.scrollTo(x, y);
-  }
-
-  private void scrollBy(WebView webView, int x, int y) {
-    webView.scrollBy(x, y);
-  }
-
-  private int getScrollX(WebView webView) {
-    return webView.getScrollX();
-  }
-
-  private int getScrollY(WebView webView) {
-    return webView.getScrollY();
-  }
-
-  private void applySettings(WebView webView, Map<String, Object> settings) {
     for (String key : settings.keySet()) {
       switch (key) {
         case "jsMode":
@@ -426,6 +373,59 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.KITKAT)
+  private void evaluateJavaScript(WebView webView, String jsString, final Result result) {
+    if (jsString == null) {
+      throw new UnsupportedOperationException("JavaScript string cannot be null");
+    }
+    webView.evaluateJavascript(
+        jsString,
+        new android.webkit.ValueCallback<String>() {
+          @Override
+          public void onReceiveValue(String value) {
+            result.success(value);
+          }
+        });
+  }
+
+  private void addJavaScriptChannels(WebView webView, List<String> channelNames) {
+    for (String channelName : channelNames) {
+      webView.addJavascriptInterface(
+          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
+    }
+  }
+
+  private void removeJavaScriptChannels(WebView webView, List<String> channelNames) {
+    for (String channelName : channelNames) {
+      webView.removeJavascriptInterface(channelName);
+    }
+  }
+
+  private void clearCache(WebView webView) {
+    webView.clearCache(true);
+    WebStorage.getInstance().deleteAllData();
+  }
+
+  private String getTitle(WebView webView) {
+    return webView.getTitle();
+  }
+
+  private void scrollTo(WebView webView, int x, int y) {
+    webView.scrollTo(x, y);
+  }
+
+  private void scrollBy(WebView webView, int x, int y) {
+    webView.scrollBy(x, y);
+  }
+
+  private int getScrollX(WebView webView) {
+    return webView.getScrollX();
+  }
+
+  private int getScrollY(WebView webView) {
+    return webView.getScrollY();
+  }
+
   private void updateJsMode(WebView webView, int mode) {
     switch (mode) {
       case 0: // disabled
@@ -445,13 +445,6 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     boolean requireUserGesture = mode != 1;
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
       webView.getSettings().setMediaPlaybackRequiresUserGesture(requireUserGesture);
-    }
-  }
-
-  private void registerJavaScriptChannelNames(WebView webView, List<String> channelNames) {
-    for (String channelName : channelNames) {
-      webView.addJavascriptInterface(
-          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 
