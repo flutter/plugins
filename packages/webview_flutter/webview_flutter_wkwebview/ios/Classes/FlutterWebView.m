@@ -89,7 +89,7 @@
     NSDictionary<NSString *, id> *settings = args[@"settings"];
 
     WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-    [self applyConfigurationSettings:_webView settings:settings toConfiguration:configuration];
+    [self webView:_webView applyConfigurationSettings:settings toConfiguration:configuration];
     configuration.userContentController = userContentController;
     [self updateAutoMediaPlaybackPolicy:args[@"autoMediaPlaybackPolicy"]
                         inConfiguration:configuration];
@@ -110,13 +110,13 @@
       }
     }
 
-    [self applySettings:_webView settings:settings];
+    [self webView:_webView applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
     // https://github.com/flutter/flutter/issues/36228
 
     NSString *initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:_webView url:initialUrl];
+      [self webView:_webView loadUrl:initialUrl];
     }
   }
   return self;
@@ -134,63 +134,63 @@
 
 - (void)onMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"updateSettings"]) {
-    result([self onUpdateSettings:_webView settings:call.arguments]);
+    result([self webView:_webView updateSettings:call.arguments]);
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
-    result([self onLoadUrl:_webView request:call.arguments]);
+    result([self webView:_webView onLoadUrl:call.arguments]);
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
-    result([self onCanGoBack:_webView]);
+    result([self webViewCanGoBack:_webView]);
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
-    result([self onCanGoForward:_webView]);
+    result([self webViewCanGoForward:_webView]);
   } else if ([[call method] isEqualToString:@"goBack"]) {
-    [self onGoBack:_webView];
+    [self webViewGoBack:_webView];
     result(nil);
   } else if ([[call method] isEqualToString:@"goForward"]) {
-    [self onGoForward:_webView];
+    [self webViewGoForward:_webView];
     result(nil);
   } else if ([[call method] isEqualToString:@"reload"]) {
-    [self onReload:_webView];
+    [self webViewReload:_webView];
     result(nil);
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
-    result([self onCurrentUrl:_webView]);
+    result([self currentUrlForWebView:_webView]);
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
-    [self onEvaluateJavaScript:_webView jsString:call.arguments result:result];
+    [self webView:_webView evaluateJavaScript:call.arguments result:result];
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
-    [self onAddJavaScriptChannels:_webView channelNames:call.arguments];
+    [self webView:_webView addJavaScriptChannels:call.arguments];
     result(nil);
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
-    [self onRemoveJavaScriptChannels:_webView channelNamesToRemove:call.arguments];
+    [self webView:_webView removeJavaScriptChannels:call.arguments];
     result(nil);
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
   } else if ([[call method] isEqualToString:@"getTitle"]) {
-    result([self onGetTitle:_webView]);
+    result([self titleForWebView:_webView]);
   } else if ([[call method] isEqualToString:@"scrollTo"]) {
     NSDictionary *arguments = [call arguments];
-    [self onScrollTo:_webView x:arguments[@"x"] y:arguments[@"y"]];
+    [self webView:_webView scrollTo:arguments[@"x"] y:arguments[@"y"]];
     result(nil);
   } else if ([[call method] isEqualToString:@"scrollBy"]) {
     NSDictionary *arguments = [call arguments];
-    [self onScrollBy:_webView x:arguments[@"x"] y:arguments[@"y"]];
+    [self webView:_webView scrollBy:arguments[@"x"] y:arguments[@"y"]];
     result(nil);
   } else if ([[call method] isEqualToString:@"getScrollX"]) {
-    result([self getScrollX:_webView]);
+    result([self scrollXForWebView:_webView]);
   } else if ([[call method] isEqualToString:@"getScrollY"]) {
-    result([self getScrollY:_webView]);
+    result([self scrollYForWebView:_webView]);
   } else {
     result(FlutterMethodNotImplemented);
   }
 }
 
-- (FlutterError *_Nullable)onUpdateSettings:(WKWebView *)webView
-                                   settings:(NSDictionary<NSString *, id> *)settings {
-  NSString *error = [self applySettings:webView settings:settings];
+- (FlutterError *_Nullable)webView:(WKWebView *)webView
+                    updateSettings:(NSDictionary<NSString *, id> *)settings {
+  NSString *error = [self webView:webView applySettings:settings];
   if (error == nil) return nil;
   return [FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil];
 }
 
-- (FlutterError *_Nullable)onLoadUrl:(WKWebView *)webView
-                             request:(NSDictionary<NSString *, id> *)request {
-  if (![self loadRequest:webView request:request]) {
+- (FlutterError *_Nullable)webView:(WKWebView *)webView
+                         onLoadUrl:(NSDictionary<NSString *, id> *)request {
+  if (![self webView:webView loadRequest:request]) {
     return [FlutterError errorWithCode:@"loadUrl_failed"
                                message:@"Failed parsing the URL"
                                details:[NSString stringWithFormat:@"Request was: '%@'", request]];
@@ -199,34 +199,34 @@
   }
 }
 
-- (NSNumber *)onCanGoBack:(WKWebView *)webView {
+- (NSNumber *)webViewCanGoBack:(WKWebView *)webView {
   return @(webView.canGoBack);
 }
 
-- (NSNumber *)onCanGoForward:(WKWebView *)webView {
+- (NSNumber *)webViewCanGoForward:(WKWebView *)webView {
   return @(webView.canGoForward);
 }
 
-- (void)onGoBack:(WKWebView *)webView {
+- (void)webViewGoBack:(WKWebView *)webView {
   [webView goBack];
 }
 
-- (void)onGoForward:(WKWebView *)webView {
+- (void)webViewGoForward:(WKWebView *)webView {
   [webView goForward];
 }
 
-- (void)onReload:(WKWebView *)webView {
+- (void)webViewReload:(WKWebView *)webView {
   [webView reload];
 }
 
-- (NSString *)onCurrentUrl:(WKWebView *)webView {
+- (NSString *)currentUrlForWebView:(WKWebView *)webView {
   _currentUrl = [[webView URL] absoluteString];
   return _currentUrl;
 }
 
-- (void)onEvaluateJavaScript:(WKWebView *)webView
-                    jsString:(NSString *)jsString
-                      result:(FlutterResult)result {
+- (void)webView:(WKWebView *)webView
+    evaluateJavaScript:(NSString *)jsString
+                result:(FlutterResult)result {
   if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
                                message:@"JavaScript String cannot be null"
@@ -247,15 +247,14 @@
             }];
 }
 
-- (void)onAddJavaScriptChannels:(WKWebView *)webView channelNames:(NSArray *)channelNames {
+- (void)webView:(WKWebView *)webView addJavaScriptChannels:(NSArray *)channelNames {
   NSSet *channelNamesSet = [[NSSet alloc] initWithArray:channelNames];
   [_javaScriptChannelNames addObjectsFromArray:channelNames];
   [self registerJavaScriptChannels:channelNamesSet
                         controller:webView.configuration.userContentController];
 }
 
-- (void)onRemoveJavaScriptChannels:(WKWebView *)webView
-              channelNamesToRemove:(NSArray *)channelNamesToRemove {
+- (void)webView:(WKWebView *)webView removeJavaScriptChannels:(NSArray *)channelNamesToRemove {
   // WkWebView does not support removing a single user script, so instead we remove all
   // user scripts, all message handlers. And re-register channels that shouldn't be removed.
   [webView.configuration.userContentController removeAllUserScripts];
@@ -287,15 +286,15 @@
   }
 }
 
-- (NSString *)onGetTitle:(WKWebView *)webView {
+- (NSString *)titleForWebView:(WKWebView *)webView {
   return webView.title;
 }
 
-- (void)onScrollTo:(WKWebView *)webView x:(NSNumber *)x y:(NSNumber *)y {
+- (void)webView:(WKWebView *)webView scrollTo:(NSNumber *)x y:(NSNumber *)y {
   webView.scrollView.contentOffset = CGPointMake(x.intValue, y.intValue);
 }
 
-- (void)onScrollBy:(WKWebView *)webView x:(NSNumber *)x y:(NSNumber *)y {
+- (void)webView:(WKWebView *)webView scrollBy:(NSNumber *)x y:(NSNumber *)y {
   CGPoint contentOffset = webView.scrollView.contentOffset;
   int offsetX = x.intValue + contentOffset.x;
   int offsetY = y.intValue + contentOffset.y;
@@ -303,21 +302,21 @@
   webView.scrollView.contentOffset = CGPointMake(offsetX, offsetY);
 }
 
-- (NSNumber *)getScrollX:(WKWebView *)webView {
+- (NSNumber *)scrollXForWebView:(WKWebView *)webView {
   return @((int)webView.scrollView.contentOffset.x);
 }
 
-- (NSNumber *)getScrollY:(WKWebView *)webView {
+- (NSNumber *)scrollYForWebView:(WKWebView *)webView {
   return @((int)webView.scrollView.contentOffset.y);
 }
 
 // Returns nil when successful, or an error message when one or more keys are unknown.
-- (NSString *)applySettings:(WKWebView *)webView settings:(NSDictionary<NSString *, id> *)settings {
+- (NSString *)webView:(WKWebView *)webView applySettings:(NSDictionary<NSString *, id> *)settings {
   NSMutableArray<NSString *> *unknownKeys = [[NSMutableArray alloc] init];
   for (NSString *key in settings) {
     if ([key isEqualToString:@"jsMode"]) {
       NSNumber *mode = settings[key];
-      [self updateJsMode:webView mode:mode];
+      [self webView:webView updateJsMode:mode];
     } else if ([key isEqualToString:@"hasNavigationDelegate"]) {
       NSNumber *hasDartNavigationDelegate = settings[key];
       _navigationDelegate.hasDartNavigationDelegate = [hasDartNavigationDelegate boolValue];
@@ -335,7 +334,7 @@
       webView.allowsBackForwardNavigationGestures = [allowsBackForwardNavigationGestures boolValue];
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString *userAgent = settings[key];
-      [self updateUserAgent:webView userAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+      [self webView:webView updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
     } else {
       [unknownKeys addObject:key];
     }
@@ -347,9 +346,9 @@
                                     [unknownKeys componentsJoinedByString:@", "]];
 }
 
-- (void)applyConfigurationSettings:(WKWebView *)webView
-                          settings:(NSDictionary<NSString *, id> *)settings
-                   toConfiguration:(WKWebViewConfiguration *)configuration {
+- (void)webView:(WKWebView *)webView
+    applyConfigurationSettings:(NSDictionary<NSString *, id> *)settings
+               toConfiguration:(WKWebViewConfiguration *)configuration {
   NSAssert(configuration != webView.configuration,
            @"configuration needs to be updated before webView.configuration.");
   for (NSString *key in settings) {
@@ -360,7 +359,7 @@
   }
 }
 
-- (void)updateJsMode:(WKWebView *)webView mode:(NSNumber *)mode {
+- (void)webView:(WKWebView *)webView updateJsMode:(NSNumber *)mode {
   WKPreferences *preferences = [[webView configuration] preferences];
   switch ([mode integerValue]) {
     case 0:  // disabled
@@ -406,7 +405,7 @@
   }
 }
 
-- (bool)loadRequest:(WKWebView *)webView request:(NSDictionary<NSString *, id> *)request {
+- (bool)webView:(WKWebView *)webView loadRequest:(NSDictionary<NSString *, id> *)request {
   if (!request) {
     return false;
   }
@@ -415,21 +414,21 @@
   if ([url isKindOfClass:[NSString class]]) {
     id headers = request[@"headers"];
     if ([headers isKindOfClass:[NSDictionary class]]) {
-      return [self loadUrl:webView url:url withHeaders:headers];
+      return [self webView:webView loadUrl:url withHeaders:headers];
     } else {
-      return [self loadUrl:webView url:url];
+      return [self webView:webView loadUrl:url];
     }
   }
 
   return false;
 }
 
-- (bool)loadUrl:(WKWebView *)webView url:(NSString *)url {
-  return [self loadUrl:webView url:url withHeaders:[NSMutableDictionary dictionary]];
+- (bool)webView:(WKWebView *)webView loadUrl:(NSString *)url {
+  return [self webView:webView loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
 }
 
-- (bool)loadUrl:(WKWebView *)webView
-            url:(NSString *)url
+- (bool)webView:(WKWebView *)webView
+        loadUrl:(NSString *)url
     withHeaders:(NSDictionary<NSString *, NSString *> *)headers {
   NSURL *nsUrl = [NSURL URLWithString:url];
   if (!nsUrl) {
@@ -458,7 +457,7 @@
   }
 }
 
-- (void)updateUserAgent:(WKWebView *)webView userAgent:(NSString *)userAgent {
+- (void)webView:(WKWebView *)webView updateUserAgent:(NSString *)userAgent {
   if (@available(iOS 9.0, *)) {
     [webView setCustomUserAgent:userAgent];
   } else {
