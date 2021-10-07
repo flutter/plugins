@@ -5,11 +5,11 @@
 @import XCTest;
 @import os.log;
 
-static UIColor* getPixelColorInImage(UIImage* image, int x, int y) {
-  CFDataRef pixelData = CGDataProviderCopyData(CGImageGetDataProvider(image.CGImage));
+static UIColor* getPixelColorInImage(CGImageRef image, size_t x, size_t y) {
+  CFDataRef pixelData = CGDataProviderCopyData(CGImageGetDataProvider(image));
   const UInt8* data = CFDataGetBytePtr(pixelData);
 
-  size_t bytesPerRow = CGImageGetBytesPerRow(image.CGImage);
+  size_t bytesPerRow = CGImageGetBytesPerRow(image);
   size_t pixelInfo = (bytesPerRow * y) + (x * 4);  // 4 bytes per pixel
 
   UInt8 red = data[pixelInfo + 0];
@@ -22,11 +22,6 @@ static UIColor* getPixelColorInImage(UIImage* image, int x, int y) {
                          green:green / 255.0f
                           blue:blue / 255.0f
                          alpha:alpha / 255.0f];
-}
-
-static bool compareColors(CIColor* aColor, CIColor* bColor) {
-  return aColor.red == bColor.red && aColor.green == bColor.green && aColor.blue == bColor.blue &&
-         aColor.alpha == bColor.alpha;
 }
 
 @interface FLTWebViewUITests : XCTestCase
@@ -68,23 +63,24 @@ static bool compareColors(CIColor* aColor, CIColor* bColor) {
   XCUIScreenshot* screenshot = [[XCUIScreen mainScreen] screenshot];
 
   UIImage* screenshotImage = screenshot.image;
-  UIColor* centerLeftColor = getPixelColorInImage(
-      screenshotImage, 0, (screenshotImage.scale * screenshotImage.size.height) / 2);
-  UIColor* centerColor = getPixelColorInImage(
-      screenshotImage, (screenshotImage.scale * screenshotImage.size.width) / 2,
-      (screenshotImage.scale * screenshotImage.size.height) / 2);
-  CIColor* centerLeftCIColor = [CIColor colorWithCGColor:centerLeftColor.CGColor];
-  CIColor* centerCIColor = [CIColor colorWithCGColor:centerColor.CGColor];
+  CGImageRef screenshotCGImage = screenshotImage.CGImage;
+  UIColor* centerLeftColor =
+      getPixelColorInImage(screenshotCGImage, 0, CGImageGetHeight(screenshotCGImage) / 2);
+  UIColor* centerColor =
+      getPixelColorInImage(screenshotCGImage, CGImageGetWidth(screenshotCGImage) / 2,
+                           CGImageGetHeight(screenshotCGImage) / 2);
 
+  CGColorSpaceRef centerLeftColorSpace = CGColorGetColorSpace(centerLeftColor.CGColor);
   // Flutter Colors.green color : 0xFF4CAF50 -> rgba(76, 175, 80, 1)
   // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
-  CIColor* flutterGreenColor = [CIColor colorWithRed:76.0f / 255.0f
-                                               green:175.0f / 255.0f
-                                                blue:80.0f / 255.0f
-                                               alpha:1.0f];
+  CGFloat flutterGreenColorComponents[] = {76.0f / 255.0f, 175.0f / 255.0f, 80.0f / 255.0f, 1.0f};
+  CGColorRef flutterGreenColor = CGColorCreate(centerLeftColorSpace, flutterGreenColorComponents);
+  CGFloat redColorComponents[] = {1.0f, 0.0f, 0.0f, 1.0f};
+  CGColorRef redColor = CGColorCreate(centerLeftColorSpace, redColorComponents);
+  CGColorSpaceRelease(centerLeftColorSpace);
 
-  XCTAssertTrue(compareColors(flutterGreenColor, centerLeftCIColor));
-  XCTAssertTrue(compareColors(CIColor.redColor, centerCIColor));
+  XCTAssertTrue(CGColorEqualToColor(flutterGreenColor, centerLeftColor.CGColor));
+  XCTAssertTrue(CGColorEqualToColor(redColor, centerColor.CGColor));
 }
 
 - (void)testColoredBackground {
@@ -112,25 +108,26 @@ static bool compareColors(CIColor* aColor, CIColor* bColor) {
   XCUIScreenshot* screenshot = [[XCUIScreen mainScreen] screenshot];
 
   UIImage* screenshotImage = screenshot.image;
-  UIColor* centerLeftColor = getPixelColorInImage(
-      screenshotImage, 0, (screenshotImage.scale * screenshotImage.size.height) / 2);
-  UIColor* centerColor = getPixelColorInImage(
-      screenshotImage, (screenshotImage.scale * screenshotImage.size.width) / 2,
-      (screenshotImage.scale * screenshotImage.size.height) / 2);
-  CIColor* centerLeftCIColor = [CIColor colorWithCGColor:centerLeftColor.CGColor];
-  CIColor* centerCIColor = [CIColor colorWithCGColor:centerColor.CGColor];
+  CGImageRef screenshotCGImage = screenshotImage.CGImage;
+  UIColor* centerLeftColor =
+      getPixelColorInImage(screenshotCGImage, 0, CGImageGetHeight(screenshotCGImage) / 2);
+  UIColor* centerColor =
+      getPixelColorInImage(screenshotCGImage, CGImageGetWidth(screenshotCGImage) / 2,
+                           CGImageGetHeight(screenshotCGImage) / 2);
 
+  CGColorSpaceRef centerLeftColorSpace = CGColorGetColorSpace(centerLeftColor.CGColor);
   // Flutter Colors.green color : 0xFF4CAF50 -> rgba(76, 175, 80, 1)
   // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
   // The background color of the webview is : rgba(0, 0, 0, 0.5)
   // The expected color is : rgba(38, 87, 40, 1)
-  CIColor* expectedColor = [CIColor colorWithRed:38.0f / 255.0f
-                                           green:87.0f / 255.0f
-                                            blue:40.0f / 255.0f
-                                           alpha:1.0f];
+  CGFloat flutterGreenColorComponents[] = {38.0f / 255.0f, 87.0f / 255.0f, 40.0f / 255.0f, 1.0f};
+  CGColorRef flutterGreenColor = CGColorCreate(centerLeftColorSpace, flutterGreenColorComponents);
+  CGFloat redColorComponents[] = {1.0f, 0.0f, 0.0f, 1.0f};
+  CGColorRef redColor = CGColorCreate(centerLeftColorSpace, redColorComponents);
+  CGColorSpaceRelease(centerLeftColorSpace);
 
-  XCTAssertTrue(compareColors(expectedColor, centerLeftCIColor));
-  XCTAssertTrue(compareColors(CIColor.redColor, centerCIColor));
+  XCTAssertTrue(CGColorEqualToColor(flutterGreenColor, centerLeftColor.CGColor));
+  XCTAssertTrue(CGColorEqualToColor(redColor, centerColor.CGColor));
 }
 
 - (void)testUserAgent {
