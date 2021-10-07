@@ -32,8 +32,6 @@ build_all_plugins_app_template: &BUILD_ALL_PLUGINS_APP_TEMPLATE
   create_all_plugins_app_script:
     - dart $PLUGIN_TOOL all-plugins-app --output-dir=. --exclude script/configs/exclude_all_plugins_app.yaml
   build_all_plugins_debug_script:
-    - env
-    - ls -la /usr/lib/jvm/
     - cd all_plugins
     - if [[ "$BUILD_ALL_ARGS" == "web" ]]; then
     -   echo "Skipping; web does not support debug builds"
