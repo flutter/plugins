@@ -261,7 +261,8 @@
   [_webView evaluateJavaScript:jsString
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
                if (error) {
-                 if (sendReturnValue || (!sendReturnValue && error.code != WKErrorJavaScriptResultTypeIsUnsupported)) {
+                 if (sendReturnValue ||
+                     (!sendReturnValue && error.code != WKErrorJavaScriptResultTypeIsUnsupported)) {
                    result([FlutterError
                        errorWithCode:(sendReturnValue ? @"runJavascriptReturningResult_failed"
                                                       : @"runJavascript_failed")
@@ -271,7 +272,7 @@
                  } else {
                    result(nil);
                  }
-                   return;
+                 return;
                }
                if (sendReturnValue) {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
