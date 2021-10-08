@@ -1,6 +1,6 @@
 ## 5.2.0
 
-* Add `GoogleSignInAccount.serverAuthCode`. Mark `GoogleSignInAuthentication.serverAuthCode` as deprecated and always null. 
+* Add `GoogleSignInAccount.serverAuthCode`. Mark `GoogleSignInAuthentication.serverAuthCode` as deprecated.
 
 ## 5.1.1
 
