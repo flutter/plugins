@@ -152,9 +152,9 @@
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
     [self onEvaluateJavascript:call result:result];
   } else if ([[call method] isEqualToString:@"runJavascript"]) {
-    [self onRunJavascript:call result:result];
+    [self onRunJavascript:call result:result sendReturnValue:false];
   } else if ([[call method] isEqualToString:@"runJavascriptReturningResult"]) {
-    [self onRunJavascriptReturningResult:call result:result];
+    [self onRunJavascript:call result:result sendReturnValue:true];
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
@@ -271,26 +271,13 @@
                  } else {
                    result(nil);
                  }
+                   return;
                }
                if (sendReturnValue) {
                  result([NSString stringWithFormat:@"%@", evaluateResult]);
                } else {
                  result(nil);
                }
-             }];
-}
-
-- (void)onRunJavascriptReturningResult:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* jsString = [call arguments];
-  if (!jsString) {
-    result([FlutterError errorWithCode:@"runJavascriptReturningResult_failed"
-                               message:@"JavaScript String cannot be null"
-                               details:nil]);
-    return;
-  }
-  [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error){
-
              }];
 }
 
@@ -505,7 +492,7 @@
   for (NSString* channelName in channelNames) {
     FLTJavaScriptChannel* channel =
         [[FLTJavaScriptChannel alloc] initWithMethodChannel:_channel
-                                      javascriptChannelName:channelName];
+                                      javaScriptChannelName:channelName];
     [userContentController addScriptMessageHandler:channel name:channelName];
     NSString* wrapperSource = [NSString
         stringWithFormat:@"window.%@ = webkit.messageHandlers.%@;", channelName, channelName];
