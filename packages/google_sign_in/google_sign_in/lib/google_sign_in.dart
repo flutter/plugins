@@ -27,6 +27,11 @@ class GoogleSignInAuthentication {
   /// The OAuth2 access token to access Google services.
   String? get accessToken => _data.accessToken;
 
+  /// Server auth code used to access Google Login
+  @Deprecated(
+      'Always null. Use the `GoogleSignInAccount.serverAuthCode` property instead')
+  String? get serverAuthCode => null;
+
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
 }

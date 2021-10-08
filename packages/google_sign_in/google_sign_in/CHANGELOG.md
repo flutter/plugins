@@ -1,6 +1,6 @@
-## 6.0.0
+## 5.2.0
 
-* **Breaking change**. Move `serverAuthCode` from `GoogleSignInAuthentication` to `GoogleSignInAccount`.
+* Add `GoogleSignInAccount.serverAuthCode`. Mark `GoogleSignInAuthentication.serverAuthCode` as deprecated and always null. 
 
 ## 5.1.1
 
