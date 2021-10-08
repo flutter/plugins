@@ -150,11 +150,11 @@
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
-    [self onEvaluateJavascript:call result:result];
+    [self onEvaluateJavaScript:call result:result];
   } else if ([[call method] isEqualToString:@"runJavascript"]) {
-    [self onRunJavascript:call result:result sendReturnValue:false];
+    [self onRunJavaScript:call result:result sendReturnValue:false];
   } else if ([[call method] isEqualToString:@"runJavascriptReturningResult"]) {
-    [self onRunJavascript:call result:result sendReturnValue:true];
+    [self onRunJavaScript:call result:result sendReturnValue:true];
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
@@ -226,7 +226,7 @@
   result(_currentUrl);
 }
 
-- (void)onEvaluateJavascript:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
@@ -248,7 +248,7 @@
              }];
 }
 
-- (void)onRunJavascript:(FlutterMethodCall*)call
+- (void)onRunJavaScript:(FlutterMethodCall*)call
                  result:(FlutterResult)result
         sendReturnValue:(BOOL)sendReturnValue {
   NSString* jsString = [call arguments];

@@ -13,7 +13,7 @@
                 javaScriptChannelName:(NSString*)javaScriptChannelName {
   self = [super init];
   NSAssert(methodChannel != nil, @"methodChannel must not be null.");
-  NSAssert(javaScriptChannelName != nil, @"javascriptChannelName must not be null.");
+  NSAssert(javaScriptChannelName != nil, @"javaScriptChannelName must not be null.");
   if (self) {
     _methodChannel = methodChannel;
     _javaScriptChannelName = javaScriptChannelName;
