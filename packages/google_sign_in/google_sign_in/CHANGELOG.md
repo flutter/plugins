@@ -1,6 +1,6 @@
-## 5.1.2
+## 6.0.0
 
-* Re-use server auth code obtained on login.
+* **Breaking change**. Move `serverAuthCode` from `GoogleSignInAuthentication` to `GoogleSignInAccount`.
 
 ## 5.1.1
 
