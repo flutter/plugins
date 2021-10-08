@@ -169,11 +169,7 @@
           transactionForUpdateBlock = transaction;
           [expectation fulfill];
         }
-        if (@available(iOS 8.3, *)) {
-          if (!transaction.payment.simulatesAskToBuyInSandbox) {
-            [simulatesAskToBuyInSandboxExpectation fulfill];
-          }
-        } else {
+        if (!transaction.payment.simulatesAskToBuyInSandbox) {
           [simulatesAskToBuyInSandboxExpectation fulfill];
         }
       }

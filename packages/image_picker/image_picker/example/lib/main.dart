@@ -226,6 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
         isVideo = false;
         setState(() {
           _imageFile = response.file;
+          _imageFileList = response.files;
         });
       }
     } else {

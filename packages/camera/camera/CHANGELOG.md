@@ -1,7 +1,52 @@
-## 0.8.1+8
+## 0.9.4+2
 
-* Fix registerTexture and result being called on background thread on iOS. 
+* Fix registerTexture and result being called on background thread on iOS;
+* Updated package description.
 
+## 0.9.4+1
+
+* Fixed Android implementation throwing IllegalStateException when switching to a different activity.
+
+## 0.9.4
+
+* Add web support by endorsing `package:camera_web`.
+
+## 0.9.3+1
+
+* Remove iOS 9 availability check around ultra high capture sessions.
+
+## 0.9.3
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 0.9.2+2
+
+* Ensure that setting the exposure offset returns the new offset value on Android.
+
+## 0.9.2+1
+
+* Fixed camera controller throwing an exception when being replaced in the preview widget.
+
+## 0.9.2
+
+* Added functions to pause and resume the camera preview.
+
+## 0.9.1+1
+
+* Replace `device_info` reference with `device_info_plus` in the [README.md](README.md)
+
+## 0.9.1
+
+* Added `lensAperture`, `sensorExposureTime` and `sensorSensitivity` properties to the `CameraImage` dto.
+
+## 0.9.0
+
+* Complete rewrite of Android plugin to fix many capture, focus, flash, orientation and exposure issues.
+* Fixed crash when opening front-facing cameras on some legacy android devices like Sony XZ.
+* Android Flash mode works with full precapture sequence.
+* Updated Android lint settings.
+
+>>>>>>> 174f140651e9ca9c958f2ae75960684c27772a07
 ## 0.8.1+7
 
 * Fix device orientation sometimes not affecting the camera preview orientation.

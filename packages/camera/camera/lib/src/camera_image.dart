@@ -100,6 +100,9 @@ class CameraImage {
       : format = ImageFormat._fromPlatformData(data['format']),
         height = data['height'],
         width = data['width'],
+        lensAperture = data['lensAperture'],
+        sensorExposureTime = data['sensorExposureTime'],
+        sensorSensitivity = data['sensorSensitivity'],
         planes = List<Plane>.unmodifiable(data['planes']
             .map((dynamic planeData) => Plane._fromPlatformData(planeData)));
 
@@ -125,4 +128,15 @@ class CameraImage {
   ///
   /// The number of planes is determined by the format of the image.
   final List<Plane> planes;
+
+  /// The aperture settings for this image.
+  ///
+  /// Represented as an f-stop value.
+  final double? lensAperture;
+
+  /// The sensor exposure time for this image in nanoseconds.
+  final int? sensorExposureTime;
+
+  /// The sensor sensitivity in standard ISO arithmetic units.
+  final double? sensorSensitivity;
 }

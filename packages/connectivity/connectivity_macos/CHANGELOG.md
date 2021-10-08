@@ -1,6 +1,7 @@
-## NEXT
+## 0.2.1+2
 
 * Add Swift language version to podspec.
+* Fix `implements` package name in pubspec.
 
 ## 0.2.1+1
 
