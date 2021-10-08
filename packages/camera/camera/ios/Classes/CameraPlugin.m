@@ -716,8 +716,9 @@ NSString *const errorMethod = @"error";
           planeCount = 1;
         }
 
-        if (planeCount == 1) {
-          OSType formatType = CVPixelBufferGetPixelFormatType(nextBuffer);
+        OSType formatType = CVPixelBufferGetPixelFormatType(nextBuffer);
+
+        if (!isPlanar) {
           void *planeAddress = CVPixelBufferGetBaseAddress(nextBuffer);
           size_t bytesPerRow = CVPixelBufferGetBytesPerRow(nextBuffer);
           size_t height = CVPixelBufferGetHeight(nextBuffer);
@@ -754,7 +755,8 @@ NSString *const errorMethod = @"error";
           CVReturn status;
           CVPixelBufferRef nnb = NULL;
 
-          status = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, formatType, outBuffer.data, outBuffer.rowBytes, NULL, NULL, NULL, &nnb);
+          status = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, formatType, outBuffer.data,
+                                                outBuffer.rowBytes, NULL, NULL, NULL, &nnb);
           
           if (status != kCVReturnSuccess) {
             NSLog (@"CVPixelBufferCreateWithBytes returned %d", status);
@@ -772,7 +774,93 @@ NSString *const errorMethod = @"error";
 
           CVBufferRelease(nnb);
         } else {
+          uint8_t* planeAddress[planeCount];
+          size_t bytesPerRow[planeCount];
+          size_t height[planeCount];
+          size_t width[planeCount];
 
+          uint8_t* targetAddress[planeCount];
+          
+          for (int i = 0; i < planeCount; i++) {
+            planeAddress[i] = CVPixelBufferGetBaseAddressOfPlane(nextBuffer, i);
+            bytesPerRow[i] = CVPixelBufferGetBytesPerRowOfPlane(nextBuffer, i);
+            height[i] = CVPixelBufferGetHeightOfPlane(nextBuffer, i);
+            width[i] = CVPixelBufferGetWidthOfPlane(nextBuffer, i);
+                
+            targetAddress[i] = malloc(height[i] * bytesPerRow[i]);
+          }
+
+          size_t wp;
+          size_t hp;
+            
+          uint8_t x = bytesPerRow[1] - (width[1] * 2) - 1;
+
+          for (size_t i = 0; i < height[1]; i++) {
+            for (size_t j = 0; j < bytesPerRow[1]; j++) {
+              if (j >= bytesPerRow[1] / 2) {
+                continue;
+              }
+
+              wp = j + (i * bytesPerRow[1]);
+              hp = (bytesPerRow[1] - j - 1) + (bytesPerRow[1] * i);
+
+              targetAddress[1][hp] = planeAddress[1][wp - x];
+              targetAddress[1][wp] = planeAddress[1][hp - x];
+            }
+          }
+
+          vImage_Buffer inBuffer;
+          inBuffer.data = planeAddress[0];
+          inBuffer.rowBytes = bytesPerRow[0];
+          inBuffer.width = width[0];
+          inBuffer.height = height[0];
+              
+          vImage_Buffer outBuffer;
+          outBuffer.data = targetAddress[0];
+          outBuffer.rowBytes = bytesPerRow[0];
+          outBuffer.width = width[0];
+          outBuffer.height = height[0];
+
+          vImage_Error err;
+
+          err = vImageHorizontalReflect_Planar8(&inBuffer, &outBuffer, kvImageNoFlags);
+
+          if (err != kvImageNoError) {
+            NSLog (@"vImageHorizontalReflect_Planar8 returned %ld", err);
+
+            for (int i = 0; i < planeCount; i++) {
+              free(targetAddress[i]);
+            }
+
+            return;
+          }
+
+          CVReturn status;
+          CVPixelBufferRef nnb = NULL;
+
+          status = CVPixelBufferCreate(kCFAllocatorDefault, width[0], height[0], formatType, NULL, &nnb);
+
+          if (status != kCVReturnSuccess) {
+            NSLog (@"CVPixelBufferCreate returned %d", status);
+
+            return;
+          }
+          
+          CVPixelBufferLockBaseAddress(nnb, kCVPixelBufferLock_ReadOnly);
+          uint8_t *y = CVPixelBufferGetBaseAddressOfPlane(nnb, 0);
+          memcpy(y, targetAddress[0], height[0] * bytesPerRow[0]);
+
+          uint8_t *uv = CVPixelBufferGetBaseAddressOfPlane(nnb, 1);
+          memcpy(uv, targetAddress[1], height[1] * bytesPerRow[1]);
+          CVPixelBufferUnlockBaseAddress(nnb, kCVPixelBufferLock_ReadOnly);
+
+          [_videoAdaptor appendPixelBuffer:nnb withPresentationTime:nextSampleTime];
+
+          for (int i = 0; i < planeCount; i++) {
+            free(targetAddress[i]);
+          }
+
+          CVBufferRelease(nnb);
         }
         
         CVPixelBufferUnlockBaseAddress(nextBuffer, kCVPixelBufferLock_ReadOnly);
