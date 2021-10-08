@@ -48,7 +48,7 @@ const String kTransparentBackgroundPage = '''
   <style type="text/css">
     body { background: transparent; margin: 0; padding: 0; }
     #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
-    #shape { background: red; width: 200px; height: 200px; margin: 0; padding: 0; position: absolute; top: calc(50% - 100px); left: calc(50% - 100px); }
+    #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
     p { text-align: center; }
   </style>
   <body>
@@ -94,7 +94,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
           javascriptChannels: _createJavascriptChannels(context),
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
-          backgroundColor: Color(0x00000000),
+          backgroundColor: Color(0x80000000),
         );
       }),
       floatingActionButton: favoriteButton(),

@@ -43,7 +43,9 @@ public class BackgroundColorTest {
 
     // Flutter Colors.green color : 0xFF4CAF50
     // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
-    assertEquals(0xFF4CAF50, centerLeftColor);
+    // The background color of the webview is : rgba(0, 0, 0, 0.5)
+    // The expected color is : rgba(38, 87, 40, 1) -> 0xFF265728
+    assertEquals(0xFF265728, centerLeftColor);
     assertEquals(Color.RED, centerColor);
   }
 }

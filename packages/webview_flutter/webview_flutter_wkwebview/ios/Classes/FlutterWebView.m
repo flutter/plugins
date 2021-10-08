@@ -106,7 +106,7 @@
                                                   blue:(backgroundColorInt & 0xff) / 255.f
                                                  alpha:(backgroundColorInt >> 24 & 0xff) / 255.f];
       _webView.opaque = NO;
-      _webView.backgroundColor = backgroundColor;
+      _webView.backgroundColor = UIColor.clearColor;
       _webView.scrollView.backgroundColor = backgroundColor;
     }
 

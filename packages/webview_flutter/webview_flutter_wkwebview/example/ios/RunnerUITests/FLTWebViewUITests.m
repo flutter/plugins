@@ -73,51 +73,6 @@ static UIColor* getPixelColorInImage(CGImageRef image, size_t x, size_t y) {
   CGColorSpaceRef centerLeftColorSpace = CGColorGetColorSpace(centerLeftColor.CGColor);
   // Flutter Colors.green color : 0xFF4CAF50 -> rgba(76, 175, 80, 1)
   // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
-  CGFloat flutterGreenColorComponents[] = {76.0f / 255.0f, 175.0f / 255.0f, 80.0f / 255.0f, 1.0f};
-  CGColorRef flutterGreenColor = CGColorCreate(centerLeftColorSpace, flutterGreenColorComponents);
-  CGFloat redColorComponents[] = {1.0f, 0.0f, 0.0f, 1.0f};
-  CGColorRef redColor = CGColorCreate(centerLeftColorSpace, redColorComponents);
-  CGColorSpaceRelease(centerLeftColorSpace);
-
-  XCTAssertTrue(CGColorEqualToColor(flutterGreenColor, centerLeftColor.CGColor));
-  XCTAssertTrue(CGColorEqualToColor(redColor, centerColor.CGColor));
-}
-
-- (void)testColoredBackground {
-  XCUIApplication* app = self.app;
-  XCUIElement* menu = app.buttons[@"Show menu"];
-  if (![menu waitForExistenceWithTimeout:30.0]) {
-    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find menu");
-  }
-  [menu tap];
-
-  XCUIElement* coloredBackground = app.buttons[@"Colored background example"];
-  if (![coloredBackground waitForExistenceWithTimeout:30.0]) {
-    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find Colored background example");
-  }
-  [coloredBackground tap];
-
-  XCUIElement* coloredBackgroundLoaded = app.webViews.staticTexts[@"Colored background test"];
-  if (![coloredBackgroundLoaded waitForExistenceWithTimeout:30.0]) {
-    os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-    XCTFail(@"Failed due to not able to find Colored background test");
-  }
-
-  XCUIScreenshot* screenshot = [[XCUIScreen mainScreen] screenshot];
-
-  UIImage* screenshotImage = screenshot.image;
-  CGImageRef screenshotCGImage = screenshotImage.CGImage;
-  UIColor* centerLeftColor =
-      getPixelColorInImage(screenshotCGImage, 0, CGImageGetHeight(screenshotCGImage) / 2);
-  UIColor* centerColor =
-      getPixelColorInImage(screenshotCGImage, CGImageGetWidth(screenshotCGImage) / 2,
-                           CGImageGetHeight(screenshotCGImage) / 2);
-
-  CGColorSpaceRef centerLeftColorSpace = CGColorGetColorSpace(centerLeftColor.CGColor);
-  // Flutter Colors.green color : 0xFF4CAF50 -> rgba(76, 175, 80, 1)
-  // https://github.com/flutter/flutter/blob/f4abaa0735eba4dfd8f33f73363911d63931fe03/packages/flutter/lib/src/material/colors.dart#L1208
   // The background color of the webview is : rgba(0, 0, 0, 0.5)
   // The expected color is : rgba(38, 87, 40, 1)
   CGFloat flutterGreenColorComponents[] = {38.0f / 255.0f, 87.0f / 255.0f, 40.0f / 255.0f, 1.0f};

@@ -77,27 +77,6 @@ const String kTransparentBackgroundPage = '''
   </html>
 ''';
 
-const String kColoredBackgroundPage = '''
-  <!DOCTYPE html>
-  <html>
-  <head>
-    <title>Colored background test</title>
-  </head>
-  <style type="text/css">
-    body { background: rgba(0, 0, 0, 0.5); margin: 0; padding: 0; }
-    #container { position: relative; margin: 0; padding: 0; width: 100vw; height: 100vh; }
-    #shape { background: #FF0000; width: 200px; height: 100%; margin: 0; padding: 0; position: absolute; top: 0; bottom: 0; left: calc(50% - 100px); }
-    p { text-align: center; }
-  </style>
-  <body>
-    <div id="container">
-      <p>Colored background test</p>
-      <div id="shape"></div>
-    </div>
-  </body>
-  </html>
-''';
-
 class _WebViewExample extends StatefulWidget {
   const _WebViewExample({Key? key}) : super(key: key);
 
@@ -139,7 +118,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
             print('allowing navigation to $request');
             return NavigationDecision.navigate;
           },
-          backgroundColor: Color(0x00000000),
+          backgroundColor: Color(0x80000000),
         );
       }),
       floatingActionButton: favoriteButton(),
@@ -191,7 +170,6 @@ enum _MenuOptions {
   loadHtmlString,
   doPostRequest,
   transparentBackground,
-  coloredBackground,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -242,9 +220,6 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.transparentBackground:
                 _onTransparentBackground(controller.data!, context);
                 break;
-              case _MenuOptions.coloredBackground:
-                _onColoredBackground(controller.data!, context);
-                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -293,11 +268,6 @@ class _SampleMenu extends StatelessWidget {
               key: ValueKey('ShowTransparentBackgroundExample'),
               value: _MenuOptions.transparentBackground,
               child: Text('Transparent background example'),
-            ),
-            const PopupMenuItem<_MenuOptions>(
-              key: ValueKey('ShowColoredBackgroundExample'),
-              value: _MenuOptions.coloredBackground,
-              child: Text('Colored background example'),
             ),
           ],
         );
@@ -420,13 +390,6 @@ class _SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kTransparentBackgroundPage));
-    await controller.loadUrl('data:text/html;base64,$contentBase64');
-  }
-
-  void _onColoredBackground(
-      WebViewController controller, BuildContext context) async {
-    final String contentBase64 =
-        base64Encode(const Utf8Encoder().convert(kColoredBackgroundPage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
   }
 }
