@@ -1,6 +1,6 @@
 ## 0.8.4+3
 
-* Suppress a unchecked cast build warning
+* Suppress a unchecked cast build warning.
 
 ## 0.8.4+2
 
