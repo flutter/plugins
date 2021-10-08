@@ -27,6 +27,8 @@ Otherwise, you may encounter `APIException` errors.
 
 ### iOS integration
 
+This plugin requires iOS 9.0 or higher.
+
 1. [First register your application](https://firebase.google.com/docs/ios/setup).
 2. Make sure the file you download in step 1 is named
    `GoogleService-Info.plist`.

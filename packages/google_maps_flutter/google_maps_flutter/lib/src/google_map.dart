@@ -8,7 +8,7 @@ part of google_maps_flutter;
 ///
 /// Pass to [GoogleMap.onMapCreated] to receive a [GoogleMapController] when the
 /// map is created.
-typedef void MapCreatedCallback(GoogleMapController controller);
+typedef MapCreatedCallback = void Function(GoogleMapController controller);
 
 // This counter is used to provide a stable "constant" initialization id
 // to the buildView function, so the web implementation can use it as a
@@ -365,6 +365,30 @@ class _GoogleMapState extends State<GoogleMap> {
     final VoidCallback? onTap = marker.onTap;
     if (onTap != null) {
       onTap();
+    }
+  }
+
+  void onMarkerDragStart(MarkerId markerId, LatLng position) {
+    assert(markerId != null);
+    final Marker? marker = _markers[markerId];
+    if (marker == null) {
+      throw UnknownMapObjectIdError('marker', markerId, 'onDragStart');
+    }
+    final ValueChanged<LatLng>? onDragStart = marker.onDragStart;
+    if (onDragStart != null) {
+      onDragStart(position);
+    }
+  }
+
+  void onMarkerDrag(MarkerId markerId, LatLng position) {
+    assert(markerId != null);
+    final Marker? marker = _markers[markerId];
+    if (marker == null) {
+      throw UnknownMapObjectIdError('marker', markerId, 'onDrag');
+    }
+    final ValueChanged<LatLng>? onDrag = marker.onDrag;
+    if (onDrag != null) {
+      onDrag(position);
     }
   }
 

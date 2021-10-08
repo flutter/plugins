@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'in_app_purchase_error.dart';
+import '../errors/in_app_purchase_error.dart';
 import 'product_details.dart';
 
 /// The response returned by [InAppPurchasePlatform.queryProductDetails].

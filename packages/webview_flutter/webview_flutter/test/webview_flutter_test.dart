@@ -10,7 +10,7 @@ import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter/platform_interface.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef void VoidCallback();
@@ -1175,6 +1175,7 @@ class MyWebViewPlatform implements WebViewPlatform {
     BuildContext? context,
     CreationParams? creationParams,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+    required JavascriptChannelRegistry javascriptChannelRegistry,
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {

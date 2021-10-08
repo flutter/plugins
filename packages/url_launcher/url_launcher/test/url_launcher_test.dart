@@ -281,6 +281,42 @@ void main() {
       await launchResult;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
     });
+
+    test('open non-parseable url', () async {
+      mock
+        ..setLaunchExpectations(
+          url:
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+          useSafariVC: false,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+        )
+        ..setResponse(true);
+      expect(
+          await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1'),
+          isTrue);
+    });
+
+    test('cannot open non-parseable url with forceSafariVC: true', () async {
+      expect(
+          () async => await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+              forceSafariVC: true),
+          throwsA(isA<PlatformException>()));
+    });
+
+    test('cannot open non-parseable url with forceWebView: true', () async {
+      expect(
+          () async => await launch(
+              'rdp://full%20address=s:mypc:3389&audiomode=i:2&disable%20themes=i:1',
+              forceWebView: true),
+          throwsA(isA<PlatformException>()));
+    });
   });
 }
 
