@@ -1255,6 +1255,7 @@ void main() {
       expect(groundOverlayInfo2['zIndex'], 15);
       expect(groundOverlayInfo2['bearing'], 20);
     },
+    skip: !Platform.isAndroid,
   );
 
   testWidgets(
@@ -1352,6 +1353,7 @@ void main() {
 
       expect(groundOverlayInfo2, isNull);
     },
+    skip: !Platform.isAndroid,
   );
 
   testWidgets(
@@ -1411,6 +1413,7 @@ void main() {
 
       expect(groundOverlayInfo1, isNull);
     },
+    skip: !Platform.isAndroid,
   );
 }
 
