@@ -707,7 +707,7 @@ NSString *const errorMethod = @"error";
 
       if ([_captureDevice position] == AVCaptureDevicePositionFront) {
         CVPixelBufferLockBaseAddress(nextBuffer, kCVPixelBufferLock_ReadOnly);
-          
+
         const Boolean isPlanar = CVPixelBufferIsPlanar(nextBuffer);
         size_t planeCount;
         if (isPlanar) {
@@ -724,7 +724,7 @@ NSString *const errorMethod = @"error";
           size_t height = CVPixelBufferGetHeight(nextBuffer);
           size_t width = CVPixelBufferGetWidth(nextBuffer);
 
-          void* targetBytes = malloc(height * bytesPerRow);
+          void *targetBytes = malloc(height * bytesPerRow);
           size_t targetBytesPerRow = bytesPerRow;
 
           vImage_Buffer inBuffer;
@@ -744,7 +744,7 @@ NSString *const errorMethod = @"error";
           err = vImageHorizontalReflect_ARGB8888(&inBuffer, &outBuffer, kvImageNoFlags);
 
           if (err != kvImageNoError) {
-            NSLog (@"vImageHorizontalReflect_ARGB8888 returned %ld", err);
+            NSLog(@"vImageHorizontalReflect_ARGB8888 returned %ld", err);
 
             free(targetBytes);
             targetBytes = NULL;
@@ -755,11 +755,12 @@ NSString *const errorMethod = @"error";
           CVReturn status;
           CVPixelBufferRef nnb = NULL;
 
-          status = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, formatType, outBuffer.data,
-                                                outBuffer.rowBytes, NULL, NULL, NULL, &nnb);
-          
+          status = CVPixelBufferCreateWithBytes(kCFAllocatorDefault, width, height, formatType,
+                                                outBuffer.data, outBuffer.rowBytes, NULL, NULL,
+                                                NULL, &nnb);
+
           if (status != kCVReturnSuccess) {
-            NSLog (@"CVPixelBufferCreateWithBytes returned %d", status);
+            NSLog(@"CVPixelBufferCreateWithBytes returned %d", status);
 
             free(targetBytes);
             targetBytes = NULL;
@@ -774,25 +775,25 @@ NSString *const errorMethod = @"error";
 
           CVBufferRelease(nnb);
         } else {
-          uint8_t* planeAddress[planeCount];
+          uint8_t *planeAddress[planeCount];
           size_t bytesPerRow[planeCount];
           size_t height[planeCount];
           size_t width[planeCount];
 
-          uint8_t* targetAddress[planeCount];
-          
+          uint8_t *targetAddress[planeCount];
+
           for (int i = 0; i < planeCount; i++) {
             planeAddress[i] = CVPixelBufferGetBaseAddressOfPlane(nextBuffer, i);
             bytesPerRow[i] = CVPixelBufferGetBytesPerRowOfPlane(nextBuffer, i);
             height[i] = CVPixelBufferGetHeightOfPlane(nextBuffer, i);
             width[i] = CVPixelBufferGetWidthOfPlane(nextBuffer, i);
-                
+
             targetAddress[i] = malloc(height[i] * bytesPerRow[i]);
           }
 
           size_t wp;
           size_t hp;
-            
+
           uint8_t x = bytesPerRow[1] - (width[1] * 2) - 1;
 
           for (size_t i = 0; i < height[1]; i++) {
@@ -814,7 +815,7 @@ NSString *const errorMethod = @"error";
           inBuffer.rowBytes = bytesPerRow[0];
           inBuffer.width = width[0];
           inBuffer.height = height[0];
-              
+
           vImage_Buffer outBuffer;
           outBuffer.data = targetAddress[0];
           outBuffer.rowBytes = bytesPerRow[0];
@@ -826,7 +827,7 @@ NSString *const errorMethod = @"error";
           err = vImageHorizontalReflect_Planar8(&inBuffer, &outBuffer, kvImageNoFlags);
 
           if (err != kvImageNoError) {
-            NSLog (@"vImageHorizontalReflect_Planar8 returned %ld", err);
+            NSLog(@"vImageHorizontalReflect_Planar8 returned %ld", err);
 
             for (int i = 0; i < planeCount; i++) {
               free(targetAddress[i]);
@@ -838,14 +839,15 @@ NSString *const errorMethod = @"error";
           CVReturn status;
           CVPixelBufferRef nnb = NULL;
 
-          status = CVPixelBufferCreate(kCFAllocatorDefault, width[0], height[0], formatType, NULL, &nnb);
+          status =
+              CVPixelBufferCreate(kCFAllocatorDefault, width[0], height[0], formatType, NULL, &nnb);
 
           if (status != kCVReturnSuccess) {
-            NSLog (@"CVPixelBufferCreate returned %d", status);
+            NSLog(@"CVPixelBufferCreate returned %d", status);
 
             return;
           }
-          
+
           CVPixelBufferLockBaseAddress(nnb, kCVPixelBufferLock_ReadOnly);
           uint8_t *y = CVPixelBufferGetBaseAddressOfPlane(nnb, 0);
           memcpy(y, targetAddress[0], height[0] * bytesPerRow[0]);
@@ -862,7 +864,7 @@ NSString *const errorMethod = @"error";
 
           CVBufferRelease(nnb);
         }
-        
+
         CVPixelBufferUnlockBaseAddress(nextBuffer, kCVPixelBufferLock_ReadOnly);
       } else {
         [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
