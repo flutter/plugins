@@ -17,7 +17,7 @@ export 'widgets.dart';
 
 /// Holds authentication tokens after sign in.
 class GoogleSignInAuthentication {
-  GoogleSignInAuthentication._(this._data);
+  GoogleSignInAuthentication._(this._data, this.serverAuthCode);
 
   final GoogleSignInTokenData _data;
 
@@ -28,9 +28,8 @@ class GoogleSignInAuthentication {
   String? get accessToken => _data.accessToken;
 
   /// Server auth code used to access Google Login
-  @Deprecated(
-      'Always null. Use the `GoogleSignInAccount.serverAuthCode` property instead')
-  String? get serverAuthCode => null;
+  @Deprecated('Use the `GoogleSignInAccount.serverAuthCode` property instead')
+  final String? serverAuthCode;
 
   @override
   String toString() => 'GoogleSignInAuthentication:$_data';
@@ -104,7 +103,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       response.idToken = _idToken;
     }
 
-    return GoogleSignInAuthentication._(response);
+    return GoogleSignInAuthentication._(response, serverAuthCode);
   }
 
   /// Convenience method returning a `<String, String>` map of HTML Authorization
