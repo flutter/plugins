@@ -975,7 +975,7 @@ void main() {
 
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
-      final String viewportRectJSON = await _runJavascriptReturningResult(
+      final String viewportRectJSON = await _runJavaScriptReturningResult(
           controller, 'JSON.stringify(viewport.getBoundingClientRect())');
       final Map<String, dynamic> viewportRectRelativeToViewport =
           jsonDecode(viewportRectJSON);
@@ -983,7 +983,7 @@ void main() {
       // Check that the input is originally outside of the viewport.
 
       final String initialInputClientRectJSON =
-          await _runJavascriptReturningResult(
+          await _runJavaScriptReturningResult(
               controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
       final Map<String, dynamic> initialInputClientRectRelativeToViewport =
           jsonDecode(initialInputClientRectJSON);
@@ -998,7 +998,7 @@ void main() {
       // Check that focusing the input brought it into view.
 
       final String lastInputClientRectJSON =
-          await _runJavascriptReturningResult(
+          await _runJavaScriptReturningResult(
               controller, 'JSON.stringify(inputEl.getBoundingClientRect())');
       final Map<String, dynamic> lastInputClientRectRelativeToViewport =
           jsonDecode(lastInputClientRectJSON);
@@ -1408,10 +1408,10 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return _runJavascriptReturningResult(controller, 'navigator.userAgent;');
+  return _runJavaScriptReturningResult(controller, 'navigator.userAgent;');
 }
 
-Future<String> _runJavascriptReturningResult(
+Future<String> _runJavaScriptReturningResult(
     WebViewController controller, String js) async {
   return jsonDecode(await controller.runJavascriptReturningResult(js));
 }

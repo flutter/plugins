@@ -123,7 +123,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     if (params.containsKey(JS_CHANNEL_NAMES_FIELD)) {
       List<String> names = (List<String>) params.get(JS_CHANNEL_NAMES_FIELD);
       if (names != null) {
-        registerJavascriptChannelNames(names);
+        registerJavaScriptChannelNames(names);
       }
     }
 
@@ -245,16 +245,16 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         break;
       case "evaluateJavascript":
       case "runJavascriptReturningResult":
-        evaluateJavascript(methodCall, result, true);
+        evaluateJavaScript(methodCall, result, true);
         break;
       case "runJavascript":
-        evaluateJavascript(methodCall, result, false);
+        evaluateJavaScript(methodCall, result, false);
         break;
       case "addJavascriptChannels":
-        addJavascriptChannels(methodCall, result);
+        addJavaScriptChannels(methodCall, result);
         break;
       case "removeJavascriptChannels":
-        removeJavascriptChannels(methodCall, result);
+        removeJavaScriptChannels(methodCall, result);
         break;
       case "clearCache":
         clearCache(result);
@@ -329,7 +329,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void evaluateJavascript(
+  private void evaluateJavaScript(
       MethodCall methodCall, final Result result, final boolean returnValue) {
     String jsString = (String) methodCall.arguments;
     if (jsString == null) {
@@ -350,14 +350,14 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @SuppressWarnings("unchecked")
-  private void addJavascriptChannels(MethodCall methodCall, Result result) {
+  private void addJavaScriptChannels(MethodCall methodCall, Result result) {
     List<String> channelNames = (List<String>) methodCall.arguments;
-    registerJavascriptChannelNames(channelNames);
+    registerJavaScriptChannelNames(channelNames);
     result.success(null);
   }
 
   @SuppressWarnings("unchecked")
-  private void removeJavascriptChannels(MethodCall methodCall, Result result) {
+  private void removeJavaScriptChannels(MethodCall methodCall, Result result) {
     List<String> channelNames = (List<String>) methodCall.arguments;
     for (String channelName : channelNames) {
       webView.removeJavascriptInterface(channelName);
@@ -465,10 +465,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void registerJavascriptChannelNames(List<String> channelNames) {
+  private void registerJavaScriptChannelNames(List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
-          new JavascriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
+          new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 

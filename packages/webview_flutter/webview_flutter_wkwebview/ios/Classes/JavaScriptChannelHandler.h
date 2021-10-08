@@ -7,10 +7,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface FLTJavascriptChannel : NSObject <WKScriptMessageHandler>
+@interface FLTJavaScriptChannelFLTJavaScriptChannel : NSObject <WKScriptMessageHandler>
 
 - (instancetype)initWithMethodChannel:(FlutterMethodChannel*)methodChannel
-                javascriptChannelName:(NSString*)javascriptChannelName;
+                javaScriptChannelName:(NSString*)javaScriptChannelName;
 
 @end
 

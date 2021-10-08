@@ -72,7 +72,7 @@ public class FlutterWebViewTest {
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void evaluateJavascript_shouldThrowForNullString() {
+  public void evaluateJavaScript_shouldThrowForNullString() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -97,7 +97,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void evaluateJavascript_shouldReturnValueOnSuccessForReturnValue() {
+  public void evaluateJavaScript_shouldReturnValueOnSuccessForReturnValue() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -130,7 +130,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void evaluateJavascript_shouldReturnNilOnSuccessForNoReturnValue() {
+  public void evaluateJavaScript_shouldReturnNilOnSuccessForNoReturnValue() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
