@@ -8,6 +8,7 @@ import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
 import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
+import 'package:flutter_plugin_tools/src/common/file_utils.dart';
 import 'package:flutter_plugin_tools/src/format_command.dart';
 import 'package:path/path.dart' as p;
 import 'package:test/test.dart';
@@ -101,6 +102,42 @@ void main() {
               <String>[
                 'format',
                 ..._getPackagesDirRelativePaths(pluginDir, files)
+              ],
+              packagesDir.path),
+        ]));
+  });
+
+  test('does not format .dart files with pragma', () async {
+    const List<String> formattedFiles = <String>[
+      'lib/a.dart',
+      'lib/src/b.dart',
+      'lib/src/c.dart',
+    ];
+    const String unformattedFile = 'lib/src/d.dart';
+    final Directory pluginDir = createFakePlugin(
+      'a_plugin',
+      packagesDir,
+      extraFiles: <String>[
+        ...formattedFiles,
+        unformattedFile,
+      ],
+    );
+
+    final p.Context posixContext = p.posix;
+    childFileWithSubcomponents(pluginDir, posixContext.split(unformattedFile))
+        .writeAsStringSync(
+            '// copyright bla bla\n// This file is hand-formatted.\ncode...');
+
+    await runCapturingPrint(runner, <String>['format']);
+
+    expect(
+        processRunner.recordedCalls,
+        orderedEquals(<ProcessCall>[
+          ProcessCall(
+              getFlutterCommand(mockPlatform),
+              <String>[
+                'format',
+                ..._getPackagesDirRelativePaths(pluginDir, formattedFiles)
               ],
               packagesDir.path),
         ]));

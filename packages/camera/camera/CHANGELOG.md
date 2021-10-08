@@ -1,3 +1,27 @@
+## NEXT
+
+* Updated package description.
+
+## 0.9.4+1
+
+* Fixed Android implementation throwing IllegalStateException when switching to a different activity.
+
+## 0.9.4
+
+* Add web support by endorsing `package:camera_web`.
+
+## 0.9.3+1
+
+* Remove iOS 9 availability check around ultra high capture sessions.
+
+## 0.9.3
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 0.9.2+2
+
+* Ensure that setting the exposure offset returns the new offset value on Android.
+
 ## 0.9.2+1
 
 * Fixed camera controller throwing an exception when being replaced in the preview widget.

@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:cross_file/cross_file.dart';
-import 'package:flutter/services.dart';
-
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
+import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 
 const MethodChannel _channel =
@@ -27,8 +26,9 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     final List<String>? path = await _channel.invokeListMethod<String>(
       'openFile',
       <String, dynamic>{
-        'acceptedTypeGroups':
-            acceptedTypeGroups?.map((group) => group.toJSON()).toList(),
+        'acceptedTypeGroups': acceptedTypeGroups
+            ?.map((XTypeGroup group) => group.toJSON())
+            .toList(),
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
         'multiple': false,
@@ -47,14 +47,15 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     final List<String>? pathList = await _channel.invokeListMethod<String>(
       'openFile',
       <String, dynamic>{
-        'acceptedTypeGroups':
-            acceptedTypeGroups?.map((group) => group.toJSON()).toList(),
+        'acceptedTypeGroups': acceptedTypeGroups
+            ?.map((XTypeGroup group) => group.toJSON())
+            .toList(),
         'initialDirectory': initialDirectory,
         'confirmButtonText': confirmButtonText,
         'multiple': true,
       },
     );
-    return pathList?.map((path) => XFile(path)).toList() ?? [];
+    return pathList?.map((String path) => XFile(path)).toList() ?? <XFile>[];
   }
 
   /// Gets the path from a save dialog
@@ -68,8 +69,9 @@ class MethodChannelFileSelector extends FileSelectorPlatform {
     return _channel.invokeMethod<String>(
       'getSavePath',
       <String, dynamic>{
-        'acceptedTypeGroups':
-            acceptedTypeGroups?.map((group) => group.toJSON()).toList(),
+        'acceptedTypeGroups': acceptedTypeGroups
+            ?.map((XTypeGroup group) => group.toJSON())
+            .toList(),
         'initialDirectory': initialDirectory,
         'suggestedName': suggestedName,
         'confirmButtonText': confirmButtonText,
