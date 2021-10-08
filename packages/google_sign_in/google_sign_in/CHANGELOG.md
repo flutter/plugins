@@ -1,7 +1,3 @@
-## 5.2.0
-
-* Add serverAuthCode attribute to user data
-
 ## 5.1.1
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
