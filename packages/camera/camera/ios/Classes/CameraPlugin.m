@@ -1351,14 +1351,19 @@ NSString *const errorMethod = @"error";
 - (void)handleMethodCall:(FlutterMethodCall *)call result:(FlutterResult)result {
   FLTThreadSafeFlutterResult *threadSafeResult =
       [[FLTThreadSafeFlutterResult alloc] initWithResult:result];
-  [self handleMethodCallWithThreadSafeResult:call result:threadSafeResult];
-}
-- (void)handleMethodCallWithThreadSafeResult:(FlutterMethodCall *)call
-                                      result:(FLTThreadSafeFlutterResult *)result {
+
   if (_dispatchQueue == nil) {
     _dispatchQueue = dispatch_queue_create("io.flutter.camera.dispatchqueue", NULL);
   }
 
+  // Invoke the plugin on another dispatch queue to avoid blocking the UI.
+  dispatch_async(_dispatchQueue, ^{
+    [self handleMethodCallAsync:call result:threadSafeResult];
+  });
+}
+
+- (void)handleMethodCallAsync:(FlutterMethodCall *)call
+                       result:(FLTThreadSafeFlutterResult *)result {
   if ([@"availableCameras" isEqualToString:call.method]) {
     if (@available(iOS 10.0, *)) {
       AVCaptureDeviceDiscoverySession *discoverySession = [AVCaptureDeviceDiscoverySession
