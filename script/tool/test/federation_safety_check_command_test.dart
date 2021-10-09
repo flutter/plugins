@@ -125,6 +125,47 @@ void main() {
     );
   });
 
+  test('allows changes to just an interface package', () async {
+    final Directory pluginGroupDir = packagesDir.childDirectory('foo');
+    final Directory platformInterface =
+        createFakePlugin('foo_platform_interface', pluginGroupDir);
+    createFakePlugin('foo', pluginGroupDir);
+    createFakePlugin('foo_ios', pluginGroupDir);
+    createFakePlugin('foo_android', pluginGroupDir);
+
+    final String changedFileOutput = <File>[
+      platformInterface.childDirectory('lib').childFile('foo.dart'),
+      platformInterface.childFile('pubspec.yaml'),
+    ].map((File file) => file.path).join('\n');
+    processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+      MockProcess(stdout: changedFileOutput),
+    ];
+
+    final List<String> output =
+        await runCapturingPrint(runner, <String>['federation-safety-check']);
+
+    expect(
+      output,
+      containsAllInOrder(<Matcher>[
+        contains('Running for foo/foo...'),
+        contains('No Dart changes.'),
+        contains('Running for foo_android...'),
+        contains('No Dart changes.'),
+        contains('Running for foo_ios...'),
+        contains('No Dart changes.'),
+        contains('Running for foo_platform_interface...'),
+        contains('Ran for 3 package(s)'),
+        contains('Skipped 1 package(s)'),
+      ]),
+    );
+    expect(
+      output,
+      isNot(contains(<Matcher>[
+        contains('No published changes for foo_platform_interface'),
+      ])),
+    );
+  });
+
   test('allows changes to multiple non-interface packages', () async {
     final Directory pluginGroupDir = packagesDir.childDirectory('foo');
     final Directory appFacing = createFakePlugin('foo', pluginGroupDir);

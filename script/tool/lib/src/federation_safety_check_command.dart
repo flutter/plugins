@@ -109,7 +109,7 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
       return PackageResult.skip('Not a federated plugin.');
     }
 
-    if (package.directory.basename.endsWith('_platform_interface')) {
+    if (package.isPlatformInterface) {
       // As the leaf nodes in the graph, a published package interface change is
       // assumed to be correct, and other changes are validated against that.
       return PackageResult.skip(
@@ -132,6 +132,13 @@ class FederationSafetyCheckCommand extends PackageLoopingCommand {
     if (!changedPlatformInterfaceFiles
         .any((String path) => path.startsWith('lib/'))) {
       print('No public code changes for $platformInterfacePackageName.');
+      return PackageResult.success();
+    }
+
+    final List<String> changedPackageFiles =
+        _changedDartFiles[package.directory.basename] ?? <String>[];
+    if (changedPackageFiles.isEmpty) {
+      print('No Dart changes.');
       return PackageResult.success();
     }
 

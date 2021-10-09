@@ -120,4 +120,39 @@ void main() {
           plugin.childDirectory('example').childDirectory('example2').path);
     });
   });
+
+  group('federated plugin queries', () {
+    test('all return false for a simple plugin', () {
+      final Directory plugin = createFakePlugin('a_plugin', packagesDir);
+      expect(RepositoryPackage(plugin).isFederated, false);
+      expect(RepositoryPackage(plugin).isPlatformInterface, false);
+      expect(RepositoryPackage(plugin).isFederated, false);
+    });
+
+    test('handle app-facing packages', () {
+      final Directory plugin =
+          createFakePlugin('a_plugin', packagesDir.childDirectory('a_plugin'));
+      expect(RepositoryPackage(plugin).isFederated, true);
+      expect(RepositoryPackage(plugin).isPlatformInterface, false);
+      expect(RepositoryPackage(plugin).isPlatformImplementation, false);
+    });
+
+    test('handle platform interface packages', () {
+      final Directory plugin = createFakePlugin('a_plugin_platform_interface',
+          packagesDir.childDirectory('a_plugin'));
+      expect(RepositoryPackage(plugin).isFederated, true);
+      expect(RepositoryPackage(plugin).isPlatformInterface, true);
+      expect(RepositoryPackage(plugin).isPlatformImplementation, false);
+    });
+
+    test('handle platform implementation packages', () {
+      // A platform interface can end with anything, not just one of the known
+      // platform names, because of cases like webview_flutter_wkwebview.
+      final Directory plugin = createFakePlugin(
+          'a_plugin_foo', packagesDir.childDirectory('a_plugin'));
+      expect(RepositoryPackage(plugin).isFederated, true);
+      expect(RepositoryPackage(plugin).isPlatformInterface, false);
+      expect(RepositoryPackage(plugin).isPlatformImplementation, true);
+    });
+  });
 }
