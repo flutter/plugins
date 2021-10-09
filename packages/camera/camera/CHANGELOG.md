@@ -1,4 +1,4 @@
-## 0.9.5+1
+## 0.9.4+2
 
 * Update front camera mirroring on iOS.
 
