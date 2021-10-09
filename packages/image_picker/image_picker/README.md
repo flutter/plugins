@@ -47,7 +47,7 @@ import 'package:image_picker/image_picker.dart';
     // Pick a video
     final XFile? image = await _picker.pickVideo(source: ImageSource.gallery);
     // Capture a video
-    final XFile? photo = await _picker.pickVideo(source: ImageSource.camera);
+    final XFile? video = await _picker.pickVideo(source: ImageSource.camera);
     // Pick multiple images
     final List<XFile>? images = await _picker.pickMultiImage();
     ...
@@ -82,9 +82,9 @@ Starting with version **0.8.2** of the image_picker plugin, new methods have bee
 
 #### Call the new methods
 
-| Old API | New API |
-|---------|---------|
-| `PickedFile image = await _picker.getImage(...)` | `XFile image = await _picker.pickImage(...)` |
-| `List<PickedFile> images = await _picker.getMultiImage(...)` | `List<XFile> images = await _picker.pickMultiImage(...)` |
-| `PickedFile video = await _picker.getVideo(...)` | `XFile video = await _picker.pickVideo(...)` |
-| `LostData response = await _picker.getLostData()` | `LostDataResponse response = await _picker.retrieveLostData()` |
+| Old API                                                      | New API                                                        |
+| ------------------------------------------------------------ | -------------------------------------------------------------- |
+| `PickedFile image = await _picker.getImage(...)`             | `XFile image = await _picker.pickImage(...)`                   |
+| `List<PickedFile> images = await _picker.getMultiImage(...)` | `List<XFile> images = await _picker.pickMultiImage(...)`       |
+| `PickedFile video = await _picker.getVideo(...)`             | `XFile video = await _picker.pickVideo(...)`                   |
+| `LostData response = await _picker.getLostData()`            | `LostDataResponse response = await _picker.retrieveLostData()` |
