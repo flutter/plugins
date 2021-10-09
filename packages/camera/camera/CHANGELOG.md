@@ -1,6 +1,6 @@
-## NEXT
+## 0.9.5+1
 
-* Updated package description.
+* Update front camera mirroring on iOS.
 
 ## 0.9.4+1
 
