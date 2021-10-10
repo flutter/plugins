@@ -1,7 +1,3 @@
-## NEXT
-
-* Updated package description.
-
 ## 0.9.4+2
 
 * Fixed iOS implementation encoding some videos in HEVC and some in MPEG-4 (now all are MPEG-4/H.264).
