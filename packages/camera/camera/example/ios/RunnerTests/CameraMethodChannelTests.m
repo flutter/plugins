@@ -9,8 +9,7 @@
 #import "MockFLTThreadSafeFlutterResult.h"
 
 @interface CameraPlugin (Test)
-- (void)handleMethodCallAsync:(FlutterMethodCall *)call
-                                      result:(FLTThreadSafeFlutterResult *)result;
+- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FLTThreadSafeFlutterResult *)result;
 @end
 
 @interface CameraMethodChannelTests : XCTestCase
@@ -43,7 +42,6 @@
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
 
-  
   [self->_camera handleMethodCallAsync:call result:self->_resultObject];
 
   // Verify the result

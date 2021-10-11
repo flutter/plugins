@@ -17,7 +17,7 @@
 @end
 
 @interface CameraPreviewPauseTests : XCTestCase
-@property(readonly, nonatomic) FLTCam* camera;
+@property(readonly, nonatomic) FLTCam *camera;
 @property(readonly, nonatomic) MockFLTThreadSafeFlutterResult *resultObject;
 @end
 
@@ -25,7 +25,7 @@
 
 - (void)setUp {
   _camera = [[FLTCam alloc] init];
-  
+
   XCTestExpectation *expectation =
       [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
   _resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];

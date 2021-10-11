@@ -1,16 +1,12 @@
-//
-//  MockFLTThreadSafeFlutterResult.h
-//  Runner
-//
-//  Created by Maurits van Beusekom on 11/10/2021.
-//  Copyright © 2021 The Flutter Authors. All rights reserved.
-//
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef MockFLTThreadSafeFlutterResult_h
 #define MockFLTThreadSafeFlutterResult_h
 
 @interface FLTThreadSafeFlutterResult ()
-@property(readonly, nonatomic) FlutterResult flutterResult;
+@property(readonly, nonatomic) FlutterResult _Nonnull flutterResult;
 @end
 
 /**
@@ -18,10 +14,10 @@
  * read the received result.
  */
 @interface MockFLTThreadSafeFlutterResult : FLTThreadSafeFlutterResult
-@property(readonly, nonatomic) XCTestExpectation *expectation;
+@property(readonly, nonatomic) XCTestExpectation *_Nonnull expectation;
 @property(nonatomic, nullable) id receivedResult;
 
--(id)initWithExpectation:(XCTestExpectation *)expectation;
+- (id _Nonnull)initWithExpectation:(XCTestExpectation *_Nonnull)expectation;
 @end
 
 #endif /* MockFLTThreadSafeFlutterResult_h */

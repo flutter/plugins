@@ -1357,7 +1357,7 @@ NSString *const errorMethod = @"error";
   dispatch_async(_dispatchQueue, ^{
     FLTThreadSafeFlutterResult *threadSafeResult =
         [[FLTThreadSafeFlutterResult alloc] initWithResult:result];
-    
+
     [self handleMethodCallAsync:call result:threadSafeResult];
   });
 }
@@ -1407,7 +1407,7 @@ NSString *const errorMethod = @"error";
                                          orientation:[[UIDevice currentDevice] orientation]
                                        dispatchQueue:self->_dispatchQueue
                                                error:&error];
-    
+
     if (error) {
       [result sendError:error];
     } else {
