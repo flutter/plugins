@@ -8,10 +8,12 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.when;
 
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
 import io.flutter.plugins.camera.CameraProperties;
+import java.util.List;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,7 +32,7 @@ public class ResolutionFeatureTest {
     mockProfileLow_v31 = mock(EncoderProfiles.class);
     CamcorderProfile mockProfile = mock(CamcorderProfile.class);
     EncoderProfiles mockProfile_v31 = mock(EncoderProfiles.class);
-    EncoderProfiles.VideoProfile mockVideoProfile = mock(EncoderProfiles.VideoProfile.class);
+    List<EncoderProfiles.VideoProfile> mockVideoProfiles = List.of(mock(EncoderProfiles.VideoProfile.class));
 
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH)).thenReturn(true);
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_2160P)).thenReturn(true);
@@ -56,7 +58,7 @@ public class ResolutionFeatureTest {
     mockedStaticProfile.when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_LOW))
         .thenReturn(mockProfileLow_v31);
 
-    when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfile);
+    when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfiles);
 
     // } else {
     //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_HIGH)).thenReturn(mockProfile);

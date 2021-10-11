@@ -46,7 +46,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       this.cameraId = -1;
       return;
     }
-    System.out.println("CAMERA_ID_" + this.cameraId);
+    // System.out.println("CAMERA_ID_" + this.cameraId);
     configureResolution(resolutionPreset, cameraId);
   }
 
@@ -89,7 +89,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
 
   @Override
   public ResolutionPreset getValue() {
-    System.out.println(currentSetting);
+    // System.out.println(currentSetting);
     return currentSetting;
   }
 
@@ -120,13 +120,13 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       
       try {
         EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
+        return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
       }
       catch (IndexOutOfBoundsException e) {
         System.out.println("No video profiles found.");
         return null;
       }
-      
-      return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
+
 
     // }
     // else {
@@ -244,7 +244,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       recordingProfile_v31 =
       getBestAvailableCamcorderProfileForResolutionPreset_v31(cameraId, resolutionPreset);
       List<EncoderProfiles.VideoProfile> videoProfiles =  recordingProfile_v31.getVideoProfiles();
-      System.out.println("VIDEO_PROFILES_ " + recordingProfile_v31);
+      // System.out.println("VIDEO_PROFILES_ " + recordingProfile_v31);
 
       try {
         EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
