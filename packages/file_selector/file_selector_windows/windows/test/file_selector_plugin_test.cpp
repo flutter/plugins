@@ -401,12 +401,15 @@ TEST(FileSelectorPlugin, TestGetDirectorySimple) {
   // This must be a directory that actually exists.
   ::SHCreateItemFromParsingName(L"C:\\Program Files", nullptr,
                                 IID_PPV_ARGS(&fake_selected_directory));
+  IShellItemArrayPtr fake_result_array;
+  ::SHCreateShellItemArrayFromShellItem(fake_selected_directory,
+                                        IID_PPV_ARGS(&fake_result_array));
 
   std::unique_ptr<MockMethodResult> result =
       std::make_unique<MockMethodResult>();
 
   bool shown = false;
-  MockShow show_validator = [&shown, fake_selected_directory, fake_window](
+  MockShow show_validator = [&shown, fake_result_array, fake_window](
                                 const TestFileDialogController& dialog,
                                 HWND parent) {
     shown = true;
@@ -418,7 +421,7 @@ TEST(FileSelectorPlugin, TestGetDirectorySimple) {
     EXPECT_EQ(options & FOS_ALLOWMULTISELECT, 0U);
     EXPECT_NE(options & FOS_PICKFOLDERS, 0U);
 
-    return MockShowResult(fake_selected_directory);
+    return MockShowResult(fake_result_array);
   };
   EncodableValue expected_path("C:\\Program Files");
   // Expect the mock path.
