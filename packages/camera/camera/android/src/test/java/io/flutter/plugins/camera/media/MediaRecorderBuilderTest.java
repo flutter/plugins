@@ -13,6 +13,7 @@ import android.media.EncoderProfiles;
 import android.media.MediaRecorder;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.util.List;
 import org.junit.Test;
 import org.mockito.InOrder;
 
@@ -31,6 +32,8 @@ public class MediaRecorderBuilderTest {
     // CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     Context mockApplicationContext = mock(Context.class);
+    List<EncoderProfiles.VideoProfile> mockVideoProfiles = List.of(mock(EncoderProfiles.VideoProfile.class));
+    List<EncoderProfiles.AudioProfile> mockAudioProfiles = List.of(mock(EncoderProfiles.AudioProfile.class));
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
     MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
@@ -42,10 +45,13 @@ public class MediaRecorderBuilderTest {
             .setMediaOrientation(mediaOrientation);
 
     when(mockFactory.makeMediaRecorder(mockApplicationContext)).thenReturn(mockMediaRecorder);
+    when(recorderProfile.getVideoProfiles()).thenReturn(mockVideoProfiles);
+    when(recorderProfile.getAudioProfiles()).thenReturn(mockAudioProfiles);
+
 
     MediaRecorder recorder = builder.build();
 
-    EncoderProfiles.VideoProfile videoProfile = recorderProfile.getVideoProfiles().get(0);
+    EncoderProfiles.VideoProfile videoProfile = mockVideoProfiles.get(0);
 
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
@@ -72,6 +78,8 @@ public class MediaRecorderBuilderTest {
     // CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     Context mockApplicationContext = mock(Context.class);
+    List<EncoderProfiles.VideoProfile> mockVideoProfiles = List.of(mock(EncoderProfiles.VideoProfile.class));
+    List<EncoderProfiles.AudioProfile> mockAudioProfiles = List.of(mock(EncoderProfiles.AudioProfile.class));
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
     MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
@@ -83,11 +91,13 @@ public class MediaRecorderBuilderTest {
             .setMediaOrientation(mediaOrientation);
 
     when(mockFactory.makeMediaRecorder(mockApplicationContext)).thenReturn(mockMediaRecorder);
+    when(recorderProfile.getVideoProfiles()).thenReturn(mockVideoProfiles);
+    when(recorderProfile.getAudioProfiles()).thenReturn(mockAudioProfiles);
 
     MediaRecorder recorder = builder.build();
 
-    EncoderProfiles.VideoProfile videoProfile = recorderProfile.getVideoProfiles().get(0);
-    EncoderProfiles.AudioProfile audioProfile = recorderProfile.getAudioProfiles().get(0);
+    EncoderProfiles.VideoProfile videoProfile = mockVideoProfiles.get(0);
+    EncoderProfiles.AudioProfile audioProfile = mockAudioProfiles.get(0);
 
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setAudioSource(MediaRecorder.AudioSource.MIC);
