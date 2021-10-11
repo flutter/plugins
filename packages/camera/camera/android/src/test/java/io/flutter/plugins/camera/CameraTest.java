@@ -23,6 +23,7 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.media.CamcorderProfile;
+import android.media.EncoderProfiles;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
@@ -253,14 +254,18 @@ public class CameraTest {
   public void getRecordingProfile() {
     ResolutionFeature mockResolutionFeature =
         mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
-    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+    // CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+    EncoderProfiles mockRecordingProfile = mock(EncoderProfiles.class);
 
-    when(mockResolutionFeature.getRecordingProfile()).thenReturn(mockCamcorderProfile);
+    // when(mockResolutionFeature.getRecordingProfile()).thenReturn(mockCamcorderProfile);
+    when(mockResolutionFeature.getRecordingProfile_v31()).thenReturn(mockRecordingProfile);
 
-    CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
+    // CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
+    EncoderProfiles actualRecordingProfile = camera.getRecordingProfile();
 
     verify(mockResolutionFeature, times(1)).getRecordingProfile();
-    assertEquals(mockCamcorderProfile, actualRecordingProfile);
+    // assertEquals(mockCamcorderProfile, actualRecordingProfile);
+    assertEquals(mockRecordingProfile, actualRecordingProfile);
   }
 
   @Test

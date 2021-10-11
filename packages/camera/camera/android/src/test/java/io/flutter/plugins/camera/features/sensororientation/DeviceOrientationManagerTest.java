@@ -30,6 +30,7 @@ import org.mockito.MockedStatic;
 
 public class DeviceOrientationManagerTest {
   private Activity mockActivity;
+  private Context mockContext;
   private DartMessenger mockDartMessenger;
   private WindowManager mockWindowManager;
   private Display mockDisplay;
@@ -38,12 +39,14 @@ public class DeviceOrientationManagerTest {
   @Before
   public void before() {
     mockActivity = mock(Activity.class);
+    mockContext = mock(Context.class);
     mockDartMessenger = mock(DartMessenger.class);
     mockDisplay = mock(Display.class);
     mockWindowManager = mock(WindowManager.class);
 
     when(mockActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mockWindowManager);
-    when(mockWindowManager.getDefaultDisplay()).thenReturn(mockDisplay);
+    // when(mockWindowManager.getDefaultDisplay()).thenReturn(mockDisplay);
+    when(mockContext.getDisplay()).thenReturn(mockDisplay);
 
     deviceOrientationManager =
         DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 0);

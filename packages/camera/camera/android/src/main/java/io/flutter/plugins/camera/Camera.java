@@ -20,6 +20,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
 import android.media.CamcorderProfile;
+import android.media.EncoderProfiles;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -200,7 +201,7 @@ class Camera
             .getLockedCaptureOrientation();
 
     mediaRecorder =
-        new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
+        new MediaRecorderBuilder(getRecordingProfile(), applicationContext, outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
                 lockedOrientation == null
@@ -919,8 +920,9 @@ class Camera
   }
 
   /** Shortcut to get current recording profile. */
-  CamcorderProfile getRecordingProfile() {
-    return cameraFeatures.getResolution().getRecordingProfile();
+  EncoderProfiles getRecordingProfile() {
+    // return cameraFeatures.getResolution().getRecordingProfile();
+    return cameraFeatures.getResolution().getRecordingProfile_v31();
   }
 
   /** Shortut to get deviceOrientationListener. */
