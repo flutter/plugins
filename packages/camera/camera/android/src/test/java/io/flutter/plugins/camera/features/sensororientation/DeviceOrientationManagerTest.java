@@ -36,6 +36,7 @@ public class DeviceOrientationManagerTest {
   private Display mockDisplay;
   private DeviceOrientationManager deviceOrientationManager;
 
+  @SuppressWarnings("deprecation")
   @Before
   public void before() {
     mockActivity = mock(Activity.class);
@@ -45,8 +46,7 @@ public class DeviceOrientationManagerTest {
     mockWindowManager = mock(WindowManager.class);
 
     when(mockActivity.getSystemService(Context.WINDOW_SERVICE)).thenReturn(mockWindowManager);
-    // when(mockWindowManager.getDefaultDisplay()).thenReturn(mockDisplay);
-    when(mockContext.getDisplay()).thenReturn(mockDisplay);
+    when(mockWindowManager.getDefaultDisplay()).thenReturn(mockDisplay);
 
     deviceOrientationManager =
         DeviceOrientationManager.create(mockActivity, mockDartMessenger, false, 0);
