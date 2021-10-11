@@ -6,44 +6,38 @@
 @import XCTest;
 @import AVFoundation;
 #import <OCMock/OCMock.h>
+#import "MockFLTThreadSafeFlutterResult.h"
 
 @interface FLTCam : NSObject <FlutterTexture,
                               AVCaptureVideoDataOutputSampleBufferDelegate,
                               AVCaptureAudioDataOutputSampleBufferDelegate>
 @property(assign, nonatomic) BOOL isPreviewPaused;
-- (void)pausePreviewWithResult:(FlutterResult)result;
-- (void)resumePreviewWithResult:(FlutterResult)result;
+- (void)pausePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
+- (void)resumePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
 @end
 
 @interface CameraPreviewPauseTests : XCTestCase
 @property(readonly, nonatomic) FLTCam* camera;
+@property(readonly, nonatomic) MockFLTThreadSafeFlutterResult *resultObject;
 @end
 
 @implementation CameraPreviewPauseTests
 
 - (void)setUp {
   _camera = [[FLTCam alloc] init];
+  
+  XCTestExpectation *expectation =
+      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
+  _resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
 }
 
 - (void)testPausePreviewWithResult_shouldPausePreview {
-  XCTestExpectation* resultExpectation =
-      [self expectationWithDescription:@"Succeeding result with nil value"];
-  [_camera pausePreviewWithResult:^void(id _Nullable result) {
-    XCTAssertNil(result);
-    [resultExpectation fulfill];
-  }];
-  [self waitForExpectationsWithTimeout:2.0 handler:nil];
+  [_camera pausePreviewWithResult:_resultObject];
   XCTAssertTrue(_camera.isPreviewPaused);
 }
 
 - (void)testResumePreviewWithResult_shouldResumePreview {
-  XCTestExpectation* resultExpectation =
-      [self expectationWithDescription:@"Succeeding result with nil value"];
-  [_camera resumePreviewWithResult:^void(id _Nullable result) {
-    XCTAssertNil(result);
-    [resultExpectation fulfill];
-  }];
-  [self waitForExpectationsWithTimeout:2.0 handler:nil];
+  [_camera resumePreviewWithResult:_resultObject];
   XCTAssertFalse(_camera.isPreviewPaused);
 }
 

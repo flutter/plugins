@@ -6,41 +6,10 @@
 @import XCTest;
 @import AVFoundation;
 #import <OCMock/OCMock.h>
-
-@interface FLTThreadSafeFlutterResult ()
-@property(readonly, nonatomic) FlutterResult flutterResult;
-@end
-
-/**
- * Extends FLTThreadSafeFlutterResult to give tests the ability to wait on the result and
- * read the received result.
- */
-@interface MockFLTThreadSafeFlutterResult : FLTThreadSafeFlutterResult
-@property(readonly, nonatomic) XCTestExpectation *expectation;
-@property(nonatomic, nullable) id receivedResult;
-@end
-
-@implementation MockFLTThreadSafeFlutterResult
-/**
- * Initializes with a notification center.
- */
-- (id)initWithExpectation:(XCTestExpectation *)expectation {
-  self = [super init];
-  _expectation = expectation;
-  return self;
-}
-
-/**
- * Called when result is successful. Fulfills the expectation.
- */
-- (void)sendSuccessWithData:(id)data {
-  _receivedResult = data;
-  [self->_expectation fulfill];
-}
-@end
+#import "MockFLTThreadSafeFlutterResult.h"
 
 @interface CameraPlugin (Test)
-- (void)handleMethodCallWithThreadSafeResult:(FlutterMethodCall *)call
+- (void)handleMethodCallAsync:(FlutterMethodCall *)call
                                       result:(FLTThreadSafeFlutterResult *)result;
 @end
 
@@ -74,17 +43,8 @@
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
 
-  [_camera handleMethodCallWithThreadSafeResult:call result:_resultObject];
-
-  // Don't expect a result yet
-  // The initWithCameraName method should do some heavy operations on a second thread. This verifies
-  // the dispatch is not removed.
-  XCTAssertNil(_resultObject.receivedResult);
-
-  [self waitForExpectations:[NSArray arrayWithObject:_resultObject.expectation] timeout:1];
-
-  // Expect a result after waiting for thread to switch
-  XCTAssertNotNil(_resultObject.receivedResult);
+  
+  [self->_camera handleMethodCallAsync:call result:self->_resultObject];
 
   // Verify the result
   NSDictionary *dictionaryResult = (NSDictionary *)_resultObject.receivedResult;
