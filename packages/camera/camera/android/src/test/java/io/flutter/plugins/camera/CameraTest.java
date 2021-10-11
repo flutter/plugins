@@ -263,7 +263,8 @@ public class CameraTest {
     // CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
     EncoderProfiles actualRecordingProfile = camera.getRecordingProfile();
 
-    verify(mockResolutionFeature, times(1)).getRecordingProfile();
+    // verify(mockResolutionFeature, times(1)).getRecordingProfile();
+    verify(mockResolutionFeature, times(1)).getRecordingProfile_v31();
     // assertEquals(mockCamcorderProfile, actualRecordingProfile);
     assertEquals(mockRecordingProfile, actualRecordingProfile);
   }
