@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
+import android.os.Build;
 import io.flutter.plugins.camera.CameraProperties;
 import java.util.List;
 import org.junit.After;
@@ -26,6 +27,7 @@ public class ResolutionFeatureTest {
   private MockedStatic<CamcorderProfile> mockedStaticProfile;
 
   @Before
+  @SuppressWarnings("deprecation")
   public void before() {
     mockedStaticProfile = mockStatic(CamcorderProfile.class);
     mockProfileLow = mock(CamcorderProfile.class);
@@ -42,7 +44,7 @@ public class ResolutionFeatureTest {
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_QVGA)).thenReturn(true);
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_LOW)).thenReturn(true);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
     mockedStaticProfile.when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_HIGH))
         .thenReturn(mockProfile_v31);
     mockedStaticProfile.when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_2160P))
@@ -60,15 +62,15 @@ public class ResolutionFeatureTest {
 
     when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfiles);
 
-    // } else {
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_HIGH)).thenReturn(mockProfile);
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_2160P)).thenReturn(mockProfile);
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_1080P)).thenReturn(mockProfile);
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P)).thenReturn(mockProfile);
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P)).thenReturn(mockProfile);
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA)).thenReturn(mockProfile);
-    //   mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_LOW)).thenReturn(mockProfileLow);
-    // }
+    } else {
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_HIGH)).thenReturn(mockProfile);
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_2160P)).thenReturn(mockProfile);
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_1080P)).thenReturn(mockProfile);
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P)).thenReturn(mockProfile);
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P)).thenReturn(mockProfile);
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA)).thenReturn(mockProfile);
+      mockedStaticProfile.when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_LOW)).thenReturn(mockProfileLow);
+    }
   }
 
   @After
@@ -111,6 +113,7 @@ public class ResolutionFeatureTest {
     assertTrue(resolutionFeature.checkIsSupported());
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void getBestAvailableCamcorderProfileForResolutionPreset_shouldFallThrough() {
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH)).thenReturn(false);
@@ -121,85 +124,91 @@ public class ResolutionFeatureTest {
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_QVGA)).thenReturn(false);
     mockedStaticProfile.when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_LOW)).thenReturn(true);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       assertEquals(mockProfileLow_v31,
           ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset_v31(1, ResolutionPreset.max));
-    // } else {
-    //   assertEquals(mockProfileLow,
-    //       ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(1, ResolutionPreset.max));
-    // }
+    } else {
+      assertEquals(mockProfileLow,
+          ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(1, ResolutionPreset.max));
+    }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetMax() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
 
-    // } else {
-    //   mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
+    } else {
+      mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
 
-    // }
+    }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetUltraHigh() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.ultraHigh);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
-    // } else {
-    //   mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
-    // }
+    } else {
+      mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
+    }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetVeryHigh() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.veryHigh);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
 
-    // } else {
-    //   mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
+    } else {
+      mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
 
-    // }
+    }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetHigh() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.high);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
-    // } else {
-    //   mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
+    } else {
+      mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
 
-    // }
+    }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUse480PWhenResolutionPresetMedium() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.medium);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_480P));
-    // } else {
-    //   mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P));
+    } else {
+      mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P));
 
-    // }
+    }
   }
 
+  @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUseQVGAWhenResolutionPresetLow() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.low);
 
-    // if (Build.VERSION.SDK_INT >= 31) {
+    if (Build.VERSION.SDK_INT >= 31) {
       mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_QVGA));
-    // } else {
-    //   mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA));
+    } else {
+      mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA));
 
-    // }
+    }
   }
 }
