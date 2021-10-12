@@ -27,19 +27,13 @@
   ];
   for (NSString* buttonName in buttonNames) {
     XCUIElement* button = app.buttons[buttonName];
-    if (![button waitForExistenceWithTimeout:30.0]) {
-      os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-      XCTFail(@"Failed due to not able to find %@ button", buttonName);
-    }
+    XCTAssertTrue([button waitForExistenceWithTimeout:30.0]);
     XCTAssertEqual(app.webViews.count, 0);
     [button tap];
     XCUIElement* webView = app.webViews.firstMatch;
-    if (![webView waitForExistenceWithTimeout:30.0]) {
-      os_log_error(OS_LOG_DEFAULT, "%@", app.debugDescription);
-      XCTFail(@"Failed due to not able to find webview");
-    }
-    XCTAssertTrue(app.buttons[@"ForwardButton"].exists);
-    XCTAssertTrue(app.buttons[@"ShareButton"].exists);
+    XCTAssertTrue([webView waitForExistenceWithTimeout:30.0]);
+    XCTAssertTrue([app.buttons[@"ForwardButton"] waitForExistenceWithTimeout:30.0]);
+    XCTAssertTrue(app.buttons[@"Share"].exists);
     XCTAssertTrue(app.buttons[@"OpenInSafariButton"].exists);
     [app.buttons[@"Done"] tap];
   }

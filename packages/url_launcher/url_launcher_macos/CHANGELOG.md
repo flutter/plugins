@@ -1,6 +1,11 @@
-## NEXT
+## 2.0.2
+
+* Replaced reference to `shared_preferences` plugin with the `url_launcher` in the README.
+
+## 2.0.1
 
 * Add native unit tests.
+* Updated installation instructions in README.
 
 ## 2.0.0
 

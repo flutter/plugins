@@ -162,6 +162,11 @@ void main() {
       expect(find.byType(Text), findsNothing);
     });
 
+    testWidgets('handles empty text', (WidgetTester tester) async {
+      await tester.pumpWidget(MaterialApp(home: ClosedCaption(text: '')));
+      expect(find.byType(Text), findsNothing);
+    });
+
     testWidgets('Passes text contrast ratio guidelines',
         (WidgetTester tester) async {
       final String text = 'foo';
@@ -284,6 +289,15 @@ void main() {
       });
     });
 
+    test('contentUri', () async {
+      final VideoPlayerController controller =
+          VideoPlayerController.contentUri(Uri.parse('content://video'));
+      await controller.initialize();
+
+      expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'content://video');
+    });
+
     test('dispose', () async {
       final VideoPlayerController controller = VideoPlayerController.network(
         'https://127.0.0.1',
@@ -316,6 +330,34 @@ void main() {
               .calls[fakeVideoPlayerPlatform.calls.length - 2],
           'play');
       expect(fakeVideoPlayerPlatform.calls.last, 'setPlaybackSpeed');
+    });
+
+    test('play before initialized does not call platform', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+      expect(controller.value.isInitialized, isFalse);
+
+      await controller.play();
+
+      expect(fakeVideoPlayerPlatform.calls, isEmpty);
+    });
+
+    test('play restarts from beginning if video is at end', () async {
+      final VideoPlayerController controller = VideoPlayerController.network(
+        'https://127.0.0.1',
+      );
+      await controller.initialize();
+      const Duration nonzeroDuration = Duration(milliseconds: 100);
+      controller.value = controller.value.copyWith(duration: nonzeroDuration);
+      await controller.seekTo(nonzeroDuration);
+      expect(controller.value.isPlaying, isFalse);
+      expect(controller.value.position, nonzeroDuration);
+
+      await controller.play();
+
+      expect(controller.value.isPlaying, isTrue);
+      expect(controller.value.position, Duration.zero);
     });
 
     test('setLooping', () async {
@@ -354,6 +396,17 @@ void main() {
         await controller.seekTo(const Duration(milliseconds: 500));
 
         expect(await controller.position, const Duration(milliseconds: 500));
+      });
+
+      test('before initialized does not call platform', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        expect(controller.value.isInitialized, isFalse);
+
+        await controller.seekTo(const Duration(milliseconds: 500));
+
+        expect(fakeVideoPlayerPlatform.calls, isEmpty);
       });
 
       test('clamps values that are too high or low', () async {
@@ -459,6 +512,8 @@ void main() {
           'https://127.0.0.1',
         );
         await controller.initialize();
+        const Duration nonzeroDuration = Duration(milliseconds: 100);
+        controller.value = controller.value.copyWith(duration: nonzeroDuration);
         expect(controller.value.isPlaying, isFalse);
         await controller.play();
         expect(controller.value.isPlaying, isTrue);
@@ -470,7 +525,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(controller.value.isPlaying, isFalse);
-        expect(controller.value.position, controller.value.duration);
+        expect(controller.value.position, nonzeroDuration);
       });
 
       testWidgets('buffering status', (WidgetTester tester) async {
@@ -837,7 +892,16 @@ class FakeEventsChannel {
   }
 
   void _sendMessage(ByteData data) {
-    ServicesBinding.instance!.defaultBinaryMessenger.handlePlatformMessage(
-        eventsMethodChannel.name, data, (ByteData? data) {});
+    _ambiguate(ServicesBinding.instance)!
+        .defaultBinaryMessenger
+        .handlePlatformMessage(
+            eventsMethodChannel.name, data, (ByteData? data) {});
   }
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

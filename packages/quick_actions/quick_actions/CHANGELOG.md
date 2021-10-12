@@ -1,3 +1,24 @@
+## 0.6.0+7
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 0.6.0+6
+
+* Updated Android lint settings.
+* Fix repository link in pubspec.yaml.
+
+## 0.6.0+5
+
+* Support only calling initialize once.
+
+## 0.6.0+4
+
+* Remove references to the Android V1 embedding.
+
+## 0.6.0+3
+
+* Added a `const` constructor for the `QuickActions` class, so the plugin will behave as documented in the  sample code mentioned in the [README.md](https://github.com/flutter/plugins/blob/59e16a556e273c2d69189b2dcdfa92d101ea6408/packages/quick_actions/quick_actions/README.md).
+
 ## 0.6.0+2
 
 * Migrate maven repository from jcenter to mavenCentral.

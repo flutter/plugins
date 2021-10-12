@@ -1,0 +1,42 @@
+# Plugins that deliberately use their own analysis_options.yaml.
+#
+# This only exists to allow incrementally switching to the newer, stricter
+# analysis_options.yaml based on flutter/flutter, rather than the original
+# rules based on pedantic (now at analysis_options_legacy.yaml).
+#
+# DO NOT add new entries to the list, unless it is to push the legacy rules
+# from a top-level package into more specific packages in order to incrementally
+# migrate a federated plugin.
+#
+# DO NOT move or delete this file without updating
+# https://github.com/dart-lang/sdk/blob/master/tools/bots/flutter/analyze_flutter_plugins.sh
+# which references this file from source, but out-of-repo.
+# Contact stuartmorgan or devoncarew for assistance if necessary.
+
+# TODO(ecosystem): Remove everything from this list. See:
+# https://github.com/flutter/flutter/issues/76229
+- camera
+- google_maps_flutter
+- google_sign_in
+- image_picker
+- in_app_purchase
+- ios_platform_images
+- local_auth
+- quick_actions
+- shared_preferences
+- url_launcher
+- video_player
+- webview_flutter
+
+# These plugins are deprecated in favor of the Community Plus versions, and
+# will be removed from the repo once the critical support window has passed,
+# so are not worth updating.
+- android_alarm_manager
+- android_intent
+- battery
+- connectivity
+- device_info
+- package_info
+- sensors
+- share
+- wifi_info_flutter

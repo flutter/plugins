@@ -1,3 +1,15 @@
+## 0.10.0+3
+
+* Updated URL to the `google_sign_in` package in README.
+
+## 0.10.0+2
+
+* Add `implements` to pubspec.
+
+## 0.10.0+1
+
+* Updated installation instructions in README.
+
 ## 0.10.0
 
 * Migrate to null-safety.

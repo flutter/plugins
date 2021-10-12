@@ -1,0 +1,5 @@
+tasks:
+  - name: prepare tool
+    script: .ci/scripts/prepare_tool.sh
+  - name: build examples (UWP)
+    script: .ci/scripts/build_examples_uwp.sh

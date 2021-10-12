@@ -330,6 +330,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
+@property(assign, nonatomic) BOOL isPreviewPaused;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
 @property(assign, nonatomic) FocusMode focusMode;
@@ -531,12 +532,10 @@ NSString *const errorMethod = @"error";
   switch (resolutionPreset) {
     case max:
     case ultraHigh:
-      if (@available(iOS 9.0, *)) {
-        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-          _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
-          _previewSize = CGSizeMake(3840, 2160);
-          break;
-        }
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+        _previewSize = CGSizeMake(3840, 2160);
+        break;
       }
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
         _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
@@ -661,6 +660,11 @@ NSString *const errorMethod = @"error";
       imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
       imageBuffer[@"format"] = @(videoFormat);
       imageBuffer[@"planes"] = planes;
+      imageBuffer[@"lensAperture"] = [NSNumber numberWithFloat:[_captureDevice lensAperture]];
+      Float64 exposureDuration = CMTimeGetSeconds([_captureDevice exposureDuration]);
+      Float64 nsExposureDuration = 1000000000 * exposureDuration;
+      imageBuffer[@"sensorExposureTime"] = [NSNumber numberWithInt:nsExposureDuration];
+      imageBuffer[@"sensorSensitivity"] = [NSNumber numberWithFloat:[_captureDevice ISO]];
 
       _imageStreamHandler.eventSink(imageBuffer);
 
@@ -1030,6 +1034,41 @@ NSString *const errorMethod = @"error";
   [captureDevice unlockForConfiguration];
 }
 
+- (void)pausePreviewWithResult:(FlutterResult)result {
+  _isPreviewPaused = true;
+  result(nil);
+}
+
+- (void)resumePreviewWithResult:(FlutterResult)result {
+  _isPreviewPaused = false;
+  result(nil);
+}
+
+- (CGPoint)getCGPointForCoordsWithOrientation:(UIDeviceOrientation)orientation
+                                            x:(double)x
+                                            y:(double)y {
+  double oldX = x, oldY = y;
+  switch (orientation) {
+    case UIDeviceOrientationPortrait:  // 90 ccw
+      y = 1 - oldX;
+      x = oldY;
+      break;
+    case UIDeviceOrientationPortraitUpsideDown:  // 90 cw
+      x = 1 - oldY;
+      y = oldX;
+      break;
+    case UIDeviceOrientationLandscapeRight:  // 180
+      x = 1 - x;
+      y = 1 - y;
+      break;
+    case UIDeviceOrientationLandscapeLeft:
+    default:
+      // No rotation required
+      break;
+  }
+  return CGPointMake(x, y);
+}
+
 - (void)setExposurePointWithResult:(FlutterResult)result x:(double)x y:(double)y {
   if (!_captureDevice.isExposurePointOfInterestSupported) {
     result([FlutterError errorWithCode:@"setExposurePointFailed"
@@ -1037,8 +1076,11 @@ NSString *const errorMethod = @"error";
                                details:nil]);
     return;
   }
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setExposurePointOfInterest:CGPointMake(y, 1 - x)];
+  [_captureDevice setExposurePointOfInterest:[self getCGPointForCoordsWithOrientation:orientation
+                                                                                    x:x
+                                                                                    y:y]];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto exposure
   [self applyExposureMode];
@@ -1052,11 +1094,16 @@ NSString *const errorMethod = @"error";
                                details:nil]);
     return;
   }
+  UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
   [_captureDevice lockForConfiguration:nil];
-  [_captureDevice setFocusPointOfInterest:CGPointMake(y, 1 - x)];
+
+  [_captureDevice setFocusPointOfInterest:[self getCGPointForCoordsWithOrientation:orientation
+                                                                                 x:x
+                                                                                 y:y]];
   [_captureDevice unlockForConfiguration];
   // Retrigger auto focus
   [self applyFocusMode];
+
   result(nil);
 }
 
@@ -1394,7 +1441,9 @@ NSString *const errorMethod = @"error";
 
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
-        [weakSelf.registry textureFrameAvailable:cameraId];
+        if (![weakSelf.camera isPreviewPaused]) {
+          [weakSelf.registry textureFrameAvailable:cameraId];
+        }
       };
       FlutterMethodChannel *methodChannel = [FlutterMethodChannel
           methodChannelWithName:[NSString stringWithFormat:@"flutter.io/cameraPlugin/camera%lu",
@@ -1481,6 +1530,10 @@ NSString *const errorMethod = @"error";
         y = ((NSNumber *)call.arguments[@"y"]).doubleValue;
       }
       [_camera setFocusPointWithResult:result x:x y:y];
+    } else if ([@"pausePreview" isEqualToString:call.method]) {
+      [_camera pausePreviewWithResult:result];
+    } else if ([@"resumePreview" isEqualToString:call.method]) {
+      [_camera resumePreviewWithResult:result];
     } else {
       result(FlutterMethodNotImplemented);
     }

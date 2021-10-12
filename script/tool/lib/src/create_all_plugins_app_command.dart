@@ -5,11 +5,15 @@
 import 'dart:io' as io;
 
 import 'package:file/file.dart';
+import 'package:path/path.dart' as p;
 import 'package:pub_semver/pub_semver.dart';
 import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
+import 'common/repository_package.dart';
+
+const String _outputDirectoryFlag = 'output-dir';
 
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {
@@ -17,16 +21,19 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   CreateAllPluginsAppCommand(
     Directory packagesDir, {
     Directory? pluginsRoot,
-  })  : pluginsRoot = pluginsRoot ?? packagesDir.fileSystem.currentDirectory,
-        super(packagesDir) {
-    appDirectory = this.pluginsRoot.childDirectory('all_plugins');
+  }) : super(packagesDir) {
+    final Directory defaultDir =
+        pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
+    argParser.addOption(_outputDirectoryFlag,
+        defaultsTo: defaultDir.path,
+        help: 'The path the directory to create the "all_plugins" project in.\n'
+            'Defaults to the repository root.');
   }
 
-  /// The root directory of the plugin repository.
-  Directory pluginsRoot;
-
   /// The location of the synthesized app project.
-  late Directory appDirectory;
+  Directory get appDirectory => packagesDir.fileSystem
+      .directory(getStringArg(_outputDirectoryFlag))
+      .childDirectory('all_plugins');
 
   @override
   String get description =>
@@ -42,6 +49,15 @@ class CreateAllPluginsAppCommand extends PluginCommand {
       throw ToolExit(exitCode);
     }
 
+    final Set<String> excluded = getExcludedPackageNames();
+    if (excluded.isNotEmpty) {
+      print('Exluding the following plugins from the combined build:');
+      for (final String plugin in excluded) {
+        print('  $plugin');
+      }
+      print('');
+    }
+
     await Future.wait(<Future<void>>[
       _genPubspecWithAllPlugins(),
       _updateAppGradle(),
@@ -51,7 +67,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
   Future<int> _createApp() async {
     final io.ProcessResult result = io.Process.runSync(
-      'flutter',
+      flutterCommand,
       <String>[
         'create',
         '--template=app',
@@ -155,13 +171,15 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (final Directory package in getPlugins()) {
-      final String pluginName = package.path.split('/').last;
-      final File pubspecFile = package.childFile('pubspec.yaml');
+    await for (final PackageEnumerationEntry entry in getTargetPackages()) {
+      final RepositoryPackage package = entry.package;
+      final Directory pluginDirectory = package.directory;
+      final String pluginName = pluginDirectory.basename;
+      final File pubspecFile = package.pubspecFile;
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {
-        pathDependencies[pluginName] = PathDependency(package.path);
+        pathDependencies[pluginName] = PathDependency(pluginDirectory.path);
       }
     }
     return pathDependencies;
@@ -172,6 +190,7 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 ### Generated file. Do not edit. Run `pub global run flutter_plugin_tools gen-pubspec` to update.
 name: ${pubspec.name}
 description: ${pubspec.description}
+publish_to: none
 
 version: ${pubspec.version}
 
@@ -197,7 +216,21 @@ dev_dependencies:${_pubspecMapString(pubspec.devDependencies)}
         buffer.write('  ${entry.key}: \n    sdk: ${dep.sdk}');
       } else if (entry.value is PathDependency) {
         final PathDependency dep = entry.value as PathDependency;
-        buffer.write('  ${entry.key}: \n    path: ${dep.path}');
+        String depPath = dep.path;
+        if (path.style == p.Style.windows) {
+          // Posix-style path separators are preferred in pubspec.yaml (and
+          // using a consistent format makes unit testing simpler), so convert.
+          final List<String> components = path.split(depPath);
+          final String firstComponent = components.first;
+          // path.split leaves a \ on drive components that isn't necessary,
+          // and confuses pub, so remove it.
+          if (firstComponent.endsWith(r':\')) {
+            components[0] =
+                firstComponent.substring(0, firstComponent.length - 1);
+          }
+          depPath = p.posix.joinAll(components);
+        }
+        buffer.write('  ${entry.key}: \n    path: $depPath');
       } else {
         throw UnimplementedError(
           'Not available for type: ${entry.value.runtimeType}',

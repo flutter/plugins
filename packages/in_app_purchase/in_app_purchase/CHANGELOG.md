@@ -1,3 +1,20 @@
+## 1.0.9
+
+* Handle purchases with `PurchaseStatus.restored` correctly in the example App.
+* Updated dependencies on `in_app_purchase_android` and `in_app_purchase_ios` to their latest versions (version 0.1.5 and 0.1.3+5 respectively).
+
+## 1.0.8
+
+* Fix repository link in pubspec.yaml.
+
+## 1.0.7
+
+* Remove references to the Android V1 embedding.
+
+## 1.0.6
+
+* Added import flutter foundation dependency in README.md to be able to use `defaultTargetPlatform`.
+
 ## 1.0.5
 
 * Add explanation for casting `ProductDetails` and `PurchaseDetails` to platform specific implementations in the readme.
