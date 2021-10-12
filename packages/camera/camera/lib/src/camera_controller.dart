@@ -45,6 +45,7 @@ class CameraValue {
     required this.exposurePointSupported,
     required this.focusPointSupported,
     required this.deviceOrientation,
+    required this.description,
     this.lockedCaptureOrientation,
     this.recordingOrientation,
     this.isPreviewPaused = false,
@@ -52,9 +53,10 @@ class CameraValue {
   }) : _isRecordingPaused = isRecordingPaused;
 
   /// Creates a new camera controller state for an uninitialized controller.
-  const CameraValue.uninitialized()
+  const CameraValue.uninitialized({required CameraDescription description})
       : this(
           isInitialized: false,
+          description: description,
           isRecordingVideo: false,
           isTakingPicture: false,
           isStreamingImages: false,
@@ -139,6 +141,9 @@ class CameraValue {
   /// The orientation of the currently running video recording.
   final DeviceOrientation? recordingOrientation;
 
+  /// The properties of the camera device controlled by this controller.
+  final CameraDescription description;
+
   /// Creates a modified copy of the object.
   ///
   /// Explicitly specified fields get the specified value, all other fields get
@@ -146,6 +151,7 @@ class CameraValue {
   CameraValue copyWith({
     bool? isInitialized,
     bool? isRecordingVideo,
+    CameraDescription? description,
     bool? isTakingPicture,
     bool? isStreamingImages,
     String? errorDescription,
@@ -164,6 +170,7 @@ class CameraValue {
   }) {
     return CameraValue(
       isInitialized: isInitialized ?? this.isInitialized,
+      description: description ?? this.description,
       errorDescription: errorDescription,
       previewSize: previewSize ?? this.previewSize,
       isRecordingVideo: isRecordingVideo ?? this.isRecordingVideo,
@@ -221,14 +228,11 @@ class CameraValue {
 class CameraController extends ValueNotifier<CameraValue> {
   /// Creates a new camera controller in an uninitialized state.
   CameraController(
-    this.description,
+    CameraDescription description,
     this.resolutionPreset, {
     this.enableAudio = true,
     this.imageFormatGroup,
-  }) : super(const CameraValue.uninitialized());
-
-  /// The properties of the camera device controlled by this controller.
-  final CameraDescription description;
+  }) : super(CameraValue.uninitialized(description: description));
 
   /// The resolution this controller is targeting.
   ///
@@ -237,6 +241,9 @@ class CameraController extends ValueNotifier<CameraValue> {
   ///
   /// See also: [ResolutionPreset].
   final ResolutionPreset resolutionPreset;
+
+  /// The current properties of the camera device controlled by this controller.
+  CameraDescription get description => value.description;
 
   /// Whether to include audio when recording a video.
   final bool enableAudio;
@@ -287,7 +294,7 @@ class CameraController extends ValueNotifier<CameraValue> {
       });
 
       _cameraId = await CameraPlatform.instance.createCamera(
-        description,
+        value.description,
         resolutionPreset,
         enableAudio: enableAudio,
       );
@@ -366,6 +373,17 @@ class CameraController extends ValueNotifier<CameraValue> {
       await CameraPlatform.instance.resumePreview(_cameraId);
       value = value.copyWith(
           isPreviewPaused: false, previewPauseOrientation: Optional.absent());
+    } on PlatformException catch (e) {
+      throw CameraException(e.code, e.message);
+    }
+  }
+
+  /// Sets this camera to use a different description
+  /// This is useful for switching cameras while recording video
+  Future<void> setDescription(CameraDescription description) async {
+    try {
+      await CameraPlatform.instance.resumePreview(_cameraId);
+      value = value.copyWith();
     } on PlatformException catch (e) {
       throw CameraException(e.code, e.message);
     }

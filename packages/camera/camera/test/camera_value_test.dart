@@ -10,10 +10,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+CameraDescription testDescription = CameraDescription(
+    name: '', lensDirection: CameraLensDirection.back, sensorOrientation: 0);
 void main() {
   group('camera_value', () {
     test('Can be created', () {
-      var cameraValue = const CameraValue(
+      var cameraValue = CameraValue(
+        description: testDescription,
         isInitialized: false,
         errorDescription: null,
         previewSize: Size(10, 10),
@@ -53,7 +56,7 @@ void main() {
     });
 
     test('Can be created as uninitialized', () {
-      var cameraValue = const CameraValue.uninitialized();
+      var cameraValue = CameraValue.uninitialized(description: testDescription);
 
       expect(cameraValue, isA<CameraValue>());
       expect(cameraValue.isInitialized, isFalse);
@@ -75,7 +78,7 @@ void main() {
     });
 
     test('Can be copied with isInitialized', () {
-      var cv = const CameraValue.uninitialized();
+      var cv = CameraValue.uninitialized(description: testDescription);
       var cameraValue = cv.copyWith(isInitialized: true);
 
       expect(cameraValue, isA<CameraValue>());
@@ -98,7 +101,7 @@ void main() {
     });
 
     test('Has aspectRatio after setting size', () {
-      var cv = const CameraValue.uninitialized();
+      var cv = CameraValue.uninitialized(description: testDescription);
       var cameraValue =
           cv.copyWith(isInitialized: true, previewSize: Size(20, 10));
 
@@ -106,7 +109,7 @@ void main() {
     });
 
     test('hasError is true after setting errorDescription', () {
-      var cv = const CameraValue.uninitialized();
+      var cv = CameraValue.uninitialized(description: testDescription);
       var cameraValue = cv.copyWith(errorDescription: 'error');
 
       expect(cameraValue.hasError, isTrue);
@@ -114,7 +117,7 @@ void main() {
     });
 
     test('Recording paused is false when not recording', () {
-      var cv = const CameraValue.uninitialized();
+      var cv = CameraValue.uninitialized(description: testDescription);
       var cameraValue = cv.copyWith(
           isInitialized: true,
           isRecordingVideo: false,
@@ -124,8 +127,9 @@ void main() {
     });
 
     test('toString() works as expected', () {
-      var cameraValue = const CameraValue(
+      var cameraValue = CameraValue(
           isInitialized: false,
+          description: testDescription,
           errorDescription: null,
           previewSize: Size(10, 10),
           isRecordingPaused: false,
