@@ -6,19 +6,16 @@ part of 'enum_converters.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_SerializedEnums _$_SerializedEnumsFromJson(Map json) {
-  return _SerializedEnums()
-    ..response = _$enumDecode(_$BillingResponseEnumMap, json['response'])
-    ..type = _$enumDecode(_$SkuTypeEnumMap, json['type'])
-    ..purchaseState =
-        _$enumDecode(_$PurchaseStateWrapperEnumMap, json['purchaseState'])
-    ..prorationMode =
-        _$enumDecode(_$ProrationModeEnumMap, json['prorationMode'])
-    ..billingClientFeature = _$enumDecode(
-        _$BillingClientFeatureEnumMap, json['billingClientFeature']);
-}
+_SerializedEnums _$SerializedEnumsFromJson(Map json) => _SerializedEnums()
+  ..response = _$enumDecode(_$BillingResponseEnumMap, json['response'])
+  ..type = _$enumDecode(_$SkuTypeEnumMap, json['type'])
+  ..purchaseState =
+      _$enumDecode(_$PurchaseStateWrapperEnumMap, json['purchaseState'])
+  ..prorationMode = _$enumDecode(_$ProrationModeEnumMap, json['prorationMode'])
+  ..billingClientFeature =
+      _$enumDecode(_$BillingClientFeatureEnumMap, json['billingClientFeature']);
 
-Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
+Map<String, dynamic> _$SerializedEnumsToJson(_SerializedEnums instance) =>
     <String, dynamic>{
       'response': _$BillingResponseEnumMap[instance.response],
       'type': _$SkuTypeEnumMap[instance.type],

@@ -8,9 +8,6 @@ environment:
   sdk: ">=2.12.0 <3.0.0"
 
 dependencies:
-  flutter:
-    sdk: flutter
-
   file_selector:
     # When depending on this package from a real application you should use:
     #   file_selector: ^x.y.z
@@ -18,6 +15,8 @@ dependencies:
     # The example app is bundled with the plugin so we use a path dependency on
     # the parent directory to use the current plugin's version.
     path: ../
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:

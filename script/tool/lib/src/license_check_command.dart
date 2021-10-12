@@ -16,6 +16,7 @@ const Set<String> _codeFileExtensions = <String>{
   '.h',
   '.html',
   '.java',
+  '.kt',
   '.m',
   '.mm',
   '.swift',

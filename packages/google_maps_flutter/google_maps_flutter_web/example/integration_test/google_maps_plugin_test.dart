@@ -404,6 +404,28 @@ void main() {
 
         await _testStreamFiltering(stream, event);
       });
+      testWidgets('onMarkerDragStart', (WidgetTester tester) async {
+        final event = MarkerDragStartEvent(
+          mapId,
+          LatLng(43.3677, -5.8372),
+          MarkerId('test-123'),
+        );
+
+        final stream = plugin.onMarkerDragStart(mapId: mapId);
+
+        await _testStreamFiltering(stream, event);
+      });
+      testWidgets('onMarkerDrag', (WidgetTester tester) async {
+        final event = MarkerDragEvent(
+          mapId,
+          LatLng(43.3677, -5.8372),
+          MarkerId('test-123'),
+        );
+
+        final stream = plugin.onMarkerDrag(mapId: mapId);
+
+        await _testStreamFiltering(stream, event);
+      });
       testWidgets('onMarkerDragEnd', (WidgetTester tester) async {
         final event = MarkerDragEndEvent(
           mapId,
