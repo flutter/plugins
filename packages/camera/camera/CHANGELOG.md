@@ -1,3 +1,11 @@
+## NEXT
+
+* Updated package description.
+
+## 0.9.4+1
+
+* Fixed Android implementation throwing IllegalStateException when switching to a different activity.
+
 ## 0.9.4
 
 * Add web support by endorsing `package:camera_web`.

@@ -35,9 +35,7 @@ import android.view.Display;
 import android.view.Surface;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
-import androidx.lifecycle.OnLifecycleEvent;
+import androidx.annotation.VisibleForTesting;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.EventChannel;
 import io.flutter.plugin.common.MethodChannel;
@@ -82,8 +80,7 @@ interface ErrorCallback {
 
 class Camera
     implements CameraCaptureCallback.CameraCaptureStateListener,
-        ImageReader.OnImageAvailableListener,
-        LifecycleObserver {
+        ImageReader.OnImageAvailableListener {
   private static final String TAG = "Camera";
 
   private static final HashMap<String, Integer> supportedImageFormats;
@@ -576,19 +573,21 @@ class Camera
   }
 
   /** Starts a background thread and its {@link Handler}. */
-  @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
   public void startBackgroundThread() {
-    backgroundHandlerThread = new HandlerThread("CameraBackground");
+    if (backgroundHandlerThread != null) {
+      return;
+    }
+
+    backgroundHandlerThread = HandlerThreadFactory.create("CameraBackground");
     try {
       backgroundHandlerThread.start();
     } catch (IllegalThreadStateException e) {
       // Ignore exception in case the thread has already started.
     }
-    backgroundHandler = new Handler(backgroundHandlerThread.getLooper());
+    backgroundHandler = HandlerFactory.create(backgroundHandlerThread.getLooper());
   }
 
   /** Stops the background thread and its {@link Handler}. */
-  @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
   public void stopBackgroundThread() {
     if (backgroundHandlerThread != null) {
       backgroundHandlerThread.quitSafely();
@@ -1119,5 +1118,39 @@ class Camera
     close();
     flutterTexture.release();
     getDeviceOrientationManager().stop();
+  }
+
+  /** Factory class that assists in creating a {@link HandlerThread} instance. */
+  static class HandlerThreadFactory {
+    /**
+     * Creates a new instance of the {@link HandlerThread} class.
+     *
+     * <p>This method is visible for testing purposes only and should never be used outside this *
+     * class.
+     *
+     * @param name to give to the HandlerThread.
+     * @return new instance of the {@link HandlerThread} class.
+     */
+    @VisibleForTesting
+    public static HandlerThread create(String name) {
+      return new HandlerThread(name);
+    }
+  }
+
+  /** Factory class that assists in creating a {@link Handler} instance. */
+  static class HandlerFactory {
+    /**
+     * Creates a new instance of the {@link Handler} class.
+     *
+     * <p>This method is visible for testing purposes only and should never be used outside this *
+     * class.
+     *
+     * @param looper to give to the Handler.
+     * @return new instance of the {@link Handler} class.
+     */
+    @VisibleForTesting
+    public static Handler create(Looper looper) {
+      return new Handler(looper);
+    }
   }
 }

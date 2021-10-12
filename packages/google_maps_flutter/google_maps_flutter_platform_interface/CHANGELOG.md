@@ -1,3 +1,8 @@
+## 2.1.3
+
+* `LatLng` constructor maintains longitude precision when given within
+  acceptable range
+
 ## 2.1.2
 
 * Add additional marker drag events

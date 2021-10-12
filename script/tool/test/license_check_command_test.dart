@@ -66,6 +66,7 @@ void main() {
         'html': true,
         'java': true,
         'json': false,
+        'kt': true,
         'm': true,
         'md': false,
         'mm': true,
