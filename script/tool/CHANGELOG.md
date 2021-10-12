@@ -9,6 +9,7 @@
 - Added flags to `version-check` to allow overriding the platform interface
   major version change restriction.
 - Improved error handling and error messages in CHANGELOG version checks.
+- Fixed `pubspec-check` on Windows.
 
 ## 0.7.1
 
