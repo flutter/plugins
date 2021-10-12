@@ -24,7 +24,7 @@
   [super setUp];
 
   self.mockMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
-  self.cameraPlugin = [[CameraPlugin alloc] initWithRegistry:nil messenger:_mockMessenger];
+  self.cameraPlugin = [[CameraPlugin alloc] initWithRegistry:nil messenger:self.mockMessenger];
 }
 
 - (void)testOrientationNotifications {
