@@ -704,9 +704,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             
             CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
             CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
-            if (_videoWriterInput.readyForMoreMediaData) {
                 [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
-            }
         } else {
             CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
             
@@ -733,8 +731,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 CFRelease(sampleBuffer);
                 sampleBuffer = [self adjustTime:sampleBuffer by:_audioTimeOffset];
             }
-            
+            //if (_videoWriterInput.readyForMoreMediaData) { POSSIBLY
             [self newAudioSample:sampleBuffer];
+           //}
         }
         
         CFRelease(sampleBuffer);
@@ -1091,8 +1090,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     [_captureSession beginConfiguration];
     [_captureSession removeInput:_oldInput];
     [_captureSession removeOutput:_oldOutput];
+    if(![_captureSession canAddInput:_newInput])
+        result([FlutterError errorWithCode:@"VideoError" message:@"Unable switch video input" details:nil]);
     [_captureSession addInputWithNoConnections:_newInput];
+    if(![_captureSession canAddOutput:_newOutput])
+        result([FlutterError errorWithCode:@"VideoError" message:@"Unable switch video output" details:nil]);
     [_captureSession addOutputWithNoConnections:_newOutput];
+    if(![_captureSession canAddConnection:_newConnection])
+        result([FlutterError errorWithCode:@"VideoError" message:@"Unable switch video connection" details:nil]);
     [_captureSession addConnection:_newConnection];
     _captureVideoInput = _newInput;
     _captureVideoOutput = _newOutput;
