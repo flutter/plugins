@@ -33,19 +33,19 @@ public class MediaRecorderBuilder {
   }
 
   public MediaRecorderBuilder(
-    @NonNull EncoderProfiles encoderProfiles, @NonNull String outputFilePath) {
-  this(encoderProfiles, outputFilePath, new MediaRecorderFactory());
-}
+      @NonNull EncoderProfiles encoderProfiles, @NonNull String outputFilePath) {
+    this(encoderProfiles, outputFilePath, new MediaRecorderFactory());
+  }
 
   MediaRecorderBuilder(
-    @NonNull CamcorderProfile camcorderProfile,
-    @NonNull String outputFilePath,
-    MediaRecorderFactory helper) {
-  this.outputFilePath = outputFilePath;
-  this.camcorderProfile = camcorderProfile;
-  this.encoderProfiles = null;
-  this.recorderFactory = helper;
-}
+      @NonNull CamcorderProfile camcorderProfile,
+      @NonNull String outputFilePath,
+      MediaRecorderFactory helper) {
+    this.outputFilePath = outputFilePath;
+    this.camcorderProfile = camcorderProfile;
+    this.encoderProfiles = null;
+    this.recorderFactory = helper;
+  }
 
   MediaRecorderBuilder(
       @NonNull EncoderProfiles encoderProfiles,
@@ -80,28 +80,28 @@ public class MediaRecorderBuilder {
       EncoderProfiles.AudioProfile audioProfile = encoderProfiles.getAudioProfiles().get(0);
 
       mediaRecorder.setOutputFormat(encoderProfiles.getRecommendedFileFormat());
-      if (enableAudio) { 
-      mediaRecorder.setAudioEncoder(audioProfile.getCodec());
-      mediaRecorder.setAudioEncodingBitRate(audioProfile.getBitrate());
-      mediaRecorder.setAudioSamplingRate(audioProfile.getSampleRate());
+      if (enableAudio) {
+        mediaRecorder.setAudioEncoder(audioProfile.getCodec());
+        mediaRecorder.setAudioEncodingBitRate(audioProfile.getBitrate());
+        mediaRecorder.setAudioSamplingRate(audioProfile.getSampleRate());
       }
       mediaRecorder.setVideoEncoder(videoProfile.getCodec());
       mediaRecorder.setVideoEncodingBitRate(videoProfile.getBitrate());
       mediaRecorder.setVideoFrameRate(videoProfile.getFrameRate());
       mediaRecorder.setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
       mediaRecorder.setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
-    }
-    else {
-    mediaRecorder.setOutputFormat(camcorderProfile.fileFormat);
-    if (enableAudio) {
-      mediaRecorder.setAudioEncoder(camcorderProfile.audioCodec);
-      mediaRecorder.setAudioEncodingBitRate(camcorderProfile.audioBitRate);
-      mediaRecorder.setAudioSamplingRate(camcorderProfile.audioSampleRate);
-    }
-    mediaRecorder.setVideoEncoder(camcorderProfile.videoCodec);
-    mediaRecorder.setVideoEncodingBitRate(camcorderProfile.videoBitRate);
-    mediaRecorder.setVideoFrameRate(camcorderProfile.videoFrameRate);
-    mediaRecorder.setVideoSize(camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
+    } else {
+      mediaRecorder.setOutputFormat(camcorderProfile.fileFormat);
+      if (enableAudio) {
+        mediaRecorder.setAudioEncoder(camcorderProfile.audioCodec);
+        mediaRecorder.setAudioEncodingBitRate(camcorderProfile.audioBitRate);
+        mediaRecorder.setAudioSamplingRate(camcorderProfile.audioSampleRate);
+      }
+      mediaRecorder.setVideoEncoder(camcorderProfile.videoCodec);
+      mediaRecorder.setVideoEncodingBitRate(camcorderProfile.videoBitRate);
+      mediaRecorder.setVideoFrameRate(camcorderProfile.videoFrameRate);
+      mediaRecorder.setVideoSize(
+          camcorderProfile.videoFrameWidth, camcorderProfile.videoFrameHeight);
     }
 
     mediaRecorder.setOutputFile(outputFilePath);
