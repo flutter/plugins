@@ -144,9 +144,11 @@ public class WebViewActivity extends Activity {
 
   private Map<String, String> extractHeaders(Bundle headersBundle) {
     final Map<String, String> headersMap = new HashMap<>();
-    for (String key : headersBundle.keySet()) {
-      final String value = headersBundle.getString(key);
-      headersMap.put(key, value);
+    if(headersBundle!=null){
+      for (String key : headersBundle.keySet()) {
+        final String value = headersBundle.getString(key);
+        headersMap.put(key, value);
+      }
     }
     return headersMap;
   }
