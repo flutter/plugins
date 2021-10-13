@@ -93,10 +93,13 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     final StringBuffer newGradle = StringBuffer();
     for (final String line in gradleFile.readAsLinesSync()) {
-      if (line.contains('minSdkVersion 16')) {
+      if (line.contains('minSdkVersion')) {
         // Android SDK 20 is required by Google maps.
         // Android SDK 19 is required by WebView.
         newGradle.writeln('minSdkVersion 20');
+      } else if (line.contains('compileSdkVersion')) {
+        // Android SDK 31 is required by Camera.
+        newGradle.writeln('compileSdkVersion 31');
       } else {
         newGradle.writeln(line);
       }
