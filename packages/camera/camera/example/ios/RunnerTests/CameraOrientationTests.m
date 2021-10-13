@@ -2,16 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+@import camera;
+@import camera.Test;
 @import XCTest;
 #import <Flutter/Flutter.h>
 #import <OCMock/OCMock.h>
-
-@interface CameraPlugin : NSObject
-- (instancetype)initWithRegistry:(NSObject<FlutterTextureRegistry> *)registry
-                       messenger:(NSObject<FlutterBinaryMessenger> *)messenger;
-
-- (void)orientationChanged:(NSNotification *)note;
-@end
 
 @interface CameraOrientationTests : XCTestCase
 @property(strong, nonatomic) id mockMessenger;
