@@ -5,7 +5,8 @@
 @import camera;
 @import camera.Test;
 @import XCTest;
-#import <Flutter/Flutter.h>
+@import Flutter;
+
 #import <OCMock/OCMock.h>
 
 @interface CameraOrientationTests : XCTestCase
@@ -68,7 +69,7 @@
   UIDevice *mockDevice = OCMClassMock([UIDevice class]);
   OCMStub([mockDevice orientation]).andReturn(deviceOrientation);
 
-  return [[NSNotification alloc] initWithName:@"orientation_test" object:mockDevice userInfo:nil];
+  return [NSNotification notificationWithName:@"orientation_test" object:mockDevice];
 }
 
 @end
