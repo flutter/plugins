@@ -111,6 +111,25 @@ public class MediaRecorderBuilderTest {
     inOrder.verify(recorder).prepare();
   }
 
+  @Config(minSdk = 31)
+  @Test(expected = IndexOutOfBoundsException.class)
+  public void build_shouldThrowExceptionWithoutVideoOrAudioProfiles_v31() throws IOException{
+    EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
+    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
+        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    String outputFilePath = "mock_video_file_path";
+    int mediaOrientation = 1;
+    MediaRecorderBuilder builder =
+        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
+            .setEnableAudio(false)
+            .setMediaOrientation(mediaOrientation);
+
+    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
+
+    MediaRecorder recorder = builder.build();
+  }
+
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
