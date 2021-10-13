@@ -56,6 +56,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockedStatic;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
 public class CameraTest {
   private CameraProperties mockCameraProperties;
@@ -250,22 +253,33 @@ public class CameraTest {
     assertEquals(expectedMinZoomLevel, actualMinZoomLevel, 0);
   }
 
+  @Config(maxSdk = 30)
   @Test
   public void getRecordingProfile() {
     ResolutionFeature mockResolutionFeature =
         mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
-    // CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
+
+    when(mockResolutionFeature.getRecordingProfile()).thenReturn(mockCamcorderProfile);
+
+    CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
+
+    verify(mockResolutionFeature, times(1)).getRecordingProfile();
+    assertEquals(mockCamcorderProfile, actualRecordingProfile);
+  }
+
+  @Config(minSdk = 31)
+  @Test
+  public void getRecordingProfile_v31() {
+    ResolutionFeature mockResolutionFeature =
+        mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
     EncoderProfiles mockRecordingProfile = mock(EncoderProfiles.class);
 
-    // when(mockResolutionFeature.getRecordingProfile()).thenReturn(mockCamcorderProfile);
     when(mockResolutionFeature.getRecordingProfile_v31()).thenReturn(mockRecordingProfile);
 
-    // CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
-    EncoderProfiles actualRecordingProfile = camera.getRecordingProfile();
+    EncoderProfiles actualRecordingProfile = camera.getRecordingProfile_v31();
 
-    // verify(mockResolutionFeature, times(1)).getRecordingProfile();
     verify(mockResolutionFeature, times(1)).getRecordingProfile_v31();
-    // assertEquals(mockCamcorderProfile, actualRecordingProfile);
     assertEquals(mockRecordingProfile, actualRecordingProfile);
   }
 

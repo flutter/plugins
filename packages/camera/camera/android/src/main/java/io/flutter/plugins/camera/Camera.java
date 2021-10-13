@@ -199,15 +199,27 @@ class Camera
     final PlatformChannel.DeviceOrientation lockedOrientation =
         ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
             .getLockedCaptureOrientation();
-
+    
+    if (Build.VERSION.SDK_INT >= 31) {
     mediaRecorder =
-        new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
+        new MediaRecorderBuilder(getRecordingProfile_v31(), outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
                 lockedOrientation == null
                     ? getDeviceOrientationManager().getVideoOrientation()
                     : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
             .build();
+    }
+    else {
+      mediaRecorder =
+      new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
+          .setEnableAudio(enableAudio)
+          .setMediaOrientation(
+              lockedOrientation == null
+                  ? getDeviceOrientationManager().getVideoOrientation()
+                  : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
+          .build();
+    }
   }
 
   @SuppressLint("MissingPermission")
@@ -920,8 +932,10 @@ class Camera
   }
 
   /** Shortcut to get current recording profile. */
-  EncoderProfiles getRecordingProfile() {
-    // return cameraFeatures.getResolution().getRecordingProfile();
+  CamcorderProfile getRecordingProfile() {
+    return cameraFeatures.getResolution().getRecordingProfile();
+  }
+  EncoderProfiles getRecordingProfile_v31() {
     return cameraFeatures.getResolution().getRecordingProfile_v31();
   }
 
