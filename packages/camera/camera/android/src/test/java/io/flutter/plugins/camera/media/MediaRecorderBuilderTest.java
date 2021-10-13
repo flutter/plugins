@@ -7,31 +7,77 @@ package io.flutter.plugins.camera.media;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
-import android.content.Context;
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
 import android.media.MediaRecorder;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.List;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.mockito.InOrder;
+import org.robolectric.Robolectric;
+import org.robolectric.RobolectricTestRunner;
+import org.robolectric.annotation.Config;
 
+@RunWith(RobolectricTestRunner.class)
 public class MediaRecorderBuilderTest {
+  @Config(maxSdk = 30)
+  @SuppressWarnings("deprecation")
   @Test
   public void ctor_test() {
-    Context mockApplicationContext = mock(Context.class);
     MediaRecorderBuilder builder =
-        new MediaRecorderBuilder(CamcorderProfile.getAll("0",CamcorderProfile.QUALITY_1080P), mockApplicationContext, "");
+        new MediaRecorderBuilder(CamcorderProfile.get(CamcorderProfile.QUALITY_1080P), "");
 
     assertNotNull(builder);
   }
 
+  @Config(minSdk = 31)
+  @Test
+  public void ctor_test_v31() {
+    MediaRecorderBuilder builder =
+        new MediaRecorderBuilder(CamcorderProfile.getAll("0",CamcorderProfile.QUALITY_1080P), "");
+
+    assertNotNull(builder);
+  }
+
+  @Config(maxSdk = 30)
+  @SuppressWarnings("deprecation")
   @Test
   public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabled() throws IOException {
-    // CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
+    CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
+    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
+        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    String outputFilePath = "mock_video_file_path";
+    int mediaOrientation = 1;
+    MediaRecorderBuilder builder =
+        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
+            .setEnableAudio(false)
+            .setMediaOrientation(mediaOrientation);
+
+    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
+
+    MediaRecorder recorder = builder.build();
+
+    InOrder inOrder = inOrder(recorder);
+    inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
+    inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
+    inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
+    inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
+    inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
+    inOrder
+        .verify(recorder)
+        .setVideoSize(recorderProfile.videoFrameWidth, recorderProfile.videoFrameHeight);
+    inOrder.verify(recorder).setOutputFile(outputFilePath);
+    inOrder.verify(recorder).setOrientationHint(mediaOrientation);
+    inOrder.verify(recorder).prepare();
+  }
+
+  @Config(minSdk = 31)
+  @Test
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabled_v31() throws IOException {
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
-    Context mockApplicationContext = mock(Context.class);
     List<EncoderProfiles.VideoProfile> mockVideoProfiles = List.of(mock(EncoderProfiles.VideoProfile.class));
     List<EncoderProfiles.AudioProfile> mockAudioProfiles = List.of(mock(EncoderProfiles.AudioProfile.class));
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
@@ -40,11 +86,11 @@ public class MediaRecorderBuilderTest {
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
     MediaRecorderBuilder builder =
-        new MediaRecorderBuilder(recorderProfile, mockApplicationContext, outputFilePath, mockFactory)
+        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
             .setEnableAudio(false)
             .setMediaOrientation(mediaOrientation);
 
-    when(mockFactory.makeMediaRecorder(mockApplicationContext)).thenReturn(mockMediaRecorder);
+    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
     when(recorderProfile.getVideoProfiles()).thenReturn(mockVideoProfiles);
     when(recorderProfile.getAudioProfiles()).thenReturn(mockAudioProfiles);
 
@@ -55,29 +101,60 @@ public class MediaRecorderBuilderTest {
 
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    // inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
     inOrder.verify(recorder).setOutputFormat(recorderProfile.getRecommendedFileFormat());
-    // inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
     inOrder.verify(recorder).setVideoEncoder(videoProfile.getCodec());
-    // inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
     inOrder.verify(recorder).setVideoEncodingBitRate(videoProfile.getBitrate());
-    // inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
     inOrder.verify(recorder).setVideoFrameRate(videoProfile.getFrameRate());
-
     inOrder
         .verify(recorder)
         .setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
-        // .setVideoSize(recorderProfile.videoFrameWidth, recorderProfile.videoFrameHeight);
     inOrder.verify(recorder).setOutputFile(outputFilePath);
     inOrder.verify(recorder).setOrientationHint(mediaOrientation);
     inOrder.verify(recorder).prepare();
   }
 
+  @Config(maxSdk = 30)
+  @SuppressWarnings("deprecation")
   @Test
   public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled() throws IOException {
-    // CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
+    CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
+    MediaRecorderBuilder.MediaRecorderFactory mockFactory =
+        mock(MediaRecorderBuilder.MediaRecorderFactory.class);
+    MediaRecorder mockMediaRecorder = mock(MediaRecorder.class);
+    String outputFilePath = "mock_video_file_path";
+    int mediaOrientation = 1;
+    MediaRecorderBuilder builder =
+        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
+            .setEnableAudio(true)
+            .setMediaOrientation(mediaOrientation);
+
+    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
+
+    MediaRecorder recorder = builder.build();
+
+    InOrder inOrder = inOrder(recorder);
+    inOrder.verify(recorder).setAudioSource(MediaRecorder.AudioSource.MIC);
+    inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
+    inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
+    inOrder.verify(recorder).setAudioEncoder(recorderProfile.audioCodec);
+    inOrder.verify(recorder).setAudioEncodingBitRate(recorderProfile.audioBitRate);
+    inOrder.verify(recorder).setAudioSamplingRate(recorderProfile.audioSampleRate);
+    inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
+    inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
+    inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
+    inOrder
+        .verify(recorder)
+        .setVideoSize(recorderProfile.videoFrameWidth, recorderProfile.videoFrameHeight);
+    inOrder.verify(recorder).setOutputFile(outputFilePath);
+    inOrder.verify(recorder).setOrientationHint(mediaOrientation);
+    inOrder.verify(recorder).prepare();
+  }
+
+  @Config(minSdk = 31)
+  @Test
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled_v31() throws IOException {
+    System.out.println(getEmptyCamcorderProfile());
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
-    Context mockApplicationContext = mock(Context.class);
     List<EncoderProfiles.VideoProfile> mockVideoProfiles = List.of(mock(EncoderProfiles.VideoProfile.class));
     List<EncoderProfiles.AudioProfile> mockAudioProfiles = List.of(mock(EncoderProfiles.AudioProfile.class));
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
@@ -86,11 +163,11 @@ public class MediaRecorderBuilderTest {
     String outputFilePath = "mock_video_file_path";
     int mediaOrientation = 1;
     MediaRecorderBuilder builder =
-        new MediaRecorderBuilder(recorderProfile, mockApplicationContext, outputFilePath, mockFactory)
+        new MediaRecorderBuilder(recorderProfile, outputFilePath, mockFactory)
             .setEnableAudio(true)
             .setMediaOrientation(mediaOrientation);
 
-    when(mockFactory.makeMediaRecorder(mockApplicationContext)).thenReturn(mockMediaRecorder);
+    when(mockFactory.makeMediaRecorder()).thenReturn(mockMediaRecorder);
     when(recorderProfile.getVideoProfiles()).thenReturn(mockVideoProfiles);
     when(recorderProfile.getAudioProfiles()).thenReturn(mockAudioProfiles);
 
@@ -102,24 +179,16 @@ public class MediaRecorderBuilderTest {
     InOrder inOrder = inOrder(recorder);
     inOrder.verify(recorder).setAudioSource(MediaRecorder.AudioSource.MIC);
     inOrder.verify(recorder).setVideoSource(MediaRecorder.VideoSource.SURFACE);
-    // inOrder.verify(recorder).setOutputFormat(recorderProfile.fileFormat);
     inOrder.verify(recorder).setOutputFormat(recorderProfile.getRecommendedFileFormat());
-    // inOrder.verify(recorder).setAudioEncoder(recorderProfile.audioCodec);
     inOrder.verify(recorder).setAudioEncoder(audioProfile.getCodec());
-    // inOrder.verify(recorder).setAudioEncodingBitRate(recorderProfile.audioBitRate);
     inOrder.verify(recorder).setAudioEncodingBitRate(audioProfile.getBitrate());
-    // inOrder.verify(recorder).setAudioSamplingRate(recorderProfile.audioSampleRate);
     inOrder.verify(recorder).setAudioSamplingRate(audioProfile.getSampleRate());
-    // inOrder.verify(recorder).setVideoEncoder(recorderProfile.videoCodec);
     inOrder.verify(recorder).setVideoEncoder(videoProfile.getCodec());
-    // inOrder.verify(recorder).setVideoEncodingBitRate(recorderProfile.videoBitRate);
     inOrder.verify(recorder).setVideoEncodingBitRate(videoProfile.getBitrate());
-    // inOrder.verify(recorder).setVideoFrameRate(recorderProfile.videoFrameRate);
     inOrder.verify(recorder).setVideoFrameRate(videoProfile.getFrameRate());
     inOrder
         .verify(recorder)
         .setVideoSize(videoProfile.getWidth(), videoProfile.getHeight());
-        // .setVideoSize(recorderProfile.videoFrameWidth, recorderProfile.videoFrameHeight);
     inOrder.verify(recorder).setOutputFile(outputFilePath);
     inOrder.verify(recorder).setOrientationHint(mediaOrientation);
     inOrder.verify(recorder).prepare();

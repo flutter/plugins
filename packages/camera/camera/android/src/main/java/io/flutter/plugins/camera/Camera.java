@@ -201,7 +201,7 @@ class Camera
             .getLockedCaptureOrientation();
 
     mediaRecorder =
-        new MediaRecorderBuilder(getRecordingProfile(), applicationContext, outputFilePath)
+        new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
                 lockedOrientation == null
