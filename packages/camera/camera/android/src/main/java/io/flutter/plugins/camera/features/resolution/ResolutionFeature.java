@@ -109,7 +109,8 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
 
   @SuppressWarnings("deprecation")
   @VisibleForTesting
-  static Size computeBestPreviewSize(int cameraId, ResolutionPreset preset) {
+  static Size computeBestPreviewSize(int cameraId, ResolutionPreset preset)
+      throws IndexOutOfBoundsException {
     if (preset.ordinal() > ResolutionPreset.high.ordinal()) {
       preset = ResolutionPreset.high;
     }
@@ -118,13 +119,8 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
           getBestAvailableCamcorderProfileForResolutionPreset_v31(cameraId, preset);
       List<EncoderProfiles.VideoProfile> videoProfiles = profile.getVideoProfiles();
 
-      try {
-        EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
-        return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-      } catch (IndexOutOfBoundsException e) {
-        System.out.println("No video profiles found.");
-        return null;
-      }
+      EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
+      return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
     } else {
       CamcorderProfile profile =
           getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
@@ -233,25 +229,20 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   }
 
   @SuppressWarnings("deprecation")
-  private void configureResolution(ResolutionPreset resolutionPreset, int cameraId) {
+  private void configureResolution(ResolutionPreset resolutionPreset, int cameraId)
+      throws IndexOutOfBoundsException {
     if (!checkIsSupported()) {
       return;
     }
 
     if (Build.VERSION.SDK_INT >= 31) {
-      System.out.println("31");
       recordingProfile_v31 =
           getBestAvailableCamcorderProfileForResolutionPreset_v31(cameraId, resolutionPreset);
       List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfile_v31.getVideoProfiles();
 
-      try {
-        EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
-        captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
-      } catch (IndexOutOfBoundsException e) {
-        System.out.println("No video profiles found.");
-      }
+      EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
+      captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
     } else {
-      System.out.println("not 31");
       recordingProfile =
           getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
       captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);

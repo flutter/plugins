@@ -67,7 +67,7 @@ public class MediaRecorderBuilder {
     return this;
   }
 
-  public MediaRecorder build() throws IOException {
+  public MediaRecorder build() throws IOException, NullPointerException, IndexOutOfBoundsException {
     MediaRecorder mediaRecorder = recorderFactory.makeMediaRecorder();
 
     // There's a fixed order that mediaRecorder expects. Only change these functions accordingly.
