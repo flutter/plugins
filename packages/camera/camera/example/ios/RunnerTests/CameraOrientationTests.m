@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 @import camera;
+@import camera.Test;
 @import XCTest;
 
 #import <OCMock/OCMock.h>
