@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import java.io.IOException;
 
 public class MediaRecorderBuilder {
+  @SuppressWarnings("deprecation")
   static class MediaRecorderFactory {
     MediaRecorder makeMediaRecorder() {
       return new MediaRecorder();
