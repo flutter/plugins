@@ -24,8 +24,8 @@
 }
 
 - (void)tearDown {
-  [self.mockMessenger stopMocking];
   self.mockMessenger = nil;
+  self.cameraPlugin = nil;
 }
 
 - (void)testOrientationNotifications {
