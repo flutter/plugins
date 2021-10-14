@@ -1405,17 +1405,17 @@ NSString *const errorMethod = @"error";
                                     resolutionPreset:resolutionPreset
                                          enableAudio:[enableAudio boolValue]
                                          orientation:[[UIDevice currentDevice] orientation]
-                                       dispatchQueue:self->_dispatchQueue
+                                       dispatchQueue:_dispatchQueue
                                                error:&error];
 
     if (error) {
       [result sendError:error];
     } else {
-      if (self->_camera) {
-        [self->_camera close];
+      if (_camera) {
+        [_camera close];
       }
-      int64_t textureId = [self->_registry registerTexture:cam];
-      self->_camera = cam;
+      int64_t textureId = [self.registry registerTexture:cam];
+      _camera = cam;
       [result sendSuccessWithData:@{
         @"cameraId" : @(textureId),
       }];
@@ -1456,10 +1456,8 @@ NSString *const errorMethod = @"error";
                @"focusPointSupported" : @([_camera.captureDevice isFocusPointOfInterestSupported]),
              }];
       [self sendDeviceOrientation:[UIDevice currentDevice].orientation];
-      dispatch_async(_dispatchQueue, ^{
-        [self->_camera start];
-        [result sendSuccess];
-      });
+      [_camera start];
+      [result sendSuccess];
     } else if ([@"takePicture" isEqualToString:call.method]) {
       if (@available(iOS 10.0, *)) {
         [_camera captureToFile:result];
