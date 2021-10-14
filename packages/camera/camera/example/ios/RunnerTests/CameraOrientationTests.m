@@ -23,6 +23,11 @@
   self.cameraPlugin = [[CameraPlugin alloc] initWithRegistry:nil messenger:self.mockMessenger];
 }
 
+- (void)tearDown {
+  [self.mockMessenger stopMocking];
+  self.mockMessenger = nil;
+}
+
 - (void)testOrientationNotifications {
   id mockMessenger = self.mockMessenger;
   [mockMessenger setExpectationOrderMatters:YES];
