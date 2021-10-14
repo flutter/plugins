@@ -155,7 +155,11 @@ public class FlutterWebViewTest {
 
   @Test
   public void clearCache() {
-    testFlutterWebView.clearCache(mockWebView);
+    try {
+      testFlutterWebView.clearCache(mockWebView);
+    } catch (NullPointerException exception) {
+      // Catch null pointer exception from WebStorage.getInstance();
+    }
     verify(mockWebView).clearCache(true);
   }
 
