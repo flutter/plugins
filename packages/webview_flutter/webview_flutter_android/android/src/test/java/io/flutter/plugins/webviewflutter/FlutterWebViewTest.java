@@ -4,26 +4,41 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import android.content.Context;
 import android.webkit.DownloadListener;
+import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
+
+import androidx.annotation.Nullable;
+
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import io.flutter.plugin.common.MethodChannel;
 
 public class FlutterWebViewTest {
   private WebChromeClient mockWebChromeClient;
   private DownloadListener mockDownloadListener;
   private WebViewBuilder mockWebViewBuilder;
   private WebView mockWebView;
+  private FlutterWebView testFlutterWebView;
 
   @Before
   public void before() {
@@ -43,6 +58,13 @@ public class FlutterWebViewTest {
         .thenReturn(mockWebViewBuilder);
 
     when(mockWebViewBuilder.build()).thenReturn(mockWebView);
+
+    testFlutterWebView = new FlutterWebView(mock(Context.class),
+        mockWebViewBuilder,
+        mock(MethodChannel.class),
+        createParameterMap(true));
+
+    clearInvocations(mockWebViewBuilder);
   }
 
   @Test
@@ -55,6 +77,80 @@ public class FlutterWebViewTest {
     verify(mockWebViewBuilder, times(1)).setSupportMultipleWindows(true);
     verify(mockWebViewBuilder, times(1)).setUsesHybridComposition(false);
     verify(mockWebViewBuilder, times(1)).setWebChromeClient(mockWebChromeClient);
+  }
+
+  @Test
+  public void loadUrl() {
+    testFlutterWebView.loadUrl(mockWebView, "www.google.com", Collections.singletonMap("apple", "ewf"));
+    verify(mockWebView).loadUrl("www.google.com", Collections.singletonMap("apple", "ewf"));
+  }
+
+  @Test
+  public void canGoBack() {
+    when(mockWebView.canGoBack()).thenReturn(true);
+    assertTrue(testFlutterWebView.canGoBack(mockWebView));
+  }
+
+  @Test
+  public void canGoForward() {
+    when(mockWebView.canGoForward()).thenReturn(false);
+    assertFalse(testFlutterWebView.canGoForward(mockWebView));
+  }
+
+  @Test
+  public void goBack() {
+    when(mockWebView.canGoBack()).thenReturn(true);
+
+    testFlutterWebView.goBack(mockWebView);
+    verify(mockWebView).goBack();
+  }
+
+  @Test
+  public void goForward() {
+    when(mockWebView.canGoForward()).thenReturn(true);
+
+    testFlutterWebView.goForward(mockWebView);
+    verify(mockWebView).goForward();
+  }
+
+  @Test
+  public void reload() {
+    testFlutterWebView.reload(mockWebView);
+    verify(mockWebView).reload();
+  }
+
+  @Test
+  public void currentUrl() {
+    when(mockWebView.getUrl()).thenReturn("www.google.com");
+    assertEquals(testFlutterWebView.currentUrl(mockWebView), "www.google.com");
+  }
+
+  @Test
+  public void evaluateJavaScript() {
+    final String[] successValue = new String[1];
+    testFlutterWebView.evaluateJavaScript(mockWebView, "2 + 2", new MethodChannel.Result() {
+      @Override
+      public void success(@Nullable Object o) {
+        successValue[0] = (String) o;
+      }
+
+      @Override
+      public void error(String s, @Nullable String s1, @Nullable Object o) {
+
+      }
+
+      @Override
+      public void notImplemented() {
+
+      }
+    });
+
+    @SuppressWarnings("unchecked")
+    final ArgumentCaptor<ValueCallback<String>> callbackCaptor = ArgumentCaptor.forClass(ValueCallback.class);
+    verify(mockWebView).evaluateJavascript(eq("2 + 2"), callbackCaptor.capture());
+
+    callbackCaptor.getValue().onReceiveValue("da result");
+    assertEquals(successValue[0], "da result");
   }
 
   private Map<String, Object> createParameterMap(boolean usesHybridComposition) {

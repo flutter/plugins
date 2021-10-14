@@ -87,9 +87,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   @SuppressWarnings("unchecked")
   FlutterWebView(
       final Context context,
+      WebViewBuilder webViewBuilder,
       MethodChannel methodChannel,
-      Map<String, Object> params,
-      View containerView) {
+      Map<String, Object> params) {
 
     DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
     DisplayManager displayManager =
@@ -105,7 +105,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         new FlutterDownloadListener(flutterWebViewClient);
     webView =
         createWebView(
-            new WebViewBuilder(context, containerView),
+            webViewBuilder,
             params,
             new FlutterWebChromeClient(),
             flutterDownloadListener);
@@ -300,35 +300,35 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  private void loadUrl(WebView webView, String url, Map<String, String> headers) {
+  public void loadUrl(WebView webView, String url, Map<String, String> headers) {
     webView.loadUrl(url, headers);
   }
 
-  private boolean canGoBack(WebView webView) {
+  public boolean canGoBack(WebView webView) {
     return webView.canGoBack();
   }
 
-  private boolean canGoForward(WebView webView) {
+  public boolean canGoForward(WebView webView) {
     return webView.canGoForward();
   }
 
-  private void goBack(WebView webView) {
+  public void goBack(WebView webView) {
     if (webView.canGoBack()) {
       webView.goBack();
     }
   }
 
-  private void goForward(WebView webView) {
-    if (!webView.canGoForward()) {
+  public void goForward(WebView webView) {
+    if (webView.canGoForward()) {
       webView.goForward();
     }
   }
 
-  private void reload(WebView webView) {
+  public void reload(WebView webView) {
     webView.reload();
   }
 
-  private String currentUrl(WebView webView) {
+  public String currentUrl(WebView webView) {
     return webView.getUrl();
   }
 
@@ -373,8 +373,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
   }
 
-  @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void evaluateJavaScript(WebView webView, String jsString, final Result result) {
+  public void evaluateJavaScript(WebView webView, String jsString, final Result result) {
     if (jsString == null) {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
     }
@@ -388,41 +387,41 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         });
   }
 
-  private void addJavaScriptChannels(WebView webView, List<String> channelNames) {
+  public void addJavaScriptChannels(WebView webView, List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.addJavascriptInterface(
           new JavaScriptChannel(methodChannel, channelName, platformThreadHandler), channelName);
     }
   }
 
-  private void removeJavaScriptChannels(WebView webView, List<String> channelNames) {
+  public void removeJavaScriptChannels(WebView webView, List<String> channelNames) {
     for (String channelName : channelNames) {
       webView.removeJavascriptInterface(channelName);
     }
   }
 
-  private void clearCache(WebView webView) {
+  public void clearCache(WebView webView) {
     webView.clearCache(true);
     WebStorage.getInstance().deleteAllData();
   }
 
-  private String getTitle(WebView webView) {
+  public String getTitle(WebView webView) {
     return webView.getTitle();
   }
 
-  private void scrollTo(WebView webView, int x, int y) {
+  public void scrollTo(WebView webView, int x, int y) {
     webView.scrollTo(x, y);
   }
 
-  private void scrollBy(WebView webView, int x, int y) {
+  public void scrollBy(WebView webView, int x, int y) {
     webView.scrollBy(x, y);
   }
 
-  private int getScrollX(WebView webView) {
+  public int getScrollX(WebView webView) {
     return webView.getScrollX();
   }
 
-  private int getScrollY(WebView webView) {
+  public int getScrollY(WebView webView) {
     return webView.getScrollY();
   }
 
