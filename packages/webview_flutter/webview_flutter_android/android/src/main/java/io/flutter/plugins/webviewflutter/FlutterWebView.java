@@ -105,10 +105,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         new FlutterDownloadListener(flutterWebViewClient);
     webView =
         createWebView(
-            webViewBuilder,
-            params,
-            new FlutterWebChromeClient(),
-            flutterDownloadListener);
+            webViewBuilder, params, new FlutterWebChromeClient(), flutterDownloadListener);
     flutterDownloadListener.setWebView(webView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);

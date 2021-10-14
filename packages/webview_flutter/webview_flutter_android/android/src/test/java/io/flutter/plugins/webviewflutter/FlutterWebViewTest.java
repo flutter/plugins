@@ -21,17 +21,14 @@ import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-
 import androidx.annotation.Nullable;
-
+import io.flutter.plugin.common.MethodChannel;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-
-import io.flutter.plugin.common.MethodChannel;
 
 public class FlutterWebViewTest {
   private WebChromeClient mockWebChromeClient;
@@ -59,10 +56,12 @@ public class FlutterWebViewTest {
 
     when(mockWebViewBuilder.build()).thenReturn(mockWebView);
 
-    testFlutterWebView = new FlutterWebView(mock(Context.class),
-        mockWebViewBuilder,
-        mock(MethodChannel.class),
-        createParameterMap(true));
+    testFlutterWebView =
+        new FlutterWebView(
+            mock(Context.class),
+            mockWebViewBuilder,
+            mock(MethodChannel.class),
+            createParameterMap(true));
 
     clearInvocations(mockWebViewBuilder);
   }
@@ -81,7 +80,8 @@ public class FlutterWebViewTest {
 
   @Test
   public void loadUrl() {
-    testFlutterWebView.loadUrl(mockWebView, "www.google.com", Collections.singletonMap("apple", "ewf"));
+    testFlutterWebView.loadUrl(
+        mockWebView, "www.google.com", Collections.singletonMap("apple", "ewf"));
     verify(mockWebView).loadUrl("www.google.com", Collections.singletonMap("apple", "ewf"));
   }
 
@@ -128,29 +128,65 @@ public class FlutterWebViewTest {
   @Test
   public void evaluateJavaScript() {
     final String[] successValue = new String[1];
-    testFlutterWebView.evaluateJavaScript(mockWebView, "2 + 2", new MethodChannel.Result() {
-      @Override
-      public void success(@Nullable Object o) {
-        successValue[0] = (String) o;
-      }
+    testFlutterWebView.evaluateJavaScript(
+        mockWebView,
+        "2 + 2",
+        new MethodChannel.Result() {
+          @Override
+          public void success(@Nullable Object o) {
+            successValue[0] = (String) o;
+          }
 
-      @Override
-      public void error(String s, @Nullable String s1, @Nullable Object o) {
+          @Override
+          public void error(String s, @Nullable String s1, @Nullable Object o) {}
 
-      }
-
-      @Override
-      public void notImplemented() {
-
-      }
-    });
+          @Override
+          public void notImplemented() {}
+        });
 
     @SuppressWarnings("unchecked")
-    final ArgumentCaptor<ValueCallback<String>> callbackCaptor = ArgumentCaptor.forClass(ValueCallback.class);
+    final ArgumentCaptor<ValueCallback<String>> callbackCaptor =
+        ArgumentCaptor.forClass(ValueCallback.class);
     verify(mockWebView).evaluateJavascript(eq("2 + 2"), callbackCaptor.capture());
 
     callbackCaptor.getValue().onReceiveValue("da result");
     assertEquals(successValue[0], "da result");
+  }
+
+  @Test
+  public void clearCache() {
+    testFlutterWebView.clearCache(mockWebView);
+    verify(mockWebView).clearCache(true);
+  }
+
+  @Test
+  public void getTitle() {
+    when(mockWebView.getTitle()).thenReturn("My Title");
+    assertEquals(testFlutterWebView.getTitle(mockWebView), "My Title");
+  }
+
+  @Test
+  public void scrollTo() {
+    testFlutterWebView.scrollTo(mockWebView, 12, 16);
+    verify(mockWebView).scrollTo(12, 16);
+  }
+
+  @Test
+  public void scrollBy() {
+    testFlutterWebView.scrollBy(mockWebView, 234, 34);
+    verify(mockWebView).scrollBy(234, 34);
+  }
+
+  @Test
+  public void getScrollX() {
+    when(mockWebView.getScrollX()).thenReturn(23);
+    assertEquals(testFlutterWebView.getScrollX(mockWebView), 23);
+  }
+
+  @Test
+  public void getScrollY() {
+    when(mockWebView.getScrollY()).thenReturn(44);
+    assertEquals(testFlutterWebView.getScrollY(mockWebView), 44);
   }
 
   private Map<String, Object> createParameterMap(boolean usesHybridComposition) {

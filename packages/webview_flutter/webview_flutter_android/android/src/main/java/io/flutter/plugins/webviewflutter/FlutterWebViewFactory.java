@@ -28,6 +28,7 @@ public final class FlutterWebViewFactory extends PlatformViewFactory {
   public PlatformView create(Context context, int id, Object args) {
     Map<String, Object> params = (Map<String, Object>) args;
     MethodChannel methodChannel = new MethodChannel(messenger, "plugins.flutter.io/webview_" + id);
-    return new FlutterWebView(context, new WebViewBuilder(context, containerView), methodChannel, params);
+    return new FlutterWebView(
+        context, new WebViewBuilder(context, containerView), methodChannel, params);
   }
 }
