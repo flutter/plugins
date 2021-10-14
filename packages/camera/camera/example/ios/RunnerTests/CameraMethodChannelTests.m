@@ -3,14 +3,11 @@
 // found in the LICENSE file.
 
 @import camera;
+@import camera.Test;
 @import XCTest;
 @import AVFoundation;
 #import <OCMock/OCMock.h>
 #import "MockFLTThreadSafeFlutterResult.h"
-
-@interface CameraPlugin (Test)
-- (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FLTThreadSafeFlutterResult *)result;
-@end
 
 @interface CameraMethodChannelTests : XCTestCase
 @property(readonly, nonatomic) CameraPlugin *camera;
@@ -20,7 +17,8 @@
 @implementation CameraMethodChannelTests
 
 - (void)setUp {
-  _camera = [[CameraPlugin alloc] init];
+  _camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
+
   XCTestExpectation *expectation =
       [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 

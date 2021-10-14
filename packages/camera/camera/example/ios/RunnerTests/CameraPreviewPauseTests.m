@@ -26,9 +26,7 @@
 - (void)setUp {
   _camera = [[FLTCam alloc] init];
 
-  XCTestExpectation *expectation =
-      [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
-  _resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
+  _resultObject = [[MockFLTThreadSafeFlutterResult alloc] init];
 }
 
 - (void)testPausePreviewWithResult_shouldPausePreview {

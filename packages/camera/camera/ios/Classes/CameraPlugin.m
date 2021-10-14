@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "CameraPlugin.h"
+#import "CameraPlugin_Test.h"
+
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
 #import <CoreMotion/CoreMotion.h>
@@ -1292,6 +1294,7 @@ NSString *const errorMethod = @"error";
 @implementation CameraPlugin {
   dispatch_queue_t _dispatchQueue;
 }
+
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar> *)registrar {
   FlutterMethodChannel *channel =
       [FlutterMethodChannel methodChannelWithName:@"plugins.flutter.io/camera"

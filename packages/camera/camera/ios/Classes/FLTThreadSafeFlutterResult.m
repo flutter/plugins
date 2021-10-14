@@ -5,10 +5,6 @@
 #import "FLTThreadSafeFlutterResult.h"
 #import <Foundation/Foundation.h>
 
-@interface FLTThreadSafeFlutterResult ()
-@property(readonly, nonatomic) FlutterResult flutterResult;
-@end
-
 @implementation FLTThreadSafeFlutterResult {
 }
 

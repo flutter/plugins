@@ -9,9 +9,17 @@
 
 @implementation MockFLTThreadSafeFlutterResult
 /**
- * Initializes with a notification center.
+ * Initializes the MockFLTThreadSafeFlutterResult.
  */
-- (id)initWithExpectation:(XCTestExpectation *)expectation {
+- (instancetype)init {
+  self = [super init];
+  return self;
+}
+
+/**
+ * Initializes the MockFLTThreadSafeFlutterResult with an expectation.
+ */
+- (instancetype)initWithExpectation:(XCTestExpectation *)expectation {
   self = [super init];
   _expectation = expectation;
   return self;

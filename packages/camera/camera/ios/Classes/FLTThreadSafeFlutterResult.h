@@ -10,6 +10,11 @@
 @interface FLTThreadSafeFlutterResult : NSObject
 
 /**
+ * Gets the original FlutterResult object wrapped by this FLTThreadSafeFlutterResult instance.
+ */
+@property(readonly, nonatomic) FlutterResult _Nonnull flutterResult;
+
+/**
  * Initializes with a FlutterResult object.
  * @param result The FlutterResult object that the result will be given to.
  */
