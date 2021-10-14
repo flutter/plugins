@@ -116,7 +116,7 @@
 
     NSString *initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self webView:_webView loadUrl:initialUrl];
+      [self webView:_webView loadUrl:initialUrl withHeaders:nil];
     }
   }
   return self;
@@ -136,7 +136,9 @@
   if ([[call method] isEqualToString:@"updateSettings"]) {
     result([self webView:_webView updateSettings:call.arguments]);
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
-    result([self webView:_webView onLoadUrl:call.arguments]);
+    result([self webView:_webView
+                 loadUrl:call.arguments[@"url"]
+             withHeaders:call.arguments[@"headers"]]);
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     result([self webViewCanGoBack:_webView]);
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -186,17 +188,6 @@
   NSString *error = [self webView:webView applySettings:settings];
   if (error == nil) return nil;
   return [FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil];
-}
-
-- (FlutterError *_Nullable)webView:(WKWebView *)webView
-                         onLoadUrl:(NSDictionary<NSString *, id> *)request {
-  if (![self webView:webView loadRequest:request]) {
-    return [FlutterError errorWithCode:@"loadUrl_failed"
-                               message:@"Failed parsing the URL"
-                               details:[NSString stringWithFormat:@"Request was: '%@'", request]];
-  } else {
-    return nil;
-  }
 }
 
 - (NSNumber *)webViewCanGoBack:(WKWebView *)webView {
@@ -405,39 +396,24 @@
   }
 }
 
-- (bool)webView:(WKWebView *)webView loadRequest:(NSDictionary<NSString *, id> *)request {
-  if (!request) {
-    return false;
-  }
-
-  NSString *url = request[@"url"];
-  if ([url isKindOfClass:[NSString class]]) {
-    id headers = request[@"headers"];
-    if ([headers isKindOfClass:[NSDictionary class]]) {
-      return [self webView:webView loadUrl:url withHeaders:headers];
-    } else {
-      return [self webView:webView loadUrl:url];
-    }
-  }
-
-  return false;
-}
-
-- (bool)webView:(WKWebView *)webView loadUrl:(NSString *)url {
-  return [self webView:webView loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
-}
-
-- (bool)webView:(WKWebView *)webView
-        loadUrl:(NSString *)url
-    withHeaders:(NSDictionary<NSString *, NSString *> *)headers {
+- (FlutterError *_Nullable)webView:(WKWebView *)webView
+                           loadUrl:(NSString *)url
+                       withHeaders:(NSDictionary<NSString *, NSString *> *)headers {
   NSURL *nsUrl = [NSURL URLWithString:url];
+
   if (!nsUrl) {
-    return false;
+    return [FlutterError errorWithCode:@"loadUrl_failed"
+                               message:@"Failed parsing the URL"
+                               details:[NSString stringWithFormat:@"Request was: '%@'", url]];
   }
+
   NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:nsUrl];
-  [request setAllHTTPHeaderFields:headers];
+  if (headers) {
+    [request setAllHTTPHeaderFields:headers];
+  }
   [webView loadRequest:request];
-  return true;
+
+  return nil;
 }
 
 - (void)registerJavaScriptChannels:(NSSet *)channelNames

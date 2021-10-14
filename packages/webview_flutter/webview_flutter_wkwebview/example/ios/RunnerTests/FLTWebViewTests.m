@@ -17,11 +17,15 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 @end
 
-@implementation FLTWebViewTests
+@implementation FLTWebViewTests {
+  WKWebView *_mockWebView;
+  FLTWebViewController *_testWebViewController;
+}
 
 - (void)setUp {
-  [super setUp];
   self.mockBinaryMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
+  _mockWebView = OCMClassMock(WKWebView.class);
+  _testWebViewController = [[FLTWebViewController alloc] init];
 }
 
 - (void)testCanInitFLTWebViewController {
@@ -88,4 +92,68 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
+- (void)testLoadUrl {
+  [_testWebViewController webView:_mockWebView
+                          loadUrl:@"https://www.google.com"
+                      withHeaders:@{@"a" : @"header"}];
+
+  NSURL *nsUrl = [NSURL URLWithString:@"https://www.google.com"];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:nsUrl];
+  [request setAllHTTPHeaderFields:@{@"a" : @"header"}];
+  OCMVerify([_mockWebView loadRequest:request]);
+}
+
+- (void)testCanGoBack {
+  OCMStub([_mockWebView canGoBack]).andReturn(NO);
+  XCTAssertEqualObjects([_testWebViewController webViewCanGoBack:_mockWebView], @(NO));
+}
+
+- (void)testCanGoForward {
+  OCMStub([_mockWebView canGoForward]).andReturn(YES);
+  XCTAssertEqualObjects([_testWebViewController webViewCanGoForward:_mockWebView], @(YES));
+}
+
+- (void)testGoBack {
+  [_testWebViewController webViewGoBack:_mockWebView];
+  OCMVerify([_mockWebView goBack]);
+}
+
+- (void)testGoForward {
+  [_testWebViewController webViewGoForward:_mockWebView];
+  OCMVerify([_mockWebView goForward]);
+}
+
+- (void)testReload {
+  [_testWebViewController webViewReload:_mockWebView];
+  OCMVerify([_mockWebView reload]);
+}
+
+- (void)testCurrentUrlForWebView {
+  OCMStub([_mockWebView URL]).andReturn([NSURL URLWithString:@"https://www.google.com"]);
+  XCTAssertEqualObjects([_testWebViewController currentUrlForWebView:_mockWebView],
+                        @"https://www.google.com");
+}
+
+- (void)testEvaluateJavaScript {
+  OCMStub([_mockWebView evaluateJavaScript:@"run javascript;"
+                         completionHandler:[OCMArg checkWithBlock:^BOOL(id obj) {
+                           void (^resultBlock)(id, NSError *) = obj;
+                           resultBlock(@"returnValue", nil);
+                           return YES;
+                         }]]);
+
+  __block NSString *resultValue;
+  [_testWebViewController webView:_mockWebView
+               evaluateJavaScript:@"run javascript;"
+                           result:^(id _Nullable result) {
+                             resultValue = result;
+                           }];
+
+  XCTAssertEqualObjects(resultValue, @"returnValue");
+}
+
+- (void)testTitleForWebView {
+  OCMStub([_mockWebView title]).andReturn(@"My Title");
+  XCTAssertEqualObjects([_testWebViewController titleForWebView:_mockWebView], @"My Title");
+}
 @end

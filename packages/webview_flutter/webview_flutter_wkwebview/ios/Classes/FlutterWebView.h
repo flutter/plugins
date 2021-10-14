@@ -12,13 +12,29 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
-              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+              binaryMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 
-- (UIView*)view;
+- (FlutterError *_Nullable)webView:(WKWebView *)webView
+                           loadUrl:(NSString *)url
+                       withHeaders:(NSDictionary<NSString *, NSString *> *)headers;
+- (NSNumber *)webViewCanGoBack:(WKWebView *)webView;
+- (NSNumber *)webViewCanGoForward:(WKWebView *)webView;
+- (void)webViewGoBack:(WKWebView *)webView;
+- (void)webViewGoForward:(WKWebView *)webView;
+- (void)webViewReload:(WKWebView *)webView;
+- (NSString *)currentUrlForWebView:(WKWebView *)webView;
+- (void)webView:(WKWebView *)webView
+    evaluateJavaScript:(NSString *)jsString
+                result:(FlutterResult)result;
+- (NSString *)titleForWebView:(WKWebView *)webView;
+- (void)webView:(WKWebView *)webView scrollTo:(NSNumber *)x y:(NSNumber *)y;
+- (void)webView:(WKWebView *)webView scrollBy:(NSNumber *)x y:(NSNumber *)y;
+- (NSNumber *)scrollXForWebView:(WKWebView *)webView;
+- (NSNumber *)scrollYForWebView:(WKWebView *)webView;
 @end
 
 @interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
-- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger> *)messenger;
 @end
 
 /**
