@@ -46,7 +46,6 @@
 * Android Flash mode works with full precapture sequence.
 * Updated Android lint settings.
 
->>>>>>> 174f140651e9ca9c958f2ae75960684c27772a07
 ## 0.8.1+7
 
 * Fix device orientation sometimes not affecting the camera preview orientation.
