@@ -122,7 +122,12 @@
   NSError *authError = nil;
   self.lastCallArgs = nil;
   self.lastResult = nil;
-  context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
+
+  if (arguments[@"localizedFallbackTitle"] == [NSNull null]) {
+    context.localizedFallbackTitle = nil;
+  } else {
+    context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
+  }
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
@@ -146,8 +151,10 @@
   NSError *authError = nil;
   _lastCallArgs = nil;
   _lastResult = nil;
-  context.localizedFallbackTitle = nil;
-  if (arguments[@"localizedFallbackTitle"] != (NSString *)[NSNull null]) {
+
+  if (arguments[@"localizedFallbackTitle"] == [NSNull null]) {
+    context.localizedFallbackTitle = nil;
+  } else {
     context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"];
   }
 

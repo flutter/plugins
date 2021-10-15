@@ -78,19 +78,16 @@ class IOSAuthMessages {
   final String? localizedFallbackTitle;
 
   Map<String, String> get args {
-    final args = <String, String>{
+    return <String, String>{
       'lockOut': lockOut ?? iOSLockOut,
       'goToSetting': goToSettingsButton ?? goToSettings,
       'goToSettingDescriptionIOS':
           goToSettingsDescription ?? iOSGoToSettingsDescription,
       'okButton': cancelButton ?? iOSOkButton,
+      if (localizedFallbackTitle != null) ...{
+        localizedFallbackTitle!: localizedFallbackTitle!,
+      }
     };
-
-    if (localizedFallbackTitle != null) {
-      args['localizedFallbackTitle'] = localizedFallbackTitle!;
-    }
-
-    return args;
   }
 }
 
