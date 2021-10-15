@@ -34,7 +34,11 @@ void main() {
       'disconnect': null,
       'isSignedIn': true,
       'requestScopes': true,
-      'getTokens': <dynamic, dynamic>{'idToken': '123', 'accessToken': '456'},
+      'getTokens': <dynamic, dynamic>{
+        'idToken': '123',
+        'accessToken': '456',
+        'serverAuthCode': '789',
+      },
     };
 
     final List<MethodCall> log = <MethodCall>[];
@@ -347,6 +351,7 @@ void main() {
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
+      expect(auth.serverAuthCode, '789');
       expect(
         log,
         <Matcher>[
