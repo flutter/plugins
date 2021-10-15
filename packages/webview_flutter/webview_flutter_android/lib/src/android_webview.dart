@@ -177,3 +177,78 @@ class WebViewSettings {
 
   static final WebViewSettingsHostApiImpl _api = WebViewSettingsHostApiImpl();
 }
+
+abstract class JavaScriptChannel {
+  JavaScriptChannel(this.channelName);
+
+  final String channelName;
+
+  void postMessage(String message);
+}
+
+abstract class WebViewClient {
+  void onPageStarted(WebView webView, String url);
+
+  void onPageFinished(WebView webView, String url);
+
+  void onReceivedRequestError(
+    WebView webView,
+    WebResourceRequest request,
+    WebResourceError error,
+  );
+
+  void onReceivedError(
+    WebView webView,
+    int errorCode,
+    String description,
+    String failingUrl,
+  );
+
+  void shouldOverrideRequestLoading(
+    WebView webView,
+    WebResourceRequest request,
+  );
+
+  void shouldOverrideUrlLoading(
+    WebView webView,
+    String url,
+  );
+}
+
+abstract class DownloadListener {
+  void onDownloadStart(
+    String url,
+    String userAgent,
+    String contentDisposition,
+    String mimetype,
+    int contentLength,
+  );
+}
+
+class WebResourceRequest {
+  WebResourceRequest({
+    required this.url,
+    required this.isForMainFrame,
+    required this.isRedirect,
+    required this.hasGesture,
+    required this.method,
+    required this.requestHeaders,
+  });
+
+  final String url;
+  final isForMainFrame;
+  final bool? isRedirect;
+  final bool hasGesture;
+  final String method;
+  final Map<String, String> requestHeaders;
+}
+
+class WebResourceError {
+  WebResourceError({
+    required this.errorCode,
+    required this.description,
+  });
+
+  final int errorCode;
+  final String description;
+}

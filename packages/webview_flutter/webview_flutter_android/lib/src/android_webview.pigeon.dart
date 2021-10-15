@@ -531,6 +531,29 @@ class WebViewHostApi {
       return;
     }
   }
+
+  Future<void> setDownloadListener(int arg_instanceId, int arg_listenerInstanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewHostApi.setDownloadListener', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_listenerInstanceId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
 }
 
 class _WebViewSettingsHostApiCodec extends StandardMessageCodec {
@@ -713,6 +736,121 @@ class WebViewSettingsHostApi {
         'dev.flutter.pigeon.WebViewSettingsHostApi.setMediaPlaybackRequiresUserGesture', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_require]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setSupportZoom(int arg_instanceId, bool arg_support) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewSettingsHostApi.setSupportZoom', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_support]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setLoadWithOverviewMode(int arg_instanceId, bool arg_overview) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewSettingsHostApi.setLoadWithOverviewMode', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_overview]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setUseWideViewPort(int arg_instanceId, bool arg_use) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewSettingsHostApi.setUseWideViewPort', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_use]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setDisplayZoomControls(int arg_instanceId, bool arg_enabled) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewSettingsHostApi.setDisplayZoomControls', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_enabled]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error = (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> setBuiltInZoomControls(int arg_instanceId, bool arg_enabled) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewSettingsHostApi.setBuiltInZoomControls', codec, binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_enabled]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',
@@ -930,11 +1068,6 @@ abstract class WebViewClientFlutterApi {
   void onReceivedError(int instanceId, int webViewInstanceId, int errorCode, String description, String failingUrl);
   void shouldOverrideRequestLoading(int instanceId, int webViewInstanceId, WebResourceRequestData request);
   void shouldOverrideUrlLoading(int instanceId, int webViewInstanceId, String url);
-  void setSupportZoom(int instanceId, bool support);
-  void setLoadWithOverviewMode(int instanceId, bool overview);
-  void setUseWideViewPort(int instanceId, bool use);
-  void setDisplayZoomControls(int instanceId, bool enabled);
-  void setBuiltInZoomControls(int instanceId, bool enabled);
   static void setup(WebViewClientFlutterApi? api) {
     {
       const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -1058,96 +1191,6 @@ abstract class WebViewClientFlutterApi {
           final String? arg_url = args[2] as String?;
           assert(arg_url != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading was null, expected non-null String.');
           api.shouldOverrideUrlLoading(arg_instanceId!, arg_webViewInstanceId!, arg_url!);
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.setSupportZoom', codec);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setSupportZoom was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setSupportZoom was null, expected non-null int.');
-          final bool? arg_support = args[1] as bool?;
-          assert(arg_support != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setSupportZoom was null, expected non-null bool.');
-          api.setSupportZoom(arg_instanceId!, arg_support!);
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.setLoadWithOverviewMode', codec);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setLoadWithOverviewMode was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setLoadWithOverviewMode was null, expected non-null int.');
-          final bool? arg_overview = args[1] as bool?;
-          assert(arg_overview != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setLoadWithOverviewMode was null, expected non-null bool.');
-          api.setLoadWithOverviewMode(arg_instanceId!, arg_overview!);
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.setUseWideViewPort', codec);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setUseWideViewPort was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setUseWideViewPort was null, expected non-null int.');
-          final bool? arg_use = args[1] as bool?;
-          assert(arg_use != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setUseWideViewPort was null, expected non-null bool.');
-          api.setUseWideViewPort(arg_instanceId!, arg_use!);
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.setDisplayZoomControls', codec);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setDisplayZoomControls was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setDisplayZoomControls was null, expected non-null int.');
-          final bool? arg_enabled = args[1] as bool?;
-          assert(arg_enabled != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setDisplayZoomControls was null, expected non-null bool.');
-          api.setDisplayZoomControls(arg_instanceId!, arg_enabled!);
-          return;
-        });
-      }
-    }
-    {
-      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.setBuiltInZoomControls', codec);
-      if (api == null) {
-        channel.setMessageHandler(null);
-      } else {
-        channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setBuiltInZoomControls was null.');
-          final List<Object?> args = (message as List<Object?>?)!;
-          final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setBuiltInZoomControls was null, expected non-null int.');
-          final bool? arg_enabled = args[1] as bool?;
-          assert(arg_enabled != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.setBuiltInZoomControls was null, expected non-null bool.');
-          api.setBuiltInZoomControls(arg_instanceId!, arg_enabled!);
           return;
         });
       }

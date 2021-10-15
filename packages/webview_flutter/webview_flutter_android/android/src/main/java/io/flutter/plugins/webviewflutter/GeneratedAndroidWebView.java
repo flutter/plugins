@@ -130,6 +130,7 @@ public class GeneratedAndroidWebView {
     void setWebViewClient(Long instanceId, Long webViewClientInstanceId);
     void addJavaScriptChannel(Long instanceId, Long javaScriptChannelInstanceId);
     void removeJavaScriptChannel(Long instanceId, Long javaScriptChannelInstanceId);
+    void setDownloadListener(Long instanceId, Long listenerInstanceId);
 
     /** The codec used by WebViewHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -676,6 +677,34 @@ public class GeneratedAndroidWebView {
           channel.setMessageHandler(null);
         }
       }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewHostApi.setDownloadListener", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number instanceIdArg = (Number)args.get(0);
+              if (instanceIdArg == null) {
+                throw new NullPointerException("instanceIdArg unexpectedly null.");
+              }
+              Number listenerInstanceIdArg = (Number)args.get(1);
+              if (listenerInstanceIdArg == null) {
+                throw new NullPointerException("listenerInstanceIdArg unexpectedly null.");
+              }
+              api.setDownloadListener(instanceIdArg.longValue(), listenerInstanceIdArg.longValue());
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
     }
   }
   private static class WebViewSettingsHostApiCodec extends StandardMessageCodec {
@@ -693,6 +722,11 @@ public class GeneratedAndroidWebView {
     void setJavaScriptEnabled(Long instanceId, Boolean flag);
     void setUserAgentString(Long instanceId, String userAgentString);
     void setMediaPlaybackRequiresUserGesture(Long instanceId, Boolean require);
+    void setSupportZoom(Long instanceId, Boolean support);
+    void setLoadWithOverviewMode(Long instanceId, Boolean overview);
+    void setUseWideViewPort(Long instanceId, Boolean use);
+    void setDisplayZoomControls(Long instanceId, Boolean enabled);
+    void setBuiltInZoomControls(Long instanceId, Boolean enabled);
 
     /** The codec used by WebViewSettingsHostApi. */
     static MessageCodec<Object> getCodec() {
@@ -910,6 +944,146 @@ public class GeneratedAndroidWebView {
                 throw new NullPointerException("requireArg unexpectedly null.");
               }
               api.setMediaPlaybackRequiresUserGesture(instanceIdArg.longValue(), requireArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setSupportZoom", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number instanceIdArg = (Number)args.get(0);
+              if (instanceIdArg == null) {
+                throw new NullPointerException("instanceIdArg unexpectedly null.");
+              }
+              Boolean supportArg = (Boolean)args.get(1);
+              if (supportArg == null) {
+                throw new NullPointerException("supportArg unexpectedly null.");
+              }
+              api.setSupportZoom(instanceIdArg.longValue(), supportArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setLoadWithOverviewMode", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number instanceIdArg = (Number)args.get(0);
+              if (instanceIdArg == null) {
+                throw new NullPointerException("instanceIdArg unexpectedly null.");
+              }
+              Boolean overviewArg = (Boolean)args.get(1);
+              if (overviewArg == null) {
+                throw new NullPointerException("overviewArg unexpectedly null.");
+              }
+              api.setLoadWithOverviewMode(instanceIdArg.longValue(), overviewArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setUseWideViewPort", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number instanceIdArg = (Number)args.get(0);
+              if (instanceIdArg == null) {
+                throw new NullPointerException("instanceIdArg unexpectedly null.");
+              }
+              Boolean useArg = (Boolean)args.get(1);
+              if (useArg == null) {
+                throw new NullPointerException("useArg unexpectedly null.");
+              }
+              api.setUseWideViewPort(instanceIdArg.longValue(), useArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setDisplayZoomControls", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number instanceIdArg = (Number)args.get(0);
+              if (instanceIdArg == null) {
+                throw new NullPointerException("instanceIdArg unexpectedly null.");
+              }
+              Boolean enabledArg = (Boolean)args.get(1);
+              if (enabledArg == null) {
+                throw new NullPointerException("enabledArg unexpectedly null.");
+              }
+              api.setDisplayZoomControls(instanceIdArg.longValue(), enabledArg);
+              wrapped.put("result", null);
+            }
+            catch (Error | RuntimeException exception) {
+              wrapped.put("error", wrapError(exception));
+            }
+            reply.reply(wrapped);
+          });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setBuiltInZoomControls", getCodec());
+        if (api != null) {
+          channel.setMessageHandler((message, reply) -> {
+            Map<String, Object> wrapped = new HashMap<>();
+            try {
+              ArrayList<Object> args = (ArrayList<Object>)message;
+              Number instanceIdArg = (Number)args.get(0);
+              if (instanceIdArg == null) {
+                throw new NullPointerException("instanceIdArg unexpectedly null.");
+              }
+              Boolean enabledArg = (Boolean)args.get(1);
+              if (enabledArg == null) {
+                throw new NullPointerException("enabledArg unexpectedly null.");
+              }
+              api.setBuiltInZoomControls(instanceIdArg.longValue(), enabledArg);
               wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {
@@ -1183,41 +1357,6 @@ public class GeneratedAndroidWebView {
       BasicMessageChannel<Object> channel =
           new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading", getCodec());
       channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, urlArg)), channelReply -> {
-        callback.reply(null);
-      });
-    }
-    public void setSupportZoom(Long instanceIdArg, Boolean supportArg, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setSupportZoom", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, supportArg)), channelReply -> {
-        callback.reply(null);
-      });
-    }
-    public void setLoadWithOverviewMode(Long instanceIdArg, Boolean overviewArg, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setLoadWithOverviewMode", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, overviewArg)), channelReply -> {
-        callback.reply(null);
-      });
-    }
-    public void setUseWideViewPort(Long instanceIdArg, Boolean useArg, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setUseWideViewPort", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, useArg)), channelReply -> {
-        callback.reply(null);
-      });
-    }
-    public void setDisplayZoomControls(Long instanceIdArg, Boolean enabledArg, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setDisplayZoomControls", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, enabledArg)), channelReply -> {
-        callback.reply(null);
-      });
-    }
-    public void setBuiltInZoomControls(Long instanceIdArg, Boolean enabledArg, Reply<Void> callback) {
-      BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setBuiltInZoomControls", getCodec());
-      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, enabledArg)), channelReply -> {
         callback.reply(null);
       });
     }
