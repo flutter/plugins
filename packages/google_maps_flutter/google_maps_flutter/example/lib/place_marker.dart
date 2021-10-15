@@ -83,6 +83,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
     final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
+      setState(() {
+        this.markerPosition = null;
+      });
       await showDialog<void>(
           context: context,
           builder: (BuildContext context) {
