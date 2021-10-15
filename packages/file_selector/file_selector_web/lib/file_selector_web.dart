@@ -3,16 +3,23 @@
 // found in the LICENSE file.
 
 import 'dart:async';
-import 'package:meta/meta.dart';
-import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+
 import 'package:file_selector_platform_interface/file_selector_platform_interface.dart';
 import 'package:file_selector_web/src/dom_helper.dart';
 import 'package:file_selector_web/src/utils.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:meta/meta.dart';
 
 /// The web implementation of [FileSelectorPlatform].
 ///
 /// This class implements the `package:file_selector` functionality for the web.
 class FileSelectorWeb extends FileSelectorPlatform {
+  /// Default constructor, initializes _domHelper that we can use
+  /// to interact with the DOM.
+  /// overrides parameter allows for testing to override functions
+  FileSelectorWeb({@visibleForTesting DomHelper? domHelper})
+      : _domHelper = domHelper ?? DomHelper();
+
   final DomHelper _domHelper;
 
   /// Registers this class as the default instance of [FileSelectorPlatform].
@@ -20,19 +27,14 @@ class FileSelectorWeb extends FileSelectorPlatform {
     FileSelectorPlatform.instance = FileSelectorWeb();
   }
 
-  /// Default constructor, initializes _domHelper that we can use
-  /// to interact with the DOM.
-  /// overrides parameter allows for testing to override functions
-  FileSelectorWeb({@visibleForTesting DomHelper? domHelper})
-      : _domHelper = domHelper ?? DomHelper();
-
   @override
   Future<XFile> openFile({
     List<XTypeGroup>? acceptedTypeGroups,
     String? initialDirectory,
     String? confirmButtonText,
   }) async {
-    final files = await _openFiles(acceptedTypeGroups: acceptedTypeGroups);
+    final List<XFile> files =
+        await _openFiles(acceptedTypeGroups: acceptedTypeGroups);
     return files.first;
   }
 
@@ -68,7 +70,7 @@ class FileSelectorWeb extends FileSelectorPlatform {
     List<XTypeGroup>? acceptedTypeGroups,
     bool multiple = false,
   }) async {
-    final accept = acceptedTypesToString(acceptedTypeGroups);
+    final String accept = acceptedTypesToString(acceptedTypeGroups);
     return _domHelper.getFiles(
       accept: accept,
       multiple: multiple,

@@ -6,15 +6,15 @@ part of google_maps_flutter_web;
 
 /// The `PolygonController` class wraps a [gmaps.Polyline] and its `onTap` behavior.
 class PolylineController {
-  gmaps.Polyline _polyline;
+  gmaps.Polyline? _polyline;
 
   final bool _consumeTapEvents;
 
   /// Creates a `PolylineController` that wraps a [gmaps.Polyline] object and its `onTap` behavior.
   PolylineController({
-    @required gmaps.Polyline polyline,
+    required gmaps.Polyline polyline,
     bool consumeTapEvents = false,
-    ui.VoidCallback onTap,
+    ui.VoidCallback? onTap,
   })  : _polyline = polyline,
         _consumeTapEvents = consumeTapEvents {
     if (onTap != null) {
@@ -26,20 +26,26 @@ class PolylineController {
 
   /// Returns the wrapped [gmaps.Polyline]. Only used for testing.
   @visibleForTesting
-  gmaps.Polyline get line => _polyline;
+  gmaps.Polyline? get line => _polyline;
 
   /// Returns `true` if this Controller will use its own `onTap` handler to consume events.
   bool get consumeTapEvents => _consumeTapEvents;
 
   /// Updates the options of the wrapped [gmaps.Polyline] object.
+  ///
+  /// This cannot be called after [remove].
   void update(gmaps.PolylineOptions options) {
-    _polyline.options = options;
+    assert(
+        _polyline != null, 'Cannot `update` Polyline after calling `remove`.');
+    _polyline!.options = options;
   }
 
   /// Disposes of the currently wrapped [gmaps.Polyline].
   void remove() {
-    _polyline.visible = false;
-    _polyline.map = null;
-    _polyline = null;
+    if (_polyline != null) {
+      _polyline!.visible = false;
+      _polyline!.map = null;
+      _polyline = null;
+    }
   }
 }

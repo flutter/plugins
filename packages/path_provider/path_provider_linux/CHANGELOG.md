@@ -1,3 +1,16 @@
+## 2.1.0
+
+* Now `getTemporaryPath` returns the value of the `TMPDIR` environment variable primarily. If `TMPDIR` is not set, `/tmp` is returned.
+
+## 2.0.2
+
+* Updated installation instructions in README.
+
+## 2.0.1
+
+* Add `implements` to pubspec.yaml.
+* Add `registerWith` method to the main Dart class.
+
 ## 2.0.0
 
 * Migrate to null safety.

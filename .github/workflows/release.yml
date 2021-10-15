@@ -1,0 +1,54 @@
+name: release
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  release:
+    if: github.repository_owner == 'flutter'
+    name: release
+    permissions:
+      # Release needs to push a tag back to the repo.
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+    - name: "Install Flutter"
+      # Github Actions don't support templates so it is hard to share this snippet with another action
+      # If we eventually need to use this in more workflow, we could create a shell script that contains this
+      # snippet.
+      run: |
+        cd $HOME
+        git clone https://github.com/flutter/flutter.git --depth 1 -b stable _flutter
+        echo "$HOME/_flutter/bin" >> $GITHUB_PATH
+        cd $GITHUB_WORKSPACE
+    # Checks out a copy of the repo.
+    - name: Check out code
+      uses: actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f
+      with:
+        fetch-depth: 0 # Fetch all history so the tool can get all the tags to determine version.
+    - name: Set up tools
+      run: dart pub get
+      working-directory: ${{ github.workspace }}/script/tool
+
+    # This workflow should be the last to run. So wait for all the other tests to succeed.
+    - name: Wait on all tests
+      uses: lewagon/wait-on-check-action@5e937358caba2c7876a2ee06e4a48d0664fe4967
+      with:
+        ref: ${{ github.sha }}
+        running-workflow-name: 'release'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        wait-interval: 180 # seconds
+        allowed-conclusions: success,neutral
+        # verbose:true will produce too many logs that hang github actions web UI.
+        verbose: false
+
+    - name: run release
+      run: |
+        git config --global user.name ${{ secrets.USER_NAME }}
+        git config --global user.email ${{ secrets.USER_EMAIL }}
+        dart ./script/tool/lib/src/main.dart publish-plugin --all-changed --base-sha=HEAD~ --skip-confirmation --remote=origin
+      env: {PUB_CREDENTIALS: "${{ secrets.PUB_CREDENTIALS }}"}
+
+    env:
+      DEFAULT_BRANCH: master

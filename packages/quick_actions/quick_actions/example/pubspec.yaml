@@ -1,5 +1,10 @@
 name: quick_actions_example
 description: Demonstrates how to use the quick_actions plugin.
+publish_to: none
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.9.1+hotfix.2"
 
 dependencies:
   flutter:
@@ -13,6 +18,7 @@ dependencies:
     path: ../
 
 dev_dependencies:
+  espresso: ^0.1.0+2
   flutter_driver:
     sdk: flutter
   integration_test:
@@ -21,7 +27,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
-environment:
-  sdk: ">=2.12.0-259.9.beta <3.0.0"
-  flutter: ">=1.9.1+hotfix.2"

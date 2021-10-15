@@ -4,7 +4,6 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -22,13 +21,13 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Path Provider'),
+      home: const MyHomePage(title: 'Path Provider'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
 
   @override
@@ -166,8 +165,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: Text(
-                    '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Storage Directory"}'),
+                child: Text(Platform.isIOS
+                    ? 'External directories are unavailable on iOS'
+                    : 'Get External Storage Directory'),
                 onPressed:
                     Platform.isIOS ? null : _requestExternalStorageDirectory,
               ),
@@ -178,8 +178,9 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  child: Text(
-                      '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Storage Directories"}'),
+                  child: Text(Platform.isIOS
+                      ? 'External directories are unavailable on iOS'
+                      : 'Get External Storage Directories'),
                   onPressed: Platform.isIOS
                       ? null
                       : () {
@@ -197,8 +198,9 @@ class _MyHomePageState extends State<MyHomePage> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  child: Text(
-                      '${Platform.isIOS ? "External directories are unavailable " "on iOS" : "Get External Cache Directories"}'),
+                  child: Text(Platform.isIOS
+                      ? 'External directories are unavailable on iOS'
+                      : 'Get External Cache Directories'),
                   onPressed:
                       Platform.isIOS ? null : _requestExternalCacheDirectories,
                 ),

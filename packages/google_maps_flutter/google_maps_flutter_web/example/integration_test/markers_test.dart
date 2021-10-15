@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:html';
+import 'dart:html' as html;
+import 'dart:js_util' show getProperty;
 
-import 'package:http/http.dart' as http;
-import 'package:integration_test/integration_test.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:google_maps/google_maps.dart' as gmaps;
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 import 'package:google_maps_flutter_web/google_maps_flutter_web.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:http/http.dart' as http;
+import 'package:integration_test/integration_test.dart';
 
 import 'resources/icon_image_base64.dart';
 
@@ -20,12 +20,15 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   group('MarkersController', () {
-    StreamController<MapEvent> stream;
-    MarkersController controller;
+    late StreamController<MapEvent> events;
+    late MarkersController controller;
+    late gmaps.GMap map;
 
     setUp(() {
-      stream = StreamController<MapEvent>();
-      controller = MarkersController(stream: stream);
+      events = StreamController<MapEvent>();
+      controller = MarkersController(stream: events);
+      map = gmaps.GMap(html.DivElement());
+      controller.bindToMap(123, map);
     });
 
     testWidgets('addMarkers', (WidgetTester tester) async {
@@ -48,7 +51,7 @@ void main() {
       };
       controller.addMarkers(markers);
 
-      expect(controller.markers[MarkerId('1')].marker.draggable, isFalse);
+      expect(controller.markers[MarkerId('1')]?.marker?.draggable, isFalse);
 
       // Update the marker with radius 10
       final updatedMarkers = {
@@ -57,7 +60,7 @@ void main() {
       controller.changeMarkers(updatedMarkers);
 
       expect(controller.markers.length, 1);
-      expect(controller.markers[MarkerId('1')].marker.draggable, isTrue);
+      expect(controller.markers[MarkerId('1')]?.marker?.draggable, isTrue);
     });
 
     testWidgets('removeMarkers', (WidgetTester tester) async {
@@ -95,15 +98,15 @@ void main() {
 
       controller.addMarkers(markers);
 
-      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('1')]?.infoWindowShown, isFalse);
 
       controller.showMarkerInfoWindow(MarkerId('1'));
 
-      expect(controller.markers[MarkerId('1')].infoWindowShown, isTrue);
+      expect(controller.markers[MarkerId('1')]?.infoWindowShown, isTrue);
 
       controller.hideMarkerInfoWindow(MarkerId('1'));
 
-      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('1')]?.infoWindowShown, isFalse);
     });
 
     // https://github.com/flutter/flutter/issues/67380
@@ -121,33 +124,21 @@ void main() {
       };
       controller.addMarkers(markers);
 
-      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
-      expect(controller.markers[MarkerId('2')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('1')]?.infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('2')]?.infoWindowShown, isFalse);
 
       controller.showMarkerInfoWindow(MarkerId('1'));
 
-      expect(controller.markers[MarkerId('1')].infoWindowShown, isTrue);
-      expect(controller.markers[MarkerId('2')].infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('1')]?.infoWindowShown, isTrue);
+      expect(controller.markers[MarkerId('2')]?.infoWindowShown, isFalse);
 
       controller.showMarkerInfoWindow(MarkerId('2'));
 
-      expect(controller.markers[MarkerId('1')].infoWindowShown, isFalse);
-      expect(controller.markers[MarkerId('2')].infoWindowShown, isTrue);
+      expect(controller.markers[MarkerId('1')]?.infoWindowShown, isFalse);
+      expect(controller.markers[MarkerId('2')]?.infoWindowShown, isTrue);
     });
 
-    // https://github.com/flutter/flutter/issues/64938
-    testWidgets('markers with icon:null work', (WidgetTester tester) async {
-      final markers = {
-        Marker(markerId: MarkerId('1'), icon: null),
-      };
-
-      controller.addMarkers(markers);
-
-      expect(controller.markers.length, 1);
-      expect(controller.markers[MarkerId('1')].marker.icon, isNull);
-    });
-
-    //
+    // https://github.com/flutter/flutter/issues/66622
     testWidgets('markers with custom bitmap icon work',
         (WidgetTester tester) async {
       final bytes = Base64Decoder().convert(iconImageBase64);
@@ -159,11 +150,15 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      expect(controller.markers[MarkerId('1')].marker.icon, isNotNull);
-      expect(controller.markers[MarkerId('1')].marker.icon.url,
-          startsWith('blob:'));
+      expect(controller.markers[MarkerId('1')]?.marker?.icon, isNotNull);
 
-      final blobUrl = controller.markers[MarkerId('1')].marker.icon.url;
+      final blobUrl = getProperty(
+        controller.markers[MarkerId('1')]!.marker!.icon!,
+        'url',
+      );
+
+      expect(blobUrl, startsWith('blob:'));
+
       final response = await http.get(Uri.parse(blobUrl));
 
       expect(response.bodyBytes, bytes,
@@ -187,8 +182,8 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      final content =
-          controller.markers[MarkerId('1')].infoWindow.content as HtmlElement;
+      final content = controller.markers[MarkerId('1')]?.infoWindow?.content
+          as html.HtmlElement;
       expect(content.innerHtml, contains('title for test'));
       expect(
           content.innerHtml,
@@ -211,12 +206,12 @@ void main() {
       controller.addMarkers(markers);
 
       expect(controller.markers.length, 1);
-      final content =
-          controller.markers[MarkerId('1')].infoWindow.content as HtmlElement;
+      final content = controller.markers[MarkerId('1')]?.infoWindow?.content
+          as html.HtmlElement;
 
       content.click();
 
-      final event = await stream.stream.first;
+      final event = await events.stream.first;
 
       expect(event, isA<InfoWindowTapEvent>());
       expect((event as InfoWindowTapEvent).value, equals(MarkerId('1')));
