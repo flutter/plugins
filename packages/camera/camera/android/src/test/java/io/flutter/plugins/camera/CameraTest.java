@@ -54,11 +54,13 @@ import io.flutter.plugins.camera.utils.TestUtils;
 import io.flutter.view.TextureRegistry;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.robolectric.annotation.Config;
+import org.robolectric.RobolectricTestRunner;
 
-// @RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricTestRunner.class)
 public class CameraTest {
   private CameraProperties mockCameraProperties;
   private CameraFeatureFactory mockCameraFeatureFactory;
