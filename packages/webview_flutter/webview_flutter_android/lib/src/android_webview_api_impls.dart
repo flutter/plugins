@@ -2,22 +2,30 @@ import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
 
-int _getInstanceId(Object instance) =>
-    InstanceManager.instance.getInstanceId(instance)!;
+final InstanceManager _instanceManager = InstanceManager();
 
 class WebViewHostApiImpl extends WebViewHostApi {
+  WebViewHostApiImpl({InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? _instanceManager;
+  }
+
+  late final InstanceManager instanceManager;
+
+  int _getInstanceId(Object instance) =>
+      instanceManager.getInstanceId(instance)!;
+
   Future<void> createFromInstance(
     WebView instance,
     bool useHybridComposition,
   ) async {
-    final int? instanceId = InstanceManager.instance.tryAddInstance(instance);
+    final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       return create(instanceId, useHybridComposition);
     }
   }
 
   Future<void> disposeFromInstance(WebView instance) async {
-    final int? instanceId = InstanceManager.instance.removeInstance(instance);
+    final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
       return dispose(instanceId);
     }
@@ -66,7 +74,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     return evaluateJavascript(_getInstanceId(instance), javascriptString);
   }
 
-  Future<String> getTitleFromInstance(WebView instance)  {
+  Future<String> getTitleFromInstance(WebView instance) {
     return getTitle(_getInstanceId(instance));
   }
 
@@ -88,5 +96,80 @@ class WebViewHostApiImpl extends WebViewHostApi {
 }
 
 class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
-  //Future<void> createFromInst
+  WebViewSettingsHostApiImpl({InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? _instanceManager;
+  }
+
+  late final InstanceManager instanceManager;
+
+  int _getInstanceId(Object instance) =>
+      instanceManager.getInstanceId(instance)!;
+
+  Future<void> createFromInstance(
+    WebViewSettings instance,
+    WebView webView,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      return create(instanceId, _getInstanceId(webView));
+    }
+  }
+
+  Future<void> disposeFromInstance(WebViewSettings instance) async {
+    final int? instanceId = instanceManager.removeInstance(instance);
+    if (instanceId != null) {
+      return dispose(instanceId);
+    }
+  }
+
+  Future<void> setDomStorageEnabledFromInstance(
+    WebViewSettings instance,
+    bool flag,
+  ) {
+    return setDomStorageEnabled(_getInstanceId(instance), flag);
+  }
+
+  Future<void> setJavaScriptCanOpenWindowsAutomaticallyFromInstance(
+    WebViewSettings instance,
+    bool flag,
+  ) {
+    return setJavaScriptCanOpenWindowsAutomatically(
+      _getInstanceId(instance),
+      flag,
+    );
+  }
+
+  Future<void> setSupportMultipleWindowsFromInstance(
+    WebViewSettings instance,
+    bool support,
+  ) {
+    return setSupportMultipleWindows(_getInstanceId(instance), support);
+  }
+
+  Future<void> setJavaScriptEnabledFromInstance(
+    WebViewSettings instance,
+    bool flag,
+  ) {
+    return setJavaScriptCanOpenWindowsAutomatically(
+      _getInstanceId(instance),
+      flag,
+    );
+  }
+
+  Future<void> setUserAgentStringFromInstance(
+    WebViewSettings instance,
+    String userAgentString,
+  ) {
+    return setUserAgentString(_getInstanceId(instance), userAgentString);
+  }
+
+  Future<void> setMediaPlaybackRequiresUserGestureFromInstance(
+    WebViewSettings instance,
+    bool require,
+  ) {
+    return setMediaPlaybackRequiresUserGesture(
+      _getInstanceId(instance),
+      require,
+    );
+  }
 }

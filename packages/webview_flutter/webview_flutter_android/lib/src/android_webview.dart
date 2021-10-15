@@ -6,8 +6,9 @@ import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
 import 'android_webview_api_impls.dart';
 
-// TODO: This can be removed once pigeon supports null values.
-// Workaround since pigeon doesn't support null values.
+// TODO(bparrishMines): This can be removed once pigeon supports null values.
+// Workaround to represent null Strings since pigeon doesn't support null
+// values.
 const String _nullStringIdentifier = '<null-value>';
 
 /// An Android View that displays web pages.
@@ -45,6 +46,8 @@ class WebView {
   ///
   /// Defaults to false.
   final bool useHybridComposition;
+
+  late final WebViewSettings webViewSettings = WebViewSettings._(this);
 
   static Future<void> setWebContentsDebuggingEnabled(bool enabled) {
     return _api.setWebContentsDebuggingEnabled(enabled);
@@ -107,7 +110,7 @@ class WebView {
     return _api.clearCacheFromInstance(this, includeDiskFiles);
   }
 
-  // TODO: Update documentation once addJavascriptInterface is added.
+  // TODO(bparrishMines): Update documentation once addJavascriptInterface is added.
   /// Asynchronously evaluates JavaScript in the context of the currently displayed page.
   ///
   /// If non-null, the returned value will be any result returned from that
@@ -126,7 +129,7 @@ class WebView {
     return result;
   }
 
-  // TODO: Update documentation when WebViewClient.onReceivedTitle is added.
+  // TODO(bparrishMines): Update documentation when WebViewClient.onReceivedTitle is added.
   /// Gets the title for the current page.
   ///
   /// Returns null if no page has been loaded.
@@ -136,13 +139,13 @@ class WebView {
     return result;
   }
 
-  // TODO: Update documentation when onScrollChanged is added.
+  // TODO(bparrishMines): Update documentation when onScrollChanged is added.
   /// Set the scrolled position of your view.
   Future<void> scrollTo(int x, int y) {
     return _api.scrollToFromInstance(this, x, y);
   }
 
-  // TODO: Update documentation when onScrollChanged is added.
+  // TODO(bparrishMines): Update documentation when onScrollChanged is added.
   /// Move the scrolled position of your view.
   Future<void> scrollBy(int x, int y) {
     return _api.scrollByFromInstance(this, x, y);
@@ -165,4 +168,12 @@ class WebView {
   Future<int> getScrollY() {
     return _api.getScrollYFromInstance(this);
   }
+}
+
+class WebViewSettings {
+  WebViewSettings._(WebView webView) {
+    _api.createFromInstance(this, webView);
+  }
+
+  static final WebViewSettingsHostApiImpl _api = WebViewSettingsHostApiImpl();
 }

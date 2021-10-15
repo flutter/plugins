@@ -4,8 +4,6 @@ class InstanceManager {
 
   static int _nextInstanceId = 0;
 
-  static final InstanceManager instance = InstanceManager();
-
   int? tryAddInstance(Object instance) {
 
   }
