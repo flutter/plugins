@@ -286,7 +286,7 @@ class PurchasesResultWrapper {
 ///
 /// Contains a potentially empty list of [PurchaseHistoryRecordWrapper]s and a [BillingResultWrapper]
 /// that contains a detailed description of the status.
-@JsonSerializable(createToJson: false)
+@JsonSerializable()
 @BillingResponseConverter()
 class PurchasesHistoryResult {
   /// Creates a [PurchasesHistoryResult] with the provided history.
