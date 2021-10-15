@@ -84,7 +84,7 @@ public class ResolutionFeatureTest {
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_LOW))
         .thenReturn(mockProfileLow);
 
-    when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfilesList);
+    when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfilesList); //TODO: move this logic
     when(mockVideoProfile.getHeight()).thenReturn(100);
     when(mockVideoProfile.getWidth()).thenReturn(100);
   }
