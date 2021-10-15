@@ -113,7 +113,7 @@ public class MediaRecorderBuilderTest {
 
   @Config(minSdk = 31)
   @Test(expected = IndexOutOfBoundsException.class)
-  public void build_shouldThrowExceptionWithoutVideoOrAudioProfiles_v31() throws IOException{
+  public void build_shouldThrowExceptionWithoutVideoOrAudioProfiles_v31() throws IOException {
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);

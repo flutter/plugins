@@ -34,11 +34,7 @@ public class ResolutionFeatureTest {
   public void before() {
     mockedStaticProfile = mockStatic(CamcorderProfile.class);
     mockProfileLow = mock(CamcorderProfile.class);
-    mockProfileLow_v31 = mock(EncoderProfiles.class);
     CamcorderProfile mockProfile = mock(CamcorderProfile.class);
-    EncoderProfiles mockProfile_v31 = mock(EncoderProfiles.class);
-    EncoderProfiles.VideoProfile mockVideoProfile = mock(EncoderProfiles.VideoProfile.class);
-    List<EncoderProfiles.VideoProfile> mockVideoProfilesList = List.of(mockVideoProfile);
 
     mockedStaticProfile
         .when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH))
@@ -83,14 +79,13 @@ public class ResolutionFeatureTest {
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_LOW))
         .thenReturn(mockProfileLow);
-
-    when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfilesList); //TODO: move this logic
-    when(mockVideoProfile.getHeight()).thenReturn(100);
-    when(mockVideoProfile.getWidth()).thenReturn(100);
   }
 
   public void before_v31() {
+    mockProfileLow_v31 = mock(EncoderProfiles.class);
     EncoderProfiles mockProfile_v31 = mock(EncoderProfiles.class);
+    EncoderProfiles.VideoProfile mockVideoProfile = mock(EncoderProfiles.VideoProfile.class);
+    List<EncoderProfiles.VideoProfile> mockVideoProfilesList = List.of(mockVideoProfile);
 
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_HIGH))
@@ -113,6 +108,10 @@ public class ResolutionFeatureTest {
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_LOW))
         .thenReturn(mockProfileLow_v31);
+
+    when(mockProfile_v31.getVideoProfiles()).thenReturn(mockVideoProfilesList);
+    when(mockVideoProfile.getHeight()).thenReturn(100);
+    when(mockVideoProfile.getWidth()).thenReturn(100);
   }
 
   @After
