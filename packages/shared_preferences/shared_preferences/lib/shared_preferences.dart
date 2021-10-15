@@ -212,4 +212,15 @@ class SharedPreferences {
         InMemorySharedPreferencesStore.withData(newValues);
     _completer = null;
   }
+
+  /// reports if this instance is mocked
+  ///
+  /// An instance turns to being mocked after a call to [setMockInitialValues]
+  ///
+  /// true if changes on the current delegate will not write to the disk
+  /// false if shared preferences behaves as normal
+  @visibleForTesting
+  bool isMocked() {
+    return _store is InMemorySharedPreferencesStore;
+  }
 }
