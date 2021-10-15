@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/widgets.dart' show AndroidViewSurface;
+
 import 'android_webview_api_impls.dart';
-import 'instance_manager.dart';
 
 // TODO: This can be removed once pigeon supports null values.
 // Workaround since pigeon doesn't support null values.
@@ -33,9 +34,21 @@ class WebView {
   }
 
   static final WebViewHostApiImpl _api = WebViewHostApiImpl();
-  int get _instanceId => InstanceManager.instance.getInstanceId(this)!;
 
+  /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
+  ///
+  /// This implementation uses hybrid composition to render the WebView Widget.
+  /// This comes at the cost of some performance on Android versions below 10.
+  /// See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance
+  /// for more information.
+  ///
+  /// Defaults to false.
   final bool useHybridComposition;
+
+  static Future<void> setWebContentsDebuggingEnabled(bool enabled) {
+    return _api.setWebContentsDebuggingEnabled(enabled);
+  }
 
   /// Loads the given URL with additional HTTP headers, specified as a map from name to value.
   ///
@@ -45,7 +58,7 @@ class WebView {
   ///
   /// Also see compatibility note on [evaluateJavascript].
   Future<void> loadUrl(String url, Map<String, String> headers) {
-    return _api.loadUrl(_instanceId, url, headers);
+    return _api.loadUrlFromInstance(this, url, headers);
   }
 
   /// Gets the URL for the current page.
@@ -56,34 +69,34 @@ class WebView {
   ///
   /// Returns null if no page has been loaded.
   Future<String?> getUrl() async {
-    final String result = await _api.getUrl(_instanceId);
+    final String result = await _api.getUrlFromInstance(this);
     if (result == _nullStringIdentifier) return null;
     return result;
   }
 
   /// Whether this WebView has a back history item.
   Future<bool> canGoBack() {
-    return _api.canGoBack(_instanceId);
+    return _api.canGoBackFromInstance(this);
   }
 
   /// Whether this WebView has a forward history item.
   Future<bool> canGoForward() {
-    return _api.canGoForward(_instanceId);
+    return _api.canGoForwardFromInstance(this);
   }
 
   /// Goes back in the history of this WebView.
   Future<void> goBack() {
-    return _api.goBack(_instanceId);
+    return _api.goBackFromInstance(this);
   }
 
   /// Goes forward in the history of this WebView.
   Future<void> goForward() {
-    return _api.goForward(_instanceId);
+    return _api.goForwardFromInstance(this);
   }
 
   /// Reloads the current URL.
   Future<void> reload() {
-    return _api.reload(_instanceId);
+    return _api.reloadFromInstance(this);
   }
 
   /// Clears the resource cache.
@@ -91,7 +104,7 @@ class WebView {
   /// Note that the cache is per-application, so this will clear the cache for
   /// all WebViews used.
   Future<void> clearCache(bool includeDiskFiles) {
-    return _api.clearCache(_instanceId, includeDiskFiles);
+    return _api.clearCacheFromInstance(this, includeDiskFiles);
   }
 
   // TODO: Update documentation once addJavascriptInterface is added.
@@ -105,8 +118,8 @@ class WebView {
   /// navigations like [loadUrl]. For example, global variables and functions
   /// defined before calling [loadUrl]) will not exist in the loaded page.
   Future<String?> evaluateJavascript(String javascriptString) async {
-    final String result = await _api.evaluateJavascript(
-      _instanceId,
+    final String result = await _api.evaluateJavascriptFromInstance(
+      this,
       javascriptString,
     );
     if (result == _nullStringIdentifier) return null;
@@ -118,7 +131,7 @@ class WebView {
   ///
   /// Returns null if no page has been loaded.
   Future<String?> getTitle() async {
-    final String result = await _api.getTitle(_instanceId);
+    final String result = await _api.getTitleFromInstance(this);
     if (result == _nullStringIdentifier) return null;
     return result;
   }
@@ -126,13 +139,13 @@ class WebView {
   // TODO: Update documentation when onScrollChanged is added.
   /// Set the scrolled position of your view.
   Future<void> scrollTo(int x, int y) {
-    return _api.scrollTo(_instanceId, x, y);
+    return _api.scrollToFromInstance(this, x, y);
   }
 
   // TODO: Update documentation when onScrollChanged is added.
   /// Move the scrolled position of your view.
   Future<void> scrollBy(int x, int y) {
-    return _api.scrollBy(_instanceId, x, y);
+    return _api.scrollByFromInstance(this, x, y);
   }
 
   /// Return the scrolled left position of this view.
@@ -141,7 +154,7 @@ class WebView {
   /// need to draw any pixels farther left, since those are outside of the frame
   /// of your view on screen.
   Future<int> getScrollX() {
-    return _api.getScrollX(_instanceId);
+    return _api.getScrollXFromInstance(this);
   }
 
   /// Return the scrolled top position of this view.
@@ -150,6 +163,6 @@ class WebView {
   /// to draw any pixels above it, since those are outside of the frame of your
   /// view on screen.
   Future<int> getScrollY() {
-    return _api.getScrollY(_instanceId);
+    return _api.getScrollYFromInstance(this);
   }
 }

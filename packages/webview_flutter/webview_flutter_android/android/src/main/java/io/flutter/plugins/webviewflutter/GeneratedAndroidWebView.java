@@ -1186,6 +1186,41 @@ public class GeneratedAndroidWebView {
         callback.reply(null);
       });
     }
+    public void setSupportZoom(Long instanceIdArg, Boolean supportArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setSupportZoom", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, supportArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+    public void setLoadWithOverviewMode(Long instanceIdArg, Boolean overviewArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setLoadWithOverviewMode", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, overviewArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+    public void setUseWideViewPort(Long instanceIdArg, Boolean useArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setUseWideViewPort", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, useArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+    public void setDisplayZoomControls(Long instanceIdArg, Boolean enabledArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setDisplayZoomControls", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, enabledArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
+    public void setBuiltInZoomControls(Long instanceIdArg, Boolean enabledArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.setBuiltInZoomControls", getCodec());
+      channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, enabledArg)), channelReply -> {
+        callback.reply(null);
+      });
+    }
   }
   private static class DownloadListenerHostApiCodec extends StandardMessageCodec {
     public static final DownloadListenerHostApiCodec INSTANCE = new DownloadListenerHostApiCodec();

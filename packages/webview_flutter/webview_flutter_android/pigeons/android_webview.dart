@@ -139,6 +139,16 @@ abstract class WebViewClientFlutterApi {
     int webViewInstanceId,
     String url,
   );
+
+  void setSupportZoom(int instanceId, bool support);
+
+  void setLoadWithOverviewMode(int instanceId, bool overview);
+
+  void setUseWideViewPort(int instanceId, bool use);
+
+  void setDisplayZoomControls(int instanceId, bool enabled);
+
+  void setBuiltInZoomControls(int instanceId, bool enabled);
 }
 
 @HostApi()
