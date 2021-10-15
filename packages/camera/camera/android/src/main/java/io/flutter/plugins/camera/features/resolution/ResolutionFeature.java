@@ -118,8 +118,8 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       EncoderProfiles profile =
           getBestAvailableCamcorderProfileForResolutionPreset_v31(cameraId, preset);
       List<EncoderProfiles.VideoProfile> videoProfiles = profile.getVideoProfiles();
-
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
+
       return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
     } else {
       CamcorderProfile profile =
