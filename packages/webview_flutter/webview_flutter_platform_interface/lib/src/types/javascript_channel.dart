@@ -4,14 +4,14 @@
 
 import 'javascript_message.dart';
 
-/// Callback type for handling messages sent from Javascript running in a web view.
+/// Callback type for handling messages sent from JavaScript running in a web view.
 typedef void JavascriptMessageHandler(JavascriptMessage message);
 
 final RegExp _validChannelNames = RegExp('^[a-zA-Z_][a-zA-Z0-9_]*\$');
 
 /// A named channel for receiving messaged from JavaScript code running inside a web view.
 class JavascriptChannel {
-  /// Constructs a Javascript channel.
+  /// Constructs a JavaScript channel.
   ///
   /// The parameters `name` and `onMessageReceived` must not be null.
   JavascriptChannel({
@@ -24,7 +24,7 @@ class JavascriptChannel {
   /// The channel's name.
   ///
   /// Passing this channel object as part of a [WebView.javascriptChannels] adds a channel object to
-  /// the Javascript window object's property named `name`.
+  /// the JavaScript window object's property named `name`.
   ///
   /// The name must start with a letter or underscore(_), followed by any combination of those
   /// characters plus digits.

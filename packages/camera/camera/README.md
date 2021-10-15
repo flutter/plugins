@@ -2,7 +2,7 @@
 
 [![pub package](https://img.shields.io/pub/v/camera.svg)](https://pub.dev/packages/camera)
 
-A Flutter plugin for iOS and Android allowing access to the device cameras.
+A Flutter plugin for iOS, Android and Web allowing access to the device cameras.
 
 *Note*: This plugin is still under development, and some APIs might not be available yet. We are working on a refactor which can be followed here: [issue](https://github.com/flutter/flutter/issues/31225)
 
@@ -46,6 +46,11 @@ minSdkVersion 21
 ```
 
 It's important to note that the `MediaRecorder` class is not working properly on emulators, as stated in the documentation: https://developer.android.com/reference/android/media/MediaRecorder. Specifically, when recording a video with sound enabled and trying to play it back, the duration won't be correct and you will only see the first frame.
+
+### Web integration
+
+For web integration details, see the
+[`camera_web` package](https://pub.dev/packages/camera_web).
 
 ### Handling Lifecycle states
 

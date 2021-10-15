@@ -58,6 +58,9 @@ class GitVersionFinder {
       return null;
     }
     final String fileContent = gitShow.stdout as String;
+    if (fileContent.trim().isEmpty) {
+      return null;
+    }
     final String? versionString = loadYaml(fileContent)['version'] as String?;
     return versionString == null ? null : Version.parse(versionString);
   }

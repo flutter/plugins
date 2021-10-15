@@ -1,3 +1,7 @@
+## NEXT
+
+* Minor code cleanup for new analysis rules.
+
 ## 2.0.2
 
 * Update platform_plugin_interface version requirement.

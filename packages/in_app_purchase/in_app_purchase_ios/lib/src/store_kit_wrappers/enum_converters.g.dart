@@ -6,16 +6,14 @@ part of 'enum_converters.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_SerializedEnums _$_SerializedEnumsFromJson(Map json) {
-  return _SerializedEnums()
-    ..response = _$enumDecode(
-        _$SKPaymentTransactionStateWrapperEnumMap, json['response'])
-    ..unit = _$enumDecode(_$SKSubscriptionPeriodUnitEnumMap, json['unit'])
-    ..discountPaymentMode = _$enumDecode(
-        _$SKProductDiscountPaymentModeEnumMap, json['discountPaymentMode']);
-}
+_SerializedEnums _$SerializedEnumsFromJson(Map json) => _SerializedEnums()
+  ..response =
+      _$enumDecode(_$SKPaymentTransactionStateWrapperEnumMap, json['response'])
+  ..unit = _$enumDecode(_$SKSubscriptionPeriodUnitEnumMap, json['unit'])
+  ..discountPaymentMode = _$enumDecode(
+      _$SKProductDiscountPaymentModeEnumMap, json['discountPaymentMode']);
 
-Map<String, dynamic> _$_SerializedEnumsToJson(_SerializedEnums instance) =>
+Map<String, dynamic> _$SerializedEnumsToJson(_SerializedEnums instance) =>
     <String, dynamic>{
       'response': _$SKPaymentTransactionStateWrapperEnumMap[instance.response],
       'unit': _$SKSubscriptionPeriodUnitEnumMap[instance.unit],
