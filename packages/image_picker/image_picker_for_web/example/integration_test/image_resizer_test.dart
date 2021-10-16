@@ -106,8 +106,6 @@ Future<Size> _getImageSize(XFile file) async {
   final completer = Completer<Size>();
   final image = html.ImageElement(src: file.path);
   image.onLoad.listen((event) {
-    print(image.width);
-    print(image.height);
     completer.complete(Size(image.width!.toDouble(), image.height!.toDouble()));
   });
   image.onError.listen((event) {

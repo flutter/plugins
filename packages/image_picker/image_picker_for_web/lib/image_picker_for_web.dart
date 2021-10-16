@@ -128,7 +128,11 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       capture: capture,
     );
     return _imageResizer.resizeImageIfNeeded(
-        files.first, maxWidth, maxHeight, imageQuality);
+      files.first,
+      maxWidth,
+      maxHeight,
+      imageQuality,
+    );
   }
 
   /// Returns an [XFile] containing the video that was picked.
@@ -164,10 +168,20 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxHeight,
     int? imageQuality,
   }) async {
-    return await Future.wait(
-        (await getFiles(accept: _kAcceptImageMimeType, multiple: true)).map(
-            (e) => _imageResizer.resizeImageIfNeeded(
-                e, maxWidth, maxHeight, imageQuality)));
+    final List<XFile> images = await getFiles(
+      accept: _kAcceptImageMimeType,
+      multiple: true,
+    );
+    final Iterable<Future<XFile>> resized = images.map(
+      (image) => _imageResizer.resizeImageIfNeeded(
+        image,
+        maxWidth,
+        maxHeight,
+        imageQuality,
+      ),
+    );
+
+    return Future.wait<XFile>(resized);
   }
 
   /// Injects a file input with the specified accept+capture attributes, and

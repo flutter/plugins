@@ -9,15 +9,15 @@ import 'package:image_picker_for_web/src/image_resizer_utils.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 import 'dart:html' as html;
 
-/// Helper class that resizes image
+/// Helper class that resizes images.
 class ImageResizer {
-  /// Resizes the image if needed
-  /// Does not support gif image
+  /// Resizes the image if needed.
+  /// (Does not support gif images)
   Future<XFile> resizeImageIfNeeded(XFile file, double? maxWidth,
       double? maxHeight, int? imageQuality) async {
     if (!imageResizeNeeded(maxWidth, maxHeight, imageQuality) ||
         file.mimeType == "image/gif") {
-      //TODO Implement maxWidth and maxHeight for image/gif
+      // Implement maxWidth and maxHeight for image/gif
       return file;
     }
     try {
