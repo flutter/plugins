@@ -22,8 +22,6 @@ import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
-import android.media.CamcorderProfile;
-import android.media.EncoderProfiles;
 import android.media.MediaRecorder;
 import android.os.Build;
 import android.os.Handler;
@@ -54,13 +52,9 @@ import io.flutter.plugins.camera.utils.TestUtils;
 import io.flutter.view.TextureRegistry;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
 import org.junit.Test;
 import org.mockito.MockedStatic;
-import org.robolectric.annotation.Config;
-import org.robolectric.RobolectricTestRunner;
 
-@RunWith(RobolectricTestRunner.class)
 public class CameraTest {
   private CameraProperties mockCameraProperties;
   private CameraFeatureFactory mockCameraFeatureFactory;
@@ -252,36 +246,6 @@ public class CameraTest {
 
     verify(mockZoomLevelFeature, times(1)).getMinimumZoomLevel();
     assertEquals(expectedMinZoomLevel, actualMinZoomLevel, 0);
-  }
-
-  @Config(maxSdk = 30)
-  @Test
-  public void getRecordingProfile() {
-    ResolutionFeature mockResolutionFeature =
-        mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
-    CamcorderProfile mockCamcorderProfile = mock(CamcorderProfile.class);
-
-    when(mockResolutionFeature.getRecordingProfile()).thenReturn(mockCamcorderProfile);
-
-    CamcorderProfile actualRecordingProfile = camera.getRecordingProfile();
-
-    verify(mockResolutionFeature, times(1)).getRecordingProfile();
-    assertEquals(mockCamcorderProfile, actualRecordingProfile);
-  }
-
-  @Config(minSdk = 31)
-  @Test
-  public void getRecordingProfile_v31() {
-    ResolutionFeature mockResolutionFeature =
-        mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
-    EncoderProfiles mockRecordingProfile = mock(EncoderProfiles.class);
-
-    when(mockResolutionFeature.getRecordingProfile_v31()).thenReturn(mockRecordingProfile);
-
-    EncoderProfiles actualRecordingProfile = camera.getRecordingProfile_v31();
-
-    verify(mockResolutionFeature, times(1)).getRecordingProfile_v31();
-    assertEquals(mockRecordingProfile, actualRecordingProfile);
   }
 
   @Test
