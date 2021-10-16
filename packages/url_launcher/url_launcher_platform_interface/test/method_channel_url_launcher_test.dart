@@ -14,10 +14,12 @@ import 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Store the initial instance before any tests change it.
+  final UrlLauncherPlatform initialInstance = UrlLauncherPlatform.instance;
+
   group('$UrlLauncherPlatform', () {
     test('$MethodChannelUrlLauncher() is the default instance', () {
-      expect(UrlLauncherPlatform.instance,
-          isInstanceOf<MethodChannelUrlLauncher>());
+      expect(initialInstance, isInstanceOf<MethodChannelUrlLauncher>());
     });
 
     test('Cannot be implemented with `implements`', () {
