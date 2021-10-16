@@ -6,13 +6,17 @@ import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
 
+/// Host api implementation for [WebView].
 class WebViewHostApiImpl extends WebViewHostApi {
+  /// Constructs a [WebViewHostApiImpl].
   WebViewHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
+  /// Helper method to convert instances ids to objects.
   Future<void> createFromInstance(WebView instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
@@ -20,6 +24,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(WebView instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
@@ -27,6 +32,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> loadUrlFromInstance(
     WebView instance,
     String url,
@@ -35,30 +41,37 @@ class WebViewHostApiImpl extends WebViewHostApi {
     return loadUrl(instanceManager.getInstanceId(instance)!, url, headers);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<String> getUrlFromInstance(WebView instance) {
     return getUrl(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<bool> canGoBackFromInstance(WebView instance) {
     return canGoBack(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<bool> canGoForwardFromInstance(WebView instance) {
     return canGoForward(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> goBackFromInstance(WebView instance) {
     return goBack(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> goForwardFromInstance(WebView instance) {
     return goForward(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> reloadFromInstance(WebView instance) {
     return reload(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> clearCacheFromInstance(WebView instance, bool includeDiskFiles) {
     return clearCache(
       instanceManager.getInstanceId(instance)!,
@@ -66,6 +79,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<String> evaluateJavascriptFromInstance(
     WebView instance,
     String javascriptString,
@@ -74,26 +88,32 @@ class WebViewHostApiImpl extends WebViewHostApi {
         instanceManager.getInstanceId(instance)!, javascriptString);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<String> getTitleFromInstance(WebView instance) {
     return getTitle(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> scrollToFromInstance(WebView instance, int x, int y) {
     return scrollTo(instanceManager.getInstanceId(instance)!, x, y);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> scrollByFromInstance(WebView instance, int x, int y) {
     return scrollBy(instanceManager.getInstanceId(instance)!, x, y);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<int> getScrollXFromInstance(WebView instance) {
     return getScrollX(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<int> getScrollYFromInstance(WebView instance) {
     return getScrollY(instanceManager.getInstanceId(instance)!);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setWebViewClientFromInstance(
     WebView instance,
     WebViewClient webViewClient,
@@ -104,6 +124,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> addJavaScriptChannelFromInstance(
     WebView instance,
     JavaScriptChannel javaScriptChannel,
@@ -114,6 +135,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> removeJavaScriptChannelFromInstance(
     WebView instance,
     JavaScriptChannel javaScriptChannel,
@@ -124,6 +146,7 @@ class WebViewHostApiImpl extends WebViewHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setDownloadListenerFromInstance(
     WebView instance,
     DownloadListener listener,
@@ -135,13 +158,17 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 }
 
+/// Host api implementation for [WebViewSettings].
 class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
+  /// Constructs a [WebViewSettingsHostApiImpl].
   WebViewSettingsHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
+  /// Helper method to convert instances ids to objects.
   Future<void> createFromInstance(WebViewSettings instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
@@ -152,6 +179,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(WebViewSettings instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
@@ -159,6 +187,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setDomStorageEnabledFromInstance(
     WebViewSettings instance,
     bool flag,
@@ -166,6 +195,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     return setDomStorageEnabled(instanceManager.getInstanceId(instance)!, flag);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setJavaScriptCanOpenWindowsAutomaticallyFromInstance(
     WebViewSettings instance,
     bool flag,
@@ -176,6 +206,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setSupportMultipleWindowsFromInstance(
     WebViewSettings instance,
     bool support,
@@ -184,6 +215,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
         instanceManager.getInstanceId(instance)!, support);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setJavaScriptEnabledFromInstance(
     WebViewSettings instance,
     bool flag,
@@ -194,6 +226,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setUserAgentStringFromInstance(
     WebViewSettings instance,
     String userAgentString,
@@ -204,6 +237,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setMediaPlaybackRequiresUserGestureFromInstance(
     WebViewSettings instance,
     bool require,
@@ -214,6 +248,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setSupportZoomFromInstance(
     WebViewSettings instance,
     bool support,
@@ -221,6 +256,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     return setSupportZoom(instanceManager.getInstanceId(instance)!, support);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setLoadWithOverviewModeFromInstance(
     WebViewSettings instance,
     bool overview,
@@ -231,6 +267,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setUseWideViewPortFromInstance(
     WebViewSettings instance,
     bool use,
@@ -238,6 +275,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     return setUseWideViewPort(instanceManager.getInstanceId(instance)!, use);
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setDisplayZoomControlsFromInstance(
     WebViewSettings instance,
     bool enabled,
@@ -248,6 +286,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
     );
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> setBuiltInZoomControlsFromInstance(
     WebViewSettings instance,
     bool enabled,
@@ -259,13 +298,17 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
   }
 }
 
+/// Host api implementation for [JavaScriptChannel].
 class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
+  /// Constructs a [JavaScriptChannelHostApiImpl].
   JavaScriptChannelHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
+  /// Helper method to convert instances ids to objects.
   Future<void> createFromInstance(JavaScriptChannel instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
@@ -273,6 +316,7 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(JavaScriptChannel instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
@@ -281,11 +325,14 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
   }
 }
 
+/// Flutter api implementation for [JavaScriptChannel].
 class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
+  /// Constructs a [JavaScriptChannelFlutterApiImpl].
   JavaScriptChannelHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
   @override
@@ -296,13 +343,17 @@ class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
   }
 }
 
+/// Host api implementation for [WebViewClient].
 class WebViewClientHostApiImpl extends WebViewClientHostApi {
+  /// Constructs a [WebViewClientHostApiImpl].
   WebViewClientHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
+  /// Helper method to convert instances ids to objects.
   Future<void> createFromInstance(WebViewClient instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
@@ -310,6 +361,7 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(WebViewClient instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
@@ -318,11 +370,14 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
   }
 }
 
+/// Flutter api implementation for [WebViewClient].
 class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
+  /// Constructs a [WebViewClientFlutterApiImpl].
   WebViewClientFlutterApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
   @override
@@ -425,13 +480,17 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   }
 }
 
+/// Host api implementation for [DownloadListener].
 class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
+  /// Constructs a [DownloadListenerHostApiImpl].
   DownloadListenerHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
+  /// Helper method to convert instances ids to objects.
   Future<void> createFromInstance(DownloadListener instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
@@ -439,6 +498,7 @@ class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
     }
   }
 
+  /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(DownloadListener instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
@@ -447,11 +507,14 @@ class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
   }
 }
 
+/// Flutter api implementation for [DownloadListener].
 class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
+  /// Constructs a [DownloadListenerFlutterApiImpl].
   DownloadListenerFlutterApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
+  /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
 
   @override
