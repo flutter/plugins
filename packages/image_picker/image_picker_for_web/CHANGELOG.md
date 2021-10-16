@@ -1,6 +1,7 @@
 ## 2.1.4
 
-* Implemented `maxWidth`, `maxHeight` and `imageQuality`
+* Implemented `maxWidth`, `maxHeight` and `imageQuality` when selecting images
+  (except for gifs).
 
 ## 2.1.3
 
