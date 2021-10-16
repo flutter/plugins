@@ -1,6 +1,6 @@
 group 'io.flutter.plugins.camera'
 version '1.0-SNAPSHOT'
-def args = ["-Xlint:deprecation","-Xlint:unchecked","-Werror"]
+def args = ["-Xlint:deprecation","-Xlint:unchecked"]
 
 buildscript {
     repositories {
