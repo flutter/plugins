@@ -974,11 +974,11 @@ class WebViewClientHostApi {
 
   static const MessageCodec<Object?> codec = _WebViewClientHostApiCodec();
 
-  Future<void> create(int arg_instanceId, bool arg_autoFailShouldOverrideUrlLoading) async {
+  Future<void> create(int arg_instanceId, bool arg_shouldOverrideUrlLoading) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
         'dev.flutter.pigeon.WebViewClientHostApi.create', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
-        await channel.send(<Object>[arg_instanceId, arg_autoFailShouldOverrideUrlLoading]) as Map<Object?, Object?>?;
+        await channel.send(<Object>[arg_instanceId, arg_shouldOverrideUrlLoading]) as Map<Object?, Object?>?;
     if (replyMap == null) {
       throw PlatformException(
         code: 'channel-error',

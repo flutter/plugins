@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
@@ -9,13 +13,10 @@ class WebViewHostApiImpl extends WebViewHostApi {
 
   late final InstanceManager instanceManager;
 
-  Future<void> createFromInstance(
-    WebView instance,
-    bool useHybridComposition,
-  ) async {
+  Future<void> createFromInstance(WebView instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId, useHybridComposition);
+      return create(instanceId, instance.useHybridComposition);
     }
   }
 
@@ -141,13 +142,13 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   late final InstanceManager instanceManager;
 
-  Future<void> createFromInstance(
-    WebViewSettings instance,
-    WebView webView,
-  ) async {
+  Future<void> createFromInstance(WebViewSettings instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId, instanceManager.getInstanceId(webView)!);
+      return create(
+        instanceId,
+        instanceManager.getInstanceId(instance.webView)!,
+      );
     }
   }
 
@@ -265,13 +266,10 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
 
   late final InstanceManager instanceManager;
 
-  Future<void> createFromInstance(
-    JavaScriptChannel instance,
-    String channelName,
-  ) async {
+  Future<void> createFromInstance(JavaScriptChannel instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId, channelName);
+      return create(instanceId, instance.channelName);
     }
   }
 
@@ -305,13 +303,10 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
 
   late final InstanceManager instanceManager;
 
-  Future<void> createFromInstance(
-    WebViewClient instance,
-    bool autoFailShouldOverrideUrlLoading,
-  ) async {
+  Future<void> createFromInstance(WebViewClient instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
-      return create(instanceId, autoFailShouldOverrideUrlLoading);
+      return create(instanceId, instance.shouldOverrideUrlLoading);
     }
   }
 
@@ -402,7 +397,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   ) {
     final WebViewClient instance =
         instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.shouldOverrideRequestLoading(
+    instance.requestLoading(
       instanceManager.getInstance(webViewInstanceId) as WebView,
       WebResourceRequest(
         url: request.url!,
@@ -423,7 +418,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   ) {
     final WebViewClient instance =
         instanceManager.getInstance(instanceId) as WebViewClient;
-    instance.shouldOverrideUrlLoading(
+    instance.urlLoading(
       instanceManager.getInstance(webViewInstanceId) as WebView,
       url,
     );

@@ -1201,7 +1201,7 @@ public class GeneratedAndroidWebView {
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
   public interface WebViewClientHostApi {
-    void create(Long instanceId, Boolean autoFailShouldOverrideUrlLoading);
+    void create(Long instanceId, Boolean shouldOverrideUrlLoading);
     void dispose(Long instanceId);
 
     /** The codec used by WebViewClientHostApi. */
@@ -1223,11 +1223,11 @@ public class GeneratedAndroidWebView {
               if (instanceIdArg == null) {
                 throw new NullPointerException("instanceIdArg unexpectedly null.");
               }
-              Boolean autoFailShouldOverrideUrlLoadingArg = (Boolean)args.get(1);
-              if (autoFailShouldOverrideUrlLoadingArg == null) {
-                throw new NullPointerException("autoFailShouldOverrideUrlLoadingArg unexpectedly null.");
+              Boolean shouldOverrideUrlLoadingArg = (Boolean)args.get(1);
+              if (shouldOverrideUrlLoadingArg == null) {
+                throw new NullPointerException("shouldOverrideUrlLoadingArg unexpectedly null.");
               }
-              api.create(instanceIdArg.longValue(), autoFailShouldOverrideUrlLoadingArg);
+              api.create(instanceIdArg.longValue(), shouldOverrideUrlLoadingArg);
               wrapped.put("result", null);
             }
             catch (Error | RuntimeException exception) {

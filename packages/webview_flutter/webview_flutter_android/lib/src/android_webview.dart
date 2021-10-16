@@ -31,10 +31,14 @@ const String _nullStringIdentifier = '<null-value>';
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
-    _api.createFromInstance(this, useHybridComposition);
+    _api.createFromInstance(this);
   }
 
   static final WebViewHostApiImpl _api = WebViewHostApiImpl();
+
+  WebViewClient? _currentWebViewClient;
+  DownloadListener? _currentDownloadListener;
+  Set<JavaScriptChannel> _javaScriptChannels = <JavaScriptChannel>{};
 
   /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
   ///
@@ -47,8 +51,14 @@ class WebView {
   /// Defaults to false.
   final bool useHybridComposition;
 
-  late final WebViewSettings webViewSettings = WebViewSettings._(this);
+  /// The [WebSettings] object used to control the settings for this WebView.
+  late final WebViewSettings settings = WebViewSettings._(this);
 
+  /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
+  ///
+  /// This flag can be enabled in order to facilitate debugging of web layouts
+  /// and JavaScript code running inside WebViews. Please refer to [WebView]
+  /// documentation for the debugging guide. The default is false.
   static Future<void> setWebContentsDebuggingEnabled(bool enabled) {
     return _api.setWebContentsDebuggingEnabled(enabled);
   }
@@ -168,35 +178,326 @@ class WebView {
   Future<int> getScrollY() {
     return _api.getScrollYFromInstance(this);
   }
-}
 
-class WebViewSettings {
-  WebViewSettings._(WebView webView) {
-    _api.createFromInstance(this, webView);
+  /// Sets the [WebViewClient] that will receive various notifications and requests.
+  ///
+  /// This will replace the current handler.
+  Future<void> setWebViewClient(WebViewClient webViewClient) async {
+    final WebViewClient? currentWebViewClient = _currentWebViewClient;
+    if (currentWebViewClient != null) {
+      // ignore: unawaited_futures
+      WebViewClient._api.disposeFromInstance(currentWebViewClient);
+    }
+
+    // ignore: unawaited_futures
+    WebViewClient._api.createFromInstance(webViewClient);
+    _currentWebViewClient = webViewClient;
+    return _api.setWebViewClientFromInstance(this, webViewClient);
   }
 
-  static final WebViewSettingsHostApiImpl _api = WebViewSettingsHostApiImpl();
+  /// Injects the supplied [JavascriptChannel] into this WebView.
+  ///
+  /// The object is injected into all frames of the web page, including all the
+  /// iframes, using the supplied name. This allows the object's methods to
+  /// be accessed from JavaScript.
+  ///
+  /// Note that injected objects will not appear in JavaScript until the page is
+  /// next (re)loaded. JavaScript should be enabled before injecting the object.
+  /// For example:
+  ///
+  /// ```dart
+  /// webview.settings.setJavaScriptEnabled(true);
+  /// webView.addJavascriptChannel(JavScriptChannel("injectedObject"));
+  /// webView.loadUrl("about:blank", <String, String>{});
+  /// webView.loadUrl("javascript:injectedObject.postMessage("Hello, World!")", <String, String>{});
+  /// ```
+  ///
+  /// **Important**
+  /// * Because the object is exposed to all the frames, any frame could obtain
+  /// the object name and call methods on it. There is no way to tell the
+  /// calling frame's origin from the app side, so the app must not assume that
+  /// the caller is trustworthy unless the app can guarantee that no third party
+  /// content is ever loaded into the WebView even inside an iframe.
+  Future<void> addJavaScriptChannel(JavaScriptChannel javaScriptChannel) async {
+    // ignore: unawaited_futures
+    JavaScriptChannel._api.createFromInstance(javaScriptChannel);
+    _javaScriptChannels.add(javaScriptChannel);
+    return _api.addJavaScriptChannelFromInstance(this, javaScriptChannel);
+  }
+
+  /// Removes a previously injected [JavaScriptChannel] from this WebView.
+  ///
+  /// Note that the removal will not be reflected in JavaScript until the page
+  /// is next (re)loaded. See [addJavaScriptChannel].
+  Future<void> removeJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
+    JavaScriptChannel._api.disposeFromInstance(javaScriptChannel);
+    _javaScriptChannels.remove(javaScriptChannel);
+    return _api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
+  }
+
+  /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
+  ///
+  /// This will replace the current handler.
+  Future<void> setDownloadListener(DownloadListener listener) {
+    final DownloadListener? currentDownloadListener = _currentDownloadListener;
+    if (currentDownloadListener != null) {
+      DownloadListener._api.disposeFromInstance(currentDownloadListener);
+    }
+
+    DownloadListener._api.createFromInstance(listener);
+    _currentDownloadListener = listener;
+    return _api.setDownloadListenerFromInstance(this, listener);
+  }
 }
 
+/// Manages settings state for a [WebView].
+///
+/// When a WebView is first created, it obtains a set of default settings. These
+/// default settings will be returned from any getter call. A WebSettings object
+/// obtained from [WebView.settings] is tied to the life of the WebView. If a
+/// WebView has been destroyed, any method call on [WebSettings] will throw an
+/// Exception.
+class WebViewSettings {
+  WebViewSettings._(this.webView) {
+    _api.createFromInstance(this);
+  }
+
+  /// The webView instance this is attached to.
+  final WebView webView;
+
+  static final WebViewSettingsHostApiImpl _api = WebViewSettingsHostApiImpl();
+
+  /// Sets whether the DOM storage API is enabled.
+  ///
+  /// The default value is false.
+  Future<void> setDomStorageEnabled(bool flag) {
+    return _api.setDomStorageEnabledFromInstance(this, flag);
+  }
+
+  /// Tells JavaScript to open windows automatically.
+  ///
+  /// This applies to the JavaScript function `window.open()`. The default is
+  /// false.
+  Future<void> setJavaScriptCanOpenWindowsAutomatically(bool flag) {
+    return _api.setJavaScriptCanOpenWindowsAutomaticallyFromInstance(
+      this,
+      flag,
+    );
+  }
+
+  // TODO(bparrishMines): Update documentation when WebChromeClient.onCreateWindow is added.
+  /// Sets whether the WebView should supports multiple windows.
+  ///
+  /// The default is false.
+  Future<void> setSupportMultipleWindows(bool support) {
+    return _api.setSupportZoomFromInstance(this, support);
+  }
+
+  /// Tells the WebView to enable JavaScript execution.
+  ///
+  /// The default is false.
+  Future<void> setJavaScriptEnabled(bool flag) {
+    return _api.setJavaScriptEnabledFromInstance(this, flag);
+  }
+
+  /// Sets the WebView's user-agent string.
+  ///
+  /// If the string is empty, the system default value will be used. Note that
+  /// starting from KITKAT Android version, changing the user-agent while
+  /// loading a web page causes WebView to initiate loading once again.
+  Future<void> setUserAgentString(String userAgentString) {
+    return _api.setUserAgentStringFromInstance(this, userAgentString);
+  }
+
+  /// Sets whether the WebView requires a user gesture to play media.
+  ///
+  /// The default is true.
+  Future<void> setMediaPlaybackRequiresUserGesture(bool require) {
+    return _api.setMediaPlaybackRequiresUserGestureFromInstance(this, require);
+  }
+
+  // TODO(bparrishMines): Update documentation when WebView.zoomIn and WebView.zoomOut are added.
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// The particular zoom mechanisms that should be used can be set with
+  /// [setBuiltInZoomControls].
+  ///
+  /// The default is true.
+  Future<void> setSupportZoom(bool support) {
+    return _api.setSupportZoomFromInstance(this, support);
+  }
+
+  /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
+  ///
+  /// This setting is taken into account when the content width is greater than
+  /// the width of the WebView control, for example, when [setUseWideViewPort]
+  /// is enabled.
+  ///
+  /// The default is false.
+  Future<void> setLoadWithOverviewMode(bool overview) {
+    return _api.setLoadWithOverviewModeFromInstance(this, overview);
+  }
+
+  /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
+  ///
+  /// When the value of the setting is false, the layout width is always set to
+  /// the width of the WebView control in device-independent (CSS) pixels. When
+  /// the value is true and the page contains the viewport meta tag, the value
+  /// of the width specified in the tag is used. If the page does not contain
+  /// the tag or does not provide a width, then a wide viewport will be used.
+  Future<void> setUseWideViewPort(bool use) {
+    return _api.setUseWideViewPortFromInstance(this, use);
+  }
+
+  // TODO(bparrishMines): Update documentation when ZoomButtonsController is added.
+  /// Sets whether the WebView should display on-screen zoom controls when using the built-in zoom mechanisms.
+  ///
+  /// See [setBuiltInZoomControls]. The default is true. However, on-screen zoom
+  /// controls are deprecated in Android so it's recommended to set this to
+  /// false.
+  Future<void> setDisplayZoomControls(bool enabled) {
+    return _api.setDisplayZoomControlsFromInstance(this, enabled);
+  }
+
+  // TODO(bparrishMines): Update documentation when ZoomButtonsController is added.
+  /// Sets whether the WebView should use its built-in zoom mechanisms.
+  ///
+  /// The built-in zoom mechanisms comprise on-screen zoom controls, which are
+  /// displayed over the WebView's content, and the use of a pinch gesture to
+  /// control zooming. Whether or not these on-screen controls are displayed can
+  /// be set with [setDisplayZoomControls]. The default is false.
+  ///
+  /// The built-in mechanisms are the only currently supported zoom mechanisms,
+  /// so it is recommended that this setting is always enabled. However,
+  /// on-screen zoom controls are deprecated in Android so it's recommended to
+  /// disable [setDisplayZoomControls].
+  Future<void> setBuiltInZoomControls(bool enabled) {
+    return _api.setBuiltInZoomControlsFromInstance(this, enabled);
+  }
+}
+
+/// Exposes a channel to receive calls from javaScript.
+///
+/// See [WebView.addJavaScriptChannel].
 abstract class JavaScriptChannel {
+  /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(this.channelName);
 
+  static final JavaScriptChannelHostApiImpl _api =
+      JavaScriptChannelHostApiImpl();
+
+  /// Used to identify this object to receive messages from javaScript.
   final String channelName;
 
+  /// Callback method when javaScript calls `postMessage` on the object instance passed.
   void postMessage(String message);
 }
 
+/// Receive various notifications and requests for [WebView].
 abstract class WebViewClient {
+  /// Constructs a [WebViewClient].
+  WebViewClient({this.shouldOverrideUrlLoading = true});
+
+  /// User authentication failed on server.
+  static const int errorAuthentication = 0xfffffffc;
+
+  /// Malformed URL.
+  static const int errorBadUrl = 0xfffffff4;
+
+  /// Failed to connect to the server.
+  static const int errorConnect = 0xfffffffa;
+
+  /// Failed to perform SSL handshake.
+  static const int errorFailedSslHandshake = 0xfffffff5;
+
+  /// Generic file error.
+  static const int errorFile = 0xfffffff3;
+
+  /// File not found.
+  static const int errorFileNotFound = 0xfffffff2;
+
+  /// Server or proxy hostname lookup failed.
+  static const int errorHostLookup = 0xfffffffe;
+
+  /// Failed to read or write to the server.
+  static const int errorIO = 0xfffffff9;
+
+  /// User authentication failed on proxy.
+  static const int errorProxyAuthentication = 0xfffffffb;
+
+  /// Too many redirects.
+  static const int errorRedirectLoop = 0xfffffff7;
+
+  /// Connection timed out.
+  static const int errorTimeout = 0xfffffff8;
+
+  /// Too many requests during this load.
+  static const int errorTooManyRequests = 0xfffffff1;
+
+  /// Generic error.
+  static const int errorUnknown = 0xffffffff;
+
+  /// Resource load was canceled by Safe Browsing.
+  static const int errorUnsafeResource = 0xfffffff0;
+
+  /// Unsupported authentication scheme (not basic or digest).
+  static const int errorUnsupportedAuthScheme = 0xfffffffd;
+
+  /// Unsupported URI scheme.
+  static const int errorUnsupportedScheme = 0xfffffff6;
+
+  static final WebViewClientHostApiImpl _api = WebViewClientHostApiImpl();
+
+  /// Whether loading a url should be overridden.
+  ///
+  /// In Java, `shouldOverrideUrlLoading()` and `shouldOverrideRequestLoading()`
+  /// callbacks must synchronously return a boolean. This sets the default
+  /// return value.
+  ///
+  /// Setting [shouldOverrideUrlLoading] to true causes the current [WebView] to
+  /// abort loading the URL, while returning false causes the [WebView] to
+  /// continue loading the URL as usual. [requestLoading] or [urlLoading] will
+  /// still be called either way.
+  ///
+  /// Defaults to true.
+  final bool shouldOverrideUrlLoading;
+
+  /// Notify the host application that a page has started loading.
+  ///
+  /// This method is called once for each main frame load so a page with iframes
+  /// or framesets will call onPageStarted one time for the main frame. This
+  /// also means that [onPageStarted] will not be called when the contents of an
+  /// embedded frame changes, i.e. clicking a link whose target is an iframe, it
+  /// will also not be called for fragment navigations (navigations to
+  /// #fragment_id).
   void onPageStarted(WebView webView, String url);
 
+  // TODO(bparrishMines): Update documentation when WebView.postVisualStateCallback is added.
+  /// Notify the host application that a page has finished loading.
+  ///
+  /// This method is called only for main frame. Receiving an [onPageFinished]
+  /// callback does not guarantee that the next frame drawn by WebView will
+  /// reflect the state of the DOM at this point.
   void onPageFinished(WebView webView, String url);
 
+  /// Report web resource loading error to the host application.
+  ///
+  /// These errors usually indicate inability to connect to the server. Note
+  /// that unlike the deprecated version of the callback, the new version will
+  /// be called for any resource (iframe, image, etc.), not just for the main
+  /// page. Thus, it is recommended to perform minimum required work in this
+  /// callback.
   void onReceivedRequestError(
     WebView webView,
     WebResourceRequest request,
     WebResourceError error,
   );
 
+  /// Report an error to the host application.
+  ///
+  /// These errors are unrecoverable (i.e. the main resource is unavailable).
+  /// The errorCode parameter corresponds to one of the error* constants.
+  @Deprecated('Only called on Android version < 23.')
   void onReceivedError(
     WebView webView,
     int errorCode,
@@ -204,18 +505,32 @@ abstract class WebViewClient {
     String failingUrl,
   );
 
-  void shouldOverrideRequestLoading(
-    WebView webView,
-    WebResourceRequest request,
-  );
+  // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
+  /// When a URL is about to be loaded in the current [WebView].
+  ///
+  /// If a [WebViewClient] is not provided, by default [WebView] will ask
+  /// Activity Manager to choose the proper handler for the URL. If a
+  /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
+  /// causes the current [WebView] to abort loading the URL, while returning
+  /// false causes the [WebView] to continue loading the URL as usual.
+  void requestLoading(WebView webView, WebResourceRequest request);
 
-  void shouldOverrideUrlLoading(
-    WebView webView,
-    String url,
-  );
+  // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
+  /// When a URL is about to be loaded in the current [WebView].
+  ///
+  /// If a [WebViewClient] is not provided, by default [WebView] will ask
+  /// Activity Manager to choose the proper handler for the URL. If a
+  /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
+  /// causes the current [WebView] to abort loading the URL, while returning
+  /// false causes the [WebView] to continue loading the URL as usual.
+  void urlLoading(WebView webView, String url);
 }
 
+/// The interface to be used when content can not be handled by the rendering engine for [WebView], and should be downloaded instead.
 abstract class DownloadListener {
+  static final DownloadListenerHostApiImpl _api = DownloadListenerHostApiImpl();
+
+  /// Notify the host application that a file should be downloaded.
   void onDownloadStart(
     String url,
     String userAgent,
@@ -225,7 +540,9 @@ abstract class DownloadListener {
   );
 }
 
+/// Encompasses parameters to the [WebViewClient.requestLoading] method.
 class WebResourceRequest {
+  /// Constructs a [WebResourceRequest].
   WebResourceRequest({
     required this.url,
     required this.isForMainFrame,
@@ -235,20 +552,40 @@ class WebResourceRequest {
     required this.requestHeaders,
   });
 
+  /// Gets the URL for which the resource request was made.
   final String url;
+
+  /// Gets whether the request was made in order to fetch the main frame's document.
   final isForMainFrame;
+
+  /// Gets whether the request was a result of a server-side redirect.
+  ///
+  /// Only supported on Android version >= 23.
   final bool? isRedirect;
+
+  /// Gets whether a gesture (such as a click) was associated with the request.
   final bool hasGesture;
+
+  /// Gets the method associated with the request, for example "GET".
   final String method;
+
+  /// Gets the headers associated with the request.
   final Map<String, String> requestHeaders;
 }
 
+/// Encapsulates information about errors occurred during loading of web resources.
+///
+/// See [WebViewClient.onReceivedRequestError].
 class WebResourceError {
+  /// Constructs a [WebResourceError].
   WebResourceError({
     required this.errorCode,
     required this.description,
   });
 
+  /// The integer code of the error (e.g. [WebViewClient.errorAuthentication].
   final int errorCode;
+
+  /// Describes the error.
   final String description;
 }

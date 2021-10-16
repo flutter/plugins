@@ -114,7 +114,7 @@ abstract class JavaScriptChannelFlutterApi {
 
 @HostApi()
 abstract class WebViewClientHostApi {
-  void create(int instanceId, bool autoFailShouldOverrideUrlLoading);
+  void create(int instanceId, bool shouldOverrideUrlLoading);
 
   void dispose(int instanceId);
 }
