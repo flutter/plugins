@@ -170,7 +170,6 @@ public class MediaRecorderBuilderTest {
   @Config(minSdk = 31)
   @Test
   public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled_v31() throws IOException {
-    System.out.println(getEmptyCamcorderProfile());
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     List<EncoderProfiles.VideoProfile> mockVideoProfiles =
         List.of(mock(EncoderProfiles.VideoProfile.class));
