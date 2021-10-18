@@ -12,31 +12,31 @@
                               AVCaptureVideoDataOutputSampleBufferDelegate,
                               AVCaptureAudioDataOutputSampleBufferDelegate>
 @property(assign, nonatomic) BOOL isPreviewPaused;
+
 - (void)pausePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
+
 - (void)resumePreviewWithResult:(FLTThreadSafeFlutterResult *)result;
 @end
 
 @interface CameraPreviewPauseTests : XCTestCase
-@property(readonly, nonatomic) FLTCam *camera;
-@property(readonly, nonatomic) MockFLTThreadSafeFlutterResult *resultObject;
 @end
 
 @implementation CameraPreviewPauseTests
 
-- (void)setUp {
-  _camera = [[FLTCam alloc] init];
-
-  _resultObject = [[MockFLTThreadSafeFlutterResult alloc] init];
-}
-
 - (void)testPausePreviewWithResult_shouldPausePreview {
-  [_camera pausePreviewWithResult:_resultObject];
-  XCTAssertTrue(_camera.isPreviewPaused);
+  FLTCam *camera = [[FLTCam alloc] init];
+  MockFLTThreadSafeFlutterResult *resultObject = [[MockFLTThreadSafeFlutterResult alloc] init];
+
+  [camera pausePreviewWithResult:resultObject];
+  XCTAssertTrue(camera.isPreviewPaused);
 }
 
 - (void)testResumePreviewWithResult_shouldResumePreview {
-  [_camera resumePreviewWithResult:_resultObject];
-  XCTAssertFalse(_camera.isPreviewPaused);
+  FLTCam *camera = [[FLTCam alloc] init];
+  MockFLTThreadSafeFlutterResult *resultObject = [[MockFLTThreadSafeFlutterResult alloc] init];
+  
+  [camera resumePreviewWithResult:resultObject];
+  XCTAssertFalse(camera.isPreviewPaused);
 }
 
 @end

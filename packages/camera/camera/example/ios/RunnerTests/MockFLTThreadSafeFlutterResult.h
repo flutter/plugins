@@ -10,10 +10,15 @@
  * read the received result.
  */
 @interface MockFLTThreadSafeFlutterResult : FLTThreadSafeFlutterResult
-@property(readonly, nonatomic) XCTestExpectation *_Nonnull expectation;
+@property(readonly, nonatomic, nonnull) XCTestExpectation *expectation;
 @property(nonatomic, nullable) id receivedResult;
 
-- (instancetype _Nonnull)initWithExpectation:(XCTestExpectation *_Nonnull)expectation;
+/**
+ * Initializes the MockFLTThreadSafeFlutterResult with an expectation.
+ *
+ * The expectation is fullfilled when a result is called allowing tests to await the result in an asynchronous manner.
+ */
+- (instancetype _Nonnull) initWithExpectation:(nonnull XCTestExpectation *)expectation;
 @end
 
 #endif /* MockFLTThreadSafeFlutterResult_h */

@@ -8,40 +8,20 @@
 #import "MockFLTThreadSafeFlutterResult.h"
 
 @implementation MockFLTThreadSafeFlutterResult
-/**
- * Initializes the MockFLTThreadSafeFlutterResult.
- */
-- (instancetype)init {
-  self = [super init];
-  return self;
-}
 
-/**
- * Initializes the MockFLTThreadSafeFlutterResult with an expectation.
- */
 - (instancetype)initWithExpectation:(XCTestExpectation *)expectation {
   self = [super init];
   _expectation = expectation;
   return self;
 }
 
-/**
- * Called when result is successful.
- *
- * Stores the data in the `receivedResult` property and fulfills the expectation.
- */
 - (void)sendSuccessWithData:(id)data {
-  _receivedResult = data;
-  [self->_expectation fulfill];
+  self.receivedResult = data;
+  [self.expectation fulfill];
 }
 
-/**
- * Called when result is successful.
- *
- * Fulfills the expectation.
- */
 - (void)sendSuccess {
-  _receivedResult = nil;
-  [self->_expectation fulfill];
+  self.receivedResult = nil;
+  [self.expectation fulfill];
 }
 @end

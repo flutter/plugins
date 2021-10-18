@@ -10,15 +10,13 @@
 #import "MockFLTThreadSafeFlutterResult.h"
 
 @interface CameraMethodChannelTests : XCTestCase
-@property(readonly, nonatomic) CameraPlugin *camera;
-@property(readonly, nonatomic) MockFLTThreadSafeFlutterResult *resultObject;
 @end
 
 @implementation CameraMethodChannelTests
 
-- (void)setUp {
-  _camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
-
+- (void)testCreate_ShouldCallResultOnMainThread {
+  CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
+  
   XCTestExpectation *expectation =
       [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 
@@ -31,19 +29,17 @@
   OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
-  _resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
-}
-
-- (void)testCreate_ShouldCallResultOnMainThread {
+  MockFLTThreadSafeFlutterResult *resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
+  
   // Set up method call
   FlutterMethodCall *call = [FlutterMethodCall
       methodCallWithMethodName:@"create"
                      arguments:@{@"resolutionPreset" : @"medium", @"enableAudio" : @(1)}];
 
-  [self->_camera handleMethodCallAsync:call result:self->_resultObject];
+  [camera handleMethodCallAsync:call result:resultObject];
 
   // Verify the result
-  NSDictionary *dictionaryResult = (NSDictionary *)_resultObject.receivedResult;
+  NSDictionary *dictionaryResult = (NSDictionary *)resultObject.receivedResult;
   XCTAssertNotNil(dictionaryResult);
   XCTAssert([[dictionaryResult allKeys] containsObject:@"cameraId"]);
 }

@@ -12,13 +12,13 @@
 /**
  * Gets the original FlutterResult object wrapped by this FLTThreadSafeFlutterResult instance.
  */
-@property(readonly, nonatomic) FlutterResult _Nonnull flutterResult;
+@property(readonly, nonatomic, nonnull) FlutterResult flutterResult;
 
 /**
  * Initializes with a FlutterResult object.
  * @param result The FlutterResult object that the result will be given to.
  */
-- (nonnull id)initWithResult:(nonnull FlutterResult)result;
+- (nonnull instancetype)initWithResult:(nonnull FlutterResult)result;
 
 /**
  * Sends a successful result without any data.
