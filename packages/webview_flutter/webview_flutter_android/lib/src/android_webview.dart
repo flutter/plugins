@@ -19,7 +19,7 @@ const String _nullStringIdentifier = '<null-value>';
 /// guide on invoking a browser with
 /// [url_launcher](https://pub.dev/packages/url_launcher).
 ///
-/// WebView objects allow you to display web content as part of your wiget
+/// WebView objects allow you to display web content as part of your widget
 /// layout, but lack some of the features of fully-developed browsers. A WebView
 /// is useful when you need increased control over the UI and advanced
 /// configuration options that will allow you to embed web pages in a

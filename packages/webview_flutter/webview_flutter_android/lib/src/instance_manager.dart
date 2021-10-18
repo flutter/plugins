@@ -7,12 +7,15 @@ class InstanceManager {
   Map<int, Object> _instanceIdsToInstances = <int, Object>{};
   Map<Object, int> _instancesToInstanceIds = <Object, int>{};
 
-  static int _nextInstanceId = 0;
+  int _nextInstanceId = 0;
 
   /// Global instance of [InstanceManager].
   static final InstanceManager instance = InstanceManager();
 
-  /// Add a new instance with instanceId.
+  /// Attempt to add a new instance.
+  ///
+  /// Returns new if [instance] has already been added. Otherwise, it is added
+  /// with a new instance id.
   int? tryAddInstance(Object instance) {
     if (_instancesToInstanceIds.containsKey(instance)) {
       return null;
@@ -25,6 +28,9 @@ class InstanceManager {
   }
 
   /// Remove the instance from the manager.
+  ///
+  /// Returns null if the instance is removed. Otherwise, return the instanceId
+  /// of the removed instance.
   int? removeInstance(Object instance) {
     final int? instanceId = _instancesToInstanceIds[instance];
     if (instanceId != null) {

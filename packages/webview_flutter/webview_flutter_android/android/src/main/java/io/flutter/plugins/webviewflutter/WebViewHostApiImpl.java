@@ -5,12 +5,9 @@ import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import androidx.annotation.NonNull;
-
-import java.util.Map;
-
 import io.flutter.plugin.platform.PlatformView;
+import java.util.Map;
 
 class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   private final InstanceManager instanceManager;
@@ -76,7 +73,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
   @Override
   public void create(Long instanceId, Boolean useHybridComposition) {
-    final WebView webView = useHybridComposition ? new WebViewImpl(context) : new InputAwareWebViewImpl(context, null);
+    final WebView webView =
+        useHybridComposition ? new WebViewImpl(context) : new InputAwareWebViewImpl(context, null);
     instanceManager.addInstance(webView, instanceId);
   }
 
@@ -134,7 +132,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   }
 
   @Override
-  public void evaluateJavascript(Long instanceId, String javascriptString, GeneratedAndroidWebView.Result<String> result) {
+  public void evaluateJavascript(
+      Long instanceId, String javascriptString, GeneratedAndroidWebView.Result<String> result) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.evaluateJavascript(javascriptString, result::success);
   }
@@ -183,14 +182,16 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   @Override
   public void addJavaScriptChannel(Long instanceId, Long javaScriptChannelInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    final JavaScriptChannel javaScriptChannel = (JavaScriptChannel) instanceManager.getInstance(javaScriptChannelInstanceId);
+    final JavaScriptChannel javaScriptChannel =
+        (JavaScriptChannel) instanceManager.getInstance(javaScriptChannelInstanceId);
     webView.addJavascriptInterface(javaScriptChannel, javaScriptChannel.javaScriptChannelName);
   }
 
   @Override
   public void removeJavaScriptChannel(Long instanceId, Long javaScriptChannelInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    final JavaScriptChannel javaScriptChannel = (JavaScriptChannel) instanceManager.getInstance(javaScriptChannelInstanceId);
+    final JavaScriptChannel javaScriptChannel =
+        (JavaScriptChannel) instanceManager.getInstance(javaScriptChannelInstanceId);
     webView.removeJavascriptInterface(javaScriptChannel.javaScriptChannelName);
   }
 
