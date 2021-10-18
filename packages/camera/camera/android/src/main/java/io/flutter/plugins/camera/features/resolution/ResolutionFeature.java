@@ -25,7 +25,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   private Size captureSize;
   private Size previewSize;
   private CamcorderProfile recordingProfile;
-  private EncoderProfiles recordingProfile_v31;
+  private EncoderProfiles recordingProfileOn31;
   private ResolutionPreset currentSetting;
   private int cameraId;
 
@@ -59,8 +59,8 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     return this.recordingProfile;
   }
 
-  public EncoderProfiles getRecordingProfile_v31() {
-    return this.recordingProfile_v31;
+  public EncoderProfiles getRecordingProfileOn31() {
+    return this.recordingProfileOn31;
   }
 
   /**
@@ -116,7 +116,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
     if (Build.VERSION.SDK_INT >= 31) {
       EncoderProfiles profile =
-          getBestAvailableCamcorderProfileForResolutionPreset_v31(cameraId, preset);
+          getBestAvailableCamcorderProfileForResolutionPresetOn31(cameraId, preset);
       List<EncoderProfiles.VideoProfile> videoProfiles = profile.getVideoProfiles();
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
 
@@ -183,7 +183,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
   }
 
-  public static EncoderProfiles getBestAvailableCamcorderProfileForResolutionPreset_v31(
+  public static EncoderProfiles getBestAvailableCamcorderProfileForResolutionPresetOn31(
       int cameraId, ResolutionPreset preset) {
     if (cameraId < 0) {
       throw new AssertionError(
@@ -221,10 +221,10 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
       default:
         if (CamcorderProfile.hasProfile(cameraId, CamcorderProfile.QUALITY_LOW)) {
           return CamcorderProfile.getAll(cameraIdString, CamcorderProfile.QUALITY_LOW);
-        } else {
-          throw new IllegalArgumentException(
-              "No capture session available for current capture session.");
         }
+
+        throw new IllegalArgumentException(
+            "No capture session available for current capture session.");
     }
   }
 
@@ -236,9 +236,9 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
 
     if (Build.VERSION.SDK_INT >= 31) {
-      recordingProfile_v31 =
-          getBestAvailableCamcorderProfileForResolutionPreset_v31(cameraId, resolutionPreset);
-      List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfile_v31.getVideoProfiles();
+      recordingProfileOn31 =
+          getBestAvailableCamcorderProfileForResolutionPresetOn31(cameraId, resolutionPreset);
+      List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfileOn31.getVideoProfiles();
 
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
       captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());

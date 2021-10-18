@@ -93,16 +93,16 @@ public class CameraTest_getRecordingProfileTest {
 
   @Config(minSdk = 31)
   @Test
-  public void getRecordingProfile_v31() {
+  public void getRecordingProfileOn31() {
     ResolutionFeature mockResolutionFeature =
         mockCameraFeatureFactory.createResolutionFeature(mockCameraProperties, null, null);
     EncoderProfiles mockRecordingProfile = mock(EncoderProfiles.class);
 
-    when(mockResolutionFeature.getRecordingProfile_v31()).thenReturn(mockRecordingProfile);
+    when(mockResolutionFeature.getRecordingProfileOn31()).thenReturn(mockRecordingProfile);
 
-    EncoderProfiles actualRecordingProfile = camera.getRecordingProfile_v31();
+    EncoderProfiles actualRecordingProfile = camera.getRecordingProfileOn31();
 
-    verify(mockResolutionFeature, times(1)).getRecordingProfile_v31();
+    verify(mockResolutionFeature, times(1)).getRecordingProfileOn31();
     assertEquals(mockRecordingProfile, actualRecordingProfile);
   }
 

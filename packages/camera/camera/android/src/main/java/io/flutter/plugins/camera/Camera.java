@@ -200,25 +200,22 @@ class Camera
         ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
             .getLockedCaptureOrientation();
 
+    MediaRecorderBuilder mediaRecorderBuilder;
+
     if (Build.VERSION.SDK_INT >= 31) {
-      mediaRecorder =
-          new MediaRecorderBuilder(getRecordingProfile_v31(), outputFilePath)
-              .setEnableAudio(enableAudio)
-              .setMediaOrientation(
-                  lockedOrientation == null
-                      ? getDeviceOrientationManager().getVideoOrientation()
-                      : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
-              .build();
+      mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfileOn31(), outputFilePath);
     } else {
-      mediaRecorder =
-          new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
-              .setEnableAudio(enableAudio)
-              .setMediaOrientation(
-                  lockedOrientation == null
-                      ? getDeviceOrientationManager().getVideoOrientation()
-                      : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
-              .build();
+      mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfile(), outputFilePath);
     }
+
+    mediaRecorder =
+        mediaRecorderBuilder
+            .setEnableAudio(enableAudio)
+            .setMediaOrientation(
+                lockedOrientation == null
+                    ? getDeviceOrientationManager().getVideoOrientation()
+                    : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
+            .build();
   }
 
   @SuppressLint("MissingPermission")
@@ -935,8 +932,8 @@ class Camera
     return cameraFeatures.getResolution().getRecordingProfile();
   }
 
-  EncoderProfiles getRecordingProfile_v31() {
-    return cameraFeatures.getResolution().getRecordingProfile_v31();
+  EncoderProfiles getRecordingProfileOn31() {
+    return cameraFeatures.getResolution().getRecordingProfileOn31();
   }
 
   /** Shortut to get deviceOrientationListener. */
