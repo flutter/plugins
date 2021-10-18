@@ -18,13 +18,17 @@
 /// Hide the default public constructor.
 - (instancetype)init NS_UNAVAILABLE;
 
-/// Exposes the [CameraPlugin handleMethodCallAsync:result:] method for unit testing.
+/// Handles `FlutterMethodCall`s and ensures result is send on the main dispatch queue.
 ///
-/// This method should always be dispatched on a background queue to prevent deadlocks.
-
+/// @param call The method call command object.
+/// @param result A wrapper around the `FlutterResult` callback which ensures the callback is called
+/// on the main dispatch queue.
 - (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FLTThreadSafeFlutterResult *)result;
 
-/// Exposes the [CameraPlugin orientationChanged:] method for unit testing.
+/// Called by the @c NSNotificationManager each time the device's orientation is changed.
+///
+/// @param notification @c NSNotification instance containing a reference to the `UIDevice` object
+/// that triggered the orientation change.
 - (void)orientationChanged:(NSNotification *)notification;
 
 @end
