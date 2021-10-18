@@ -410,6 +410,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   ) {
     final WebViewClient instance =
         instanceManager.getInstance(instanceId) as WebViewClient;
+    // ignore: deprecated_member_use_from_same_package
     instance.onReceivedError(
       instanceManager.getInstance(webViewInstanceId) as WebView,
       errorCode,
