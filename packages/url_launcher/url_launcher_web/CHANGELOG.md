@@ -1,6 +1,10 @@
+## 2.0.5
+
+- Fixed invalid routes when opening a `Link` in a new tab
+
 ## 2.0.4
 
-* Add `implements` to pubspec.
+- Add `implements` to pubspec.
 
 ## 2.0.3
 
