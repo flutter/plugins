@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/services.dart';
+
 import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
@@ -9,7 +11,10 @@ import 'instance_manager.dart';
 /// Host api implementation for [WebView].
 class WebViewHostApiImpl extends WebViewHostApi {
   /// Constructs a [WebViewHostApiImpl].
-  WebViewHostApiImpl({InstanceManager? instanceManager}) {
+  WebViewHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
@@ -161,7 +166,10 @@ class WebViewHostApiImpl extends WebViewHostApi {
 /// Host api implementation for [WebSettings].
 class WebSettingsHostApiImpl extends WebSettingsHostApi {
   /// Constructs a [WebSettingsHostApiImpl].
-  WebSettingsHostApiImpl({InstanceManager? instanceManager}) {
+  WebSettingsHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
@@ -301,7 +309,10 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
 /// Host api implementation for [JavaScriptChannel].
 class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
   /// Constructs a [JavaScriptChannelHostApiImpl].
-  JavaScriptChannelHostApiImpl({InstanceManager? instanceManager}) {
+  JavaScriptChannelHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
@@ -346,7 +357,10 @@ class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
 /// Host api implementation for [WebViewClient].
 class WebViewClientHostApiImpl extends WebViewClientHostApi {
   /// Constructs a [WebViewClientHostApiImpl].
-  WebViewClientHostApiImpl({InstanceManager? instanceManager}) {
+  WebViewClientHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
@@ -484,7 +498,10 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 /// Host api implementation for [DownloadListener].
 class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
   /// Constructs a [DownloadListenerHostApiImpl].
-  DownloadListenerHostApiImpl({InstanceManager? instanceManager}) {
+  DownloadListenerHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 

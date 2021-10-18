@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
 import 'android_webview_api_impls.dart';
 
-// TODO(bparrishMines): This can be removed once pigeon supports null values.
+// TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
 // Workaround to represent null Strings since pigeon doesn't support null
 // values.
 const String _nullStringIdentifier = '<null-value>';
@@ -31,10 +32,12 @@ const String _nullStringIdentifier = '<null-value>';
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
-    _api.createFromInstance(this);
+    api.createFromInstance(this);
   }
 
-  static final WebViewHostApiImpl _api = WebViewHostApiImpl();
+  /// Pigeon Host Api implementation for [WebView].
+  @visibleForTesting
+  static WebViewHostApiImpl api = WebViewHostApiImpl();
 
   WebViewClient? _currentWebViewClient;
   DownloadListener? _currentDownloadListener;
@@ -60,7 +63,7 @@ class WebView {
   /// and JavaScript code running inside WebViews. Please refer to [WebView]
   /// documentation for the debugging guide. The default is false.
   static Future<void> setWebContentsDebuggingEnabled(bool enabled) {
-    return _api.setWebContentsDebuggingEnabled(enabled);
+    return api.setWebContentsDebuggingEnabled(enabled);
   }
 
   /// Loads the given URL with additional HTTP headers, specified as a map from name to value.
@@ -71,7 +74,7 @@ class WebView {
   ///
   /// Also see compatibility note on [evaluateJavascript].
   Future<void> loadUrl(String url, Map<String, String> headers) {
-    return _api.loadUrlFromInstance(this, url, headers);
+    return api.loadUrlFromInstance(this, url, headers);
   }
 
   /// Gets the URL for the current page.
@@ -82,34 +85,34 @@ class WebView {
   ///
   /// Returns null if no page has been loaded.
   Future<String?> getUrl() async {
-    final String result = await _api.getUrlFromInstance(this);
+    final String result = await api.getUrlFromInstance(this);
     if (result == _nullStringIdentifier) return null;
     return result;
   }
 
   /// Whether this WebView has a back history item.
   Future<bool> canGoBack() {
-    return _api.canGoBackFromInstance(this);
+    return api.canGoBackFromInstance(this);
   }
 
   /// Whether this WebView has a forward history item.
   Future<bool> canGoForward() {
-    return _api.canGoForwardFromInstance(this);
+    return api.canGoForwardFromInstance(this);
   }
 
   /// Goes back in the history of this WebView.
   Future<void> goBack() {
-    return _api.goBackFromInstance(this);
+    return api.goBackFromInstance(this);
   }
 
   /// Goes forward in the history of this WebView.
   Future<void> goForward() {
-    return _api.goForwardFromInstance(this);
+    return api.goForwardFromInstance(this);
   }
 
   /// Reloads the current URL.
   Future<void> reload() {
-    return _api.reloadFromInstance(this);
+    return api.reloadFromInstance(this);
   }
 
   /// Clears the resource cache.
@@ -117,7 +120,7 @@ class WebView {
   /// Note that the cache is per-application, so this will clear the cache for
   /// all WebViews used.
   Future<void> clearCache(bool includeDiskFiles) {
-    return _api.clearCacheFromInstance(this, includeDiskFiles);
+    return api.clearCacheFromInstance(this, includeDiskFiles);
   }
 
   // TODO(bparrishMines): Update documentation once addJavascriptInterface is added.
@@ -131,7 +134,7 @@ class WebView {
   /// navigations like [loadUrl]. For example, global variables and functions
   /// defined before calling [loadUrl]) will not exist in the loaded page.
   Future<String?> evaluateJavascript(String javascriptString) async {
-    final String result = await _api.evaluateJavascriptFromInstance(
+    final String result = await api.evaluateJavascriptFromInstance(
       this,
       javascriptString,
     );
@@ -144,7 +147,7 @@ class WebView {
   ///
   /// Returns null if no page has been loaded.
   Future<String?> getTitle() async {
-    final String result = await _api.getTitleFromInstance(this);
+    final String result = await api.getTitleFromInstance(this);
     if (result == _nullStringIdentifier) return null;
     return result;
   }
@@ -152,13 +155,13 @@ class WebView {
   // TODO(bparrishMines): Update documentation when onScrollChanged is added.
   /// Set the scrolled position of your view.
   Future<void> scrollTo(int x, int y) {
-    return _api.scrollToFromInstance(this, x, y);
+    return api.scrollToFromInstance(this, x, y);
   }
 
   // TODO(bparrishMines): Update documentation when onScrollChanged is added.
   /// Move the scrolled position of your view.
   Future<void> scrollBy(int x, int y) {
-    return _api.scrollByFromInstance(this, x, y);
+    return api.scrollByFromInstance(this, x, y);
   }
 
   /// Return the scrolled left position of this view.
@@ -167,7 +170,7 @@ class WebView {
   /// need to draw any pixels farther left, since those are outside of the frame
   /// of your view on screen.
   Future<int> getScrollX() {
-    return _api.getScrollXFromInstance(this);
+    return api.getScrollXFromInstance(this);
   }
 
   /// Return the scrolled top position of this view.
@@ -176,23 +179,26 @@ class WebView {
   /// to draw any pixels above it, since those are outside of the frame of your
   /// view on screen.
   Future<int> getScrollY() {
-    return _api.getScrollYFromInstance(this);
+    return api.getScrollYFromInstance(this);
   }
 
   /// Sets the [WebViewClient] that will receive various notifications and requests.
   ///
   /// This will replace the current handler.
-  Future<void> setWebViewClient(WebViewClient webViewClient) async {
+  Future<void> setWebViewClient(WebViewClient webViewClient) {
     final WebViewClient? currentWebViewClient = _currentWebViewClient;
-    if (currentWebViewClient != null) {
-      // ignore: unawaited_futures
-      WebViewClient._api.disposeFromInstance(currentWebViewClient);
+
+    if (webViewClient == currentWebViewClient) {
+      return Future<void>.value();
     }
 
-    // ignore: unawaited_futures
-    WebViewClient._api.createFromInstance(webViewClient);
+    if (currentWebViewClient != null) {
+      WebViewClient.api.disposeFromInstance(currentWebViewClient);
+    }
+
+    WebViewClient.api.createFromInstance(webViewClient);
     _currentWebViewClient = webViewClient;
-    return _api.setWebViewClientFromInstance(this, webViewClient);
+    return api.setWebViewClientFromInstance(this, webViewClient);
   }
 
   /// Injects the supplied [JavascriptChannel] into this WebView.
@@ -218,11 +224,10 @@ class WebView {
   /// calling frame's origin from the app side, so the app must not assume that
   /// the caller is trustworthy unless the app can guarantee that no third party
   /// content is ever loaded into the WebView even inside an iframe.
-  Future<void> addJavaScriptChannel(JavaScriptChannel javaScriptChannel) async {
-    // ignore: unawaited_futures
-    JavaScriptChannel._api.createFromInstance(javaScriptChannel);
+  Future<void> addJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
+    JavaScriptChannel.api.createFromInstance(javaScriptChannel);
     _javaScriptChannels.add(javaScriptChannel);
-    return _api.addJavaScriptChannelFromInstance(this, javaScriptChannel);
+    return api.addJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
   /// Removes a previously injected [JavaScriptChannel] from this WebView.
@@ -230,9 +235,9 @@ class WebView {
   /// Note that the removal will not be reflected in JavaScript until the page
   /// is next (re)loaded. See [addJavaScriptChannel].
   Future<void> removeJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
-    JavaScriptChannel._api.disposeFromInstance(javaScriptChannel);
     _javaScriptChannels.remove(javaScriptChannel);
-    return _api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
+    api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
+    return JavaScriptChannel.api.disposeFromInstance(javaScriptChannel);
   }
 
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
@@ -240,13 +245,18 @@ class WebView {
   /// This will replace the current handler.
   Future<void> setDownloadListener(DownloadListener listener) {
     final DownloadListener? currentDownloadListener = _currentDownloadListener;
-    if (currentDownloadListener != null) {
-      DownloadListener._api.disposeFromInstance(currentDownloadListener);
+
+    if (listener == currentDownloadListener) {
+      return Future<void>.value();
     }
 
-    DownloadListener._api.createFromInstance(listener);
+    if (currentDownloadListener != null) {
+      DownloadListener.api.disposeFromInstance(currentDownloadListener);
+    }
+
+    DownloadListener.api.createFromInstance(listener);
     _currentDownloadListener = listener;
-    return _api.setDownloadListenerFromInstance(this, listener);
+    return api.setDownloadListenerFromInstance(this, listener);
   }
 }
 
@@ -259,19 +269,21 @@ class WebView {
 /// Exception.
 class WebSettings {
   WebSettings._(this.webView) {
-    _api.createFromInstance(this);
+    api.createFromInstance(this);
   }
 
   /// The webView instance this is attached to.
   final WebView webView;
 
-  static final WebSettingsHostApiImpl _api = WebSettingsHostApiImpl();
+  /// Pigeon Host Api implementation for [WebSettings].
+  @visibleForTesting
+  static WebSettingsHostApiImpl api = WebSettingsHostApiImpl();
 
   /// Sets whether the DOM storage API is enabled.
   ///
   /// The default value is false.
   Future<void> setDomStorageEnabled(bool flag) {
-    return _api.setDomStorageEnabledFromInstance(this, flag);
+    return api.setDomStorageEnabledFromInstance(this, flag);
   }
 
   /// Tells JavaScript to open windows automatically.
@@ -279,7 +291,7 @@ class WebSettings {
   /// This applies to the JavaScript function `window.open()`. The default is
   /// false.
   Future<void> setJavaScriptCanOpenWindowsAutomatically(bool flag) {
-    return _api.setJavaScriptCanOpenWindowsAutomaticallyFromInstance(
+    return api.setJavaScriptCanOpenWindowsAutomaticallyFromInstance(
       this,
       flag,
     );
@@ -290,14 +302,14 @@ class WebSettings {
   ///
   /// The default is false.
   Future<void> setSupportMultipleWindows(bool support) {
-    return _api.setSupportZoomFromInstance(this, support);
+    return api.setSupportZoomFromInstance(this, support);
   }
 
   /// Tells the WebView to enable JavaScript execution.
   ///
   /// The default is false.
   Future<void> setJavaScriptEnabled(bool flag) {
-    return _api.setJavaScriptEnabledFromInstance(this, flag);
+    return api.setJavaScriptEnabledFromInstance(this, flag);
   }
 
   /// Sets the WebView's user-agent string.
@@ -306,14 +318,14 @@ class WebSettings {
   /// starting from KITKAT Android version, changing the user-agent while
   /// loading a web page causes WebView to initiate loading once again.
   Future<void> setUserAgentString(String userAgentString) {
-    return _api.setUserAgentStringFromInstance(this, userAgentString);
+    return api.setUserAgentStringFromInstance(this, userAgentString);
   }
 
   /// Sets whether the WebView requires a user gesture to play media.
   ///
   /// The default is true.
   Future<void> setMediaPlaybackRequiresUserGesture(bool require) {
-    return _api.setMediaPlaybackRequiresUserGestureFromInstance(this, require);
+    return api.setMediaPlaybackRequiresUserGestureFromInstance(this, require);
   }
 
   // TODO(bparrishMines): Update documentation when WebView.zoomIn and WebView.zoomOut are added.
@@ -324,7 +336,7 @@ class WebSettings {
   ///
   /// The default is true.
   Future<void> setSupportZoom(bool support) {
-    return _api.setSupportZoomFromInstance(this, support);
+    return api.setSupportZoomFromInstance(this, support);
   }
 
   /// Sets whether the WebView loads pages in overview mode, that is, zooms out the content to fit on screen by width.
@@ -335,7 +347,7 @@ class WebSettings {
   ///
   /// The default is false.
   Future<void> setLoadWithOverviewMode(bool overview) {
-    return _api.setLoadWithOverviewModeFromInstance(this, overview);
+    return api.setLoadWithOverviewModeFromInstance(this, overview);
   }
 
   /// Sets whether the WebView should enable support for the "viewport" HTML meta tag or should use a wide viewport.
@@ -346,7 +358,7 @@ class WebSettings {
   /// of the width specified in the tag is used. If the page does not contain
   /// the tag or does not provide a width, then a wide viewport will be used.
   Future<void> setUseWideViewPort(bool use) {
-    return _api.setUseWideViewPortFromInstance(this, use);
+    return api.setUseWideViewPortFromInstance(this, use);
   }
 
   // TODO(bparrishMines): Update documentation when ZoomButtonsController is added.
@@ -356,7 +368,7 @@ class WebSettings {
   /// controls are deprecated in Android so it's recommended to set this to
   /// false.
   Future<void> setDisplayZoomControls(bool enabled) {
-    return _api.setDisplayZoomControlsFromInstance(this, enabled);
+    return api.setDisplayZoomControlsFromInstance(this, enabled);
   }
 
   // TODO(bparrishMines): Update documentation when ZoomButtonsController is added.
@@ -372,7 +384,7 @@ class WebSettings {
   /// on-screen zoom controls are deprecated in Android so it's recommended to
   /// disable [setDisplayZoomControls].
   Future<void> setBuiltInZoomControls(bool enabled) {
-    return _api.setBuiltInZoomControlsFromInstance(this, enabled);
+    return api.setBuiltInZoomControlsFromInstance(this, enabled);
   }
 }
 
@@ -383,14 +395,15 @@ abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(this.channelName);
 
-  static final JavaScriptChannelHostApiImpl _api =
-      JavaScriptChannelHostApiImpl();
+  /// Pigeon Host Api implementation for [JavaScriptChannel].
+  @visibleForTesting
+  static JavaScriptChannelHostApiImpl api = JavaScriptChannelHostApiImpl();
 
   /// Used to identify this object to receive messages from javaScript.
   final String channelName;
 
   /// Callback method when javaScript calls `postMessage` on the object instance passed.
-  void postMessage(String message);
+  void postMessage(String message) {}
 }
 
 /// Receive various notifications and requests for [WebView].
@@ -446,7 +459,9 @@ abstract class WebViewClient {
   /// Unsupported URI scheme.
   static const int errorUnsupportedScheme = 0xfffffff6;
 
-  static final WebViewClientHostApiImpl _api = WebViewClientHostApiImpl();
+  /// Pigeon Host Api implementation for [WebViewClient].
+  @visibleForTesting
+  static WebViewClientHostApiImpl api = WebViewClientHostApiImpl();
 
   /// Whether loading a url should be overridden.
   ///
@@ -470,7 +485,7 @@ abstract class WebViewClient {
   /// embedded frame changes, i.e. clicking a link whose target is an iframe, it
   /// will also not be called for fragment navigations (navigations to
   /// #fragment_id).
-  void onPageStarted(WebView webView, String url);
+  void onPageStarted(WebView webView, String url) {}
 
   // TODO(bparrishMines): Update documentation when WebView.postVisualStateCallback is added.
   /// Notify the host application that a page has finished loading.
@@ -478,7 +493,7 @@ abstract class WebViewClient {
   /// This method is called only for main frame. Receiving an [onPageFinished]
   /// callback does not guarantee that the next frame drawn by WebView will
   /// reflect the state of the DOM at this point.
-  void onPageFinished(WebView webView, String url);
+  void onPageFinished(WebView webView, String url) {}
 
   /// Report web resource loading error to the host application.
   ///
@@ -491,7 +506,7 @@ abstract class WebViewClient {
     WebView webView,
     WebResourceRequest request,
     WebResourceError error,
-  );
+  ) {}
 
   /// Report an error to the host application.
   ///
@@ -503,7 +518,7 @@ abstract class WebViewClient {
     int errorCode,
     String description,
     String failingUrl,
-  );
+  ) {}
 
   // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
   /// When a URL is about to be loaded in the current [WebView].
@@ -513,7 +528,7 @@ abstract class WebViewClient {
   /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
   /// causes the current [WebView] to abort loading the URL, while returning
   /// false causes the [WebView] to continue loading the URL as usual.
-  void requestLoading(WebView webView, WebResourceRequest request);
+  void requestLoading(WebView webView, WebResourceRequest request) {}
 
   // TODO(bparrishMines): Update documentation once synchronous url handling is supported.
   /// When a URL is about to be loaded in the current [WebView].
@@ -523,12 +538,14 @@ abstract class WebViewClient {
   /// [WebViewClient] is provided, setting [shouldOverrideUrlLoading] to true
   /// causes the current [WebView] to abort loading the URL, while returning
   /// false causes the [WebView] to continue loading the URL as usual.
-  void urlLoading(WebView webView, String url);
+  void urlLoading(WebView webView, String url) {}
 }
 
 /// The interface to be used when content can not be handled by the rendering engine for [WebView], and should be downloaded instead.
 abstract class DownloadListener {
-  static final DownloadListenerHostApiImpl _api = DownloadListenerHostApiImpl();
+  /// Pigeon Host Api implementation for [DownloadListener].
+  @visibleForTesting
+  static DownloadListenerHostApiImpl api = DownloadListenerHostApiImpl();
 
   /// Notify the host application that a file should be downloaded.
   void onDownloadStart(

@@ -18,7 +18,7 @@ class WebResourceErrorData {
   String? description;
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestWebViewHostApi')
 abstract class WebViewHostApi {
   void create(int instanceId, bool useHybridComposition);
 
