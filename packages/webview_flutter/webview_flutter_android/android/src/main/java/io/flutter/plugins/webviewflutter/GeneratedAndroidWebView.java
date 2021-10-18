@@ -707,13 +707,13 @@ public class GeneratedAndroidWebView {
       }
     }
   }
-  private static class WebViewSettingsHostApiCodec extends StandardMessageCodec {
-    public static final WebViewSettingsHostApiCodec INSTANCE = new WebViewSettingsHostApiCodec();
-    private WebViewSettingsHostApiCodec() {}
+  private static class WebSettingsHostApiCodec extends StandardMessageCodec {
+    public static final WebSettingsHostApiCodec INSTANCE = new WebSettingsHostApiCodec();
+    private WebSettingsHostApiCodec() {}
   }
 
   /** Generated interface from Pigeon that represents a handler of messages from Flutter.*/
-  public interface WebViewSettingsHostApi {
+  public interface WebSettingsHostApi {
     void create(Long instanceId, Long webViewInstanceId);
     void dispose(Long instanceId);
     void setDomStorageEnabled(Long instanceId, Boolean flag);
@@ -728,16 +728,16 @@ public class GeneratedAndroidWebView {
     void setDisplayZoomControls(Long instanceId, Boolean enabled);
     void setBuiltInZoomControls(Long instanceId, Boolean enabled);
 
-    /** The codec used by WebViewSettingsHostApi. */
+    /** The codec used by WebSettingsHostApi. */
     static MessageCodec<Object> getCodec() {
-      return WebViewSettingsHostApiCodec.INSTANCE;
+      return WebSettingsHostApiCodec.INSTANCE;
     }
 
-    /** Sets up an instance of `WebViewSettingsHostApi` to handle messages through the `binaryMessenger`. */
-    static void setup(BinaryMessenger binaryMessenger, WebViewSettingsHostApi api) {
+    /** Sets up an instance of `WebSettingsHostApi` to handle messages through the `binaryMessenger`. */
+    static void setup(BinaryMessenger binaryMessenger, WebSettingsHostApi api) {
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.create", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.create", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -765,7 +765,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.dispose", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.dispose", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -789,7 +789,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setDomStorageEnabled", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setDomStorageEnabled", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -817,7 +817,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setJavaScriptCanOpenWindowsAutomatically", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setJavaScriptCanOpenWindowsAutomatically", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -845,7 +845,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setSupportMultipleWindows", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setSupportMultipleWindows", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -873,7 +873,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setJavaScriptEnabled", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setJavaScriptEnabled", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -901,7 +901,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setUserAgentString", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setUserAgentString", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -929,7 +929,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setMediaPlaybackRequiresUserGesture", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setMediaPlaybackRequiresUserGesture", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -957,7 +957,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setSupportZoom", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setSupportZoom", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -985,7 +985,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setLoadWithOverviewMode", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setLoadWithOverviewMode", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -1013,7 +1013,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setUseWideViewPort", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setUseWideViewPort", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -1041,7 +1041,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setDisplayZoomControls", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setDisplayZoomControls", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -1069,7 +1069,7 @@ public class GeneratedAndroidWebView {
       }
       {
         BasicMessageChannel<Object> channel =
-            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewSettingsHostApi.setBuiltInZoomControls", getCodec());
+            new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebSettingsHostApi.setBuiltInZoomControls", getCodec());
         if (api != null) {
           channel.setMessageHandler((message, reply) -> {
             Map<String, Object> wrapped = new HashMap<>();
@@ -1346,16 +1346,16 @@ public class GeneratedAndroidWebView {
         callback.reply(null);
       });
     }
-    public void shouldOverrideRequestLoading(Long instanceIdArg, Long webViewInstanceIdArg, WebResourceRequestData requestArg, Reply<Void> callback) {
+    public void requestLoading(Long instanceIdArg, Long webViewInstanceIdArg, WebResourceRequestData requestArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideRequestLoading", getCodec());
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.requestLoading", getCodec());
       channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, requestArg)), channelReply -> {
         callback.reply(null);
       });
     }
-    public void shouldOverrideUrlLoading(Long instanceIdArg, Long webViewInstanceIdArg, String urlArg, Reply<Void> callback) {
+    public void urlLoading(Long instanceIdArg, Long webViewInstanceIdArg, String urlArg, Reply<Void> callback) {
       BasicMessageChannel<Object> channel =
-          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading", getCodec());
+          new BasicMessageChannel<>(binaryMessenger, "dev.flutter.pigeon.WebViewClientFlutterApi.urlLoading", getCodec());
       channel.send(new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, urlArg)), channelReply -> {
         callback.reply(null);
       });

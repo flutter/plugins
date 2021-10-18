@@ -556,23 +556,23 @@ class WebViewHostApi {
   }
 }
 
-class _WebViewSettingsHostApiCodec extends StandardMessageCodec {
-  const _WebViewSettingsHostApiCodec();
+class _WebSettingsHostApiCodec extends StandardMessageCodec {
+  const _WebSettingsHostApiCodec();
 }
 
-class WebViewSettingsHostApi {
-  /// Constructor for [WebViewSettingsHostApi].  The [binaryMessenger] named argument is
+class WebSettingsHostApi {
+  /// Constructor for [WebSettingsHostApi].  The [binaryMessenger] named argument is
   /// available for dependency injection.  If it is left null, the default
   /// BinaryMessenger will be used which routes to the host platform.
-  WebViewSettingsHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
+  WebSettingsHostApi({BinaryMessenger? binaryMessenger}) : _binaryMessenger = binaryMessenger;
 
   final BinaryMessenger? _binaryMessenger;
 
-  static const MessageCodec<Object?> codec = _WebViewSettingsHostApiCodec();
+  static const MessageCodec<Object?> codec = _WebSettingsHostApiCodec();
 
   Future<void> create(int arg_instanceId, int arg_webViewInstanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.create', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.create', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_webViewInstanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -595,7 +595,7 @@ class WebViewSettingsHostApi {
 
   Future<void> dispose(int arg_instanceId) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.dispose', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.dispose', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -618,7 +618,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setDomStorageEnabled(int arg_instanceId, bool arg_flag) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setDomStorageEnabled', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setDomStorageEnabled', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_flag]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -641,7 +641,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setJavaScriptCanOpenWindowsAutomatically(int arg_instanceId, bool arg_flag) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setJavaScriptCanOpenWindowsAutomatically', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setJavaScriptCanOpenWindowsAutomatically', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_flag]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -664,7 +664,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setSupportMultipleWindows(int arg_instanceId, bool arg_support) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setSupportMultipleWindows', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setSupportMultipleWindows', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_support]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -687,7 +687,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setJavaScriptEnabled(int arg_instanceId, bool arg_flag) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setJavaScriptEnabled', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setJavaScriptEnabled', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_flag]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -710,7 +710,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setUserAgentString(int arg_instanceId, String arg_userAgentString) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setUserAgentString', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setUserAgentString', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_userAgentString]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -733,7 +733,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setMediaPlaybackRequiresUserGesture(int arg_instanceId, bool arg_require) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setMediaPlaybackRequiresUserGesture', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setMediaPlaybackRequiresUserGesture', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_require]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -756,7 +756,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setSupportZoom(int arg_instanceId, bool arg_support) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setSupportZoom', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setSupportZoom', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_support]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -779,7 +779,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setLoadWithOverviewMode(int arg_instanceId, bool arg_overview) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setLoadWithOverviewMode', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setLoadWithOverviewMode', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_overview]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -802,7 +802,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setUseWideViewPort(int arg_instanceId, bool arg_use) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setUseWideViewPort', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setUseWideViewPort', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_use]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -825,7 +825,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setDisplayZoomControls(int arg_instanceId, bool arg_enabled) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setDisplayZoomControls', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setDisplayZoomControls', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_enabled]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -848,7 +848,7 @@ class WebViewSettingsHostApi {
 
   Future<void> setBuiltInZoomControls(int arg_instanceId, bool arg_enabled) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.WebViewSettingsHostApi.setBuiltInZoomControls', codec, binaryMessenger: _binaryMessenger);
+        'dev.flutter.pigeon.WebSettingsHostApi.setBuiltInZoomControls', codec, binaryMessenger: _binaryMessenger);
     final Map<Object?, Object?>? replyMap =
         await channel.send(<Object>[arg_instanceId, arg_enabled]) as Map<Object?, Object?>?;
     if (replyMap == null) {
@@ -1066,8 +1066,8 @@ abstract class WebViewClientFlutterApi {
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
   void onReceivedRequestError(int instanceId, int webViewInstanceId, WebResourceRequestData request, WebResourceErrorData error);
   void onReceivedError(int instanceId, int webViewInstanceId, int errorCode, String description, String failingUrl);
-  void shouldOverrideRequestLoading(int instanceId, int webViewInstanceId, WebResourceRequestData request);
-  void shouldOverrideUrlLoading(int instanceId, int webViewInstanceId, String url);
+  void requestLoading(int instanceId, int webViewInstanceId, WebResourceRequestData request);
+  void urlLoading(int instanceId, int webViewInstanceId, String url);
   static void setup(WebViewClientFlutterApi? api) {
     {
       const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -1157,40 +1157,40 @@ abstract class WebViewClientFlutterApi {
     }
     {
       const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideRequestLoading', codec);
+          'dev.flutter.pigeon.WebViewClientFlutterApi.requestLoading', codec);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideRequestLoading was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.requestLoading was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideRequestLoading was null, expected non-null int.');
+          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.requestLoading was null, expected non-null int.');
           final int? arg_webViewInstanceId = args[1] as int?;
-          assert(arg_webViewInstanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideRequestLoading was null, expected non-null int.');
+          assert(arg_webViewInstanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.requestLoading was null, expected non-null int.');
           final WebResourceRequestData? arg_request = args[2] as WebResourceRequestData?;
-          assert(arg_request != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideRequestLoading was null, expected non-null WebResourceRequestData.');
-          api.shouldOverrideRequestLoading(arg_instanceId!, arg_webViewInstanceId!, arg_request!);
+          assert(arg_request != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.requestLoading was null, expected non-null WebResourceRequestData.');
+          api.requestLoading(arg_instanceId!, arg_webViewInstanceId!, arg_request!);
           return;
         });
       }
     }
     {
       const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading', codec);
+          'dev.flutter.pigeon.WebViewClientFlutterApi.urlLoading', codec);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading was null.');
+          assert(message != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.urlLoading was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_instanceId = args[0] as int?;
-          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading was null, expected non-null int.');
+          assert(arg_instanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.urlLoading was null, expected non-null int.');
           final int? arg_webViewInstanceId = args[1] as int?;
-          assert(arg_webViewInstanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading was null, expected non-null int.');
+          assert(arg_webViewInstanceId != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.urlLoading was null, expected non-null int.');
           final String? arg_url = args[2] as String?;
-          assert(arg_url != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.shouldOverrideUrlLoading was null, expected non-null String.');
-          api.shouldOverrideUrlLoading(arg_instanceId!, arg_webViewInstanceId!, arg_url!);
+          assert(arg_url != null, 'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.urlLoading was null, expected non-null String.');
+          api.urlLoading(arg_instanceId!, arg_webViewInstanceId!, arg_url!);
           return;
         });
       }

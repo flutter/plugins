@@ -52,7 +52,7 @@ class WebView {
   final bool useHybridComposition;
 
   /// The [WebSettings] object used to control the settings for this WebView.
-  late final WebViewSettings settings = WebViewSettings._(this);
+  late final WebSettings settings = WebSettings._(this);
 
   /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
   ///
@@ -257,15 +257,15 @@ class WebView {
 /// obtained from [WebView.settings] is tied to the life of the WebView. If a
 /// WebView has been destroyed, any method call on [WebSettings] will throw an
 /// Exception.
-class WebViewSettings {
-  WebViewSettings._(this.webView) {
+class WebSettings {
+  WebSettings._(this.webView) {
     _api.createFromInstance(this);
   }
 
   /// The webView instance this is attached to.
   final WebView webView;
 
-  static final WebViewSettingsHostApiImpl _api = WebViewSettingsHostApiImpl();
+  static final WebSettingsHostApiImpl _api = WebSettingsHostApiImpl();
 
   /// Sets whether the DOM storage API is enabled.
   ///
@@ -560,7 +560,7 @@ class WebResourceRequest {
 
   /// Gets whether the request was a result of a server-side redirect.
   ///
-  /// Only supported on Android version >= 23.
+  /// Only supported on Android version >= 24.
   final bool? isRedirect;
 
   /// Gets whether a gesture (such as a click) was associated with the request.

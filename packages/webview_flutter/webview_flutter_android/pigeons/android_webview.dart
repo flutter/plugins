@@ -72,7 +72,7 @@ abstract class WebViewHostApi {
 }
 
 @HostApi()
-abstract class WebViewSettingsHostApi {
+abstract class WebSettingsHostApi {
   void create(int instanceId, int webViewInstanceId);
 
   void dispose(int instanceId);
@@ -140,17 +140,13 @@ abstract class WebViewClientFlutterApi {
     String failingUrl,
   );
 
-  void shouldOverrideRequestLoading(
+  void requestLoading(
     int instanceId,
     int webViewInstanceId,
     WebResourceRequestData request,
   );
 
-  void shouldOverrideUrlLoading(
-    int instanceId,
-    int webViewInstanceId,
-    String url,
-  );
+  void urlLoading(int instanceId, int webViewInstanceId, String url);
 }
 
 @HostApi()

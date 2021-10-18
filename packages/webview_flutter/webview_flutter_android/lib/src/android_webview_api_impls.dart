@@ -158,10 +158,10 @@ class WebViewHostApiImpl extends WebViewHostApi {
   }
 }
 
-/// Host api implementation for [WebViewSettings].
-class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
-  /// Constructs a [WebViewSettingsHostApiImpl].
-  WebViewSettingsHostApiImpl({InstanceManager? instanceManager}) {
+/// Host api implementation for [WebSettings].
+class WebSettingsHostApiImpl extends WebSettingsHostApi {
+  /// Constructs a [WebSettingsHostApiImpl].
+  WebSettingsHostApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
@@ -169,7 +169,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
   late final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(WebViewSettings instance) async {
+  Future<void> createFromInstance(WebSettings instance) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       return create(
@@ -180,7 +180,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
   }
 
   /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebViewSettings instance) async {
+  Future<void> disposeFromInstance(WebSettings instance) async {
     final int? instanceId = instanceManager.removeInstance(instance);
     if (instanceId != null) {
       return dispose(instanceId);
@@ -189,7 +189,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setDomStorageEnabledFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool flag,
   ) {
     return setDomStorageEnabled(instanceManager.getInstanceId(instance)!, flag);
@@ -197,7 +197,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setJavaScriptCanOpenWindowsAutomaticallyFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool flag,
   ) {
     return setJavaScriptCanOpenWindowsAutomatically(
@@ -208,7 +208,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setSupportMultipleWindowsFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool support,
   ) {
     return setSupportMultipleWindows(
@@ -217,7 +217,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setJavaScriptEnabledFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool flag,
   ) {
     return setJavaScriptCanOpenWindowsAutomatically(
@@ -228,7 +228,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setUserAgentStringFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     String userAgentString,
   ) {
     return setUserAgentString(
@@ -239,7 +239,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setMediaPlaybackRequiresUserGestureFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool require,
   ) {
     return setMediaPlaybackRequiresUserGesture(
@@ -250,7 +250,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setSupportZoomFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool support,
   ) {
     return setSupportZoom(instanceManager.getInstanceId(instance)!, support);
@@ -258,7 +258,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setLoadWithOverviewModeFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool overview,
   ) {
     return setLoadWithOverviewMode(
@@ -269,7 +269,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setUseWideViewPortFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool use,
   ) {
     return setUseWideViewPort(instanceManager.getInstanceId(instance)!, use);
@@ -277,7 +277,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setDisplayZoomControlsFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool enabled,
   ) {
     return setDisplayZoomControls(
@@ -288,7 +288,7 @@ class WebViewSettingsHostApiImpl extends WebViewSettingsHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> setBuiltInZoomControlsFromInstance(
-    WebViewSettings instance,
+    WebSettings instance,
     bool enabled,
   ) {
     return setBuiltInZoomControls(
@@ -445,7 +445,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   }
 
   @override
-  void shouldOverrideRequestLoading(
+  void requestLoading(
     int instanceId,
     int webViewInstanceId,
     WebResourceRequestData request,
@@ -466,7 +466,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   }
 
   @override
-  void shouldOverrideUrlLoading(
+  void urlLoading(
     int instanceId,
     int webViewInstanceId,
     String url,
