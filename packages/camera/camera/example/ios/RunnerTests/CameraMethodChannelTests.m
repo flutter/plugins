@@ -16,7 +16,7 @@
 
 - (void)testCreate_ShouldCallResultOnMainThread {
   CameraPlugin *camera = [[CameraPlugin alloc] initWithRegistry:nil messenger:nil];
-  
+
   XCTestExpectation *expectation =
       [[XCTestExpectation alloc] initWithDescription:@"Result finished"];
 
@@ -29,8 +29,9 @@
   OCMStub([avCaptureSessionMock alloc]).andReturn(avCaptureSessionMock);
   OCMStub([avCaptureSessionMock canSetSessionPreset:[OCMArg any]]).andReturn(YES);
 
-  MockFLTThreadSafeFlutterResult *resultObject = [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
-  
+  MockFLTThreadSafeFlutterResult *resultObject =
+      [[MockFLTThreadSafeFlutterResult alloc] initWithExpectation:expectation];
+
   // Set up method call
   FlutterMethodCall *call = [FlutterMethodCall
       methodCallWithMethodName:@"create"

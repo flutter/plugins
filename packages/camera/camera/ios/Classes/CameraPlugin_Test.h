@@ -21,7 +21,7 @@
 /// Exposes the [CameraPlugin handleMethodCallAsync:result:] method for unit testing.
 ///
 /// This method should always be dispatched on a background queue to prevent deadlocks.
- 
+
 - (void)handleMethodCallAsync:(FlutterMethodCall *)call result:(FLTThreadSafeFlutterResult *)result;
 
 /// Exposes the [CameraPlugin orientationChanged:] method for unit testing.

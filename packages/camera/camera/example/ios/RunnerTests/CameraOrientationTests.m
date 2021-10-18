@@ -17,13 +17,25 @@
 - (void)testOrientationNotifications {
   id mockMessenger = OCMProtocolMock(@protocol(FlutterBinaryMessenger));
   CameraPlugin *cameraPlugin = [[CameraPlugin alloc] initWithRegistry:nil messenger:mockMessenger];
-  
+
   [mockMessenger setExpectationOrderMatters:YES];
 
-  [self rotate:UIDeviceOrientationPortraitUpsideDown expectedChannelOrientation:@"portraitDown" cameraPlugin:cameraPlugin messenger: mockMessenger];
-  [self rotate:UIDeviceOrientationPortrait expectedChannelOrientation:@"portraitUp" cameraPlugin:cameraPlugin messenger: mockMessenger];
-  [self rotate:UIDeviceOrientationLandscapeRight expectedChannelOrientation:@"landscapeLeft" cameraPlugin:cameraPlugin messenger: mockMessenger];
-  [self rotate:UIDeviceOrientationLandscapeLeft expectedChannelOrientation:@"landscapeRight" cameraPlugin:cameraPlugin messenger: mockMessenger];
+  [self rotate:UIDeviceOrientationPortraitUpsideDown
+      expectedChannelOrientation:@"portraitDown"
+                    cameraPlugin:cameraPlugin
+                       messenger:mockMessenger];
+  [self rotate:UIDeviceOrientationPortrait
+      expectedChannelOrientation:@"portraitUp"
+                    cameraPlugin:cameraPlugin
+                       messenger:mockMessenger];
+  [self rotate:UIDeviceOrientationLandscapeRight
+      expectedChannelOrientation:@"landscapeLeft"
+                    cameraPlugin:cameraPlugin
+                       messenger:mockMessenger];
+  [self rotate:UIDeviceOrientationLandscapeLeft
+      expectedChannelOrientation:@"landscapeRight"
+                    cameraPlugin:cameraPlugin
+                       messenger:mockMessenger];
 
   OCMReject([mockMessenger sendOnChannel:[OCMArg any] message:[OCMArg any]]);
 
@@ -39,9 +51,8 @@
 
 - (void)rotate:(UIDeviceOrientation)deviceOrientation
     expectedChannelOrientation:(NSString *)channelOrientation
-        cameraPlugin: (CameraPlugin *)cameraPlugin
-     messenger: (NSObject<FlutterBinaryMessenger> *) messenger {
-  
+                  cameraPlugin:(CameraPlugin *)cameraPlugin
+                     messenger:(NSObject<FlutterBinaryMessenger> *)messenger {
   XCTestExpectation *orientationExpectation = [self expectationWithDescription:channelOrientation];
 
   OCMExpect([messenger
@@ -55,8 +66,7 @@
                   [methodCall.arguments isEqualToDictionary:@{@"orientation" : channelOrientation}];
             }]]);
 
-  [cameraPlugin
-      orientationChanged:[self createMockNotificationForOrientation:deviceOrientation]];
+  [cameraPlugin orientationChanged:[self createMockNotificationForOrientation:deviceOrientation]];
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 

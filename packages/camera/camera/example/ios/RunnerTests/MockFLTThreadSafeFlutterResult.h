@@ -16,9 +16,10 @@
 /**
  * Initializes the MockFLTThreadSafeFlutterResult with an expectation.
  *
- * The expectation is fullfilled when a result is called allowing tests to await the result in an asynchronous manner.
+ * The expectation is fullfilled when a result is called allowing tests to await the result in an
+ * asynchronous manner.
  */
-- (instancetype _Nonnull) initWithExpectation:(nonnull XCTestExpectation *)expectation;
+- (instancetype _Nonnull)initWithExpectation:(nonnull XCTestExpectation *)expectation;
 @end
 
 #endif /* MockFLTThreadSafeFlutterResult_h */

@@ -34,7 +34,7 @@
 - (void)testResumePreviewWithResult_shouldResumePreview {
   FLTCam *camera = [[FLTCam alloc] init];
   MockFLTThreadSafeFlutterResult *resultObject = [[MockFLTThreadSafeFlutterResult alloc] init];
-  
+
   [camera resumePreviewWithResult:resultObject];
   XCTAssertFalse(camera.isPreviewPaused);
 }
