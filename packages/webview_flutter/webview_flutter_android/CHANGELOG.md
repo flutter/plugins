@@ -1,7 +1,7 @@
 ## 2.0.16
 
-* Fix `NullPointerException` on Android from a race condition when changing focus. This only affects
-WebView when it is created without Hybrid Composition.
+* Fix `NullPointerException` from a race condition when changing focus. This only affects `WebView`
+when it is created without Hybrid Composition.
 
 ## 2.0.15
 
