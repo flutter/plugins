@@ -100,7 +100,7 @@ abstract class WebSettingsHostApi {
   void setBuiltInZoomControls(int instanceId, bool enabled);
 }
 
-@HostApi(dartHostTestHandler:'TestJavaScriptChannelHostApi')
+@HostApi(dartHostTestHandler: 'TestJavaScriptChannelHostApi')
 abstract class JavaScriptChannelHostApi {
   void create(int instanceId, String channelName);
 

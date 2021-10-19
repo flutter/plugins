@@ -177,12 +177,12 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
   late final InstanceManager instanceManager;
 
   /// Helper method to convert instances ids to objects.
-  Future<void> createFromInstance(WebSettings instance) async {
+  Future<void> createFromInstance(WebSettings instance, WebView webView) async {
     final int? instanceId = instanceManager.tryAddInstance(instance);
     if (instanceId != null) {
       return create(
         instanceId,
-        instanceManager.getInstanceId(instance.webView)!,
+        instanceManager.getInstanceId(webView)!,
       );
     }
   }

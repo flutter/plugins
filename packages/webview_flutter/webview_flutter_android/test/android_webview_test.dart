@@ -44,7 +44,7 @@ void main() {
 
       test('create', () {
         final WebView webView = WebView();
-        final WebSettings webSettings = webView.settings;
+        final WebSettings webSettings = WebSettings(webView);
         expect(
           WebSettings.api.instanceManager.getInstanceId(webSettings),
           isNotNull,

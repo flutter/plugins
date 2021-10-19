@@ -55,7 +55,7 @@ class WebView {
   final bool useHybridComposition;
 
   /// The [WebSettings] object used to control the settings for this WebView.
-  late final WebSettings settings = WebSettings._(this);
+  late final WebSettings settings = WebSettings(this);
 
   /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
   ///
@@ -268,12 +268,14 @@ class WebView {
 /// WebView has been destroyed, any method call on [WebSettings] will throw an
 /// Exception.
 class WebSettings {
-  WebSettings._(this.webView) {
-    api.createFromInstance(this);
+  /// Constructs a [WebSettings].
+  ///
+  /// This constructor is only used for testing. An instance should be obtained
+  /// with [WebView.settings].
+  @visibleForTesting
+  WebSettings(WebView webView) {
+    api.createFromInstance(this, webView);
   }
-
-  /// The webView instance this is attached to.
-  final WebView webView;
 
   /// Pigeon Host Api implementation for [WebSettings].
   @visibleForTesting
