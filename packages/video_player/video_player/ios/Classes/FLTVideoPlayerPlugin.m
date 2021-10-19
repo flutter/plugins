@@ -52,6 +52,8 @@
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
+static void* presentationSizeContext = &presentationSizeContext;
+static void* durationContext = &durationContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
@@ -71,6 +73,14 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"status"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"presentationSize"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:presentationSizeContext];
+  [item addObserver:self
+         forKeyPath:@"duration"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:durationContext];
   [item addObserver:self
          forKeyPath:@"playbackLikelyToKeepUp"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -285,6 +295,14 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         [self sendInitialized];
         [self updatePlayingState];
         break;
+    }
+  } else if (context == presentationSizeContext || context == durationContext) {
+    AVPlayerItem* item = (AVPlayerItem*)object;
+    if (item.status == AVPlayerItemStatusReadyToPlay) {
+      // When the player item is ready, it still may not have determined its presentation size or
+      // duration. When these properties are finally set, initialize the player.
+      [self sendInitialized];
+      [self updatePlayingState];
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
