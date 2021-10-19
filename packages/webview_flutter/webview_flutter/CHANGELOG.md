@@ -1,8 +1,3 @@
-## 2.1.2
-
-* Fix `NullPointerException` on Android from a race condition when changing focus. This only affects
-WebView when it is created without Hybrid Composition.
-
 ## 2.1.1
 
 * Fixed `_CastError` that was thrown when running the example App.
