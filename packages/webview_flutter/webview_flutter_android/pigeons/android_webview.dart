@@ -71,7 +71,7 @@ abstract class WebViewHostApi {
   void setDownloadListener(int instanceId, int listenerInstanceId);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
 abstract class WebSettingsHostApi {
   void create(int instanceId, int webViewInstanceId);
 
@@ -100,7 +100,7 @@ abstract class WebSettingsHostApi {
   void setBuiltInZoomControls(int instanceId, bool enabled);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler:'TestJavaScriptChannelHostApi')
 abstract class JavaScriptChannelHostApi {
   void create(int instanceId, String channelName);
 
@@ -112,7 +112,7 @@ abstract class JavaScriptChannelFlutterApi {
   void postMessage(int instanceId, String message);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestWebViewClientHostApi')
 abstract class WebViewClientHostApi {
   void create(int instanceId, bool shouldOverrideUrlLoading);
 
@@ -149,7 +149,7 @@ abstract class WebViewClientFlutterApi {
   void urlLoading(int instanceId, int webViewInstanceId, String url);
 }
 
-@HostApi()
+@HostApi(dartHostTestHandler: 'TestDownloadListenerHostApi')
 abstract class DownloadListenerHostApi {
   void create(int instanceId);
   void dispose(int instanceId);

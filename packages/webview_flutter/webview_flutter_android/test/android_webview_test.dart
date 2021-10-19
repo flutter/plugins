@@ -7,20 +7,19 @@ import 'package:webview_flutter_android/src/android_webview.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
-import 'test_binary_messenger.dart';
+import 'android_webview.pigeon.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
   group('Android WebView', () {
     group('$WebView', () {
-      setUp(() {
-        WebView.api = WebViewHostApiImpl(
-          instanceManager: InstanceManager(),
-          binaryMessenger: TestBinaryMessenger(),
-        );
+      setUpAll(() {
+        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
       });
 
-      tearDownAll(() {
-        WebView.api = WebViewHostApiImpl();
+      setUp(() {
+        WebView.api = WebViewHostApiImpl(instanceManager: InstanceManager());
       });
 
       test('create', () {
@@ -30,16 +29,16 @@ void main() {
     });
 
     group('$WebSettings', () {
+      setUpAll(() {
+        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestWebSettingsHostApi.setup(TestWebSettingsHostApiImpl());
+      });
+
       setUp(() {
         final InstanceManager instanceManager = InstanceManager();
-        final TestBinaryMessenger binaryMessenger = TestBinaryMessenger();
-        WebView.api = WebViewHostApiImpl(
-          instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
-        );
+        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
         WebSettings.api = WebSettingsHostApiImpl(
           instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
         );
       });
 
@@ -54,16 +53,16 @@ void main() {
     });
 
     group('$JavaScriptChannel', () {
+      setUpAll(() {
+        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestJavaScriptChannelHostApi.setup(TestJavaScriptChannelHostApiImpl());
+      });
+
       setUp(() {
         final InstanceManager instanceManager = InstanceManager();
-        final TestBinaryMessenger binaryMessenger = TestBinaryMessenger();
-        WebView.api = WebViewHostApiImpl(
-          instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
-        );
+        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
         JavaScriptChannel.api = JavaScriptChannelHostApiImpl(
           instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
         );
       });
 
@@ -86,16 +85,16 @@ void main() {
     });
 
     group('$WebViewClient', () {
+      setUpAll(() {
+        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestWebViewClientHostApi.setup(TestWebViewClientHostApiImpl());
+      });
+
       setUp(() {
         final InstanceManager instanceManager = InstanceManager();
-        final TestBinaryMessenger binaryMessenger = TestBinaryMessenger();
-        WebView.api = WebViewHostApiImpl(
-          instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
-        );
+        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
         WebViewClient.api = WebViewClientHostApiImpl(
           instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
         );
       });
 
@@ -119,16 +118,16 @@ void main() {
     });
 
     group('$DownloadListener', () {
+      setUpAll(() {
+        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestDownloadListenerHostApi.setup(TestDownloadListenerHostApiImpl());
+      });
+
       setUp(() {
         final InstanceManager instanceManager = InstanceManager();
-        final TestBinaryMessenger binaryMessenger = TestBinaryMessenger();
-        WebView.api = WebViewHostApiImpl(
-          instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
-        );
+        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
         DownloadListener.api = DownloadListenerHostApiImpl(
           instanceManager: instanceManager,
-          binaryMessenger: binaryMessenger,
         );
       });
 
@@ -157,9 +156,7 @@ class TestJavaScriptChannel extends JavaScriptChannel {
   TestJavaScriptChannel(String channelName) : super(channelName);
 
   @override
-  void postMessage(String message) {
-    // Do nothing.
-  }
+  void postMessage(String message) {}
 }
 
 class TestWebViewClient extends WebViewClient {}
@@ -172,7 +169,150 @@ class TestDownloadListener extends DownloadListener {
     String contentDisposition,
     String mimetype,
     int contentLength,
-  ) {
-    // Do nothing.
+  ) {}
+}
+
+class TestWebViewHostApiImpl extends TestWebViewHostApi {
+  @override
+  void addJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId) {}
+
+  @override
+  bool canGoBack(int instanceId) {
+    throw UnimplementedError();
   }
+
+  @override
+  bool canGoForward(int instanceId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void clearCache(int instanceId, bool includeDiskFiles) {}
+
+  @override
+  void create(int instanceId, bool useHybridComposition) {}
+
+  @override
+  void dispose(int instanceId) {}
+
+  @override
+  Future<String> evaluateJavascript(int instanceId, String javascriptString) {
+    throw UnimplementedError();
+  }
+
+  @override
+  int getScrollX(int instanceId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  int getScrollY(int instanceId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  String getTitle(int instanceId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  String getUrl(int instanceId) {
+    throw UnimplementedError();
+  }
+
+  @override
+  void goBack(int instanceId) {}
+
+  @override
+  void goForward(int instanceId) {}
+
+  @override
+  void loadUrl(int instanceId, String url, Map headers) {}
+
+  @override
+  void reload(int instanceId) {}
+
+  @override
+  void removeJavaScriptChannel(
+      int instanceId, int javaScriptChannelInstanceId) {}
+
+  @override
+  void scrollBy(int instanceId, int x, int y) {}
+
+  @override
+  void scrollTo(int instanceId, int x, int y) {}
+
+  @override
+  void setDownloadListener(int instanceId, int listenerInstanceId) {}
+
+  @override
+  void setWebContentsDebuggingEnabled(bool enabled) {}
+
+  @override
+  void setWebViewClient(int instanceId, int webViewClientInstanceId) {}
+}
+
+class TestWebSettingsHostApiImpl extends TestWebSettingsHostApi {
+  @override
+  void create(int instanceId, int webViewInstanceId) {}
+
+  @override
+  void dispose(int instanceId) {}
+
+  @override
+  void setBuiltInZoomControls(int instanceId, bool enabled) {}
+
+  @override
+  void setDisplayZoomControls(int instanceId, bool enabled) {}
+
+  @override
+  void setDomStorageEnabled(int instanceId, bool flag) {}
+
+  @override
+  void setJavaScriptCanOpenWindowsAutomatically(int instanceId, bool flag) {}
+
+  @override
+  void setJavaScriptEnabled(int instanceId, bool flag) {}
+
+  @override
+  void setLoadWithOverviewMode(int instanceId, bool overview) {}
+
+  @override
+  void setMediaPlaybackRequiresUserGesture(int instanceId, bool require) {}
+
+  @override
+  void setSupportMultipleWindows(int instanceId, bool support) {}
+
+  @override
+  void setSupportZoom(int instanceId, bool support) {}
+
+  @override
+  void setUseWideViewPort(int instanceId, bool use) {}
+
+  @override
+  void setUserAgentString(int instanceId, String userAgentString) {}
+}
+
+class TestJavaScriptChannelHostApiImpl extends TestJavaScriptChannelHostApi {
+  @override
+  void create(int instanceId, String channelName) {}
+
+  @override
+  void dispose(int instanceId) {}
+}
+
+class TestWebViewClientHostApiImpl extends TestWebViewClientHostApi {
+  @override
+  void create(int instanceId, bool shouldOverrideUrlLoading) {}
+
+  @override
+  void dispose(int instanceId) {}
+}
+
+class TestDownloadListenerHostApiImpl extends TestDownloadListenerHostApi {
+  @override
+  void create(int instanceId) {}
+
+  @override
+  void dispose(int instanceId) {}
 }
