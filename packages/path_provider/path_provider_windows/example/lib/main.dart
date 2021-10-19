@@ -4,8 +4,6 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:path_provider_windows/path_provider_windows.dart';
 
@@ -79,7 +77,7 @@ class _MyAppState extends State<MyApp> {
         ),
         body: Center(
           child: Column(
-            children: [
+            children: <Widget>[
               Text('Temp Directory: $_tempDirectory\n'),
               Text('Documents Directory: $_documentsDirectory\n'),
               Text('Downloads Directory: $_downloadsDirectory\n'),

@@ -14,8 +14,11 @@ import 'package:path_provider_platform_interface/path_provider_platform_interfac
 class PathProviderWindows extends PathProviderPlatform {
   /// Errors on attempted instantiation of the stub. It exists only to satisfy
   /// compile-time dependencies, and should never actually be created.
-  PathProviderWindows() {
-    assert(false);
+  PathProviderWindows() : assert(false);
+
+  /// Registers the Windows implementation.
+  static void registerWith() {
+    PathProviderPlatform.instance = PathProviderWindows();
   }
 
   /// Stub; see comment on VersionInfoQuerier.

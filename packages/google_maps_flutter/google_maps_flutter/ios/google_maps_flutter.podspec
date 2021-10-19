@@ -17,9 +17,9 @@ Downloaded by pub (not CocoaPods).
   s.source_files = 'Classes/**/*'
   s.public_header_files = 'Classes/**/*.h'
   s.dependency 'Flutter'
-  # TODO: Unpin this once the fix for b/163474612 or b/163359804 rolls (avoid v3.10!)
-  s.dependency 'GoogleMaps', '< 3.10'
+  s.dependency 'GoogleMaps'
   s.static_framework = true
-  s.platform = :ios, '8.0'
-  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
+  s.platform = :ios, '9.0'
+  # GoogleMaps does not support arm64 simulators.
+  s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'arm64' }
 end

@@ -73,6 +73,17 @@ void main() {
         );
       });
 
+      test('authenticate with no localizedReason on iOS.', () async {
+        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+        await expectLater(
+          localAuthentication.authenticate(
+            localizedReason: '',
+            biometricOnly: true,
+          ),
+          throwsAssertionError,
+        );
+      });
+
       test('authenticate with no sensitive transaction.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'android'));
         await localAuthentication.authenticate(

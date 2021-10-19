@@ -1,3 +1,16 @@
+## 0.2.1+2
+
+* Add Swift language version to podspec.
+* Fix `implements` package name in pubspec.
+
+## 0.2.1+1
+
+* Ignore Reachability pointer to int cast warning.
+
+## 0.2.1
+
+* Add `implements` to pubspec.yaml.
+
 ## 0.2.0
 
 * Remove placeholder Dart file.
