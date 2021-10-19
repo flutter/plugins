@@ -4,5 +4,4 @@
 
 flutter pub run pigeon \
 --input pigeons/android_webview.dart \
---dart_out lib/src/android_webview.pigeon.dart \
---dart_test_out test/android_webview_test.pigeon.dart
+--dart_out lib/src/android_webview.pigeon.dart
