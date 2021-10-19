@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "CameraPlugin.h"
+#import "CameraPlugin_Test.h"
+
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
 #import <CoreMotion/CoreMotion.h>
