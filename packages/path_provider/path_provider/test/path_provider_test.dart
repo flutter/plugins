@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 import 'dart:io' show Directory;
-import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path_provider/path_provider.dart';
@@ -27,44 +26,44 @@ void main() {
     });
 
     test('getTemporaryDirectory', () async {
-      Directory result = await getTemporaryDirectory();
+      final Directory result = await getTemporaryDirectory();
       expect(result.path, kTemporaryPath);
     });
 
     test('getApplicationSupportDirectory', () async {
-      Directory result = await getApplicationSupportDirectory();
+      final Directory result = await getApplicationSupportDirectory();
       expect(result.path, kApplicationSupportPath);
     });
 
     test('getLibraryDirectory', () async {
-      Directory result = await getLibraryDirectory();
+      final Directory result = await getLibraryDirectory();
       expect(result.path, kLibraryPath);
     });
 
     test('getApplicationDocumentsDirectory', () async {
-      Directory result = await getApplicationDocumentsDirectory();
+      final Directory result = await getApplicationDocumentsDirectory();
       expect(result.path, kApplicationDocumentsPath);
     });
 
     test('getExternalStorageDirectory', () async {
-      Directory? result = await getExternalStorageDirectory();
+      final Directory? result = await getExternalStorageDirectory();
       expect(result?.path, kExternalStoragePath);
     });
 
     test('getExternalCacheDirectories', () async {
-      List<Directory>? result = await getExternalCacheDirectories();
+      final List<Directory>? result = await getExternalCacheDirectories();
       expect(result?.length, 1);
       expect(result?.first.path, kExternalCachePath);
     });
 
     test('getExternalStorageDirectories', () async {
-      List<Directory>? result = await getExternalStorageDirectories();
+      final List<Directory>? result = await getExternalStorageDirectories();
       expect(result?.length, 1);
       expect(result?.first.path, kExternalStoragePath);
     });
 
     test('getDownloadsDirectory', () async {
-      Directory? result = await getDownloadsDirectory();
+      final Directory? result = await getDownloadsDirectory();
       expect(result?.path, kDownloadsPath);
     });
   });
@@ -95,22 +94,22 @@ void main() {
     });
 
     test('getExternalStorageDirectory passes null through', () async {
-      Directory? result = await getExternalStorageDirectory();
+      final Directory? result = await getExternalStorageDirectory();
       expect(result, isNull);
     });
 
     test('getExternalCacheDirectories passes null through', () async {
-      List<Directory>? result = await getExternalCacheDirectories();
+      final List<Directory>? result = await getExternalCacheDirectories();
       expect(result, isNull);
     });
 
     test('getExternalStorageDirectories passes null through', () async {
-      List<Directory>? result = await getExternalStorageDirectories();
+      final List<Directory>? result = await getExternalStorageDirectories();
       expect(result, isNull);
     });
 
     test('getDownloadsDirectory passses null through', () async {
-      Directory? result = await getDownloadsDirectory();
+      final Directory? result = await getDownloadsDirectory();
       expect(result, isNull);
     });
   });
@@ -119,36 +118,44 @@ void main() {
 class FakePathProviderPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements PathProviderPlatform {
+  @override
   Future<String?> getTemporaryPath() async {
     return kTemporaryPath;
   }
 
+  @override
   Future<String?> getApplicationSupportPath() async {
     return kApplicationSupportPath;
   }
 
+  @override
   Future<String?> getLibraryPath() async {
     return kLibraryPath;
   }
 
+  @override
   Future<String?> getApplicationDocumentsPath() async {
     return kApplicationDocumentsPath;
   }
 
+  @override
   Future<String?> getExternalStoragePath() async {
     return kExternalStoragePath;
   }
 
+  @override
   Future<List<String>?> getExternalCachePaths() async {
     return <String>[kExternalCachePath];
   }
 
+  @override
   Future<List<String>?> getExternalStoragePaths({
     StorageDirectory? type,
   }) async {
     return <String>[kExternalStoragePath];
   }
 
+  @override
   Future<String?> getDownloadsPath() async {
     return kDownloadsPath;
   }
@@ -157,36 +164,44 @@ class FakePathProviderPlatform extends Fake
 class AllNullFakePathProviderPlatform extends Fake
     with MockPlatformInterfaceMixin
     implements PathProviderPlatform {
+  @override
   Future<String?> getTemporaryPath() async {
     return null;
   }
 
+  @override
   Future<String?> getApplicationSupportPath() async {
     return null;
   }
 
+  @override
   Future<String?> getLibraryPath() async {
     return null;
   }
 
+  @override
   Future<String?> getApplicationDocumentsPath() async {
     return null;
   }
 
+  @override
   Future<String?> getExternalStoragePath() async {
     return null;
   }
 
+  @override
   Future<List<String>?> getExternalCachePaths() async {
     return null;
   }
 
+  @override
   Future<List<String>?> getExternalStoragePaths({
     StorageDirectory? type,
   }) async {
     return null;
   }
 
+  @override
   Future<String?> getDownloadsPath() async {
     return null;
   }

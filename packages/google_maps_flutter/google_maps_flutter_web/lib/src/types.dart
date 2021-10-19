@@ -17,10 +17,10 @@ typedef LatLngCallback = void Function(gmaps.LatLng latLng);
 /// instance and our internal `mapId` value.
 abstract class GeometryController {
   /// The GMap instance that this controller operates on.
-  gmaps.GMap googleMap;
+  late gmaps.GMap googleMap;
 
   /// The map ID for events.
-  int mapId;
+  late int mapId;
 
   /// Binds a `mapId` and the [gmaps.GMap] instance to this controller.
   void bindToMap(int mapId, gmaps.GMap googleMap) {

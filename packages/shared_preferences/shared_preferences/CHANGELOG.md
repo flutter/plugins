@@ -1,3 +1,17 @@
+## 2.0.8
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 2.0.7
+
+* Add iOS unit test target.
+* Updated Android lint settings.
+* Fix string clash with double entries on Android
+
+## 2.0.6
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.5
 
 * Fix missing declaration of windows' default_package

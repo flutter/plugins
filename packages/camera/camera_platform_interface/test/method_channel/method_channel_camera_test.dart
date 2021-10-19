@@ -923,6 +923,38 @@ void main() {
               arguments: {'cameraId': cameraId}),
         ]);
       });
+
+      test('Should pause the camera preview', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'pausePreview': null},
+        );
+
+        // Act
+        await camera.pausePreview(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('pausePreview', arguments: {'cameraId': cameraId}),
+        ]);
+      });
+
+      test('Should resume the camera preview', () async {
+        // Arrange
+        MethodChannelMock channel = MethodChannelMock(
+          channelName: 'plugins.flutter.io/camera',
+          methods: {'resumePreview': null},
+        );
+
+        // Act
+        await camera.resumePreview(cameraId);
+
+        // Assert
+        expect(channel.log, <Matcher>[
+          isMethodCall('resumePreview', arguments: {'cameraId': cameraId}),
+        ]);
+      });
     });
   });
 }

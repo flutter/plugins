@@ -2,10 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// @dart = 2.9
-
 import 'dart:async';
 import 'dart:ui';
+import 'dart:html' as html;
 
 import 'package:integration_test/integration_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
@@ -23,13 +22,20 @@ const _acceptableDelta = 0.01;
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
+  late gmaps.GMap map;
+
+  setUp(() {
+    map = gmaps.GMap(html.DivElement());
+  });
+
   group('CirclesController', () {
-    StreamController<MapEvent> stream;
-    CirclesController controller;
+    late StreamController<MapEvent> events;
+    late CirclesController controller;
 
     setUp(() {
-      stream = StreamController<MapEvent>();
-      controller = CirclesController(stream: stream);
+      events = StreamController<MapEvent>();
+      controller = CirclesController(stream: events);
+      controller.bindToMap(123, map);
     });
 
     testWidgets('addCircles', (WidgetTester tester) async {
@@ -52,7 +58,7 @@ void main() {
       };
       controller.addCircles(circles);
 
-      expect(controller.circles[CircleId('1')].circle.visible, isTrue);
+      expect(controller.circles[CircleId('1')]?.circle?.visible, isTrue);
 
       final updatedCircles = {
         Circle(circleId: CircleId('1'), visible: false),
@@ -60,7 +66,7 @@ void main() {
       controller.changeCircles(updatedCircles);
 
       expect(controller.circles.length, 1);
-      expect(controller.circles[CircleId('1')].circle.visible, isFalse);
+      expect(controller.circles[CircleId('1')]?.circle?.visible, isFalse);
     });
 
     testWidgets('removeCircles', (WidgetTester tester) async {
@@ -99,7 +105,7 @@ void main() {
 
       controller.addCircles(circles);
 
-      final circle = controller.circles.values.first.circle;
+      final circle = controller.circles.values.first.circle!;
 
       expect(circle.get('fillColor'), '#fabada');
       expect(circle.get('fillOpacity'), closeTo(0.5, _acceptableDelta));
@@ -109,12 +115,13 @@ void main() {
   });
 
   group('PolygonsController', () {
-    StreamController<MapEvent> stream;
-    PolygonsController controller;
+    late StreamController<MapEvent> events;
+    late PolygonsController controller;
 
     setUp(() {
-      stream = StreamController<MapEvent>();
-      controller = PolygonsController(stream: stream);
+      events = StreamController<MapEvent>();
+      controller = PolygonsController(stream: events);
+      controller.bindToMap(123, map);
     });
 
     testWidgets('addPolygons', (WidgetTester tester) async {
@@ -137,7 +144,7 @@ void main() {
       };
       controller.addPolygons(polygons);
 
-      expect(controller.polygons[PolygonId('1')].polygon.visible, isTrue);
+      expect(controller.polygons[PolygonId('1')]?.polygon?.visible, isTrue);
 
       // Update the polygon
       final updatedPolygons = {
@@ -146,7 +153,7 @@ void main() {
       controller.changePolygons(updatedPolygons);
 
       expect(controller.polygons.length, 1);
-      expect(controller.polygons[PolygonId('1')].polygon.visible, isFalse);
+      expect(controller.polygons[PolygonId('1')]?.polygon?.visible, isFalse);
     });
 
     testWidgets('removePolygons', (WidgetTester tester) async {
@@ -185,7 +192,7 @@ void main() {
 
       controller.addPolygons(polygons);
 
-      final polygon = controller.polygons.values.first.polygon;
+      final polygon = controller.polygons.values.first.polygon!;
 
       expect(polygon.get('fillColor'), '#fabada');
       expect(polygon.get('fillOpacity'), closeTo(0.5, _acceptableDelta));
@@ -243,7 +250,7 @@ void main() {
       final polygon = controller.polygons.values.first.polygon;
       final pointInHole = gmaps.LatLng(28.632, -68.401);
 
-      expect(geometry.poly.containsLocation(pointInHole, polygon), false);
+      expect(geometry.Poly.containsLocation(pointInHole, polygon), false);
     });
 
     testWidgets('Hole Path gets reversed to display correctly',
@@ -268,25 +275,22 @@ void main() {
 
       controller.addPolygons(polygons);
 
-      expect(
-          controller.polygons.values.first.polygon.paths.getAt(1).getAt(0).lat,
-          28.745);
-      expect(
-          controller.polygons.values.first.polygon.paths.getAt(1).getAt(1).lat,
-          29.57);
-      expect(
-          controller.polygons.values.first.polygon.paths.getAt(1).getAt(2).lat,
-          27.339);
+      final paths = controller.polygons.values.first.polygon!.paths!;
+
+      expect(paths.getAt(1)?.getAt(0)?.lat, 28.745);
+      expect(paths.getAt(1)?.getAt(1)?.lat, 29.57);
+      expect(paths.getAt(1)?.getAt(2)?.lat, 27.339);
     });
   });
 
   group('PolylinesController', () {
-    StreamController<MapEvent> stream;
-    PolylinesController controller;
+    late StreamController<MapEvent> events;
+    late PolylinesController controller;
 
     setUp(() {
-      stream = StreamController<MapEvent>();
-      controller = PolylinesController(stream: stream);
+      events = StreamController<MapEvent>();
+      controller = PolylinesController(stream: events);
+      controller.bindToMap(123, map);
     });
 
     testWidgets('addPolylines', (WidgetTester tester) async {
@@ -309,7 +313,7 @@ void main() {
       };
       controller.addPolylines(polylines);
 
-      expect(controller.lines[PolylineId('1')].line.visible, isTrue);
+      expect(controller.lines[PolylineId('1')]?.line?.visible, isTrue);
 
       final updatedPolylines = {
         Polyline(polylineId: PolylineId('1'), visible: false),
@@ -317,7 +321,7 @@ void main() {
       controller.changePolylines(updatedPolylines);
 
       expect(controller.lines.length, 1);
-      expect(controller.lines[PolylineId('1')].line.visible, isFalse);
+      expect(controller.lines[PolylineId('1')]?.line?.visible, isFalse);
     });
 
     testWidgets('removePolylines', (WidgetTester tester) async {
@@ -355,7 +359,7 @@ void main() {
 
       controller.addPolylines(lines);
 
-      final line = controller.lines.values.first.line;
+      final line = controller.lines.values.first.line!;
 
       expect(line.get('strokeColor'), '#fabada');
       expect(line.get('strokeOpacity'), closeTo(0.5, _acceptableDelta));

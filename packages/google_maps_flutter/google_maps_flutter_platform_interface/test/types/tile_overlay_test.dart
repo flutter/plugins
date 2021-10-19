@@ -7,6 +7,13 @@ import 'dart:ui' show hashValues;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_maps_flutter_platform_interface/google_maps_flutter_platform_interface.dart';
 
+class _TestTileProvider extends TileProvider {
+  @override
+  Future<Tile> getTile(int x, int y, int? zoom) async {
+    return Tile(0, 0, null);
+  }
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -58,40 +65,65 @@ void main() {
     });
 
     test('equality', () async {
-      const TileOverlay tileOverlay1 = TileOverlay(
+      final TileProvider tileProvider = _TestTileProvider();
+      final TileOverlay tileOverlay1 = TileOverlay(
           tileOverlayId: TileOverlayId('id1'),
           fadeIn: false,
-          tileProvider: null,
+          tileProvider: tileProvider,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      const TileOverlay tileOverlay2 = TileOverlay(
+      final TileOverlay tileOverlaySameValues = TileOverlay(
           tileOverlayId: TileOverlayId('id1'),
           fadeIn: false,
-          tileProvider: null,
+          tileProvider: tileProvider,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      const TileOverlay tileOverlay3 = TileOverlay(
+      final TileOverlay tileOverlayDifferentId = TileOverlay(
           tileOverlayId: TileOverlayId('id2'),
           fadeIn: false,
+          tileProvider: tileProvider,
+          transparency: 0.1,
+          zIndex: 1,
+          visible: false,
+          tileSize: 128);
+      final TileOverlay tileOverlayDifferentProvider = TileOverlay(
+          tileOverlayId: TileOverlayId('id1'),
+          fadeIn: false,
           tileProvider: null,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
           tileSize: 128);
-      expect(tileOverlay1, tileOverlay2);
-      expect(tileOverlay1, isNot(tileOverlay3));
+      expect(tileOverlay1, tileOverlaySameValues);
+      expect(tileOverlay1, isNot(tileOverlayDifferentId));
+      expect(tileOverlay1, isNot(tileOverlayDifferentProvider));
+    });
+
+    test('clone', () async {
+      final TileProvider tileProvider = _TestTileProvider();
+      // Set non-default values for every parameter.
+      final TileOverlay tileOverlay = TileOverlay(
+          tileOverlayId: TileOverlayId('id1'),
+          fadeIn: false,
+          tileProvider: tileProvider,
+          transparency: 0.1,
+          zIndex: 1,
+          visible: false,
+          tileSize: 128);
+      expect(tileOverlay, tileOverlay.clone());
     });
 
     test('hashCode', () async {
+      final TileProvider tileProvider = _TestTileProvider();
       const TileOverlayId id = TileOverlayId('id1');
-      const TileOverlay tileOverlay = TileOverlay(
+      final TileOverlay tileOverlay = TileOverlay(
           tileOverlayId: id,
           fadeIn: false,
-          tileProvider: null,
+          tileProvider: tileProvider,
           transparency: 0.1,
           zIndex: 1,
           visible: false,
@@ -101,6 +133,7 @@ void main() {
           hashValues(
               tileOverlay.tileOverlayId,
               tileOverlay.fadeIn,
+              tileOverlay.tileProvider,
               tileOverlay.transparency,
               tileOverlay.zIndex,
               tileOverlay.visible,

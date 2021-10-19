@@ -14,7 +14,7 @@ class MarkersController extends GeometryController {
 
   /// Initialize the cache. The [StreamController] comes from the [GoogleMapController], and is shared with other controllers.
   MarkersController({
-    @required StreamController<MapEvent> stream,
+    required StreamController<MapEvent> stream,
   })  : _streamController = stream,
         _markerIdToController = Map<MarkerId, MarkerController>();
 
@@ -26,7 +26,7 @@ class MarkersController extends GeometryController {
   ///
   /// Wraps each [Marker] into its corresponding [MarkerController].
   void addMarkers(Set<Marker> markersToAdd) {
-    markersToAdd?.forEach(_addMarker);
+    markersToAdd.forEach(_addMarker);
   }
 
   void _addMarker(Marker marker) {
@@ -35,14 +35,15 @@ class MarkersController extends GeometryController {
     }
 
     final infoWindowOptions = _infoWindowOptionsFromMarker(marker);
-    gmaps.InfoWindow gmInfoWindow;
+    gmaps.InfoWindow? gmInfoWindow;
 
     if (infoWindowOptions != null) {
       gmInfoWindow = gmaps.InfoWindow(infoWindowOptions);
       // Google Maps' JS SDK does not have a click event on the InfoWindow, so
       // we make one...
       if (infoWindowOptions.content is HtmlElement) {
-        infoWindowOptions.content.onClick.listen((_) {
+        final content = infoWindowOptions.content as HtmlElement;
+        content.onClick.listen((_) {
           _onInfoWindowTap(marker.markerId);
         });
       }
@@ -61,6 +62,12 @@ class MarkersController extends GeometryController {
         this.showMarkerInfoWindow(marker.markerId);
         _onMarkerTap(marker.markerId);
       },
+      onDragStart: (gmaps.LatLng latLng) {
+        _onMarkerDragStart(marker.markerId, latLng);
+      },
+      onDrag: (gmaps.LatLng latLng) {
+        _onMarkerDrag(marker.markerId, latLng);
+      },
       onDragEnd: (gmaps.LatLng latLng) {
         _onMarkerDragEnd(marker.markerId, latLng);
       },
@@ -70,11 +77,11 @@ class MarkersController extends GeometryController {
 
   /// Updates a set of [Marker] objects with new options.
   void changeMarkers(Set<Marker> markersToChange) {
-    markersToChange?.forEach(_changeMarker);
+    markersToChange.forEach(_changeMarker);
   }
 
   void _changeMarker(Marker marker) {
-    MarkerController markerController = _markerIdToController[marker?.markerId];
+    MarkerController? markerController = _markerIdToController[marker.markerId];
     if (markerController != null) {
       final markerOptions = _markerOptionsFromMarker(
         marker,
@@ -83,18 +90,18 @@ class MarkersController extends GeometryController {
       final infoWindow = _infoWindowOptionsFromMarker(marker);
       markerController.update(
         markerOptions,
-        newInfoWindowContent: infoWindow?.content,
+        newInfoWindowContent: infoWindow?.content as HtmlElement?,
       );
     }
   }
 
   /// Removes a set of [MarkerId]s from the cache.
   void removeMarkers(Set<MarkerId> markerIdsToRemove) {
-    markerIdsToRemove?.forEach(_removeMarker);
+    markerIdsToRemove.forEach(_removeMarker);
   }
 
   void _removeMarker(MarkerId markerId) {
-    final MarkerController markerController = _markerIdToController[markerId];
+    final MarkerController? markerController = _markerIdToController[markerId];
     markerController?.remove();
     _markerIdToController.remove(markerId);
   }
@@ -106,7 +113,7 @@ class MarkersController extends GeometryController {
   /// See also [hideMarkerInfoWindow] and [isInfoWindowShown].
   void showMarkerInfoWindow(MarkerId markerId) {
     _hideAllMarkerInfoWindow();
-    MarkerController markerController = _markerIdToController[markerId];
+    MarkerController? markerController = _markerIdToController[markerId];
     markerController?.showInfoWindow();
   }
 
@@ -114,7 +121,7 @@ class MarkersController extends GeometryController {
   ///
   /// See also [showMarkerInfoWindow] and [isInfoWindowShown].
   void hideMarkerInfoWindow(MarkerId markerId) {
-    MarkerController markerController = _markerIdToController[markerId];
+    MarkerController? markerController = _markerIdToController[markerId];
     markerController?.hideInfoWindow();
   }
 
@@ -122,7 +129,7 @@ class MarkersController extends GeometryController {
   ///
   /// See also [showMarkerInfoWindow] and [hideMarkerInfoWindow].
   bool isInfoWindowShown(MarkerId markerId) {
-    MarkerController markerController = _markerIdToController[markerId];
+    MarkerController? markerController = _markerIdToController[markerId];
     return markerController?.infoWindowShown ?? false;
   }
 
@@ -137,6 +144,22 @@ class MarkersController extends GeometryController {
 
   void _onInfoWindowTap(MarkerId markerId) {
     _streamController.add(InfoWindowTapEvent(mapId, markerId));
+  }
+
+  void _onMarkerDragStart(MarkerId markerId, gmaps.LatLng latLng) {
+    _streamController.add(MarkerDragStartEvent(
+      mapId,
+      _gmLatLngToLatLng(latLng),
+      markerId,
+    ));
+  }
+
+  void _onMarkerDrag(MarkerId markerId, gmaps.LatLng latLng) {
+    _streamController.add(MarkerDragEvent(
+      mapId,
+      _gmLatLngToLatLng(latLng),
+      markerId,
+    ));
   }
 
   void _onMarkerDragEnd(MarkerId markerId, gmaps.LatLng latLng) {
