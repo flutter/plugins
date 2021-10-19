@@ -214,7 +214,7 @@ task:
         - export CIRRUS_COMMIT_MESSAGE=""
         - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
         -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/tool_runner.sh firebase-test-lab --device model=flame,version=29 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
+        -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
         - else
         -   echo "This user does not have permission to run Firebase Test Lab tests."
         - fi
