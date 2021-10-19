@@ -54,7 +54,7 @@ class FirebaseTestLabCommand extends PackageLoopingCommand {
         splitCommas: false,
         defaultsTo: <String>[
           'model=walleye,version=26',
-          'model=flame,version=29'
+          'model=redfin,version=30'
         ],
         help:
             'Device model(s) to test. See https://cloud.google.com/sdk/gcloud/reference/firebase/test/android/run for more info');
