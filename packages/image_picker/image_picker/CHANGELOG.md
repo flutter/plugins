@@ -1,3 +1,7 @@
+## 0.9.0
+
+* Added initial Windows support.
+
 ## 0.8.4+3
 
 * Suppress a unchecked cast build warning.
