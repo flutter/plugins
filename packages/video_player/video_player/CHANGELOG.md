@@ -1,4 +1,4 @@
-## 2.2.5+1
+## 2.2.6
 
 * Upgrade gradle version to 7.0.2.
 
