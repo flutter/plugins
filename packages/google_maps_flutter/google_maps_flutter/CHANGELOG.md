@@ -1,6 +1,9 @@
-## 2.0.10+1
+## 2.0.12
 
-* Suppress unchecked cast warning
+* Suppress unchecked cast warning.
+## 2.0.11
+
+* Add additional marker drag events.
 
 ## 2.0.10
 
