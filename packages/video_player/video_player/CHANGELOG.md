@@ -1,3 +1,7 @@
+## 2.2.5+1
+
+* Upgrade gradle version to 7.0.2.
+
 ## 2.2.5
 
 * Support to closed caption WebVTT format added.

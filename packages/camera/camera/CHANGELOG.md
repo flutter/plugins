@@ -1,3 +1,9 @@
+## 0.9.4+3
+
+* Change compileSdkVersion to 31.
+* Remove deprecated `CamcorderProfile`.
+* Update gradle version to 7.0.2.
+
 ## 0.9.4+2
 
 * Updated package description;
