@@ -3,6 +3,7 @@
 * Change compileSdkVersion to 31.
 * Remove deprecated `CamcorderProfile`.
 * Update gradle version to 7.0.2.
+* Fix registerTexture and result being called on background thread on iOS.
 
 ## 0.9.4+2
 
