@@ -25,6 +25,7 @@ public class ImageResizerTest {
 
   ImageResizer resizer;
   File imageFile;
+  File gifImageFile;
   File externalDirectory;
   Bitmap originalImageBitmap;
 
@@ -32,6 +33,7 @@ public class ImageResizerTest {
   public void setUp() throws IOException {
     MockitoAnnotations.initMocks(this);
     imageFile = new File(getClass().getClassLoader().getResource("pngImage.png").getFile());
+    gifImageFile = new File(getClass().getClassLoader().getResource("dash-fainting.gif").getFile());
     originalImageBitmap = BitmapFactory.decodeFile(imageFile.getPath());
     TemporaryFolder temporaryFolder = new TemporaryFolder();
     temporaryFolder.create();
@@ -40,34 +42,40 @@ public class ImageResizerTest {
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenQualityIsNull_ShoultNotResize_ReturnTheUnscaledFile() {
-    String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
-    assertThat(outoutFile, equalTo(imageFile.getPath()));
+  public void onResizeImageIfNeeded_WhenQualityIsNull_ShouldNotResize_ReturnTheUnscaledFile() {
+    String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, null);
+    assertThat(outputFile, equalTo(imageFile.getPath()));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenQualityIsNotNull_ShoulResize_ReturnResizedFile() {
-    String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, 50);
-    assertThat(outoutFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
+  public void onResizeImageIfNeeded_WhenQualityIsNotNull_ShouldResize_ReturnResizedFile() {
+    String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, null, 50);
+    assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenWidthIsNotNull_ShoulResize_ReturnResizedFile() {
-    String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), 50.0, null, null);
-    assertThat(outoutFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
+  public void onResizeImageIfNeeded_WhenImageIsGif_ShouldNotResize_ReturnUnscaledFile() {
+    String outputFilePath = resizer.resizeImageIfNeeded(gifImageFile.getPath(), null, null, 50);
+    assertThat(outputFilePath, equalTo(imageFile.getPath()));
   }
 
   @Test
-  public void onResizeImageIfNeeded_WhenHeightIsNotNull_ShoulResize_ReturnResizedFile() {
-    String outoutFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
-    assertThat(outoutFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
+  public void onResizeImageIfNeeded_WhenWidthIsNotNull_ShouldResize_ReturnResizedFile() {
+    String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), 50.0, null, null);
+    assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
+  }
+
+  @Test
+  public void onResizeImageIfNeeded_WhenHeightIsNotNull_ShouldResize_ReturnResizedFile() {
+    String outputFile = resizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
+    assertThat(outputFile, equalTo(externalDirectory.getPath() + "/scaled_pngImage.png"));
   }
 
   @Test
   public void onResizeImageIfNeeded_WhenParentDirectoryDoesNotExists_ShouldNotCrash() {
     File nonExistentDirectory = new File(externalDirectory, "/nonExistent");
     ImageResizer invalidResizer = new ImageResizer(nonExistentDirectory, new ExifDataCopier());
-    String outoutFile = invalidResizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
-    assertThat(outoutFile, equalTo(nonExistentDirectory.getPath() + "/scaled_pngImage.png"));
+    String outputFile = invalidResizer.resizeImageIfNeeded(imageFile.getPath(), null, 50.0, null);
+    assertThat(outputFile, equalTo(nonExistentDirectory.getPath() + "/scaled_pngImage.png"));
   }
 }

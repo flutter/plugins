@@ -37,6 +37,11 @@ class ImageResizer {
     if (bmp == null) {
       return null;
     }
+    // Android can't rescale animated GIF files
+    boolean canScale = !imagePath.toLowerCase().endsWith(".gif");
+    if (!canScale) {
+      return imagePath;
+    }
     boolean shouldScale =
         maxWidth != null || maxHeight != null || isImageQualityValid(imageQuality);
     if (!shouldScale) {

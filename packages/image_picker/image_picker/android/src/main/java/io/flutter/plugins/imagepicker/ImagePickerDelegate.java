@@ -564,11 +564,6 @@ public class ImagePickerDelegate
     if (methodCall != null) {
       ArrayList<String> finalPath = new ArrayList<>();
       for (int i = 0; i < paths.size(); i++) {
-        if (paths.get(i).toLowerCase().endsWith(".gif")) {
-          finalPath.add(i, paths.get(i));
-          continue;
-        }
-
         String finalImagePath = getResizedImagePath(paths.get(i));
 
         //delete original file if scaled
