@@ -1047,6 +1047,13 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 
 - (void)setDescriptionWhileVideoRecording:(NSString *)cameraName
                           result:(FlutterResult)result {
+    
+    // dont allow setting description if not recording
+    if(!_isRecording){
+        result([FlutterError errorWithCode:@"setDescription" message:@"Uvideo was not recording" details:nil]);
+        return;
+    }
+    
     // get new capture device
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
     
