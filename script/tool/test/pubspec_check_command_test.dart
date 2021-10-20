@@ -34,9 +34,16 @@ String _headerSection(
   String? description,
 }) {
   final String repositoryPath = repositoryPackagesDirRelativePath ?? name;
-  final String repoLink = 'https://github.com/flutter/'
-      '${isPlugin ? 'plugins' : 'packages'}/tree/master/'
-      'packages/$repositoryPath';
+  final List<String> repoLinkPathComponents = <String>[
+    'flutter',
+    if (isPlugin) 'plugins' else 'packages',
+    'tree',
+    'master',
+    'packages',
+    repositoryPath,
+  ];
+  final String repoLink =
+      'https://github.com/' + repoLinkPathComponents.join('/');
   final String issueTrackerLink = 'https://github.com/flutter/flutter/issues?'
       'q=is%3Aissue+is%3Aopen+label%3A%22p%3A+$name%22';
   description ??= 'A test package for validating that the pubspec.yaml '
