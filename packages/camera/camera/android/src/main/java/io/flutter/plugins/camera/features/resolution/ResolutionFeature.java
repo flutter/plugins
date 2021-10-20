@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.camera.features.resolution;
 
+import android.annotation.TargetApi;
 import android.hardware.camera2.CaptureRequest;
 import android.media.CamcorderProfile;
 import android.media.EncoderProfiles;
@@ -183,6 +184,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
   }
 
+  @TargetApi(Build.VERSION_CODES.S)
   public static EncoderProfiles getBestAvailableCamcorderProfileForResolutionPresetOn31(
       int cameraId, ResolutionPreset preset) {
     if (cameraId < 0) {
