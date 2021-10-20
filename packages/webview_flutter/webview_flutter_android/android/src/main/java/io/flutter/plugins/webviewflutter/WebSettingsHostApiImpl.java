@@ -3,17 +3,25 @@ package io.flutter.plugins.webviewflutter;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-class WebViewSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostApi {
+class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostApi {
   private final InstanceManager instanceManager;
+  private final WebSettingsProxy webSettingsProxy;
 
-  WebViewSettingsHostApiImpl(InstanceManager instanceManager) {
+  static class WebSettingsProxy {
+    WebSettings createWebSettings(WebView webView) {
+      return webView.getSettings();
+    }
+  }
+
+  WebSettingsHostApiImpl(InstanceManager instanceManager, WebSettingsProxy webSettingsProxy) {
     this.instanceManager = instanceManager;
+    this.webSettingsProxy = webSettingsProxy;
   }
 
   @Override
   public void create(Long instanceId, Long webViewInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(webViewInstanceId);
-    instanceManager.addInstance(webView.getSettings(), instanceId);
+    instanceManager.addInstance(webSettingsProxy.createWebSettings(webView), instanceId);
   }
 
   @Override

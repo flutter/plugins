@@ -3,7 +3,7 @@ package io.flutter.plugins.webviewflutter;
 import android.os.Handler;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 
-public class JavaScriptChannelHostApiImpl
+class JavaScriptChannelHostApiImpl
     implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
   private final JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;

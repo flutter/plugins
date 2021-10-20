@@ -11,10 +11,25 @@ import java.util.Map;
 
 class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   private final InstanceManager instanceManager;
+  private final WebViewProxy webViewProxy;
   private final Context context;
 
-  private static class WebViewImpl extends WebView implements PlatformView {
-    public WebViewImpl(Context context) {
+  static class WebViewProxy {
+    WebView createWebView(Context context) {
+      return new WebViewPlatformView(context);
+    }
+    
+    WebView createInputAwareWebView(Context context) {
+      return new InputAwareWebViewPlatformView(context, null);
+    }
+    
+    void setWebContentsDebuggingEnabled(boolean enabled) {
+      WebView.setWebContentsDebuggingEnabled(enabled);
+    }
+  }
+
+  private static class WebViewPlatformView extends WebView implements PlatformView {
+    public WebViewPlatformView(Context context) {
       super(context);
     }
 
@@ -29,8 +44,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  private static class InputAwareWebViewImpl extends InputAwareWebView implements PlatformView {
-    InputAwareWebViewImpl(Context context, View containerView) {
+  private static class InputAwareWebViewPlatformView extends InputAwareWebView implements PlatformView {
+    InputAwareWebViewPlatformView(Context context, View containerView) {
       super(context, containerView);
     }
 
@@ -66,15 +81,16 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  WebViewHostApiImpl(InstanceManager instanceManager, Context context) {
+  WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context) {
     this.instanceManager = instanceManager;
+    this.webViewProxy = webViewProxy;
     this.context = context;
   }
 
   @Override
   public void create(Long instanceId, Boolean useHybridComposition) {
     final WebView webView =
-        useHybridComposition ? new WebViewImpl(context) : new InputAwareWebViewImpl(context, null);
+        useHybridComposition ? webViewProxy.createWebView(context) : webViewProxy.createInputAwareWebView(context);
     instanceManager.addInstance(webView, instanceId);
   }
 
@@ -170,7 +186,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
   @Override
   public void setWebContentsDebuggingEnabled(Boolean enabled) {
-    WebView.setWebContentsDebuggingEnabled(enabled);
+    webViewProxy.setWebContentsDebuggingEnabled(enabled);
   }
 
   @Override

@@ -9,7 +9,7 @@ import android.webkit.WebViewClient;
 import androidx.annotation.RequiresApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
 
-public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
+class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
   private final InstanceManager instanceManager;
   private final WebViewClientFlutterApi webViewClientFlutterApi;
 

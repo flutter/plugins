@@ -2,7 +2,7 @@ package io.flutter.plugins.webviewflutter;
 
 import android.webkit.DownloadListener;
 
-public class DownloadListenerHostApiImpl
+class DownloadListenerHostApiImpl
     implements GeneratedAndroidWebView.DownloadListenerHostApi {
   private final InstanceManager instanceManager;
   private final GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi;
