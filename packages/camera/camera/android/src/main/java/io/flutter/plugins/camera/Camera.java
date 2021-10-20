@@ -309,6 +309,13 @@ class Camera
     createCaptureSession(templateType, null, surfaces);
   }
 
+  /**
+   * Change camera description mid recording
+   */
+  public void setDescription(@NonNull final Result result, CameraProperties properties){
+
+  }
+
   private void createCaptureSession(
       int templateType, Runnable onSuccessCallback, Surface... surfaces)
       throws CameraAccessException {

@@ -135,6 +135,14 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.resumeVideoRecording(result);
           break;
         }
+      case "setDescription":
+      {
+        try {
+          setDescription(call, result);
+        } catch (Exception e) {
+          handleException(e, result);
+        }
+      }
       case "setFlashMode":
         {
           String modeStr = call.argument("mode");
@@ -367,6 +375,14 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   void stopListening() {
     methodChannel.setMethodCallHandler(null);
   }
+
+  private void setDescription(MethodCall call, Result result) throws CameraAccessException {
+    String cameraName = call.argument("cameraName");
+    CameraProperties cameraProperties =
+            new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
+    camera.setDescription(result,cameraProperties);
+  }
+
 
   private void instantiateCamera(MethodCall call, Result result) throws CameraAccessException {
     String cameraName = call.argument("cameraName");
