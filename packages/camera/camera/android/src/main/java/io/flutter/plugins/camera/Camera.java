@@ -96,13 +96,14 @@ class Camera
    * Holds all of the camera features/settings and will be used to update the request builder when
    * one changes.
    */
-  private final CameraFeatures cameraFeatures;
+  private CameraFeatures cameraFeatures;
 
   private final SurfaceTextureEntry flutterTexture;
   private final boolean enableAudio;
   private final Context applicationContext;
   private final DartMessenger dartMessenger;
-  private final CameraProperties cameraProperties;
+  private CameraProperties cameraProperties;
+  private final ResolutionPreset resolutionPreset;
   private final CameraFeatureFactory cameraFeatureFactory;
   private final Activity activity;
   /** A {@link CameraCaptureSession.CaptureCallback} that handles events related to JPEG capture. */
@@ -135,6 +136,8 @@ class Camera
   private MethodChannel.Result flutterResult;
 
   private Recorder recorder;
+  // we don't want to close or dispose while setting changing cameras
+  boolean settingDescription = false;
 
   public Camera(
       final Activity activity,
@@ -158,6 +161,7 @@ class Camera
     this.cameraFeatures =
         CameraFeatures.init(
             cameraFeatureFactory, cameraProperties, activity, dartMessenger, resolutionPreset);
+    this.resolutionPreset = resolutionPreset;
 
     // Create capture callback.
     captureTimeouts = new CaptureTimeoutsWrapper(3000, 3000);
@@ -198,6 +202,87 @@ class Camera
     recorder = new Recorder(outputFilePath,cameraFeatures, enableAudio);
   }
 
+  private void openCamera() throws CameraAccessException {
+    // Open the camera.
+    ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+    CameraManager cameraManager = CameraUtils.getCameraManager(activity);
+    cameraManager.openCamera(
+            cameraProperties.getCameraName(),
+            new CameraDevice.StateCallback() {
+              @Override
+              public void onOpened(@NonNull CameraDevice device) {
+                cameraDevice = device;
+                try {
+                  // wer are opening the camera while we are already recording a video
+                  if(recordingVideo) {
+                    createCaptureSession(
+                            CameraDevice.TEMPLATE_RECORD, () ->recorder.setPaused(false), recorder.getInputSurface());
+                  }else{
+                    startPreview();
+                  }
+                  dartMessenger.sendCameraInitializedEvent(
+                          resolutionFeature.getPreviewSize().getWidth(),
+                          resolutionFeature.getPreviewSize().getHeight(),
+                          cameraFeatures.getExposureLock().getValue(),
+                          cameraFeatures.getAutoFocus().getValue(),
+                          cameraFeatures.getExposurePoint().checkIsSupported(),
+                          cameraFeatures.getFocusPoint().checkIsSupported());
+                } catch (CameraAccessException e) {
+                  dartMessenger.sendCameraErrorEvent(e.getMessage());
+                  close();
+                }
+              }
+
+              @Override
+              public void onClosed(@NonNull CameraDevice camera) {
+                Log.i(TAG, "open | onClosed");
+
+                dartMessenger.sendCameraClosingEvent();
+                super.onClosed(camera);
+              }
+
+              @Override
+              public void onDisconnected(@NonNull CameraDevice cameraDevice) {
+                Log.i(TAG, "open | onDisconnected");
+
+                if(!settingDescription) {
+                  close();
+                }
+                dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
+              }
+
+              @Override
+              public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
+                Log.i(TAG, "open | onError");
+                if(!settingDescription) {
+                  close();
+                }
+                String errorDescription;
+                switch (errorCode) {
+                  case ERROR_CAMERA_IN_USE:
+                    errorDescription = "The camera device is in use already.";
+                    break;
+                  case ERROR_MAX_CAMERAS_IN_USE:
+                    errorDescription = "Max cameras in use";
+                    break;
+                  case ERROR_CAMERA_DISABLED:
+                    errorDescription = "The camera device could not be opened due to a device policy.";
+                    break;
+                  case ERROR_CAMERA_DEVICE:
+                    errorDescription = "The camera device has encountered a fatal error";
+                    break;
+                  case ERROR_CAMERA_SERVICE:
+                    errorDescription = "The camera service has encountered a fatal error.";
+                    break;
+                  default:
+                    errorDescription = "Unknown camera error";
+                }
+                dartMessenger.sendCameraErrorEvent(errorDescription);
+              }
+            },
+            backgroundHandler);
+  }
+
   @SuppressLint("MissingPermission")
   public void open(String imageFormatGroup) throws CameraAccessException {
     final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
@@ -234,74 +319,7 @@ class Camera
             imageFormat,
             1);
 
-    // Open the camera.
-    CameraManager cameraManager = CameraUtils.getCameraManager(activity);
-    cameraManager.openCamera(
-        cameraProperties.getCameraName(),
-        new CameraDevice.StateCallback() {
-          @Override
-          public void onOpened(@NonNull CameraDevice device) {
-            cameraDevice = device;
-            try {
-              startPreview();
-              dartMessenger.sendCameraInitializedEvent(
-                  resolutionFeature.getPreviewSize().getWidth(),
-                  resolutionFeature.getPreviewSize().getHeight(),
-                  cameraFeatures.getExposureLock().getValue(),
-                  cameraFeatures.getAutoFocus().getValue(),
-                  cameraFeatures.getExposurePoint().checkIsSupported(),
-                  cameraFeatures.getFocusPoint().checkIsSupported());
-            } catch (CameraAccessException e) {
-              dartMessenger.sendCameraErrorEvent(e.getMessage());
-              close();
-            }
-          }
-
-          @Override
-          public void onClosed(@NonNull CameraDevice camera) {
-            Log.i(TAG, "open | onClosed");
-
-            dartMessenger.sendCameraClosingEvent();
-            super.onClosed(camera);
-          }
-
-          @Override
-          public void onDisconnected(@NonNull CameraDevice cameraDevice) {
-            Log.i(TAG, "open | onDisconnected");
-
-            close();
-            dartMessenger.sendCameraErrorEvent("The camera was disconnected.");
-          }
-
-          @Override
-          public void onError(@NonNull CameraDevice cameraDevice, int errorCode) {
-            Log.i(TAG, "open | onError");
-
-            close();
-            String errorDescription;
-            switch (errorCode) {
-              case ERROR_CAMERA_IN_USE:
-                errorDescription = "The camera device is in use already.";
-                break;
-              case ERROR_MAX_CAMERAS_IN_USE:
-                errorDescription = "Max cameras in use";
-                break;
-              case ERROR_CAMERA_DISABLED:
-                errorDescription = "The camera device could not be opened due to a device policy.";
-                break;
-              case ERROR_CAMERA_DEVICE:
-                errorDescription = "The camera device has encountered a fatal error";
-                break;
-              case ERROR_CAMERA_SERVICE:
-                errorDescription = "The camera service has encountered a fatal error.";
-                break;
-              default:
-                errorDescription = "Unknown camera error";
-            }
-            dartMessenger.sendCameraErrorEvent(errorDescription);
-          }
-        },
-        backgroundHandler);
+   openCamera();
   }
 
   private void createCaptureSession(int templateType, Surface... surfaces)
@@ -312,8 +330,42 @@ class Camera
   /**
    * Change camera description mid recording
    */
-  public void setDescription(@NonNull final Result result, CameraProperties properties){
+  public void setDescriptionWhileVideoRecording(@NonNull final Result result, CameraProperties properties){
+    Log.d(TAG, "set description");
 
+    // only allow setting description while recording
+    if(!recordingVideo){
+      result.error("setDescription", "video was not recording", null);
+      return;
+    }
+    settingDescription = true;
+    cameraProperties = properties;
+    cameraFeatures.setAutoFocus(
+            cameraFeatureFactory.createAutoFocusFeature(cameraProperties, true));
+    cameraFeatures =  CameraFeatures.init(
+            cameraFeatureFactory, properties, activity, dartMessenger,resolutionPreset);
+    final ResolutionFeature resolutionFeature = cameraFeatures.getResolution();
+
+
+    try {
+      recorder.setPaused(true);
+      captureSession.close();
+      if (cameraDevice != null) {
+        cameraDevice.close();
+        cameraDevice = null;
+      }
+
+      openCamera();
+    }catch(CameraAccessException e){
+      Log.e(TAG, "set desc", e);
+      result.error("cannot change camera", e.getMessage(), null);// TODO:
+      settingDescription = false;
+      result.error("setDescription", e.getMessage(), null);
+      return;
+    }
+
+
+  result.success(null);
   }
 
   private void createCaptureSession(

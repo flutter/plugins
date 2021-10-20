@@ -126,6 +126,7 @@ public class Recorder {
 
         // setup video renderer
         videoRenderer = new VideoRenderer(videoEncoderSurface, recordingWidth,recordingHeight);
+        videoRenderer.setRotation(rotation);
 
         videoThread = new Thread(){
             public void run(){

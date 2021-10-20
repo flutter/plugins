@@ -418,7 +418,7 @@ class MethodChannelCamera extends CameraPlatform {
   @override
   Future<void> setDescription(CameraDescription description) async {
     await _channel.invokeMethod<double>(
-      'setDescription',
+      'setDescriptionWhileVideoRecording',
       <String, dynamic>{
         'cameraName': description.name,
       },

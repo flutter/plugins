@@ -1045,7 +1045,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     result(nil);
 }
 
-- (void)setDescriptionWithResult:(NSString *)cameraName
+- (void)setDescriptionWhileVideoRecording:(NSString *)cameraName
                           result:(FlutterResult)result {
     // get new capture device
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
@@ -1596,9 +1596,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             [_camera pausePreviewWithResult:result];
         } else if ([@"resumePreview" isEqualToString:call.method]) {
             [_camera resumePreviewWithResult:result];
-        } else if ([@"setDescription" isEqualToString:call.method]){
+        } else if ([@"setDescriptionWhileVideoRecording" isEqualToString:call.method]){
             NSString *cameraName = call.arguments[@"cameraName"];
-            [_camera setDescriptionWithResult:cameraName result:result];
+            [_camera setDescriptionWhileVideoRecording:cameraName result:result];
         } else {
             result(FlutterMethodNotImplemented);
         }

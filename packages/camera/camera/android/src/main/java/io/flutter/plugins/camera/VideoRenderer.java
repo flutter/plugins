@@ -92,6 +92,7 @@ public class VideoRenderer {
 
     private final int recordingWidth;
     private final int recordingHeight;
+    private int rotation = 0;
 
     private final Object lock = new Object();
 
@@ -279,8 +280,12 @@ public class VideoRenderer {
     public float[] moveMatrix (){
         float[] m = new float[16];
         Matrix.setIdentityM(m, 0);
-        Matrix.rotateM(m, 0, 270, 0, 0, 1);
+        Matrix.rotateM(m, 0, rotation, 0, 0, 1);
         return m;
+    }
+
+    public void setRotation(int rotation){
+        this.rotation = rotation;
     }
 
     private int loadShader(int type, String code) {

@@ -135,10 +135,10 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
           camera.resumeVideoRecording(result);
           break;
         }
-      case "setDescription":
+      case "setDescriptionWhileVideoRecording":
       {
         try {
-          setDescription(call, result);
+          setDescriptionWhileVideoRecording(call, result);
         } catch (Exception e) {
           handleException(e, result);
         }
@@ -376,11 +376,11 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     methodChannel.setMethodCallHandler(null);
   }
 
-  private void setDescription(MethodCall call, Result result) throws CameraAccessException {
+  private void setDescriptionWhileVideoRecording(MethodCall call, Result result) throws CameraAccessException {
     String cameraName = call.argument("cameraName");
     CameraProperties cameraProperties =
             new CameraPropertiesImpl(cameraName, CameraUtils.getCameraManager(activity));
-    camera.setDescription(result,cameraProperties);
+    camera.setDescriptionWhileVideoRecording(result,cameraProperties);
   }
 
 
