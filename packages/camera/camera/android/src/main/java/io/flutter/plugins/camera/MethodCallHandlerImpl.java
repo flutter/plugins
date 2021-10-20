@@ -385,7 +385,7 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
     ResolutionPreset resolutionPreset = ResolutionPreset.valueOf(preset);
 
     Integer audioEncoder = null;
-    if(audioFormatGroup != null) {
+    if (audioFormatGroup != null) {
       audioEncoder = AudioFormatGroup.getValueForString(audioFormatGroup).getEncoder();
     }
 

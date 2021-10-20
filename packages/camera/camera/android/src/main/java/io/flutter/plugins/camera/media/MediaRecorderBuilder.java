@@ -62,7 +62,8 @@ public class MediaRecorderBuilder {
     mediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
     mediaRecorder.setOutputFormat(recordingProfile.fileFormat);
     if (enableAudio) {
-      mediaRecorder.setAudioEncoder(audioEncoder != null ? audioEncoder : recordingProfile.audioCodec);
+      mediaRecorder.setAudioEncoder(
+          audioEncoder != null ? audioEncoder : recordingProfile.audioCodec);
       // TODO can we assume that bitrate and sampling rate from the CamcorderProfile will also be valid if we change
       //      the encoder?
       mediaRecorder.setAudioEncodingBitRate(recordingProfile.audioBitRate);
