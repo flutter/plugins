@@ -56,7 +56,7 @@ public class ImageResizerTest {
   @Test
   public void onResizeImageIfNeeded_WhenImageIsGif_ShouldNotResize_ReturnUnscaledFile() {
     String outputFilePath = resizer.resizeImageIfNeeded(gifImageFile.getPath(), null, null, 50);
-    assertThat(outputFilePath, equalTo(imageFile.getPath()));
+    assertThat(outputFilePath, equalTo(gifImageFile.getPath()));
   }
 
   @Test
