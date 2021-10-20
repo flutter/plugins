@@ -58,6 +58,7 @@ public class Recorder {
     static final int BIT_RATE = 32000;
     boolean stopped = false;
     private long startTimeUs = -1;
+    private boolean paused = false;
 
 
     // muxer
@@ -161,6 +162,13 @@ public class Recorder {
         waitStop();
     }
 
+    public void setPaused(boolean paused){
+            synchronized (muxerLock){
+                this.paused = paused;
+            }
+    }
+
+
 
     /** The input surface for this recorder to record video from */
     public Surface getInputSurface(){
@@ -221,6 +229,7 @@ public class Recorder {
         }
     }
 
+    /** Wait for video's first frame, in essence waiting for known start Presentation Time*/
     private void waitForVideoFirstFrame() throws InterruptedException {
         synchronized(videoLock) {
             while (startTimeUs < 0) {
@@ -230,6 +239,7 @@ public class Recorder {
         }
     }
 
+    /** Enqueues audio from recorder into encoder */
     @RequiresApi(api = Build.VERSION_CODES.M)
     private void enqueueAudio(){
         if(stopped || stoppedAudio){
@@ -290,7 +300,8 @@ public class Recorder {
 
     }
 
-    public void writeAudio(){
+    /** Writes audio from encoder to muxer */
+    private void writeAudio(){
         if(stopped || stoppedAudio){
             return;
         }
@@ -323,7 +334,9 @@ public class Recorder {
                 // write if valid presentation time
                 if(audioWriteInfo.presentationTimeUs > lastAudioWriteTimeUs && audioWriteInfo.presentationTimeUs > 0) {
                     synchronized(muxerLock) {
-                        muxer.writeSampleData(audioTrackIndex, audioWriteBuffer, audioWriteInfo);
+                        if(!paused) {
+                            muxer.writeSampleData(audioTrackIndex, audioWriteBuffer, audioWriteInfo);
+                        }
                     }
                   lastAudioWriteTimeUs = audioWriteInfo.presentationTimeUs;
                 }else{
@@ -385,7 +398,9 @@ public class Recorder {
                 // write to muxer
                 if(videoInfo.presentationTimeUs > 0) {
                     synchronized(muxerLock) {
-                        muxer.writeSampleData(videoTrackIndex, videoBuffer, videoInfo);
+                        if(!paused) {
+                            muxer.writeSampleData(videoTrackIndex, videoBuffer, videoInfo);
+                        }
                     }
                     lastVideoWriteTimeUs = videoInfo.presentationTimeUs;
                 }

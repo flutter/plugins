@@ -717,7 +717,7 @@ class Camera
 
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-       // TODO:  mediaRecorder.pause();
+       recorder.setPaused(true);
       } else {
         result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
         return;
@@ -738,7 +738,7 @@ class Camera
 
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-       // TODO:  mediaRecorder.resume();
+      recorder.setPaused(false);
       } else {
         result.error(
             "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
