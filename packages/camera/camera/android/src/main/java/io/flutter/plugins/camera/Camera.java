@@ -120,7 +120,6 @@ class Camera
   /** {@link CaptureRequest.Builder} for the camera preview */
   private CaptureRequest.Builder previewRequestBuilder;
 
-  private MediaRecorder mediaRecorder;
   /** True when recording video. */
   private boolean recordingVideo;
   /** True when the preview is paused. */
@@ -134,6 +133,8 @@ class Camera
   private CameraCaptureProperties captureProps;
 
   private MethodChannel.Result flutterResult;
+
+  private Recorder recorder;
 
   public Camera(
       final Activity activity,
@@ -191,22 +192,10 @@ class Camera
   private void prepareMediaRecorder(String outputFilePath) throws IOException {
     Log.i(TAG, "prepareMediaRecorder");
 
-    if (mediaRecorder != null) {
-      mediaRecorder.release();
+    if(recorder != null){
+      recorder.stop();
     }
-
-    final PlatformChannel.DeviceOrientation lockedOrientation =
-        ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
-            .getLockedCaptureOrientation();
-
-    mediaRecorder =
-        new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
-            .setEnableAudio(enableAudio)
-            .setMediaOrientation(
-                lockedOrientation == null
-                    ? getDeviceOrientationManager().getVideoOrientation()
-                    : getDeviceOrientationManager().getVideoOrientation(lockedOrientation))
-            .build();
+    recorder = new Recorder(outputFilePath,cameraFeatures, enableAudio);
   }
 
   @SuppressLint("MissingPermission")
@@ -678,7 +667,7 @@ class Camera
     recordingVideo = true;
     try {
       createCaptureSession(
-          CameraDevice.TEMPLATE_RECORD, () -> mediaRecorder.start(), mediaRecorder.getSurface());
+          CameraDevice.TEMPLATE_RECORD, () -> recorder.start(), recorder.getInputSurface());
       result.success(null);
     } catch (CameraAccessException e) {
       recordingVideo = false;
@@ -698,11 +687,11 @@ class Camera
     recordingVideo = false;
     try {
       captureSession.abortCaptures();
-      mediaRecorder.stop();
+      recorder.stop();
     } catch (CameraAccessException | IllegalStateException e) {
       // Ignore exceptions and try to continue (changes are camera session already aborted capture).
     }
-    mediaRecorder.reset();
+    // TODO: mediaRecorder.reset();
     try {
       startPreview();
     } catch (CameraAccessException | IllegalStateException e) {
@@ -721,7 +710,7 @@ class Camera
 
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        mediaRecorder.pause();
+       // TODO:  mediaRecorder.pause();
       } else {
         result.error("videoRecordingFailed", "pauseVideoRecording requires Android API +24.", null);
         return;
@@ -742,7 +731,7 @@ class Camera
 
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        mediaRecorder.resume();
+       // TODO:  mediaRecorder.resume();
       } else {
         result.error(
             "videoRecordingFailed", "resumeVideoRecording requires Android API +24.", null);
@@ -1103,10 +1092,9 @@ class Camera
       imageStreamReader.close();
       imageStreamReader = null;
     }
-    if (mediaRecorder != null) {
-      mediaRecorder.reset();
-      mediaRecorder.release();
-      mediaRecorder = null;
+    if (recorder != null) {
+      recorder.stop();
+      recorder = null;
     }
 
     stopBackgroundThread();

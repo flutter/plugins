@@ -12,6 +12,8 @@ import android.os.Build;
 import android.util.Log;
 import android.view.Surface;
 
+import androidx.annotation.RequiresApi;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -37,8 +39,7 @@ public class Recorder {
     private int videoTrackIndex = -1;
     private final Object videoLock = new Object();
     private boolean stoppedVideo = false;
-    private long videoStartTimeUs = -1;
-    private long videoEndTimeUs = -1;
+    private long lastVideoWriteTimeUs = -1;
 
     // audio
     private final MediaCodec audioEncoder;
@@ -49,10 +50,14 @@ public class Recorder {
     private final Thread audioThread;
     private final Object audioLock = new Object();
     private boolean stoppedAudio = false;
+    private int audioTrackIndex = -1;
+    private long audioEnqueueTimeNano;
+    private long lastAudioWriteTimeUs = -1;
 
     // audio and video
     static final int BIT_RATE = 32000;
     boolean stopped = false;
+    private long startTimeUs = -1;
 
 
     // muxer
@@ -123,14 +128,14 @@ public class Recorder {
 
         videoThread = new Thread(){
             public void run(){
-                videoEncoderLoop();
+                videoLoop();
             }
         };
 
 
         audioThread = new Thread(){
             public void run(){
-
+                audioLoop();
             }
         };
     }
@@ -140,15 +145,13 @@ public class Recorder {
             return; // TODO: throw error already videoing or not complete videoing
         }
 
-        audioEnabled = false;
-        stoppedAudio = true; // TODO: audio
-
-       // audioRecord.startRecording();
+        audioRecord.startRecording();
         videoEncoder.start();
-       // audioEncoder.start();
+        audioEncoder.start();
 
 
         videoThread.start();
+        audioThread.start();
 
     }
 
@@ -174,20 +177,174 @@ public class Recorder {
 
 
     /** initializes encoder with muxer and continuously encodes */
-    private void videoEncoderLoop(){
+    private void videoLoop(){
 
         initializeVideoEncoder();
-
+        try {
         waitAudioEncoderInitialized();
 
         muxer.start();
 
         while(!stopped) {
-            encodeVideo();
+            writeVideo();
+        }
+
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Video loop interrupeted ", e);
         }
     }
 
-    private void encodeVideo(){
+    private void audioLoop(){
+
+        try {
+
+            waitVideoEncoderInitialized();
+            initializeAudioEncoder();
+            waitForVideoFirstFrame();
+
+            // start audio at same timestamp video starts on
+            audioEnqueueTimeNano = startTimeUs * 1000;
+
+
+            while(!stopped){
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    enqueueAudio(); // TODO:
+                }
+                writeAudio();
+            }
+
+            // log durations
+            long elapsedAudio = lastVideoWriteTimeUs - startTimeUs;
+            long elapsedVideo = lastAudioWriteTimeUs - startTimeUs;
+            Log.d(TAG, "timeCount elapsed Audio=Video: " + usToSeconds(elapsedAudio) + " = " + usToSeconds(elapsedVideo));
+
+
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Audio loop interrupeted ", e);
+        }
+    }
+
+    private void waitForVideoFirstFrame() throws InterruptedException {
+        synchronized(videoLock) {
+            while (startTimeUs < 0) {
+                Log.e(TAG, "skipping audio frame because video hasn't started");
+                videoLock.wait(500); // TODO: lower
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void enqueueAudio(){
+        if(stopped || stoppedAudio){
+            return;
+        }
+        // enqueue audio
+        int audioEnqueueIndex = audioEncoder.dequeueInputBuffer(500);
+        Log.d(TAG, "enqueue index audio " + audioEnqueueIndex);
+        try {
+
+            if(audioEnqueueIndex < 0) {
+                Log.d(TAG, "No audio buffer available to dequeue");
+                return;
+            }
+
+                // get encoder buffer
+                ByteBuffer audioeEnqueueBuffer = audioEncoder.getInputBuffer(audioEnqueueIndex);
+
+                // write bytes from audioRecord to buffer
+                int bytes = audioRecord.getBufferSizeInFrames() * 16 * audioRecord.getChannelCount(); // MUST BE MULTIPLE OF something TODO:
+                int length = audioRecord.read(audioeEnqueueBuffer, bytes);
+
+                // verify value is good
+                switch (length) {
+                    case AudioRecord.ERROR_BAD_VALUE:
+                        throw new RuntimeException("enqueue audio error bad value");
+                    case AudioRecord.ERROR_DEAD_OBJECT:
+                        throw new RuntimeException("enqueue audio error dead object");
+                    case AudioRecord.ERROR_INVALID_OPERATION:
+                        throw new RuntimeException("enqueue audio error invalid operation");
+                }
+
+                // calculate nanoSeconds sampled from audio record
+                MediaFormat audioFormat = audioEncoder.getInputFormat();
+                int sampleRate = audioFormat.getInteger(MediaFormat.KEY_SAMPLE_RATE);
+                int sampleSize = 16; // because ENCODING_PCM_16BIT
+                int bitsPerSecond = sampleRate * sampleSize;
+                int bits = length * 8;
+                float secondsSampled = (float)bits / (float)bitsPerSecond;
+                long nanoSecondsSampled = (long)(secondsSampled * 1000000000);
+
+                // queue buffer for encoding
+                audioEncoder.queueInputBuffer(
+                        audioEnqueueIndex,
+                        0,
+                        length,
+                        audioEnqueueTimeNano / 1000,
+                        stoppedVideo ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0); // TODO: finish flushing
+
+                // add seconds we queued so next timestamp is correct
+                audioEnqueueTimeNano += nanoSecondsSampled;
+
+        }catch(Exception er){
+            Log.e(TAG, "audio enqueue error ", er);
+        }
+
+    }
+
+    public void writeAudio(){
+        if(stopped || stoppedAudio){
+            return;
+        }
+
+        // get buffer index ready to be written
+        MediaCodec.BufferInfo audioWriteInfo = new MediaCodec.BufferInfo();
+        int audioWriteIndex = audioEncoder.dequeueOutputBuffer(audioWriteInfo, 500);
+
+        try{
+            if(audioWriteIndex < 0) {
+                Log.d(TAG, " no audio ready to be written");
+                return;
+            }
+
+                // get buffer ready to be written
+                ByteBuffer audioWriteBuffer = audioEncoder.getOutputBuffer(audioWriteIndex);
+
+
+                // if eos
+                if ((audioWriteInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                    Log.d(TAG, "Audio EOS at " + usToSeconds(lastAudioWriteTimeUs) + " seconds");
+                    stoppedAudio = true;
+                    audioRecord.stop();
+                    audioEncoder.stop();
+                    if(stoppedVideo){
+                        stopInternal();
+                    }
+                    return;
+                }
+
+                // write if valid presentation time
+                if(audioWriteInfo.presentationTimeUs > lastAudioWriteTimeUs && audioWriteInfo.presentationTimeUs > 0) {
+                  muxer.writeSampleData(audioTrackIndex, audioWriteBuffer, audioWriteInfo);
+                  lastAudioWriteTimeUs = audioWriteInfo.presentationTimeUs;
+                }else{
+                    Log.d(TAG, "Skipping audio frame. Tried to write audio with time " + usToSeconds(audioWriteInfo.presentationTimeUs) + " when last write was " + usToSeconds(lastAudioWriteTimeUs));
+                }
+
+                // release for reuse
+                audioEncoder.releaseOutputBuffer(audioWriteIndex,false);
+
+        }catch(Exception er){
+            Log.e(TAG, "Audio write error ", er);
+            if(audioWriteIndex >= 0){
+                audioEncoder.releaseOutputBuffer(audioWriteIndex,false);
+            }
+        }
+
+    }
+
+
+    /** Pulls video from encoder and writes to mutex */
+    private void writeVideo(){
             if(stopped || stoppedVideo){
                 return;
             }
@@ -196,10 +353,10 @@ public class Recorder {
             int videoIndex = videoEncoder.dequeueOutputBuffer(videoInfo,-1);
 
             // first frame - note start time
-            if(videoInfo.presentationTimeUs != 0 && videoStartTimeUs == -1){
+            if(videoInfo.presentationTimeUs != 0 && startTimeUs < 0){
                 synchronized (videoLock) {
-                    videoStartTimeUs = videoInfo.presentationTimeUs;
-                    Log.d(TAG, "Started recording video at " + usToSeconds(videoStartTimeUs) + " seconds");
+                    startTimeUs = videoInfo.presentationTimeUs;
+                    Log.d(TAG, "Started recording video at " + usToSeconds(startTimeUs) + " seconds");
                     videoLock.notifyAll();
                 }
             }
@@ -216,7 +373,7 @@ public class Recorder {
 
                 // reached end of stream
                 if(((videoInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM)) != 0){
-                    Log.d(TAG, "Stopped recording video at " + usToSeconds(videoEndTimeUs) + " seconds");
+                    Log.d(TAG, "Video EOS at " + usToSeconds(lastVideoWriteTimeUs) + " seconds");
                     stoppedVideo = true;
                     videoRenderer.close();
                     videoEncoder.stop();
@@ -226,8 +383,10 @@ public class Recorder {
                 }
 
                 // write to muxer
-                muxer.writeSampleData(videoTrackIndex, videoBuffer, videoInfo);
-                videoEndTimeUs = videoInfo.presentationTimeUs;
+                if(videoInfo.presentationTimeUs > 0) {
+                    muxer.writeSampleData(videoTrackIndex, videoBuffer, videoInfo);
+                    lastVideoWriteTimeUs = videoInfo.presentationTimeUs;
+                }
 
             }catch(Exception e){
                 Log.e(TAG, "Encode video error ",e);
@@ -256,8 +415,28 @@ public class Recorder {
         }
     }
 
-    private void waitAudioEncoderInitialized() {
- // TODO:
+    private void initializeAudioEncoder(){
+        while(audioTrackIndex < 0) {
+            MediaCodec.BufferInfo audioInfo = new MediaCodec.BufferInfo();
+            int audioIndex = audioEncoder.dequeueOutputBuffer(audioInfo, -1);
+            if (audioIndex >= 0) {
+                audioEncoder.releaseOutputBuffer(audioIndex, false);
+            } else {
+                Log.d(TAG, "Initialize audio format");
+                synchronized (audioLock){
+                    audioTrackIndex = muxer.addTrack(audioEncoder.getOutputFormat());
+                    audioLock.notifyAll();
+                }
+            }
+        }
+    }
+
+    private void waitAudioEncoderInitialized() throws InterruptedException {
+        synchronized(audioLock){
+            while(audioTrackIndex < 0){
+                audioLock.wait(500);
+            }
+        }
     }
 
     private void waitVideoEncoderInitialized() throws InterruptedException {
@@ -270,6 +449,7 @@ public class Recorder {
 
     private void stopInternal(){
         // TODO: log elapsed times
+        Log.d(TAG, "Stop internal");
         stopped = true;
         muxer.stop();
     }
