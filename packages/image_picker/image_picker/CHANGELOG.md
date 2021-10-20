@@ -1,7 +1,11 @@
 ## NEXT
 
 * Fix typos in README.md.
-  
+
+## 0.8.4+3
+
+* Suppress a unchecked cast build warning.
+
 ## 0.8.4+2
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
