@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "CameraPlugin.h"
+#import "CameraPlugin_Test.h"
+
 #import <AVFoundation/AVFoundation.h>
 #import <Accelerate/Accelerate.h>
 #import <CoreMotion/CoreMotion.h>
@@ -532,12 +534,10 @@ NSString *const errorMethod = @"error";
   switch (resolutionPreset) {
     case max:
     case ultraHigh:
-      if (@available(iOS 9.0, *)) {
-        if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-          _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
-          _previewSize = CGSizeMake(3840, 2160);
-          break;
-        }
+      if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+        _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+        _previewSize = CGSizeMake(3840, 2160);
+        break;
       }
       if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
         _captureSession.sessionPreset = AVCaptureSessionPresetHigh;

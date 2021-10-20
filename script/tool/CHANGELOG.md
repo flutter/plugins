@@ -1,3 +1,19 @@
+## NEXT
+
+- Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
+- `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
+  have unit tests, rather than skipping them.
+- Added a new `federation-safety-check` command to help catch changes to
+  federated packages that have been done in such a way that they will pass in
+  CI, but fail once the change is landed and published.
+- `publish-check` now validates that there is an `AUTHORS` file.
+- Added flags to `version-check` to allow overriding the platform interface
+  major version change restriction.
+- Improved error handling and error messages in CHANGELOG version checks.
+- `license-check` now validates Kotlin files.
+- `pubspec-check` now checks that the description is of the pub-recommended
+  length.
+
 ## 0.7.1
 
 - Add support for `.pluginToolsConfig.yaml` in the `build-examples` command.

@@ -1,3 +1,27 @@
+## 2.2.5
+
+* Support to closed caption WebVTT format added.
+
+## 2.2.4
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 2.2.3
+
+* Fixed empty caption text still showing the caption widget.
+
+## 2.2.2
+
+* Fix a disposed `VideoPlayerController` throwing an exception when being replaced in the `VideoPlayer`.
+
+## 2.2.1
+
+* Specify Java 8 for Android build.
+
+## 2.2.0
+
+* Add `contentUri` based VideoPlayerController.
+
 ## 2.1.15
 
 * Ensured seekTo isn't called before video player is initialized. Fixes [#89259](https://github.com/flutter/flutter/issues/89259).

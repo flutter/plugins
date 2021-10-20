@@ -10,8 +10,6 @@ import android.os.Handler;
 import android.os.Looper;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.Lifecycle;
-import androidx.lifecycle.LifecycleObserver;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.EventChannel;
@@ -30,7 +28,7 @@ import io.flutter.view.TextureRegistry;
 import java.util.HashMap;
 import java.util.Map;
 
-final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, LifecycleObserver {
+final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   private final Activity activity;
   private final BinaryMessenger messenger;
   private final CameraPermissions cameraPermissions;
@@ -38,7 +36,6 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
   private final TextureRegistry textureRegistry;
   private final MethodChannel methodChannel;
   private final EventChannel imageStreamChannel;
-  private final Lifecycle lifecycle;
   private @Nullable Camera camera;
 
   MethodCallHandlerImpl(
@@ -46,14 +43,12 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
       BinaryMessenger messenger,
       CameraPermissions cameraPermissions,
       PermissionsRegistry permissionsAdder,
-      TextureRegistry textureRegistry,
-      @Nullable Lifecycle lifecycle) {
+      TextureRegistry textureRegistry) {
     this.activity = activity;
     this.messenger = messenger;
     this.cameraPermissions = cameraPermissions;
     this.permissionsRegistry = permissionsAdder;
     this.textureRegistry = textureRegistry;
-    this.lifecycle = lifecycle;
 
     methodChannel = new MethodChannel(messenger, "plugins.flutter.io/camera");
     imageStreamChannel = new EventChannel(messenger, "plugins.flutter.io/camera/imageStream");
@@ -394,10 +389,6 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
       audioEncoder = AudioFormatGroup.getValueForString(audioFormatGroup).getEncoder();
     }
 
-    if (camera != null && lifecycle != null) {
-      lifecycle.removeObserver(camera);
-    }
-
     camera =
         new Camera(
             activity,
@@ -408,10 +399,6 @@ final class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler, Li
             resolutionPreset,
             enableAudio,
             audioEncoder);
-
-    if (lifecycle != null) {
-      lifecycle.addObserver(camera);
-    }
 
     Map<String, Object> reply = new HashMap<>();
     reply.put("cameraId", flutterSurfaceTexture.id());

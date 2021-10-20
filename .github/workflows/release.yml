@@ -8,6 +8,9 @@ jobs:
   release:
     if: github.repository_owner == 'flutter'
     name: release
+    permissions:
+      # Release needs to push a tag back to the repo.
+      contents: write
     runs-on: ubuntu-latest
     steps:
     - name: "Install Flutter"
@@ -30,13 +33,13 @@ jobs:
 
     # This workflow should be the last to run. So wait for all the other tests to succeed.
     - name: Wait on all tests
-      uses: lewagon/wait-on-check-action@a0f99ce1e713de216866868c3da4d4183a051cbe
+      uses: lewagon/wait-on-check-action@5e937358caba2c7876a2ee06e4a48d0664fe4967
       with:
         ref: ${{ github.sha }}
         running-workflow-name: 'release'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         wait-interval: 180 # seconds
-        allowed-conclusions: success
+        allowed-conclusions: success,neutral
         # verbose:true will produce too many logs that hang github actions web UI.
         verbose: false
 
