@@ -78,6 +78,7 @@ class WebSettings {
     this.debuggingEnabled,
     this.gestureNavigationEnabled,
     this.allowsInlineMediaPlayback,
+    this.zoomEnabled,
     required this.userAgent,
   }) : assert(userAgent != null);
 
@@ -110,6 +111,9 @@ class WebSettings {
   ///
   /// See also [WebView.userAgent].
   final WebSetting<String?> userAgent;
+
+  /// Sets whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  final bool? zoomEnabled;
 
   /// Whether to allow swipe based navigation in iOS.
   ///
