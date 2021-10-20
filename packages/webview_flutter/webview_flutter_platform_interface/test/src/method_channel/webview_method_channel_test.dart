@@ -5,7 +5,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-
 import 'package:webview_flutter_platform_interface/src/method_channel/webview_method_channel.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -31,6 +30,7 @@ void main() {
         case 'canGoBack':
         case 'canGoForward':
           return true;
+        case 'runJavascriptReturningResult':
         case 'evaluateJavascript':
           return methodCall.arguments as String;
         case 'getScrollX':
@@ -229,6 +229,7 @@ void main() {
         debuggingEnabled: true,
         gestureNavigationEnabled: true,
         allowsInlineMediaPlayback: true,
+        zoomEnabled: false,
       );
       await webViewPlatform.updateSettings(settings);
 
@@ -245,6 +246,7 @@ void main() {
               'debuggingEnabled': true,
               'gestureNavigationEnabled': true,
               'allowsInlineMediaPlayback': true,
+              'zoomEnabled': false,
             },
           ),
         ],
@@ -265,16 +267,50 @@ void main() {
     test('evaluateJavascript', () async {
       final String evaluateJavascript =
           await webViewPlatform.evaluateJavascript(
-        'This simulates some Javascript code.',
+        'This simulates some JavaScript code.',
       );
 
-      expect('This simulates some Javascript code.', evaluateJavascript);
+      expect('This simulates some JavaScript code.', evaluateJavascript);
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'evaluateJavascript',
-            arguments: 'This simulates some Javascript code.',
+            arguments: 'This simulates some JavaScript code.',
+          ),
+        ],
+      );
+    });
+
+    test('runJavascript', () async {
+      await webViewPlatform.runJavascript(
+        'This simulates some JavaScript code.',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'runJavascript',
+            arguments: 'This simulates some JavaScript code.',
+          ),
+        ],
+      );
+    });
+
+    test('runJavascriptReturningResult', () async {
+      final String evaluateJavascript =
+          await webViewPlatform.runJavascriptReturningResult(
+        'This simulates some JavaScript code.',
+      );
+
+      expect('This simulates some JavaScript code.', evaluateJavascript);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'runJavascriptReturningResult',
+            arguments: 'This simulates some JavaScript code.',
           ),
         ],
       );

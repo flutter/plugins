@@ -6,6 +6,7 @@ import 'dart:async';
 import 'dart:html' as html;
 
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
+import 'package:image_picker_for_web/src/image_resizer.dart';
 import 'package:meta/meta.dart';
 import 'package:image_picker_platform_interface/image_picker_platform_interface.dart';
 
@@ -23,10 +24,14 @@ class ImagePickerPlugin extends ImagePickerPlatform {
 
   late html.Element _target;
 
+  late ImageResizer _imageResizer;
+
   /// A constructor that allows tests to override the function that creates file inputs.
   ImagePickerPlugin({
     @visibleForTesting ImagePickerPluginTestOverrides? overrides,
+    @visibleForTesting ImageResizer? imageResizer,
   }) : _overrides = overrides {
+    _imageResizer = imageResizer ?? ImageResizer();
     _target = _ensureInitialized(_kImagePickerInputsDomId);
   }
 
@@ -122,7 +127,12 @@ class ImagePickerPlugin extends ImagePickerPlatform {
       accept: _kAcceptImageMimeType,
       capture: capture,
     );
-    return files.first;
+    return _imageResizer.resizeImageIfNeeded(
+      files.first,
+      maxWidth,
+      maxHeight,
+      imageQuality,
+    );
   }
 
   /// Returns an [XFile] containing the video that was picked.
@@ -157,8 +167,21 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     double? maxWidth,
     double? maxHeight,
     int? imageQuality,
-  }) {
-    return getFiles(accept: _kAcceptImageMimeType, multiple: true);
+  }) async {
+    final List<XFile> images = await getFiles(
+      accept: _kAcceptImageMimeType,
+      multiple: true,
+    );
+    final Iterable<Future<XFile>> resized = images.map(
+      (image) => _imageResizer.resizeImageIfNeeded(
+        image,
+        maxWidth,
+        maxHeight,
+        imageQuality,
+      ),
+    );
+
+    return Future.wait<XFile>(resized);
   }
 
   /// Injects a file input with the specified accept+capture attributes, and
@@ -244,17 +267,17 @@ class ImagePickerPlugin extends ImagePickerPlatform {
     input.onChange.first.then((event) {
       final files = _handleOnChangeEvent(event);
       if (!_completer.isCompleted && files != null) {
-        _completer.complete(files
-            .map((file) => XFile(
-                  html.Url.createObjectUrl(file),
-                  name: file.name,
-                  length: file.size,
-                  lastModified: DateTime.fromMillisecondsSinceEpoch(
-                    file.lastModified ?? DateTime.now().millisecondsSinceEpoch,
-                  ),
-                  mimeType: file.type,
-                ))
-            .toList());
+        _completer.complete(files.map((file) {
+          return XFile(
+            html.Url.createObjectUrl(file),
+            name: file.name,
+            length: file.size,
+            lastModified: DateTime.fromMillisecondsSinceEpoch(
+              file.lastModified ?? DateTime.now().millisecondsSinceEpoch,
+            ),
+            mimeType: file.type,
+          );
+        }).toList());
       }
     });
     input.onError.first.then((event) {
