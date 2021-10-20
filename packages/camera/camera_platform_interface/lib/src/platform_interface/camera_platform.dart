@@ -248,7 +248,7 @@ abstract class CameraPlatform extends PlatformInterface {
   }
 
   /// Changes the camera description mid recording
-  Future<void> setDescription(CameraDescription description) {
+  Future<void> setDescriptionWhileRecording(CameraDescription description) {
     throw UnimplementedError('setDescription() is not implemented.');
   }
 

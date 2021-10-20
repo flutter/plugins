@@ -576,7 +576,7 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
       }
 
       if (controller != null && controller!.value.isRecordingVideo) {
-        return switchCameraDescription(description);
+        return switchCameraDescriptionWhileRecording(description);
       }
 
       onNewCameraSelected(description);
@@ -626,8 +626,8 @@ class _CameraExampleHomeState extends State<CameraExampleHome>
   }
 
   /// switch camera mid recording
-  void switchCameraDescription(CameraDescription cameraDescription) {
-    controller?.setDescription(cameraDescription);
+  void switchCameraDescriptionWhileRecording(CameraDescription cameraDescription) {
+    controller?.setDescriptionWhileRecording(cameraDescription);
   }
 
   void onNewCameraSelected(CameraDescription cameraDescription) async {

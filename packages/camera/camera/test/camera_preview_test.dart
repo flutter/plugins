@@ -124,7 +124,7 @@ class FakeController extends ValueNotifier<CameraValue>
   CameraDescription get description => value.description;
 
   @override
-  Future<void> setDescription(CameraDescription description) {
+  Future<void> setDescriptionWhileRecording(CameraDescription description) {
     // TODO: implement setDescription
     throw UnimplementedError();
   }
