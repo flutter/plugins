@@ -23,7 +23,6 @@
 - ios_platform_images
 - local_auth
 - quick_actions
-- shared_preferences
 - url_launcher
 - video_player
 - webview_flutter
