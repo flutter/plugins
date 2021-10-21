@@ -23,6 +23,7 @@ void main() {
       "id": "8162538176523816253123",
       "photoUrl": "https://lh5.googleusercontent.com/photo.jpg",
       "displayName": "John Doe",
+      "serverAuthCode": "789"
     };
 
     const Map<String, dynamic> kDefaultResponses = <String, dynamic>{
@@ -350,7 +351,8 @@ void main() {
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
-      expect(auth.serverAuthCode, '789');
+      // fix deprecated_member_use_from_same_package
+      // expect(auth.serverAuthCode, '789');
       expect(
         log,
         <Matcher>[
@@ -382,11 +384,11 @@ void main() {
 
   group('GoogleSignIn with fake backend', () {
     const FakeUser kUserData = FakeUser(
-      id: "8162538176523816253123",
-      displayName: "John Doe",
-      email: "john.doe@gmail.com",
-      photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
-    );
+        id: "8162538176523816253123",
+        displayName: "John Doe",
+        email: "john.doe@gmail.com",
+        photoUrl: "https://lh5.googleusercontent.com/photo.jpg",
+        serverAuthCode: '789');
 
     late GoogleSignIn googleSignIn;
 
@@ -411,6 +413,7 @@ void main() {
       expect(user.email, equals(kUserData.email));
       expect(user.id, equals(kUserData.id));
       expect(user.photoUrl, equals(kUserData.photoUrl));
+      expect(user.serverAuthCode, equals(kUserData.serverAuthCode));
 
       await googleSignIn.disconnect();
       expect(googleSignIn.currentUser, isNull);
