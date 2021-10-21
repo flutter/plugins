@@ -731,7 +731,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 CFRelease(sampleBuffer);
                 sampleBuffer = [self adjustTime:sampleBuffer by:_audioTimeOffset];
             }
-            //if (_videoWriterInput.readyForMoreMediaData) { POSSIBLY
+           // if (_videoWriterInput.readyForMoreMediaData) { TODO: 
             [self newAudioSample:sampleBuffer];
            //}
         }
@@ -1333,6 +1333,12 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)setUpCaptureSessionForAudio {
+    
+    // dont setup twice or we will lose the audio
+    if(_isAudioSetup){
+        return;
+    }
+    
     NSError *error = nil;
     // Create a device input with the device and add it to the session.
     // Setup the audio input.
