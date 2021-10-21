@@ -2,18 +2,20 @@ package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
 import android.os.Looper;
-
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 
-class JavaScriptChannelHostApiImpl
-    implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
+class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
   private final JavaScriptChannelProxy javaScriptChannelProxy;
   private final JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;
   private final Handler platformThreadHandler;
-  
+
   static class JavaScriptChannelProxy {
-    JavaScriptChannel createJavaScriptChannel(Long instanceId, JavaScriptChannelFlutterApi javaScriptChannelFlutterApi, String channelName, Handler platformThreadHandler) {
+    JavaScriptChannel createJavaScriptChannel(
+        Long instanceId,
+        JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+        String channelName,
+        Handler platformThreadHandler) {
       return new JavaScriptChannel(null, channelName, platformThreadHandler) {
         @Override
         public void postMessage(String message) {
@@ -42,7 +44,9 @@ class JavaScriptChannelHostApiImpl
 
   @Override
   public void create(Long instanceId, String channelName) {
-    final JavaScriptChannel javaScriptChannel = javaScriptChannelProxy.createJavaScriptChannel(instanceId, javaScriptChannelFlutterApi, channelName, platformThreadHandler);
+    final JavaScriptChannel javaScriptChannel =
+        javaScriptChannelProxy.createJavaScriptChannel(
+            instanceId, javaScriptChannelFlutterApi, channelName, platformThreadHandler);
     instanceManager.addInstance(javaScriptChannel, instanceId);
   }
 

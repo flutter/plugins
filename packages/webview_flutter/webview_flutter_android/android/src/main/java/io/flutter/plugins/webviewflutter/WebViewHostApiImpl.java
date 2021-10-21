@@ -18,11 +18,11 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     WebView createWebView(Context context) {
       return new WebViewPlatformView(context);
     }
-    
+
     WebView createInputAwareWebView(Context context) {
       return new InputAwareWebViewPlatformView(context, null);
     }
-    
+
     void setWebContentsDebuggingEnabled(boolean enabled) {
       WebView.setWebContentsDebuggingEnabled(enabled);
     }
@@ -44,7 +44,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  private static class InputAwareWebViewPlatformView extends InputAwareWebView implements PlatformView {
+  private static class InputAwareWebViewPlatformView extends InputAwareWebView
+      implements PlatformView {
     InputAwareWebViewPlatformView(Context context, View containerView) {
       super(context, containerView);
     }
@@ -90,7 +91,9 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   @Override
   public void create(Long instanceId, Boolean useHybridComposition) {
     final WebView webView =
-        useHybridComposition ? webViewProxy.createWebView(context) : webViewProxy.createInputAwareWebView(context);
+        useHybridComposition
+            ? webViewProxy.createWebView(context)
+            : webViewProxy.createInputAwareWebView(context);
     instanceManager.addInstance(webView, instanceId);
   }
 

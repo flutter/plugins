@@ -2,26 +2,21 @@ package io.flutter.plugins.webviewflutter;
 
 import android.webkit.DownloadListener;
 
-class DownloadListenerHostApiImpl
-    implements GeneratedAndroidWebView.DownloadListenerHostApi {
+class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadListenerHostApi {
   private final InstanceManager instanceManager;
   private final DownloadListenerProxy downloadListenerProxy;
   private final GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi;
 
   static class DownloadListenerProxy {
-    DownloadListener createDownloadListener(Long instanceId, GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi) {
+    DownloadListener createDownloadListener(
+        Long instanceId,
+        GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi) {
       return (url, userAgent, contentDisposition, mimetype, contentLength) ->
           downloadListenerFlutterApi.onDownloadStart(
-              instanceId,
-              url,
-              userAgent,
-              contentDisposition,
-              mimetype,
-              contentLength,
-              reply -> {});
+              instanceId, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
     }
   }
-  
+
   DownloadListenerHostApiImpl(
       InstanceManager instanceManager,
       DownloadListenerProxy downloadListenerProxy,
@@ -33,7 +28,9 @@ class DownloadListenerHostApiImpl
 
   @Override
   public void create(Long instanceId) {
-    instanceManager.addInstance(downloadListenerProxy.createDownloadListener(instanceId, downloadListenerFlutterApi), instanceId);
+    instanceManager.addInstance(
+        downloadListenerProxy.createDownloadListener(instanceId, downloadListenerFlutterApi),
+        instanceId);
   }
 
   @Override

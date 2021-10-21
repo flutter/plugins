@@ -5,7 +5,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.webkit.WebSettings;
-
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,14 +13,11 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 public class WebSettingsTest {
-  @Rule
-  public MockitoRule mockitoRule = MockitoJUnit.rule();
+  @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock
-  public WebSettings mockWebSettings;
+  @Mock public WebSettings mockWebSettings;
 
-  @Mock
-  WebSettingsHostApiImpl.WebSettingsProxy mockWebSettingsProxy;
+  @Mock WebSettingsHostApiImpl.WebSettingsProxy mockWebSettingsProxy;
 
   InstanceManager testInstanceManager;
   WebSettingsHostApiImpl testHostApiImpl;

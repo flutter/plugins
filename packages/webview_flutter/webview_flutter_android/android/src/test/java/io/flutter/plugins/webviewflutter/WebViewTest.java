@@ -15,7 +15,7 @@ import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
+import java.util.HashMap;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,20 +24,14 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
-import java.util.HashMap;
-
 public class WebViewTest {
-  @Rule
-  public MockitoRule mockitoRule = MockitoJUnit.rule();
+  @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock
-  public WebView mockWebView;
+  @Mock public WebView mockWebView;
 
-  @Mock
-  WebViewHostApiImpl.WebViewProxy mockWebViewProxy;
+  @Mock WebViewHostApiImpl.WebViewProxy mockWebViewProxy;
 
-  @Mock
-  Context mockContext;
+  @Mock Context mockContext;
 
   InstanceManager testInstanceManager;
   WebViewHostApiImpl testHostApiImpl;
@@ -138,17 +132,18 @@ public class WebViewTest {
   @Test
   public void evaluateJavaScript() {
     final String[] successValue = new String[1];
-    testHostApiImpl.evaluateJavascript(0L, "2 + 2", new GeneratedAndroidWebView.Result<String>() {
-      @Override
-      public void success(String result) {
-        successValue[0] = result;
-      }
+    testHostApiImpl.evaluateJavascript(
+        0L,
+        "2 + 2",
+        new GeneratedAndroidWebView.Result<String>() {
+          @Override
+          public void success(String result) {
+            successValue[0] = result;
+          }
 
-      @Override
-      public void error(Throwable error) {
-
-      }
-    });
+          @Override
+          public void error(Throwable error) {}
+        });
 
     @SuppressWarnings("unchecked")
     final ArgumentCaptor<ValueCallback<String>> callbackCaptor =
