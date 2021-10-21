@@ -35,7 +35,6 @@ public class DeviceOrientationManagerTest {
   private Display mockDisplay;
   private DeviceOrientationManager deviceOrientationManager;
 
-  @SuppressWarnings("deprecation")
   @Before
   public void before() {
     mockActivity = mock(Activity.class);
