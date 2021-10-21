@@ -588,6 +588,8 @@ NSString *const errorMethod = @"error";
 - (void)captureOutput:(AVCaptureOutput *)output
 didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
        fromConnection:(AVCaptureConnection *)connection {
+    
+    // send captured image to preview
     if (output == _captureVideoOutput) {
         CVPixelBufferRef newBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
         CFRetain(newBuffer);
@@ -602,11 +604,14 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             _onFrameAvailable();
         }
     }
+    
+    // assert sampled data is ready
     if (!CMSampleBufferDataIsReady(sampleBuffer)) {
         [_methodChannel invokeMethod:errorMethod
                            arguments:@"sample buffer is not ready. Skipping sample"];
         return;
     }
+    
     if (_isStreamingImages) {
         if (_imageStreamHandler.eventSink) {
             CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -671,6 +676,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             CVPixelBufferUnlockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
         }
     }
+    
+   
     if (_isRecording && !_isRecordingPaused) {
         if (_videoWriter.status == AVAssetWriterStatusFailed) {
             [_methodChannel invokeMethod:errorMethod
@@ -686,6 +693,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             [_videoWriter startSessionAtSourceTime:currentSampleTime];
         }
         
+        // save video frame
         if (output == _captureVideoOutput) {
             if (_videoIsDisconnected) {
                 _videoIsDisconnected = NO;
@@ -705,6 +713,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
             CVPixelBufferRef nextBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
             CMTime nextSampleTime = CMTimeSubtract(_lastVideoSampleTime, _videoTimeOffset);
                 [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
+            
+            // save audio frame
         } else {
             CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
             
@@ -869,15 +879,23 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)pauseVideoRecordingWithResult:(FlutterResult)result {
-    _isRecordingPaused = YES;
-    _videoIsDisconnected = YES;
-    _audioIsDisconnected = YES;
+    [self pauseInternal];
     result(nil);
 }
 
+- (void) pauseInternal {
+    _isRecordingPaused = YES;
+    _videoIsDisconnected = YES;
+    _audioIsDisconnected = YES;
+}
+
 - (void)resumeVideoRecordingWithResult:(FlutterResult)result {
-    _isRecordingPaused = NO;
+    [self resumeInternal];
     result(nil);
+}
+
+- (void) resumeInternal {
+    _isRecordingPaused = NO;
 }
 
 - (void)lockCaptureOrientationWithResult:(FlutterResult)result
@@ -1061,6 +1079,9 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     AVCaptureVideoDataOutput *_oldOutput = _captureVideoOutput;
     AVCaptureConnection *_oldConnection = [_oldOutput connectionWithMediaType:AVMediaTypeVideo];
     
+    
+    [self pauseInternal];
+    
     // stop video capture from old output
     // this also automatically removes old output's connection from captureSession
     [_oldOutput setSampleBufferDelegate:nil queue:nil];
@@ -1109,6 +1130,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     _captureVideoInput = _newInput;
     _captureVideoOutput = _newOutput;
     [_captureSession commitConfiguration];
+
+    [self resumeInternal];
     
     result(nil);
 }
