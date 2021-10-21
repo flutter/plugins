@@ -25,8 +25,8 @@ import java.util.List;
 public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   private Size captureSize;
   private Size previewSize;
-  private CamcorderProfile recordingProfile;
-  private EncoderProfiles recordingProfileOn31;
+  private CamcorderProfile recordingProfileLegacy;
+  private EncoderProfiles recordingProfile;
   private ResolutionPreset currentSetting;
   private int cameraId;
 
@@ -56,12 +56,12 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
    *
    * @return Resolution information to configure the {@link android.hardware.camera2} API.
    */
-  public CamcorderProfile getRecordingProfile() {
-    return this.recordingProfile;
+  public CamcorderProfile getRecordingProfileLegacy() {
+    return this.recordingProfileLegacy;
   }
 
-  public EncoderProfiles getRecordingProfileOn31() {
-    return this.recordingProfileOn31;
+  public EncoderProfiles getRecordingProfile() {
+    return this.recordingProfile;
   }
 
   /**
@@ -117,21 +117,22 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
     if (Build.VERSION.SDK_INT >= 31) {
       EncoderProfiles profile =
-          getBestAvailableCamcorderProfileForResolutionPresetOn31(cameraId, preset);
+          getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
       List<EncoderProfiles.VideoProfile> videoProfiles = profile.getVideoProfiles();
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
 
       return new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
     } else {
+      @SuppressWarnings("deprecation")
       CamcorderProfile profile =
-          getBestAvailableCamcorderProfileForResolutionPreset(cameraId, preset);
+          getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, preset);
       return new Size(profile.videoFrameWidth, profile.videoFrameHeight);
     }
   }
 
   /**
    * Gets the best possible {@link android.media.CamcorderProfile} for the supplied {@link
-   * ResolutionPreset}.
+   * ResolutionPreset}. Supports SDK < 31.
    *
    * @param cameraId Camera identifier which indicates the device's camera for which to select a
    *     {@link android.media.CamcorderProfile}.
@@ -140,8 +141,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
    * @return The best possible {@link android.media.CamcorderProfile} that matches the supplied
    *     {@link ResolutionPreset}.
    */
-  @SuppressWarnings("deprecation")
-  public static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPreset(
+  public static CamcorderProfile getBestAvailableCamcorderProfileForResolutionPresetLegacy(
       int cameraId, ResolutionPreset preset) {
     if (cameraId < 0) {
       throw new AssertionError(
@@ -185,7 +185,7 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
   }
 
   @TargetApi(Build.VERSION_CODES.S)
-  public static EncoderProfiles getBestAvailableCamcorderProfileForResolutionPresetOn31(
+  public static EncoderProfiles getBestAvailableCamcorderProfileForResolutionPreset(
       int cameraId, ResolutionPreset preset) {
     if (cameraId < 0) {
       throw new AssertionError(
@@ -238,16 +238,19 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
 
     if (Build.VERSION.SDK_INT >= 31) {
-      recordingProfileOn31 =
-          getBestAvailableCamcorderProfileForResolutionPresetOn31(cameraId, resolutionPreset);
-      List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfileOn31.getVideoProfiles();
+      recordingProfile =
+          getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
+      List<EncoderProfiles.VideoProfile> videoProfiles = recordingProfile.getVideoProfiles();
 
       EncoderProfiles.VideoProfile defaultVideoProfile = videoProfiles.get(0);
       captureSize = new Size(defaultVideoProfile.getWidth(), defaultVideoProfile.getHeight());
     } else {
-      recordingProfile =
-          getBestAvailableCamcorderProfileForResolutionPreset(cameraId, resolutionPreset);
-      captureSize = new Size(recordingProfile.videoFrameWidth, recordingProfile.videoFrameHeight);
+      @SuppressWarnings("deprecation")
+      CamcorderProfile camcorderProfile =
+          getBestAvailableCamcorderProfileForResolutionPresetLegacy(cameraId, resolutionPreset);
+      recordingProfileLegacy = camcorderProfile;
+      captureSize =
+          new Size(recordingProfileLegacy.videoFrameWidth, recordingProfileLegacy.videoFrameHeight);
     }
 
     previewSize = computeBestPreviewSize(cameraId, resolutionPreset);

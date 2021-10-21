@@ -186,7 +186,7 @@ public class ResolutionFeatureTest {
 
     assertEquals(
         mockProfileLow,
-        ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
+        ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
             1, ResolutionPreset.max));
   }
 
@@ -217,7 +217,7 @@ public class ResolutionFeatureTest {
 
     assertEquals(
         mockProfileLowOn31,
-        ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetOn31(
+        ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
             1, ResolutionPreset.max));
   }
 

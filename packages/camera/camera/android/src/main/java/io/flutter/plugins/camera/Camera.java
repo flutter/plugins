@@ -203,9 +203,9 @@ class Camera
     MediaRecorderBuilder mediaRecorderBuilder;
 
     if (Build.VERSION.SDK_INT >= 31) {
-      mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfileOn31(), outputFilePath);
-    } else {
       mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfile(), outputFilePath);
+    } else {
+      mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfileLegacy(), outputFilePath);
     }
 
     mediaRecorder =
@@ -927,13 +927,13 @@ class Camera
     return cameraFeatures.getZoomLevel().getMinimumZoomLevel();
   }
 
-  /** Shortcut to get current recording profile. */
-  CamcorderProfile getRecordingProfile() {
-    return cameraFeatures.getResolution().getRecordingProfile();
+  /** Shortcut to get current recording profile. Legacy method provides support for SDK < 31. */
+  CamcorderProfile getRecordingProfileLegacy() {
+    return cameraFeatures.getResolution().getRecordingProfileLegacy();
   }
 
-  EncoderProfiles getRecordingProfileOn31() {
-    return cameraFeatures.getResolution().getRecordingProfileOn31();
+  EncoderProfiles getRecordingProfile() {
+    return cameraFeatures.getResolution().getRecordingProfile();
   }
 
   /** Shortut to get deviceOrientationListener. */
