@@ -42,12 +42,12 @@ public class Recorder {
     private long lastVideoWriteTimeUs = -1;
 
     // audio
-    private final MediaCodec audioEncoder;
-    private boolean audioEnabled; // TODO:
-    private final AudioRecord audioRecord;
+    private MediaCodec audioEncoder;
+    private boolean audioEnabled;
+    private AudioRecord audioRecord;
     static final String AUDIO_MIME = "audio/mp4a-latm";
     static final int MAX_INPUT_SIZE = 16384;
-    private final Thread audioThread;
+    private Thread audioThread;
     private final Object audioLock = new Object();
     private boolean stoppedAudio = false;
     private int audioTrackIndex = -1;
@@ -100,29 +100,31 @@ public class Recorder {
         videoEncoderSurface = videoEncoder.createInputSurface();
 
         // setup audio recorder
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            audioRecord = new AudioRecord.Builder()
-                    .setAudioSource(MediaRecorder.AudioSource.MIC)
-                    .setAudioFormat(new AudioFormat.Builder()
-                            .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
-                            .setSampleRate(44100)
-                            .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
-                            .build())
-                    .build();
-        }else{
-            // audioRecord = new AudioRecord(); TODO:
-            audioRecord = null;
-        }
+        if(audioEnabled) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                audioRecord = new AudioRecord.Builder()
+                        .setAudioSource(MediaRecorder.AudioSource.MIC)
+                        .setAudioFormat(new AudioFormat.Builder()
+                                .setEncoding(AudioFormat.ENCODING_PCM_16BIT)
+                                .setSampleRate(44100)
+                                .setChannelMask(AudioFormat.CHANNEL_IN_MONO)
+                                .build())
+                        .build();
+            } else {
+                // audioRecord = new AudioRecord(); TODO:
+                audioRecord = null;
+            }
 
-        // setup audio encoder
-        MediaFormat audioFormat =  MediaFormat.createAudioFormat(AUDIO_MIME,audioRecord.getSampleRate(),audioRecord.getChannelCount());
-        audioFormat.setString(MediaFormat.KEY_MIME, AUDIO_MIME);
-        audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);
-        audioFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MAX_INPUT_SIZE);
-        encoderName = new MediaCodecList(MediaCodecList.REGULAR_CODECS).findEncoderForFormat(audioFormat);
-        audioEncoder = MediaCodec.createByCodecName(encoderName);
-        audioEncoder.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+            // setup audio encoder
+            MediaFormat audioFormat = MediaFormat.createAudioFormat(AUDIO_MIME, audioRecord.getSampleRate(), audioRecord.getChannelCount());
+            audioFormat.setString(MediaFormat.KEY_MIME, AUDIO_MIME);
+            audioFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
+            audioFormat.setInteger(MediaFormat.KEY_BIT_RATE, BIT_RATE);
+            audioFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, MAX_INPUT_SIZE);
+            encoderName = new MediaCodecList(MediaCodecList.REGULAR_CODECS).findEncoderForFormat(audioFormat);
+            audioEncoder = MediaCodec.createByCodecName(encoderName);
+            audioEncoder.configure(audioFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
+        }
 
         // setup video renderer
         videoRenderer = new VideoRenderer(videoEncoderSurface, recordingWidth,recordingHeight);
@@ -134,32 +136,40 @@ public class Recorder {
             }
         };
 
-
-        audioThread = new Thread(){
-            public void run(){
-                audioLoop();
-            }
-        };
+        if(audioEnabled) {
+            audioThread = new Thread() {
+                public void run() {
+                    audioLoop();
+                }
+            };
+        }
     }
 
     public void start(){
-        if(audioThread.isAlive() || videoThread.isAlive()){
+        if((audioEnabled && audioThread.isAlive()) || videoThread.isAlive()){
             return; // TODO: throw error already videoing or not complete videoing
         }
 
-        audioRecord.startRecording();
+
         videoEncoder.start();
-        audioEncoder.start();
+        if(audioEnabled) {
+            audioRecord.startRecording();
+            audioEncoder.start();
+        }
 
 
         videoThread.start();
-        audioThread.start();
+        if(audioEnabled) {
+            audioThread.start();
+        }
 
     }
 
     public void stop(){
         videoEncoder.signalEndOfInputStream();
-        audioRecord.stop();
+        if(audioEnabled) {
+            audioRecord.stop();
+        }
         waitStop();
     }
 
@@ -450,6 +460,7 @@ public class Recorder {
     }
 
     private void waitAudioEncoderInitialized() throws InterruptedException {
+        if(audioEncoder == null) return;
         synchronized(audioLock){
             while(audioTrackIndex < 0){
                 audioLock.wait(500);
