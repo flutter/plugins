@@ -12,17 +12,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Set;
-import java.util.HashSet;
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 class ImageResizer {
-  /**
-   * Extensions that the ImageResizer cannot resize.
-   */
-  private static final Set<String> nonResizeableExtensions = new HashSet<>(
-    Arrays.asList("gif", "svg", "apng")
-  );
+  /** Extensions that the ImageResizer cannot resize. */
+  private static final Set<String> nonResizeableExtensions =
+      new HashSet<>(Arrays.asList("gif", "svg", "apng"));
 
   private final File externalFilesDirectory;
   private final ExifDataCopier exifDataCopier;
