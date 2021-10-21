@@ -173,6 +173,22 @@ public class Recorder {
         waitStop();
     }
 
+    public void close(){
+        stop();
+        if(audioRecord != null){
+            audioRecord.release();
+        }
+        if(audioEncoder != null){
+            audioEncoder.release();
+        }
+        if(videoEncoder != null){
+            videoEncoder.release();
+        }
+        if(videoRenderer != null){
+            videoRenderer.close();
+        }
+    }
+
     public void setPaused(boolean paused){
             synchronized (muxerLock){
                 this.paused = paused;

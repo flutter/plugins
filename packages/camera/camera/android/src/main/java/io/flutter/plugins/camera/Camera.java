@@ -197,7 +197,7 @@ class Camera
     Log.i(TAG, "prepareMediaRecorder");
 
     if(recorder != null){
-      recorder.stop();
+      recorder.close();
     }
     recorder = new Recorder(outputFilePath,cameraFeatures, enableAudio);
   }
@@ -746,7 +746,8 @@ class Camera
     recordingVideo = false;
     try {
       captureSession.abortCaptures();
-      recorder.stop();
+      recorder.close();
+      recorder = null;
     } catch (CameraAccessException | IllegalStateException e) {
       // Ignore exceptions and try to continue (changes are camera session already aborted capture).
     }
@@ -1152,7 +1153,7 @@ class Camera
       imageStreamReader = null;
     }
     if (recorder != null) {
-      recorder.stop();
+      recorder.close();
       recorder = null;
     }
 
