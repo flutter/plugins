@@ -351,8 +351,6 @@ void main() {
 
       expect(auth.accessToken, '456');
       expect(auth.idToken, '123');
-      // fix deprecated_member_use_from_same_package
-      // expect(auth.serverAuthCode, '789');
       expect(
         log,
         <Matcher>[
