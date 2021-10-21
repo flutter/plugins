@@ -1,3 +1,7 @@
+## 2.1.2
+
+* Fix typos in the README.
+
 ## 2.1.1
 
 * Fixed `_CastError` that was thrown when running the example App.
@@ -14,7 +18,6 @@
 
 * Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
-* Fix typos in the README.
 
 ## 2.0.12
 
