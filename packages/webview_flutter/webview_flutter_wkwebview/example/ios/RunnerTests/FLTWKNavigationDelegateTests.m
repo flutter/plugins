@@ -20,11 +20,11 @@
 @implementation FLTWKNavigationDelegateTests
 
 NSString *const expectedJavascript =
-  @"var meta = document.createElement('meta');"
-  @"meta.name = 'viewport';"
-  @"meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
-  @"user-scalable=no';"
-  @"var head = document.getElementsByTagName('head')[0];head.appendChild(meta);";
+    @"var meta = document.createElement('meta');"
+    @"meta.name = 'viewport';"
+    @"meta.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0,"
+    @"user-scalable=no';"
+    @"var head = document.getElementsByTagName('head')[0];head.appendChild(meta);";
 
 - (void)setUp {
   self.mockMethodChannel = OCMClassMock(FlutterMethodChannel.class);
@@ -54,7 +54,6 @@ NSString *const expectedJavascript =
 
   self.navigationDelegate.shouldEnableZoom = false;
   [self.navigationDelegate webView:webview didFinishNavigation:self.navigation];
-    
   OCMVerify([webview evaluateJavaScript:expectedJavascript completionHandler:nil]);
 }
 
@@ -66,7 +65,6 @@ NSString *const expectedJavascript =
   self.navigationDelegate.shouldEnableZoom = true;
 
   OCMReject([webview evaluateJavaScript:expectedJavascript completionHandler:nil]);
-    
   [self.navigationDelegate webView:webview didFinishNavigation:self.navigation];
 }
 
