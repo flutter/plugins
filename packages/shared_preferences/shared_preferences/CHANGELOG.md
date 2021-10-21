@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes newly enabled analyzer options.
+
 ## 2.0.8
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
