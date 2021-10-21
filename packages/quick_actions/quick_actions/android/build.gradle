@@ -30,8 +30,18 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        disable 'GradleDependency'
     }
 
+    dependencies {
+        testImplementation 'junit:junit:4.12'
+        testImplementation 'org.mockito:mockito-core:3.2.4'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 
     testOptions {
         unitTests.includeAndroidResources = true

@@ -224,7 +224,10 @@ void main() {
 
       await tester.pumpAndSettle();
       expect(_controller.value.isPlaying, true);
-    }, skip: kIsWeb); // Web does not support local assets.
+    },
+        skip: kIsWeb || // Web does not support local assets.
+            // Extremely flaky on iOS: https://github.com/flutter/flutter/issues/86915
+            defaultTargetPlatform == TargetPlatform.iOS);
 
     testWidgets('test video player using static file() method as constructor',
         (WidgetTester tester) async {

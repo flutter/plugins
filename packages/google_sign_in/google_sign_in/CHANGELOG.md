@@ -1,3 +1,13 @@
+## 5.1.1
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 5.1.0
+
+* Add reAuthenticate option to signInSilently to allow re-authentication to be requested
+
+* Updated Android lint settings.
+
 ## 5.0.7
 
 * Mark iOS arm64 simulators as unsupported.

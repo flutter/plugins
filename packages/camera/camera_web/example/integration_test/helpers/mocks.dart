@@ -7,7 +7,8 @@ import 'dart:html';
 import 'dart:ui';
 
 import 'package:camera_web/src/camera.dart';
-import 'package:camera_web/src/camera_settings.dart';
+import 'package:camera_web/src/camera_service.dart';
+import 'package:camera_web/src/shims/dart_js_util.dart';
 import 'package:camera_web/src/types/types.dart';
 import 'package:cross_file/cross_file.dart';
 import 'package:mocktail/mocktail.dart';
@@ -26,7 +27,7 @@ class MockNavigator extends Mock implements Navigator {}
 
 class MockMediaDevices extends Mock implements MediaDevices {}
 
-class MockCameraSettings extends Mock implements CameraSettings {}
+class MockCameraService extends Mock implements CameraService {}
 
 class MockMediaStreamTrack extends Mock implements MediaStreamTrack {}
 
@@ -37,6 +38,10 @@ class MockCameraOptions extends Mock implements CameraOptions {}
 class MockVideoElement extends Mock implements VideoElement {}
 
 class MockXFile extends Mock implements XFile {}
+
+class MockJsUtil extends Mock implements JsUtil {}
+
+class MockMediaRecorder extends Mock implements MediaRecorder {}
 
 /// A fake [MediaStream] that returns the provided [_videoTracks].
 class FakeMediaStream extends Fake implements MediaStream {
@@ -117,6 +122,34 @@ class FakeElementStream<T extends Event> extends Fake
       cancelOnError: cancelOnError,
     );
   }
+}
+
+/// A fake [BlobEvent] that returns the provided blob [data].
+class FakeBlobEvent extends Fake implements BlobEvent {
+  FakeBlobEvent(this._blob);
+
+  final Blob? _blob;
+
+  @override
+  Blob? get data => _blob;
+}
+
+/// A fake [DomException] that returns the provided error [_name] and [_message].
+class FakeErrorEvent extends Fake implements ErrorEvent {
+  FakeErrorEvent(
+    String type, [
+    String? message,
+  ])  : _type = type,
+        _message = message;
+
+  final String _type;
+  final String? _message;
+
+  @override
+  String get type => _type;
+
+  @override
+  String? get message => _message;
 }
 
 /// Returns a video element with a blank stream of size [videoSize].

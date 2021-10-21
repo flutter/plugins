@@ -281,6 +281,22 @@ void main() {
           throwsA(isInstanceOf<PlatformException>()));
     });
 
+    test('signInSilently allows re-authentication to be requested', () async {
+      await googleSignIn.signInSilently();
+      expect(googleSignIn.currentUser, isNotNull);
+
+      await googleSignIn.signInSilently(reAuthenticate: true);
+
+      expect(
+        log,
+        <Matcher>[
+          _isSignInMethodCall(),
+          isMethodCall('signInSilently', arguments: null),
+          isMethodCall('signInSilently', arguments: null),
+        ],
+      );
+    });
+
     test('can sign in after init failed before', () async {
       int initCount = 0;
       channel.setMockMethodCallHandler((MethodCall methodCall) {

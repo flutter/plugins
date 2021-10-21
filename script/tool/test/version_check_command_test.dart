@@ -46,7 +46,7 @@ class MockProcessResult extends Mock implements io.ProcessResult {}
 void main() {
   const String indentation = '  ';
   group('$VersionCheckCommand', () {
-    FileSystem fileSystem;
+    late FileSystem fileSystem;
     late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
@@ -54,11 +54,15 @@ void main() {
     late List<List<String>> gitDirCommands;
     Map<String, String> gitShowResponses;
     late MockGitDir gitDir;
+    // Ignored if mockHttpResponse is set.
+    int mockHttpStatus;
+    Map<String, dynamic>? mockHttpResponse;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
       mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
+
       gitDirCommands = <List<String>>[];
       gitShowResponses = <String, String>{};
       gitDir = MockGitDir();
@@ -81,9 +85,21 @@ void main() {
         }
         return Future<io.ProcessResult>.value(mockProcessResult);
       });
+
+      // Default to simulating the plugin never having been published.
+      mockHttpStatus = 404;
+      mockHttpResponse = null;
+      final MockClient mockClient = MockClient((http.Request request) async {
+        return http.Response(json.encode(mockHttpResponse),
+            mockHttpResponse == null ? mockHttpStatus : 200);
+      });
+
       processRunner = RecordingProcessRunner();
       final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, platform: mockPlatform, gitDir: gitDir);
+          processRunner: processRunner,
+          platform: mockPlatform,
+          gitDir: gitDir,
+          httpClient: mockClient);
 
       runner = CommandRunner<void>(
           'version_check_command', 'Test for $VersionCheckCommand');
@@ -236,7 +252,8 @@ void main() {
           ]));
     });
 
-    test('disallows breaking changes to platform interfaces', () async {
+    test('disallows breaking changes to platform interfaces by default',
+        () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -258,6 +275,92 @@ void main() {
               'master:packages/plugin_platform_interface/pubspec.yaml'
             ]),
           ]));
+    });
+
+    test('allows breaking changes to platform interfaces with explanation',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+      final File changeDescriptionFile =
+          fileSystem.file('change_description.txt');
+      changeDescriptionFile.writeAsStringSync('''
+Some general PR description
+
+## Breaking change justification
+
+This is necessary because of X, Y, and Z
+
+## Another section''');
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--change-description-file=${changeDescriptionFile.path}'
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Allowing breaking change to plugin_platform_interface '
+              'due to "## Breaking change justification" in the change '
+              'description.'),
+          contains('Ran for 1 package(s) (1 with warnings)'),
+        ]),
+      );
+    });
+
+    test('throws if a nonexistent change description file is specified',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--change-description-file=a_missing_file.txt'
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No such file: a_missing_file.txt'),
+        ]),
+      );
+    });
+
+    test('allows breaking changes to platform interfaces with bypass flag',
+        () async {
+      createFakePlugin('plugin_platform_interface', packagesDir,
+          version: '2.0.0');
+      gitShowResponses = <String, String>{
+        'master:packages/plugin_platform_interface/pubspec.yaml':
+            'version: 1.0.0',
+      };
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--ignore-platform-interface-breaks'
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Allowing breaking change to plugin_platform_interface due '
+              'to --ignore-platform-interface-breaks'),
+          contains('Ran for 1 package(s) (1 with warnings)'),
+        ]),
+      );
     });
 
     test('Allow empty lines in front of the first version in CHANGELOG',
@@ -373,6 +476,10 @@ void main() {
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=master']);
       await expectLater(
@@ -384,8 +491,7 @@ void main() {
       );
     });
 
-    test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
-        () async {
+    test('Fail if NEXT appears after a version', () async {
       const String version = '1.0.1';
       final Directory pluginDirectory =
           createFakePlugin('plugin', packagesDir, version: version);
@@ -419,17 +525,25 @@ void main() {
       );
     });
 
-    test('Fail if the version changes without replacing NEXT', () async {
+    test('Fail if NEXT is left in the CHANGELOG when adding a version bump',
+        () async {
+      const String version = '1.0.1';
       final Directory pluginDirectory =
-          createFakePlugin('plugin', packagesDir, version: '1.0.1');
+          createFakePlugin('plugin', packagesDir, version: version);
 
       const String changelog = '''
 ## NEXT
-* Some changes that should be listed as part of 1.0.1.
+* Some changes that should have been folded in 1.0.1.
+## $version
+* Some changes.
 ## 1.0.0
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
       bool hasError = false;
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
@@ -444,14 +558,118 @@ void main() {
       expect(
         output,
         containsAllInOrder(<Matcher>[
-          contains('Found NEXT; validating next version in the CHANGELOG.'),
-          contains('Versions in CHANGELOG.md and pubspec.yaml do not match.'),
+          contains('When bumping the version for release, the NEXT section '
+              'should be incorporated into the new version\'s release notes.'),
+          contains('plugin:\n'
+              '    CHANGELOG.md failed validation.'),
+        ]),
+      );
+    });
+
+    test('Fail if the version changes without replacing NEXT', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, version: '1.0.1');
+
+      const String changelog = '''
+## NEXT
+* Some changes that should be listed as part of 1.0.1.
+## 1.0.0
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      bool hasError = false;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+        '--against-pub'
+      ], errorHandler: (Error e) {
+        expect(e, isA<ToolExit>());
+        hasError = true;
+      });
+      expect(hasError, isTrue);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('When bumping the version for release, the NEXT section '
+              'should be incorporated into the new version\'s release notes.')
+        ]),
+      );
+    });
+
+    test(
+        'fails gracefully if the version headers are not found due to using the wrong style',
+        () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+      const String changelog = '''
+## NEXT
+* Some changes for a later release.
+# 1.0.0
+* Some other changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Unable to find a version in CHANGELOG.md'),
+          contains('The current version should be on a line starting with '
+              '"## ", either on the first non-empty line or after a "## NEXT" '
+              'section.'),
+        ]),
+      );
+    });
+
+    test('fails gracefully if the version is unparseable', () async {
+      final Directory pluginDirectory =
+          createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+      const String changelog = '''
+## Alpha
+* Some changes.
+''';
+      createFakeCHANGELOG(pluginDirectory, changelog);
+      gitShowResponses = <String, String>{
+        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+      };
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(runner, <String>[
+        'version-check',
+        '--base-sha=master',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('"Alpha" could not be parsed as a version.'),
         ]),
       );
     });
 
     test('allows valid against pub', () async {
-      const Map<String, dynamic> httpResponse = <String, dynamic>{
+      mockHttpResponse = <String, dynamic>{
         'name': 'some_package',
         'versions': <String>[
           '0.0.1',
@@ -459,15 +677,6 @@ void main() {
           '1.0.0',
         ],
       };
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response(json.encode(httpResponse), 200);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -485,22 +694,13 @@ void main() {
     });
 
     test('denies invalid against pub', () async {
-      const Map<String, dynamic> httpResponse = <String, dynamic>{
+      mockHttpResponse = <String, dynamic>{
         'name': 'some_package',
         'versions': <String>[
           '0.0.1',
           '0.0.2',
         ],
       };
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response(json.encode(httpResponse), 200);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -532,15 +732,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
     test(
         'throw and print error message if http request failed when checking against pub',
         () async {
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response('xx', 400);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
+      mockHttpStatus = 400;
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
@@ -563,7 +755,7 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
           contains('''
 ${indentation}Error fetching version on pub for plugin.
 ${indentation}HTTP Status 400
-${indentation}HTTP response: xx
+${indentation}HTTP response: null
 ''')
         ]),
       );
@@ -571,15 +763,7 @@ ${indentation}HTTP response: xx
 
     test('when checking against pub, allow any version if http status is 404.',
         () async {
-      final MockClient mockClient = MockClient((http.Request request) async {
-        return http.Response('xx', 404);
-      });
-      final VersionCheckCommand command = VersionCheckCommand(packagesDir,
-          processRunner: processRunner, gitDir: gitDir, httpClient: mockClient);
-
-      runner = CommandRunner<void>(
-          'version_check_command', 'Test for $VersionCheckCommand');
-      runner.addCommand(command);
+      mockHttpStatus = 404;
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
