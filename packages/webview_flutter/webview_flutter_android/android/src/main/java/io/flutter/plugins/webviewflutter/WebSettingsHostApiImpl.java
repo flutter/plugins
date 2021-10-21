@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import android.webkit.WebSettings;
@@ -5,23 +9,23 @@ import android.webkit.WebView;
 
 class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostApi {
   private final InstanceManager instanceManager;
-  private final WebSettingsProxy webSettingsProxy;
+  private final WebSettingsCreator webSettingsCreator;
 
-  static class WebSettingsProxy {
+  static class WebSettingsCreator {
     WebSettings createWebSettings(WebView webView) {
       return webView.getSettings();
     }
   }
 
-  WebSettingsHostApiImpl(InstanceManager instanceManager, WebSettingsProxy webSettingsProxy) {
+  WebSettingsHostApiImpl(InstanceManager instanceManager, WebSettingsCreator webSettingsCreator) {
     this.instanceManager = instanceManager;
-    this.webSettingsProxy = webSettingsProxy;
+    this.webSettingsCreator = webSettingsCreator;
   }
 
   @Override
   public void create(Long instanceId, Long webViewInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(webViewInstanceId);
-    instanceManager.addInstance(webSettingsProxy.createWebSettings(webView), instanceId);
+    instanceManager.addInstance(webSettingsCreator.createWebSettings(webView), instanceId);
   }
 
   @Override

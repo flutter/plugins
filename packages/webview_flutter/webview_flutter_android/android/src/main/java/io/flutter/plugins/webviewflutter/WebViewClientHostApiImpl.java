@@ -1,9 +1,14 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.view.KeyEvent;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -16,7 +21,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFl
 
 class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
   private final InstanceManager instanceManager;
-  private final WebViewClientProxy webViewClientProxy;
+  private final WebViewClientCreator webViewClientCreator;
   private final WebViewClientFlutterApi webViewClientFlutterApi;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
@@ -58,12 +63,20 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
     return requestData;
   }
 
-  static class WebViewClientProxy {
+  static class WebViewClientCreator {
     WebViewClient createWebViewClient(
         Long instanceId,
         InstanceManager instanceManager,
         Boolean shouldOverrideUrlLoading,
         WebViewClientFlutterApi webViewClientFlutterApi) {
+      // WebViewClientCompat is used to get
+      // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
+      // invoked by the webview on older Android devices, without it pages that use iframes will
+      // be broken when a navigationDelegate is set on Android version earlier than N.
+      //
+      // However, this if statement attempts to avoid using WebViewClientCompat on versions >= N due
+      // to bug https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
+      // https://github.com/flutter/flutter/issues/29446.
       if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
         return new WebViewClient() {
           @Override
@@ -116,6 +129,13 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
             webViewClientFlutterApi.urlLoading(
                 instanceId, instanceManager.getInstanceId(view), url, reply -> {});
             return shouldOverrideUrlLoading;
+          }
+
+          @Override
+          public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+            // Deliberately empty. Occasionally the webview will mark events as having failed to be
+            // handled even though they were handled. We don't want to propagate those as they're not
+            // truly lost.
           }
         };
       } else {
@@ -179,6 +199,13 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
                 instanceId, instanceManager.getInstanceId(view), url, reply -> {});
             return shouldOverrideUrlLoading;
           }
+
+          @Override
+          public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+            // Deliberately empty. Occasionally the webview will mark events as having failed to be
+            // handled even though they were handled. We don't want to propagate those as they're not
+            // truly lost.
+          }
         };
       }
     }
@@ -186,19 +213,19 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
 
   WebViewClientHostApiImpl(
       InstanceManager instanceManager,
-      WebViewClientProxy webViewClientProxy,
+      WebViewClientCreator webViewClientCreator,
       WebViewClientFlutterApi webViewClientFlutterApi) {
     this.instanceManager = instanceManager;
-    this.webViewClientProxy = webViewClientProxy;
+    this.webViewClientCreator = webViewClientCreator;
     this.webViewClientFlutterApi = webViewClientFlutterApi;
   }
 
   @Override
   public void create(Long instanceId, Boolean shouldOverrideUrlLoading) {
-    instanceManager.addInstance(
-        webViewClientProxy.createWebViewClient(
-            instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi),
-        instanceId);
+    final WebViewClient webViewClient =
+        webViewClientCreator.createWebViewClient(
+            instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);
+    instanceManager.addInstance(webViewClient, instanceId);
   }
 
   @Override

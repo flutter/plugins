@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -5,6 +9,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.webkit.WebSettings;
+import io.flutter.plugins.webviewflutter.WebSettingsHostApiImpl.WebSettingsCreator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -17,7 +22,7 @@ public class WebSettingsTest {
 
   @Mock public WebSettings mockWebSettings;
 
-  @Mock WebSettingsHostApiImpl.WebSettingsProxy mockWebSettingsProxy;
+  @Mock WebSettingsCreator mockWebSettingsCreator;
 
   InstanceManager testInstanceManager;
   WebSettingsHostApiImpl testHostApiImpl;
@@ -25,8 +30,8 @@ public class WebSettingsTest {
   @Before
   public void setUp() {
     testInstanceManager = new InstanceManager();
-    when(mockWebSettingsProxy.createWebSettings(any())).thenReturn(mockWebSettings);
-    testHostApiImpl = new WebSettingsHostApiImpl(testInstanceManager, mockWebSettingsProxy);
+    when(mockWebSettingsCreator.createWebSettings(any())).thenReturn(mockWebSettings);
+    testHostApiImpl = new WebSettingsHostApiImpl(testInstanceManager, mockWebSettingsCreator);
     testHostApiImpl.create(0L, 0L);
   }
 

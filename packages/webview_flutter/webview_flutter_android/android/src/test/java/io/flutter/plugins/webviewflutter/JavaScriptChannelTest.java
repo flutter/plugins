@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -5,6 +9,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
+import io.flutter.plugins.webviewflutter.JavaScriptChannelHostApiImpl.JavaScriptChannelCreator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -25,12 +31,12 @@ public class JavaScriptChannelTest {
   public void setUp() {
     testInstanceManager = new InstanceManager();
 
-    final JavaScriptChannelHostApiImpl.JavaScriptChannelProxy javaScriptChannelProxy =
-        new JavaScriptChannelHostApiImpl.JavaScriptChannelProxy() {
+    final JavaScriptChannelCreator javaScriptChannelCreator =
+        new JavaScriptChannelCreator() {
           @Override
           JavaScriptChannel createJavaScriptChannel(
               Long instanceId,
-              GeneratedAndroidWebView.JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+              JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
               String channelName,
               Handler platformThreadHandler) {
             testJavaScriptChannel =
@@ -42,7 +48,7 @@ public class JavaScriptChannelTest {
 
     testHostApiImpl =
         new JavaScriptChannelHostApiImpl(
-            testInstanceManager, javaScriptChannelProxy, mockFlutterApi, new Handler());
+            testInstanceManager, javaScriptChannelCreator, mockFlutterApi, new Handler());
     testHostApiImpl.create(0L, "aChannelName");
   }
 

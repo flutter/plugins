@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -5,6 +9,8 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.webkit.DownloadListener;
+import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerCreator;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerFlutterApi;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,7 +21,7 @@ import org.mockito.junit.MockitoRule;
 public class DownloadListenerTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public GeneratedAndroidWebView.DownloadListenerFlutterApi mockFlutterApi;
+  @Mock public DownloadListenerFlutterApi mockFlutterApi;
 
   InstanceManager testInstanceManager;
   DownloadListenerHostApiImpl testHostApiImpl;
@@ -25,12 +31,11 @@ public class DownloadListenerTest {
   public void setUp() {
     testInstanceManager = new InstanceManager();
 
-    final DownloadListenerHostApiImpl.DownloadListenerProxy downloadListenerProxy =
-        new DownloadListenerHostApiImpl.DownloadListenerProxy() {
+    final DownloadListenerCreator downloadListenerCreator =
+        new DownloadListenerCreator() {
           @Override
           DownloadListener createDownloadListener(
-              Long instanceId,
-              GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi) {
+              Long instanceId, DownloadListenerFlutterApi downloadListenerFlutterApi) {
             testDownloadListener =
                 super.createDownloadListener(instanceId, downloadListenerFlutterApi);
             return testDownloadListener;
@@ -38,7 +43,8 @@ public class DownloadListenerTest {
         };
 
     testHostApiImpl =
-        new DownloadListenerHostApiImpl(testInstanceManager, downloadListenerProxy, mockFlutterApi);
+        new DownloadListenerHostApiImpl(
+            testInstanceManager, downloadListenerCreator, mockFlutterApi);
     testHostApiImpl.create(0L);
   }
 

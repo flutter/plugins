@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -6,6 +10,8 @@ import static org.mockito.Mockito.verify;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
+import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCreator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 public class WebViewClientTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public GeneratedAndroidWebView.WebViewClientFlutterApi mockFlutterApi;
+  @Mock public WebViewClientFlutterApi mockFlutterApi;
 
   @Mock public WebView mockWebView;
 
@@ -29,14 +35,14 @@ public class WebViewClientTest {
     testInstanceManager = new InstanceManager();
     testInstanceManager.addInstance(mockWebView, 0L);
 
-    final WebViewClientHostApiImpl.WebViewClientProxy webViewClientProxy =
-        new WebViewClientHostApiImpl.WebViewClientProxy() {
+    final WebViewClientCreator webViewClientCreator =
+        new WebViewClientCreator() {
           @Override
           WebViewClient createWebViewClient(
               Long instanceId,
               InstanceManager instanceManager,
               Boolean shouldOverrideUrlLoading,
-              GeneratedAndroidWebView.WebViewClientFlutterApi webViewClientFlutterApi) {
+              WebViewClientFlutterApi webViewClientFlutterApi) {
             testWebViewClient =
                 super.createWebViewClient(
                     instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);
@@ -45,7 +51,7 @@ public class WebViewClientTest {
         };
 
     testHostApiImpl =
-        new WebViewClientHostApiImpl(testInstanceManager, webViewClientProxy, mockFlutterApi);
+        new WebViewClientHostApiImpl(testInstanceManager, webViewClientCreator, mockFlutterApi);
     testHostApiImpl.create(1L, true);
   }
 

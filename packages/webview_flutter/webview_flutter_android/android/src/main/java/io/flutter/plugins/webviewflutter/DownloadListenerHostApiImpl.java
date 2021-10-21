@@ -1,16 +1,20 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import android.webkit.DownloadListener;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerFlutterApi;
 
 class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadListenerHostApi {
   private final InstanceManager instanceManager;
-  private final DownloadListenerProxy downloadListenerProxy;
+  private final DownloadListenerCreator downloadListenerCreator;
   private final GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi;
 
-  static class DownloadListenerProxy {
+  static class DownloadListenerCreator {
     DownloadListener createDownloadListener(
-        Long instanceId,
-        GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi) {
+        Long instanceId, DownloadListenerFlutterApi downloadListenerFlutterApi) {
       return (url, userAgent, contentDisposition, mimetype, contentLength) ->
           downloadListenerFlutterApi.onDownloadStart(
               instanceId, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
@@ -19,18 +23,18 @@ class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadLis
 
   DownloadListenerHostApiImpl(
       InstanceManager instanceManager,
-      DownloadListenerProxy downloadListenerProxy,
-      GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi) {
+      DownloadListenerCreator downloadListenerCreator,
+      DownloadListenerFlutterApi downloadListenerFlutterApi) {
     this.instanceManager = instanceManager;
-    this.downloadListenerProxy = downloadListenerProxy;
+    this.downloadListenerCreator = downloadListenerCreator;
     this.downloadListenerFlutterApi = downloadListenerFlutterApi;
   }
 
   @Override
   public void create(Long instanceId) {
-    instanceManager.addInstance(
-        downloadListenerProxy.createDownloadListener(instanceId, downloadListenerFlutterApi),
-        instanceId);
+    final DownloadListener downloadListener =
+        downloadListenerCreator.createDownloadListener(instanceId, downloadListenerFlutterApi);
+    instanceManager.addInstance(downloadListener, instanceId);
   }
 
   @Override

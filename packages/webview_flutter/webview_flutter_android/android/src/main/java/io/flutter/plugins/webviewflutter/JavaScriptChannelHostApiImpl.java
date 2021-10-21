@@ -1,3 +1,7 @@
+// Copyright 2013 The Flutter Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
@@ -6,11 +10,11 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChann
 
 class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
-  private final JavaScriptChannelProxy javaScriptChannelProxy;
+  private final JavaScriptChannelCreator javaScriptChannelCreator;
   private final JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;
   private final Handler platformThreadHandler;
 
-  static class JavaScriptChannelProxy {
+  static class JavaScriptChannelCreator {
     JavaScriptChannel createJavaScriptChannel(
         Long instanceId,
         JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
@@ -19,7 +23,7 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
       return new JavaScriptChannel(null, channelName, platformThreadHandler) {
         @Override
         public void postMessage(String message) {
-          Runnable postMessageRunnable =
+          final Runnable postMessageRunnable =
               () -> javaScriptChannelFlutterApi.postMessage(instanceId, message, reply -> {});
           if (platformThreadHandler.getLooper() == Looper.myLooper()) {
             postMessageRunnable.run();
@@ -33,11 +37,11 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
 
   JavaScriptChannelHostApiImpl(
       InstanceManager instanceManager,
-      JavaScriptChannelProxy javaScriptChannelProxy,
+      JavaScriptChannelCreator javaScriptChannelCreator,
       JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
       Handler platformThreadHandler) {
     this.instanceManager = instanceManager;
-    this.javaScriptChannelProxy = javaScriptChannelProxy;
+    this.javaScriptChannelCreator = javaScriptChannelCreator;
     this.javaScriptChannelFlutterApi = javaScriptChannelFlutterApi;
     this.platformThreadHandler = platformThreadHandler;
   }
@@ -45,7 +49,7 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
   @Override
   public void create(Long instanceId, String channelName) {
     final JavaScriptChannel javaScriptChannel =
-        javaScriptChannelProxy.createJavaScriptChannel(
+        javaScriptChannelCreator.createJavaScriptChannel(
             instanceId, javaScriptChannelFlutterApi, channelName, platformThreadHandler);
     instanceManager.addInstance(javaScriptChannel, instanceId);
   }
