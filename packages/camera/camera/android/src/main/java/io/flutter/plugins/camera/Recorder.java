@@ -417,7 +417,7 @@ public class Recorder {
                     stoppedVideo = true;
                     videoRenderer.close();
                     videoEncoder.stop();
-                    if(stoppedAudio){
+                    if(!audioEnabled || stoppedAudio){
                         stopInternal();
                     }
                 }
