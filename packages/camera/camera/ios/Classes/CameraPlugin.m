@@ -309,7 +309,8 @@ AVCaptureAudioDataOutputSampleBufferDelegate>
 @property BOOL enableAudio;
 @property(nonatomic) FLTImageStreamHandler *imageStreamHandler;
 @property(nonatomic) FlutterMethodChannel *methodChannel;
-@property(readonly, nonatomic) AVCaptureSession *captureSession;
+@property(readonly, nonatomic) AVCaptureSession *videoCaptureSession;
+@property(readonly, nonatomic) AVCaptureSession *audioCaptureSession;
 @property(readonly, nonatomic) AVCaptureDevice *captureDevice;
 @property(readonly, nonatomic) AVCapturePhotoOutput *capturePhotoOutput API_AVAILABLE(ios(10));
 @property(readonly, nonatomic) AVCaptureVideoDataOutput *captureVideoOutput;
@@ -367,7 +368,8 @@ NSString *const errorMethod = @"error";
     }
     _enableAudio = enableAudio;
     _dispatchQueue = dispatchQueue;
-    _captureSession = [[AVCaptureSession alloc] init];
+    _videoCaptureSession = [[AVCaptureSession alloc] init];
+    _audioCaptureSession = [[AVCaptureSession alloc] init];
     _captureDevice = [AVCaptureDevice deviceWithUniqueID:cameraName];
     _flashMode = _captureDevice.hasFlash ? FlashModeAuto : FlashModeOff;
     _exposureMode = ExposureModeAuto;
@@ -398,14 +400,14 @@ NSString *const errorMethod = @"error";
         connection.videoMirrored = YES;
     }
     
-    [_captureSession addInputWithNoConnections:_captureVideoInput];
-    [_captureSession addOutputWithNoConnections:_captureVideoOutput];
-    [_captureSession addConnection:connection];
+    [_videoCaptureSession addInputWithNoConnections:_captureVideoInput];
+    [_videoCaptureSession addOutputWithNoConnections:_captureVideoOutput];
+    [_videoCaptureSession addConnection:connection];
     
     if (@available(iOS 10.0, *)) {
         _capturePhotoOutput = [AVCapturePhotoOutput new];
         [_capturePhotoOutput setHighResolutionCaptureEnabled:YES];
-        [_captureSession addOutput:_capturePhotoOutput];
+        [_videoCaptureSession addOutput:_capturePhotoOutput];
     }
     _motionManager = [[CMMotionManager alloc] init];
     [_motionManager startAccelerometerUpdates];
@@ -417,12 +419,14 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)start {
-    [_captureSession startRunning];
+    [_videoCaptureSession startRunning];
+    [_audioCaptureSession startRunning];
 }
 
 - (void)stop {
-    [_captureSession stopRunning];
-}
+    [_videoCaptureSession stopRunning];
+    [_audioCaptureSession stopRunning];
+    }
 
 - (void)setDeviceOrientation:(UIDeviceOrientation)orientation {
     if (_deviceOrientation == orientation) {
@@ -532,45 +536,45 @@ NSString *const errorMethod = @"error";
     switch (resolutionPreset) {
         case max:
         case ultraHigh:
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
-                _captureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset3840x2160]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPreset3840x2160;
                 _previewSize = CGSizeMake(3840, 2160);
                 break;
             }
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
-                _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPresetHigh]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPresetHigh;
                 _previewSize =
                 CGSizeMake(_captureDevice.activeFormat.highResolutionStillImageDimensions.width,
                            _captureDevice.activeFormat.highResolutionStillImageDimensions.height);
                 break;
             }
         case veryHigh:
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
-                _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset1920x1080]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPreset1920x1080;
                 _previewSize = CGSizeMake(1920, 1080);
                 break;
             }
         case high:
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
-                _captureSession.sessionPreset = AVCaptureSessionPreset1280x720;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset1280x720]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPreset1280x720;
                 _previewSize = CGSizeMake(1280, 720);
                 break;
             }
         case medium:
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
-                _captureSession.sessionPreset = AVCaptureSessionPreset640x480;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset640x480]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPreset640x480;
                 _previewSize = CGSizeMake(640, 480);
                 break;
             }
         case low:
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
-                _captureSession.sessionPreset = AVCaptureSessionPreset352x288;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPreset352x288]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPreset352x288;
                 _previewSize = CGSizeMake(352, 288);
                 break;
             }
         default:
-            if ([_captureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
-                _captureSession.sessionPreset = AVCaptureSessionPresetLow;
+            if ([_videoCaptureSession canSetSessionPreset:AVCaptureSessionPresetLow]) {
+                _videoCaptureSession.sessionPreset = AVCaptureSessionPresetLow;
                 _previewSize = CGSizeMake(352, 288);
             } else {
                 NSError *error =
@@ -583,6 +587,7 @@ NSString *const errorMethod = @"error";
                 @throw error;
             }
     }
+    _audioCaptureSession.sessionPreset = _videoCaptureSession.sessionPreset;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)output
@@ -715,7 +720,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 [_videoAdaptor appendPixelBuffer:nextBuffer withPresentationTime:nextSampleTime];
             
             // save audio frame
-        } else {
+        } else if(output == _audioOutput){
             CMTime dur = CMSampleBufferGetDuration(sampleBuffer);
             
             if (dur.value > 0) {
@@ -800,12 +805,19 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)close {
-    [_captureSession stopRunning];
-    for (AVCaptureInput *input in [_captureSession inputs]) {
-        [_captureSession removeInput:input];
+    [_videoCaptureSession stopRunning];
+    [_audioCaptureSession stopRunning];
+    for (AVCaptureInput *input in [_videoCaptureSession inputs]) {
+        [_videoCaptureSession removeInput:input];
     }
-    for (AVCaptureOutput *output in [_captureSession outputs]) {
-        [_captureSession removeOutput:output];
+    for (AVCaptureOutput *output in [_videoCaptureSession outputs]) {
+        [_videoCaptureSession removeOutput:output];
+    }
+    for (AVCaptureInput *input in [_audioCaptureSession inputs]) {
+        [_audioCaptureSession removeInput:input];
+    }
+    for (AVCaptureOutput *output in [_audioCaptureSession outputs]) {
+        [_audioCaptureSession removeOutput:output];
     }
 }
 
@@ -879,23 +891,15 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 }
 
 - (void)pauseVideoRecordingWithResult:(FlutterResult)result {
-    [self pauseInternal];
-    result(nil);
-}
-
-- (void) pauseInternal {
     _isRecordingPaused = YES;
     _videoIsDisconnected = YES;
     _audioIsDisconnected = YES;
-}
-
-- (void)resumeVideoRecordingWithResult:(FlutterResult)result {
-    [self resumeInternal];
     result(nil);
 }
 
-- (void) resumeInternal {
+- (void)resumeVideoRecordingWithResult:(FlutterResult)result {
     _isRecordingPaused = NO;
+    result(nil);
 }
 
 - (void)lockCaptureOrientationWithResult:(FlutterResult)result
@@ -1079,9 +1083,6 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     AVCaptureVideoDataOutput *_oldOutput = _captureVideoOutput;
     AVCaptureConnection *_oldConnection = [_oldOutput connectionWithMediaType:AVMediaTypeVideo];
     
-    
-    [self pauseInternal];
-    
     // stop video capture from old output
     // this also automatically removes old output's connection from captureSession
     [_oldOutput setSampleBufferDelegate:nil queue:nil];
@@ -1115,23 +1116,21 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     }
     
     // replace old with new in session
-    [_captureSession beginConfiguration];
-    [_captureSession removeInput:_oldInput];
-    [_captureSession removeOutput:_oldOutput];
-    if(![_captureSession canAddInput:_newInput])
+    [_videoCaptureSession beginConfiguration];
+    [_videoCaptureSession removeInput:_oldInput];
+    [_videoCaptureSession removeOutput:_oldOutput];
+    if(![_videoCaptureSession canAddInput:_newInput])
         result([FlutterError errorWithCode:@"VideoError" message:@"Unable switch video input" details:nil]);
-    [_captureSession addInputWithNoConnections:_newInput];
-    if(![_captureSession canAddOutput:_newOutput])
+    [_videoCaptureSession addInputWithNoConnections:_newInput];
+    if(![_videoCaptureSession canAddOutput:_newOutput])
         result([FlutterError errorWithCode:@"VideoError" message:@"Unable switch video output" details:nil]);
-    [_captureSession addOutputWithNoConnections:_newOutput];
-    if(![_captureSession canAddConnection:_newConnection])
+    [_videoCaptureSession addOutputWithNoConnections:_newOutput];
+    if(![_videoCaptureSession canAddConnection:_newConnection])
         result([FlutterError errorWithCode:@"VideoError" message:@"Unable switch video connection" details:nil]);
-    [_captureSession addConnection:_newConnection];
+    [_videoCaptureSession addConnection:_newConnection];
     _captureVideoInput = _newInput;
     _captureVideoOutput = _newOutput;
-    [_captureSession commitConfiguration];
-
-    [self resumeInternal];
+    [_videoCaptureSession commitConfiguration];
     
     result(nil);
 }
@@ -1374,11 +1373,11 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     // Setup the audio output.
     _audioOutput = [[AVCaptureAudioDataOutput alloc] init];
     
-    if ([_captureSession canAddInput:audioInput]) {
-        [_captureSession addInput:audioInput];
+    if ([_audioCaptureSession canAddInput:audioInput]) {
+        [_audioCaptureSession addInput:audioInput];
         
-        if ([_captureSession canAddOutput:_audioOutput]) {
-            [_captureSession addOutput:_audioOutput];
+        if ([_audioCaptureSession canAddOutput:_audioOutput]) {
+            [_audioCaptureSession addOutput:_audioOutput];
             _isAudioSetup = YES;
         } else {
             [_methodChannel invokeMethod:errorMethod
