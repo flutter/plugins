@@ -69,8 +69,8 @@ task:
         - dart pub run test
     - name: publishable
       env:
-        # TODO (mvanbeusekom): Temporary override to "stable" because of failure on "master". 
-        # Remove override once https://github.com/dart-lang/pub/issues/3152 is resolved. 
+        # TODO (mvanbeusekom): Temporary override to "stable" because of failure on "master".
+        # Remove override once https://github.com/dart-lang/pub/issues/3152 is resolved.
         CHANNEL: stable
         CHANGE_DESC: "$TMPDIR/change-description.txt"
       version_check_script:
@@ -88,9 +88,10 @@ task:
         - fi
       publish_check_script: ./script/tool_runner.sh publish-check
     - name: format
-      format_script: ./script/tool_runner.sh format --fail-on-change
-      pubspec_script: ./script/tool_runner.sh pubspec-check
-      license_script: dart $PLUGIN_TOOL license-check
+      always:
+        format_script: ./script/tool_runner.sh format --fail-on-change
+        pubspec_script: ./script/tool_runner.sh pubspec-check
+        license_script: dart $PLUGIN_TOOL license-check
     - name: federated_safety
       # This check is only meaningful for PRs, as it validates changes
       # rather than state.

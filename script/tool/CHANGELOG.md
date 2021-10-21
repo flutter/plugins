@@ -13,6 +13,7 @@
 - `license-check` now validates Kotlin files.
 - `pubspec-check` now checks that the description is of the pub-recommended
   length.
+- Fix `license-check` when run on Windows with line ending conversion enabled.
 
 ## 0.7.1
 
