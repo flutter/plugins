@@ -101,7 +101,7 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
-        'model=flame,version=29',
+        'model=redfin,version=30',
         '--device',
         'model=seoul,version=26',
         '--test-run-id',
@@ -142,7 +142,7 @@ void main() {
               '/packages/plugin1/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin1/buildId/testRunId/0/ --device model=flame,version=29 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin1/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin1/example'),
           ProcessCall(
@@ -156,7 +156,7 @@ void main() {
               '/packages/plugin2/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin2/buildId/testRunId/0/ --device model=flame,version=29 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin2/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin2/example'),
         ]),
@@ -176,7 +176,7 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
-        'model=flame,version=29',
+        'model=redfin,version=30',
         '--device',
         'model=seoul,version=26',
         '--test-run-id',
@@ -219,7 +219,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=flame,version=29 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
           ProcessCall(
@@ -229,7 +229,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/1/ --device model=flame,version=29 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/1/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
@@ -257,7 +257,7 @@ void main() {
         <String>[
           'firebase-test-lab',
           '--device',
-          'model=flame,version=29',
+          'model=redfin,version=30',
           '--device',
           'model=seoul,version=26',
           '--test-run-id',
@@ -294,7 +294,7 @@ void main() {
         <String>[
           'firebase-test-lab',
           '--device',
-          'model=flame,version=29',
+          'model=redfin,version=30',
           '--device',
           'model=seoul,version=26',
           '--test-run-id',
@@ -332,7 +332,7 @@ void main() {
         <String>[
           'firebase-test-lab',
           '--device',
-          'model=flame,version=29',
+          'model=redfin,version=30',
           '--device',
           'model=seoul,version=26',
           '--test-run-id',
@@ -366,7 +366,7 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
-        'model=flame,version=29',
+        'model=redfin,version=30',
         '--device',
         'model=seoul,version=26',
         '--test-run-id',
@@ -400,7 +400,7 @@ void main() {
       final List<String> output = await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
-        'model=flame,version=29',
+        'model=redfin,version=30',
         '--device',
         'model=seoul,version=26',
         '--test-run-id',
@@ -445,7 +445,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=flame,version=29 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
@@ -468,7 +468,7 @@ void main() {
         <String>[
           'firebase-test-lab',
           '--device',
-          'model=flame,version=29',
+          'model=redfin,version=30',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -505,7 +505,7 @@ void main() {
         <String>[
           'firebase-test-lab',
           '--device',
-          'model=flame,version=29',
+          'model=redfin,version=30',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -543,7 +543,7 @@ void main() {
         <String>[
           'firebase-test-lab',
           '--device',
-          'model=flame,version=29',
+          'model=redfin,version=30',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -571,7 +571,7 @@ void main() {
       await runCapturingPrint(runner, <String>[
         'firebase-test-lab',
         '--device',
-        'model=flame,version=29',
+        'model=redfin,version=30',
         '--test-run-id',
         'testRunId',
         '--build-id',
@@ -601,7 +601,7 @@ void main() {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=flame,version=29'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
