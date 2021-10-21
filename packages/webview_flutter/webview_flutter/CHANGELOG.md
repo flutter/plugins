@@ -1,5 +1,18 @@
-## NEXT
+## 2.1.1
 
+* Fixed `_CastError` that was thrown when running the example App.
+
+## 2.1.0
+
+* Migrated to fully federated architecture.
+
+## 2.0.14
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 2.0.13
+
+* Send URL of File to download to the NavigationDelegate on Android just like it is already done on iOS.
 * Updated Android lint settings.
 * Fix typos in the README.
 

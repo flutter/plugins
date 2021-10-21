@@ -18,6 +18,9 @@ void main() {
         'format': 35,
         'height': 1,
         'width': 4,
+        'lensAperture': 1.8,
+        'sensorExposureTime': 9991324,
+        'sensorSensitivity': 92.0,
         'planes': [
           {
             'bytes': Uint8List.fromList([1, 2, 3, 4]),
@@ -41,6 +44,9 @@ void main() {
         'format': 875704438,
         'height': 1,
         'width': 4,
+        'lensAperture': 1.8,
+        'sensorExposureTime': 9991324,
+        'sensorSensitivity': 92.0,
         'planes': [
           {
             'bytes': Uint8List.fromList([1, 2, 3, 4]),
@@ -61,6 +67,9 @@ void main() {
         'format': 35,
         'height': 1,
         'width': 4,
+        'lensAperture': 1.8,
+        'sensorExposureTime': 9991324,
+        'sensorSensitivity': 92.0,
         'planes': [
           {
             'bytes': Uint8List.fromList([1, 2, 3, 4]),
@@ -81,6 +90,9 @@ void main() {
         'format': 1111970369,
         'height': 1,
         'width': 4,
+        'lensAperture': 1.8,
+        'sensorExposureTime': 9991324,
+        'sensorSensitivity': 92.0,
         'planes': [
           {
             'bytes': Uint8List.fromList([1, 2, 3, 4]),
@@ -98,6 +110,9 @@ void main() {
         'format': null,
         'height': 1,
         'width': 4,
+        'lensAperture': 1.8,
+        'sensorExposureTime': 9991324,
+        'sensorSensitivity': 92.0,
         'planes': [
           {
             'bytes': Uint8List.fromList([1, 2, 3, 4]),

@@ -11,6 +11,7 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
+import 'common/repository_package.dart';
 
 const String _outputDirectoryFlag = 'output-dir';
 
@@ -92,10 +93,13 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     final StringBuffer newGradle = StringBuffer();
     for (final String line in gradleFile.readAsLinesSync()) {
-      if (line.contains('minSdkVersion 16')) {
-        // Android SDK 20 is required by Google maps.
-        // Android SDK 19 is required by WebView.
+      if (line.contains('minSdkVersion')) {
+        // minSdkVersion 20 is required by Google maps.
+        // minSdkVersion 19 is required by WebView.
         newGradle.writeln('minSdkVersion 20');
+      } else if (line.contains('compileSdkVersion')) {
+        // compileSdkVersion 31 is required by Camera.
+        newGradle.writeln('compileSdkVersion 31');
       } else {
         newGradle.writeln(line);
       }
@@ -170,10 +174,11 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (final PackageEnumerationEntry package in getTargetPackages()) {
+    await for (final PackageEnumerationEntry entry in getTargetPackages()) {
+      final RepositoryPackage package = entry.package;
       final Directory pluginDirectory = package.directory;
       final String pluginName = pluginDirectory.basename;
-      final File pubspecFile = pluginDirectory.childFile('pubspec.yaml');
+      final File pubspecFile = package.pubspecFile;
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {

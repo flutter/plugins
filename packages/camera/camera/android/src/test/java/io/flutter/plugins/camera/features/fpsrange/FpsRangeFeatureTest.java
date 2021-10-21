@@ -35,19 +35,19 @@ public class FpsRangeFeatureTest {
   }
 
   @Test
-  public void ctor_should_initialize_fps_range_with_highest_upper_value_from_range_array() {
+  public void ctor_shouldInitializeFpsRangeWithHighestUpperValueFromRangeArray() {
     FpsRangeFeature fpsRangeFeature = createTestInstance();
     assertEquals(13, (int) fpsRangeFeature.getValue().getUpper());
   }
 
   @Test
-  public void getDebugName_should_return_the_name_of_the_feature() {
+  public void getDebugName_shouldReturnTheNameOfTheFeature() {
     FpsRangeFeature fpsRangeFeature = createTestInstance();
     assertEquals("FpsRangeFeature", fpsRangeFeature.getDebugName());
   }
 
   @Test
-  public void getValue_should_return_highest_upper_range_if_not_set() {
+  public void getValue_shouldReturnHighestUpperRangeIfNotSet() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FpsRangeFeature fpsRangeFeature = createTestInstance();
 
@@ -55,7 +55,7 @@ public class FpsRangeFeatureTest {
   }
 
   @Test
-  public void getValue_should_echo_the_set_value() {
+  public void getValue_shouldEchoTheSetValue() {
     CameraProperties mockCameraProperties = mock(CameraProperties.class);
     FpsRangeFeature fpsRangeFeature = new FpsRangeFeature(mockCameraProperties);
     @SuppressWarnings("unchecked")
@@ -68,14 +68,14 @@ public class FpsRangeFeatureTest {
   }
 
   @Test
-  public void checkIsSupported_should_return_true() {
+  public void checkIsSupported_shouldReturnTrue() {
     FpsRangeFeature fpsRangeFeature = createTestInstance();
     assertTrue(fpsRangeFeature.checkIsSupported());
   }
 
   @Test
   @SuppressWarnings("unchecked")
-  public void updateBuilder_should_set_ae_target_fps_range() {
+  public void updateBuilder_shouldSetAeTargetFpsRange() {
     CaptureRequest.Builder mockBuilder = mock(CaptureRequest.Builder.class);
     FpsRangeFeature fpsRangeFeature = createTestInstance();
 

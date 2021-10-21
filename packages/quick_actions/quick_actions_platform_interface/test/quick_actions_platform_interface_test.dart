@@ -9,9 +9,12 @@ import 'package:quick_actions_platform_interface/platform_interface/quick_action
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  // Store the initial instance before any tests change it.
+  final QuickActionsPlatform initialInstance = QuickActionsPlatform.instance;
+
   group('$QuickActionsPlatform', () {
     test('$MethodChannelQuickActions is the default instance', () {
-      expect(QuickActionsPlatform.instance, isA<MethodChannelQuickActions>());
+      expect(initialInstance, isA<MethodChannelQuickActions>());
     });
 
     test('Cannot be implemented with `implements`', () {
