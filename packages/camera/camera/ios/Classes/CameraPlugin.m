@@ -746,9 +746,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
                 CFRelease(sampleBuffer);
                 sampleBuffer = [self adjustTime:sampleBuffer by:_audioTimeOffset];
             }
-           // if (_videoWriterInput.readyForMoreMediaData) { TODO: 
             [self newAudioSample:sampleBuffer];
-           //}
         }
         
         CFRelease(sampleBuffer);
@@ -1072,7 +1070,7 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
     
     // dont allow setting description if not recording
     if(!_isRecording){
-        result([FlutterError errorWithCode:@"setDescription" message:@"Uvideo was not recording" details:nil]);
+        result([FlutterError errorWithCode:@"setDescription" message:@"Video was not recording" details:nil]);
         return;
     }
     

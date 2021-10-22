@@ -378,12 +378,13 @@ class CameraController extends ValueNotifier<CameraValue> {
     }
   }
 
-  /// Sets this camera to use a different description
-  /// This is useful for switching cameras while recording video
+  /// Set camera description while video is recording
+  /// 
+  /// Throws a [CameraException] if controller is not currently video recording
   Future<void> setDescriptionWhileRecording(CameraDescription description) async {
     try {
       if(!value.isRecordingVideo){
-        throw CameraException("recordingVideo", "was not recording video");
+        throw CameraException("setDescription", "Video was not recording");
       }
       await CameraPlatform.instance.setDescriptionWhileRecording(description);
       value = value.copyWith(description: description);

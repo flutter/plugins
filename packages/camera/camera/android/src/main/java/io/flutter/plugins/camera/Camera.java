@@ -331,11 +331,10 @@ class Camera
    * Change camera description mid recording
    */
   public void setDescriptionWhileVideoRecording(@NonNull final Result result, CameraProperties properties){
-    Log.d(TAG, "set description");
 
     // only allow setting description while recording
     if(!recordingVideo){
-      result.error("setDescription", "video was not recording", null);
+      result.error("setDescription", "Video was not recording", null);
       return;
     }
     settingDescription = true;
@@ -357,10 +356,9 @@ class Camera
 
       openCamera();
     }catch(CameraAccessException e){
-      Log.e(TAG, "set desc", e);
-      result.error("cannot change camera", e.getMessage(), null);// TODO:
+      Log.e(TAG, "set description while recording error", e);
       settingDescription = false;
-      result.error("setDescription", e.getMessage(), null);
+      result.error("setDescription", "Failed to set description", null);
       return;
     }
 
