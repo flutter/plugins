@@ -1,3 +1,7 @@
+## 2.2.6
+
+* Add RTSP Support for Android
+
 ## 2.2.5
 
 * Support to closed caption WebVTT format added.

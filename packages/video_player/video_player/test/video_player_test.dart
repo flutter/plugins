@@ -287,6 +287,27 @@ void main() {
         expect(fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
             'file://a.avi');
       });
+
+      test('network with rtsp', () async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'rtsp://127.0.0.1/test',
+          formatHint: VideoFormat.rtsp,
+        );
+        await controller.initialize();
+
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].uri,
+          'rtsp://127.0.0.1/test',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].formatHint,
+          'rtsp',
+        );
+        expect(
+          fakeVideoPlayerPlatform.dataSourceDescriptions[0].httpHeaders,
+          {},
+        );
+      });
     });
 
     test('contentUri', () async {

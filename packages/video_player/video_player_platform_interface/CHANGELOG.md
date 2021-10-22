@@ -1,3 +1,7 @@
+## 4.2.1
+
+* Add `rtsp` to `VideoFormat`
+
 ## 4.2.0
 
 * Add `contentUri` to `DataSourceType`.
