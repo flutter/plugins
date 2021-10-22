@@ -50,7 +50,8 @@ class SharedPreferences {
   /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
-      final completer = Completer<SharedPreferences>();
+      final Completer<SharedPreferences> completer =
+          Completer<SharedPreferences>();
       try {
         final Map<String, Object> preferencesMap =
             await _getSharedPreferencesMap();
@@ -188,7 +189,7 @@ class SharedPreferences {
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
-    for (String key in fromSystem.keys) {
+    for (final String key in fromSystem.keys) {
       assert(key.startsWith(_prefix));
       preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
     }
