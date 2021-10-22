@@ -136,8 +136,9 @@ class Camera
   private MethodChannel.Result flutterResult;
 
   private Recorder recorder;
-  // we don't want to close or dispose while setting changing cameras
-  boolean settingDescription = false;
+
+  // we don't want to close or dispose while setting camera description mid video recording
+  private boolean settingDescription = false;
 
   public Camera(
       final Activity activity,
