@@ -80,6 +80,24 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
+  Future<void> loadFlutterAsset(String assetName) async {
+    assert(assetName != null);
+    return _channel.invokeMethod<void>('loadFlutterAsset', assetName);
+  }
+
+  @override
+  Future<void> loadHtml(
+    String html, {
+    String? baseUrl,
+  }) async {
+    assert(html != null);
+    return _channel.invokeMethod<void>('loadHtml', <String, dynamic>{
+      'html': html,
+      'baseUrl': baseUrl,
+    });
+  }
+
+  @override
   Future<void> loadUrl(
     String url,
     Map<String, String>? headers,

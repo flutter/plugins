@@ -23,6 +23,29 @@ abstract class WebViewPlatformController {
   /// The `handler` parameter must not be null.
   WebViewPlatformController(WebViewPlatformCallbacksHandler handler);
 
+  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  ///
+  /// Throws an ArgumentError if [assetName] is not part of the specified assets
+  /// in the pubspec.yaml file.
+  Future<void> loadFlutterAsset(
+    String assetName,
+  ) {
+    throw UnimplementedError(
+        "WebView loadFlutterAsset is not implemented on the current platform");
+  }
+
+  /// Loads the supplied HTML.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtml(
+    String html, {
+    String? baseUrl,
+  }) {
+    throw UnimplementedError(
+        "WebView loadHtml is not implemented on the current platform");
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
