@@ -152,9 +152,9 @@
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
     [self onEvaluateJavaScript:call result:result];
   } else if ([[call method] isEqualToString:@"runJavascript"]) {
-    [self onRunJavaScript:call result:result sendReturnValue:false];
+    [self onRunJavaScript:call result:result sendReturnValue:NO];
   } else if ([[call method] isEqualToString:@"runJavascriptReturningResult"]) {
-    [self onRunJavaScript:call result:result sendReturnValue:true];
+    [self onRunJavaScript:call result:result sendReturnValue:YES];
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
     [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
@@ -258,28 +258,28 @@
                                details:nil]);
     return;
   }
-  [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
-               if (error) {
-                 if (sendReturnValue ||
-                     (!sendReturnValue && error.code != WKErrorJavaScriptResultTypeIsUnsupported)) {
-                   result([FlutterError
+  [_webView
+    evaluateJavaScript:jsString
+     completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+       if (error) {
+         // WebKit will throw an error (WKErrorJavaScriptResultTypeIsUnsupported) when the
+         // type of the evaluated value is unsupported. This also goes for `null` and `undefined`,
+         // for example when running a void function. For ease of use this specific error is
+         // ignored when no return value is expected.
+         BOOL sendError = sendReturnValue || error.code != WKErrorJavaScriptResultTypeIsUnsupported;
+         result(
+             sendError
+                 ? [FlutterError
                        errorWithCode:(sendReturnValue ? @"runJavascriptReturningResult_failed"
                                                       : @"runJavascript_failed")
                              message:@"Failed running JavaScript"
                              details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
-                                                                jsString, error]]);
-                 } else {
-                   result(nil);
-                 }
-                 return;
-               }
-               if (sendReturnValue) {
-                 result([NSString stringWithFormat:@"%@", evaluateResult]);
-               } else {
-                 result(nil);
-               }
-             }];
+                                                                jsString, error]]
+                 : nil);
+         return;
+       }
+       result(sendReturnValue ? [NSString stringWithFormat:@"%@", evaluateResult] : nil);
+     }];
 }
 
 - (void)onAddJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {

@@ -158,8 +158,7 @@ void main() {
     // See: https://github.com/flutter/flutter/issues/66318#issuecomment-701105380
     // TODO(cyanglaz): remove the workaround "1" in the end when the below issue is fixed.
     // https://github.com/flutter/flutter/issues/66318
-    await controller
-        .runJavascriptReturningResult('Echo.postMessage("hello");1;');
+    await controller.runJavascriptReturningResult('Echo.postMessage("hello");');
     expect(messagesReceived, equals(<String>['hello']));
   });
 
