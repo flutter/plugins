@@ -263,9 +263,9 @@
        completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
          if (error) {
            // WebKit will throw an error (WKErrorJavaScriptResultTypeIsUnsupported) when the
-           // type of the evaluated value is unsupported. This also goes for `null` and `undefined`,
-           // for example when running a void function. For ease of use this specific error is
-           // ignored when no return value is expected.
+           // type of the evaluated value is unsupported. This also goes for
+           // `null` and `undefined` on iOS 14+, for example when running a void function.
+           // For ease of use this specific error is ignored when no return value is expected.
            BOOL sendError =
                sendReturnValue || error.code != WKErrorJavaScriptResultTypeIsUnsupported;
            result(sendError
