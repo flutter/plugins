@@ -216,6 +216,7 @@ public class VideoRenderer {
             GLES20.glBindTexture(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, textureHandles[0]);
 
             inputSurfaceTexture = new SurfaceTexture(getTexId());
+            inputSurfaceTexture.setDefaultBufferSize(recordingWidth, recordingHeight);
             surfaceTextureFrameAvailableHandler = new HandlerThread("FrameHandlerThread");
             surfaceTextureFrameAvailableHandler.start();
             inputSurface = new Surface(inputSurfaceTexture);
