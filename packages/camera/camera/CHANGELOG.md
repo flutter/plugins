@@ -2,6 +2,9 @@
 
 * Updated package description.
 
+## 0.9.5+1
+* allow camera to be switched while recording a video 
+
 ## 0.9.4+1
 
 * Fixed Android implementation throwing IllegalStateException when switching to a different activity.
