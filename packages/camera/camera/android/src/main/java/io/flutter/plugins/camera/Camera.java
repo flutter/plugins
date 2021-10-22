@@ -751,7 +751,6 @@ class Camera
     } catch (CameraAccessException | IllegalStateException e) {
       // Ignore exceptions and try to continue (changes are camera session already aborted capture).
     }
-    // TODO: mediaRecorder.reset();
     try {
       startPreview();
     } catch (CameraAccessException | IllegalStateException e) {

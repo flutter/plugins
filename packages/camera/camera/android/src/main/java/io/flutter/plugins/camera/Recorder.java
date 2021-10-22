@@ -259,7 +259,7 @@ public class Recorder {
         synchronized(videoLock) {
             while (startTimeUs < 0) {
                 Log.e(TAG, "skipping audio frame because video hasn't started");
-                videoLock.wait(500); // TODO: lower
+                videoLock.wait(500);
             }
         }
     }
@@ -314,7 +314,7 @@ public class Recorder {
                     0,
                     length,
                     audioEnqueueTimeNano / 1000,
-                    eos ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0); // TODO: finish flushing
+                    eos ? MediaCodec.BUFFER_FLAG_END_OF_STREAM : 0);
 
             // add seconds we queued so next timestamp is correct
             audioEnqueueTimeNano += nanoSecondsSampled;
@@ -503,7 +503,6 @@ public class Recorder {
     }
 
     private void stopInternal(){
-        // TODO: log elapsed times
         Log.d(TAG, "Stop internal");
         stopped = true;
         synchronized (muxerLock){

@@ -109,7 +109,7 @@ public class VideoRenderer {
     public VideoRenderer(Surface outputSurface, int recordingWidth, int recordingHeight){
         this.outputSurface = outputSurface;
         this.recordingHeight = recordingHeight;
-        this.recordingWidth = recordingWidth; // TODO: do these values change on flip camera? what about rotate
+        this.recordingWidth = recordingWidth;
         startOpenGL();
     }
 
@@ -248,7 +248,7 @@ public class VideoRenderer {
                 configureOpenGL();
 
                 try {
-                    // continuously pull frames from input surface texture and use videoRenderer to modify to correct rotation //TODO: with openGL
+                    // continuously pull frames from input surface texture and use videoRenderer to modify to correct rotation
                     while(!Thread.interrupted()) {
 
                         synchronized(surfaceTextureAvailableFrameLock) {
