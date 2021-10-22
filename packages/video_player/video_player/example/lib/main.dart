@@ -50,6 +50,7 @@ class _App extends StatelessWidget {
                 text: "Remote",
               ),
               Tab(icon: Icon(Icons.insert_drive_file), text: "Asset"),
+              Tab(icon: Icon(Icons.cloud), text: "RTSP"),
               Tab(icon: Icon(Icons.list), text: "List example"),
             ],
           ),
@@ -58,6 +59,7 @@ class _App extends StatelessWidget {
           children: <Widget>[
             _BumbleBeeRemoteVideo(),
             _ButterFlyAssetVideo(),
+            _RtspSampleVideo(),
             _ButterFlyAssetVideoInList(),
           ],
         ),
@@ -180,6 +182,69 @@ class _ButterFlyAssetVideoState extends State<_ButterFlyAssetVideo> {
             padding: const EdgeInsets.only(top: 20.0),
           ),
           const Text('With assets mp4'),
+          Container(
+            padding: const EdgeInsets.all(20),
+            child: AspectRatio(
+              aspectRatio: _controller.value.aspectRatio,
+              child: Stack(
+                alignment: Alignment.bottomCenter,
+                children: <Widget>[
+                  VideoPlayer(_controller),
+                  _ControlsOverlay(controller: _controller),
+                  VideoProgressIndicator(_controller, allowScrubbing: true),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RtspSampleVideo extends StatefulWidget {
+  @override
+  _RtspSampleVideoState createState() => _RtspSampleVideoState();
+}
+
+
+class _RtspSampleVideoState extends State<_RtspSampleVideo> {
+  late VideoPlayerController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = VideoPlayerController.network(
+      'rtsp://wowzaec2demo.streamlock.net/vod/mp4:BigBuckBunny_115k.mov',
+      formatHint: VideoFormat.rtsp,
+      videoPlayerOptions: VideoPlayerOptions(
+        mixWithOthers: true,
+      ),
+    );
+
+    _controller.addListener(() {
+      setState(() {});
+    });
+    _controller.setLooping(true);
+    _controller.initialize().then((_) => setState(() {}));
+    _controller.play();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(
+        children: <Widget>[
+          Container(
+            padding: const EdgeInsets.only(top: 20.0),
+          ),
+          const Text('With RTSP from a public source in the internet'),
           Container(
             padding: const EdgeInsets.all(20),
             child: AspectRatio(

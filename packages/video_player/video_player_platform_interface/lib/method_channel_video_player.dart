@@ -153,6 +153,7 @@ class MethodChannelVideoPlayer extends VideoPlayerPlatform {
       <VideoFormat, String>{
     VideoFormat.ss: 'ss',
     VideoFormat.hls: 'hls',
+    VideoFormat.rtsp: 'rtsp',
     VideoFormat.dash: 'dash',
     VideoFormat.other: 'other',
   };
