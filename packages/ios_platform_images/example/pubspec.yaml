@@ -1,0 +1,28 @@
+name: ios_platform_images_example
+description: Demonstrates how to use the ios_platform_images plugin.
+publish_to: none
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^1.0.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  ios_platform_images:
+    # When depending on this package from a real application you should use:
+    #   ios_platform_images: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
+    path: ../
+  pedantic: ^1.10.0
+
+flutter:
+  uses-material-design: true

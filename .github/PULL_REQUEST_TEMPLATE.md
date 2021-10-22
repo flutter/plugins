@@ -1,37 +1,32 @@
-## Description
+*Replace this paragraph with a description of what this PR is changing or adding, and why. Consider including before/after screenshots.*
 
-*Replace this paragraph with a description of what this PR is doing. If you're modifying existing behavior, describe the existing behavior, how this PR is changing it, and what motivated the change.*
+*List which issues are fixed by this PR. You must list at least one issue.*
 
-## Related Issues
+*If you had to change anything in the [flutter/tests] repo, include a link to the migration guide as per the [breaking change policy].*
 
-*Replace this paragraph with a list of issues related to this PR from the [issue database](https://github.com/flutter/flutter/issues). Indicate, which of these issues are resolved or fixed by this PR. Note that you'll have to prefix the issue numbers with flutter/flutter#.*
-
-## Checklist
-
-Before you create this PR confirm that it meets all requirements listed below by checking the relevant checkboxes (`[x]`). This will ensure a smooth and quick review process.
+## Pre-launch Checklist
 
 - [ ] I read the [Contributor Guide] and followed the process outlined there for submitting PRs.
-- [ ] My PR includes unit or integration tests for *all* changed/updated/fixed behaviors (See [Contributor Guide]).
-- [ ] All existing and new tests are passing.
-- [ ] I updated/added relevant documentation (doc comments with `///`).
-- [ ] The analyzer (`flutter analyze`) does not report any problems on my PR.
-- [ ] I read and followed the [Flutter Style Guide].
-- [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. [shared_preferences]
-- [ ] I updated pubspec.yaml with an appropriate new version according to the [pub versioning philosophy].
-- [ ] I updated CHANGELOG.md to add a description of the change.
+- [ ] I read the [Tree Hygiene] wiki page, which explains my responsibilities.
+- [ ] I read and followed the [relevant style guides] and ran [the auto-formatter]. (Note that unlike the flutter/flutter repo, the flutter/plugins repo does use `dart format`.)
 - [ ] I signed the [CLA].
-- [ ] I am willing to follow-up on review comments in a timely manner.
+- [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. `[shared_preferences]`
+- [ ] I listed at least one issue that this PR fixes in the description above.
+- [ ] I [updated pubspec.yaml](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#version-and-changelog-updates) with an appropriate new version according to the [pub versioning philosophy].
+- [ ] I updated CHANGELOG.md to add a description of the change.
+- [ ] I updated/added relevant documentation (doc comments with `///`).
+- [ ] I added new tests to check the change I am making or feature I am adding, or Hixie said the PR is test exempt.
+- [ ] All existing and new tests are passing.
 
-## Breaking Change
-
-Does your PR require plugin users to manually update their apps to accommodate your change?
-
-- [ ] Yes, this is a breaking change (please indicate a breaking change in CHANGELOG.md and increment major revision).
-- [ ] No, this is *not* a breaking change.
+If you need help, consider asking for advice on the #hackers-new channel on [Discord].
 
 <!-- Links -->
-[issue database]: https://github.com/flutter/flutter/issues
 [Contributor Guide]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
-[Flutter Style Guide]: https://github.com/flutter/flutter/wiki/Style-guide-for-Flutter-repo
-[pub versioning philosophy]: https://www.dartlang.org/tools/pub/versioning
+[Tree Hygiene]: https://github.com/flutter/flutter/wiki/Tree-hygiene
+[relevant style guides]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md#style
 [CLA]: https://cla.developers.google.com/
+[flutter/tests]: https://github.com/flutter/tests
+[breaking change policy]: https://github.com/flutter/flutter/wiki/Tree-hygiene#handling-breaking-changes
+[Discord]: https://github.com/flutter/flutter/wiki/Chat
+[pub versioning philosophy]: https://dart.dev/tools/pub/versioning
+[the auto-formatter]: https://github.com/flutter/plugins/blob/master/script/tool/README.md#format-code

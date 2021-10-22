@@ -1,0 +1,34 @@
+name: google_maps_flutter_example
+description: Demonstrates how to use the google_maps_flutter plugin.
+publish_to: none
+
+environment:
+  sdk: ">=2.14.0 <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  cupertino_icons: ^0.1.0
+  google_maps_flutter:
+    # When depending on this package from a real application you should use:
+    #   google_maps_flutter: ^x.y.z
+    # See https://dart.dev/tools/pub/dependencies#version-constraints
+    # The example app is bundled with the plugin so we use a path dependency on
+    # the parent directory to use the current plugin's version.
+    path: ../
+  flutter_plugin_android_lifecycle: ^2.0.1
+
+dev_dependencies:
+  espresso: ^0.1.0+2
+  flutter_driver:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+  pedantic: ^1.10.0
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/

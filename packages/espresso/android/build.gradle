@@ -1,0 +1,89 @@
+group 'com.example.espresso'
+version '1.0'
+
+buildscript {
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.5.0'
+    }
+}
+
+rootProject.allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 29
+
+    defaultConfig {
+        minSdkVersion 16
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+    lintOptions {
+        disable 'InvalidPackage'
+        disable 'GradleDependency'
+        baseline file("lint-baseline.xml")
+    }
+
+
+    testOptions {
+        unitTests.includeAndroidResources = true
+        unitTests.returnDefaultValues = true
+        unitTests.all {
+            testLogging {
+               events "passed", "skipped", "failed", "standardOut", "standardError"
+               outputs.upToDateWhen {false}
+               showStandardStreams = true
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.google.guava:guava:28.1-android'
+    implementation 'com.squareup.okhttp3:okhttp:3.12.1'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    androidTestImplementation 'org.hamcrest:hamcrest:2.2'
+
+    testImplementation 'junit:junit:4.12'
+    testImplementation "com.google.truth:truth:1.0"
+    api 'androidx.test:runner:1.1.1'
+    api 'androidx.test.espresso:espresso-core:3.1.1'
+
+    // Core library
+    api 'androidx.test:core:1.0.0'
+
+    // AndroidJUnitRunner and JUnit Rules
+    api 'androidx.test:runner:1.1.0'
+    api 'androidx.test:rules:1.1.0'
+
+    // Assertions
+    api 'androidx.test.ext:junit:1.0.0'
+    api 'androidx.test.ext:truth:1.0.0'
+    api 'com.google.truth:truth:0.42'
+
+    // Espresso dependencies
+    api 'androidx.test.espresso:espresso-core:3.1.0'
+    api 'androidx.test.espresso:espresso-contrib:3.1.0'
+    api 'androidx.test.espresso:espresso-intents:3.1.0'
+    api 'androidx.test.espresso:espresso-accessibility:3.1.0'
+    api 'androidx.test.espresso:espresso-web:3.1.0'
+    api 'androidx.test.espresso.idling:idling-concurrent:3.1.0'
+
+    // The following Espresso dependency can be either "implementation"
+    // or "androidTestImplementation", depending on whether you want the
+    // dependency to appear on your APK's compile classpath or the test APK
+    // classpath.
+    api 'androidx.test.espresso:espresso-idling-resource:3.1.0'
+}
+
+

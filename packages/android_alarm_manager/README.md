@@ -1,6 +1,21 @@
 # android_alarm_manager
 
-[![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dartlang.org/packages/android_alarm_manager)
+---
+
+## Deprecation Notice
+
+This plugin has been replaced by the [Flutter Community Plus
+Plugins](https://plus.fluttercommunity.dev/) version,
+[`android_alarm_manager_plus`](https://pub.dev/packages/android_alarm_manager_plus).
+No further updates are planned to this plugin, and we encourage all users to
+migrate to the Plus version.
+
+Critical fixes (e.g., for any security incidents) will be provided through the
+end of 2021, at which point this package will be marked as discontinued.
+
+---
+
+[![pub package](https://img.shields.io/pub/v/android_alarm_manager.svg)](https://pub.dev/packages/android_alarm_manager)
 
 A Flutter plugin for accessing the Android AlarmManager service, and running
 Dart code in the background when alarms fire.
@@ -29,7 +44,7 @@ Next, within the `<application></application>` tags, add:
     android:name="io.flutter.plugins.androidalarmmanager.RebootBroadcastReceiver"
     android:enabled="false">
     <intent-filter>
-        <action android:name="android.intent.action.BOOT_COMPLETED"></action>
+        <action android:name="android.intent.action.BOOT_COMPLETED"/>
     </intent-filter>
 </receiver>
 
@@ -59,40 +74,7 @@ will not run in the same isolate as the main application. Unlike threads, isolat
 memory and communication between isolates must be done via message passing (see more documentation on
 isolates [here](https://api.dart.dev/stable/2.0.0/dart-isolate/dart-isolate-library.html)).
 
-If alarm callbacks will need access to other Flutter plugins, including the
-alarm manager plugin itself, it is necessary to teach the background service how
-to initialize plugins. This is done by giving the `AlarmService` a callback to call
-in the application's `onCreate` method. See the example's
-[Application overrides](https://github.com/flutter/plugins/blob/master/packages/android_alarm_manager/example/android/app/src/main/java/io/flutter/plugins/androidalarmmanagerexample/Application.java).
-In particular, its `Application` class is as follows:
-
-```java
-public class Application extends FlutterApplication implements PluginRegistrantCallback {
-  @Override
-  public void onCreate() {
-    super.onCreate();
-    AlarmService.setPluginRegistrant(this);
-  }
-
-  @Override
-  public void registerWith(PluginRegistry registry) {
-    GeneratedPluginRegistrant.registerWith(registry);
-  }
-}
-```
-
-Which must be reflected in the application's `AndroidManifest.xml`. E.g.:
-
-```xml
-    <application
-        android:name=".Application"
-        ...
-```
-
-**Note:** Not calling `AlarmService.setPluginRegistrant` will result in an exception being
-thrown when an alarm eventually fires.
-
 For help getting started with Flutter, view our online
-[documentation](http://flutter.io/).
+[documentation](https://flutter.dev/).
 
-For help on editing plugin code, view the [documentation](https://flutter.io/platform-plugins/#edit-code).
+For help on editing plugin code, view the [documentation](https://flutter.dev/docs/development/packages-and-plugins/developing-packages#plugin).

@@ -1,0 +1,16 @@
+include: package:pedantic/analysis_options.1.8.0.yaml
+analyzer:
+  exclude:
+    # Ignore generated files
+    - '**/*.g.dart'
+    - 'lib/src/generated/*.dart'
+    - '**/*.mocks.dart' # Mockito @GenerateMocks
+  errors:
+    always_require_non_null_named_parameters: false # not needed with nnbd
+    # TODO(https://github.com/flutter/flutter/issues/74381):
+    # Clean up existing unnecessary imports, and remove line to ignore.
+    unnecessary_import: ignore
+    unnecessary_null_comparison: false # Turned as long as nnbd mix-mode is supported.
+linter:
+  rules:
+    - public_member_api_docs

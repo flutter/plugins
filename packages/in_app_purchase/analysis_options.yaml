@@ -1,3 +1,0 @@
-analyzer:
-  exclude:
-    - lib/**/*.g.dart # Ignore generated files
