@@ -403,6 +403,9 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
   [_player seekToTime:CMTimeMake(location, 1000)
       toleranceBefore:kCMTimeZero
        toleranceAfter:kCMTimeZero];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self notifyIfFrameAvailable];
+  });
 }
 
 - (void)setIsLooping:(bool)isLooping {
