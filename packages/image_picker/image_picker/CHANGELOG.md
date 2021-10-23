@@ -1,3 +1,7 @@
+## 0.8.4+4
+
+* Support adding WebP for iOS
+
 ## 0.8.4+3
 
 * Suppress a unchecked cast build warning.
