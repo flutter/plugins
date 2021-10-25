@@ -44,7 +44,7 @@ public class MethodCallHandlerImplTest {
     methodCallHandler.startListening(messenger);
 
     verify(messenger, times(1))
-        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class), eq(null));
   }
 
   @Test
@@ -56,9 +56,9 @@ public class MethodCallHandlerImplTest {
     methodCallHandler.startListening(secondMessenger);
 
     // Unregisters the first and then registers the second.
-    verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null, null);
     verify(secondMessenger, times(1))
-        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class), eq(null));
   }
 
   @Test
@@ -68,7 +68,7 @@ public class MethodCallHandlerImplTest {
 
     methodCallHandler.stopListening();
 
-    verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null, null);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class MethodCallHandlerImplTest {
 
     methodCallHandler.stopListening();
 
-    verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null);
+    verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null, null);
   }
 
   @Test

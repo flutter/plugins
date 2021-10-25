@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 
 import android.os.Handler;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -32,6 +33,11 @@ public class DartMessengerTest {
     private final List<ByteBuffer> sentMessages = new ArrayList<>();
 
     @Override
+    BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
+      return null;
+    }
+
+    @Override
     public void send(@NonNull String channel, ByteBuffer message) {
       sentMessages.add(message);
     }
@@ -42,7 +48,10 @@ public class DartMessengerTest {
     }
 
     @Override
-    public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
+    public void setMessageHandler(
+        @NonNull String channel,
+        BinaryMessageHandler handler,
+        @Nullable BinaryMessenger.TaskQueue taskQueue) {}
 
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);

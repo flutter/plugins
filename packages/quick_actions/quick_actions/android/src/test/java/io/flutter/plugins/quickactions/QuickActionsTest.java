@@ -34,6 +34,11 @@ public class QuickActionsTest {
     public MethodCall lastMethodCall;
 
     @Override
+    BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
+      return null;
+    }
+
+    @Override
     public void send(@NonNull String channel, @Nullable ByteBuffer message) {
       send(channel, message, null);
     }
@@ -50,7 +55,10 @@ public class QuickActionsTest {
     }
 
     @Override
-    public void setMessageHandler(@NonNull String channel, @Nullable BinaryMessageHandler handler) {
+    public void setMessageHandler(
+        @NonNull String channel,
+        @Nullable BinaryMessageHandler handler,
+        @Nullable BinaryMessenger.TaskQueue taskQueue) {
       // Do nothing.
     }
   }
