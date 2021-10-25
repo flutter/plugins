@@ -3,7 +3,6 @@
 * Remove references to the Android V1 embedding.
 * Updated Android lint settings.
 * Specify Java 8 for Android build.
-* Update gradle version to 7.0.2.
 
 ## 3.0.6
 
