@@ -197,6 +197,8 @@ task:
         - export CIRRUS_CHANGE_MESSAGE=""
         - export CIRRUS_COMMIT_MESSAGE=""
         - ./script/tool_runner.sh lint-android # must come after build-examples
+      stable_channel_conditional_script:
+        - dart ./ci/stable_conditional.dart $CHANNEL
       native_unit_test_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.

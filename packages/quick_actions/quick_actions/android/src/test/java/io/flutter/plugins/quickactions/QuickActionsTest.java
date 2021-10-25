@@ -33,10 +33,14 @@ public class QuickActionsTest {
   private static class TestBinaryMessenger implements BinaryMessenger {
     public MethodCall lastMethodCall;
 
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     @Override
-    BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
+    public BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
       return null;
     }
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // FLUTTER_STABLE_CHANNEL_END
 
     @Override
     public void send(@NonNull String channel, @Nullable ByteBuffer message) {
@@ -54,6 +58,8 @@ public class QuickActionsTest {
       }
     }
 
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     @Override
     public void setMessageHandler(
         @NonNull String channel,
@@ -61,6 +67,12 @@ public class QuickActionsTest {
         @Nullable BinaryMessenger.TaskQueue taskQueue) {
       // Do nothing.
     }
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // @Override
+    // public void setMessageHandler(
+    //    @NonNull String channel,
+    //    @Nullable BinaryMessageHandler handler) {}
+    // FLUTTER_STABLE_CHANNEL_END
   }
 
   static final int SUPPORTED_BUILD = 25;

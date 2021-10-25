@@ -32,10 +32,14 @@ public class DartMessengerTest {
   private static class FakeBinaryMessenger implements BinaryMessenger {
     private final List<ByteBuffer> sentMessages = new ArrayList<>();
 
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     @Override
-    BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
+    public BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
       return null;
     }
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // FLUTTER_STABLE_CHANNEL_END
 
     @Override
     public void send(@NonNull String channel, ByteBuffer message) {
@@ -47,11 +51,17 @@ public class DartMessengerTest {
       send(channel, message);
     }
 
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     @Override
     public void setMessageHandler(
         @NonNull String channel,
         BinaryMessageHandler handler,
         @Nullable BinaryMessenger.TaskQueue taskQueue) {}
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // @Override
+    // public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
+    // FLUTTER_STABLE_CHANNEL_END
 
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);

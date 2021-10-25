@@ -55,7 +55,11 @@ public class MethodCallHandlerImplTest {
     methodCallHandler.startListening(messenger);
 
     verify(messenger, times(1))
+        // FLUTTER_STABLE_CHANNEL_BEGIN
         .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class), eq(null));
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+    // FLUTTER_STABLE_CHANNEL_END
   }
 
   @Test
@@ -67,9 +71,15 @@ public class MethodCallHandlerImplTest {
     methodCallHandler.startListening(secondMessenger);
 
     // Unregisters the first and then registers the second.
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null, null);
     verify(secondMessenger, times(1))
         .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class), eq(null));
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    // verify(secondMessenger, times(1))
+    //     .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+    // FLUTTER_STABLE_CHANNEL_END
   }
 
   @Test
@@ -79,7 +89,11 @@ public class MethodCallHandlerImplTest {
 
     methodCallHandler.stopListening();
 
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null, null);
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CHANNEL_END
   }
 
   @Test
@@ -88,7 +102,11 @@ public class MethodCallHandlerImplTest {
 
     methodCallHandler.stopListening();
 
+    // FLUTTER_STABLE_CHANNEL_BEGIN
     verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null, null);
+    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CHANNEL_END
   }
 
   @Test
