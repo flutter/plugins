@@ -42,7 +42,7 @@ public class DartMessengerTest {
     }
 
     @Override
-    public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
+    public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler, BinaryMessenger.TaskQueue TaskQueue) {}
 
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);
