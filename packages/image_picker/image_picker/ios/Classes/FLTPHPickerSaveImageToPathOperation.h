@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <PhotosUI/PhotosUI.h>
+#import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "FLTImagePickerImageUtil.h"
 #import "FLTImagePickerMetaDataUtil.h"

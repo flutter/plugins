@@ -82,9 +82,9 @@ typedef void (^GetSavedPath)(NSString *);
   }
   if (@available(iOS 14, *)) {
     [self setExecuting:YES];
-    NSString *webpIdentifier = @"org.webmproject.webp";
-    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:webpIdentifier]) {
-        [self.result.itemProvider loadDataRepresentationForTypeIdentifier:webpIdentifier completionHandler:^(NSData * _Nullable data, NSError * _Nullable error) {
+    
+    if ([self.result.itemProvider hasItemConformingToTypeIdentifier:UTTypeWebP.identifier]) {
+        [self.result.itemProvider loadDataRepresentationForTypeIdentifier:UTTypeWebP.identifier completionHandler:^(NSData * _Nullable data, NSError * _Nullable error) {
             __block UIImage *image = [[UIImage alloc] initWithData:data];
             [self processImage:image];
         }];
