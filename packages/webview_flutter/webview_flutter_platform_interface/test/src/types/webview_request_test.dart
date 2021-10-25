@@ -4,6 +4,11 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter_platform_interface/src/types/types.dart';
 
 void main() {
+  test('WebViewRequestMethod should serialize correctly', () {
+    expect(WebViewRequestMethod.get.serialize(), 'get');
+    expect(WebViewRequestMethod.post.serialize(), 'post');
+  });
+
   test('WebViewRequest should serialize correctly', () {
     WebViewRequest request;
     Map<String, dynamic> serializedRequest;
