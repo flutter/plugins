@@ -123,8 +123,8 @@
   self.lastCallArgs = nil;
   self.lastResult = nil;
   context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"] == [NSNull null]
-    ? nil
-    : arguments[@"localizedFallbackTitle"];
+                                       ? nil
+                                       : arguments[@"localizedFallbackTitle"];
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthenticationWithBiometrics
                            error:&authError]) {
@@ -149,8 +149,8 @@
   _lastCallArgs = nil;
   _lastResult = nil;
   context.localizedFallbackTitle = arguments[@"localizedFallbackTitle"] == [NSNull null]
-    ? nil
-    : arguments[@"localizedFallbackTitle"];
+                                       ? nil
+                                       : arguments[@"localizedFallbackTitle"];
 
   if ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:&authError]) {
     [context evaluatePolicy:kLAPolicyDeviceOwnerAuthentication
