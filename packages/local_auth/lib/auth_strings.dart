@@ -84,9 +84,8 @@ class IOSAuthMessages {
       'goToSettingDescriptionIOS':
           goToSettingsDescription ?? iOSGoToSettingsDescription,
       'okButton': cancelButton ?? iOSOkButton,
-      if (localizedFallbackTitle != null) ...{
-        localizedFallbackTitle!: localizedFallbackTitle!,
-      }
+      if (localizedFallbackTitle != null)
+        'localizedFallbackTitle': localizedFallbackTitle!,
     };
   }
 }

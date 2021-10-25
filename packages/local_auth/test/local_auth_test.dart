@@ -73,6 +73,30 @@ void main() {
         );
       });
 
+      test('authenticate with `localizedFallbackTitle` on iOS.', () async {
+        final iosAuthMessages =
+            IOSAuthMessages(localizedFallbackTitle: 'Enter PIN');
+        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+        await localAuthentication.authenticate(
+          localizedReason: 'Needs secure',
+          biometricOnly: true,
+          iOSAuthStrings: iosAuthMessages,
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate',
+                arguments: <String, dynamic>{
+                  'localizedReason': 'Needs secure',
+                  'useErrorDialogs': true,
+                  'stickyAuth': false,
+                  'sensitiveTransaction': true,
+                  'biometricOnly': true,
+                }..addAll(iosAuthMessages.args)),
+          ],
+        );
+      });
+
       test('authenticate with no localizedReason on iOS.', () async {
         setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
         await expectLater(
@@ -145,6 +169,29 @@ void main() {
                   'sensitiveTransaction': true,
                   'biometricOnly': false,
                 }..addAll(const IOSAuthMessages().args)),
+          ],
+        );
+      });
+
+      test('authenticate with `localizedFallbackTitle` on iOS', () async {
+        final iosAuthMessages =
+            IOSAuthMessages(localizedFallbackTitle: 'Enter PIN');
+        setMockPathProviderPlatform(FakePlatform(operatingSystem: 'ios'));
+        await localAuthentication.authenticate(
+          localizedReason: 'Needs secure',
+          iOSAuthStrings: iosAuthMessages,
+        );
+        expect(
+          log,
+          <Matcher>[
+            isMethodCall('authenticate',
+                arguments: <String, dynamic>{
+                  'localizedReason': 'Needs secure',
+                  'useErrorDialogs': true,
+                  'stickyAuth': false,
+                  'sensitiveTransaction': true,
+                  'biometricOnly': false,
+                }..addAll(iosAuthMessages.args)),
           ],
         );
       });
