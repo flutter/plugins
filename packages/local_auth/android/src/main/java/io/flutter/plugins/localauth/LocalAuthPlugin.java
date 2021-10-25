@@ -15,6 +15,7 @@ import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
 import android.os.Build;
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.biometric.BiometricManager;
 import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.Lifecycle;
@@ -41,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
   private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
   private static final int LOCK_REQUEST_CODE = 221;
-  private Activity activity;
+  @VisibleForTesting /*package*/ Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
   private AuthenticationHelper authHelper;
 
@@ -337,6 +338,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     lifecycle = null;
+    activity = null;
   }
 
   @Override
@@ -350,5 +352,6 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   public void onDetachedFromActivity() {
     lifecycle = null;
     channel.setMethodCallHandler(null);
+    activity = null;
   }
 }
