@@ -101,6 +101,30 @@ void main() {
       );
     });
 
+    test('loadRequest', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {},
+                'body': null,
+              }
+            },
+          ),
+        ],
+      );
+    });
+
     test('currentUrl', () async {
       final String? currentUrl = await webViewPlatform.currentUrl();
 
