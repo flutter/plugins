@@ -15,7 +15,7 @@ class InstanceManager {
   /** Add a new instance with instanceId. */
   void addInstance(Object instance, long instanceId) {
     instancesToInstanceIds.put(instance, instanceId);
-    instanceIdsToInstances.put(instanceId, instance);
+    instanceIdsToInstances.append(instanceId, instance);
   }
 
   /** Remove the instance from the manager. */
