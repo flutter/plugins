@@ -102,6 +102,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
                 reply -> {});
           }
 
+          @SuppressWarnings("deprecation")
           @Override
           public void onReceivedError(
               WebView view, int errorCode, String description, String failingUrl) {
@@ -124,6 +125,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
             return shouldOverrideUrlLoading;
           }
 
+          @SuppressWarnings("deprecation")
           @Override
           public boolean shouldOverrideUrlLoading(WebView view, String url) {
             webViewClientFlutterApi.urlLoading(
@@ -169,6 +171,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
                 reply -> {});
           }
 
+          @SuppressWarnings("deprecation")
           @Override
           public void onReceivedError(
               WebView view, int errorCode, String description, String failingUrl) {
@@ -193,6 +196,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
             return shouldOverrideUrlLoading;
           }
 
+          @SuppressWarnings("deprecation")
           @Override
           public boolean shouldOverrideUrlLoading(WebView view, String url) {
             webViewClientFlutterApi.urlLoading(
@@ -230,6 +234,6 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstanceId(instanceId);
+    instanceManager.removeInstance(instanceId);
   }
 }

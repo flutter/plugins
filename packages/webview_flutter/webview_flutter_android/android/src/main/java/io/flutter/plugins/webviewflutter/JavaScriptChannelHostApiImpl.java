@@ -56,6 +56,6 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstanceId(instanceId);
+    instanceManager.removeInstance(instanceId);
   }
 }

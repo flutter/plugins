@@ -4,30 +4,31 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.util.LongSparseArray;
 import java.util.HashMap;
 import java.util.Map;
 
 class InstanceManager {
-  private final Map<Long, Object> instanceIdsToInstances = new HashMap<>();
+  private final LongSparseArray<Object> instanceIdsToInstances = new LongSparseArray<>();
   private final Map<Object, Long> instancesToInstanceIds = new HashMap<>();
 
   /** Add a new instance with instanceId. */
-  void addInstance(Object instance, Long instanceId) {
+  void addInstance(Object instance, long instanceId) {
     instancesToInstanceIds.put(instance, instanceId);
     instanceIdsToInstances.put(instanceId, instance);
   }
 
   /** Remove the instance from the manager. */
-  Object removeInstanceId(Long instanceId) {
-    final Object instance = instanceIdsToInstances.remove(instanceId);
+  void removeInstance(long instanceId) {
+    final Object instance = instanceIdsToInstances.get(instanceId);
     if (instance != null) {
+      instanceIdsToInstances.remove(instanceId);
       instancesToInstanceIds.remove(instance);
     }
-    return instance;
   }
 
   /** Retrieve the Object paired with instanceId. */
-  Object getInstance(Long instanceId) {
+  Object getInstance(long instanceId) {
     return instanceIdsToInstances.get(instanceId);
   }
 
