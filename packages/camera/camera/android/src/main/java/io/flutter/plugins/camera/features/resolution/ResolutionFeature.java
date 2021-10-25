@@ -108,7 +108,6 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     // No-op: when setting a resolution there is no need to update the request builder.
   }
 
-  @SuppressWarnings("deprecation")
   @VisibleForTesting
   static Size computeBestPreviewSize(int cameraId, ResolutionPreset preset)
       throws IndexOutOfBoundsException {
