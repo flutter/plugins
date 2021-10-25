@@ -103,7 +103,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstanceId(instanceId);
+    instanceManager.removeInstance(instanceId);
   }
 
   @Override

@@ -1,3 +1,7 @@
+## 0.9.4+3
+
+* Fix registerTexture and result being called on background thread on iOS.
+
 ## 0.9.4+2
 
 * Updated package description;

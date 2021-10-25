@@ -39,6 +39,6 @@ class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadLis
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstanceId(instanceId);
+    instanceManager.removeInstance(instanceId);
   }
 }
