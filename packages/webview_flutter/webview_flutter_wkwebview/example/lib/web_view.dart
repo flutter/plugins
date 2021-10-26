@@ -410,6 +410,16 @@ class WebViewController {
     _javascriptChannelRegistry.updateJavascriptChannelsFromSet(newChannels);
   }
 
+  @visibleForTesting
+  // ignore: public_member_api_docs
+  Future<String> evaluateJavascript(String javascriptString) {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      return Future<String>.error(FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.'));
+    }
+    return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
   /// Runs the given JavaScript in the context of the current page.
   /// If you are looking for the result, use [runJavascriptReturningResult] instead.
   /// The Future completes with an error if a JavaScript error occurred.
