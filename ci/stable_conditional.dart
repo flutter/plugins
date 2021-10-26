@@ -9,11 +9,11 @@
 //
 // Example input:
 //   int main() {
-//     // FLUTTER_STABLE_CHANNEL_BEGIN
+//     // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
 //     printf("hello world\n");
-//     // FLUTTER_STABLE_CHANNEL_REPLACE
+//     // FLUTTER_STABLE_CONDITIONAL_ELSE
 //     // printf("goodbye world\n");
-//     // FLUTTER_STABLE_CHANNEL_END
+//     // FLUTTER_STABLE_CONDITIONAL_ENDIF
 //   }
 //
 // Example output:
@@ -27,10 +27,10 @@ import 'dart:io' show Directory, FileSystemEntity, File;
 final RegExp _isSourceRegex =
     RegExp(r'\.cc$|\.java$|\.m$\.h$|\.c$|\.swift$|\.kt$');
 final RegExp _replacer = RegExp(
-    r'^\s*// FLUTTER_STABLE_CHANNEL_BEGIN(.*?)^\s*// FLUTTER_STABLE_CHANNEL_REPLACE(.*?)^\s*// FLUTTER_STABLE_CHANNEL_END',
+    r'^\s*// FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE(.*?)^\s*// FLUTTER_STABLE_CONDITIONAL_ELSE(.*?)^\s*// FLUTTER_STABLE_CONDITIONAL_ENDIF',
     multiLine: true,
     dotAll: true);
-final RegExp _commentRemover = RegExp(r'^(\s*)\/+\s*(.*)');
+final RegExp _commentRemover = RegExp(r'^(\s*)\/\/\s*(.*)');
 const String _newline = '\n';
 
 bool _isSourceFile(FileSystemEntity entity) =>
@@ -61,9 +61,11 @@ void _process(FileSystemEntity entity) {
 }
 
 void main(List<String> args) {
-  final String channel = args[0];
-  if (channel == 'stable') {
-    final Directory dir = Directory('.');
-    dir.list(recursive: true).where(_isSourceFile).forEach(_process);
-  }
+  final List<String> filesToProcess = <String>[
+    'packages/android_intent/android/src/test/java/io/flutter/plugins/androidintent/MethodCallHandlerImplTest.java',
+    'packages/camera/camera/android/src/test/java/io/flutter/plugins/camera/DartMessengerTest.java',
+    'packages/quick_actions/quick_actions/android/src/test/java/io/flutter/plugins/quickactions/QuickActionsTest.java',
+    'packages/url_launcher/url_launcher/android/src/test/java/io/flutter/plugins/urllauncher/MethodCallHandlerImplTest.java',
+  ];
+  filesToProcess.map((String path) => File(path)).forEach(_process);
 }

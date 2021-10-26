@@ -32,14 +32,14 @@ public class DartMessengerTest {
   private static class FakeBinaryMessenger implements BinaryMessenger {
     private final List<ByteBuffer> sentMessages = new ArrayList<>();
 
-    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
-    // FLUTTER_STABLE_CHANNEL_BEGIN
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on stable.
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
     @Override
     public BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
       return null;
     }
-    // FLUTTER_STABLE_CHANNEL_REPLACE
-    // FLUTTER_STABLE_CHANNEL_END
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
 
     @Override
     public void send(@NonNull String channel, ByteBuffer message) {
@@ -51,17 +51,17 @@ public class DartMessengerTest {
       send(channel, message);
     }
 
-    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
-    // FLUTTER_STABLE_CHANNEL_BEGIN
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on stable.
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
     @Override
     public void setMessageHandler(
         @NonNull String channel,
         BinaryMessageHandler handler,
         @Nullable BinaryMessenger.TaskQueue taskQueue) {}
-    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
     // @Override
     // public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
-    // FLUTTER_STABLE_CHANNEL_END
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
 
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);

@@ -33,14 +33,14 @@ public class QuickActionsTest {
   private static class TestBinaryMessenger implements BinaryMessenger {
     public MethodCall lastMethodCall;
 
-    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
-    // FLUTTER_STABLE_CHANNEL_BEGIN
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on stable.
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
     @Override
     public BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
       return null;
     }
-    // FLUTTER_STABLE_CHANNEL_REPLACE
-    // FLUTTER_STABLE_CHANNEL_END
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
 
     @Override
     public void send(@NonNull String channel, @Nullable ByteBuffer message) {
@@ -58,8 +58,8 @@ public class QuickActionsTest {
       }
     }
 
-    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on master.
-    // FLUTTER_STABLE_CHANNEL_BEGIN
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on stable.
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
     @Override
     public void setMessageHandler(
         @NonNull String channel,
@@ -67,12 +67,12 @@ public class QuickActionsTest {
         @Nullable BinaryMessenger.TaskQueue taskQueue) {
       // Do nothing.
     }
-    // FLUTTER_STABLE_CHANNEL_REPLACE
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
     // @Override
     // public void setMessageHandler(
     //    @NonNull String channel,
     //    @Nullable BinaryMessageHandler handler) {}
-    // FLUTTER_STABLE_CHANNEL_END
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
   }
 
   static final int SUPPORTED_BUILD = 25;
