@@ -149,6 +149,45 @@ void main() {
         );
       });
     });
+
+    group('$WebChromeClient', () {
+      setUpAll(() {
+        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestWebViewClientHostApi.setup(TestWebViewClientHostApiImpl());
+        TestWebChromeClientHostApi.setup(TestWebChromeClientHostApiImpl());
+      });
+
+      setUp(() {
+        final InstanceManager instanceManager = InstanceManager();
+        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
+        WebViewClient.api = WebViewClientHostApiImpl(
+          instanceManager: instanceManager,
+        );
+        WebChromeClient.api = WebChromeClientHostApiImpl(
+          instanceManager: instanceManager,
+        );
+      });
+
+      test('create', () {
+        final WebView webView = WebView();
+        webView.setWebViewClient(TestWebViewClient());
+
+        final WebChromeClient webChromeClient1 = TestWebChromeClient();
+        final WebChromeClient webChromeClient2 = TestWebChromeClient();
+
+        webView.setWebChromeClient(webChromeClient1);
+        expect(
+          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient1),
+          isNotNull,
+        );
+
+        webView.setWebChromeClient(webChromeClient2);
+        expect(
+          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient1),
+          isNull,
+        );
+      });
+    });
   });
 }
 
@@ -170,6 +209,11 @@ class TestDownloadListener extends DownloadListener {
     String mimetype,
     int contentLength,
   ) {}
+}
+
+class TestWebChromeClient extends WebChromeClient {
+  @override
+  void onProgressChanged(WebView webView, int progress) {}
 }
 
 class TestWebViewHostApiImpl extends TestWebViewHostApi {
@@ -250,6 +294,9 @@ class TestWebViewHostApiImpl extends TestWebViewHostApi {
 
   @override
   void setWebViewClient(int instanceId, int webViewClientInstanceId) {}
+
+  @override
+  void setWebChromeClient(int instanceId, int clientInstanceId) {}
 }
 
 class TestWebSettingsHostApiImpl extends TestWebSettingsHostApi {
@@ -312,6 +359,14 @@ class TestWebViewClientHostApiImpl extends TestWebViewClientHostApi {
 class TestDownloadListenerHostApiImpl extends TestDownloadListenerHostApi {
   @override
   void create(int instanceId) {}
+
+  @override
+  void dispose(int instanceId) {}
+}
+
+class TestWebChromeClientHostApiImpl extends TestWebChromeClientHostApi {
+  @override
+  void create(int instanceId, int webViewClientInstanceId) {}
 
   @override
   void dispose(int instanceId) {}

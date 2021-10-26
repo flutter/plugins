@@ -161,6 +161,17 @@ class WebViewHostApiImpl extends WebViewHostApi {
       instanceManager.getInstanceId(listener)!,
     );
   }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> setWebChromeClientFromInstance(
+    WebView instance,
+    WebChromeClient client,
+  ) {
+    return setWebChromeClient(
+      instanceManager.getInstanceId(instance)!,
+      instanceManager.getInstanceId(client)!,
+    );
+  }
 }
 
 /// Host api implementation for [WebSettings].
@@ -552,6 +563,60 @@ class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
       contentDisposition,
       mimetype,
       contentLength,
+    );
+  }
+}
+
+/// Host api implementation for [DownloadListener].
+class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
+  /// Constructs a [WebChromeClientHostApiImpl].
+  WebChromeClientHostApiImpl({
+    BinaryMessenger? binaryMessenger,
+    InstanceManager? instanceManager,
+  }) : super(binaryMessenger: binaryMessenger) {
+    this.instanceManager = instanceManager ?? InstanceManager.instance;
+  }
+
+  /// Maintains instances stored to communicate with java objects.
+  late final InstanceManager instanceManager;
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> createFromInstance(
+    WebChromeClient instance,
+    WebViewClient webViewClient,
+  ) async {
+    final int? instanceId = instanceManager.tryAddInstance(instance);
+    if (instanceId != null) {
+      return create(instanceId, instanceManager.getInstanceId(webViewClient)!);
+    }
+  }
+
+  /// Helper method to convert instances ids to objects.
+  Future<void> disposeFromInstance(WebChromeClient instance) async {
+    final int? instanceId = instanceManager.removeInstance(instance);
+    if (instanceId != null) {
+      return dispose(instanceId);
+    }
+  }
+}
+
+/// Flutter api implementation for [DownloadListener].
+class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
+  /// Constructs a [DownloadListenerFlutterApiImpl].
+  WebChromeClientFlutterApiImpl({InstanceManager? instanceManager}) {
+    this.instanceManager = instanceManager ?? InstanceManager.instance;
+  }
+
+  /// Maintains instances stored to communicate with java objects.
+  late final InstanceManager instanceManager;
+
+  @override
+  void onProgressChanged(int instanceId, int webViewInstanceId, int progress) {
+    final WebChromeClient instance =
+        instanceManager.getInstance(instanceId) as WebChromeClient;
+    instance.onProgressChanged(
+      instanceManager.getInstance(webViewInstanceId) as WebView,
+      progress,
     );
   }
 }

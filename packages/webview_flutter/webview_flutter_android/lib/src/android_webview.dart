@@ -41,6 +41,7 @@ class WebView {
 
   WebViewClient? _currentWebViewClient;
   DownloadListener? _currentDownloadListener;
+  WebChromeClient? _currentWebChromeClient;
   Set<JavaScriptChannel> _javaScriptChannels = <JavaScriptChannel>{};
 
   /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
@@ -257,6 +258,33 @@ class WebView {
     DownloadListener.api.createFromInstance(listener);
     _currentDownloadListener = listener;
     return api.setDownloadListenerFromInstance(this, listener);
+  }
+
+  /// Sets the chrome handler.
+  ///
+  /// This is an implementation of [WebChromeClient] for use in handling
+  /// JavaScript dialogs, favicons, titles, and the progress. This will replace
+  /// the current handler.
+  Future<void> setWebChromeClient(WebChromeClient client) {
+    final WebChromeClient? currentWebChromeClient = _currentWebChromeClient;
+
+    if (client == currentWebChromeClient) {
+      return Future<void>.value();
+    }
+
+    if (currentWebChromeClient != null) {
+      WebChromeClient.api.disposeFromInstance(currentWebChromeClient);
+    }
+
+    final WebViewClient? currentWebViewClient = _currentWebViewClient;
+    assert(
+      currentWebViewClient != null,
+      "Can't set a WebChromeClient without setting a WebViewClient first.",
+    );
+
+    WebChromeClient.api.createFromInstance(client, currentWebViewClient!);
+    _currentWebChromeClient = client;
+    return api.setWebChromeClientFromInstance(this, client);
   }
 }
 
@@ -557,6 +585,16 @@ abstract class DownloadListener {
     String mimetype,
     int contentLength,
   );
+}
+
+/// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
+abstract class WebChromeClient {
+  /// Pigeon Host Api implementation for [WebChromeClient].
+  @visibleForTesting
+  static WebChromeClientHostApiImpl api = WebChromeClientHostApiImpl();
+
+  /// Notify the host application that a file should be downloaded.
+  void onProgressChanged(WebView webView, int progress);
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.
