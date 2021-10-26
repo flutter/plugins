@@ -16,16 +16,16 @@ class _TestGoogleIdentity extends GoogleIdentity {
   _TestGoogleIdentity({
     required this.id,
     required this.email,
-    this.displayName,
     this.photoUrl,
   });
 
   final String id;
   final String email;
 
-  final String? displayName;
-
   final String? photoUrl;
+
+  @override
+  String? get displayName => null;
 }
 
 /// A mocked [HttpClient] which always returns a [_MockHttpRequest].
