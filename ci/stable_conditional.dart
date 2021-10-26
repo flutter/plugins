@@ -22,19 +22,21 @@
 //   }
 
 import 'dart:convert' show LineSplitter;
-import 'dart:io' show Directory, FileSystemEntity, File;
+import 'dart:io' show FileSystemEntity, File;
 
-final RegExp _isSourceRegex =
-    RegExp(r'\.cc$|\.java$|\.m$\.h$|\.c$|\.swift$|\.kt$');
+final List<String> _filesToProcess = <String>[
+  'packages/android_intent/android/src/test/java/io/flutter/plugins/androidintent/MethodCallHandlerImplTest.java',
+  'packages/camera/camera/android/src/test/java/io/flutter/plugins/camera/DartMessengerTest.java',
+  'packages/quick_actions/quick_actions/android/src/test/java/io/flutter/plugins/quickactions/QuickActionsTest.java',
+  'packages/url_launcher/url_launcher/android/src/test/java/io/flutter/plugins/urllauncher/MethodCallHandlerImplTest.java',
+];
+
 final RegExp _replacer = RegExp(
     r'^\s*// FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE(.*?)^\s*// FLUTTER_STABLE_CONDITIONAL_ELSE(.*?)^\s*// FLUTTER_STABLE_CONDITIONAL_ENDIF',
     multiLine: true,
     dotAll: true);
 final RegExp _commentRemover = RegExp(r'^(\s*)\/\/\s*(.*)');
 const String _newline = '\n';
-
-bool _isSourceFile(FileSystemEntity entity) =>
-    _isSourceRegex.hasMatch(entity.path);
 
 void _process(FileSystemEntity entity) {
   const LineSplitter splitter = LineSplitter();
@@ -61,11 +63,5 @@ void _process(FileSystemEntity entity) {
 }
 
 void main(List<String> args) {
-  final List<String> filesToProcess = <String>[
-    'packages/android_intent/android/src/test/java/io/flutter/plugins/androidintent/MethodCallHandlerImplTest.java',
-    'packages/camera/camera/android/src/test/java/io/flutter/plugins/camera/DartMessengerTest.java',
-    'packages/quick_actions/quick_actions/android/src/test/java/io/flutter/plugins/quickactions/QuickActionsTest.java',
-    'packages/url_launcher/url_launcher/android/src/test/java/io/flutter/plugins/urllauncher/MethodCallHandlerImplTest.java',
-  ];
-  filesToProcess.map((String path) => File(path)).forEach(_process);
+  _filesToProcess.map((String path) => File(path)).forEach(_process);
 }
