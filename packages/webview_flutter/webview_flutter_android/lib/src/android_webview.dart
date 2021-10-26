@@ -29,6 +29,8 @@ const String _nullStringIdentifier = '<null-value>';
 /// To learn more about WebView and alternatives for serving web content, read
 /// the documentation on
 /// [Web-based content](https://developer.android.com/guide/webapps).
+///
+/// When a [WebView] is no longer needed [release] must be called.
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
@@ -285,6 +287,33 @@ class WebView {
     WebChromeClient.api.createFromInstance(client, currentWebViewClient!);
     _currentWebChromeClient = client;
     return api.setWebChromeClientFromInstance(this, client);
+  }
+
+  Future<void> release() {
+    final WebViewClient? webViewClient = _currentWebViewClient;
+    if (webViewClient != null) {
+      WebViewClient.api.disposeFromInstance(webViewClient);
+      _currentWebViewClient = null;
+    }
+
+    final DownloadListener? downloadListener = _currentDownloadListener;
+    if (downloadListener != null) {
+      DownloadListener.api.disposeFromInstance(downloadListener);
+      _currentDownloadListener = null;
+    }
+
+    final WebChromeClient? webChromeClient = _currentWebChromeClient;
+    if (webChromeClient != null) {
+      WebChromeClient.api.disposeFromInstance(webChromeClient);
+      _currentWebChromeClient = null;
+    }
+
+    for (JavaScriptChannel javaScriptChannel in _javaScriptChannels) {
+      JavaScriptChannel.api.disposeFromInstance(javaScriptChannel);
+    }
+    _javaScriptChannels.clear();
+
+    return api.disposeFromInstance(this);
   }
 }
 

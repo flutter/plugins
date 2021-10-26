@@ -6,6 +6,11 @@ package io.flutter.plugins.webviewflutter;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -40,24 +45,26 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
    * <p>Calling this automatically initializes the plugin. However plugins initialized this way
    * won't react to changes in activity or context, unlike {@link CameraPlugin}.
    */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    registrar
-        .platformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview",
-            new FlutterWebViewFactory(registrar.messenger(), registrar.view()));
-    new FlutterCookieManager(registrar.messenger());
-  }
+//  @SuppressWarnings("deprecation")
+//  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+//    registrar
+//        .platformViewRegistry()
+//        .registerViewFactory(
+//            "plugins.flutter.io/webview",
+//            new FlutterWebViewFactory(registrar.messenger(), registrar.view()));
+//    new FlutterCookieManager(registrar.messenger());
+//  }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     BinaryMessenger messenger = binding.getBinaryMessenger();
+    InstanceManager instanceManager = new InstanceManager();
     binding
         .getPlatformViewRegistry()
         .registerViewFactory(
             "plugins.flutter.io/webview",
-            new FlutterWebViewFactory(messenger, /*containerView=*/ null));
+            new FlutterWebViewFactory(instanceManager));
+    WebViewHostApi.setup(messenger, new WebViewHostApiImpl(instanceManager, ));
     flutterCookieManager = new FlutterCookieManager(messenger);
   }
 
