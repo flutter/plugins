@@ -1,6 +1,6 @@
-## 5.1.2
+## 5.2.0
 
-Change the placeholder of the GoogleUserCircleAvatar to a transparent image.
+* Add `GoogleSignInAccount.serverAuthCode`. Mark `GoogleSignInAuthentication.serverAuthCode` as deprecated.
 
 ## 5.1.1
 

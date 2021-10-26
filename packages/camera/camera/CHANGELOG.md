@@ -1,3 +1,12 @@
+## 0.9.4+3
+
+* Fix registerTexture and result being called on background thread on iOS.
+
+## 0.9.4+2
+
+* Updated package description;
+* Refactor unit test on iOS to make it compatible with new restrictions in Xcode 13 which only supports the use of the `XCUIDevice` in Xcode UI tests.
+
 ## 0.9.4+1
 
 * Fixed Android implementation throwing IllegalStateException when switching to a different activity.
