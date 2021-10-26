@@ -7,6 +7,7 @@ package io.flutter.plugins.webviewflutter;
 import android.content.Context;
 import android.view.View;
 import android.webkit.DownloadListener;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
@@ -222,5 +223,11 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   public void setDownloadListener(Long instanceId, Long listenerInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setDownloadListener((DownloadListener) instanceManager.getInstance(listenerInstanceId));
+  }
+
+  @Override
+  public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
+    final WebView webView = (WebView) instanceManager.getInstance(instanceId);
+    webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(instanceId));
   }
 }
