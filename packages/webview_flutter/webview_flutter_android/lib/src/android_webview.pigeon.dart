@@ -617,6 +617,33 @@ class WebViewHostApi {
       return;
     }
   }
+
+  Future<void> setWebChromeClient(
+      int arg_instanceId, int arg_clientInstanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebViewHostApi.setWebChromeClient', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId, arg_clientInstanceId])
+            as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
 }
 
 class _WebSettingsHostApiCodec extends StandardMessageCodec {
@@ -1460,6 +1487,112 @@ abstract class DownloadListenerFlutterApi {
               'Argument for dev.flutter.pigeon.DownloadListenerFlutterApi.onDownloadStart was null, expected non-null int.');
           api.onDownloadStart(arg_instanceId!, arg_url!, arg_userAgent!,
               arg_contentDisposition!, arg_mimetype!, arg_contentLength!);
+          return;
+        });
+      }
+    }
+  }
+}
+
+class _WebChromeClientHostApiCodec extends StandardMessageCodec {
+  const _WebChromeClientHostApiCodec();
+}
+
+class WebChromeClientHostApi {
+  /// Constructor for [WebChromeClientHostApi].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  WebChromeClientHostApi({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _WebChromeClientHostApiCodec();
+
+  Future<void> create(
+      int arg_instanceId, int arg_webViewClientInstanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebChromeClientHostApi.create', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap = await channel
+            .send(<Object>[arg_instanceId, arg_webViewClientInstanceId])
+        as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> dispose(int arg_instanceId) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.WebChromeClientHostApi.dispose', codec,
+        binaryMessenger: _binaryMessenger);
+    final Map<Object?, Object?>? replyMap =
+        await channel.send(<Object>[arg_instanceId]) as Map<Object?, Object?>?;
+    if (replyMap == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+        details: null,
+      );
+    } else if (replyMap['error'] != null) {
+      final Map<Object?, Object?> error =
+          (replyMap['error'] as Map<Object?, Object?>?)!;
+      throw PlatformException(
+        code: (error['code'] as String?)!,
+        message: error['message'] as String?,
+        details: error['details'],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+class _WebChromeClientFlutterApiCodec extends StandardMessageCodec {
+  const _WebChromeClientFlutterApiCodec();
+}
+
+abstract class WebChromeClientFlutterApi {
+  static const MessageCodec<Object?> codec = _WebChromeClientFlutterApiCodec();
+
+  void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
+  static void setup(WebChromeClientFlutterApi? api) {
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged',
+          codec);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = args[0] as int?;
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged was null, expected non-null int.');
+          final int? arg_webViewInstanceId = args[1] as int?;
+          assert(arg_webViewInstanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged was null, expected non-null int.');
+          final int? arg_progress = args[2] as int?;
+          assert(arg_progress != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged was null, expected non-null int.');
+          api.onProgressChanged(
+              arg_instanceId!, arg_webViewInstanceId!, arg_progress!);
           return;
         });
       }

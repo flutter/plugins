@@ -69,6 +69,8 @@ abstract class WebViewHostApi {
   void removeJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
 
   void setDownloadListener(int instanceId, int listenerInstanceId);
+
+  void setWebChromeClient(int instanceId, int clientInstanceId);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebSettingsHostApi')
@@ -165,4 +167,15 @@ abstract class DownloadListenerFlutterApi {
     String mimetype,
     int contentLength,
   );
+}
+
+@HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
+abstract class WebChromeClientHostApi {
+  void create(int instanceId, int webViewClientInstanceId);
+  void dispose(int instanceId);
+}
+
+@FlutterApi()
+abstract class WebChromeClientFlutterApi {
+  void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
 }

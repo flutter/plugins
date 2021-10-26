@@ -42,6 +42,7 @@ abstract class TestWebViewHostApi {
   void addJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
   void removeJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId);
   void setDownloadListener(int instanceId, int listenerInstanceId);
+  void setWebChromeClient(int instanceId, int clientInstanceId);
   static void setup(TestWebViewHostApi? api) {
     {
       const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -461,6 +462,27 @@ abstract class TestWebViewHostApi {
           assert(arg_listenerInstanceId != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.setDownloadListener was null, expected non-null int.');
           api.setDownloadListener(arg_instanceId!, arg_listenerInstanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebViewHostApi.setWebChromeClient', codec);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setWebChromeClient was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = args[0] as int?;
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setWebChromeClient was null, expected non-null int.');
+          final int? arg_clientInstanceId = args[1] as int?;
+          assert(arg_clientInstanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewHostApi.setWebChromeClient was null, expected non-null int.');
+          api.setWebChromeClient(arg_instanceId!, arg_clientInstanceId!);
           return <Object?, Object?>{};
         });
       }
@@ -917,6 +939,58 @@ abstract class TestDownloadListenerHostApi {
           final int? arg_instanceId = args[0] as int?;
           assert(arg_instanceId != null,
               'Argument for dev.flutter.pigeon.DownloadListenerHostApi.dispose was null, expected non-null int.');
+          api.dispose(arg_instanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+  }
+}
+
+class _TestWebChromeClientHostApiCodec extends StandardMessageCodec {
+  const _TestWebChromeClientHostApiCodec();
+}
+
+abstract class TestWebChromeClientHostApi {
+  static const MessageCodec<Object?> codec = _TestWebChromeClientHostApiCodec();
+
+  void create(int instanceId, int webViewClientInstanceId);
+  void dispose(int instanceId);
+  static void setup(TestWebChromeClientHostApi? api) {
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientHostApi.create', codec);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = args[0] as int?;
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null, expected non-null int.');
+          final int? arg_webViewClientInstanceId = args[1] as int?;
+          assert(arg_webViewClientInstanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.create was null, expected non-null int.');
+          api.create(arg_instanceId!, arg_webViewClientInstanceId!);
+          return <Object?, Object?>{};
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebChromeClientHostApi.dispose', codec);
+      if (api == null) {
+        channel.setMockMessageHandler(null);
+      } else {
+        channel.setMockMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.dispose was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = args[0] as int?;
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebChromeClientHostApi.dispose was null, expected non-null int.');
           api.dispose(arg_instanceId!);
           return <Object?, Object?>{};
         });

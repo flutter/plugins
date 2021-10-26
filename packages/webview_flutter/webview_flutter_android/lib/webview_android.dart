@@ -97,7 +97,8 @@ class _AndroidWebViewWidgetState extends State<_AndroidWebViewWidget> {
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
     webView.settings.setSupportMultipleWindows(true);
 
-    platformController = _AndroidWebViewPlatformController(webView, widget.webViewPlatformCallbacksHandler);
+    platformController = _AndroidWebViewPlatformController(
+        webView, widget.webViewPlatformCallbacksHandler);
 
     final WebSettings? webSettings = widget.creationParams.webSettings;
     if (webSettings != null) {
@@ -132,7 +133,7 @@ class _AndroidWebViewWidgetState extends State<_AndroidWebViewWidget> {
   @override
   void dispose() {
     super.dispose();
-    android_webview.WebView.api.disposeFromInstance(webView);
+    //android_webview.WebView.api.disposeFromInstance(webView);
   }
 
   @override
@@ -152,13 +153,13 @@ class _AndroidWebViewWidgetState extends State<_AndroidWebViewWidget> {
         onPlatformViewCreated: (int id) {
           final WebViewPlatformCreatedCallback? createdCallback =
               widget.onWebViewPlatformCreated;
-          if (createdCallback != null) {
-            createdCallback(MethodChannelWebViewPlatform(
-              id,
-              webViewPlatformCallbacksHandler,
-              javascriptChannelRegistry,
-            ));
-          }
+          // if (createdCallback != null) {
+          //   createdCallback(MethodChannelWebViewPlatform(
+          //     id,
+          //     webViewPlatformCallbacksHandler,
+          //     javascriptChannelRegistry,
+          //   ));
+          // }
         },
         gestureRecognizers: widget.gestureRecognizers,
         layoutDirection: Directionality.maybeOf(context) ?? TextDirection.rtl,
@@ -235,9 +236,10 @@ class _AndroidWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
-  Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
-    return _channel.invokeMethod<void>(
-        'removeJavascriptChannels', javascriptChannelNames.toList());
+  Future<void> removeJavascriptChannels(
+      Set<String> javascriptChannelNames) async {
+    // return _channel.invokeMethod<void>(
+    //     'removeJavascriptChannels', javascriptChannelNames.toList());
   }
 
   @override
@@ -299,7 +301,10 @@ class _WebViewClientImpl extends android_webview.WebViewClient {
 
   @override
   void urlLoading(android_webview.WebView webView, String url) {
-    callbacksHandler.onNavigationRequest(url: url, isForMainFrame: true);
+    final FutureOr<bool> returnValue = callbacksHandler.onNavigationRequest(
+      url: url,
+      isForMainFrame: true,
+    );
   }
 
   @override

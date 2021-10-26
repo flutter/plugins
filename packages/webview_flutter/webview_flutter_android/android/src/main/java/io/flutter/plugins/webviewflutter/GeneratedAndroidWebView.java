@@ -211,6 +211,8 @@ public class GeneratedAndroidWebView {
 
     void setDownloadListener(Long instanceId, Long listenerInstanceId);
 
+    void setWebChromeClient(Long instanceId, Long clientInstanceId);
+
     /** The codec used by WebViewHostApi. */
     static MessageCodec<Object> getCodec() {
       return WebViewHostApiCodec.INSTANCE;
@@ -814,6 +816,38 @@ public class GeneratedAndroidWebView {
                   }
                   api.setDownloadListener(
                       instanceIdArg.longValue(), listenerInstanceIdArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger,
+                "dev.flutter.pigeon.WebViewHostApi.setWebChromeClient",
+                getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  Number clientInstanceIdArg = (Number) args.get(1);
+                  if (clientInstanceIdArg == null) {
+                    throw new NullPointerException("clientInstanceIdArg unexpectedly null.");
+                  }
+                  api.setWebChromeClient(
+                      instanceIdArg.longValue(), clientInstanceIdArg.longValue());
                   wrapped.put("result", null);
                 } catch (Error | RuntimeException exception) {
                   wrapped.put("error", wrapError(exception));
@@ -1742,6 +1776,123 @@ public class GeneratedAndroidWebView {
                   contentDispositionArg,
                   mimetypeArg,
                   contentLengthArg)),
+          channelReply -> {
+            callback.reply(null);
+          });
+    }
+  }
+
+  private static class WebChromeClientHostApiCodec extends StandardMessageCodec {
+    public static final WebChromeClientHostApiCodec INSTANCE = new WebChromeClientHostApiCodec();
+
+    private WebChromeClientHostApiCodec() {}
+  }
+
+  /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+  public interface WebChromeClientHostApi {
+    void create(Long instanceId, Long webViewClientInstanceId);
+
+    void dispose(Long instanceId);
+
+    /** The codec used by WebChromeClientHostApi. */
+    static MessageCodec<Object> getCodec() {
+      return WebChromeClientHostApiCodec.INSTANCE;
+    }
+
+    /**
+     * Sets up an instance of `WebChromeClientHostApi` to handle messages through the
+     * `binaryMessenger`.
+     */
+    static void setup(BinaryMessenger binaryMessenger, WebChromeClientHostApi api) {
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.WebChromeClientHostApi.create", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  Number webViewClientInstanceIdArg = (Number) args.get(1);
+                  if (webViewClientInstanceIdArg == null) {
+                    throw new NullPointerException("webViewClientInstanceIdArg unexpectedly null.");
+                  }
+                  api.create(instanceIdArg.longValue(), webViewClientInstanceIdArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+      {
+        BasicMessageChannel<Object> channel =
+            new BasicMessageChannel<>(
+                binaryMessenger, "dev.flutter.pigeon.WebChromeClientHostApi.dispose", getCodec());
+        if (api != null) {
+          channel.setMessageHandler(
+              (message, reply) -> {
+                Map<String, Object> wrapped = new HashMap<>();
+                try {
+                  ArrayList<Object> args = (ArrayList<Object>) message;
+                  Number instanceIdArg = (Number) args.get(0);
+                  if (instanceIdArg == null) {
+                    throw new NullPointerException("instanceIdArg unexpectedly null.");
+                  }
+                  api.dispose(instanceIdArg.longValue());
+                  wrapped.put("result", null);
+                } catch (Error | RuntimeException exception) {
+                  wrapped.put("error", wrapError(exception));
+                }
+                reply.reply(wrapped);
+              });
+        } else {
+          channel.setMessageHandler(null);
+        }
+      }
+    }
+  }
+
+  private static class WebChromeClientFlutterApiCodec extends StandardMessageCodec {
+    public static final WebChromeClientFlutterApiCodec INSTANCE =
+        new WebChromeClientFlutterApiCodec();
+
+    private WebChromeClientFlutterApiCodec() {}
+  }
+
+  /** Generated class from Pigeon that represents Flutter messages that can be called from Java. */
+  public static class WebChromeClientFlutterApi {
+    private final BinaryMessenger binaryMessenger;
+
+    public WebChromeClientFlutterApi(BinaryMessenger argBinaryMessenger) {
+      this.binaryMessenger = argBinaryMessenger;
+    }
+
+    public interface Reply<T> {
+      void reply(T reply);
+    }
+
+    static MessageCodec<Object> getCodec() {
+      return WebChromeClientFlutterApiCodec.INSTANCE;
+    }
+
+    public void onProgressChanged(
+        Long instanceIdArg, Long webViewInstanceIdArg, Long progressArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger,
+              "dev.flutter.pigeon.WebChromeClientFlutterApi.onProgressChanged",
+              getCodec());
+      channel.send(
+          new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, progressArg)),
           channelReply -> {
             callback.reply(null);
           });
