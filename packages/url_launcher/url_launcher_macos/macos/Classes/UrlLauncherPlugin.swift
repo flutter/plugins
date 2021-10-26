@@ -5,7 +5,17 @@
 import FlutterMacOS
 import Foundation
 
+public protocol URLLauncher {
+  func open(_ url: URL) -> Bool
+  func urlForApplication(toOpen: URL) -> URL?
+}
+
+extension NSWorkspace : URLLauncher {}
+
 public class UrlLauncherPlugin: NSObject, FlutterPlugin {
+
+  public var workspace: URLLauncher = NSWorkspace.shared
+
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
       name: "plugins.flutter.io/url_launcher",
@@ -24,7 +34,7 @@ public class UrlLauncherPlugin: NSObject, FlutterPlugin {
         result(invalidURLError(urlString))
         return
       }
-      result(NSWorkspace.shared.urlForApplication(toOpen: url) != nil)
+      result(workspace.urlForApplication(toOpen: url) != nil)
     case "launch":
       guard let unwrappedURLString = urlString,
         let url = URL.init(string: unwrappedURLString)
@@ -32,7 +42,7 @@ public class UrlLauncherPlugin: NSObject, FlutterPlugin {
         result(invalidURLError(urlString))
         return
       }
-      result(NSWorkspace.shared.open(url))
+      result(workspace.open(url))
     default:
       result(FlutterMethodNotImplemented)
     }

@@ -6,19 +6,60 @@ import FlutterMacOS
 import XCTest
 import url_launcher_macos
 
+class StubWorkspace: URLLauncher {
+  var isSuccessful = true
+    var url = URL.init(string: "https://flutter.dev")
+
+  func open(_ url: URL) -> Bool {
+    return isSuccessful
+  }
+
+  func urlForApplication(toOpen: URL) -> URL? {
+    return url
+  }
+
+}
+
 class RunnerTests: XCTestCase {
+
+  var workspace: StubWorkspace! = nil
+  var plugin: UrlLauncherPlugin! = nil
+
+  override func setUp() {
+    workspace = StubWorkspace()
+    plugin = UrlLauncherPlugin()
+    plugin.workspace = workspace
+  }
+
+  override func tearDown() {
+    workspace = nil
+    plugin = nil
+  }
+
   func testCanLaunch() throws {
-    let plugin = UrlLauncherPlugin()
     let call = FlutterMethodCall(
       methodName: "canLaunch",
       arguments: ["url": "https://flutter.dev"])
-    var canLaunch: Bool?
+
     plugin.handle(
       call,
       result: { (result: Any?) -> Void in
-        canLaunch = result as? Bool
+        XCTAssertTrue(result as? Bool == true)
       })
 
-    XCTAssertTrue(canLaunch == true)
+    
   }
+
+  func testLaunch() throws {
+    let call = FlutterMethodCall(
+      methodName: "launch",
+      arguments: ["url": "https://flutter.dev"])
+
+    plugin.handle(
+      call,
+      result: { (result: Any?) -> Void in
+        XCTAssertTrue(result as? Bool == true)
+      })
+  }
+
 }
