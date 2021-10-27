@@ -1206,7 +1206,7 @@ void main() {
 
         expect(errorCompleter.future, doesNotComplete);
         await pageFinishCompleter.future;
-      }, skip: true,
+      },
     );
 
     testWidgets('can block requests', (WidgetTester tester) async {
