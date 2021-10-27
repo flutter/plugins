@@ -285,6 +285,8 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
     if (userAgent.isPresent && userAgent.value != null) {
       return webView.settings.setUserAgentString(userAgent.value!);
     }
+
+    return webView.settings.setUserAgentString('');
   }
 }
 
@@ -420,12 +422,14 @@ class _WebViewClientImpl extends android_webview.WebViewClient {
     android_webview.WebResourceRequest request,
     android_webview.WebResourceError error,
   ) {
-    callbacksHandler.onWebResourceError(WebResourceError(
-      errorCode: error.errorCode,
-      description: error.description,
-      failingUrl: request.url,
-      errorType: _errorCodeToErrorType(error.errorCode),
-    ));
+    if (request.isForMainFrame) {
+      callbacksHandler.onWebResourceError(WebResourceError(
+        errorCode: error.errorCode,
+        description: error.description,
+        failingUrl: request.url,
+        errorType: _errorCodeToErrorType(error.errorCode),
+      ));
+    }
   }
 
   @override
