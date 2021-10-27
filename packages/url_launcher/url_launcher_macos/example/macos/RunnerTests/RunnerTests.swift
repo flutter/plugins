@@ -28,7 +28,6 @@ class RunnerTests: XCTestCase {
   override func setUp() {
     workspace = StubWorkspace()
     plugin = UrlLauncherPlugin()
-    plugin.workspace = workspace
   }
 
   override func tearDown() {
@@ -44,10 +43,9 @@ class RunnerTests: XCTestCase {
     plugin.handle(
       call,
       result: { (result: Any?) -> Void in
-        XCTAssertTrue(result as? Bool == true)
-      })
-
-    
+        let canLaunch: Bool? = result as? Bool
+        XCTAssertTrue(canLaunch == true)
+      }, with: workspace)
   }
 
   func testLaunch() throws {
@@ -59,7 +57,7 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertTrue(result as? Bool == true)
-      })
+      }, with: workspace)
   }
 
 }
