@@ -72,6 +72,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
       creationParams: creationParams,
       webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,
+      useHybridComposition: true,
     );
   }
 }

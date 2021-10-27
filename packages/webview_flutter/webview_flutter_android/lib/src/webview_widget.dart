@@ -18,6 +18,7 @@ class AndroidWebViewWidget extends StatefulWidget {
     required this.creationParams,
     required this.webViewPlatformCallbacksHandler,
     required this.javascriptChannelRegistry,
+    required this.useHybridComposition,
   });
 
   /// Callback to build a widget once [android_webview.WebView] has been initialized.
@@ -33,6 +34,9 @@ class AndroidWebViewWidget extends StatefulWidget {
   /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
+  /// Whether the Widget will be rendered with Hybrid Composition.
+  final bool useHybridComposition;
+
   @override
   State<StatefulWidget> createState() => _AndroidWebViewWidgetState();
 }
@@ -44,7 +48,9 @@ class _AndroidWebViewWidgetState extends State<AndroidWebViewWidget> {
   @override
   void initState() {
     super.initState();
-    webView = android_webview.WebView(useHybridComposition: false);
+    webView = android_webview.WebView(
+      useHybridComposition: widget.useHybridComposition,
+    );
     webView.settings.setDomStorageEnabled(true);
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
     webView.settings.setSupportMultipleWindows(true);

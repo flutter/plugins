@@ -239,7 +239,7 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
     WebSettings instance,
     bool flag,
   ) {
-    return setJavaScriptCanOpenWindowsAutomatically(
+    return setJavaScriptEnabled(
       instanceManager.getInstanceId(instance)!,
       flag,
     );

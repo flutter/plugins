@@ -61,6 +61,7 @@ class AndroidWebView implements WebViewPlatform {
       creationParams: creationParams,
       webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,
+      useHybridComposition: false,
     );
   }
 
