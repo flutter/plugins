@@ -8,6 +8,8 @@ import android.util.LongSparseArray;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.flutter.Log;
+
 class InstanceManager {
   private final LongSparseArray<Object> instanceIdsToInstances = new LongSparseArray<>();
   private final Map<Object, Long> instancesToInstanceIds = new HashMap<>();
@@ -29,6 +31,7 @@ class InstanceManager {
 
   /** Retrieve the Object paired with instanceId. */
   Object getInstance(long instanceId) {
+    Log.d("HELLLOOOO", "AMOUNT" + instanceIdsToInstances.size() + " " + instancesToInstanceIds.size());
     return instanceIdsToInstances.get(instanceId);
   }
 

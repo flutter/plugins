@@ -350,7 +350,7 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
 /// Flutter api implementation for [JavaScriptChannel].
 class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
   /// Constructs a [JavaScriptChannelFlutterApiImpl].
-  JavaScriptChannelHostApiImpl({InstanceManager? instanceManager}) {
+  JavaScriptChannelFlutterApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 

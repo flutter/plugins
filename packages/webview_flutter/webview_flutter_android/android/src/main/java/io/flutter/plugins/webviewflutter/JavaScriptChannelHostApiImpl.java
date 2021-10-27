@@ -6,6 +6,8 @@ package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
 import android.os.Looper;
+import android.webkit.JavascriptInterface;
+
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 
 class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
@@ -21,6 +23,7 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
         String channelName,
         Handler platformThreadHandler) {
       return new JavaScriptChannel(null, channelName, platformThreadHandler) {
+        @JavascriptInterface
         @Override
         public void postMessage(String message) {
           final Runnable postMessageRunnable =

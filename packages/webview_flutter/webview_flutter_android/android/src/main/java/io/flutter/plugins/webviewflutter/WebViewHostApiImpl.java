@@ -5,6 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.content.Context;
+import android.hardware.display.DisplayManager;
 import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
@@ -95,10 +96,17 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
   @Override
   public void create(Long instanceId, Boolean useHybridComposition) {
+    DisplayListenerProxy displayListenerProxy = new DisplayListenerProxy();
+    DisplayManager displayManager =
+        (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+    displayListenerProxy.onPreWebViewInitialization(displayManager);
+
     final WebView webView =
         useHybridComposition
             ? webViewProxy.createWebView(context)
             : webViewProxy.createInputAwareWebView(context);
+
+    displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addInstance(webView, instanceId);
   }
 

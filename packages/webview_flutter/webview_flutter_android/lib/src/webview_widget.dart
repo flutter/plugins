@@ -202,7 +202,7 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
     return Future.wait(
       javascriptChannelNames.where(
         (String channelName) {
-          return _javaScriptChannels.containsKey(channelName);
+          return !_javaScriptChannels.containsKey(channelName);
         },
       ).map<Future<void>>(
         (String channelName) {
