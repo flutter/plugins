@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:json_annotation/json_annotation.dart';
-import 'sk_product_wrapper.dart';
-import 'sk_payment_queue_wrapper.dart';
+
 import 'enum_converters.dart';
+import 'sk_payment_queue_wrapper.dart';
+import 'sk_product_wrapper.dart';
 
 part 'sk_payment_transaction_wrappers.g.dart';
 
@@ -101,7 +103,7 @@ enum SKPaymentTransactionStateWrapper {
 ///
 /// Dart wrapper around StoreKit's
 /// [SKPaymentTransaction](https://developer.apple.com/documentation/storekit/skpaymenttransaction?language=objc).
-@JsonSerializable()
+@JsonSerializable(createToJson: true)
 class SKPaymentTransactionWrapper {
   /// Creates a new [SKPaymentTransactionWrapper] with the provided information.
   SKPaymentTransactionWrapper({

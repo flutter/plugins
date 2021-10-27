@@ -15,12 +15,6 @@ SKError _$SKErrorFromJson(Map json) => SKError(
           {},
     );
 
-Map<String, dynamic> _$SKErrorToJson(SKError instance) => <String, dynamic>{
-      'code': instance.code,
-      'domain': instance.domain,
-      'userInfo': instance.userInfo,
-    };
-
 SKPaymentWrapper _$SKPaymentWrapperFromJson(Map json) => SKPaymentWrapper(
       productIdentifier: json['productIdentifier'] as String? ?? '',
       applicationUsername: json['applicationUsername'] as String?,

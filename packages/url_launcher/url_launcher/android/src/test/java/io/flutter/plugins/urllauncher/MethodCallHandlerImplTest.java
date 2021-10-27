@@ -44,7 +44,11 @@ public class MethodCallHandlerImplTest {
     methodCallHandler.startListening(messenger);
 
     verify(messenger, times(1))
-        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+        // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
+        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class), eq(null));
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    //     .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
   }
 
   @Test
@@ -56,9 +60,15 @@ public class MethodCallHandlerImplTest {
     methodCallHandler.startListening(secondMessenger);
 
     // Unregisters the first and then registers the second.
-    verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
+    verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null, null);
     verify(secondMessenger, times(1))
-        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+        .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class), eq(null));
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // verify(firstMessenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    // verify(secondMessenger, times(1))
+    //     .setMessageHandler(eq(CHANNEL_NAME), any(BinaryMessageHandler.class));
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
   }
 
   @Test
@@ -68,7 +78,11 @@ public class MethodCallHandlerImplTest {
 
     methodCallHandler.stopListening();
 
-    verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
+    verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null, null);
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // verify(messenger, times(1)).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
   }
 
   @Test
@@ -77,7 +91,11 @@ public class MethodCallHandlerImplTest {
 
     methodCallHandler.stopListening();
 
-    verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
+    verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null, null);
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // verify(messenger, never()).setMessageHandler(CHANNEL_NAME, null);
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
   }
 
   @Test
