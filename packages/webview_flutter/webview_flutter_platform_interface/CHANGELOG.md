@@ -1,6 +1,6 @@
 ## 1.3.0
 
-* Added `loadFlutterAsset` and `loadHtml` interface methods.
+* Added `loadFile` and `loadHtml` interface methods.
 
 ## 1.2.0
 
