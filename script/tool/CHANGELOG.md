@@ -14,6 +14,7 @@
 - `pubspec-check` now checks that the description is of the pub-recommended
   length.
 - Fix `license-check` when run on Windows with line ending conversion enabled.
+- Fixed `pubspec-check` on Windows.
 
 ## 0.7.1
 
