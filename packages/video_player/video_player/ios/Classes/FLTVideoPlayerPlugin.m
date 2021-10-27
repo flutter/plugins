@@ -292,16 +292,17 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         break;
       case AVPlayerItemStatusReadyToPlay:
         [item addOutput:_videoOutput];
-        [self sendInitialized];
+        [self setupEventSinkIfReadyToPlay];
         [self updatePlayingState];
         break;
     }
   } else if (context == presentationSizeContext || context == durationContext) {
     AVPlayerItem* item = (AVPlayerItem*)object;
     if (item.status == AVPlayerItemStatusReadyToPlay) {
-      // When the player item is ready, it still may not have determined its presentation size or
-      // duration. When these properties are finally set, initialize the player.
-      [self sendInitialized];
+      // Due to an apparent bug, when the player item is ready, it still may not have determined
+      // its presentation size or duration. When these properties are finally set, re-check if
+      // all required properties and instantiate the event sink if it is not already set up.
+      [self setupEventSinkIfReadyToPlay];
       [self updatePlayingState];
     }
   } else if (context == playbackLikelyToKeepUpContext) {
@@ -334,7 +335,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = !_isPlaying;
 }
 
-- (void)sendInitialized {
+- (void)setupEventSinkIfReadyToPlay {
   if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
@@ -443,7 +444,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // This line ensures the 'initialized' event is sent when the event
   // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
   // onListenWithArguments is called)
-  [self sendInitialized];
+  [self setupEventSinkIfReadyToPlay];
   return nil;
 }
 
