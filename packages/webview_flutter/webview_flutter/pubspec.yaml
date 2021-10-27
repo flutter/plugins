@@ -20,7 +20,9 @@ dependencies:
   flutter:
     sdk: flutter
   webview_flutter_platform_interface: ^1.0.0
-  webview_flutter_android: ^2.0.13
+  # TODO(bparrishMines): Don't commit. Undo after tests pass.
+  webview_flutter_android:
+    path: ../webview_flutter_android
   webview_flutter_wkwebview: ^2.0.13
 
 dev_dependencies:
