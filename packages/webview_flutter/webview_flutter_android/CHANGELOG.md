@@ -1,4 +1,4 @@
-## NEXT
+## 2.1.0
 
 * Replace platform implementation with API built with pigeon.
 
