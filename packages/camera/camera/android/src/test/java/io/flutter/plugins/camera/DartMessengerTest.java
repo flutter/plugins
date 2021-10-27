@@ -12,6 +12,7 @@ import static org.mockito.Mockito.mock;
 
 import android.os.Handler;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
@@ -31,6 +32,15 @@ public class DartMessengerTest {
   private static class FakeBinaryMessenger implements BinaryMessenger {
     private final List<ByteBuffer> sentMessages = new ArrayList<>();
 
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on stable.
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
+    @Override
+    public BinaryMessenger.TaskQueue makeBackgroundTaskQueue() {
+      return null;
+    }
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
+
     @Override
     public void send(@NonNull String channel, ByteBuffer message) {
       sentMessages.add(message);
@@ -41,8 +51,17 @@ public class DartMessengerTest {
       send(channel, message);
     }
 
+    // TODO(aaclarke): Remove when https://github.com/flutter/engine/pull/29147 is on stable.
+    // FLUTTER_STABLE_CONDITIONAL_IF_NOT_STABLE
     @Override
-    public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
+    public void setMessageHandler(
+        @NonNull String channel,
+        BinaryMessageHandler handler,
+        @Nullable BinaryMessenger.TaskQueue taskQueue) {}
+    // FLUTTER_STABLE_CONDITIONAL_ELSE
+    // @Override
+    // public void setMessageHandler(@NonNull String channel, BinaryMessageHandler handler) {}
+    // FLUTTER_STABLE_CONDITIONAL_ENDIF
 
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);

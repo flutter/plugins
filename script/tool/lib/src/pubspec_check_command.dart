@@ -177,7 +177,7 @@ class PubspecCheckCommand extends PackageLoopingCommand {
       errorMessages.add('Missing "repository"');
     } else {
       final String relativePackagePath =
-          path.relative(package.path, from: packagesDir.parent.path);
+          getRelativePosixPath(package.directory, from: packagesDir.parent);
       if (!pubspec.repository!.path.endsWith(relativePackagePath)) {
         errorMessages
             .add('The "repository" link should end with the package path.');
