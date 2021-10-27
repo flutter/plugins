@@ -39,6 +39,15 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
   private MethodChannel channel;
   private PathProviderImpl impl;
 
+  /**
+   * An abstraction over how to access the paths in a thread-safe manner.
+   *
+   * <p>We need this so on versions of Flutter that support Background Platform Channels this plugin
+   * can take advantage of it.
+   *
+   * <p>This can be removed after https://github.com/flutter/engine/pull/29147 becomes available on
+   * the stable branch.
+   */
   private interface PathProviderImpl {
     void getTemporaryDirectory(@NonNull Result result);
 
@@ -53,6 +62,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     void getApplicationSupportDirectory(@NonNull Result result);
   }
 
+  /** The implementation for getting system paths that executes from the platform */
   private class PathProviderPlatformThread implements PathProviderImpl {
     private final Executor uiThreadExecutor = new UiThreadExecutor();
     private final Executor executor =
@@ -112,6 +122,7 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     }
   }
 
+  /** The implementation for getting system paths that executes from a background thread. */
   private class PathProviderBackgroundThread implements PathProviderImpl {
     public void getTemporaryDirectory(@NonNull Result result) {
       result.success(getPathProviderTemporaryDirectory());
