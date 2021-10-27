@@ -27,5 +27,6 @@ dev_dependencies:
     sdk: flutter
   flutter_test:
     sdk: flutter
+  pigeon: 1.0.7
   pedantic: ^1.10.0
 
