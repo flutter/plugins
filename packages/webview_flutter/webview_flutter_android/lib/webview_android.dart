@@ -43,10 +43,8 @@ class AndroidWebView implements WebViewPlatform {
           child: AndroidView(
             viewType: 'plugins.flutter.io/webview',
             onPlatformViewCreated: (int id) {
-              final WebViewPlatformCreatedCallback? createdCallback =
-                  onWebViewPlatformCreated;
-              if (createdCallback != null) {
-                createdCallback(platformController);
+              if (onWebViewPlatformCreated != null) {
+                onWebViewPlatformCreated(platformController);
               }
             },
             gestureRecognizers: gestureRecognizers,
