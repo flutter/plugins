@@ -1,6 +1,6 @@
 ## NEXT
 
-* Replace platform implementation with API build with pigeon.
+* Replace platform implementation with API built with pigeon.
 
 ## 2.0.15
 
