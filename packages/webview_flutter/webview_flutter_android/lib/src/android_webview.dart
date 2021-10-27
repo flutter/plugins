@@ -35,23 +35,12 @@ const String _nullStringIdentifier = '<null-value>';
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
-    // TODO: handle independently?
-    if (!_flutterApisHaveBeenSetup) {
-      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
-      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
-      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
-      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
-      _flutterApisHaveBeenSetup = true;
-    }
-
     api.createFromInstance(this);
   }
 
   /// Pigeon Host Api implementation for [WebView].
   @visibleForTesting
   static WebViewHostApiImpl api = WebViewHostApiImpl();
-
-  static bool _flutterApisHaveBeenSetup = false;
 
   WebViewClient? _currentWebViewClient;
   DownloadListener? _currentDownloadListener;
@@ -301,6 +290,10 @@ class WebView {
     return api.setWebChromeClientFromInstance(this, client);
   }
 
+  /// Releases all resources used by the [WebView].
+  ///
+  /// Any methods called on the [WebView] instance after [release] will throw
+  /// an exception.
   Future<void> release() {
     final WebViewClient? webViewClient = _currentWebViewClient;
     if (webViewClient != null) {
@@ -464,11 +457,18 @@ class WebSettings {
 /// See [WebView.addJavaScriptChannel].
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
-  JavaScriptChannel(this.channelName);
+  JavaScriptChannel(this.channelName) {
+    if (!_flutterApisHaveBeenSetup) {
+      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
   @visibleForTesting
   static JavaScriptChannelHostApiImpl api = JavaScriptChannelHostApiImpl();
+
+  static bool _flutterApisHaveBeenSetup = false;
 
   /// Used to identify this object to receive messages from javaScript.
   final String channelName;
@@ -480,55 +480,62 @@ abstract class JavaScriptChannel {
 /// Receive various notifications and requests for [WebView].
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
-  WebViewClient({this.shouldOverrideUrlLoading = true});
+  WebViewClient({this.shouldOverrideUrlLoading = true}) {
+    if (!_flutterApisHaveBeenSetup) {
+      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
+
+  static bool _flutterApisHaveBeenSetup = false;
 
   /// User authentication failed on server.
-  static const int errorAuthentication = 0xfffffffc;
+  static const int errorAuthentication = -4;
 
   /// Malformed URL.
-  static const int errorBadUrl = 0xfffffff4;
+  static const int errorBadUrl = -12;
 
   /// Failed to connect to the server.
-  static const int errorConnect = 0xfffffffa;
+  static const int errorConnect = -6;
 
   /// Failed to perform SSL handshake.
-  static const int errorFailedSslHandshake = 0xfffffff5;
+  static const int errorFailedSslHandshake = -11;
 
   /// Generic file error.
-  static const int errorFile = 0xfffffff3;
+  static const int errorFile = -13;
 
   /// File not found.
-  static const int errorFileNotFound = 0xfffffff2;
+  static const int errorFileNotFound = -14;
 
   /// Server or proxy hostname lookup failed.
-  static const int errorHostLookup = 0xfffffffe;
+  static const int errorHostLookup = -2;
 
   /// Failed to read or write to the server.
-  static const int errorIO = 0xfffffff9;
+  static const int errorIO = -7;
 
   /// User authentication failed on proxy.
-  static const int errorProxyAuthentication = 0xfffffffb;
+  static const int errorProxyAuthentication = -5;
 
   /// Too many redirects.
-  static const int errorRedirectLoop = 0xfffffff7;
+  static const int errorRedirectLoop = -9;
 
   /// Connection timed out.
-  static const int errorTimeout = 0xfffffff8;
+  static const int errorTimeout = -8;
 
   /// Too many requests during this load.
-  static const int errorTooManyRequests = 0xfffffff1;
+  static const int errorTooManyRequests = -15;
 
   /// Generic error.
-  static const int errorUnknown = 0xffffffff;
+  static const int errorUnknown = -1;
 
   /// Resource load was canceled by Safe Browsing.
-  static const int errorUnsafeResource = 0xfffffff0;
+  static const int errorUnsafeResource = -16;
 
   /// Unsupported authentication scheme (not basic or digest).
-  static const int errorUnsupportedAuthScheme = 0xfffffffd;
+  static const int errorUnsupportedAuthScheme = -3;
 
   /// Unsupported URI scheme.
-  static const int errorUnsupportedScheme = 0xfffffff6;
+  static const int errorUnsupportedScheme = -10;
 
   /// Pigeon Host Api implementation for [WebViewClient].
   @visibleForTesting
@@ -614,6 +621,16 @@ abstract class WebViewClient {
 
 /// The interface to be used when content can not be handled by the rendering engine for [WebView], and should be downloaded instead.
 abstract class DownloadListener {
+  /// Constructs a [DownloadListener].
+  DownloadListener() {
+    if (!_flutterApisHaveBeenSetup) {
+      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
+
+  static bool _flutterApisHaveBeenSetup = false;
+
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
   static DownloadListenerHostApiImpl api = DownloadListenerHostApiImpl();
@@ -630,6 +647,16 @@ abstract class DownloadListener {
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
 abstract class WebChromeClient {
+  /// Constructs a [WebChromeClient].
+  WebChromeClient() {
+    if (!_flutterApisHaveBeenSetup) {
+      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
+
+  static bool _flutterApisHaveBeenSetup = false;
+
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
   static WebChromeClientHostApiImpl api = WebChromeClientHostApiImpl();

@@ -4,20 +4,20 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.app.Activity;
 import android.os.Handler;
-
 import androidx.annotation.NonNull;
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
+import io.flutter.plugin.platform.PlatformViewRegistry;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -28,7 +28,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHost
  * package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
-  private FlutterPluginBinding binding;
+  private FlutterPluginBinding pluginBinding;
   private FlutterCookieManager flutterCookieManager;
 
   /**
@@ -52,19 +52,56 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
    * <p>Calling this automatically initializes the plugin. However plugins initialized this way
    * won't react to changes in activity or context, unlike {@link CameraPlugin}.
    */
-//  @SuppressWarnings("deprecation")
-//  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-//    registrar
-//        .platformViewRegistry()
-//        .registerViewFactory(
-//            "plugins.flutter.io/webview",
-//            new FlutterWebViewFactory(registrar.messenger(), registrar.view()));
-//    new FlutterCookieManager(registrar.messenger());
-//  }
+  @SuppressWarnings("deprecation")
+  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
+    setUp(registrar.messenger(), registrar.platformViewRegistry(), registrar.activity());
+    new FlutterCookieManager(registrar.messenger());
+  }
+
+  private static void setUp(
+      BinaryMessenger binaryMessenger, PlatformViewRegistry viewRegistry, Activity activity) {
+    InstanceManager instanceManager = new InstanceManager();
+    viewRegistry.registerViewFactory(
+        "plugins.flutter.io/webview", new FlutterWebViewFactory(instanceManager));
+    WebViewHostApi.setup(
+        binaryMessenger,
+        new WebViewHostApiImpl(instanceManager, new WebViewHostApiImpl.WebViewProxy(), activity));
+    WebViewClientHostApi.setup(
+        binaryMessenger,
+        new WebViewClientHostApiImpl(
+            instanceManager,
+            new WebViewClientHostApiImpl.WebViewClientCreator(),
+            new GeneratedAndroidWebView.WebViewClientFlutterApi(binaryMessenger)));
+    WebChromeClientHostApi.setup(
+        binaryMessenger,
+        new WebChromeClientHostApiImpl(
+            instanceManager,
+            new WebChromeClientHostApiImpl.WebChromeClientCreator(),
+            new GeneratedAndroidWebView.WebChromeClientFlutterApi(binaryMessenger)));
+    DownloadListenerHostApi.setup(
+        binaryMessenger,
+        new DownloadListenerHostApiImpl(
+            instanceManager,
+            new DownloadListenerHostApiImpl.DownloadListenerCreator(),
+            new GeneratedAndroidWebView.DownloadListenerFlutterApi(binaryMessenger)));
+    JavaScriptChannelHostApi.setup(
+        binaryMessenger,
+        new JavaScriptChannelHostApiImpl(
+            instanceManager,
+            new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(),
+            new GeneratedAndroidWebView.JavaScriptChannelFlutterApi(binaryMessenger),
+            new Handler(activity.getMainLooper())));
+    WebSettingsHostApi.setup(
+        binaryMessenger,
+        new WebSettingsHostApiImpl(
+            instanceManager, new WebSettingsHostApiImpl.WebSettingsCreator()));
+    new FlutterCookieManager(binaryMessenger);
+  }
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    this.binding = binding;
+    this.pluginBinding = binding;
+    flutterCookieManager = new FlutterCookieManager(binding.getBinaryMessenger());
   }
 
   @Override
@@ -79,34 +116,19 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    BinaryMessenger messenger = binding.getBinaryMessenger();
-    InstanceManager instanceManager = new InstanceManager();
-    binding
-        .getPlatformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview",
-            new FlutterWebViewFactory(instanceManager));
-    WebViewHostApi.setup(messenger, new WebViewHostApiImpl(instanceManager, new WebViewHostApiImpl.WebViewProxy(), activityPluginBinding.getActivity()));
-    WebViewClientHostApi.setup(messenger, new WebViewClientHostApiImpl(instanceManager, new WebViewClientHostApiImpl.WebViewClientCreator(), new GeneratedAndroidWebView.WebViewClientFlutterApi(messenger)));
-    WebChromeClientHostApi.setup(messenger, new WebChromeClientHostApiImpl(instanceManager, new WebChromeClientHostApiImpl.WebChromeClientCreator(), new GeneratedAndroidWebView.WebChromeClientFlutterApi(messenger)));
-    DownloadListenerHostApi.setup(messenger, new DownloadListenerHostApiImpl(instanceManager, new DownloadListenerHostApiImpl.DownloadListenerCreator(), new GeneratedAndroidWebView.DownloadListenerFlutterApi(messenger)));
-    JavaScriptChannelHostApi.setup(messenger, new JavaScriptChannelHostApiImpl(instanceManager, new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(), new GeneratedAndroidWebView.JavaScriptChannelFlutterApi(messenger), new Handler(activityPluginBinding.getActivity().getMainLooper())));
-    WebSettingsHostApi.setup(messenger, new WebSettingsHostApiImpl(instanceManager, new WebSettingsHostApiImpl.WebSettingsCreator()));
-    flutterCookieManager = new FlutterCookieManager(messenger);
+    setUp(
+        pluginBinding.getBinaryMessenger(),
+        pluginBinding.getPlatformViewRegistry(),
+        activityPluginBinding.getActivity());
   }
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {
-
-  }
+  public void onDetachedFromActivityForConfigChanges() {}
 
   @Override
-  public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding activityPluginBinding) {
-
-  }
+  public void onReattachedToActivityForConfigChanges(
+      @NonNull ActivityPluginBinding activityPluginBinding) {}
 
   @Override
-  public void onDetachedFromActivity() {
-
-  }
+  public void onDetachedFromActivity() {}
 }

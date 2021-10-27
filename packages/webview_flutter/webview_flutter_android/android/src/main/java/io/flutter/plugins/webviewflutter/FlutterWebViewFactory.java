@@ -19,9 +19,9 @@ public final class FlutterWebViewFactory extends PlatformViewFactory {
 
   @Override
   public PlatformView create(Context context, int id, Object args) {
-    final PlatformView view = (PlatformView) instanceManager.getInstance(id);
+    final PlatformView view = (PlatformView) instanceManager.getInstance((Integer) args);
     if (view == null) {
-      throw new IllegalStateException("Unable to find WebView instance.");
+      throw new IllegalStateException("Unable to find WebView instance: " + args);
     }
     return view;
   }
