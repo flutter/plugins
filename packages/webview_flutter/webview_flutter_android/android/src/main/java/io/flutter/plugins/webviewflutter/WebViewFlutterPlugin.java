@@ -127,7 +127,12 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onReattachedToActivityForConfigChanges(
-      @NonNull ActivityPluginBinding activityPluginBinding) {}
+      @NonNull ActivityPluginBinding activityPluginBinding) {
+    setUp(
+        pluginBinding.getBinaryMessenger(),
+        pluginBinding.getPlatformViewRegistry(),
+        activityPluginBinding.getActivity());
+  }
 
   @Override
   public void onDetachedFromActivity() {}
