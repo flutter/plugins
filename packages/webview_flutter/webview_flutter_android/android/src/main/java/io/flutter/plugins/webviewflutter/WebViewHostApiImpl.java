@@ -228,6 +228,6 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   @Override
   public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(instanceId));
+    webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
   }
 }

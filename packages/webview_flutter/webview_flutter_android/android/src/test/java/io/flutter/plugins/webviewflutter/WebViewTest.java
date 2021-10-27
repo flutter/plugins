@@ -13,6 +13,7 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import java.util.HashMap;
@@ -218,5 +219,14 @@ public class WebViewTest {
 
     testHostApiImpl.setDownloadListener(0L, 1L);
     verify(mockWebView).setDownloadListener(mockDownloadListener);
+  }
+
+  @Test
+  public void setWebChromeClient() {
+    final WebChromeClient mockWebChromeClient = mock(WebChromeClient.class);
+    testInstanceManager.addInstance(mockWebChromeClient, 1L);
+
+    testHostApiImpl.setWebChromeClient(0L, 1L);
+    verify(mockWebView).setWebChromeClient(mockWebChromeClient);
   }
 }

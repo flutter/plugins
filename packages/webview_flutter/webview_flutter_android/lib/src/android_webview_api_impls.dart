@@ -486,7 +486,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
         isRedirect: request.isRedirect,
         hasGesture: request.hasGesture!,
         method: request.method!,
-        requestHeaders: request.requestHeaders!.cast<String, String>(),
+        requestHeaders: request.requestHeaders?.cast<String, String>(),
       ),
     );
   }

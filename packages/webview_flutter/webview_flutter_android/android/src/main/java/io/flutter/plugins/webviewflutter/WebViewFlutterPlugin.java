@@ -4,13 +4,20 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.os.Handler;
+
+import androidx.annotation.NonNull;
+
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
+import io.flutter.embedding.engine.plugins.activity.ActivityAware;
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
 
 /**
  * Java platform implementation of the webview_flutter plugin.
@@ -20,8 +27,8 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChann
  * <p>Call {@link #registerWith(Registrar)} to use the stable {@code io.flutter.plugin.common}
  * package instead.
  */
-public class WebViewFlutterPlugin implements FlutterPlugin {
-
+public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
+  private FlutterPluginBinding binding;
   private FlutterCookieManager flutterCookieManager;
 
   /**
@@ -57,15 +64,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
 
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
-    BinaryMessenger messenger = binding.getBinaryMessenger();
-    InstanceManager instanceManager = new InstanceManager();
-    binding
-        .getPlatformViewRegistry()
-        .registerViewFactory(
-            "plugins.flutter.io/webview",
-            new FlutterWebViewFactory(instanceManager));
-    WebViewHostApi.setup(messenger, new WebViewHostApiImpl(instanceManager, ));
-    flutterCookieManager = new FlutterCookieManager(messenger);
+    this.binding = binding;
   }
 
   @Override
@@ -76,5 +75,38 @@ public class WebViewFlutterPlugin implements FlutterPlugin {
 
     flutterCookieManager.dispose();
     flutterCookieManager = null;
+  }
+
+  @Override
+  public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
+    BinaryMessenger messenger = binding.getBinaryMessenger();
+    InstanceManager instanceManager = new InstanceManager();
+    binding
+        .getPlatformViewRegistry()
+        .registerViewFactory(
+            "plugins.flutter.io/webview",
+            new FlutterWebViewFactory(instanceManager));
+    WebViewHostApi.setup(messenger, new WebViewHostApiImpl(instanceManager, new WebViewHostApiImpl.WebViewProxy(), activityPluginBinding.getActivity()));
+    WebViewClientHostApi.setup(messenger, new WebViewClientHostApiImpl(instanceManager, new WebViewClientHostApiImpl.WebViewClientCreator(), new GeneratedAndroidWebView.WebViewClientFlutterApi(messenger)));
+    WebChromeClientHostApi.setup(messenger, new WebChromeClientHostApiImpl(instanceManager, new WebChromeClientHostApiImpl.WebChromeClientCreator(), new GeneratedAndroidWebView.WebChromeClientFlutterApi(messenger)));
+    DownloadListenerHostApi.setup(messenger, new DownloadListenerHostApiImpl(instanceManager, new DownloadListenerHostApiImpl.DownloadListenerCreator(), new GeneratedAndroidWebView.DownloadListenerFlutterApi(messenger)));
+    JavaScriptChannelHostApi.setup(messenger, new JavaScriptChannelHostApiImpl(instanceManager, new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(), new GeneratedAndroidWebView.JavaScriptChannelFlutterApi(messenger), new Handler(activityPluginBinding.getActivity().getMainLooper())));
+    WebSettingsHostApi.setup(messenger, new WebSettingsHostApiImpl(instanceManager, new WebSettingsHostApiImpl.WebSettingsCreator()));
+    flutterCookieManager = new FlutterCookieManager(messenger);
+  }
+
+  @Override
+  public void onDetachedFromActivityForConfigChanges() {
+
+  }
+
+  @Override
+  public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding activityPluginBinding) {
+
+  }
+
+  @Override
+  public void onDetachedFromActivity() {
+
   }
 }

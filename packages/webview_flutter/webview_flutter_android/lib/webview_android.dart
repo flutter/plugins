@@ -210,9 +210,9 @@ class _AndroidWebViewPlatformController extends WebViewPlatformController {
   final WebViewPlatformCallbacksHandler callbacksHandler;
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
-  late final _WebViewClientImpl webViewClient;
   late final _DownloadListenerImpl downloadListener;
   late final _WebChromeClientImpl webChromeClient;
+  late _WebViewClientImpl webViewClient;
 
   @override
   Future<void> loadUrl(
@@ -251,7 +251,7 @@ class _AndroidWebViewPlatformController extends WebViewPlatformController {
     }
 
     return Future.wait(<Future<void>>[
-      _trySetNavigationDelegate(settings.hasNavigationDelegate),
+      _trySetHasNavigationDelegate(settings.hasNavigationDelegate),
       _trySetJavaScriptMode(settings.javascriptMode),
       _trySetDebuggingEnabled(settings.debuggingEnabled),
       _trySetUserAgent(settings.userAgent),
@@ -316,7 +316,7 @@ class _AndroidWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<int> getScrollY() => webView.getScrollY();
 
-  Future<void> _trySetNavigationDelegate(bool? hasNavigationDelegate) async {
+  Future<void> _trySetHasNavigationDelegate(bool? hasNavigationDelegate) async {
     if (hasNavigationDelegate != null) {
       downloadListener.hasNavigationDelegate = hasNavigationDelegate;
       webViewClient = _WebViewClientImpl(

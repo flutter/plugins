@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
+import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 
 // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
@@ -34,12 +35,23 @@ const String _nullStringIdentifier = '<null-value>';
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
+    // TODO: handle independently?
+    if (!_flutterApisHaveBeenSetup) {
+      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
+      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
+      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
+      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+
     api.createFromInstance(this);
   }
 
   /// Pigeon Host Api implementation for [WebView].
   @visibleForTesting
   static WebViewHostApiImpl api = WebViewHostApiImpl();
+
+  static bool _flutterApisHaveBeenSetup = false;
 
   WebViewClient? _currentWebViewClient;
   DownloadListener? _currentDownloadListener;
@@ -656,7 +668,7 @@ class WebResourceRequest {
   final String method;
 
   /// Gets the headers associated with the request.
-  final Map<String, String> requestHeaders;
+  final Map<String, String>? requestHeaders;
 }
 
 /// Encapsulates information about errors occurred during loading of web resources.
