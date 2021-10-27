@@ -7,8 +7,7 @@ package io.flutter.plugins.webviewflutter;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
-import io.flutter.plugin.common.MethodChannel;
-import java.util.HashMap;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 
 /**
  * Added as a JavaScript interface to the WebView for any JavaScript channel that the Dart code sets
@@ -18,37 +17,34 @@ import java.util.HashMap;
  * channel to the Dart code.
  */
 class JavaScriptChannel {
-  private final MethodChannel methodChannel;
+  private final Long instanceId;
+  private final GeneratedAndroidWebView.JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;
   final String javaScriptChannelName;
   private final Handler platformThreadHandler;
 
   /**
-   * @param methodChannel the Flutter WebView method channel to which JS messages are sent
-   * @param javaScriptChannelName the name of the JavaScript channel, this is sent over the method
-   *     channel with each message to let the Dart code know which JavaScript channel the message
-   *     was sent through
+   * @param instanceId identifier for this object when messages are sent to Dart
+   * @param javaScriptChannelFlutterApi the Flutter Api to which JS messages are sent
+   * @param channelName the name of the JavaScript channel, this is sent over the method channel
+   *     with each message to let the Dart code know which JavaScript channel the message was sent
+   *     through
+   * @param platformThreadHandler handles making callbacks on the desired thread
    */
   JavaScriptChannel(
-      MethodChannel methodChannel, String javaScriptChannelName, Handler platformThreadHandler) {
-    this.methodChannel = methodChannel;
-    this.javaScriptChannelName = javaScriptChannelName;
+      Long instanceId,
+      JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+      String channelName,
+      Handler platformThreadHandler) {
+    this.instanceId = instanceId;
+    this.javaScriptChannelFlutterApi = javaScriptChannelFlutterApi;
+    this.javaScriptChannelName = channelName;
     this.platformThreadHandler = platformThreadHandler;
   }
 
-  // Suppressing unused warning as this is invoked from JavaScript.
-  @SuppressWarnings("unused")
   @JavascriptInterface
   public void postMessage(final String message) {
-    Runnable postMessageRunnable =
-        new Runnable() {
-          @Override
-          public void run() {
-            HashMap<String, String> arguments = new HashMap<>();
-            arguments.put("channel", javaScriptChannelName);
-            arguments.put("message", message);
-            methodChannel.invokeMethod("javascriptChannelMessage", arguments);
-          }
-        };
+    final Runnable postMessageRunnable =
+        () -> javaScriptChannelFlutterApi.postMessage(instanceId, message, reply -> {});
     if (platformThreadHandler.getLooper() == Looper.myLooper()) {
       postMessageRunnable.run();
     } else {
