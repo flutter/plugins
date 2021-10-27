@@ -9,7 +9,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
-import com.google.android.gms.internal.maps.zzt;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -35,8 +34,7 @@ public class MarkersControllerTest {
     final GoogleMap googleMap = mock(GoogleMap.class);
     controller.setGoogleMap(googleMap);
 
-    final zzt z = mock(zzt.class);
-    final Marker marker = new Marker(z);
+    final Marker marker = mock(Marker.class);
 
     final String googleMarkerId = "abc123";
 
@@ -69,8 +67,7 @@ public class MarkersControllerTest {
     final GoogleMap googleMap = mock(GoogleMap.class);
     controller.setGoogleMap(googleMap);
 
-    final zzt z = mock(zzt.class);
-    final Marker marker = new Marker(z);
+    final Marker marker = mock(Marker.class);
 
     final String googleMarkerId = "abc123";
 
@@ -103,8 +100,7 @@ public class MarkersControllerTest {
     final GoogleMap googleMap = mock(GoogleMap.class);
     controller.setGoogleMap(googleMap);
 
-    final zzt z = mock(zzt.class);
-    final Marker marker = new Marker(z);
+    final Marker marker = mock(Marker.class);
 
     final String googleMarkerId = "abc123";
 

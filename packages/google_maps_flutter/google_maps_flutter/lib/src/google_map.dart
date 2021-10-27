@@ -50,14 +50,12 @@ class AndroidGoogleMapsFlutter {
   ///
   /// Defaults to false.
   static bool get useAndroidViewSurface {
-    assert(
-      GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter,
-      'This feature is only supported when `GoogleMapsFlutterPlatform.instance` '
-      'is a `MethodChannelGoogleMapsFlutter`; The default implementation for Android.',
-    );
-    return (GoogleMapsFlutterPlatform.instance
-            as MethodChannelGoogleMapsFlutter)
-        .useAndroidViewSurface;
+    final GoogleMapsFlutterPlatform platform =
+        GoogleMapsFlutterPlatform.instance;
+    if (platform is MethodChannelGoogleMapsFlutter) {
+      return platform.useAndroidViewSurface;
+    }
+    return false;
   }
 
   /// Set whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
@@ -70,13 +68,11 @@ class AndroidGoogleMapsFlutter {
   ///
   /// Defaults to false.
   static set useAndroidViewSurface(bool useAndroidViewSurface) {
-    assert(
-      GoogleMapsFlutterPlatform.instance is MethodChannelGoogleMapsFlutter,
-      'This feature is only supported when `GoogleMapsFlutterPlatform.instance` '
-      'is a `MethodChannelGoogleMapsFlutter`; The default implementation for Android.',
-    );
-    (GoogleMapsFlutterPlatform.instance as MethodChannelGoogleMapsFlutter)
-        .useAndroidViewSurface = useAndroidViewSurface;
+    final GoogleMapsFlutterPlatform platform =
+        GoogleMapsFlutterPlatform.instance;
+    if (platform is MethodChannelGoogleMapsFlutter) {
+      platform.useAndroidViewSurface = useAndroidViewSurface;
+    }
   }
 }
 

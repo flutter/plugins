@@ -12,7 +12,7 @@ part 'sk_storefront_wrapper.g.dart';
 ///
 /// Dart wrapper around StoreKit's
 /// [SKStorefront](https://developer.apple.com/documentation/storekit/skstorefront?language=objc).
-@JsonSerializable()
+@JsonSerializable(createToJson: true)
 class SKStorefrontWrapper {
   /// Creates a new [SKStorefrontWrapper] with the provided information.
   SKStorefrontWrapper({
