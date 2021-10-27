@@ -73,7 +73,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
     @Override
     public void dispose() {
-      dispose();
+      super.dispose();
       destroy();
     }
 
