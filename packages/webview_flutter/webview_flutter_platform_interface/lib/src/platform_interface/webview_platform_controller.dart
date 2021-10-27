@@ -34,16 +34,16 @@ abstract class WebViewPlatformController {
         "WebView loadFlutterAsset is not implemented on the current platform");
   }
 
-  /// Loads the supplied HTML.
+  /// Loads the supplied HTML string.
   ///
   /// The [baseUrl] parameter is used when resolving relative URLs within the
   /// HTML string.
-  Future<void> loadHtml(
+  Future<void> loadHtmlString(
     String html, {
     String? baseUrl,
   }) {
     throw UnimplementedError(
-        "WebView loadHtml is not implemented on the current platform");
+        "WebView loadHtmlString is not implemented on the current platform");
   }
 
   /// Loads the specified URL.

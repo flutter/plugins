@@ -71,8 +71,8 @@ void main() {
       );
     });
 
-    test('loadHtml without base URL', () async {
-      await webViewPlatform.loadHtml(
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
         'Test HTML string',
       );
 
@@ -80,7 +80,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
-            'loadHtml',
+            'loadHtmlString',
             arguments: <String, String?>{
               'html': 'Test HTML string',
               'baseUrl': null,
@@ -90,8 +90,8 @@ void main() {
       );
     });
 
-    test('loadHtml without base URL', () async {
-      await webViewPlatform.loadHtml(
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
         'Test HTML string',
         baseUrl: 'https://flutter.dev',
       );
@@ -100,7 +100,7 @@ void main() {
         log,
         <Matcher>[
           isMethodCall(
-            'loadHtml',
+            'loadHtmlString',
             arguments: <String, String?>{
               'html': 'Test HTML string',
               'baseUrl': 'https://flutter.dev',

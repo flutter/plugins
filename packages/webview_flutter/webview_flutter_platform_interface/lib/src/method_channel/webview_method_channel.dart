@@ -86,12 +86,12 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<void> loadHtml(
+  Future<void> loadHtmlString(
     String html, {
     String? baseUrl,
   }) async {
     assert(html != null);
-    return _channel.invokeMethod<void>('loadHtml', <String, dynamic>{
+    return _channel.invokeMethod<void>('loadHtmlString', <String, dynamic>{
       'html': html,
       'baseUrl': baseUrl,
     });
