@@ -23,12 +23,15 @@ abstract class WebViewPlatformController {
   /// The `handler` parameter must not be null.
   WebViewPlatformController(WebViewPlatformCallbacksHandler handler);
 
-  /// Loads the Flutter asset specified in the pubspec.yaml file.
+  /// Loads the file located on the specified [absoluteFilePath].
   ///
-  /// Throws an ArgumentError if [assetName] is not part of the specified assets
-  /// in the pubspec.yaml file.
-  Future<void> loadFlutterAsset(
-    String assetName,
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(
+    String absoluteFilePath,
   ) {
     throw UnimplementedError(
         "WebView loadFlutterAsset is not implemented on the current platform");

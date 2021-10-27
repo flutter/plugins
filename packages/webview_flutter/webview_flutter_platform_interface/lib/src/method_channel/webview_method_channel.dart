@@ -80,9 +80,9 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<void> loadFlutterAsset(String assetName) async {
-    assert(assetName != null);
-    return _channel.invokeMethod<void>('loadFlutterAsset', assetName);
+  Future<void> loadFile(String absoluteFilePath) async {
+    assert(absoluteFilePath != null);
+    return _channel.invokeMethod<void>('loadFile', absoluteFilePath);
   }
 
   @override

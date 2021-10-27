@@ -55,17 +55,17 @@ void main() {
       log.clear();
     });
 
-    test('loadFlutterAsset', () async {
-      await webViewPlatform.loadFlutterAsset(
-        'folder/asset.html',
+    test('loadFile', () async {
+      await webViewPlatform.loadFile(
+        '/folder/asset.html',
       );
 
       expect(
         log,
         <Matcher>[
           isMethodCall(
-            'loadFlutterAsset',
-            arguments: 'folder/asset.html',
+            'loadFile',
+            arguments: '/folder/asset.html',
           ),
         ],
       );
