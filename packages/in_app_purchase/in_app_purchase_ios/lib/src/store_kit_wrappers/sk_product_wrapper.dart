@@ -297,12 +297,12 @@ class SKProductWrapper {
   final SKProductDiscountWrapper? introductoryPrice;
 
   /// An array of subscription offers available for the auto-renewable subscription (available on iOS 12.2 and higher).
-  /// 
-  /// This property lists all promotional offers set up in App Store Connect. If 
+  ///
+  /// This property lists all promotional offers set up in App Store Connect. If
   /// no promotional offers have been set up this field returns an empty list.
   /// Each [subscriptionPeriod] of individual discounts are independent of the
   /// product's [subscriptionPeriod] and their units and duration do not have to
-  /// be matched. 
+  /// be matched.
   @JsonKey(defaultValue: <SKProductDiscountWrapper>[])
   final List<SKProductDiscountWrapper> discounts;
 

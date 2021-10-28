@@ -46,15 +46,14 @@
     self.productMap[@"subscriptionPeriod"] = self.periodMap;
     self.productMap[@"introductoryPrice"] = self.discountMap;
   }
+  if (@available(iOS 12.2, *)) {
+    self.productMap[@"discounts"] = @[ self.discountMap ];
+  }
 
   if (@available(iOS 12.0, *)) {
     self.productMap[@"subscriptionGroupIdentifier"] = @"com.group";
   }
 
-  if (@available(iOS 11.2, *)) {
-    self.productMap[@"discounts"] = @[ self.discountMap ];
-  }
-  
   self.productResponseMap =
       @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
   self.paymentMap = @{
@@ -63,6 +62,13 @@
     @"quantity" : @(2),
     @"applicationUsername" : @"app user name",
     @"simulatesAskToBuyInSandbox" : @(NO)
+  };
+  self.paymentDiscountMap = @{
+    @"identifier" : @"payment_discount_identifier",
+    @"keyIdentifier" : @"payment_discount_key_identifier",
+    @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+    @"signature" : @"this is a encrypted signature",
+    @"timestamp" : @([NSDate date].timeIntervalSince1970),
   };
   NSDictionary *originalTransactionMap = @{
     @"transactionIdentifier" : @"567",
@@ -177,6 +183,20 @@
     NSDictionary *map = [FIAObjectTranslator getMapFromSKStorefront:storefront
                                             andSKPaymentTransaction:transaction];
     XCTAssertEqualObjects(map, self.storefrontAndPaymentTransactionMap);
+  }
+}
+
+- (void)testSKPaymentDiscountFromMap {
+  if (@available(iOS 12.2, *)) {
+    SKPaymentDiscount *paymentDiscount =
+        [FIAObjectTranslator getSKPaymentDiscountFromMap:self.paymentDiscountMap];
+
+    XCTAssertEqual(paymentDiscount.identifier, self.paymentDiscountMap[@"identifier"]);
+    XCTAssertEqual(paymentDiscount.keyIdentifier, self.paymentDiscountMap[@"keyIdentifier"]);
+    XCTAssertEqualObjects(paymentDiscount.nonce,
+                          [[NSUUID alloc] initWithUUIDString:self.paymentDiscountMap[@"nonce"]]);
+    XCTAssertEqual(paymentDiscount.signature, self.paymentDiscountMap[@"signature"]);
+    XCTAssertEqual(paymentDiscount.timestamp, self.paymentDiscountMap[@"timestamp"]);
   }
 }
 

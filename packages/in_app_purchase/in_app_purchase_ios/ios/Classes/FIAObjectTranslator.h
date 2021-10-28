@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount
     API_AVAILABLE(ios(11.2));
 
+// Converts an array of SKProductDiscount instances into an array of dictionaries.
++ (nonnull NSArray *)getMapArrayFromSKProductDiscounts:
+    (nonnull NSArray<SKProductDiscount *> *)productDiscounts API_AVAILABLE(ios(12.2));
+
 // Converts an instance of SKProductsResponse into a dictionary.
 + (NSDictionary *)getMapFromSKProductsResponse:(SKProductsResponse *)productResponse;
 
