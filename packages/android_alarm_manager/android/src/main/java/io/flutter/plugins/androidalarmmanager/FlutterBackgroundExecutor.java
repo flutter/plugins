@@ -12,7 +12,6 @@ import android.util.Log;
 import io.flutter.embedding.engine.FlutterEngine;
 import io.flutter.embedding.engine.dart.DartExecutor;
 import io.flutter.embedding.engine.dart.DartExecutor.DartCallback;
-import io.flutter.embedding.engine.plugins.shim.ShimPluginRegistry;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.JSONMethodCodec;
 import io.flutter.plugin.common.MethodCall;
@@ -149,12 +148,6 @@ public class FlutterBackgroundExecutor implements MethodCallHandler {
       DartCallback dartCallback = new DartCallback(assets, appBundlePath, flutterCallback);
 
       executor.executeDartCallback(dartCallback);
-
-      // The pluginRegistrantCallback should only be set in the V1 embedding as
-      // plugin registration is done via reflection in the V2 embedding.
-      if (pluginRegistrantCallback != null) {
-        pluginRegistrantCallback.registerWith(new ShimPluginRegistry(backgroundFlutterEngine));
-      }
     }
   }
 

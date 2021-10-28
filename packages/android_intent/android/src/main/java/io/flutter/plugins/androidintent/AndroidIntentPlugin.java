@@ -28,20 +28,6 @@ public final class AndroidIntentPlugin implements FlutterPlugin, ActivityAware {
     impl = new MethodCallHandlerImpl(sender);
   }
 
-  /**
-   * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
-   * package.
-   *
-   * <p>Calling this automatically initializes the plugin. However plugins initialized this way
-   * won't react to changes in activity or context, unlike {@link AndroidIntentPlugin}.
-   */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    IntentSender sender = new IntentSender(registrar.activity(), registrar.context());
-    MethodCallHandlerImpl impl = new MethodCallHandlerImpl(sender);
-    impl.startListening(registrar.messenger());
-  }
-
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     sender.setApplicationContext(binding.getApplicationContext());

@@ -14,13 +14,6 @@ import io.flutter.plugin.common.MethodChannel;
 public class WifiInfoFlutterPlugin implements FlutterPlugin {
   private MethodChannel methodChannel;
 
-  /** Plugin registration. */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    WifiInfoFlutterPlugin plugin = new WifiInfoFlutterPlugin();
-    plugin.setupChannels(registrar.messenger(), registrar.context());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     setupChannels(binding.getBinaryMessenger(), binding.getApplicationContext());

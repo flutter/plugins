@@ -14,11 +14,6 @@ import io.flutter.embedding.engine.plugins.FlutterPlugin;
  * <p><strong>DO NOT USE THIS CLASS.</strong>
  */
 public class FlutterAndroidLifecyclePlugin implements FlutterPlugin {
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    // no-op
-  }
-
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     // no-op

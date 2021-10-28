@@ -23,13 +23,6 @@ public class SensorsPlugin implements FlutterPlugin {
   private EventChannel userAccelChannel;
   private EventChannel gyroscopeChannel;
 
-  /** Plugin registration. */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    SensorsPlugin plugin = new SensorsPlugin();
-    plugin.setupEventChannels(registrar.context(), registrar.messenger());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     final Context context = binding.getApplicationContext();

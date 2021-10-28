@@ -46,27 +46,6 @@ public class InAppPurchasePluginTest {
     when(flutterPluginBinding.getApplicationContext()).thenReturn(context);
   }
 
-  @Test
-  public void registerWith_doNotCrashWhenRegisterContextIsActivity_V1Embedding() {
-    when(mockRegistrar.context()).thenReturn(activity);
-    when(activity.getApplicationContext()).thenReturn(mockApplication);
-    InAppPurchasePlugin.registerWith(mockRegistrar);
-  }
-
-  // The PROXY_PACKAGE_KEY value of this test (io.flutter.plugins.inapppurchase) should never be changed.
-  // In case there's a strong reason to change it, please inform the current code owner of the plugin.
-  @Test
-  public void registerWith_proxyIsSet_V1Embedding() {
-    when(mockRegistrar.context()).thenReturn(activity);
-    when(activity.getApplicationContext()).thenReturn(mockApplication);
-    InAppPurchasePlugin.registerWith(mockRegistrar);
-    // The `PROXY_PACKAGE_KEY` value is hard coded in the plugin code as "io.flutter.plugins.inapppurchase".
-    // We cannot use `BuildConfig.LIBRARY_PACKAGE_NAME` directly in the plugin code because whether to read BuildConfig.APPLICATION_ID or LIBRARY_PACKAGE_NAME
-    // depends on the "APP's" Android Gradle plugin version. Newer versions of AGP use LIBRARY_PACKAGE_NAME, whereas older ones use BuildConfig.APPLICATION_ID.
-    Mockito.verify(mockIntent).putExtra(PROXY_PACKAGE_KEY, "io.flutter.plugins.inapppurchase");
-    assertEquals("io.flutter.plugins.inapppurchase", BuildConfig.LIBRARY_PACKAGE_NAME);
-  }
-
   // The PROXY_PACKAGE_KEY value of this test (io.flutter.plugins.inapppurchase) should never be changed.
   // In case there's a strong reason to change it, please inform the current code owner of the plugin.
   @Test

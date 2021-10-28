@@ -21,20 +21,6 @@ public final class UrlLauncherPlugin implements FlutterPlugin, ActivityAware {
   @Nullable private MethodCallHandlerImpl methodCallHandler;
   @Nullable private UrlLauncher urlLauncher;
 
-  /**
-   * Registers a plugin implementation that uses the stable {@code io.flutter.plugin.common}
-   * package.
-   *
-   * <p>Calling this automatically initializes the plugin. However plugins initialized this way
-   * won't react to changes in activity or context, unlike {@link UrlLauncherPlugin}.
-   */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    MethodCallHandlerImpl handler =
-        new MethodCallHandlerImpl(new UrlLauncher(registrar.context(), registrar.activity()));
-    handler.startListening(registrar.messenger());
-  }
-
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     urlLauncher = new UrlLauncher(binding.getApplicationContext(), /*activity=*/ null);

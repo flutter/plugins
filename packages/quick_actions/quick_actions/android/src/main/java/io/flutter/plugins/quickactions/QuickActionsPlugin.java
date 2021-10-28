@@ -22,17 +22,6 @@ public class QuickActionsPlugin implements FlutterPlugin, ActivityAware, NewInte
   private MethodChannel channel;
   private MethodCallHandlerImpl handler;
 
-  /**
-   * Plugin registration.
-   *
-   * <p>Must be called when the application is created.
-   */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    final QuickActionsPlugin plugin = new QuickActionsPlugin();
-    plugin.setupChannel(registrar.messenger(), registrar.context(), registrar.activity());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     setupChannel(binding.getBinaryMessenger(), binding.getApplicationContext(), null);

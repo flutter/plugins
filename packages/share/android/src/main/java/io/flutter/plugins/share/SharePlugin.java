@@ -20,12 +20,6 @@ public class SharePlugin implements FlutterPlugin, ActivityAware {
   private Share share;
   private MethodChannel methodChannel;
 
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    SharePlugin plugin = new SharePlugin();
-    plugin.setUpChannel(registrar.context(), registrar.activity(), registrar.messenger());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     setUpChannel(binding.getApplicationContext(), null, binding.getBinaryMessenger());

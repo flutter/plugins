@@ -48,17 +48,6 @@ public class VideoPlayerPlugin implements FlutterPlugin, VideoPlayerApi {
     flutterState.startListening(this, registrar.messenger());
   }
 
-  /** Registers this with the stable v1 embedding. Will not respond to lifecycle events. */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    final VideoPlayerPlugin plugin = new VideoPlayerPlugin(registrar);
-    registrar.addViewDestroyListener(
-        view -> {
-          plugin.onDestroy();
-          return false; // We are not interested in assuming ownership of the NativeView.
-        });
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
 

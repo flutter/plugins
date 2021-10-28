@@ -19,13 +19,6 @@ public class DeviceInfoPlugin implements FlutterPlugin {
   static final String TAG = "DeviceInfoPlugin";
   MethodChannel channel;
 
-  /** Plugin registration. */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    DeviceInfoPlugin plugin = new DeviceInfoPlugin();
-    plugin.setupMethodChannel(registrar.messenger(), registrar.context());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
     setupMethodChannel(binding.getBinaryMessenger(), binding.getApplicationContext());

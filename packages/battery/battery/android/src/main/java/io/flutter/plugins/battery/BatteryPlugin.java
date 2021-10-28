@@ -30,13 +30,6 @@ public class BatteryPlugin implements MethodCallHandler, StreamHandler, FlutterP
   private MethodChannel methodChannel;
   private EventChannel eventChannel;
 
-  /** Plugin registration. */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    final BatteryPlugin instance = new BatteryPlugin();
-    instance.onAttachedToEngine(registrar.context(), registrar.messenger());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());

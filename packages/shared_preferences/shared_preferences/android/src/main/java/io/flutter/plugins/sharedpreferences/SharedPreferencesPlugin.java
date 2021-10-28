@@ -15,12 +15,6 @@ public class SharedPreferencesPlugin implements FlutterPlugin {
   private MethodChannel channel;
   private MethodCallHandlerImpl handler;
 
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    final SharedPreferencesPlugin plugin = new SharedPreferencesPlugin();
-    plugin.setupChannel(registrar.messenger(), registrar.context());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPlugin.FlutterPluginBinding binding) {
     setupChannel(binding.getBinaryMessenger(), binding.getApplicationContext());

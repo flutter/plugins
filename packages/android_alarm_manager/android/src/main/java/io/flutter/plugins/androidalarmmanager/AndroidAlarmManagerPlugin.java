@@ -46,21 +46,6 @@ public class AndroidAlarmManagerPlugin implements FlutterPlugin, MethodCallHandl
   private Object initializationLock = new Object();
   private MethodChannel alarmManagerPluginChannel;
 
-  /**
-   * Registers this plugin with an associated Flutter execution context, represented by the given
-   * {@link io.flutter.plugin.common.PluginRegistry.Registrar}.
-   *
-   * <p>Once this method is executed, an instance of {@code AndroidAlarmManagerPlugin} will be
-   * connected to, and running against, the associated Flutter execution context.
-   */
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    if (instance == null) {
-      instance = new AndroidAlarmManagerPlugin();
-    }
-    instance.onAttachedToEngine(registrar.context(), registrar.messenger());
-  }
-
   @Override
   public void onAttachedToEngine(FlutterPluginBinding binding) {
     onAttachedToEngine(binding.getApplicationContext(), binding.getBinaryMessenger());
