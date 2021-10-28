@@ -567,7 +567,6 @@ class WebViewController {
     bool? debuggingEnabled;
     bool? zoomEnabled;
     WebSetting<String?> userAgent = WebSetting.absent();
-    bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
