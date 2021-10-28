@@ -1,4 +1,3 @@
-
 ## 2.2.6
 
 * Initialize player when size and duration become available on iOS
