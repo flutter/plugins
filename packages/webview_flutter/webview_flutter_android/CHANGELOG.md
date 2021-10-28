@@ -1,6 +1,10 @@
-## 2.1.0
+## 2.1.1
 
 * Replace platform implementation with API built with pigeon.
+
+## 2.1.0
+
+* Add `zoomEnabled` functionality.
 
 ## 2.0.15
 
