@@ -45,11 +45,11 @@ public class WebChromeClientTest {
           WebChromeClient createWebChromeClient(
               Long instanceId,
               InstanceManager instanceManager,
-              WebViewClient webViewClient,
-              WebChromeClientFlutterApi webChromeClientFlutterApi) {
+              WebChromeClientFlutterApi webChromeClientFlutterApi,
+              WebViewClient webViewClient) {
             testWebChromeClient =
                 super.createWebChromeClient(
-                    instanceId, instanceManager, webViewClient, webChromeClientFlutterApi);
+                    instanceId, instanceManager, webChromeClientFlutterApi, webViewClient);
             return testWebChromeClient;
           }
         };

@@ -16,11 +16,12 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChann
  * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message over a method
  * channel to the Dart code.
  */
-class JavaScriptChannel {
+class JavaScriptChannel implements Releasable {
   private final Long instanceId;
   private final GeneratedAndroidWebView.JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;
   final String javaScriptChannelName;
   private final Handler platformThreadHandler;
+  private boolean ignoreCallbacks = false;
 
   /**
    * @param instanceId identifier for this object when messages are sent to Dart
@@ -43,12 +44,19 @@ class JavaScriptChannel {
 
   @JavascriptInterface
   public void postMessage(final String message) {
-    final Runnable postMessageRunnable =
-        () -> javaScriptChannelFlutterApi.postMessage(instanceId, message, reply -> {});
-    if (platformThreadHandler.getLooper() == Looper.myLooper()) {
-      postMessageRunnable.run();
-    } else {
-      platformThreadHandler.post(postMessageRunnable);
+    if (!ignoreCallbacks) {
+      final Runnable postMessageRunnable =
+          () -> javaScriptChannelFlutterApi.postMessage(instanceId, message, reply -> {});
+      if (platformThreadHandler.getLooper() == Looper.myLooper()) {
+        postMessageRunnable.run();
+      } else {
+        platformThreadHandler.post(postMessageRunnable);
+      }
     }
+  }
+
+  public void release() {
+    ignoreCallbacks = true;
+    javaScriptChannelFlutterApi.dispose(instanceId, reply -> {});
   }
 }

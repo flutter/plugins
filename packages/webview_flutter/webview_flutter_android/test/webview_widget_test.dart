@@ -382,7 +382,6 @@ void main() {
 
         await controller.addJavascriptChannels(<String>{'c', 'd'});
         await controller.removeJavascriptChannels(<String>{'c', 'd'});
-        verify(mockJavaScriptChannelHostApi.dispose(any)).called(2);
         verify(mockWebViewHostApi.removeJavaScriptChannel(0, any)).called(2);
       });
 

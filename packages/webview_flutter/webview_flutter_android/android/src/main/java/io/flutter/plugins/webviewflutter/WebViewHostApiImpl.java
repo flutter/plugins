@@ -4,6 +4,7 @@
 
 package io.flutter.plugins.webviewflutter;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.view.View;
@@ -13,6 +14,8 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import io.flutter.plugin.platform.PlatformView;
+import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
+import java.util.HashMap;
 import java.util.Map;
 
 class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
@@ -39,7 +42,12 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  private static class WebViewPlatformView extends WebView implements PlatformView {
+  private static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
+    private WebViewClient currentWebViewClient;
+    private DownloadListener currentDownloadListener;
+    private WebChromeClient currentWebChromeClient;
+    private final Map<String, JavaScriptChannel> javaScriptInterfaces = new HashMap<>();
+
     public WebViewPlatformView(Context context) {
       super(context);
     }
@@ -53,10 +61,81 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     public void dispose() {
       destroy();
     }
+
+    @Override
+    public void setWebViewClient(WebViewClient webViewClient) {
+      super.setWebViewClient(webViewClient);
+      if (currentWebViewClient instanceof Releasable) {
+        ((Releasable) currentWebViewClient).release();
+      }
+      currentWebViewClient = (WebViewClient) webViewClient;
+    }
+
+    @Override
+    public void setDownloadListener(DownloadListener listener) {
+      super.setDownloadListener(listener);
+      if (currentDownloadListener instanceof Releasable) {
+        ((Releasable) currentDownloadListener).release();
+      }
+      currentDownloadListener = listener;
+    }
+
+    @Override
+    public void setWebChromeClient(WebChromeClient client) {
+      super.setWebChromeClient(client);
+      if (currentWebChromeClient instanceof Releasable) {
+        ((Releasable) currentWebChromeClient).release();
+      }
+      currentWebChromeClient = client;
+    }
+
+    @SuppressLint("JavascriptInterface")
+    @Override
+    public void addJavascriptInterface(Object object, String name) {
+      super.addJavascriptInterface(object, name);
+      if (object instanceof JavaScriptChannel) {
+        javaScriptInterfaces.put(name, (JavaScriptChannel) object);
+      }
+    }
+
+    @Override
+    public void removeJavascriptInterface(@NonNull String name) {
+      super.removeJavascriptInterface(name);
+      final JavaScriptChannel javaScriptChannel = javaScriptInterfaces.get(name);
+      if (javaScriptChannel != null) {
+        javaScriptChannel.release();
+      }
+      javaScriptInterfaces.remove(name);
+    }
+
+    @Override
+    public void release() {
+      if (currentWebViewClient instanceof Releasable) {
+        ((Releasable) currentWebViewClient).release();
+        currentWebViewClient = null;
+      }
+      if (currentDownloadListener instanceof Releasable) {
+        ((Releasable) currentDownloadListener).release();
+        currentDownloadListener = null;
+      }
+      if (currentWebChromeClient instanceof Releasable) {
+        ((Releasable) currentWebChromeClient).release();
+        currentWebChromeClient = null;
+      }
+      for (JavaScriptChannel channel : javaScriptInterfaces.values()) {
+        channel.release();
+      }
+      javaScriptInterfaces.clear();
+    }
   }
 
   private static class InputAwareWebViewPlatformView extends InputAwareWebView
-      implements PlatformView {
+      implements PlatformView, Releasable {
+    private WebViewClient currentWebViewClient;
+    private DownloadListener currentDownloadListener;
+    private WebChromeClient currentWebChromeClient;
+    private final Map<String, JavaScriptChannel> javaScriptInterfaces = new HashMap<>();
+
     InputAwareWebViewPlatformView(Context context, View containerView) {
       super(context, containerView);
     }
@@ -91,6 +170,76 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     public void onInputConnectionUnlocked() {
       unlockInputConnection();
     }
+
+    @Override
+    public void setWebViewClient(WebViewClient webViewClient) {
+      super.setWebViewClient(webViewClient);
+      if (currentWebViewClient instanceof Releasable) {
+        ((Releasable) currentWebViewClient).release();
+      }
+      currentWebViewClient = (WebViewClient) webViewClient;
+    }
+
+    @Override
+    public void setDownloadListener(DownloadListener listener) {
+      super.setDownloadListener(listener);
+      if (currentDownloadListener instanceof Releasable) {
+        ((Releasable) currentDownloadListener).release();
+      }
+      currentDownloadListener = listener;
+    }
+
+    @Override
+    public void setWebChromeClient(WebChromeClient client) {
+      super.setWebChromeClient(client);
+      if (currentWebChromeClient instanceof Releasable) {
+        ((Releasable) currentWebChromeClient).release();
+      }
+
+      if (client instanceof WebChromeClientImpl) {
+        ((WebChromeClientImpl) client).setWebViewClient(currentWebViewClient);
+      }
+      currentWebChromeClient = client;
+    }
+
+    @SuppressLint("JavascriptInterface")
+    @Override
+    public void addJavascriptInterface(Object object, String name) {
+      super.addJavascriptInterface(object, name);
+      if (object instanceof JavaScriptChannel) {
+        javaScriptInterfaces.put(name, (JavaScriptChannel) object);
+      }
+    }
+
+    @Override
+    public void removeJavascriptInterface(@NonNull String name) {
+      super.removeJavascriptInterface(name);
+      final JavaScriptChannel javaScriptChannel = javaScriptInterfaces.get(name);
+      if (javaScriptChannel != null) {
+        javaScriptChannel.release();
+      }
+      javaScriptInterfaces.remove(name);
+    }
+
+    @Override
+    public void release() {
+      if (currentWebViewClient instanceof Releasable) {
+        ((Releasable) currentWebViewClient).release();
+        currentWebViewClient = null;
+      }
+      if (currentDownloadListener instanceof Releasable) {
+        ((Releasable) currentDownloadListener).release();
+        currentDownloadListener = null;
+      }
+      if (currentWebChromeClient instanceof Releasable) {
+        ((Releasable) currentWebChromeClient).release();
+        currentWebChromeClient = null;
+      }
+      for (JavaScriptChannel channel : javaScriptInterfaces.values()) {
+        channel.release();
+      }
+      javaScriptInterfaces.clear();
+    }
   }
 
   WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context) {
@@ -117,7 +266,10 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstance(instanceId);
+    final WebView instance = (WebView) instanceManager.removeInstance(instanceId);
+    if (instance instanceof Releasable) {
+      ((Releasable) instance).release();
+    }
   }
 
   @Override

@@ -43,9 +43,6 @@ class WebView {
   static WebViewHostApiImpl api = WebViewHostApiImpl();
 
   WebViewClient? _currentWebViewClient;
-  DownloadListener? _currentDownloadListener;
-  WebChromeClient? _currentWebChromeClient;
-  Set<JavaScriptChannel> _javaScriptChannels = <JavaScriptChannel>{};
 
   /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
   ///
@@ -190,18 +187,8 @@ class WebView {
   ///
   /// This will replace the current handler.
   Future<void> setWebViewClient(WebViewClient webViewClient) {
-    final WebViewClient? currentWebViewClient = _currentWebViewClient;
-
-    if (webViewClient == currentWebViewClient) {
-      return Future<void>.value();
-    }
-
-    if (currentWebViewClient != null) {
-      WebViewClient.api.disposeFromInstance(currentWebViewClient);
-    }
-
-    WebViewClient.api.createFromInstance(webViewClient);
     _currentWebViewClient = webViewClient;
+    WebViewClient.api.createFromInstance(webViewClient);
     return api.setWebViewClientFromInstance(this, webViewClient);
   }
 
@@ -230,7 +217,6 @@ class WebView {
   /// content is ever loaded into the WebView even inside an iframe.
   Future<void> addJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
     JavaScriptChannel.api.createFromInstance(javaScriptChannel);
-    _javaScriptChannels.add(javaScriptChannel);
     return api.addJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
@@ -239,27 +225,15 @@ class WebView {
   /// Note that the removal will not be reflected in JavaScript until the page
   /// is next (re)loaded. See [addJavaScriptChannel].
   Future<void> removeJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
-    _javaScriptChannels.remove(javaScriptChannel);
-    api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
-    return JavaScriptChannel.api.disposeFromInstance(javaScriptChannel);
+    JavaScriptChannel.api.createFromInstance(javaScriptChannel);
+    return api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
   ///
   /// This will replace the current handler.
   Future<void> setDownloadListener(DownloadListener listener) {
-    final DownloadListener? currentDownloadListener = _currentDownloadListener;
-
-    if (listener == currentDownloadListener) {
-      return Future<void>.value();
-    }
-
-    if (currentDownloadListener != null) {
-      DownloadListener.api.disposeFromInstance(currentDownloadListener);
-    }
-
     DownloadListener.api.createFromInstance(listener);
-    _currentDownloadListener = listener;
     return api.setDownloadListenerFromInstance(this, listener);
   }
 
@@ -269,24 +243,15 @@ class WebView {
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
   Future<void> setWebChromeClient(WebChromeClient client) {
-    final WebChromeClient? currentWebChromeClient = _currentWebChromeClient;
-
-    if (client == currentWebChromeClient) {
-      return Future<void>.value();
-    }
-
-    if (currentWebChromeClient != null) {
-      WebChromeClient.api.disposeFromInstance(currentWebChromeClient);
-    }
-
-    final WebViewClient? currentWebViewClient = _currentWebViewClient;
+    // WebView requires a WebViewClient because of a bug fix that makes
+    // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
+    // window is opened. This is to make sure a url opened by `Window.open` has
+    // a secure url.
     assert(
-      currentWebViewClient != null,
+      _currentWebViewClient != null,
       "Can't set a WebChromeClient without setting a WebViewClient first.",
     );
-
-    WebChromeClient.api.createFromInstance(client, currentWebViewClient!);
-    _currentWebChromeClient = client;
+    WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
     return api.setWebChromeClientFromInstance(this, client);
   }
 
@@ -295,29 +260,7 @@ class WebView {
   /// Any methods called on the [WebView] instance after [release] will throw
   /// an exception.
   Future<void> release() {
-    final WebViewClient? webViewClient = _currentWebViewClient;
-    if (webViewClient != null) {
-      WebViewClient.api.disposeFromInstance(webViewClient);
-      _currentWebViewClient = null;
-    }
-
-    final DownloadListener? downloadListener = _currentDownloadListener;
-    if (downloadListener != null) {
-      DownloadListener.api.disposeFromInstance(downloadListener);
-      _currentDownloadListener = null;
-    }
-
-    final WebChromeClient? webChromeClient = _currentWebChromeClient;
-    if (webChromeClient != null) {
-      WebChromeClient.api.disposeFromInstance(webChromeClient);
-      _currentWebChromeClient = null;
-    }
-
-    for (JavaScriptChannel javaScriptChannel in _javaScriptChannels) {
-      JavaScriptChannel.api.disposeFromInstance(javaScriptChannel);
-    }
-    _javaScriptChannels.clear();
-
+    _currentWebViewClient = null;
     return api.disposeFromInstance(this);
   }
 }

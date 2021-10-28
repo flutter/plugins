@@ -229,10 +229,6 @@ class MockTestWebViewClientHostApi extends _i1.Mock
           Invocation.method(#create, [instanceId, shouldOverrideUrlLoading]),
           returnValueForMissingStub: null);
   @override
-  void dispose(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
-          returnValueForMissingStub: null);
-  @override
   String toString() => super.toString();
 }
 
@@ -249,10 +245,6 @@ class MockTestWebChromeClientHostApi extends _i1.Mock
   void create(int? instanceId, int? webViewClientInstanceId) =>
       super.noSuchMethod(
           Invocation.method(#create, [instanceId, webViewClientInstanceId]),
-          returnValueForMissingStub: null);
-  @override
-  void dispose(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
           returnValueForMissingStub: null);
   @override
   String toString() => super.toString();
@@ -272,10 +264,6 @@ class MockTestJavaScriptChannelHostApi extends _i1.Mock
       super.noSuchMethod(Invocation.method(#create, [instanceId, channelName]),
           returnValueForMissingStub: null);
   @override
-  void dispose(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
-          returnValueForMissingStub: null);
-  @override
   String toString() => super.toString();
 }
 
@@ -291,10 +279,6 @@ class MockTestDownloadListenerHostApi extends _i1.Mock
   @override
   void create(int? instanceId) =>
       super.noSuchMethod(Invocation.method(#create, [instanceId]),
-          returnValueForMissingStub: null);
-  @override
-  void dispose(int? instanceId) =>
-      super.noSuchMethod(Invocation.method(#dispose, [instanceId]),
           returnValueForMissingStub: null);
   @override
   String toString() => super.toString();

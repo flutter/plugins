@@ -85,12 +85,6 @@ void main() {
           JavaScriptChannel.api.instanceManager.getInstanceId(channel),
           isNotNull,
         );
-
-        webView.removeJavaScriptChannel(channel);
-        expect(
-          JavaScriptChannel.api.instanceManager.getInstanceId(channel),
-          isNull,
-        );
       });
     });
 
@@ -110,19 +104,12 @@ void main() {
 
       test('create', () {
         final WebView webView = WebView();
-        final WebViewClient webViewClient1 = TestWebViewClient();
-        final WebViewClient webViewClient2 = TestWebViewClient();
+        final WebViewClient webViewClient = TestWebViewClient();
 
-        webView.setWebViewClient(webViewClient1);
+        webView.setWebViewClient(webViewClient);
         expect(
-          WebViewClient.api.instanceManager.getInstanceId(webViewClient1),
+          WebViewClient.api.instanceManager.getInstanceId(webViewClient),
           isNotNull,
-        );
-
-        webView.setWebViewClient(webViewClient2);
-        expect(
-          WebViewClient.api.instanceManager.getInstanceId(webViewClient1),
-          isNull,
         );
       });
     });
@@ -143,19 +130,12 @@ void main() {
 
       test('create', () {
         final WebView webView = WebView();
-        final DownloadListener downloadListener1 = TestDownloadListener();
-        final DownloadListener downloadListener2 = TestDownloadListener();
+        final DownloadListener downloadListener = TestDownloadListener();
 
-        webView.setDownloadListener(downloadListener1);
+        webView.setDownloadListener(downloadListener);
         expect(
-          DownloadListener.api.instanceManager.getInstanceId(downloadListener1),
+          DownloadListener.api.instanceManager.getInstanceId(downloadListener),
           isNotNull,
-        );
-
-        webView.setDownloadListener(downloadListener2);
-        expect(
-          DownloadListener.api.instanceManager.getInstanceId(downloadListener1),
-          isNull,
         );
       });
     });
@@ -182,19 +162,12 @@ void main() {
         final WebView webView = WebView();
         webView.setWebViewClient(TestWebViewClient());
 
-        final WebChromeClient webChromeClient1 = TestWebChromeClient();
-        final WebChromeClient webChromeClient2 = TestWebChromeClient();
+        final WebChromeClient webChromeClient = TestWebChromeClient();
 
-        webView.setWebChromeClient(webChromeClient1);
+        webView.setWebChromeClient(webChromeClient);
         expect(
-          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient1),
+          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient),
           isNotNull,
-        );
-
-        webView.setWebChromeClient(webChromeClient2);
-        expect(
-          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient1),
-          isNull,
         );
       });
     });

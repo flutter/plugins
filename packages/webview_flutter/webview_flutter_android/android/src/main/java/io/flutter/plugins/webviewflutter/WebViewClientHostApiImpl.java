@@ -22,7 +22,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFl
 class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
   private final InstanceManager instanceManager;
   private final WebViewClientCreator webViewClientCreator;
-  private final WebViewClientFlutterApi webViewClientFlutterApi;
+  private final WebViewClientFlutterApi flutterApi;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
@@ -63,6 +63,200 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
     return requestData;
   }
 
+  @RequiresApi(Build.VERSION_CODES.N)
+  static class WebViewClientImpl extends WebViewClient implements Releasable {
+    private final Long instanceId;
+    private final InstanceManager instanceManager;
+    private final Boolean shouldOverrideUrlLoading;
+    private final WebViewClientFlutterApi flutterApi;
+    private boolean ignoreCallbacks = false;
+
+    WebViewClientImpl(
+        Long instanceId,
+        InstanceManager instanceManager,
+        Boolean shouldOverrideUrlLoading,
+        WebViewClientFlutterApi flutterApi) {
+      this.instanceId = instanceId;
+      this.instanceManager = instanceManager;
+      this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
+      this.flutterApi = flutterApi;
+    }
+
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      if (!ignoreCallbacks) {
+        flutterApi.onPageStarted(instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+      }
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      if (!ignoreCallbacks) {
+        flutterApi.onPageFinished(
+            instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+      }
+    }
+
+    @Override
+    public void onReceivedError(WebView view, WebResourceRequest request, WebResourceError error) {
+      if (!ignoreCallbacks) {
+        flutterApi.onReceivedRequestError(
+            instanceId,
+            instanceManager.getInstanceId(view),
+            createWebResourceRequestData(request),
+            createWebResourceErrorData(error),
+            reply -> {});
+      }
+    }
+
+    @Override
+    public void onReceivedError(
+        WebView view, int errorCode, String description, String failingUrl) {
+      if (!ignoreCallbacks) {
+        flutterApi.onReceivedError(
+            instanceId,
+            instanceManager.getInstanceId(view),
+            (long) errorCode,
+            description,
+            failingUrl,
+            reply -> {});
+      }
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+      if (!ignoreCallbacks) {
+        flutterApi.requestLoading(
+            instanceId,
+            instanceManager.getInstanceId(view),
+            createWebResourceRequestData(request),
+            reply -> {});
+      }
+      return shouldOverrideUrlLoading;
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+      if (!ignoreCallbacks) {
+        flutterApi.urlLoading(instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+      }
+      return shouldOverrideUrlLoading;
+    }
+
+    @Override
+    public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+      // Deliberately empty. Occasionally the webview will mark events as having failed to be
+      // handled even though they were handled. We don't want to propagate those as they're not
+      // truly lost.
+    }
+
+    public void release() {
+      ignoreCallbacks = true;
+      flutterApi.dispose(instanceId, reply -> {});
+    }
+  }
+
+  static class WebViewClientCompatImpl extends WebViewClientCompat implements Releasable {
+    private final Long instanceId;
+    private final InstanceManager instanceManager;
+    private final Boolean shouldOverrideUrlLoading;
+    private final WebViewClientFlutterApi flutterApi;
+    private boolean ignoreCallbacks = false;
+
+    WebViewClientCompatImpl(
+        Long instanceId,
+        InstanceManager instanceManager,
+        Boolean shouldOverrideUrlLoading,
+        WebViewClientFlutterApi flutterApi) {
+      this.instanceId = instanceId;
+      this.instanceManager = instanceManager;
+      this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
+      this.flutterApi = flutterApi;
+    }
+
+    @Override
+    public void onPageStarted(WebView view, String url, Bitmap favicon) {
+      if (!ignoreCallbacks) {
+        flutterApi.onPageStarted(instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+      }
+    }
+
+    @Override
+    public void onPageFinished(WebView view, String url) {
+      if (!ignoreCallbacks) {
+        flutterApi.onPageFinished(
+            instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+      }
+    }
+
+    // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is
+    // enabled. The deprecated method is called when a device doesn't support this.
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
+    @SuppressLint("RequiresFeature")
+    @Override
+    public void onReceivedError(
+        @NonNull WebView view,
+        @NonNull WebResourceRequest request,
+        @NonNull WebResourceErrorCompat error) {
+      if (!ignoreCallbacks) {
+        flutterApi.onReceivedRequestError(
+            instanceId,
+            instanceManager.getInstanceId(view),
+            createWebResourceRequestData(request),
+            createWebResourceErrorData(error),
+            reply -> {});
+      }
+    }
+
+    @Override
+    public void onReceivedError(
+        WebView view, int errorCode, String description, String failingUrl) {
+      if (!ignoreCallbacks) {
+        flutterApi.onReceivedError(
+            instanceId,
+            instanceManager.getInstanceId(view),
+            (long) errorCode,
+            description,
+            failingUrl,
+            reply -> {});
+      }
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    @Override
+    public boolean shouldOverrideUrlLoading(
+        @NonNull WebView view, @NonNull WebResourceRequest request) {
+      if (!ignoreCallbacks) {
+        flutterApi.requestLoading(
+            instanceId,
+            instanceManager.getInstanceId(view),
+            createWebResourceRequestData(request),
+            reply -> {});
+      }
+      return shouldOverrideUrlLoading;
+    }
+
+    @Override
+    public boolean shouldOverrideUrlLoading(WebView view, String url) {
+      if (!ignoreCallbacks) {
+        flutterApi.urlLoading(instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+      }
+      return shouldOverrideUrlLoading;
+    }
+
+    @Override
+    public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
+      // Deliberately empty. Occasionally the webview will mark events as having failed to be
+      // handled even though they were handled. We don't want to propagate those as they're not
+      // truly lost.
+    }
+
+    public void release() {
+      ignoreCallbacks = true;
+      flutterApi.dispose(instanceId, reply -> {});
+    }
+  }
+
   static class WebViewClientCreator {
     WebViewClient createWebViewClient(
         Long instanceId,
@@ -78,139 +272,11 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
       // to bug https://bugs.chromium.org/p/chromium/issues/detail?id=925887. Also, see
       // https://github.com/flutter/flutter/issues/29446.
       if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-        return new WebViewClient() {
-          @Override
-          public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            webViewClientFlutterApi.onPageStarted(
-                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
-          }
-
-          @Override
-          public void onPageFinished(WebView view, String url) {
-            webViewClientFlutterApi.onPageFinished(
-                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
-          }
-
-          @Override
-          public void onReceivedError(
-              WebView view, WebResourceRequest request, WebResourceError error) {
-            webViewClientFlutterApi.onReceivedRequestError(
-                instanceId,
-                instanceManager.getInstanceId(view),
-                createWebResourceRequestData(request),
-                createWebResourceErrorData(error),
-                reply -> {});
-          }
-
-          @SuppressWarnings("deprecation")
-          @Override
-          public void onReceivedError(
-              WebView view, int errorCode, String description, String failingUrl) {
-            webViewClientFlutterApi.onReceivedError(
-                instanceId,
-                instanceManager.getInstanceId(view),
-                (long) errorCode,
-                description,
-                failingUrl,
-                reply -> {});
-          }
-
-          @Override
-          public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-            webViewClientFlutterApi.requestLoading(
-                instanceId,
-                instanceManager.getInstanceId(view),
-                createWebResourceRequestData(request),
-                reply -> {});
-            return shouldOverrideUrlLoading;
-          }
-
-          @SuppressWarnings("deprecation")
-          @Override
-          public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            webViewClientFlutterApi.urlLoading(
-                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
-            return shouldOverrideUrlLoading;
-          }
-
-          @Override
-          public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
-            // Deliberately empty. Occasionally the webview will mark events as having failed to be
-            // handled even though they were handled. We don't want to propagate those as they're not
-            // truly lost.
-          }
-        };
+        return new WebViewClientImpl(
+            instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);
       } else {
-        return new WebViewClientCompat() {
-          @Override
-          public void onPageStarted(WebView view, String url, Bitmap favicon) {
-            webViewClientFlutterApi.onPageStarted(
-                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
-          }
-
-          @Override
-          public void onPageFinished(WebView view, String url) {
-            webViewClientFlutterApi.onPageFinished(
-                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
-          }
-
-          // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is
-          // enabled. The deprecated method is called when a device doesn't support this.
-          @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-          @SuppressLint("RequiresFeature")
-          @Override
-          public void onReceivedError(
-              @NonNull WebView view,
-              @NonNull WebResourceRequest request,
-              @NonNull WebResourceErrorCompat error) {
-            webViewClientFlutterApi.onReceivedRequestError(
-                instanceId,
-                instanceManager.getInstanceId(view),
-                createWebResourceRequestData(request),
-                createWebResourceErrorData(error),
-                reply -> {});
-          }
-
-          @SuppressWarnings("deprecation")
-          @Override
-          public void onReceivedError(
-              WebView view, int errorCode, String description, String failingUrl) {
-            webViewClientFlutterApi.onReceivedError(
-                instanceId,
-                instanceManager.getInstanceId(view),
-                (long) errorCode,
-                description,
-                failingUrl,
-                reply -> {});
-          }
-
-          @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-          @Override
-          public boolean shouldOverrideUrlLoading(
-              @NonNull WebView view, @NonNull WebResourceRequest request) {
-            webViewClientFlutterApi.requestLoading(
-                instanceId,
-                instanceManager.getInstanceId(view),
-                createWebResourceRequestData(request),
-                reply -> {});
-            return shouldOverrideUrlLoading;
-          }
-
-          @SuppressWarnings("deprecation")
-          @Override
-          public boolean shouldOverrideUrlLoading(WebView view, String url) {
-            webViewClientFlutterApi.urlLoading(
-                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
-            return shouldOverrideUrlLoading;
-          }
-
-          @Override
-          public void onUnhandledKeyEvent(WebView view, KeyEvent event) {
-            // Deliberately empty. Occasionally the webview will mark events as having failed to be
-            // handled even though they were handled. We don't want to propagate those as they're not
-            // truly lost.
-          }
-        };
+        return new WebViewClientCompatImpl(
+            instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);
       }
     }
   }
@@ -218,22 +284,17 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
   WebViewClientHostApiImpl(
       InstanceManager instanceManager,
       WebViewClientCreator webViewClientCreator,
-      WebViewClientFlutterApi webViewClientFlutterApi) {
+      WebViewClientFlutterApi flutterApi) {
     this.instanceManager = instanceManager;
     this.webViewClientCreator = webViewClientCreator;
-    this.webViewClientFlutterApi = webViewClientFlutterApi;
+    this.flutterApi = flutterApi;
   }
 
   @Override
   public void create(Long instanceId, Boolean shouldOverrideUrlLoading) {
     final WebViewClient webViewClient =
         webViewClientCreator.createWebViewClient(
-            instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);
+            instanceId, instanceManager, shouldOverrideUrlLoading, flutterApi);
     instanceManager.addInstance(webViewClient, instanceId);
-  }
-
-  @Override
-  public void dispose(Long instanceId) {
-    instanceManager.removeInstance(instanceId);
   }
 }

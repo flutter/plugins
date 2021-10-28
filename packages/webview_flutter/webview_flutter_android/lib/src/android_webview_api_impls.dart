@@ -337,14 +337,6 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
       return create(instanceId, instance.channelName);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(JavaScriptChannel instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [JavaScriptChannel].
@@ -356,6 +348,11 @@ class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void postMessage(int instanceId, String message) {
@@ -385,14 +382,6 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
       return create(instanceId, instance.shouldOverrideUrlLoading);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebViewClient instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [WebViewClient].
@@ -404,6 +393,11 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void onPageFinished(int instanceId, int webViewInstanceId, String url) {
@@ -526,14 +520,6 @@ class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
       return create(instanceId);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(DownloadListener instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [DownloadListener].
@@ -545,6 +531,11 @@ class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void onDownloadStart(
@@ -590,14 +581,6 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
       return create(instanceId, instanceManager.getInstanceId(webViewClient)!);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebChromeClient instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [DownloadListener].
@@ -609,6 +592,11 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress) {
