@@ -366,7 +366,7 @@ class WebSettings {
   ///
   /// The default is false.
   Future<void> setSupportMultipleWindows(bool support) {
-    return api.setSupportZoomFromInstance(this, support);
+    return api.setSupportMultipleWindowsFromInstance(this, support);
   }
 
   /// Tells the WebView to enable JavaScript execution.
