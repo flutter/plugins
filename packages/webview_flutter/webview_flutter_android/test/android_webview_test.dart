@@ -3,21 +3,29 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:webview_flutter_android/src/android_webview.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
 import 'android_webview.pigeon.dart';
-import 'test_android_webview_api_impls.dart';
+import 'android_webview_test.mocks.dart';
 
-
+@GenerateMocks([
+  TestWebViewHostApi,
+  TestWebSettingsHostApi,
+  TestWebViewClientHostApi,
+  TestWebChromeClientHostApi,
+  TestJavaScriptChannelHostApi,
+  TestDownloadListenerHostApi
+])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
     group('$WebView', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
       });
 
       setUp(() {
@@ -32,8 +40,8 @@ void main() {
 
     group('$WebSettings', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestWebSettingsHostApi.setup(TestWebSettingsHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestWebSettingsHostApi.setup(MockTestWebSettingsHostApi());
       });
 
       setUp(() {
@@ -56,8 +64,8 @@ void main() {
 
     group('$JavaScriptChannel', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestJavaScriptChannelHostApi.setup(TestJavaScriptChannelHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestJavaScriptChannelHostApi.setup(MockTestJavaScriptChannelHostApi());
       });
 
       setUp(() {
@@ -88,8 +96,8 @@ void main() {
 
     group('$WebViewClient', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestWebViewClientHostApi.setup(TestWebViewClientHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
       });
 
       setUp(() {
@@ -121,8 +129,8 @@ void main() {
 
     group('$DownloadListener', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestDownloadListenerHostApi.setup(TestDownloadListenerHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestDownloadListenerHostApi.setup(MockTestDownloadListenerHostApi());
       });
 
       setUp(() {
@@ -154,9 +162,9 @@ void main() {
 
     group('$WebChromeClient', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestWebViewClientHostApi.setup(TestWebViewClientHostApiImpl());
-        TestWebChromeClientHostApi.setup(TestWebChromeClientHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
+        TestWebChromeClientHostApi.setup(MockTestWebChromeClientHostApi());
       });
 
       setUp(() {

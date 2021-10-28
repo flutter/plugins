@@ -56,11 +56,9 @@ void main() {
     });
 
     testWidgets('Create Widget', (WidgetTester tester) async {
-      late final AndroidWebViewPlatformController apple;
       await tester.pumpWidget(
         AndroidWebViewWidget(
           onBuildWidget: (AndroidWebViewPlatformController controller) {
-            apple = controller;
             return Container();
           },
           creationParams: CreationParams(
