@@ -52,7 +52,7 @@ class _MockHttpRequest extends Fake implements HttpClientRequest {
 /// Arbitrary valid image returned by the [_MockHttpResponse].
 ///
 /// This is an transparent 1x1 gif image.
-/// It doesn't have to match the placeholder used in [GoogleUserCircleAvatar]
+/// It doesn't have to match the placeholder used in [GoogleUserCircleAvatar].
 final Uint8List _transparentImage = Uint8List.fromList(
   [
     0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, //
