@@ -14,9 +14,12 @@ import 'package:flutter_driver/driver_extension.dart';
 
 import 'web_view.dart';
 
-void main() {
+void appMain() {
   enableFlutterDriverExtension();
+  main();
+}
 
+void main() {
   // Configure the [WebView] to use the [SurfaceAndroidWebView]
   // implementation instead of the default [AndroidWebView].
   WebView.platform = SurfaceAndroidWebView();
