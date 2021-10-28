@@ -100,7 +100,7 @@ abstract class TestWebViewHostApi {
           assert(arg_url != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.loadUrl was null, expected non-null String.');
           final Map<String?, String?>? arg_headers =
-              args[2] as Map<String?, String?>?;
+              (args[2] as Map<Object?, Object?>).cast<String?, String?>();
           assert(arg_headers != null,
               'Argument for dev.flutter.pigeon.WebViewHostApi.loadUrl was null, expected non-null Map<String?, String?>.');
           api.loadUrl(arg_instanceId!, arg_url!, arg_headers!);
