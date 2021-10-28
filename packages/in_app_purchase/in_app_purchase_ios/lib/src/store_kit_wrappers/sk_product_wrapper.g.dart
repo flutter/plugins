@@ -20,13 +20,6 @@ SkProductResponseWrapper _$SkProductResponseWrapperFromJson(Map json) =>
               [],
     );
 
-Map<String, dynamic> _$SkProductResponseWrapperToJson(
-        SkProductResponseWrapper instance) =>
-    <String, dynamic>{
-      'products': instance.products,
-      'invalidProductIdentifiers': instance.invalidProductIdentifiers,
-    };
-
 SKProductSubscriptionPeriodWrapper _$SKProductSubscriptionPeriodWrapperFromJson(
         Map json) =>
     SKProductSubscriptionPeriodWrapper(
@@ -34,13 +27,6 @@ SKProductSubscriptionPeriodWrapper _$SKProductSubscriptionPeriodWrapperFromJson(
       unit: const SKSubscriptionPeriodUnitConverter()
           .fromJson(json['unit'] as int?),
     );
-
-Map<String, dynamic> _$SKProductSubscriptionPeriodWrapperToJson(
-        SKProductSubscriptionPeriodWrapper instance) =>
-    <String, dynamic>{
-      'numberOfUnits': instance.numberOfUnits,
-      'unit': const SKSubscriptionPeriodUnitConverter().toJson(instance.unit),
-    };
 
 SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) =>
     SKProductDiscountWrapper(
@@ -57,17 +43,6 @@ SKProductDiscountWrapper _$SKProductDiscountWrapperFromJson(Map json) =>
         (k, e) => MapEntry(k as String, e),
       )),
     );
-
-Map<String, dynamic> _$SKProductDiscountWrapperToJson(
-        SKProductDiscountWrapper instance) =>
-    <String, dynamic>{
-      'price': instance.price,
-      'priceLocale': instance.priceLocale,
-      'numberOfPeriods': instance.numberOfPeriods,
-      'paymentMode': const SKProductDiscountPaymentModeConverter()
-          .toJson(instance.paymentMode),
-      'subscriptionPeriod': instance.subscriptionPeriod,
-    };
 
 SKProductWrapper _$SKProductWrapperFromJson(Map json) => SKProductWrapper(
       productIdentifier: json['productIdentifier'] as String? ?? '',
@@ -92,29 +67,9 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) => SKProductWrapper(
               Map<String, dynamic>.from(json['introductoryPrice'] as Map)),
     );
 
-Map<String, dynamic> _$SKProductWrapperToJson(SKProductWrapper instance) =>
-    <String, dynamic>{
-      'productIdentifier': instance.productIdentifier,
-      'localizedTitle': instance.localizedTitle,
-      'localizedDescription': instance.localizedDescription,
-      'priceLocale': instance.priceLocale,
-      'subscriptionGroupIdentifier': instance.subscriptionGroupIdentifier,
-      'price': instance.price,
-      'subscriptionPeriod': instance.subscriptionPeriod,
-      'introductoryPrice': instance.introductoryPrice,
-    };
-
 SKPriceLocaleWrapper _$SKPriceLocaleWrapperFromJson(Map json) =>
     SKPriceLocaleWrapper(
       currencySymbol: json['currencySymbol'] as String? ?? '',
       currencyCode: json['currencyCode'] as String? ?? '',
       countryCode: json['countryCode'] as String? ?? '',
     );
-
-Map<String, dynamic> _$SKPriceLocaleWrapperToJson(
-        SKPriceLocaleWrapper instance) =>
-    <String, dynamic>{
-      'currencySymbol': instance.currencySymbol,
-      'currencyCode': instance.currencyCode,
-      'countryCode': instance.countryCode,
-    };

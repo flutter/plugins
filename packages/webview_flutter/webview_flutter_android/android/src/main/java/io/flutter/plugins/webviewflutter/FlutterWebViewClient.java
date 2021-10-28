@@ -104,7 +104,7 @@ class FlutterWebViewClient {
       return false;
     }
     // This version of shouldOverrideUrlLoading is only invoked by the webview on devices with
-    // webview versions  earlier than 67(it is also invoked when hasNavigationDelegate is false).
+    // webview versions earlier than 67(it is also invoked when hasNavigationDelegate is false).
     // On these devices we cannot tell whether the navigation is targeted to the main frame or not.
     // We proceed assuming that the navigation is targeted to the main frame. If the page had any
     // frames they will be loaded in the main frame instead.

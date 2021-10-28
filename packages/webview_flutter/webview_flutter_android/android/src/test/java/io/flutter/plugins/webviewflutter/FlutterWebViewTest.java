@@ -52,6 +52,7 @@ public class FlutterWebViewTest {
         .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setSupportMultipleWindows(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setUsesHybridComposition(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setZoomControlsEnabled(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
         .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setDownloadListener(any(DownloadListener.class)))
@@ -69,6 +70,7 @@ public class FlutterWebViewTest {
     verify(mockWebViewBuilder, times(1)).setSupportMultipleWindows(true);
     verify(mockWebViewBuilder, times(1)).setUsesHybridComposition(false);
     verify(mockWebViewBuilder, times(1)).setWebChromeClient(mockWebChromeClient);
+    verify(mockWebViewBuilder, times(1)).setZoomControlsEnabled(true);
   }
 
   @Test(expected = UnsupportedOperationException.class)

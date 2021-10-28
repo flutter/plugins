@@ -19,7 +19,7 @@ import java.util.HashMap;
  */
 class JavaScriptChannel {
   private final MethodChannel methodChannel;
-  private final String javaScriptChannelName;
+  final String javaScriptChannelName;
   private final Handler platformThreadHandler;
 
   /**
