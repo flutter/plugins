@@ -1,4 +1,8 @@
 
+## 2.2.6
+
+* Initialize player when size and duration become available on iOS
+
 ## 2.2.5
 
 * Support to closed caption WebVTT format added.
