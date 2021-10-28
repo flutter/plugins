@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, ActivityAware {
   private static final String CHANNEL_NAME = "plugins.flutter.io/local_auth";
   private static final int LOCK_REQUEST_CODE = 221;
-  @VisibleForTesting /*package*/ Activity activity;
+  private Activity activity;
   private final AtomicBoolean authInProgress = new AtomicBoolean(false);
   private AuthenticationHelper authHelper;
 
@@ -353,5 +353,10 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
     lifecycle = null;
     channel.setMethodCallHandler(null);
     activity = null;
+  }
+
+  @VisibleForTesting
+  /*package*/ final Activity getActivity() {
+    return activity;
   }
 }

@@ -56,9 +56,9 @@ public class LocalAuthTest {
     final LocalAuthPlugin plugin = new LocalAuthPlugin();
     plugin.onAttachedToEngine(mockPluginBinding);
     plugin.onAttachedToActivity(mockActivityBinding);
-    assertNotNull(plugin.activity);
+    assertNotNull(plugin.getActivity());
 
     plugin.onDetachedFromActivity();
-    assertNull(plugin.activity);
+    assertNull(plugin.getActivity());
   }
 }
