@@ -177,12 +177,6 @@ public class PathProviderPlugin implements FlutterPlugin, MethodCallHandler {
     channel.setMethodCallHandler(this);
   }
 
-  @SuppressWarnings("deprecation")
-  public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    PathProviderPlugin instance = new PathProviderPlugin();
-    instance.setup(registrar.messenger(), registrar.context());
-  }
-
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     setup(binding.getBinaryMessenger(), binding.getApplicationContext());
