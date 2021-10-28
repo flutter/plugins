@@ -49,7 +49,10 @@ class _MockHttpRequest extends Fake implements HttpClientRequest {
   }
 }
 
-/// This is an transparent 1x1 gif image
+/// Arbitrary valid image returned by the [_MockHttpResponse].
+///
+/// This is an transparent 1x1 gif image.
+/// It doesn't have to match the placeholder used in [GoogleUserCircleAvatar]
 final Uint8List _transparentImage = Uint8List.fromList(
   [
     0x47, 0x49, 0x46, 0x38, 0x39, 0x61, 0x01, 0x00, 0x01, 0x00, 0x80, 0x00, //
@@ -60,7 +63,7 @@ final Uint8List _transparentImage = Uint8List.fromList(
 );
 
 /// A mocked [HttpClientResponse] which is empty and has a [statusCode] of 200
-/// and returns a 1x1 transparent image.
+/// and returns valid image.
 class _MockHttpResponse extends Fake implements HttpClientResponse {
   final Stream<Uint8List> _delegate =
       Stream<Uint8List>.value(_transparentImage);
