@@ -45,6 +45,10 @@
     self.productMap[@"subscriptionPeriod"] = self.periodMap;
     self.productMap[@"introductoryPrice"] = self.discountMap;
   }
+  if (@available(iOS 12.2, *)) {
+    NSArray *discounts = [[NSArray alloc] initWithObjects:self.discountMap, nil];
+    self.productMap[@"discounts"] = discounts;
+  }
 
   if (@available(iOS 12.0, *)) {
     self.productMap[@"subscriptionGroupIdentifier"] = @"com.group";

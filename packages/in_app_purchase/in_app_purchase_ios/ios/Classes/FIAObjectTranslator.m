@@ -24,6 +24,7 @@
   // https://github.com/flutter/flutter/issues/26610
   [map setObject:[FIAObjectTranslator getMapFromNSLocale:product.priceLocale] ?: [NSNull null]
           forKey:@"priceLocale"];
+      
   if (@available(iOS 11.2, *)) {
     [map setObject:[FIAObjectTranslator
                        getMapFromSKProductSubscriptionPeriod:product.subscriptionPeriod]
@@ -34,6 +35,10 @@
     [map setObject:[FIAObjectTranslator getMapFromSKProductDiscount:product.introductoryPrice]
                        ?: [NSNull null]
             forKey:@"introductoryPrice"];
+  }
+  if (@available(iOS 12.2, *)) {
+    [map setObject:[FIAObjectTranslator getMapArrayFromSKProductDiscounts:product.discounts]
+            forKey:@"discounts"];
   }
   if (@available(iOS 12.0, *)) {
     [map setObject:product.subscriptionGroupIdentifier ?: [NSNull null]
@@ -47,6 +52,16 @@
     return nil;
   }
   return @{@"numberOfUnits" : @(period.numberOfUnits), @"unit" : @(period.unit)};
+}
+
++ (nonnull NSArray *)getMapArrayFromSKProductDiscounts:(nonnull NSArray<SKProductDiscount *> *)productDiscounts {
+  NSMutableArray *discountsMapArray = [NSMutableArray new];
+  
+  for (SKProductDiscount *productDiscount in productDiscounts) {
+    [discountsMapArray addObject:[FIAObjectTranslator getMapFromSKProductDiscount:productDiscount]];
+  }
+  
+  return discountsMapArray;
 }
 
 + (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount {
