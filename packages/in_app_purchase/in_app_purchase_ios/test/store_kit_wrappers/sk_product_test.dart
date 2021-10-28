@@ -84,6 +84,7 @@ void main() {
       expect(wrapper.subscriptionGroupIdentifier, null);
       expect(wrapper.price, '');
       expect(wrapper.subscriptionPeriod, null);
+      expect(wrapper.discounts, <SKProductDiscountWrapper>[]);
     });
 
     test('toProductDetails() should return correct Product object', () {

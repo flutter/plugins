@@ -14,6 +14,7 @@
 @property(strong, nonatomic) NSMutableDictionary *productMap;
 @property(strong, nonatomic) NSDictionary *productResponseMap;
 @property(strong, nonatomic) NSDictionary *paymentMap;
+@property(strong, nonatomic) NSDictionary *paymentDiscountMap;
 @property(strong, nonatomic) NSDictionary *transactionMap;
 @property(strong, nonatomic) NSDictionary *errorMap;
 @property(strong, nonatomic) NSDictionary *localeMap;
@@ -50,6 +51,10 @@
     self.productMap[@"subscriptionGroupIdentifier"] = @"com.group";
   }
 
+  if (@available(iOS 11.2, *)) {
+    self.productMap[@"discounts"] = @[ self.discountMap ];
+  }
+  
   self.productResponseMap =
       @{@"products" : @[ self.productMap ], @"invalidProductIdentifiers" : @[]};
   self.paymentMap = @{

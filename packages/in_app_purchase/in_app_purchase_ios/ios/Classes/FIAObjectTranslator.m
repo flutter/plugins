@@ -193,4 +193,24 @@
   return map;
 }
 
++ (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map {
+  if (!map) {
+    return nil;
+  }
+  
+  NSString *identifier = map[@"identifier"];
+  NSString *keyIdentifier = map[@"keyIdentifier"];
+  NSUUID *nonce = [[NSUUID alloc] initWithUUIDString:map[@"nonce"]];
+  NSString *signature = map[@"signature"];
+  NSNumber *timestamp = map[@"timestamp"];
+  
+  SKPaymentDiscount *discount = [[SKPaymentDiscount alloc] initWithIdentifier:identifier
+                                                                keyIdentifier:keyIdentifier
+                                                                        nonce:nonce
+                                                                    signature:signature
+                                                                    timestamp:timestamp];
+  
+  return discount;
+}
+
 @end

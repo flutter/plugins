@@ -65,6 +65,11 @@ SKProductWrapper _$SKProductWrapperFromJson(Map json) => SKProductWrapper(
           ? null
           : SKProductDiscountWrapper.fromJson(
               Map<String, dynamic>.from(json['introductoryPrice'] as Map)),
+      discounts: (json['discounts'] as List<dynamic>?)
+              ?.map((e) => SKProductDiscountWrapper.fromJson(
+                  Map<String, dynamic>.from(e as Map)))
+              .toList() ??
+          [],
     );
 
 SKPriceLocaleWrapper _$SKPriceLocaleWrapperFromJson(Map json) =>

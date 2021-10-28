@@ -68,6 +68,7 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   price: '1.0',
   subscriptionPeriod: dummySubscription,
   introductoryPrice: dummyDiscount,
+  discounts: [dummyDiscount],
 );
 
 final SkProductResponseWrapper dummyProductResponseWrapper =
@@ -118,6 +119,7 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(product.subscriptionPeriod),
     'introductoryPrice': buildDiscountMap(product.introductoryPrice!),
+    'discounts': [buildDiscountMap(product.introductoryPrice!)],
   };
 }
 
