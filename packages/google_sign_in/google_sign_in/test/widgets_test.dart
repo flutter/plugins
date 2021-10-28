@@ -88,7 +88,7 @@ class _MockHttpResponse extends Fake implements HttpClientResponse {
 }
 
 void main() {
-  testWidgets('It should build th GoogleUserCircleAvatar successfully',
+  testWidgets('It should build the GoogleUserCircleAvatar successfully',
       (WidgetTester tester) async {
     final GoogleIdentity identity = _TestGoogleIdentity(
       email: 'email@email.com',
