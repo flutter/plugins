@@ -16,6 +16,11 @@ import io.flutter.plugin.platform.PlatformView;
 import java.util.Map;
 
 class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
+  // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
+  // Workaround to represent null Strings since pigeon doesn't support null
+  // values.
+  static final String nullStringIdentifier = "<null-value>";
+
   private final InstanceManager instanceManager;
   private final WebViewProxy webViewProxy;
   private final Context context;
@@ -124,7 +129,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   @Override
   public String getUrl(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return webView.getUrl();
+    final String result = webView.getUrl();
+    return result != null ? result : nullStringIdentifier;
   }
 
   @Override
@@ -173,7 +179,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   @Override
   public String getTitle(Long instanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    return webView.getTitle();
+    final String result = webView.getTitle();
+    return result != null ? result : nullStringIdentifier;
   }
 
   @Override
