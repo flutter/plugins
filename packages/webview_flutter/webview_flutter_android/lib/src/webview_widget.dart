@@ -54,6 +54,10 @@ class _AndroidWebViewWidgetState extends State<AndroidWebViewWidget> {
     webView.settings.setDomStorageEnabled(true);
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
     webView.settings.setSupportMultipleWindows(true);
+    webView.settings.setLoadWithOverviewMode(true);
+    webView.settings.setUseWideViewPort(true);
+    webView.settings.setDisplayZoomControls(false);
+    webView.settings.setBuiltInZoomControls(true);
 
     platformController = AndroidWebViewPlatformController(
       webView: webView,
@@ -189,6 +193,7 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
       _trySetJavaScriptMode(settings.javascriptMode),
       _trySetDebuggingEnabled(settings.debuggingEnabled),
       _trySetUserAgent(settings.userAgent),
+      _trySetZoomEnabled(settings.zoomEnabled),
     ]);
   }
 
@@ -287,6 +292,12 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
     }
 
     return webView.settings.setUserAgentString('');
+  }
+
+  Future<void> _trySetZoomEnabled(bool? zoomEnabled) async {
+    if (zoomEnabled != null) {
+      return webView.settings.setSupportZoom(zoomEnabled);
+    }
   }
 }
 

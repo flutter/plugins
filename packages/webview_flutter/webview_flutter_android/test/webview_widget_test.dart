@@ -122,6 +122,10 @@ void main() {
         true,
       ));
       verify(mockWebSettingsHostApi.setSupportMultipleWindows(1, true));
+      verify(mockWebSettingsHostApi.setLoadWithOverviewMode(1, true));
+      verify(mockWebSettingsHostApi.setUseWideViewPort(1, true));
+      verify(mockWebSettingsHostApi.setDisplayZoomControls(1, false));
+      verify(mockWebSettingsHostApi.setBuiltInZoomControls(1, true));
 
       verifyInOrder([
         mockWebViewHostApi.create(0, false),
@@ -256,6 +260,20 @@ void main() {
           );
 
           verify(mockWebSettingsHostApi.setUserAgentString(any, 'myUserAgent'));
+        });
+
+        testWidgets('zoomEnabled', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: WebSetting<String?>.absent(),
+                zoomEnabled: false,
+              ),
+            ),
+          );
+
+          verify(mockWebSettingsHostApi.setSupportZoom(any, false));
         });
       });
     });
