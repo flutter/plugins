@@ -38,6 +38,44 @@ class UnknownMapObjectIdError extends Error {
   }
 }
 
+/// Android specific settings for [GoogleMap].
+class AndroidGoogleMapsFlutter {
+  /// Whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
+  ///
+  /// This implementation uses hybrid composition to render the Google Maps
+  /// Widget on Android. This comes at the cost of some performance on Android
+  /// versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
+  /// information.
+  ///
+  /// Defaults to false.
+  static bool get useAndroidViewSurface {
+    final GoogleMapsFlutterPlatform platform =
+        GoogleMapsFlutterPlatform.instance;
+    if (platform is MethodChannelGoogleMapsFlutter) {
+      return platform.useAndroidViewSurface;
+    }
+    return false;
+  }
+
+  /// Set whether to render [GoogleMap] with a [AndroidViewSurface] to build the Google Maps widget.
+  ///
+  /// This implementation uses hybrid composition to render the Google Maps
+  /// Widget on Android. This comes at the cost of some performance on Android
+  /// versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance for more
+  /// information.
+  ///
+  /// Defaults to false.
+  static set useAndroidViewSurface(bool useAndroidViewSurface) {
+    final GoogleMapsFlutterPlatform platform =
+        GoogleMapsFlutterPlatform.instance;
+    if (platform is MethodChannelGoogleMapsFlutter) {
+      platform.useAndroidViewSurface = useAndroidViewSurface;
+    }
+  }
+}
+
 /// A widget which displays a map with data obtained from the Google Maps service.
 class GoogleMap extends StatefulWidget {
   /// Creates a widget displaying data from Google Maps services.
@@ -61,6 +99,7 @@ class GoogleMap extends StatefulWidget {
     this.tiltGesturesEnabled = true,
     this.myLocationEnabled = false,
     this.myLocationButtonEnabled = true,
+    this.layoutDirection,
 
     /// If no padding is specified default padding will be 0.
     this.padding = const EdgeInsets.all(0),
@@ -99,6 +138,12 @@ class GoogleMap extends StatefulWidget {
 
   /// Type of map tiles to be rendered.
   final MapType mapType;
+
+  /// The layout direction to use for the embedded view.
+  ///
+  /// If this is null, the ambient [Directionality] is used instead. If there is
+  /// no ambient [Directionality], [TextDirection.ltr] is used.
+  final TextDirection? layoutDirection;
 
   /// Preferred bounds for the camera zoom level.
   ///
@@ -250,9 +295,12 @@ class _GoogleMapState extends State<GoogleMap> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMapsFlutterPlatform.instance.buildView(
+    return GoogleMapsFlutterPlatform.instance.buildViewWithTextDirection(
       _mapId,
       onPlatformViewCreated,
+      textDirection: widget.layoutDirection ??
+          Directionality.maybeOf(context) ??
+          TextDirection.ltr,
       initialCameraPosition: widget.initialCameraPosition,
       markers: widget.markers,
       polygons: widget.polygons,

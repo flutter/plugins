@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Add `zoomEnabled` functionality.
+
 ## 2.0.15
 
 * Added Overrides in  FlutterWebView.java 

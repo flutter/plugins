@@ -46,6 +46,7 @@ public class WebViewBuilder {
   private boolean usesHybridComposition;
   private WebChromeClient webChromeClient;
   private DownloadListener downloadListener;
+  private boolean enableBuiltInZoomControls;
 
   /**
    * Constructs a new {@link WebViewBuilder} object with a custom implementation of the {@link
@@ -137,6 +138,18 @@ public class WebViewBuilder {
   }
 
   /**
+   * Sets whether the {@link WebView} should use its built-in zoom mechanisms. The default value is
+   * {@code true}.
+   *
+   * @param flag {@code true} if built in zoom controls are allowed.
+   * @return This builder. This value cannot be {@code null}.
+   */
+  public WebViewBuilder setZoomControlsEnabled(boolean flag) {
+    this.enableBuiltInZoomControls = flag;
+    return this;
+  }
+
+  /**
    * Build the {@link android.webkit.WebView} using the current settings.
    *
    * @return The {@link android.webkit.WebView} using the current settings.
@@ -148,6 +161,10 @@ public class WebViewBuilder {
     webSettings.setDomStorageEnabled(enableDomStorage);
     webSettings.setJavaScriptCanOpenWindowsAutomatically(javaScriptCanOpenWindowsAutomatically);
     webSettings.setSupportMultipleWindows(supportMultipleWindows);
+    webSettings.setLoadWithOverviewMode(true);
+    webSettings.setUseWideViewPort(true);
+    webSettings.setDisplayZoomControls(false);
+    webSettings.setBuiltInZoomControls(enableBuiltInZoomControls);
     webView.setWebChromeClient(webChromeClient);
     webView.setDownloadListener(downloadListener);
     return webView;

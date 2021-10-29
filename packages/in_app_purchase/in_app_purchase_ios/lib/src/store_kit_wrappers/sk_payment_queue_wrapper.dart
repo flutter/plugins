@@ -375,7 +375,7 @@ class SKError {
 /// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to
 /// initiate a payment.
 @immutable
-@JsonSerializable()
+@JsonSerializable(createToJson: true)
 class SKPaymentWrapper {
   /// Creates a new [SKPaymentWrapper] with the provided information.
   const SKPaymentWrapper(
@@ -448,7 +448,6 @@ class SKPaymentWrapper {
   ///
   /// See https://developer.apple.com/in-app-purchase/ for a guide on Sandbox
   /// testing.
-  @JsonKey(defaultValue: false)
   final bool simulatesAskToBuyInSandbox;
 
   @override
