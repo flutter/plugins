@@ -176,9 +176,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         .setJavaScriptCanOpenWindowsAutomatically(
             true) // Always allow automatically opening of windows.
         .setSupportMultipleWindows(true) // Always support multiple windows.
-        .setWebChromeClient(webChromeClient)
-        .setDownloadListener(
-            downloadListener); // Always use {@link FlutterWebChromeClient} as web Chrome client.
+        .setWebChromeClient(
+            webChromeClient) // Always use {@link FlutterWebChromeClient} as web Chrome client.
+        .setDownloadListener(downloadListener)
+        .setZoomControlsEnabled(true); // Always use built-in zoom mechanisms.
 
     return webViewBuilder.build();
   }
@@ -428,6 +429,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         case "allowsInlineMediaPlayback":
           // no-op inline media playback is always allowed on Android.
           break;
+        case "zoomEnabled":
+          setZoomEnabled((boolean) settings.get(key));
+          break;
         default:
           throw new IllegalArgumentException("Unknown WebView setting: " + key);
       }
@@ -465,6 +469,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
 
   private void updateUserAgent(String userAgent) {
     webView.getSettings().setUserAgentString(userAgent);
+  }
+
+  private void setZoomEnabled(boolean shouldEnable) {
+    webView.getSettings().setSupportZoom(shouldEnable);
   }
 
   @Override
