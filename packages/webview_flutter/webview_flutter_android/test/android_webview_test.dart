@@ -3,19 +3,29 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
 import 'package:webview_flutter_android/src/android_webview.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
 import 'android_webview.pigeon.dart';
+import 'android_webview_test.mocks.dart';
 
+@GenerateMocks([
+  TestWebViewHostApi,
+  TestWebSettingsHostApi,
+  TestWebViewClientHostApi,
+  TestWebChromeClientHostApi,
+  TestJavaScriptChannelHostApi,
+  TestDownloadListenerHostApi
+])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
     group('$WebView', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
       });
 
       setUp(() {
@@ -30,8 +40,8 @@ void main() {
 
     group('$WebSettings', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestWebSettingsHostApi.setup(TestWebSettingsHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestWebSettingsHostApi.setup(MockTestWebSettingsHostApi());
       });
 
       setUp(() {
@@ -54,8 +64,8 @@ void main() {
 
     group('$JavaScriptChannel', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestJavaScriptChannelHostApi.setup(TestJavaScriptChannelHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestJavaScriptChannelHostApi.setup(MockTestJavaScriptChannelHostApi());
       });
 
       setUp(() {
@@ -75,19 +85,13 @@ void main() {
           JavaScriptChannel.api.instanceManager.getInstanceId(channel),
           isNotNull,
         );
-
-        webView.removeJavaScriptChannel(channel);
-        expect(
-          JavaScriptChannel.api.instanceManager.getInstanceId(channel),
-          isNull,
-        );
       });
     });
 
     group('$WebViewClient', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestWebViewClientHostApi.setup(TestWebViewClientHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
       });
 
       setUp(() {
@@ -100,27 +104,20 @@ void main() {
 
       test('create', () {
         final WebView webView = WebView();
-        final WebViewClient webViewClient1 = TestWebViewClient();
-        final WebViewClient webViewClient2 = TestWebViewClient();
+        final WebViewClient webViewClient = TestWebViewClient();
 
-        webView.setWebViewClient(webViewClient1);
+        webView.setWebViewClient(webViewClient);
         expect(
-          WebViewClient.api.instanceManager.getInstanceId(webViewClient1),
+          WebViewClient.api.instanceManager.getInstanceId(webViewClient),
           isNotNull,
-        );
-
-        webView.setWebViewClient(webViewClient2);
-        expect(
-          WebViewClient.api.instanceManager.getInstanceId(webViewClient1),
-          isNull,
         );
       });
     });
 
     group('$DownloadListener', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestDownloadListenerHostApi.setup(TestDownloadListenerHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestDownloadListenerHostApi.setup(MockTestDownloadListenerHostApi());
       });
 
       setUp(() {
@@ -133,28 +130,21 @@ void main() {
 
       test('create', () {
         final WebView webView = WebView();
-        final DownloadListener downloadListener1 = TestDownloadListener();
-        final DownloadListener downloadListener2 = TestDownloadListener();
+        final DownloadListener downloadListener = TestDownloadListener();
 
-        webView.setDownloadListener(downloadListener1);
+        webView.setDownloadListener(downloadListener);
         expect(
-          DownloadListener.api.instanceManager.getInstanceId(downloadListener1),
+          DownloadListener.api.instanceManager.getInstanceId(downloadListener),
           isNotNull,
-        );
-
-        webView.setDownloadListener(downloadListener2);
-        expect(
-          DownloadListener.api.instanceManager.getInstanceId(downloadListener1),
-          isNull,
         );
       });
     });
 
     group('$WebChromeClient', () {
       setUpAll(() {
-        TestWebViewHostApi.setup(TestWebViewHostApiImpl());
-        TestWebViewClientHostApi.setup(TestWebViewClientHostApiImpl());
-        TestWebChromeClientHostApi.setup(TestWebChromeClientHostApiImpl());
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
+        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
+        TestWebChromeClientHostApi.setup(MockTestWebChromeClientHostApi());
       });
 
       setUp(() {
@@ -172,19 +162,12 @@ void main() {
         final WebView webView = WebView();
         webView.setWebViewClient(TestWebViewClient());
 
-        final WebChromeClient webChromeClient1 = TestWebChromeClient();
-        final WebChromeClient webChromeClient2 = TestWebChromeClient();
+        final WebChromeClient webChromeClient = TestWebChromeClient();
 
-        webView.setWebChromeClient(webChromeClient1);
+        webView.setWebChromeClient(webChromeClient);
         expect(
-          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient1),
+          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient),
           isNotNull,
-        );
-
-        webView.setWebChromeClient(webChromeClient2);
-        expect(
-          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient1),
-          isNull,
         );
       });
     });
@@ -214,160 +197,4 @@ class TestDownloadListener extends DownloadListener {
 class TestWebChromeClient extends WebChromeClient {
   @override
   void onProgressChanged(WebView webView, int progress) {}
-}
-
-class TestWebViewHostApiImpl extends TestWebViewHostApi {
-  @override
-  void addJavaScriptChannel(int instanceId, int javaScriptChannelInstanceId) {}
-
-  @override
-  bool canGoBack(int instanceId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  bool canGoForward(int instanceId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  void clearCache(int instanceId, bool includeDiskFiles) {}
-
-  @override
-  void create(int instanceId, bool useHybridComposition) {}
-
-  @override
-  void dispose(int instanceId) {}
-
-  @override
-  Future<String> evaluateJavascript(int instanceId, String javascriptString) {
-    throw UnimplementedError();
-  }
-
-  @override
-  int getScrollX(int instanceId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  int getScrollY(int instanceId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  String getTitle(int instanceId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  String getUrl(int instanceId) {
-    throw UnimplementedError();
-  }
-
-  @override
-  void goBack(int instanceId) {}
-
-  @override
-  void goForward(int instanceId) {}
-
-  @override
-  void loadUrl(int instanceId, String url, Map headers) {}
-
-  @override
-  void reload(int instanceId) {}
-
-  @override
-  void removeJavaScriptChannel(
-      int instanceId, int javaScriptChannelInstanceId) {}
-
-  @override
-  void scrollBy(int instanceId, int x, int y) {}
-
-  @override
-  void scrollTo(int instanceId, int x, int y) {}
-
-  @override
-  void setDownloadListener(int instanceId, int listenerInstanceId) {}
-
-  @override
-  void setWebContentsDebuggingEnabled(bool enabled) {}
-
-  @override
-  void setWebViewClient(int instanceId, int webViewClientInstanceId) {}
-
-  @override
-  void setWebChromeClient(int instanceId, int clientInstanceId) {}
-}
-
-class TestWebSettingsHostApiImpl extends TestWebSettingsHostApi {
-  @override
-  void create(int instanceId, int webViewInstanceId) {}
-
-  @override
-  void dispose(int instanceId) {}
-
-  @override
-  void setBuiltInZoomControls(int instanceId, bool enabled) {}
-
-  @override
-  void setDisplayZoomControls(int instanceId, bool enabled) {}
-
-  @override
-  void setDomStorageEnabled(int instanceId, bool flag) {}
-
-  @override
-  void setJavaScriptCanOpenWindowsAutomatically(int instanceId, bool flag) {}
-
-  @override
-  void setJavaScriptEnabled(int instanceId, bool flag) {}
-
-  @override
-  void setLoadWithOverviewMode(int instanceId, bool overview) {}
-
-  @override
-  void setMediaPlaybackRequiresUserGesture(int instanceId, bool require) {}
-
-  @override
-  void setSupportMultipleWindows(int instanceId, bool support) {}
-
-  @override
-  void setSupportZoom(int instanceId, bool support) {}
-
-  @override
-  void setUseWideViewPort(int instanceId, bool use) {}
-
-  @override
-  void setUserAgentString(int instanceId, String userAgentString) {}
-}
-
-class TestJavaScriptChannelHostApiImpl extends TestJavaScriptChannelHostApi {
-  @override
-  void create(int instanceId, String channelName) {}
-
-  @override
-  void dispose(int instanceId) {}
-}
-
-class TestWebViewClientHostApiImpl extends TestWebViewClientHostApi {
-  @override
-  void create(int instanceId, bool shouldOverrideUrlLoading) {}
-
-  @override
-  void dispose(int instanceId) {}
-}
-
-class TestDownloadListenerHostApiImpl extends TestDownloadListenerHostApi {
-  @override
-  void create(int instanceId) {}
-
-  @override
-  void dispose(int instanceId) {}
-}
-
-class TestWebChromeClientHostApiImpl extends TestWebChromeClientHostApi {
-  @override
-  void create(int instanceId, int webViewClientInstanceId) {}
-
-  @override
-  void dispose(int instanceId) {}
 }

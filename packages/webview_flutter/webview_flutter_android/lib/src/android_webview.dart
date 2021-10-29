@@ -5,6 +5,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart' show AndroidViewSurface;
 
+import 'android_webview.pigeon.dart';
 import 'android_webview_api_impls.dart';
 
 // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
@@ -29,6 +30,8 @@ const String _nullStringIdentifier = '<null-value>';
 /// To learn more about WebView and alternatives for serving web content, read
 /// the documentation on
 /// [Web-based content](https://developer.android.com/guide/webapps).
+///
+/// When a [WebView] is no longer needed [release] must be called.
 class WebView {
   /// Constructs a new WebView.
   WebView({this.useHybridComposition = false}) {
@@ -40,9 +43,6 @@ class WebView {
   static WebViewHostApiImpl api = WebViewHostApiImpl();
 
   WebViewClient? _currentWebViewClient;
-  DownloadListener? _currentDownloadListener;
-  WebChromeClient? _currentWebChromeClient;
-  Set<JavaScriptChannel> _javaScriptChannels = <JavaScriptChannel>{};
 
   /// Whether the [WebView] will be rendered with an [AndroidViewSurface].
   ///
@@ -187,18 +187,8 @@ class WebView {
   ///
   /// This will replace the current handler.
   Future<void> setWebViewClient(WebViewClient webViewClient) {
-    final WebViewClient? currentWebViewClient = _currentWebViewClient;
-
-    if (webViewClient == currentWebViewClient) {
-      return Future<void>.value();
-    }
-
-    if (currentWebViewClient != null) {
-      WebViewClient.api.disposeFromInstance(currentWebViewClient);
-    }
-
-    WebViewClient.api.createFromInstance(webViewClient);
     _currentWebViewClient = webViewClient;
+    WebViewClient.api.createFromInstance(webViewClient);
     return api.setWebViewClientFromInstance(this, webViewClient);
   }
 
@@ -227,7 +217,6 @@ class WebView {
   /// content is ever loaded into the WebView even inside an iframe.
   Future<void> addJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
     JavaScriptChannel.api.createFromInstance(javaScriptChannel);
-    _javaScriptChannels.add(javaScriptChannel);
     return api.addJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
@@ -236,27 +225,15 @@ class WebView {
   /// Note that the removal will not be reflected in JavaScript until the page
   /// is next (re)loaded. See [addJavaScriptChannel].
   Future<void> removeJavaScriptChannel(JavaScriptChannel javaScriptChannel) {
-    _javaScriptChannels.remove(javaScriptChannel);
-    api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
-    return JavaScriptChannel.api.disposeFromInstance(javaScriptChannel);
+    JavaScriptChannel.api.createFromInstance(javaScriptChannel);
+    return api.removeJavaScriptChannelFromInstance(this, javaScriptChannel);
   }
 
   /// Registers the interface to be used when content can not be handled by the rendering engine, and should be downloaded instead.
   ///
   /// This will replace the current handler.
   Future<void> setDownloadListener(DownloadListener listener) {
-    final DownloadListener? currentDownloadListener = _currentDownloadListener;
-
-    if (listener == currentDownloadListener) {
-      return Future<void>.value();
-    }
-
-    if (currentDownloadListener != null) {
-      DownloadListener.api.disposeFromInstance(currentDownloadListener);
-    }
-
     DownloadListener.api.createFromInstance(listener);
-    _currentDownloadListener = listener;
     return api.setDownloadListenerFromInstance(this, listener);
   }
 
@@ -266,25 +243,25 @@ class WebView {
   /// JavaScript dialogs, favicons, titles, and the progress. This will replace
   /// the current handler.
   Future<void> setWebChromeClient(WebChromeClient client) {
-    final WebChromeClient? currentWebChromeClient = _currentWebChromeClient;
-
-    if (client == currentWebChromeClient) {
-      return Future<void>.value();
-    }
-
-    if (currentWebChromeClient != null) {
-      WebChromeClient.api.disposeFromInstance(currentWebChromeClient);
-    }
-
-    final WebViewClient? currentWebViewClient = _currentWebViewClient;
+    // WebView requires a WebViewClient because of a bug fix that makes
+    // calls to WebViewClient.requestLoading/WebViewClient.urlLoading when a new
+    // window is opened. This is to make sure a url opened by `Window.open` has
+    // a secure url.
     assert(
-      currentWebViewClient != null,
+      _currentWebViewClient != null,
       "Can't set a WebChromeClient without setting a WebViewClient first.",
     );
-
-    WebChromeClient.api.createFromInstance(client, currentWebViewClient!);
-    _currentWebChromeClient = client;
+    WebChromeClient.api.createFromInstance(client, _currentWebViewClient!);
     return api.setWebChromeClientFromInstance(this, client);
+  }
+
+  /// Releases all resources used by the [WebView].
+  ///
+  /// Any methods called on the [WebView] instance after [release] will throw
+  /// an exception.
+  Future<void> release() {
+    _currentWebViewClient = null;
+    return api.disposeFromInstance(this);
   }
 }
 
@@ -332,7 +309,7 @@ class WebSettings {
   ///
   /// The default is false.
   Future<void> setSupportMultipleWindows(bool support) {
-    return api.setSupportZoomFromInstance(this, support);
+    return api.setSupportMultipleWindowsFromInstance(this, support);
   }
 
   /// Tells the WebView to enable JavaScript execution.
@@ -423,11 +400,18 @@ class WebSettings {
 /// See [WebView.addJavaScriptChannel].
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
-  JavaScriptChannel(this.channelName);
+  JavaScriptChannel(this.channelName) {
+    if (!_flutterApisHaveBeenSetup) {
+      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
   @visibleForTesting
   static JavaScriptChannelHostApiImpl api = JavaScriptChannelHostApiImpl();
+
+  static bool _flutterApisHaveBeenSetup = false;
 
   /// Used to identify this object to receive messages from javaScript.
   final String channelName;
@@ -439,55 +423,62 @@ abstract class JavaScriptChannel {
 /// Receive various notifications and requests for [WebView].
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
-  WebViewClient({this.shouldOverrideUrlLoading = true});
+  WebViewClient({this.shouldOverrideUrlLoading = true}) {
+    if (!_flutterApisHaveBeenSetup) {
+      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
+
+  static bool _flutterApisHaveBeenSetup = false;
 
   /// User authentication failed on server.
-  static const int errorAuthentication = 0xfffffffc;
+  static const int errorAuthentication = -4;
 
   /// Malformed URL.
-  static const int errorBadUrl = 0xfffffff4;
+  static const int errorBadUrl = -12;
 
   /// Failed to connect to the server.
-  static const int errorConnect = 0xfffffffa;
+  static const int errorConnect = -6;
 
   /// Failed to perform SSL handshake.
-  static const int errorFailedSslHandshake = 0xfffffff5;
+  static const int errorFailedSslHandshake = -11;
 
   /// Generic file error.
-  static const int errorFile = 0xfffffff3;
+  static const int errorFile = -13;
 
   /// File not found.
-  static const int errorFileNotFound = 0xfffffff2;
+  static const int errorFileNotFound = -14;
 
   /// Server or proxy hostname lookup failed.
-  static const int errorHostLookup = 0xfffffffe;
+  static const int errorHostLookup = -2;
 
   /// Failed to read or write to the server.
-  static const int errorIO = 0xfffffff9;
+  static const int errorIO = -7;
 
   /// User authentication failed on proxy.
-  static const int errorProxyAuthentication = 0xfffffffb;
+  static const int errorProxyAuthentication = -5;
 
   /// Too many redirects.
-  static const int errorRedirectLoop = 0xfffffff7;
+  static const int errorRedirectLoop = -9;
 
   /// Connection timed out.
-  static const int errorTimeout = 0xfffffff8;
+  static const int errorTimeout = -8;
 
   /// Too many requests during this load.
-  static const int errorTooManyRequests = 0xfffffff1;
+  static const int errorTooManyRequests = -15;
 
   /// Generic error.
-  static const int errorUnknown = 0xffffffff;
+  static const int errorUnknown = -1;
 
   /// Resource load was canceled by Safe Browsing.
-  static const int errorUnsafeResource = 0xfffffff0;
+  static const int errorUnsafeResource = -16;
 
   /// Unsupported authentication scheme (not basic or digest).
-  static const int errorUnsupportedAuthScheme = 0xfffffffd;
+  static const int errorUnsupportedAuthScheme = -3;
 
   /// Unsupported URI scheme.
-  static const int errorUnsupportedScheme = 0xfffffff6;
+  static const int errorUnsupportedScheme = -10;
 
   /// Pigeon Host Api implementation for [WebViewClient].
   @visibleForTesting
@@ -573,6 +564,16 @@ abstract class WebViewClient {
 
 /// The interface to be used when content can not be handled by the rendering engine for [WebView], and should be downloaded instead.
 abstract class DownloadListener {
+  /// Constructs a [DownloadListener].
+  DownloadListener() {
+    if (!_flutterApisHaveBeenSetup) {
+      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
+
+  static bool _flutterApisHaveBeenSetup = false;
+
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
   static DownloadListenerHostApiImpl api = DownloadListenerHostApiImpl();
@@ -589,6 +590,16 @@ abstract class DownloadListener {
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebView].
 abstract class WebChromeClient {
+  /// Constructs a [WebChromeClient].
+  WebChromeClient() {
+    if (!_flutterApisHaveBeenSetup) {
+      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
+      _flutterApisHaveBeenSetup = true;
+    }
+  }
+
+  static bool _flutterApisHaveBeenSetup = false;
+
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
   static WebChromeClientHostApiImpl api = WebChromeClientHostApiImpl();
@@ -627,7 +638,7 @@ class WebResourceRequest {
   final String method;
 
   /// Gets the headers associated with the request.
-  final Map<String, String> requestHeaders;
+  final Map<String, String>? requestHeaders;
 }
 
 /// Encapsulates information about errors occurred during loading of web resources.
