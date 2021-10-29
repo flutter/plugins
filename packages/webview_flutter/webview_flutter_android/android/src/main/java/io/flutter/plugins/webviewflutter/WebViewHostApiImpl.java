@@ -42,7 +42,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  private static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
+  static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
     private WebViewClient currentWebViewClient;
     private DownloadListener currentDownloadListener;
     private WebChromeClient currentWebChromeClient;
@@ -129,7 +129,8 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  private static class InputAwareWebViewPlatformView extends InputAwareWebView
+  @SuppressLint("ViewConstructor")
+  static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView, Releasable {
     private WebViewClient currentWebViewClient;
     private DownloadListener currentDownloadListener;
@@ -267,9 +268,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   @Override
   public void dispose(Long instanceId) {
     final WebView instance = (WebView) instanceManager.removeInstance(instanceId);
-    if (instance instanceof Releasable) {
-      ((Releasable) instance).release();
-    }
+    ((Releasable) instance).release();
   }
 
   @Override
