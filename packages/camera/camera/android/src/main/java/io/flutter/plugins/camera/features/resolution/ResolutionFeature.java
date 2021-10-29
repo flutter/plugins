@@ -229,7 +229,6 @@ public class ResolutionFeature extends CameraFeature<ResolutionPreset> {
     }
   }
 
-  @SuppressWarnings("deprecation")
   private void configureResolution(ResolutionPreset resolutionPreset, int cameraId)
       throws IndexOutOfBoundsException {
     if (!checkIsSupported()) {

@@ -31,7 +31,7 @@ public class ResolutionFeatureTest {
 
   @Before
   @SuppressWarnings("deprecation")
-  public void before() {
+  public void beforeLegacy() {
     mockedStaticProfile = mockStatic(CamcorderProfile.class);
     mockProfileLow = mock(CamcorderProfile.class);
     CamcorderProfile mockProfile = mock(CamcorderProfile.class);
@@ -81,7 +81,7 @@ public class ResolutionFeatureTest {
         .thenReturn(mockProfileLow);
   }
 
-  public void beforeOn31() {
+  public void before() {
     mockProfileLowOn31 = mock(EncoderProfiles.class);
     EncoderProfiles mockProfileOn31 = mock(EncoderProfiles.class);
     EncoderProfiles.VideoProfile mockVideoProfile = mock(EncoderProfiles.VideoProfile.class);
@@ -161,7 +161,7 @@ public class ResolutionFeatureTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void getBestAvailableCamcorderProfileForResolutionPreset_shouldFallThrough() {
+  public void getBestAvailableCamcorderProfileForResolutionPreset_shouldFallThroughLegacy() {
     mockedStaticProfile
         .when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH))
         .thenReturn(false);
@@ -192,7 +192,7 @@ public class ResolutionFeatureTest {
 
   @Config(minSdk = 31)
   @Test
-  public void getBestAvailableCamcorderProfileForResolutionPreset_shouldFallThroughOn31() {
+  public void getBestAvailableCamcorderProfileForResolutionPreset_shouldFallThrough() {
     mockedStaticProfile
         .when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH))
         .thenReturn(false);
@@ -224,7 +224,7 @@ public class ResolutionFeatureTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetMax() {
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetMaxLegacy() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
@@ -232,8 +232,8 @@ public class ResolutionFeatureTest {
 
   @Config(minSdk = 31)
   @Test
-  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetMaxOn31() {
-    beforeOn31();
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetMax() {
+    before();
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.max);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
@@ -242,7 +242,7 @@ public class ResolutionFeatureTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetUltraHigh() {
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetUltraHighLegacy() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.ultraHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
@@ -250,27 +250,27 @@ public class ResolutionFeatureTest {
 
   @Config(minSdk = 31)
   @Test
-  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetUltraHighOn31() {
-    beforeOn31();
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetUltraHigh() {
+    before();
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.ultraHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
   }
 
   @Config(maxSdk = 30)
+  @SuppressWarnings("deprecation")
+  @Test
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetVeryHighLegacy() {
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.veryHigh);
+
+    mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
+  }
+
+  @Config(minSdk = 31)
   @SuppressWarnings("deprecation")
   @Test
   public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetVeryHigh() {
-    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.veryHigh);
-
-    mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
-  }
-
-  @Config(minSdk = 31)
-  @SuppressWarnings("deprecation")
-  @Test
-  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetVeryHighOn31() {
-    beforeOn31();
+    before();
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.veryHigh);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
@@ -278,17 +278,17 @@ public class ResolutionFeatureTest {
 
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
+  @Test
+  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetHighLegacy() {
+    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.high);
+
+    mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
+  }
+
+  @Config(minSdk = 31)
   @Test
   public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetHigh() {
-    ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.high);
-
-    mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P));
-  }
-
-  @Config(minSdk = 31)
-  @Test
-  public void computeBestPreviewSize_shouldUse720PWhenResolutionPresetHighOn31() {
-    beforeOn31();
+    before();
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.high);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P));
@@ -297,7 +297,7 @@ public class ResolutionFeatureTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void computeBestPreviewSize_shouldUse480PWhenResolutionPresetMedium() {
+  public void computeBestPreviewSize_shouldUse480PWhenResolutionPresetMediumLegacy() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.medium);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P));
@@ -305,8 +305,8 @@ public class ResolutionFeatureTest {
 
   @Config(minSdk = 31)
   @Test
-  public void computeBestPreviewSize_shouldUse480PWhenResolutionPresetMediumOn31() {
-    beforeOn31();
+  public void computeBestPreviewSize_shouldUse480PWhenResolutionPresetMedium() {
+    before();
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.medium);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_480P));
@@ -315,7 +315,7 @@ public class ResolutionFeatureTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void computeBestPreviewSize_shouldUseQVGAWhenResolutionPresetLow() {
+  public void computeBestPreviewSize_shouldUseQVGAWhenResolutionPresetLowLegacy() {
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.low);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA));
@@ -323,8 +323,8 @@ public class ResolutionFeatureTest {
 
   @Config(minSdk = 31)
   @Test
-  public void computeBestPreviewSize_shouldUseQVGAWhenResolutionPresetLowOn31() {
-    beforeOn31();
+  public void computeBestPreviewSize_shouldUseQVGAWhenResolutionPresetLow() {
+    before();
     ResolutionFeature.computeBestPreviewSize(1, ResolutionPreset.low);
 
     mockedStaticProfile.verify(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_QVGA));
