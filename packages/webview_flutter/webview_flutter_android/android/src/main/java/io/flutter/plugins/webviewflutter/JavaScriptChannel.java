@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 import java.util.HashMap;
 
 /**
@@ -17,10 +18,13 @@ import java.util.HashMap;
  * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message over a method
  * channel to the Dart code.
  */
-class JavaScriptChannel {
+class JavaScriptChannel implements Releasable {
+  private final Long instanceId;
   private final MethodChannel methodChannel;
-  final String javaScriptChannelName;
   private final Handler platformThreadHandler;
+  final String javaScriptChannelName;
+  final JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;
+  boolean ignoreCallbacks = false;
 
   /**
    * @param methodChannel the Flutter WebView method channel to which JS messages are sent
@@ -33,6 +37,28 @@ class JavaScriptChannel {
     this.methodChannel = methodChannel;
     this.javaScriptChannelName = javaScriptChannelName;
     this.platformThreadHandler = platformThreadHandler;
+    this.instanceId = null;
+    javaScriptChannelFlutterApi = null;
+  }
+
+  /**
+   * @param instanceId identifier for this object when messages are sent to Dart
+   * @param javaScriptChannelFlutterApi the Flutter Api to which JS messages are sent
+   * @param channelName the name of the JavaScript channel, this is sent over the method channel
+   *     with each message to let the Dart code know which JavaScript channel the message was sent
+   *     through
+   * @param platformThreadHandler handles making callbacks on the desired thread
+   */
+  JavaScriptChannel(
+      Long instanceId,
+      JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+      String channelName,
+      Handler platformThreadHandler) {
+    this.instanceId = instanceId;
+    this.javaScriptChannelFlutterApi = javaScriptChannelFlutterApi;
+    this.javaScriptChannelName = channelName;
+    this.platformThreadHandler = platformThreadHandler;
+    methodChannel = null;
   }
 
   // Suppressing unused warning as this is invoked from JavaScript.
@@ -54,5 +80,11 @@ class JavaScriptChannel {
     } else {
       platformThreadHandler.post(postMessageRunnable);
     }
+  }
+
+  @Override
+  public void release() {
+    ignoreCallbacks = true;
+    javaScriptChannelFlutterApi.dispose(instanceId, reply -> {});
   }
 }

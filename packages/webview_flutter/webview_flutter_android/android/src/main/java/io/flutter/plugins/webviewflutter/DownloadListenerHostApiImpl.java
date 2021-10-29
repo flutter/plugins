@@ -12,12 +12,40 @@ class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadLis
   private final DownloadListenerCreator downloadListenerCreator;
   private final GeneratedAndroidWebView.DownloadListenerFlutterApi downloadListenerFlutterApi;
 
+  static class DownloadListenerImpl implements DownloadListener, Releasable {
+    private final Long instanceId;
+    private final DownloadListenerFlutterApi flutterApi;
+    private boolean ignoreCallbacks = false;
+
+    DownloadListenerImpl(Long instanceId, DownloadListenerFlutterApi downloadListenerFlutterApi) {
+      this.instanceId = instanceId;
+      this.flutterApi = downloadListenerFlutterApi;
+    }
+
+    @Override
+    public void onDownloadStart(
+        String url,
+        String userAgent,
+        String contentDisposition,
+        String mimetype,
+        long contentLength) {
+      if (!ignoreCallbacks) {
+        flutterApi.onDownloadStart(
+            instanceId, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
+      }
+    }
+
+    @Override
+    public void release() {
+      ignoreCallbacks = true;
+      flutterApi.dispose(instanceId, reply -> {});
+    }
+  }
+
   static class DownloadListenerCreator {
     DownloadListener createDownloadListener(
-        Long instanceId, DownloadListenerFlutterApi downloadListenerFlutterApi) {
-      return (url, userAgent, contentDisposition, mimetype, contentLength) ->
-          downloadListenerFlutterApi.onDownloadStart(
-              instanceId, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
+        Long instanceId, DownloadListenerFlutterApi flutterApi) {
+      return new DownloadListenerImpl(instanceId, flutterApi);
     }
   }
 
@@ -35,10 +63,5 @@ class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadLis
     final DownloadListener downloadListener =
         downloadListenerCreator.createDownloadListener(instanceId, downloadListenerFlutterApi);
     instanceManager.addInstance(downloadListener, instanceId);
-  }
-
-  @Override
-  public void dispose(Long instanceId) {
-    instanceManager.removeInstance(instanceId);
   }
 }
