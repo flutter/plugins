@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import android.webkit.DownloadListener;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerCreator;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerFlutterApi;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -21,7 +20,7 @@ import org.mockito.junit.MockitoRule;
 public class DownloadListenerTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public DownloadListenerFlutterApi mockFlutterApi;
+  @Mock public DownloadListenerFlutterApiImpl mockFlutterApi;
 
   InstanceManager testInstanceManager;
   DownloadListenerHostApiImpl testHostApiImpl;
@@ -35,7 +34,7 @@ public class DownloadListenerTest {
         new DownloadListenerCreator() {
           @Override
           DownloadListener createDownloadListener(
-              Long instanceId, DownloadListenerFlutterApi downloadListenerFlutterApi) {
+              Long instanceId, DownloadListenerFlutterApiImpl downloadListenerFlutterApi) {
             testDownloadListener =
                 super.createDownloadListener(instanceId, downloadListenerFlutterApi);
             return testDownloadListener;

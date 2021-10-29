@@ -11,7 +11,6 @@ import static org.mockito.Mockito.verify;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientCreator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -23,7 +22,7 @@ import org.mockito.junit.MockitoRule;
 public class WebChromeClientTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public WebChromeClientFlutterApi mockFlutterApi;
+  @Mock public WebChromeClientFlutterApiImpl mockFlutterApi;
 
   @Mock public WebView mockWebView;
 
@@ -45,7 +44,7 @@ public class WebChromeClientTest {
           WebChromeClient createWebChromeClient(
               Long instanceId,
               InstanceManager instanceManager,
-              WebChromeClientFlutterApi webChromeClientFlutterApi,
+              WebChromeClientFlutterApiImpl webChromeClientFlutterApi,
               WebViewClient webViewClient) {
             testWebChromeClient =
                 super.createWebChromeClient(

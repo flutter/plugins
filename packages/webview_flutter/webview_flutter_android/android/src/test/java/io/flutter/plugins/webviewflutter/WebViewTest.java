@@ -17,7 +17,6 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientImpl;
 import io.flutter.plugins.webviewflutter.WebViewHostApiImpl.InputAwareWebViewPlatformView;
@@ -262,7 +261,7 @@ public class WebViewTest {
   @Test
   public void addJavaScriptChannel() {
     final JavaScriptChannel javaScriptChannel =
-        new JavaScriptChannel(0L, mock(JavaScriptChannelFlutterApi.class), "aName", null);
+        new JavaScriptChannel(0L, mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
     testInstanceManager.addInstance(javaScriptChannel, 1L);
 
     testHostApiImpl.addJavaScriptChannel(0L, 1L);
@@ -272,7 +271,7 @@ public class WebViewTest {
   @Test
   public void removeJavaScriptChannel() {
     final JavaScriptChannel javaScriptChannel =
-        new JavaScriptChannel(0L, mock(JavaScriptChannelFlutterApi.class), "aName", null);
+        new JavaScriptChannel(0L, mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
     testInstanceManager.addInstance(javaScriptChannel, 1L);
 
     testHostApiImpl.removeJavaScriptChannel(0L, 1L);

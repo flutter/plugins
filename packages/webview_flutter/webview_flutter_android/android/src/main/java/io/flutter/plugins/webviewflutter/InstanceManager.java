@@ -18,14 +18,24 @@ class InstanceManager {
     instanceIdsToInstances.append(instanceId, instance);
   }
 
-  /** Remove the instance from the manager. */
-  Object removeInstance(long instanceId) {
+  /** Remove the instance with instanceId from the manager. */
+  Object removeInstanceWithInstanceId(long instanceId) {
     final Object instance = instanceIdsToInstances.get(instanceId);
     if (instance != null) {
       instanceIdsToInstances.remove(instanceId);
       instancesToInstanceIds.remove(instance);
     }
     return instance;
+  }
+
+  /** Remove the instance from the manager. */
+  Long removeInstance(Object instance) {
+    final Long instanceId = instancesToInstanceIds.get(instance);
+    if (instanceId != null) {
+      instanceIdsToInstances.remove(instanceId);
+      instancesToInstanceIds.remove(instance);
+    }
+    return instanceId;
   }
 
   /** Retrieve the Object paired with instanceId. */

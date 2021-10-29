@@ -30,7 +30,7 @@ class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostA
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstance(instanceId);
+    instanceManager.removeInstanceWithInstanceId(instanceId);
   }
 
   @Override

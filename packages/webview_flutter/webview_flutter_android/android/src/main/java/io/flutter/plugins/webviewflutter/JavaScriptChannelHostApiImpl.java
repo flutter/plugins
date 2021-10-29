@@ -7,18 +7,17 @@ package io.flutter.plugins.webviewflutter;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 
 class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
   private final JavaScriptChannelCreator javaScriptChannelCreator;
-  private final JavaScriptChannelFlutterApi flutterApi;
+  private final JavaScriptChannelFlutterApiImpl flutterApi;
   private final Handler platformThreadHandler;
 
   static class JavaScriptChannelCreator {
     JavaScriptChannel createJavaScriptChannel(
         Long instanceId,
-        JavaScriptChannelFlutterApi flutterApi,
+        JavaScriptChannelFlutterApiImpl flutterApi,
         String channelName,
         Handler platformThreadHandler) {
       return new JavaScriptChannel(instanceId, flutterApi, channelName, platformThreadHandler) {
@@ -27,7 +26,7 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
         public void postMessage(String message) {
           if (!ignoreCallbacks) {
             final Runnable postMessageRunnable =
-                () -> javaScriptChannelFlutterApi.postMessage(instanceId, message, reply -> {});
+                () -> flutterApi.postMessage(instanceId, message, reply -> {});
             if (platformThreadHandler.getLooper() == Looper.myLooper()) {
               postMessageRunnable.run();
             } else {
@@ -42,7 +41,7 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
   JavaScriptChannelHostApiImpl(
       InstanceManager instanceManager,
       JavaScriptChannelCreator javaScriptChannelCreator,
-      JavaScriptChannelFlutterApi flutterApi,
+      JavaScriptChannelFlutterApiImpl flutterApi,
       Handler platformThreadHandler) {
     this.instanceManager = instanceManager;
     this.javaScriptChannelCreator = javaScriptChannelCreator;

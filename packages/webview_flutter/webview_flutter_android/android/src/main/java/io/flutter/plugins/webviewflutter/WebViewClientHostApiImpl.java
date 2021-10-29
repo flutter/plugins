@@ -17,12 +17,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
 
 class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
   private final InstanceManager instanceManager;
   private final WebViewClientCreator webViewClientCreator;
-  private final WebViewClientFlutterApi flutterApi;
+  private final WebViewClientFlutterApiImpl flutterApi;
 
   @RequiresApi(api = Build.VERSION_CODES.M)
   static GeneratedAndroidWebView.WebResourceErrorData createWebResourceErrorData(
@@ -68,14 +67,14 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
     private final Long instanceId;
     private final InstanceManager instanceManager;
     private final Boolean shouldOverrideUrlLoading;
-    private final WebViewClientFlutterApi flutterApi;
+    private final WebViewClientFlutterApiImpl flutterApi;
     private boolean ignoreCallbacks = false;
 
     WebViewClientImpl(
         Long instanceId,
         InstanceManager instanceManager,
         Boolean shouldOverrideUrlLoading,
-        WebViewClientFlutterApi flutterApi) {
+        WebViewClientFlutterApiImpl flutterApi) {
       this.instanceId = instanceId;
       this.instanceManager = instanceManager;
       this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
@@ -152,7 +151,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
 
     public void release() {
       ignoreCallbacks = true;
-      flutterApi.dispose(instanceId, reply -> {});
+      flutterApi.dispose(this, reply -> {});
     }
   }
 
@@ -160,14 +159,14 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
     private final Long instanceId;
     private final InstanceManager instanceManager;
     private final Boolean shouldOverrideUrlLoading;
-    private final WebViewClientFlutterApi flutterApi;
+    private final WebViewClientFlutterApiImpl flutterApi;
     private boolean ignoreCallbacks = false;
 
     WebViewClientCompatImpl(
         Long instanceId,
         InstanceManager instanceManager,
         Boolean shouldOverrideUrlLoading,
-        WebViewClientFlutterApi flutterApi) {
+        WebViewClientFlutterApiImpl flutterApi) {
       this.instanceId = instanceId;
       this.instanceManager = instanceManager;
       this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
@@ -253,7 +252,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
 
     public void release() {
       ignoreCallbacks = true;
-      flutterApi.dispose(instanceId, reply -> {});
+      flutterApi.dispose(this, reply -> {});
     }
   }
 
@@ -262,7 +261,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
         Long instanceId,
         InstanceManager instanceManager,
         Boolean shouldOverrideUrlLoading,
-        WebViewClientFlutterApi webViewClientFlutterApi) {
+        WebViewClientFlutterApiImpl webViewClientFlutterApi) {
       // WebViewClientCompat is used to get
       // shouldOverrideUrlLoading(WebView view, WebResourceRequest request)
       // invoked by the webview on older Android devices, without it pages that use iframes will
@@ -284,7 +283,7 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
   WebViewClientHostApiImpl(
       InstanceManager instanceManager,
       WebViewClientCreator webViewClientCreator,
-      WebViewClientFlutterApi flutterApi) {
+      WebViewClientFlutterApiImpl flutterApi) {
     this.instanceManager = instanceManager;
     this.webViewClientCreator = webViewClientCreator;
     this.flutterApi = flutterApi;

@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
 import io.flutter.plugin.common.MethodChannel;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 import java.util.HashMap;
 
 /**
@@ -23,7 +22,7 @@ class JavaScriptChannel implements Releasable {
   private final MethodChannel methodChannel;
   private final Handler platformThreadHandler;
   final String javaScriptChannelName;
-  final JavaScriptChannelFlutterApi javaScriptChannelFlutterApi;
+  final JavaScriptChannelFlutterApiImpl flutterApi;
   boolean ignoreCallbacks = false;
 
   /**
@@ -38,12 +37,12 @@ class JavaScriptChannel implements Releasable {
     this.javaScriptChannelName = javaScriptChannelName;
     this.platformThreadHandler = platformThreadHandler;
     this.instanceId = null;
-    javaScriptChannelFlutterApi = null;
+    this.flutterApi = null;
   }
 
   /**
    * @param instanceId identifier for this object when messages are sent to Dart
-   * @param javaScriptChannelFlutterApi the Flutter Api to which JS messages are sent
+   * @param flutterApi the Flutter Api to which JS messages are sent
    * @param channelName the name of the JavaScript channel, this is sent over the method channel
    *     with each message to let the Dart code know which JavaScript channel the message was sent
    *     through
@@ -51,11 +50,11 @@ class JavaScriptChannel implements Releasable {
    */
   JavaScriptChannel(
       Long instanceId,
-      JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+      JavaScriptChannelFlutterApiImpl flutterApi,
       String channelName,
       Handler platformThreadHandler) {
     this.instanceId = instanceId;
-    this.javaScriptChannelFlutterApi = javaScriptChannelFlutterApi;
+    this.flutterApi = flutterApi;
     this.javaScriptChannelName = channelName;
     this.platformThreadHandler = platformThreadHandler;
     methodChannel = null;
@@ -85,6 +84,6 @@ class JavaScriptChannel implements Releasable {
   @Override
   public void release() {
     ignoreCallbacks = true;
-    javaScriptChannelFlutterApi.dispose(instanceId, reply -> {});
+    flutterApi.dispose(this, reply -> {});
   }
 }

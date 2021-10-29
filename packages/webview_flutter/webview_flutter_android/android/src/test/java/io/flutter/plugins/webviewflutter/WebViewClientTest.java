@@ -10,7 +10,6 @@ import static org.mockito.Mockito.verify;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCreator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -22,7 +21,7 @@ import org.mockito.junit.MockitoRule;
 public class WebViewClientTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public WebViewClientFlutterApi mockFlutterApi;
+  @Mock public WebViewClientFlutterApiImpl mockFlutterApi;
 
   @Mock public WebView mockWebView;
 
@@ -42,7 +41,7 @@ public class WebViewClientTest {
               Long instanceId,
               InstanceManager instanceManager,
               Boolean shouldOverrideUrlLoading,
-              WebViewClientFlutterApi webViewClientFlutterApi) {
+              WebViewClientFlutterApiImpl webViewClientFlutterApi) {
             testWebViewClient =
                 super.createWebViewClient(
                     instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);

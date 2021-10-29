@@ -12,24 +12,23 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
 
 class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeClientHostApi {
   private final InstanceManager instanceManager;
   private final WebChromeClientCreator webChromeClientCreator;
-  private final WebChromeClientFlutterApi flutterApi;
+  private final WebChromeClientFlutterApiImpl flutterApi;
 
   static class WebChromeClientImpl extends WebChromeClient implements Releasable {
     private final Long instanceId;
     private final InstanceManager instanceManager;
-    private final WebChromeClientFlutterApi flutterApi;
+    private final WebChromeClientFlutterApiImpl flutterApi;
     private WebViewClient webViewClient;
     private boolean ignoreCallbacks = false;
 
     WebChromeClientImpl(
         Long instanceId,
         InstanceManager instanceManager,
-        WebChromeClientFlutterApi flutterApi,
+        WebChromeClientFlutterApiImpl flutterApi,
         WebViewClient webViewClient) {
       this.instanceId = instanceId;
       this.instanceManager = instanceManager;
@@ -82,7 +81,7 @@ class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeCli
 
     public void release() {
       ignoreCallbacks = true;
-      flutterApi.dispose(instanceId, reply -> {});
+      flutterApi.dispose(this, reply -> {});
     }
   }
 
@@ -90,7 +89,7 @@ class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeCli
     WebChromeClient createWebChromeClient(
         Long instanceId,
         InstanceManager instanceManager,
-        WebChromeClientFlutterApi flutterApi,
+        WebChromeClientFlutterApiImpl flutterApi,
         WebViewClient webViewClient) {
       return new WebChromeClientImpl(instanceId, instanceManager, flutterApi, webViewClient);
     }
@@ -99,7 +98,7 @@ class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeCli
   WebChromeClientHostApiImpl(
       InstanceManager instanceManager,
       WebChromeClientCreator webChromeClientCreator,
-      WebChromeClientFlutterApi flutterApi) {
+      WebChromeClientFlutterApiImpl flutterApi) {
     this.instanceManager = instanceManager;
     this.webChromeClientCreator = webChromeClientCreator;
     this.flutterApi = flutterApi;

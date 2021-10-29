@@ -9,7 +9,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
 import android.os.Handler;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelFlutterApi;
 import io.flutter.plugins.webviewflutter.JavaScriptChannelHostApiImpl.JavaScriptChannelCreator;
 import org.junit.Before;
 import org.junit.Rule;
@@ -21,7 +20,7 @@ import org.mockito.junit.MockitoRule;
 public class JavaScriptChannelTest {
   @Rule public MockitoRule mockitoRule = MockitoJUnit.rule();
 
-  @Mock public GeneratedAndroidWebView.JavaScriptChannelFlutterApi mockFlutterApi;
+  @Mock public JavaScriptChannelFlutterApiImpl mockFlutterApi;
 
   InstanceManager testInstanceManager;
   JavaScriptChannelHostApiImpl testHostApiImpl;
@@ -36,7 +35,7 @@ public class JavaScriptChannelTest {
           @Override
           JavaScriptChannel createJavaScriptChannel(
               Long instanceId,
-              JavaScriptChannelFlutterApi javaScriptChannelFlutterApi,
+              JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi,
               String channelName,
               Handler platformThreadHandler) {
             testJavaScriptChannel =
