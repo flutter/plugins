@@ -172,12 +172,15 @@ void main() {
         pageFinishedCompleter.complete();
       },
     ));
+    // This is required to wait for the initial resize of the WebView. The line
+    // pageFinishedCompleter can complete before this.
     await tester.pump(Duration(seconds: 3));
     await pageFinishedCompleter.future;
 
     final int oldCount = resizeCallbackCount;
 
     await tester.tap(find.byKey(const ValueKey('resizeButton')));
+    // Wait for WebView resize.
     await tester.pump(Duration(seconds: 3));
 
     expect(resizeCallbackCount, greaterThan(oldCount));
