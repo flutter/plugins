@@ -1,3 +1,21 @@
+## 0.1.6
+
+* Require Dart SDK >= 2.14.
+* Update `json_annotation` dependency to `^4.3.0`.
+
+## 0.1.5+1
+
+* Fix a broken link in the README.
+
+## 0.1.5
+
+* Introduced the `SkuDetailsWrapper.introductoryPriceAmountMicros` field of the correct type (`int`) and deprecated the `SkuDetailsWrapper.introductoryPriceMicros` field.
+* Update dev_dependency `build_runner` to ^2.0.0 and `json_serializable` to ^5.0.2.
+
+## 0.1.4+7
+
+* Ensure that the `SkuDetailsWrapper.introductoryPriceMicros` is populated correctly.
+
 ## 0.1.4+6
 
 * Ensure that purchases correctly indicate whether they are acknowledged or not. The `PurchaseDetails.pendingCompletePurchase` field now correctly indicates if the purchase still needs to be completed.

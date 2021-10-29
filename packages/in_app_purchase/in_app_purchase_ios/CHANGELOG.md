@@ -1,3 +1,16 @@
+## 0.1.4
+
+* Require Dart SDK >= 2.14.
+
+## 0.1.3+5
+
+* Updated example app to handle restored purchases properly.
+* Update dev_dependency `build_runner` to ^2.0.0 and `json_serializable` to ^5.0.2.
+
+## 0.1.3+4
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
 ## 0.1.3+3
 
 * Add `implements` to pubspec.

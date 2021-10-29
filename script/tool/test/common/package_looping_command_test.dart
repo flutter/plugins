@@ -36,6 +36,8 @@ const String _errorFile = 'errors';
 const String _skipFile = 'skip';
 // The filename within a package containing warnings to log during runForPackage.
 const String _warningFile = 'warnings';
+// The filename within a package indicating that it should throw.
+const String _throwFile = 'throw';
 
 void main() {
   late FileSystem fileSystem;
@@ -117,12 +119,37 @@ void main() {
       expect(() => runCommand(command), throwsA(isA<ToolExit>()));
     });
 
-    test('does not stop looping', () async {
+    test('does not stop looping on error', () async {
       createFakePackage('package_a', packagesDir);
       final Directory failingPackage =
           createFakePlugin('package_b', packagesDir);
       createFakePackage('package_c', packagesDir);
       failingPackage.childFile(_errorFile).createSync();
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      Error? commandError;
+      final List<String> output =
+          await runCommand(command, errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startHeadingColor}Running for package_a...$_endColor',
+            '${_startHeadingColor}Running for package_b...$_endColor',
+            '${_startHeadingColor}Running for package_c...$_endColor',
+          ]));
+    });
+
+    test('does not stop looping on exceptions', () async {
+      createFakePackage('package_a', packagesDir);
+      final Directory failingPackage =
+          createFakePlugin('package_b', packagesDir);
+      createFakePackage('package_c', packagesDir);
+      failingPackage.childFile(_throwFile).createSync();
 
       final TestPackageLoopingCommand command =
           createTestCommand(hasLongOutput: false);
@@ -437,6 +464,31 @@ void main() {
           ]));
     });
 
+    test('logs unhandled exceptions as errors', () async {
+      createFakePackage('package_a', packagesDir);
+      final Directory failingPackage =
+          createFakePlugin('package_b', packagesDir);
+      createFakePackage('package_c', packagesDir);
+      failingPackage.childFile(_throwFile).createSync();
+
+      final TestPackageLoopingCommand command =
+          createTestCommand(hasLongOutput: false);
+      Error? commandError;
+      final List<String> output =
+          await runCommand(command, errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<String>[
+            '${_startErrorColor}Exception: Uh-oh$_endColor',
+            '${_startErrorColor}The following packages had errors:$_endColor',
+            '$_startErrorColor  package_b:\n    Unhandled exception$_endColor',
+          ]));
+    });
+
     test('prints run summary on success', () async {
       final Directory warnPackage1 =
           createFakePackage('package_a', packagesDir);
@@ -656,6 +708,10 @@ class TestPackageLoopingCommand extends PackageLoopingCommand {
     final File errorFile = package.directory.childFile(_errorFile);
     if (errorFile.existsSync()) {
       return PackageResult.fail(errorFile.readAsLinesSync());
+    }
+    final File throwFile = package.directory.childFile(_throwFile);
+    if (throwFile.existsSync()) {
+      throw Exception('Uh-oh');
     }
     return PackageResult.success();
   }

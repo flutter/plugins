@@ -27,6 +27,14 @@ void main() {
     _methodCalledCompleter.complete(true);
   }
 
+  void onDragStart(gmaps.LatLng _) {
+    _methodCalledCompleter.complete(true);
+  }
+
+  void onDrag(gmaps.LatLng _) {
+    _methodCalledCompleter.complete(true);
+  }
+
   void onDragEnd(gmaps.LatLng _) {
     _methodCalledCompleter.complete(true);
   }
@@ -50,6 +58,26 @@ void main() {
       gmaps.Event.trigger(marker, 'click', [gmaps.MapMouseEvent()]);
 
       // The event handling is now truly async. Wait for it...
+      expect(await methodCalled, isTrue);
+    });
+
+    testWidgets('onDragStart gets called', (WidgetTester tester) async {
+      MarkerController(marker: marker, onDragStart: onDragStart);
+
+      // Trigger a drag end event...
+      gmaps.Event.trigger(marker, 'dragstart',
+          [gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
+
+      expect(await methodCalled, isTrue);
+    });
+
+    testWidgets('onDrag gets called', (WidgetTester tester) async {
+      MarkerController(marker: marker, onDrag: onDrag);
+
+      // Trigger a drag end event...
+      gmaps.Event.trigger(
+          marker, 'drag', [gmaps.MapMouseEvent()..latLng = gmaps.LatLng(0, 0)]);
+
       expect(await methodCalled, isTrue);
     });
 

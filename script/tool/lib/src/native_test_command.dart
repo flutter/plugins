@@ -21,7 +21,9 @@ const String _iosDestinationFlag = 'ios-destination';
 const int _exitNoIosSimulators = 3;
 
 /// The command to run native tests for plugins:
-/// - iOS and macOS: XCTests (XCUnitTest and XCUITest) in plugins.
+/// - iOS and macOS: XCTests (XCUnitTest and XCUITest)
+/// - Android: JUnit tests
+/// - Windows and Linux: GoogleTest tests
 class NativeTestCommand extends PackageLoopingCommand {
   /// Creates an instance of the test command.
   NativeTestCommand(
@@ -39,6 +41,7 @@ class NativeTestCommand extends PackageLoopingCommand {
     );
     argParser.addFlag(kPlatformAndroid, help: 'Runs Android tests');
     argParser.addFlag(kPlatformIos, help: 'Runs iOS tests');
+    argParser.addFlag(kPlatformLinux, help: 'Runs Linux tests');
     argParser.addFlag(kPlatformMacos, help: 'Runs macOS tests');
     argParser.addFlag(kPlatformWindows, help: 'Runs Windows tests');
 
@@ -63,9 +66,11 @@ class NativeTestCommand extends PackageLoopingCommand {
 Runs native unit tests and native integration tests.
 
 Currently supported platforms:
-- Android (unit tests only)
+- Android
 - iOS: requires 'xcrun' to be in your path.
+- Linux (unit tests only)
 - macOS: requires 'xcrun' to be in your path.
+- Windows (unit tests only)
 
 The example app(s) must be built for all targeted platforms before running
 this command.
@@ -80,6 +85,7 @@ this command.
     _platforms = <String, _PlatformDetails>{
       kPlatformAndroid: _PlatformDetails('Android', _testAndroid),
       kPlatformIos: _PlatformDetails('iOS', _testIos),
+      kPlatformLinux: _PlatformDetails('Linux', _testLinux),
       kPlatformMacos: _PlatformDetails('macOS', _testMacOS),
       kPlatformWindows: _PlatformDetails('Windows', _testWindows),
     };
@@ -101,6 +107,11 @@ this command.
     if (getBoolArg(kPlatformWindows) && getBoolArg(_integrationTestFlag)) {
       logWarning('This command currently only supports unit tests for Windows. '
           'See https://github.com/flutter/flutter/issues/70233.');
+    }
+
+    if (getBoolArg(kPlatformLinux) && getBoolArg(_integrationTestFlag)) {
+      logWarning('This command currently only supports unit tests for Linux. '
+          'See https://github.com/flutter/flutter/issues/70235.');
     }
 
     // iOS-specific run-level state.
@@ -231,7 +242,8 @@ this command.
 
     final Iterable<RepositoryPackage> examples = plugin.getExamples();
 
-    bool ranTests = false;
+    bool ranUnitTests = false;
+    bool ranAnyTests = false;
     bool failed = false;
     bool hasMissingBuild = false;
     for (final RepositoryPackage example in examples) {
@@ -239,8 +251,6 @@ this command.
       final bool hasIntegrationTests =
           exampleHasNativeIntegrationTests(example);
 
-      // TODO(stuartmorgan): Make !hasUnitTests fatal. See
-      // https://github.com/flutter/flutter/issues/85469
       if (mode.unit && !hasUnitTests) {
         _printNoExampleTestsMessage(example, 'Android unit');
       }
@@ -278,7 +288,8 @@ this command.
           printError('$exampleName unit tests failed.');
           failed = true;
         }
-        ranTests = true;
+        ranUnitTests = true;
+        ranAnyTests = true;
       }
 
       if (runIntegrationTests) {
@@ -300,7 +311,7 @@ this command.
           printError('$exampleName integration tests failed.');
           failed = true;
         }
-        ranTests = true;
+        ranAnyTests = true;
       }
     }
 
@@ -310,7 +321,12 @@ this command.
               ? 'Examples must be built before testing.'
               : null);
     }
-    if (!ranTests) {
+    if (!mode.integrationOnly && !ranUnitTests) {
+      printError('No unit tests ran. Plugins are required to have unit tests.');
+      return _PlatformResult(RunState.failed,
+          error: 'No unit tests ran (use --exclude if this is intentional).');
+    }
+    if (!ranAnyTests) {
       return _PlatformResult(RunState.skipped);
     }
     return _PlatformResult(RunState.succeeded);
@@ -337,33 +353,40 @@ this command.
     List<String> extraFlags = const <String>[],
   }) async {
     String? testTarget;
+    const String unitTestTarget = 'RunnerTests';
     if (mode.unitOnly) {
-      testTarget = 'RunnerTests';
+      testTarget = unitTestTarget;
     } else if (mode.integrationOnly) {
       testTarget = 'RunnerUITests';
     }
 
+    bool ranUnitTests = false;
     // Assume skipped until at least one test has run.
     RunState overallResult = RunState.skipped;
     for (final RepositoryPackage example in plugin.getExamples()) {
       final String exampleName = example.displayName;
 
-      // TODO(stuartmorgan): Always check for RunnerTests, and make it fatal if
-      // no examples have it. See
-      // https://github.com/flutter/flutter/issues/85469
-      if (testTarget != null) {
-        final Directory project = example.directory
-            .childDirectory(platform.toLowerCase())
-            .childDirectory('Runner.xcodeproj');
+      // If running a specific target, check that. Otherwise, check if there
+      // are unit tests, since having no unit tests for a plugin is fatal
+      // (by repo policy) even if there are integration tests.
+      bool exampleHasUnitTests = false;
+      final String? targetToCheck =
+          testTarget ?? (mode.unit ? unitTestTarget : null);
+      final Directory xcodeProject = example.directory
+          .childDirectory(platform.toLowerCase())
+          .childDirectory('Runner.xcodeproj');
+      if (targetToCheck != null) {
         final bool? hasTarget =
-            await _xcode.projectHasTarget(project, testTarget);
+            await _xcode.projectHasTarget(xcodeProject, targetToCheck);
         if (hasTarget == null) {
           printError('Unable to check targets for $exampleName.');
           overallResult = RunState.failed;
           continue;
         } else if (!hasTarget) {
-          print('No "$testTarget" target in $exampleName; skipping.');
+          print('No "$targetToCheck" target in $exampleName; skipping.');
           continue;
+        } else if (targetToCheck == unitTestTarget) {
+          exampleHasUnitTests = true;
         }
       }
 
@@ -386,20 +409,39 @@ this command.
       switch (exitCode) {
         case _xcodebuildNoTestExitCode:
           _printNoExampleTestsMessage(example, platform);
-          continue;
+          break;
         case 0:
           printSuccess('Successfully ran $platform xctest for $exampleName');
           // If this is the first test, assume success until something fails.
           if (overallResult == RunState.skipped) {
             overallResult = RunState.succeeded;
           }
+          if (exampleHasUnitTests) {
+            ranUnitTests = true;
+          }
           break;
         default:
           // Any failure means a failure overall.
           overallResult = RunState.failed;
+          // If unit tests ran, note that even if they failed.
+          if (exampleHasUnitTests) {
+            ranUnitTests = true;
+          }
           break;
       }
     }
+
+    if (!mode.integrationOnly && !ranUnitTests) {
+      printError('No unit tests ran. Plugins are required to have unit tests.');
+      // Only return a specific summary error message about the missing unit
+      // tests if there weren't also failures, to avoid having a misleadingly
+      // specific message.
+      if (overallResult != RunState.failed) {
+        return _PlatformResult(RunState.failed,
+            error: 'No unit tests ran (use --exclude if this is intentional).');
+      }
+    }
+
     return _PlatformResult(overallResult);
   }
 
@@ -416,6 +458,21 @@ this command.
 
     return _runGoogleTestTests(plugin,
         buildDirectoryName: 'windows', isTestBinary: isTestBinary);
+  }
+
+  Future<_PlatformResult> _testLinux(
+      RepositoryPackage plugin, _TestMode mode) async {
+    if (mode.integrationOnly) {
+      return _PlatformResult(RunState.skipped);
+    }
+
+    bool isTestBinary(File file) {
+      return file.basename.endsWith('_test') ||
+          file.basename.endsWith('_tests');
+    }
+
+    return _runGoogleTestTests(plugin,
+        buildDirectoryName: 'linux', isTestBinary: isTestBinary);
   }
 
   /// Finds every file in the [buildDirectoryName] subdirectory of [plugin]'s
@@ -442,10 +499,11 @@ this command.
           .whereType<File>()
           .where(isTestBinary)
           .where((File file) {
-        // Only run the debug build of the unit tests, to avoid running the
-        // same tests multiple times.
+        // Only run the release build of the unit tests, to avoid running the
+        // same tests multiple times. Release is used rather than debug since
+        // `build-examples` builds release versions.
         final List<String> components = path.split(file.path);
-        return components.contains('debug') || components.contains('Debug');
+        return components.contains('release') || components.contains('Release');
       }));
     }
 
