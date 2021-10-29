@@ -25,16 +25,16 @@ import org.robolectric.annotation.Config;
 @RunWith(RobolectricTestRunner.class)
 public class ResolutionFeatureTest {
   private static final String cameraName = "1";
-  private CamcorderProfile mockProfileLow;
-  private EncoderProfiles mockProfileLowOn31;
+  private CamcorderProfile mockProfileLowLegacy;
+  private EncoderProfiles mockProfileLow;
   private MockedStatic<CamcorderProfile> mockedStaticProfile;
 
   @Before
   @SuppressWarnings("deprecation")
   public void beforeLegacy() {
     mockedStaticProfile = mockStatic(CamcorderProfile.class);
-    mockProfileLow = mock(CamcorderProfile.class);
-    CamcorderProfile mockProfile = mock(CamcorderProfile.class);
+    mockProfileLowLegacy = mock(CamcorderProfile.class);
+    CamcorderProfile mockProfileLegacy = mock(CamcorderProfile.class);
 
     mockedStaticProfile
         .when(() -> CamcorderProfile.hasProfile(1, CamcorderProfile.QUALITY_HIGH))
@@ -60,56 +60,56 @@ public class ResolutionFeatureTest {
 
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_HIGH))
-        .thenReturn(mockProfile);
+        .thenReturn(mockProfileLegacy);
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_2160P))
-        .thenReturn(mockProfile);
+        .thenReturn(mockProfileLegacy);
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_1080P))
-        .thenReturn(mockProfile);
+        .thenReturn(mockProfileLegacy);
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_720P))
-        .thenReturn(mockProfile);
+        .thenReturn(mockProfileLegacy);
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_480P))
-        .thenReturn(mockProfile);
+        .thenReturn(mockProfileLegacy);
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_QVGA))
-        .thenReturn(mockProfile);
+        .thenReturn(mockProfileLegacy);
     mockedStaticProfile
         .when(() -> CamcorderProfile.get(1, CamcorderProfile.QUALITY_LOW))
-        .thenReturn(mockProfileLow);
+        .thenReturn(mockProfileLowLegacy);
   }
 
   public void before() {
-    mockProfileLowOn31 = mock(EncoderProfiles.class);
-    EncoderProfiles mockProfileOn31 = mock(EncoderProfiles.class);
+    mockProfileLow = mock(EncoderProfiles.class);
+    EncoderProfiles mockProfile = mock(EncoderProfiles.class);
     EncoderProfiles.VideoProfile mockVideoProfile = mock(EncoderProfiles.VideoProfile.class);
     List<EncoderProfiles.VideoProfile> mockVideoProfilesList = List.of(mockVideoProfile);
 
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_HIGH))
-        .thenReturn(mockProfileOn31);
+        .thenReturn(mockProfile);
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_2160P))
-        .thenReturn(mockProfileOn31);
+        .thenReturn(mockProfile);
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_1080P))
-        .thenReturn(mockProfileOn31);
+        .thenReturn(mockProfile);
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_720P))
-        .thenReturn(mockProfileOn31);
+        .thenReturn(mockProfile);
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_480P))
-        .thenReturn(mockProfileOn31);
+        .thenReturn(mockProfile);
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_QVGA))
-        .thenReturn(mockProfileOn31);
+        .thenReturn(mockProfile);
     mockedStaticProfile
         .when(() -> CamcorderProfile.getAll("1", CamcorderProfile.QUALITY_LOW))
-        .thenReturn(mockProfileLowOn31);
+        .thenReturn(mockProfileLow);
 
-    when(mockProfileOn31.getVideoProfiles()).thenReturn(mockVideoProfilesList);
+    when(mockProfile.getVideoProfiles()).thenReturn(mockVideoProfilesList);
     when(mockVideoProfile.getHeight()).thenReturn(100);
     when(mockVideoProfile.getWidth()).thenReturn(100);
   }
@@ -185,7 +185,7 @@ public class ResolutionFeatureTest {
         .thenReturn(true);
 
     assertEquals(
-        mockProfileLow,
+        mockProfileLowLegacy,
         ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPresetLegacy(
             1, ResolutionPreset.max));
   }
@@ -216,7 +216,7 @@ public class ResolutionFeatureTest {
         .thenReturn(true);
 
     assertEquals(
-        mockProfileLowOn31,
+        mockProfileLow,
         ResolutionFeature.getBestAvailableCamcorderProfileForResolutionPreset(
             1, ResolutionPreset.max));
   }

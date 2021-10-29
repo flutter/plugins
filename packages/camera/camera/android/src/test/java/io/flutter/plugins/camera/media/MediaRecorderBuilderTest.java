@@ -24,7 +24,7 @@ public class MediaRecorderBuilderTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void ctor_test() {
+  public void ctor_testLegacy() {
     MediaRecorderBuilder builder =
         new MediaRecorderBuilder(CamcorderProfile.get(CamcorderProfile.QUALITY_1080P), "");
 
@@ -33,7 +33,7 @@ public class MediaRecorderBuilderTest {
 
   @Config(minSdk = 31)
   @Test
-  public void ctor_testOn31() {
+  public void ctor_test() {
     MediaRecorderBuilder builder =
         new MediaRecorderBuilder(CamcorderProfile.getAll("0", CamcorderProfile.QUALITY_1080P), "");
 
@@ -43,7 +43,7 @@ public class MediaRecorderBuilderTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabled() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabledLegacy() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
@@ -75,7 +75,7 @@ public class MediaRecorderBuilderTest {
 
   @Config(minSdk = 31)
   @Test
-  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabledOn31() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsDisabled() throws IOException {
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     List<EncoderProfiles.VideoProfile> mockVideoProfiles =
         List.of(mock(EncoderProfiles.VideoProfile.class));
@@ -113,7 +113,7 @@ public class MediaRecorderBuilderTest {
 
   @Config(minSdk = 31)
   @Test(expected = IndexOutOfBoundsException.class)
-  public void build_shouldThrowExceptionWithoutVideoOrAudioProfilesOn31() throws IOException {
+  public void build_shouldThrowExceptionWithoutVideoOrAudioProfiles() throws IOException {
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
@@ -133,7 +133,7 @@ public class MediaRecorderBuilderTest {
   @Config(maxSdk = 30)
   @SuppressWarnings("deprecation")
   @Test
-  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabledLegacy() throws IOException {
     CamcorderProfile recorderProfile = getEmptyCamcorderProfile();
     MediaRecorderBuilder.MediaRecorderFactory mockFactory =
         mock(MediaRecorderBuilder.MediaRecorderFactory.class);
@@ -169,7 +169,7 @@ public class MediaRecorderBuilderTest {
 
   @Config(minSdk = 31)
   @Test
-  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabledOn31() throws IOException {
+  public void build_shouldSetValuesInCorrectOrderWhenAudioIsEnabled() throws IOException {
     EncoderProfiles recorderProfile = mock(EncoderProfiles.class);
     List<EncoderProfiles.VideoProfile> mockVideoProfiles =
         List.of(mock(EncoderProfiles.VideoProfile.class));
