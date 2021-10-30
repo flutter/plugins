@@ -1,6 +1,7 @@
 ## NEXT
 
 * Updated Android lint settings.
+* Updated package description.
 
 ## 2.0.2
 

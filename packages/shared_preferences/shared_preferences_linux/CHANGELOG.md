@@ -1,3 +1,7 @@
+## NEXT
+
+* Fixes newly enabled analyzer options.
+
 ## 2.0.2
 
 * Updated installation instructions in README.

@@ -4,7 +4,7 @@ publish_to: none
 # Tests require flutter beta or greater to run.
 environment:
   sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=2.1.0" 
+  flutter: ">=2.1.0"
 
 dependencies:
   google_maps_flutter_web:
