@@ -206,7 +206,27 @@ class FormatCommand extends PluginCommand {
 
     final String fromPath = relativeTo.path;
 
+    // Dart files are allowed to have a pragma to disable auto-formatting. This
+    // was added because Hixie hurts when dealing with what dartfmt does to
+    // artisanally-formatted Dart, while Stuart gets really frustrated when
+    // dealing with PRs from newer contributors who don't know how to make Dart
+    // readable. After much discussion, it was decided that files in the plugins
+    // and packages repos that really benefit from hand-formatting (e.g. files
+    // with large blobs of hex literals) could be opted-out of the requirement
+    // that they be autoformatted, so long as the code's owner was willing to
+    // bear the cost of this during code reviews.
+    // In the event that code ownership moves to someone who does not hold the
+    // same views as the original owner, the pragma can be removed and the file
+    // auto-formatted.
+    const String handFormattedExtension = '.dart';
+    const String handFormattedPragma = '// This file is hand-formatted.';
+
     return files
+        .where((File file) {
+          // See comment above near [handFormattedPragma].
+          return path.extension(file.path) != handFormattedExtension ||
+              !file.readAsLinesSync().contains(handFormattedPragma);
+        })
         .map((File file) => path.relative(file.path, from: fromPath))
         .where((String path) =>
             // Ignore files in build/ directories (e.g., headers of frameworks)

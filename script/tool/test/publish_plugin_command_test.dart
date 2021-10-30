@@ -8,35 +8,30 @@ import 'dart:io' as io;
 
 import 'package:args/command_runner.dart';
 import 'package:file/file.dart';
-import 'package:file/local.dart';
+import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/common/core.dart';
-import 'package:flutter_plugin_tools/src/common/process_runner.dart';
 import 'package:flutter_plugin_tools/src/publish_plugin_command.dart';
-import 'package:git/git.dart';
 import 'package:http/http.dart' as http;
 import 'package:http/testing.dart';
 import 'package:mockito/mockito.dart';
 import 'package:platform/platform.dart';
 import 'package:test/test.dart';
 
+import 'common/plugin_command_test.mocks.dart';
 import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  const String testPluginName = 'foo';
-  late List<String> printedMessages;
+  final String flutterCommand = getFlutterCommand(const LocalPlatform());
 
-  late Directory testRoot;
   late Directory packagesDir;
-  late Directory pluginDir;
-  late GitDir gitDir;
+  late MockGitDir gitDir;
   late TestProcessRunner processRunner;
   late CommandRunner<void> commandRunner;
   late MockStdin mockStdin;
-  // This test uses a local file system instead of an in memory one throughout
-  // so that git actually works. In setup we initialize a mono repo of plugins
-  // with one package and commit everything to Git.
-  const FileSystem fileSystem = LocalFileSystem();
+  late FileSystem fileSystem;
+  // Map of package name to mock response.
+  late Map<String, Map<String, dynamic>> mockHttpResponses;
 
   void _createMockCredentialFile() {
     final String credentialPath = PublishPluginCommand.getCredentialPath();
@@ -46,420 +41,410 @@ void main() {
   }
 
   setUp(() async {
-    testRoot = fileSystem.systemTempDirectory
-        .createTempSync('publish_plugin_command_test-');
-    // The temp directory can have symbolic links, which won't match git output;
-    // use a fully resolved version to avoid potential path comparison issues.
-    testRoot = fileSystem.directory(testRoot.resolveSymbolicLinksSync());
-    packagesDir = createPackagesDirectory(parentDir: testRoot);
-    pluginDir =
-        createFakePlugin(testPluginName, packagesDir, examples: <String>[]);
-    assert(pluginDir != null && pluginDir.existsSync());
-    io.Process.runSync('git', <String>['init'],
-        workingDirectory: testRoot.path);
-    gitDir = await GitDir.fromExisting(testRoot.path);
-    await gitDir.runCommand(<String>['add', '-A']);
-    await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
+    fileSystem = MemoryFileSystem();
+    packagesDir = createPackagesDirectory(fileSystem: fileSystem);
     processRunner = TestProcessRunner();
-    mockStdin = MockStdin();
-    printedMessages = <String>[];
-    commandRunner = CommandRunner<void>('tester', '')
-      ..addCommand(PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          gitDir: gitDir));
-  });
 
-  tearDown(() {
-    testRoot.deleteSync(recursive: true);
+    mockHttpResponses = <String, Map<String, dynamic>>{};
+    final MockClient mockClient = MockClient((http.Request request) async {
+      final String packageName =
+          request.url.pathSegments.last.replaceAll('.json', '');
+      final Map<String, dynamic>? response = mockHttpResponses[packageName];
+      if (response != null) {
+        return http.Response(json.encode(response), 200);
+      }
+      // Default to simulating the plugin never having been published.
+      return http.Response('', 404);
+    });
+
+    gitDir = MockGitDir();
+    when(gitDir.path).thenReturn(packagesDir.parent.path);
+    when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
+        .thenAnswer((Invocation invocation) {
+      final List<String> arguments =
+          invocation.positionalArguments[0]! as List<String>;
+      // Route git calls through the process runner, to make mock output
+      // consistent with outer processes. Attach the first argument to the
+      // command to make targeting the mock results easier.
+      final String gitCommand = arguments.removeAt(0);
+      return processRunner.run('git-$gitCommand', arguments);
+    });
+
+    mockStdin = MockStdin();
+    commandRunner = CommandRunner<void>('tester', '')
+      ..addCommand(PublishPluginCommand(
+        packagesDir,
+        processRunner: processRunner,
+        stdinput: mockStdin,
+        gitDir: gitDir,
+        httpClient: mockClient,
+      ));
   });
 
   group('Initial validation', () {
-    test('requires a package flag', () async {
-      await expectLater(() => commandRunner.run(<String>['publish-plugin']),
-          throwsA(isA<ToolExit>()));
-      expect(
-          printedMessages.last, contains('Must specify a package to publish.'));
-    });
-
-    test('requires an existing flag', () async {
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                'iamerror',
-                '--no-push-tags'
-              ]),
-          throwsA(isA<ToolExit>()));
-
-      expect(printedMessages.last, contains('iamerror does not exist'));
-    });
-
     test('refuses to proceed with dirty files', () async {
-      pluginDir.childFile('tmp').createSync();
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-                '--no-push-tags'
-              ]),
-          throwsA(isA<ToolExit>()));
+      processRunner.mockProcessesForExecutable['git-status'] = <io.Process>[
+        MockProcess(stdout: '?? ${pluginDir.childFile('tmp').path}\n')
+      ];
 
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=foo',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'There are files in the package directory that haven\'t been saved in git. Refusing to publish these files:\n\n?? packages/foo/tmp\n\nIf the directory should be clean, you can run `git clean -xdf && git reset --hard HEAD` to wipe all local changes.',
-            'Failed, see above for details.',
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('There are files in the package directory that haven\'t '
+                'been saved in git. Refusing to publish these files:\n\n'
+                '?? /packages/foo/tmp\n\n'
+                'If the directory should be clean, you can run `git clean -xdf && '
+                'git reset --hard HEAD` to wipe all local changes.'),
+            contains('foo:\n'
+                '    uncommitted changes'),
           ]));
     });
 
     test('fails immediately if the remote doesn\'t exist', () async {
-      await expectLater(
-          () => commandRunner
-              .run(<String>['publish-plugin', '--package', testPluginName]),
-          throwsA(isA<ToolExit>()));
-      expect(processRunner.results.last.stderr, contains('No such remote'));
-    });
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-    test("doesn't validate the remote if it's not pushing tags", () async {
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
+      processRunner.mockProcessesForExecutable['git-remote'] = <io.Process>[
+        MockProcess(exitCode: 1),
+      ];
 
-      await commandRunner.run(<String>[
-        'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>['publish-plugin', '--packages=foo'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      expect(printedMessages.last, 'Done!');
-    });
-
-    test('can publish non-flutter package', () async {
-      const String packageName = 'a_package';
-      createFakePackage(packageName, packagesDir);
-      io.Process.runSync('git', <String>['init'],
-          workingDirectory: testRoot.path);
-      gitDir = await GitDir.fromExisting(testRoot.path);
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Initial commit']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
-        'publish-plugin',
-        '--package',
-        packageName,
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
-      expect(printedMessages.last, 'Done!');
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                'Unable to find URL for remote upstream; cannot push tags'),
+          ]));
     });
   });
 
   group('Publishes package', () {
     test('while showing all output from pub publish to the user', () async {
-      final Future<void> publishCommand = commandRunner.run(<String>[
-        'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
+      createFakePlugin('plugin1', packagesDir, examples: <String>[]);
+      createFakePlugin('plugin2', packagesDir, examples: <String>[]);
 
-      processRunner.mockPublishStdout = 'Foo';
-      processRunner.mockPublishStderr = 'Bar';
-      processRunner.mockPublishCompleteCode = 0;
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(
+            stdout: 'Foo',
+            stderr: 'Bar',
+            stdoutEncoding: utf8,
+            stderrEncoding: utf8), // pub publish for plugin1
+        MockProcess(
+            stdout: 'Baz',
+            stdoutEncoding: utf8,
+            stderrEncoding: utf8), // pub publish for plugin1
+      ];
 
-      await publishCommand;
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--packages=plugin1,plugin2']);
 
-      expect(printedMessages, contains('Foo'));
-      expect(printedMessages, contains('Bar'));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in /packages/plugin1...'),
+            contains('Foo'),
+            contains('Bar'),
+            contains('Package published!'),
+            contains('Running `pub publish ` in /packages/plugin2...'),
+            contains('Baz'),
+            contains('Package published!'),
+          ]));
     });
 
     test('forwards input from the user to `pub publish`', () async {
-      final Future<void> publishCommand = commandRunner.run(<String>[
-        'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
-        '--no-tag-release'
-      ]);
-      mockStdin.mockUserInputs.add(utf8.encode('user input'));
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-      await publishCommand;
+      mockStdin.mockUserInputs.add(utf8.encode('user input'));
+
+      await runCapturingPrint(
+          commandRunner, <String>['publish-plugin', '--packages=foo']);
 
       expect(processRunner.mockPublishProcess.stdinMock.lines,
           contains('user input'));
     });
 
     test('forwards --pub-publish-flags to pub publish', () async {
-      processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
-        '--no-tag-release',
+        '--packages=foo',
         '--pub-publish-flags',
-        '--dry-run,--server=foo'
+        '--dry-run,--server=bar'
       ]);
 
-      expect(processRunner.mockPublishArgs.length, 4);
-      expect(processRunner.mockPublishArgs[0], 'pub');
-      expect(processRunner.mockPublishArgs[1], 'publish');
-      expect(processRunner.mockPublishArgs[2], '--dry-run');
-      expect(processRunner.mockPublishArgs[3], '--server=foo');
+      expect(
+          processRunner.recordedCalls,
+          contains(ProcessCall(
+              flutterCommand,
+              const <String>['pub', 'publish', '--dry-run', '--server=bar'],
+              pluginDir.path)));
     });
 
     test(
         '--skip-confirmation flag automatically adds --force to --pub-publish-flags',
         () async {
-      processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
-      await commandRunner.run(<String>[
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
-        '--no-tag-release',
+        '--packages=foo',
         '--skip-confirmation',
         '--pub-publish-flags',
-        '--server=foo'
+        '--server=bar'
       ]);
 
-      expect(processRunner.mockPublishArgs.length, 4);
-      expect(processRunner.mockPublishArgs[0], 'pub');
-      expect(processRunner.mockPublishArgs[1], 'publish');
-      expect(processRunner.mockPublishArgs[2], '--server=foo');
-      expect(processRunner.mockPublishArgs[3], '--force');
+      expect(
+          processRunner.recordedCalls,
+          contains(ProcessCall(
+              flutterCommand,
+              const <String>['pub', 'publish', '--server=bar', '--force'],
+              pluginDir.path)));
     });
 
     test('throws if pub publish fails', () async {
-      processRunner.mockPublishCompleteCode = 128;
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-                '--no-push-tags',
-                '--no-tag-release',
-              ]),
-          throwsA(isA<ToolExit>()));
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-      expect(printedMessages, contains('Publish foo failed.'));
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(exitCode: 128) // pub publish
+      ];
+
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=foo',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Publishing foo failed.'),
+          ]));
     });
 
     test('publish, dry run', () async {
-      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishCompleteCode = 1;
-      await commandRunner.run(<String>[
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        testPluginName,
+        '--packages=foo',
         '--dry-run',
-        '--no-push-tags',
-        '--no-tag-release',
       ]);
 
-      expect(processRunner.pushTagsArgs, isEmpty);
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            '===============  DRY RUN ===============',
-            'Running `pub publish ` in ${pluginDir.path}...\n',
-            'Done!'
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('=============== DRY RUN ==============='),
+            contains('Running for foo'),
+            contains('Running `pub publish ` in ${pluginDir.path}...'),
+            contains('Tagging release foo-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published foo successfully!'),
           ]));
+    });
+
+    test('can publish non-flutter package', () async {
+      const String packageName = 'a_package';
+      createFakePackage(packageName, packagesDir);
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=$packageName',
+      ]);
+
+      expect(
+        output,
+        containsAllInOrder(
+          <Matcher>[
+            contains('Running `pub publish ` in /packages/a_package...'),
+            contains('Package published!'),
+          ],
+        ),
+      );
     });
   });
 
   group('Tags release', () {
     test('with the version and name from the pubspec.yaml', () async {
-      processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+      await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-push-tags',
+        '--packages=foo',
       ]);
 
-      final String? tag = (await gitDir
-              .runCommand(<String>['show-ref', '$testPluginName-v0.0.1']))
-          .stdout as String?;
-      expect(tag, isNotEmpty);
+      expect(processRunner.recordedCalls,
+          contains(const ProcessCall('git-tag', <String>['foo-v0.0.1'], null)));
     });
 
     test('only if publishing succeeded', () async {
-      processRunner.mockPublishCompleteCode = 128;
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-                '--no-push-tags',
-              ]),
-          throwsA(isA<ToolExit>()));
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-      expect(printedMessages, contains('Publish foo failed.'));
-      final String? tag = (await gitDir.runCommand(
-              <String>['show-ref', '$testPluginName-v0.0.1'],
-              throwOnError: false))
-          .stdout as String?;
-      expect(tag, isEmpty);
+      processRunner.mockProcessesForExecutable[flutterCommand] = <io.Process>[
+        MockProcess(exitCode: 128) // pub publish
+      ];
+
+      Error? commandError;
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
+        'publish-plugin',
+        '--packages=foo',
+      ], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Publishing foo failed.'),
+          ]));
+      expect(
+          processRunner.recordedCalls,
+          isNot(contains(
+              const ProcessCall('git-tag', <String>['foo-v0.0.1'], null))));
     });
   });
 
   group('Pushes tags', () {
-    setUp(() async {
-      await gitDir.runCommand(
-          <String>['remote', 'add', 'upstream', 'http://localhost:8000']);
-    });
-
-    test('requires user confirmation', () async {
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'help';
-      await expectLater(
-          () => commandRunner.run(<String>[
-                'publish-plugin',
-                '--package',
-                testPluginName,
-              ]),
-          throwsA(isA<ToolExit>()));
-
-      expect(printedMessages, contains('Tag push canceled.'));
-    });
-
     test('to upstream by default', () async {
-      await gitDir.runCommand(<String>['tag', 'garbage']);
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(<String>[
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        testPluginName,
+        '--packages=foo',
       ]);
 
-      expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
-      expect(printedMessages.last, 'Done!');
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'foo-v0.0.1'], null)));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Pushing tag to upstream...'),
+            contains('Published foo successfully!'),
+          ]));
     });
 
     test('does not ask for user input if the --skip-confirmation flag is on',
         () async {
-      await gitDir.runCommand(<String>['tag', 'garbage']);
-      processRunner.mockPublishCompleteCode = 0;
       _createMockCredentialFile();
-      await commandRunner.run(<String>[
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
         '--skip-confirmation',
-        '--package',
-        testPluginName,
+        '--packages=foo',
       ]);
 
-      expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
-      expect(printedMessages.last, 'Done!');
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'foo-v0.0.1'], null)));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Published foo successfully!'),
+          ]));
     });
 
     test('to upstream by default, dry run', () async {
-      await gitDir.runCommand(<String>['tag', 'garbage']);
-      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishCompleteCode = 1;
-      mockStdin.readLineOutput = 'y';
-      await commandRunner.run(
-          <String>['publish-plugin', '--package', testPluginName, '--dry-run']);
+      final Directory pluginDir =
+          createFakePlugin('foo', packagesDir, examples: <String>[]);
 
-      expect(processRunner.pushTagsArgs, isEmpty);
+      mockStdin.readLineOutput = 'y';
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--packages=foo', '--dry-run']);
+
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            '===============  DRY RUN ===============',
-            'Running `pub publish ` in ${pluginDir.path}...\n',
-            'Tagging release $testPluginName-v0.0.1...',
-            'Pushing tag to upstream...',
-            'Done!'
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('=============== DRY RUN ==============='),
+            contains('Running `pub publish ` in ${pluginDir.path}...'),
+            contains('Tagging release foo-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published foo successfully!'),
           ]));
     });
 
     test('to different remotes based on a flag', () async {
-      await gitDir.runCommand(
-          <String>['remote', 'add', 'origin', 'http://localhost:8001']);
-      processRunner.mockPublishCompleteCode = 0;
+      createFakePlugin('foo', packagesDir, examples: <String>[]);
+
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(<String>[
+
+      final List<String> output =
+          await runCapturingPrint(commandRunner, <String>[
         'publish-plugin',
-        '--package',
-        testPluginName,
+        '--packages=foo',
         '--remote',
         'origin',
       ]);
 
-      expect(processRunner.pushTagsArgs.isNotEmpty, isTrue);
-      expect(processRunner.pushTagsArgs[1], 'origin');
-      expect(processRunner.pushTagsArgs[2], '$testPluginName-v0.0.1');
-      expect(printedMessages.last, 'Done!');
-    });
-
-    test('only if tagging and pushing to remotes are both enabled', () async {
-      processRunner.mockPublishCompleteCode = 0;
-      await commandRunner.run(<String>[
-        'publish-plugin',
-        '--package',
-        testPluginName,
-        '--no-tag-release',
-      ]);
-
-      expect(processRunner.pushTagsArgs.isEmpty, isTrue);
-      expect(printedMessages.last, 'Done!');
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['origin', 'foo-v0.0.1'], null)));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Published foo successfully!'),
+          ]));
     });
   });
 
   group('Auto release (all-changed flag)', () {
-    setUp(() async {
-      io.Process.runSync('git', <String>['init'],
-          workingDirectory: testRoot.path);
-      gitDir = await GitDir.fromExisting(testRoot.path);
-      await gitDir.runCommand(
-          <String>['remote', 'add', 'upstream', 'http://localhost:8000']);
-    });
-
     test('can release newly created plugins', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>[],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>[],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
@@ -468,499 +453,334 @@ void main() {
         'plugin2',
         packagesDir.childDirectory('plugin2'),
       );
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
-            'Done!'
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                'Publishing all packages that have changed relative to "HEAD~"'),
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('plugin1 - \x1B[32mpublished\x1B[0m'),
+            contains('plugin2/plugin2 - \x1B[32mpublished\x1B[0m'),
           ]));
-      expect(processRunner.pushTagsArgs, isNotEmpty);
-      expect(processRunner.pushTagsArgs[0], 'push');
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
-      expect(processRunner.pushTagsArgs[3], 'push');
-      expect(processRunner.pushTagsArgs[4], 'upstream');
-      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin1-v0.0.1'], null)));
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin2-v0.0.1'], null)));
     });
 
     test('can release newly created plugins, while there are existing plugins',
         () async {
-      const Map<String, dynamic> httpResponsePlugin0 = <String, dynamic>{
+      mockHttpResponses['plugin0'] = <String, dynamic>{
         'name': 'plugin0',
         'versions': <String>['0.0.1'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>[],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>[],
       };
 
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin0.json') {
-          return http.Response(json.encode(httpResponsePlugin0), 200);
-        } else if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
-
-      // Prepare an exiting plugin and tag it
+      // The existing plugin.
       createFakePlugin('plugin0', packagesDir);
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      await gitDir.runCommand(<String>['tag', 'plugin0-v0.0.1']);
-
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
-      processRunner.pushTagsArgs.clear();
-
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      // Git results for plugin0 having been released already, and plugin1 and
+      // plugin2 being new.
+      processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
+        MockProcess(stdout: 'plugin0-v0.0.1\n')
+      ];
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
+
+      mockStdin.readLineOutput = 'y';
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
+          output,
           containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
             'Running `pub publish ` in ${pluginDir1.path}...\n',
             'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
-            'Done!'
           ]));
-      expect(processRunner.pushTagsArgs, isNotEmpty);
-      expect(processRunner.pushTagsArgs[0], 'push');
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
-      expect(processRunner.pushTagsArgs[3], 'push');
-      expect(processRunner.pushTagsArgs[4], 'upstream');
-      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin1-v0.0.1'], null)));
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin2-v0.0.1'], null)));
     });
 
     test('can release newly created plugins, dry run', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>[],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>[],
       };
 
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
       // Non-federated
       final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
       // federated
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 1 when running `pub publish`. If dry-run does not work, test should throw.
-      processRunner.mockPublishCompleteCode = 1;
+
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
       mockStdin.readLineOutput = 'y';
-      await commandRunner.run(<String>[
+
+      final List<String> output = await runCapturingPrint(
+          commandRunner, <String>[
         'publish-plugin',
         '--all-changed',
         '--base-sha=HEAD~',
         '--dry-run'
       ]);
+
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            '===============  DRY RUN ===============',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Tagging release plugin1-v0.0.1...',
-            'Pushing tag to upstream...',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Tagging release plugin2-v0.0.1...',
-            'Pushing tag to upstream...',
-            'Packages released: plugin1, plugin2',
-            'Done!'
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('=============== DRY RUN ==============='),
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Tagging release plugin1-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published plugin1 successfully!'),
+            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Tagging release plugin2-v0.0.1...'),
+            contains('Pushing tag to upstream...'),
+            contains('Published plugin2 successfully!'),
           ]));
-      expect(processRunner.pushTagsArgs, isEmpty);
+      expect(
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
     });
 
     test('version change triggers releases.', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
-        'versions': <String>[],
+        'versions': <String>['0.0.1'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
-        'versions': <String>[],
+        'versions': <String>['0.0.1'],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      final Directory pluginDir2 =
-          createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
+      final Directory pluginDir2 = createFakePlugin(
+          'plugin2', packagesDir.childDirectory('plugin2'),
+          version: '0.0.2');
+
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
+
       mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      final List<String> output2 = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
-            'Done!'
+          output2,
+          containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Published plugin1 successfully!'),
+            contains('Running `pub publish ` in ${pluginDir2.path}...'),
+            contains('Published plugin2 successfully!'),
           ]));
-      expect(processRunner.pushTagsArgs, isNotEmpty);
-      expect(processRunner.pushTagsArgs[0], 'push');
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
-      expect(processRunner.pushTagsArgs[3], 'push');
-      expect(processRunner.pushTagsArgs[4], 'upstream');
-      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
-
-      processRunner.pushTagsArgs.clear();
-      printedMessages.clear();
-
-      final List<String> plugin1Pubspec =
-          pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
-      plugin1Pubspec[plugin1Pubspec.indexWhere(
-          (String element) => element.contains('version:'))] = 'version: 0.0.2';
-      pluginDir1
-          .childFile('pubspec.yaml')
-          .writeAsStringSync(plugin1Pubspec.join('\n'));
-      final List<String> plugin2Pubspec =
-          pluginDir2.childFile('pubspec.yaml').readAsLinesSync();
-      plugin2Pubspec[plugin2Pubspec.indexWhere(
-          (String element) => element.contains('version:'))] = 'version: 0.0.2';
-      pluginDir2
-          .childFile('pubspec.yaml')
-          .writeAsStringSync(plugin2Pubspec.join('\n'));
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir
-          .runCommand(<String>['commit', '-m', 'Update versions to 0.0.2']);
-
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
-            'Done!'
-          ]));
-
-      expect(processRunner.pushTagsArgs, isNotEmpty);
-      expect(processRunner.pushTagsArgs[0], 'push');
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.2');
-      expect(processRunner.pushTagsArgs[3], 'push');
-      expect(processRunner.pushTagsArgs[4], 'upstream');
-      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.2');
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin1-v0.0.2'], null)));
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin2-v0.0.2'], null)));
     });
 
     test(
-        'delete package will not trigger publish but exit the command successfully.',
+        'delete package will not trigger publish but exit the command successfully!',
         () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
-        'versions': <String>[],
+        'versions': <String>['0.0.1'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
-        'versions': <String>[],
+        'versions': <String>['0.0.1'],
       };
-
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
 
       // Non-federated
-      final Directory pluginDir1 = createFakePlugin('plugin1', packagesDir);
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
-      expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'Running `pub publish ` in ${pluginDir2.path}...\n',
-            'Packages released: plugin1, plugin2',
-            'Done!'
-          ]));
-      expect(processRunner.pushTagsArgs, isNotEmpty);
-      expect(processRunner.pushTagsArgs[0], 'push');
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.1');
-      expect(processRunner.pushTagsArgs[3], 'push');
-      expect(processRunner.pushTagsArgs[4], 'upstream');
-      expect(processRunner.pushTagsArgs[5], 'plugin2-v0.0.1');
-
-      processRunner.pushTagsArgs.clear();
-      printedMessages.clear();
-
-      final List<String> plugin1Pubspec =
-          pluginDir1.childFile('pubspec.yaml').readAsLinesSync();
-      plugin1Pubspec[plugin1Pubspec.indexWhere(
-          (String element) => element.contains('version:'))] = 'version: 0.0.2';
-      pluginDir1
-          .childFile('pubspec.yaml')
-          .writeAsStringSync(plugin1Pubspec.join('\n'));
-
       pluginDir2.deleteSync(recursive: true);
 
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>[
-        'commit',
-        '-m',
-        'Update plugin1 versions to 0.0.2, delete plugin2'
-      ]);
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
 
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      mockStdin.readLineOutput = 'y';
+
+      final List<String> output2 = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Running `pub publish ` in ${pluginDir1.path}...\n',
-            'The file at The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n',
-            'Packages released: plugin1',
-            'Done!'
+          output2,
+          containsAllInOrder(<Matcher>[
+            contains('Running `pub publish ` in ${pluginDir1.path}...'),
+            contains('Published plugin1 successfully!'),
+            contains(
+                'The pubspec file at ${pluginDir2.childFile('pubspec.yaml').path} does not exist. Publishing will not happen for plugin2.\nSafe to ignore if the package is deleted in this commit.\n'),
+            contains('SKIPPING: package deleted'),
+            contains('skipped (with warning)'),
           ]));
-
-      expect(processRunner.pushTagsArgs, isNotEmpty);
-      expect(processRunner.pushTagsArgs.length, 3);
-      expect(processRunner.pushTagsArgs[0], 'push');
-      expect(processRunner.pushTagsArgs[1], 'upstream');
-      expect(processRunner.pushTagsArgs[2], 'plugin1-v0.0.2');
+      expect(
+          processRunner.recordedCalls,
+          contains(const ProcessCall(
+              'git-push', <String>['upstream', 'plugin1-v0.0.2'], null)));
     });
 
-    test('Exiting versions do not trigger release, also prints out message.',
+    test('Existing versions do not trigger release, also prints out message.',
         () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>['0.0.2'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>['0.0.2'],
       };
 
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
-
       // Non-federated
-      createFakePlugin('plugin1', packagesDir, version: '0.0.2');
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'),
+      final Directory pluginDir2 = createFakePlugin(
+          'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      await gitDir.runCommand(<String>['tag', 'plugin1-v0.0.2']);
-      await gitDir.runCommand(<String>['tag', 'plugin2-v0.0.2']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
+      processRunner.mockProcessesForExecutable['git-tag'] = <io.Process>[
+        MockProcess(
+            stdout: 'plugin1-v0.0.2\n'
+                'plugin2-v0.0.2\n')
+      ];
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'The version 0.0.2 of plugin1 has already been published',
-            'skip.',
-            'The version 0.0.2 of plugin2 has already been published',
-            'skip.',
-            'Done!'
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('plugin1 0.0.2 has already been published'),
+            contains('SKIPPING: already published'),
+            contains('plugin2 0.0.2 has already been published'),
+            contains('SKIPPING: already published'),
           ]));
 
-      expect(processRunner.pushTagsArgs, isEmpty);
+      expect(
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
     });
 
     test(
-        'Exiting versions do not trigger release, but fail if the tags do not exist.',
+        'Existing versions do not trigger release, but fail if the tags do not exist.',
         () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'plugin1',
         'versions': <String>['0.0.2'],
       };
 
-      const Map<String, dynamic> httpResponsePlugin2 = <String, dynamic>{
+      mockHttpResponses['plugin2'] = <String, dynamic>{
         'name': 'plugin2',
         'versions': <String>['0.0.2'],
       };
 
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'plugin1.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        } else if (request.url.pathSegments.last == 'plugin2.json') {
-          return http.Response(json.encode(httpResponsePlugin2), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
-
       // Non-federated
-      createFakePlugin('plugin1', packagesDir, version: '0.0.2');
+      final Directory pluginDir1 =
+          createFakePlugin('plugin1', packagesDir, version: '0.0.2');
       // federated
-      createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'),
+      final Directory pluginDir2 = createFakePlugin(
+          'plugin2', packagesDir.childDirectory('plugin2'),
           version: '0.0.2');
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'y';
-      await expectLater(
-          () => commandRunner.run(
-              <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']),
-          throwsA(isA<ToolExit>()));
-      expect(processRunner.pushTagsArgs, isEmpty);
+
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('pubspec.yaml').path}\n'
+                '${pluginDir2.childFile('pubspec.yaml').path}\n')
+      ];
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('plugin1 0.0.2 has already been published, '
+                'however the git release tag (plugin1-v0.0.2) was not found.'),
+            contains('plugin2 0.0.2 has already been published, '
+                'however the git release tag (plugin2-v0.0.2) was not found.'),
+          ]));
+      expect(
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
     });
 
     test('No version change does not release any plugins', () async {
@@ -970,161 +790,84 @@ void main() {
       final Directory pluginDir2 =
           createFakePlugin('plugin2', packagesDir.childDirectory('plugin2'));
 
-      io.Process.runSync('git', <String>['init'],
-          workingDirectory: testRoot.path);
-      gitDir = await GitDir.fromExisting(testRoot.path);
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(
+            stdout: '${pluginDir1.childFile('plugin1.dart').path}\n'
+                '${pluginDir2.childFile('plugin2.dart').path}\n')
+      ];
 
-      pluginDir1.childFile('plugin1.dart').createSync();
-      pluginDir2.childFile('plugin2.dart').createSync();
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add dart files']);
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
 
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      expect(output, containsAllInOrder(<String>['Ran for 0 package(s)']));
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'No version updates in this commit.',
-            'Done!'
-          ]));
-      expect(processRunner.pushTagsArgs, isEmpty);
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
     });
 
     test('Do not release flutter_plugin_tools', () async {
-      const Map<String, dynamic> httpResponsePlugin1 = <String, dynamic>{
+      mockHttpResponses['plugin1'] = <String, dynamic>{
         'name': 'flutter_plugin_tools',
         'versions': <String>[],
       };
 
-      final MockClient mockClient = MockClient((http.Request request) async {
-        if (request.url.pathSegments.last == 'flutter_plugin_tools.json') {
-          return http.Response(json.encode(httpResponsePlugin1), 200);
-        }
-        return http.Response('', 500);
-      });
-      final PublishPluginCommand command = PublishPluginCommand(packagesDir,
-          processRunner: processRunner,
-          print: (Object? message) => printedMessages.add(message.toString()),
-          stdinput: mockStdin,
-          httpClient: mockClient,
-          gitDir: gitDir);
-
-      commandRunner = CommandRunner<void>(
-        'publish_check_command',
-        'Test for publish-check command.',
-      );
-      commandRunner.addCommand(command);
-
       final Directory flutterPluginTools =
           createFakePlugin('flutter_plugin_tools', packagesDir);
-      await gitDir.runCommand(<String>['add', '-A']);
-      await gitDir.runCommand(<String>['commit', '-m', 'Add plugins']);
-      // Immediately return 0 when running `pub publish`.
-      processRunner.mockPublishCompleteCode = 0;
-      mockStdin.readLineOutput = 'y';
-      await commandRunner
-          .run(<String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+      processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+        MockProcess(stdout: flutterPluginTools.childFile('pubspec.yaml').path)
+      ];
+
+      final List<String> output = await runCapturingPrint(commandRunner,
+          <String>['publish-plugin', '--all-changed', '--base-sha=HEAD~']);
+
       expect(
-          printedMessages,
-          containsAllInOrder(<String>[
-            'Checking local repo...',
-            'Local repo is ready!',
-            'Done!'
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                'SKIPPING: publishing flutter_plugin_tools via the tool is not supported')
           ]));
       expect(
-          printedMessages.contains(
-            'Running `pub publish ` in ${flutterPluginTools.path}...\n',
+          output.contains(
+            'Running `pub publish ` in ${flutterPluginTools.path}...',
           ),
           isFalse);
-      expect(processRunner.pushTagsArgs, isEmpty);
-      processRunner.pushTagsArgs.clear();
-      printedMessages.clear();
+      expect(
+          processRunner.recordedCalls
+              .map((ProcessCall call) => call.executable),
+          isNot(contains('git-push')));
     });
   });
 }
 
-class TestProcessRunner extends ProcessRunner {
-  final List<io.ProcessResult> results = <io.ProcessResult>[];
+/// An extension of [RecordingProcessRunner] that stores 'flutter pub publish'
+/// calls so that their input streams can be checked in tests.
+class TestProcessRunner extends RecordingProcessRunner {
   // Most recent returned publish process.
   late MockProcess mockPublishProcess;
-  final List<String> mockPublishArgs = <String>[];
-  final MockProcessResult mockPushTagsResult = MockProcessResult();
-  final List<String> pushTagsArgs = <String>[];
-
-  String? mockPublishStdout;
-  String? mockPublishStderr;
-  int? mockPublishCompleteCode;
-
-  @override
-  Future<io.ProcessResult> run(
-    String executable,
-    List<String> args, {
-    Directory? workingDir,
-    bool exitOnError = false,
-    bool logOnError = false,
-    Encoding stdoutEncoding = io.systemEncoding,
-    Encoding stderrEncoding = io.systemEncoding,
-  }) async {
-    // Don't ever really push tags.
-    if (executable == 'git' && args.isNotEmpty && args[0] == 'push') {
-      pushTagsArgs.addAll(args);
-      return mockPushTagsResult;
-    }
-
-    final io.ProcessResult result = io.Process.runSync(executable, args,
-        workingDirectory: workingDir?.path);
-    results.add(result);
-    if (result.exitCode != 0) {
-      throw ToolExit(result.exitCode);
-    }
-    return result;
-  }
 
   @override
   Future<io.Process> start(String executable, List<String> args,
       {Directory? workingDirectory}) async {
-    /// Never actually publish anything. Start is always and only used for this
-    /// since it returns something we can route stdin through.
-    assert(executable == getFlutterCommand(const LocalPlatform()) &&
+    final io.Process process =
+        await super.start(executable, args, workingDirectory: workingDirectory);
+    if (executable == getFlutterCommand(const LocalPlatform()) &&
         args.isNotEmpty &&
         args[0] == 'pub' &&
-        args[1] == 'publish');
-    mockPublishArgs.addAll(args);
-    mockPublishProcess = MockProcess();
-    if (mockPublishStdout != null) {
-      mockPublishProcess.stdoutController.add(utf8.encode(mockPublishStdout!));
+        args[1] == 'publish') {
+      mockPublishProcess = process as MockProcess;
     }
-    if (mockPublishStderr != null) {
-      mockPublishProcess.stderrController.add(utf8.encode(mockPublishStderr!));
-    }
-    if (mockPublishCompleteCode != null) {
-      mockPublishProcess.exitCodeCompleter.complete(mockPublishCompleteCode);
-    }
-
-    return mockPublishProcess;
+    return process;
   }
 }
 
 class MockStdin extends Mock implements io.Stdin {
   List<List<int>> mockUserInputs = <List<int>>[];
-  late StreamController<List<int>> _controller;
+  final StreamController<List<int>> _controller = StreamController<List<int>>();
   String? readLineOutput;
 
   @override
   Stream<S> transform<S>(StreamTransformer<List<int>, S> streamTransformer) {
-    // In the test context, only one `PublishPluginCommand` object is created for a single test case.
-    // However, sometimes, we need to run multiple commands in a single test case.
-    // In such situation, this `MockStdin`'s StreamController might be listened to more than once, which is not allowed.
-    //
-    // Create a new controller every time so this Stdin could be listened to multiple times.
-    _controller = StreamController<List<int>>();
     mockUserInputs.forEach(_addUserInputsToSteam);
     return _controller.stream.transform(streamTransformer);
   }
@@ -1143,13 +886,4 @@ class MockStdin extends Mock implements io.Stdin {
       readLineOutput;
 
   void _addUserInputsToSteam(List<int> input) => _controller.add(input);
-}
-
-class MockProcessResult extends Mock implements io.ProcessResult {
-  MockProcessResult({int exitCode = 0}) : _exitCode = exitCode;
-
-  final int _exitCode;
-
-  @override
-  int get exitCode => _exitCode;
 }

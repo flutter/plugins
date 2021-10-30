@@ -96,9 +96,7 @@
     @"quantity" : @(payment.quantity),
     @"applicationUsername" : payment.applicationUsername ?: [NSNull null]
   }];
-  if (@available(iOS 8.3, *)) {
-    [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
-  }
+  [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
   return map;
 }
 
@@ -125,9 +123,7 @@
   payment.requestData = [utf8String dataUsingEncoding:NSUTF8StringEncoding];
   payment.quantity = [map[@"quantity"] integerValue];
   payment.applicationUsername = map[@"applicationUsername"];
-  if (@available(iOS 8.3, *)) {
-    payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
-  }
+  payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
   return payment;
 }
 

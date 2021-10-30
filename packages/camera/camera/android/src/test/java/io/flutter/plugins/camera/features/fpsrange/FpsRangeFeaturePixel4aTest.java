@@ -18,7 +18,7 @@ import org.robolectric.RobolectricTestRunner;
 @RunWith(RobolectricTestRunner.class)
 public class FpsRangeFeaturePixel4aTest {
   @Test
-  public void ctor_should_initialize_fps_range_with_30_when_device_is_pixel_4a() {
+  public void ctor_shouldInitializeFpsRangeWith30WhenDeviceIsPixel4a() {
     TestUtils.setFinalStatic(Build.class, "BRAND", "google");
     TestUtils.setFinalStatic(Build.class, "MODEL", "Pixel 4a");
 

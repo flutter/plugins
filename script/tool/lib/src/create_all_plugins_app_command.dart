@@ -11,6 +11,9 @@ import 'package:pubspec_parse/pubspec_parse.dart';
 
 import 'common/core.dart';
 import 'common/plugin_command.dart';
+import 'common/repository_package.dart';
+
+const String _outputDirectoryFlag = 'output-dir';
 
 /// A command to create an application that builds all in a single application.
 class CreateAllPluginsAppCommand extends PluginCommand {
@@ -18,16 +21,19 @@ class CreateAllPluginsAppCommand extends PluginCommand {
   CreateAllPluginsAppCommand(
     Directory packagesDir, {
     Directory? pluginsRoot,
-  })  : pluginsRoot = pluginsRoot ?? packagesDir.fileSystem.currentDirectory,
-        super(packagesDir) {
-    appDirectory = this.pluginsRoot.childDirectory('all_plugins');
+  }) : super(packagesDir) {
+    final Directory defaultDir =
+        pluginsRoot ?? packagesDir.fileSystem.currentDirectory;
+    argParser.addOption(_outputDirectoryFlag,
+        defaultsTo: defaultDir.path,
+        help: 'The path the directory to create the "all_plugins" project in.\n'
+            'Defaults to the repository root.');
   }
 
-  /// The root directory of the plugin repository.
-  Directory pluginsRoot;
-
   /// The location of the synthesized app project.
-  late Directory appDirectory;
+  Directory get appDirectory => packagesDir.fileSystem
+      .directory(getStringArg(_outputDirectoryFlag))
+      .childDirectory('all_plugins');
 
   @override
   String get description =>
@@ -41,6 +47,15 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final int exitCode = await _createApp();
     if (exitCode != 0) {
       throw ToolExit(exitCode);
+    }
+
+    final Set<String> excluded = getExcludedPackageNames();
+    if (excluded.isNotEmpty) {
+      print('Exluding the following plugins from the combined build:');
+      for (final String plugin in excluded) {
+        print('  $plugin');
+      }
+      print('');
     }
 
     await Future.wait(<Future<void>>[
@@ -78,10 +93,13 @@ class CreateAllPluginsAppCommand extends PluginCommand {
 
     final StringBuffer newGradle = StringBuffer();
     for (final String line in gradleFile.readAsLinesSync()) {
-      if (line.contains('minSdkVersion 16')) {
-        // Android SDK 20 is required by Google maps.
-        // Android SDK 19 is required by WebView.
+      if (line.contains('minSdkVersion')) {
+        // minSdkVersion 20 is required by Google maps.
+        // minSdkVersion 19 is required by WebView.
         newGradle.writeln('minSdkVersion 20');
+      } else if (line.contains('compileSdkVersion')) {
+        // compileSdkVersion 31 is required by Camera.
+        newGradle.writeln('compileSdkVersion 31');
       } else {
         newGradle.writeln(line);
       }
@@ -156,13 +174,15 @@ class CreateAllPluginsAppCommand extends PluginCommand {
     final Map<String, PathDependency> pathDependencies =
         <String, PathDependency>{};
 
-    await for (final Directory package in getPlugins()) {
-      final String pluginName = package.basename;
-      final File pubspecFile = package.childFile('pubspec.yaml');
+    await for (final PackageEnumerationEntry entry in getTargetPackages()) {
+      final RepositoryPackage package = entry.package;
+      final Directory pluginDirectory = package.directory;
+      final String pluginName = pluginDirectory.basename;
+      final File pubspecFile = package.pubspecFile;
       final Pubspec pubspec = Pubspec.parse(pubspecFile.readAsStringSync());
 
       if (pubspec.publishTo != 'none') {
-        pathDependencies[pluginName] = PathDependency(package.path);
+        pathDependencies[pluginName] = PathDependency(pluginDirectory.path);
       }
     }
     return pathDependencies;

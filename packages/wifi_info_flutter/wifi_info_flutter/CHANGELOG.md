@@ -1,3 +1,8 @@
+## NEXT
+
+* Updated Android lint settings.
+* Updated package description.
+
 ## 2.0.2
 
 * Update README to point to Plus Plugins version.

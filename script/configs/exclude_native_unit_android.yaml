@@ -1,0 +1,11 @@
+# Deprecated; no plan to backfill the missing files
+- android_alarm_manager
+- battery
+- device_info/device_info
+- package_info
+- sensors
+- share
+- wifi_info_flutter/wifi_info_flutter
+
+# No need for unit tests:
+- espresso
