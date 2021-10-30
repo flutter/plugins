@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'dart:ui';
+import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -29,7 +30,7 @@ class PlaceMarkerBody extends StatefulWidget {
   State<StatefulWidget> createState() => PlaceMarkerBodyState();
 }
 
-typedef Marker MarkerUpdateAction(Marker marker);
+typedef MarkerUpdateAction = Marker Function(Marker marker);
 
 class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   PlaceMarkerBodyState();
@@ -39,6 +40,7 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
   Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
   MarkerId? selectedMarker;
   int _markerIdCounter = 1;
+  LatLng? markerPosition;
 
   void _onMapCreated(GoogleMapController controller) {
     this.controller = controller;
@@ -66,13 +68,24 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
           ),
         );
         markers[markerId] = newMarker;
+
+        markerPosition = null;
       });
     }
+  }
+
+  void _onMarkerDrag(MarkerId markerId, LatLng newPosition) async {
+    setState(() {
+      this.markerPosition = newPosition;
+    });
   }
 
   void _onMarkerDragEnd(MarkerId markerId, LatLng newPosition) async {
     final Marker? tappedMarker = markers[markerId];
     if (tappedMarker != null) {
+      setState(() {
+        this.markerPosition = null;
+      });
       await showDialog<void>(
           context: context,
           builder: (BuildContext context) {
@@ -114,12 +127,9 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
         center.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
       ),
       infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
-      onTap: () {
-        _onMarkerTapped(markerId);
-      },
-      onDragEnd: (LatLng position) {
-        _onMarkerDragEnd(markerId, position);
-      },
+      onTap: () => _onMarkerTapped(markerId),
+      onDragEnd: (LatLng position) => _onMarkerDragEnd(markerId, position),
+      onDrag: (LatLng position) => _onMarkerDrag(markerId, position),
     );
 
     setState(() {
@@ -245,54 +255,46 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
     });
   }
 
-// A breaking change to the ImageStreamListener API affects this sample.
-// I've updates the sample to use the new API, but as we cannot use the new
-// API before it makes it to stable I'm commenting out this sample for now
-// TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-// https://github.com/flutter/flutter/issues/33438
-//
-//  void _setMarkerIcon(BitmapDescriptor assetIcon) {
-//    if (selectedMarker == null) {
-//      return;
-//    }
-//
-//    final Marker marker = markers[selectedMarker];
-//    setState(() {
-//      markers[selectedMarker] = marker.copyWith(
-//        iconParam: assetIcon,
-//      );
-//    });
-//  }
-//
-//  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
-//    final Completer<BitmapDescriptor> bitmapIcon =
-//        Completer<BitmapDescriptor>();
-//    final ImageConfiguration config = createLocalImageConfiguration(context);
-//
-//    const AssetImage('assets/red_square.png')
-//        .resolve(config)
-//        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
-//      final ByteData bytes =
-//          await image.image.toByteData(format: ImageByteFormat.png);
-//      final BitmapDescriptor bitmap =
-//          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
-//      bitmapIcon.complete(bitmap);
-//    }));
-//
-//    return await bitmapIcon.future;
-//  }
+  void _setMarkerIcon(MarkerId markerId, BitmapDescriptor assetIcon) {
+    final Marker marker = markers[markerId]!;
+    setState(() {
+      markers[markerId] = marker.copyWith(
+        iconParam: assetIcon,
+      );
+    });
+  }
+
+  Future<BitmapDescriptor> _getAssetIcon(BuildContext context) async {
+    final Completer<BitmapDescriptor> bitmapIcon =
+        Completer<BitmapDescriptor>();
+    final ImageConfiguration config = createLocalImageConfiguration(context);
+
+    const AssetImage('assets/red_square.png')
+        .resolve(config)
+        .addListener(ImageStreamListener((ImageInfo image, bool sync) async {
+      final ByteData? bytes =
+          await image.image.toByteData(format: ImageByteFormat.png);
+      if (bytes == null) {
+        bitmapIcon.completeError(Exception('Unable to encode icon'));
+        return;
+      }
+      final BitmapDescriptor bitmap =
+          BitmapDescriptor.fromBytes(bytes.buffer.asUint8List());
+      bitmapIcon.complete(bitmap);
+    }));
+
+    return await bitmapIcon.future;
+  }
 
   @override
   Widget build(BuildContext context) {
     final MarkerId? selectedId = selectedMarker;
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: <Widget>[
-        Center(
-          child: SizedBox(
-            width: 300.0,
-            height: 200.0,
+    return Stack(children: [
+      Column(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: <Widget>[
+          Expanded(
             child: GoogleMap(
               onMapCreated: _onMapCreated,
               initialCameraPosition: const CameraPosition(
@@ -302,115 +304,114 @@ class PlaceMarkerBodyState extends State<PlaceMarkerBody> {
               markers: Set<Marker>.of(markers.values),
             ),
           ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Row(
-                  children: <Widget>[
-                    Column(
-                      children: <Widget>[
-                        TextButton(
-                          child: const Text('add'),
-                          onPressed: _add,
-                        ),
-                        TextButton(
-                          child: const Text('remove'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _remove(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('change info'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changeInfo(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('change info anchor'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changeInfoAnchor(selectedId),
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: <Widget>[
-                        TextButton(
-                          child: const Text('change alpha'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changeAlpha(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('change anchor'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changeAnchor(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('toggle draggable'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _toggleDraggable(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('toggle flat'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _toggleFlat(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('change position'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changePosition(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('change rotation'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changeRotation(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('toggle visible'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _toggleVisible(selectedId),
-                        ),
-                        TextButton(
-                          child: const Text('change zIndex'),
-                          onPressed: selectedId == null
-                              ? null
-                              : () => _changeZIndex(selectedId),
-                        ),
-                        // A breaking change to the ImageStreamListener API affects this sample.
-                        // I've updates the sample to use the new API, but as we cannot use the new
-                        // API before it makes it to stable I'm commenting out this sample for now
-                        // TODO(amirh): uncomment this one the ImageStream API change makes it to stable.
-                        // https://github.com/flutter/flutter/issues/33438
-                        //
-                        // TextButton(
-                        //   child: const Text('set marker icon'),
-                        //   onPressed: () {
-                        //     _getAssetIcon(context).then(
-                        //       (BitmapDescriptor icon) {
-                        //         _setMarkerIcon(icon);
-                        //       },
-                        //     );
-                        //   },
-                        // ),
-                      ],
-                    ),
-                  ],
-                )
-              ],
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              TextButton(
+                child: const Text('Add'),
+                onPressed: _add,
+              ),
+              TextButton(
+                child: const Text('Remove'),
+                onPressed:
+                    selectedId == null ? null : () => _remove(selectedId),
+              ),
+            ],
+          ),
+          Wrap(
+            alignment: WrapAlignment.spaceEvenly,
+            children: <Widget>[
+              TextButton(
+                child: const Text('change info'),
+                onPressed:
+                    selectedId == null ? null : () => _changeInfo(selectedId),
+              ),
+              TextButton(
+                child: const Text('change info anchor'),
+                onPressed: selectedId == null
+                    ? null
+                    : () => _changeInfoAnchor(selectedId),
+              ),
+              TextButton(
+                child: const Text('change alpha'),
+                onPressed:
+                    selectedId == null ? null : () => _changeAlpha(selectedId),
+              ),
+              TextButton(
+                child: const Text('change anchor'),
+                onPressed:
+                    selectedId == null ? null : () => _changeAnchor(selectedId),
+              ),
+              TextButton(
+                child: const Text('toggle draggable'),
+                onPressed: selectedId == null
+                    ? null
+                    : () => _toggleDraggable(selectedId),
+              ),
+              TextButton(
+                child: const Text('toggle flat'),
+                onPressed:
+                    selectedId == null ? null : () => _toggleFlat(selectedId),
+              ),
+              TextButton(
+                child: const Text('change position'),
+                onPressed: selectedId == null
+                    ? null
+                    : () => _changePosition(selectedId),
+              ),
+              TextButton(
+                child: const Text('change rotation'),
+                onPressed: selectedId == null
+                    ? null
+                    : () => _changeRotation(selectedId),
+              ),
+              TextButton(
+                child: const Text('toggle visible'),
+                onPressed: selectedId == null
+                    ? null
+                    : () => _toggleVisible(selectedId),
+              ),
+              TextButton(
+                child: const Text('change zIndex'),
+                onPressed:
+                    selectedId == null ? null : () => _changeZIndex(selectedId),
+              ),
+              TextButton(
+                child: const Text('set marker icon'),
+                onPressed: selectedId == null
+                    ? null
+                    : () {
+                        _getAssetIcon(context).then(
+                          (BitmapDescriptor icon) {
+                            _setMarkerIcon(selectedId, icon);
+                          },
+                        );
+                      },
+              ),
+            ],
+          ),
+        ],
+      ),
+      Visibility(
+        visible: markerPosition != null,
+        child: Container(
+          color: Colors.white70,
+          height: 30,
+          padding: EdgeInsets.only(left: 12, right: 12),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              markerPosition == null
+                  ? Container()
+                  : Expanded(child: Text("lat: ${markerPosition!.latitude}")),
+              markerPosition == null
+                  ? Container()
+                  : Expanded(child: Text("lng: ${markerPosition!.longitude}")),
+            ],
           ),
         ),
-      ],
-    );
+      ),
+    ]);
   }
 }

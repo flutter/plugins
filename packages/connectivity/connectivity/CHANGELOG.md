@@ -1,6 +1,8 @@
 ## NEXT
 
 * Remove references to the Android V1 embedding.
+* Updated Android lint settings.
+* Specify Java 8 for Android build.
 
 ## 3.0.6
 

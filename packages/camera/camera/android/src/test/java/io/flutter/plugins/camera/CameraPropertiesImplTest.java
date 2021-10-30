@@ -41,7 +41,7 @@ public class CameraPropertiesImplTest {
   }
 
   @Test
-  public void ctor_Should_return_valid_instance() throws CameraAccessException {
+  public void ctor_shouldReturnValidInstance() throws CameraAccessException {
     verify(mockCameraManager, times(1)).getCameraCharacteristics(CAMERA_NAME);
     assertNotNull(cameraProperties);
   }
@@ -76,8 +76,7 @@ public class CameraPropertiesImplTest {
   }
 
   @Test
-  public void
-      getControlAutoExposureCompensationStep_Should_return_double_When_rational_is_not_null() {
+  public void getControlAutoExposureCompensationStep_shouldReturnDoubleWhenRationalIsNotNull() {
     double expectedStep = 3.1415926535;
     Rational mockRational = mock(Rational.class);
 
@@ -92,7 +91,7 @@ public class CameraPropertiesImplTest {
   }
 
   @Test
-  public void getControlAutoExposureCompensationStep_Should_return_zero_When_rational_is_null() {
+  public void getControlAutoExposureCompensationStep_shouldReturnZeroWhenRationalIsNull() {
     double expectedStep = 0.0;
 
     when(mockCharacteristics.get(CameraCharacteristics.CONTROL_AE_COMPENSATION_STEP))
