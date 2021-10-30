@@ -70,7 +70,7 @@ class VideoPlayerValue {
 
   /// The [Duration] that should be used to offset the current [position] to get the correct [Caption].
   ///
-  /// This field will never be null. If there is no [captionOffset] set. It will default to 0 seconds duration
+  /// If there is no [captionOffset] set. It will default to 0 seconds duration
   final Duration captionOffset;
 
   /// The currently buffered ranges.
@@ -583,8 +583,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
   ///
   /// The values will be handled as follows:
   /// *  0: this is the default behaviour. No offset will be applied.
-  /// * >0: The caption will have a positive offset. So you will get caption text from the future
-  /// * <0: The caption will have a negative offset. So you will get caption text from the past
+  /// * >0: The caption will have a negative offset. So you will get caption text from the past
+  /// * <0: The caption will have a positive offset. So you will get caption text from the future
   void setCaptionOffset(Duration offset) async {
     value = value.copyWith(
       captionOffset: offset,
