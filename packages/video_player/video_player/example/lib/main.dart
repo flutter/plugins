@@ -271,20 +271,13 @@ class _ControlsOverlay extends StatelessWidget {
 
   static const _exampleCaptionOffsets = [
     Duration(seconds: -10),
-    Duration(seconds: -5),
     Duration(seconds: -3),
-    Duration(seconds: -2),
     Duration(seconds: -1, milliseconds: -500),
-    Duration(seconds: -1),
-    Duration(milliseconds: -500),
     Duration(milliseconds: -250),
     Duration(milliseconds: 0),
     Duration(milliseconds: 250),
-    Duration(milliseconds: 500),
     Duration(seconds: 1, milliseconds: 500),
-    Duration(seconds: 2),
     Duration(seconds: 3),
-    Duration(seconds: 5),
     Duration(seconds: 10),
   ];
   static const _examplePlaybackRates = [
