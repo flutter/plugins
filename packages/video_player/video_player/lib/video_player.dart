@@ -578,8 +578,8 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
 
   /// Sets the caption offset of [this].
   ///
-  /// [offset] indicates the delay in duration  The [offset] can be positive or negative.
-  /// the [offset] will be used when getting the correct caption for a specific position in [this]
+  /// The [offset] will be used when getting the correct caption for a specific position in [this]
+  /// The [offset] can be positive or negative.
   ///
   /// The values will be handled as follows:
   /// *  0: this is the default behaviour. No offset will be applied.
