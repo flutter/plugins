@@ -604,9 +604,7 @@ class VideoPlayerController extends ValueNotifier<VideoPlayerValue> {
       return Caption.none;
     }
 
-    final delayedPosition = Duration(
-        microseconds:
-            position.inMicroseconds + value.captionOffset.inMicroseconds);
+    final delayedPosition = position + value.captionOffset;
     // TODO: This would be more efficient as a binary search.
     for (final caption in _closedCaptionFile!.captions) {
       if (caption.start <= delayedPosition && caption.end >= delayedPosition) {
