@@ -1,3 +1,7 @@
+## 1.3.0
+
+* Added new `PurchaseStatus` named `canceled` to distinguish between an error and user cancellation. 
+
 ## 1.2.0
 
 * Added `toString()` to `IAPError`
