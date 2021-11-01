@@ -52,6 +52,7 @@ public class FlutterWebViewTest {
         .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setSupportMultipleWindows(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setUsesHybridComposition(anyBoolean())).thenReturn(mockWebViewBuilder);
+    when(mockWebViewBuilder.setZoomControlsEnabled(anyBoolean())).thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setWebChromeClient(any(WebChromeClient.class)))
         .thenReturn(mockWebViewBuilder);
     when(mockWebViewBuilder.setDownloadListener(any(DownloadListener.class)))
@@ -69,10 +70,11 @@ public class FlutterWebViewTest {
     verify(mockWebViewBuilder, times(1)).setSupportMultipleWindows(true);
     verify(mockWebViewBuilder, times(1)).setUsesHybridComposition(false);
     verify(mockWebViewBuilder, times(1)).setWebChromeClient(mockWebChromeClient);
+    verify(mockWebViewBuilder, times(1)).setZoomControlsEnabled(true);
   }
 
   @Test(expected = UnsupportedOperationException.class)
-  public void evaluateJavascript_shouldThrowForNullString() {
+  public void evaluateJavaScript_shouldThrowForNullString() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -97,7 +99,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void evaluateJavascript_shouldReturnValueOnSuccessForReturnValue() {
+  public void evaluateJavaScript_shouldReturnValueOnSuccessForReturnValue() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView
@@ -130,7 +132,7 @@ public class FlutterWebViewTest {
   }
 
   @Test
-  public void evaluateJavascript_shouldReturnNilOnSuccessForNoReturnValue() {
+  public void evaluateJavaScript_shouldReturnNilOnSuccessForNoReturnValue() {
     try (MockedStatic<FlutterWebView> mockedFlutterWebView = mockStatic(FlutterWebView.class)) {
       // Setup
       mockedFlutterWebView

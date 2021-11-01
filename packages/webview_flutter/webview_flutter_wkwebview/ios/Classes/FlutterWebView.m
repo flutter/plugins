@@ -5,7 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "FLTWKProgressionDelegate.h"
-#import "JavascriptChannelHandler.h"
+#import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
   NSObject<FlutterBinaryMessenger>* _messenger;
@@ -63,7 +63,7 @@
   FlutterMethodChannel* _channel;
   NSString* _currentUrl;
   // The set of registered JavaScript channel names.
-  NSMutableSet* _javascriptChannelNames;
+  NSMutableSet* _javaScriptChannelNames;
   FLTWKNavigationDelegate* _navigationDelegate;
   FLTWKProgressionDelegate* _progressionDelegate;
 }
@@ -77,13 +77,13 @@
 
     NSString* channelName = [NSString stringWithFormat:@"plugins.flutter.io/webview_%lld", viewId];
     _channel = [FlutterMethodChannel methodChannelWithName:channelName binaryMessenger:messenger];
-    _javascriptChannelNames = [[NSMutableSet alloc] init];
+    _javaScriptChannelNames = [[NSMutableSet alloc] init];
 
     WKUserContentController* userContentController = [[WKUserContentController alloc] init];
     if ([args[@"javascriptChannelNames"] isKindOfClass:[NSArray class]]) {
       NSArray* javaScriptChannelNames = args[@"javascriptChannelNames"];
-      [_javascriptChannelNames addObjectsFromArray:javaScriptChannelNames];
-      [self registerJavascriptChannels:_javascriptChannelNames controller:userContentController];
+      [_javaScriptChannelNames addObjectsFromArray:javaScriptChannelNames];
+      [self registerJavaScriptChannels:_javaScriptChannelNames controller:userContentController];
     }
 
     NSDictionary<NSString*, id>* settings = args[@"settings"];
@@ -150,15 +150,15 @@
   } else if ([[call method] isEqualToString:@"currentUrl"]) {
     [self onCurrentUrl:call result:result];
   } else if ([[call method] isEqualToString:@"evaluateJavascript"]) {
-    [self onEvaluateJavascript:call result:result];
+    [self onEvaluateJavaScript:call result:result];
   } else if ([[call method] isEqualToString:@"runJavascript"]) {
-    [self onRunJavascript:call result:result];
+    [self onRunJavaScript:call result:result sendReturnValue:NO];
   } else if ([[call method] isEqualToString:@"runJavascriptReturningResult"]) {
-    [self onRunJavascriptReturningResult:call result:result];
+    [self onRunJavaScript:call result:result sendReturnValue:YES];
   } else if ([[call method] isEqualToString:@"addJavascriptChannels"]) {
-    [self onAddJavascriptChannels:call result:result];
+    [self onAddJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"removeJavascriptChannels"]) {
-    [self onRemoveJavascriptChannels:call result:result];
+    [self onRemoveJavaScriptChannels:call result:result];
   } else if ([[call method] isEqualToString:@"clearCache"]) {
     [self clearCache:result];
   } else if ([[call method] isEqualToString:@"getTitle"]) {
@@ -226,10 +226,10 @@
   result(_currentUrl);
 }
 
-- (void)onEvaluateJavascript:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onEvaluateJavaScript:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSString* jsString = [call arguments];
   if (!jsString) {
-    result([FlutterError errorWithCode:@"evaluateJavascript_failed"
+    result([FlutterError errorWithCode:@"evaluateJavaScript_failed"
                                message:@"JavaScript String cannot be null"
                                details:nil]);
     return;
@@ -238,7 +238,7 @@
              completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
                if (error) {
                  result([FlutterError
-                     errorWithCode:@"evaluateJavascript_failed"
+                     errorWithCode:@"evaluateJavaScript_failed"
                            message:@"Failed evaluating JavaScript"
                            details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
                                                               jsString, error]]);
@@ -248,7 +248,9 @@
              }];
 }
 
-- (void)onRunJavascript:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onRunJavaScript:(FlutterMethodCall*)call
+                 result:(FlutterResult)result
+        sendReturnValue:(BOOL)sendReturnValue {
   NSString* jsString = [call arguments];
   if (!jsString) {
     result([FlutterError errorWithCode:@"runJavascript_failed"
@@ -256,65 +258,54 @@
                                details:nil]);
     return;
   }
-  [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
-               if (error && error.code != WKErrorJavaScriptResultTypeIsUnsupported) {
-                 result([FlutterError
-                     errorWithCode:@"runJavascript_failed"
-                           message:@"Failed running JavaScript"
-                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
-                                                              jsString, error]]);
-               } else {
-                 result(nil);
-               }
-             }];
+  [_webView
+      evaluateJavaScript:jsString
+       completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
+         if (error) {
+           // WebKit will throw an error (WKErrorJavaScriptResultTypeIsUnsupported) when the
+           // type of the evaluated value is unsupported. This also goes for
+           // `null` and `undefined` on iOS 14+, for example when running a void function.
+           // For ease of use this specific error is ignored when no return value is expected.
+           BOOL sendError =
+               sendReturnValue || error.code != WKErrorJavaScriptResultTypeIsUnsupported;
+           result(sendError
+                      ? [FlutterError
+                            errorWithCode:(sendReturnValue ? @"runJavascriptReturningResult_failed"
+                                                           : @"runJavascript_failed")
+                                  message:@"Failed running JavaScript"
+                                  details:[NSString
+                                              stringWithFormat:@"JavaScript string was: '%@'\n%@",
+                                                               jsString, error]]
+                      : nil);
+           return;
+         }
+         result(sendReturnValue ? [NSString stringWithFormat:@"%@", evaluateResult] : nil);
+       }];
 }
 
-- (void)onRunJavascriptReturningResult:(FlutterMethodCall*)call result:(FlutterResult)result {
-  NSString* jsString = [call arguments];
-  if (!jsString) {
-    result([FlutterError errorWithCode:@"runJavascriptReturningResult_failed"
-                               message:@"JavaScript String cannot be null"
-                               details:nil]);
-    return;
-  }
-  [_webView evaluateJavaScript:jsString
-             completionHandler:^(_Nullable id evaluateResult, NSError* _Nullable error) {
-               if (error) {
-                 result([FlutterError
-                     errorWithCode:@"runJavascriptReturningResult_failed"
-                           message:@"Failed running JavaScript"
-                           details:[NSString stringWithFormat:@"JavaScript string was: '%@'\n%@",
-                                                              jsString, error]]);
-               } else {
-                 result([NSString stringWithFormat:@"%@", evaluateResult]);
-               }
-             }];
-}
-
-- (void)onAddJavascriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onAddJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSArray* channelNames = [call arguments];
   NSSet* channelNamesSet = [[NSSet alloc] initWithArray:channelNames];
-  [_javascriptChannelNames addObjectsFromArray:channelNames];
-  [self registerJavascriptChannels:channelNamesSet
+  [_javaScriptChannelNames addObjectsFromArray:channelNames];
+  [self registerJavaScriptChannels:channelNamesSet
                         controller:_webView.configuration.userContentController];
   result(nil);
 }
 
-- (void)onRemoveJavascriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)onRemoveJavaScriptChannels:(FlutterMethodCall*)call result:(FlutterResult)result {
   // WkWebView does not support removing a single user script, so instead we remove all
   // user scripts, all message handlers. And re-register channels that shouldn't be removed.
   [_webView.configuration.userContentController removeAllUserScripts];
-  for (NSString* channelName in _javascriptChannelNames) {
+  for (NSString* channelName in _javaScriptChannelNames) {
     [_webView.configuration.userContentController removeScriptMessageHandlerForName:channelName];
   }
 
   NSArray* channelNamesToRemove = [call arguments];
   for (NSString* channelName in channelNamesToRemove) {
-    [_javascriptChannelNames removeObject:channelName];
+    [_javaScriptChannelNames removeObject:channelName];
   }
 
-  [self registerJavascriptChannels:_javascriptChannelNames
+  [self registerJavaScriptChannels:_javaScriptChannelNames
                         controller:_webView.configuration.userContentController];
   result(nil);
 }
@@ -396,6 +387,9 @@
     } else if ([key isEqualToString:@"userAgent"]) {
       NSString* userAgent = settings[key];
       [self updateUserAgent:[userAgent isEqual:[NSNull null]] ? nil : userAgent];
+    } else if ([key isEqualToString:@"zoomEnabled"]) {
+      NSNumber* zoomEnabled = settings[key];
+      _navigationDelegate.shouldEnableZoom = [zoomEnabled boolValue];
     } else {
       [unknownKeys addObject:key];
     }
@@ -498,12 +492,12 @@
   return true;
 }
 
-- (void)registerJavascriptChannels:(NSSet*)channelNames
+- (void)registerJavaScriptChannels:(NSSet*)channelNames
                         controller:(WKUserContentController*)userContentController {
   for (NSString* channelName in channelNames) {
-    FLTJavascriptChannel* channel =
-        [[FLTJavascriptChannel alloc] initWithMethodChannel:_channel
-                                      javascriptChannelName:channelName];
+    FLTJavaScriptChannel* channel =
+        [[FLTJavaScriptChannel alloc] initWithMethodChannel:_channel
+                                      javaScriptChannelName:channelName];
     [userContentController addScriptMessageHandler:channel name:channelName];
     NSString* wrapperSource = [NSString
         stringWithFormat:@"window.%@ = webkit.messageHandlers.%@;", channelName, channelName];

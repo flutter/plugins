@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "JavascriptChannelHandler.h"
+#import "JavaScriptChannelHandler.h"
 
-@implementation FLTJavascriptChannel {
+@implementation FLTJavaScriptChannel {
   FlutterMethodChannel* _methodChannel;
-  NSString* _javascriptChannelName;
+  NSString* _javaScriptChannelName;
 }
 
 - (instancetype)initWithMethodChannel:(FlutterMethodChannel*)methodChannel
-                javascriptChannelName:(NSString*)javascriptChannelName {
+                javaScriptChannelName:(NSString*)javaScriptChannelName {
   self = [super init];
   NSAssert(methodChannel != nil, @"methodChannel must not be null.");
-  NSAssert(javascriptChannelName != nil, @"javascriptChannelName must not be null.");
+  NSAssert(javaScriptChannelName != nil, @"javaScriptChannelName must not be null.");
   if (self) {
     _methodChannel = methodChannel;
-    _javascriptChannelName = javascriptChannelName;
+    _javaScriptChannelName = javaScriptChannelName;
   }
   return self;
 }
@@ -24,10 +24,10 @@
 - (void)userContentController:(WKUserContentController*)userContentController
       didReceiveScriptMessage:(WKScriptMessage*)message {
   NSAssert(_methodChannel != nil, @"Can't send a message to an unitialized JavaScript channel.");
-  NSAssert(_javascriptChannelName != nil,
+  NSAssert(_javaScriptChannelName != nil,
            @"Can't send a message to an unitialized JavaScript channel.");
   NSDictionary* arguments = @{
-    @"channel" : _javascriptChannelName,
+    @"channel" : _javaScriptChannelName,
     @"message" : [NSString stringWithFormat:@"%@", message.body]
   };
   [_methodChannel invokeMethod:@"javascriptChannelMessage" arguments:arguments];

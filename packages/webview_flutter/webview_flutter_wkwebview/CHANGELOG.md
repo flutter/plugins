@@ -1,6 +1,10 @@
-## 2.1.0
+## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
+
+## 2.1.0
+
+* Add `zoomEnabled` functionality.
 
 ## 2.0.14
 

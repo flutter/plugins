@@ -1,5 +1,6 @@
 ## NEXT
 
+- Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
 - `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
   have unit tests, rather than skipping them.
 - Added a new `federation-safety-check` command to help catch changes to
@@ -12,6 +13,8 @@
 - `license-check` now validates Kotlin files.
 - `pubspec-check` now checks that the description is of the pub-recommended
   length.
+- Fix `license-check` when run on Windows with line ending conversion enabled.
+- Fixed `pubspec-check` on Windows.
 
 ## 0.7.1
 

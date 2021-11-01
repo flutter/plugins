@@ -72,6 +72,7 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
@@ -118,7 +119,7 @@ class WebView extends StatefulWidget {
   /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
 
-  /// The set of [JavascriptChannel]s available to Javascript code running in the web view.
+  /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
   ///
   /// For each [JavascriptChannel] in the set, a channel object is made available for the
   /// JavaScript code in a window property named [JavascriptChannel.name].
@@ -220,6 +221,11 @@ class WebView extends StatefulWidget {
   ///
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
+
+  /// A Boolean value indicating whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// By default 'zoomEnabled' is true
+  final bool zoomEnabled;
 
   /// The value used for the HTTP User-Agent: request header.
   ///
@@ -481,6 +487,16 @@ class WebViewController {
     _javascriptChannelRegistry.updateJavascriptChannelsFromSet(newChannels);
   }
 
+  @visibleForTesting
+  // ignore: public_member_api_docs
+  Future<String> evaluateJavascript(String javascriptString) {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      return Future<String>.error(FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.'));
+    }
+    return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
   /// Runs the given JavaScript in the context of the current page.
   /// If you are looking for the result, use [runJavascriptReturningResult] instead.
   /// The Future completes with an error if a JavaScript error occurred.
@@ -558,12 +574,14 @@ class WebViewController {
     assert(newValue.hasNavigationDelegate != null);
     assert(newValue.debuggingEnabled != null);
     assert(newValue.userAgent != null);
+    assert(newValue.zoomEnabled != null);
 
     JavascriptMode? javascriptMode;
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
     WebSetting<String?> userAgent = WebSetting.absent();
+    bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
@@ -579,6 +597,9 @@ class WebViewController {
     if (currentValue.userAgent != newValue.userAgent) {
       userAgent = newValue.userAgent;
     }
+    if (currentValue.zoomEnabled != newValue.zoomEnabled) {
+      zoomEnabled = newValue.zoomEnabled;
+    }
 
     return WebSettings(
       javascriptMode: javascriptMode,
@@ -586,6 +607,7 @@ class WebViewController {
       hasProgressTracking: hasProgressTracking,
       debuggingEnabled: debuggingEnabled,
       userAgent: userAgent,
+      zoomEnabled: zoomEnabled,
     );
   }
 
@@ -618,5 +640,6 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
+    zoomEnabled: widget.zoomEnabled,
   );
 }
