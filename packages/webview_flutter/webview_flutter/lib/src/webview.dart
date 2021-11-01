@@ -223,7 +223,7 @@ class WebView extends StatefulWidget {
   ///
   /// When invoked on iOS or Android, any JavaScript code that is embedded
   /// directly in the HTML has been loaded and code injected with
-  /// [WebViewController.evaluateJavascript] can assume this.
+  /// [WebViewController.runJavascript] or [WebViewController.runJavascriptReturningResult] can assume this.
   final PageFinishedCallback? onPageFinished;
 
   /// Invoked when a page is loading.

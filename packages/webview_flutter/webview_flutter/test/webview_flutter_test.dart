@@ -373,7 +373,8 @@ void main() {
     );
     expect(
         // ignore: deprecated_member_use_from_same_package
-        await controller.evaluateJavascript("fake js string"), "fake js string",
+        await controller.evaluateJavascript("fake js string"),
+        "fake js string",
         reason: 'should get the argument');
   });
 
