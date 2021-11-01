@@ -40,6 +40,7 @@ class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeCli
                   return true;
                 }
 
+                @SuppressWarnings("deprecation")
                 @Override
                 public boolean shouldOverrideUrlLoading(WebView view, String url) {
                   webViewClient.shouldOverrideUrlLoading(view, url);

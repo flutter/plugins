@@ -57,6 +57,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
               return true;
             }
 
+            @SuppressWarnings("deprecation")
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
               if (!flutterWebViewClient.shouldOverrideUrlLoading(

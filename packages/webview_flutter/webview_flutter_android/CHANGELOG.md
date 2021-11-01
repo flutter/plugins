@@ -1,3 +1,7 @@
+## 2.2.1
+
+* Annotate deprecated functions to suppress build warnings.
+
 ## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
