@@ -87,6 +87,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
+    // ignore: deprecated_member_use
     final String result = await controller.evaluateJavascript('1 + 1');
     expect(result, equals('2'));
   });
