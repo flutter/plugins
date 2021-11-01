@@ -431,7 +431,7 @@ void main() {
     );
   });
 
-  testWidgets('runJavaScriptForResult', (WidgetTester tester) async {
+  testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
     late WebViewController controller;
     await tester.pumpWidget(
       WebView(
@@ -447,7 +447,7 @@ void main() {
         reason: 'should get the argument');
   });
 
-  testWidgets('runJavaScriptForResult with JavascriptMode disabled',
+  testWidgets('runJavaScriptReturningResult with JavascriptMode disabled',
       (WidgetTester tester) async {
     late WebViewController controller;
     await tester.pumpWidget(
@@ -1066,13 +1066,13 @@ class FakePlatformWebView {
         return Future<void>.sync(() {});
       case 'currentUrl':
         return Future<String?>.value(currentUrl);
+      case 'runJavascriptReturningResult':
       case 'evaluateJavascript':
+        lastRunJavaScriptString = call.arguments;
         return Future<dynamic>.value(call.arguments);
-      case 'runJavaScript':
+      case 'runJavascript':
         lastRunJavaScriptString = call.arguments;
         return Future<void>.sync(() {});
-      case 'runJavaScriptForResult':
-        return Future<dynamic>.value(call.arguments);
       case 'addJavascriptChannels':
         final List<String> channelNames = List<String>.from(call.arguments);
         javascriptChannelNames!.addAll(channelNames);
