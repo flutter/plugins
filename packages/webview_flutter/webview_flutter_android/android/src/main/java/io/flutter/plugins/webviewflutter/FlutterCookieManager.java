@@ -36,7 +36,7 @@ class FlutterCookieManager implements MethodCallHandler {
   void dispose() {
     methodChannel.setMethodCallHandler(null);
   }
-  
+
   @SuppressWarnings("deprecation")
   private static void clearCookies(final Result result) {
     CookieManager cookieManager = CookieManager.getInstance();
