@@ -1,3 +1,6 @@
+## 2.3.0
+* Add `loadData` call.
+
 ## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.

@@ -1,3 +1,6 @@
+## 2.2.0
+* Add `loadData` call.
+
 ## 2.1.2
 
 * Fix typos in the README.

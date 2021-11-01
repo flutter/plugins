@@ -129,6 +129,28 @@ void main() {
     expect(await controller!.currentUrl(), equals('https://flutter.io'));
   });
 
+  testWidgets('Load data', (WidgetTester tester) async {
+    WebViewController? controller;
+    await tester.pumpWidget(
+      WebView(
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+
+    expect(controller, isNotNull);
+
+    await controller!.loadData(
+      'https://flutter.io',
+      '<title>test!</title>',
+      'text/html',
+      'UTF-8',
+    );
+
+    expect(await controller!.currentUrl(), 'https://flutter.io');
+  });
+
   testWidgets("Can't go back before loading a page",
       (WidgetTester tester) async {
     WebViewController? controller;
@@ -965,6 +987,10 @@ class FakePlatformWebView {
       case 'loadUrl':
         final Map<dynamic, dynamic> request = call.arguments;
         _loadUrl(request['url']);
+        return Future<void>.sync(() {});
+      case 'loadData':
+        final Map<dynamic, dynamic> request = call.arguments;
+        _loadUrl(request['baseUrl']);
         return Future<void>.sync(() {});
       case 'updateSettings':
         if (call.arguments['jsMode'] != null) {
