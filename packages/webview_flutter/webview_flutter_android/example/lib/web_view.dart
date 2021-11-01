@@ -72,6 +72,7 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
@@ -220,6 +221,11 @@ class WebView extends StatefulWidget {
   ///
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
+
+  /// A Boolean value indicating whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// By default 'zoomEnabled' is true
+  final bool zoomEnabled;
 
   /// The value used for the HTTP User-Agent: request header.
   ///
@@ -553,12 +559,14 @@ class WebViewController {
     assert(newValue.hasNavigationDelegate != null);
     assert(newValue.debuggingEnabled != null);
     assert(newValue.userAgent != null);
+    assert(newValue.zoomEnabled != null);
 
     JavascriptMode? javascriptMode;
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
     WebSetting<String?> userAgent = WebSetting.absent();
+    bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
@@ -574,6 +582,9 @@ class WebViewController {
     if (currentValue.userAgent != newValue.userAgent) {
       userAgent = newValue.userAgent;
     }
+    if (currentValue.zoomEnabled != newValue.zoomEnabled) {
+      zoomEnabled = newValue.zoomEnabled;
+    }
 
     return WebSettings(
       javascriptMode: javascriptMode,
@@ -581,6 +592,7 @@ class WebViewController {
       hasProgressTracking: hasProgressTracking,
       debuggingEnabled: debuggingEnabled,
       userAgent: userAgent,
+      zoomEnabled: zoomEnabled,
     );
   }
 
@@ -613,5 +625,6 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
+    zoomEnabled: widget.zoomEnabled,
   );
 }

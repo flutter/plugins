@@ -48,12 +48,14 @@ void main() {
         'Use of this source code is governed by a BSD-style license that can be',
         'found in the LICENSE file.',
       ],
+      bool useCrlf = false,
     }) {
       final List<String> lines = <String>['$prefix$comment$copyright'];
       for (final String line in license) {
         lines.add('$comment$line');
       }
-      file.writeAsStringSync(lines.join('\n') + suffix + '\n');
+      final String newline = useCrlf ? '\r\n' : '\n';
+      file.writeAsStringSync(lines.join(newline) + suffix + newline);
     }
 
     test('looks at only expected extensions', () async {
@@ -127,6 +129,23 @@ void main() {
       _writeLicense(checked);
       final File notChecked = root.childFile('not_checked.md');
       notChecked.createSync();
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['license-check']);
+
+      // Sanity check that the test did actually check a file.
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking checked.cc'),
+            contains('All files passed validation!'),
+          ]));
+    });
+
+    test('passes correct license blocks on Windows', () async {
+      final File checked = root.childFile('checked.cc');
+      checked.createSync();
+      _writeLicense(checked, useCrlf: true);
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['license-check']);
@@ -393,6 +412,24 @@ void main() {
       final File license = root.childFile('LICENSE');
       license.createSync();
       license.writeAsStringSync(_correctLicenseFileText);
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['license-check']);
+
+      // Sanity check that the test did actually check the file.
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Checking LICENSE'),
+            contains('All files passed validation!'),
+          ]));
+    });
+
+    test('passes correct LICENSE files on Windows', () async {
+      final File license = root.childFile('LICENSE');
+      license.createSync();
+      license
+          .writeAsStringSync(_correctLicenseFileText.replaceAll('\n', '\r\n'));
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['license-check']);
