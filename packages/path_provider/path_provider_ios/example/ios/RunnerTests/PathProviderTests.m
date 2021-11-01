@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-@import path_provider;
+@import path_provider_ios;
 @import XCTest;
 
 @interface PathProviderTests : XCTestCase
