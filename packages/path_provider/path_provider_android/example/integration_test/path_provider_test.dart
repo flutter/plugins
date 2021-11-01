@@ -30,8 +30,8 @@ void main() {
 
   testWidgets('getLibraryDirectory', (WidgetTester tester) async {
     final PathProviderPlatform provider = PathProviderPlatform.instance;
-    final Future<String?> result = provider.getLibraryPath();
-    expect(result, throwsA(isInstanceOf<UnsupportedError>()));
+    expect(() => provider.getLibraryPath(),
+        throwsA(isInstanceOf<UnsupportedError>()));
   });
 
   testWidgets('getExternalStorageDirectory', (WidgetTester tester) async {
