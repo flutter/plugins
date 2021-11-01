@@ -5,56 +5,47 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('getTemporaryDirectory', (WidgetTester tester) async {
-    final Directory result = await getTemporaryDirectory();
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final String? result = await provider.getTemporaryPath();
     _verifySampleFile(result, 'temporaryDirectory');
   });
 
   testWidgets('getApplicationDocumentsDirectory', (WidgetTester tester) async {
-    final Directory result = await getApplicationDocumentsDirectory();
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final String? result = await provider.getApplicationDocumentsPath();
     _verifySampleFile(result, 'applicationDocuments');
   });
 
   testWidgets('getApplicationSupportDirectory', (WidgetTester tester) async {
-    final Directory result = await getApplicationSupportDirectory();
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final String? result = await provider.getApplicationSupportPath();
     _verifySampleFile(result, 'applicationSupport');
   });
 
   testWidgets('getLibraryDirectory', (WidgetTester tester) async {
-    if (Platform.isIOS) {
-      final Directory result = await getLibraryDirectory();
-      _verifySampleFile(result, 'library');
-    } else if (Platform.isAndroid) {
-      final Future<Directory?> result = getLibraryDirectory();
-      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-    }
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final Future<String?> result = provider.getLibraryPath();
+    expect(result, throwsA(isInstanceOf<UnsupportedError>()));
   });
 
   testWidgets('getExternalStorageDirectory', (WidgetTester tester) async {
-    if (Platform.isIOS) {
-      final Future<Directory?> result = getExternalStorageDirectory();
-      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-    } else if (Platform.isAndroid) {
-      final Directory? result = await getExternalStorageDirectory();
-      _verifySampleFile(result, 'externalStorage');
-    }
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final String? result = await provider.getExternalStoragePath();
+    _verifySampleFile(result, 'externalStorage');
   });
 
   testWidgets('getExternalCacheDirectories', (WidgetTester tester) async {
-    if (Platform.isIOS) {
-      final Future<List<Directory>?> result = getExternalCacheDirectories();
-      expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-    } else if (Platform.isAndroid) {
-      final List<Directory>? directories = await getExternalCacheDirectories();
-      expect(directories, isNotNull);
-      for (final Directory result in directories!) {
-        _verifySampleFile(result, 'externalCache');
-      }
+    final PathProviderPlatform provider = PathProviderPlatform.instance;
+    final List<String>? directories = await provider.getExternalCachePaths();
+    expect(directories, isNotNull);
+    for (final String result in directories!) {
+      _verifySampleFile(result, 'externalCache');
     }
   });
 
@@ -71,30 +62,27 @@ void main() {
 
   for (final StorageDirectory? type in _allDirs) {
     test('getExternalStorageDirectories (type: $type)', () async {
-      if (Platform.isIOS) {
-        final Future<List<Directory>?> result =
-            getExternalStorageDirectories(type: null);
-        expect(result, throwsA(isInstanceOf<UnsupportedError>()));
-      } else if (Platform.isAndroid) {
-        final List<Directory>? directories =
-            await getExternalStorageDirectories(type: type);
-        expect(directories, isNotNull);
-        for (final Directory result in directories!) {
-          _verifySampleFile(result, '$type');
-        }
+      final PathProviderPlatform provider = PathProviderPlatform.instance;
+
+      final List<String>? directories =
+          await provider.getExternalStoragePaths(type: type);
+      expect(directories, isNotNull);
+      for (final String result in directories!) {
+        _verifySampleFile(result, '$type');
       }
     });
   }
 }
 
-/// Verify a file called [name] in [directory] by recreating it with test
+/// Verify a file called [name] in [directoryPath] by recreating it with test
 /// contents when necessary.
-void _verifySampleFile(Directory? directory, String name) {
-  expect(directory, isNotNull);
-  if (directory == null) {
+void _verifySampleFile(String? directoryPath, String name) {
+  expect(directoryPath, isNotNull);
+  if (directoryPath == null) {
     return;
   }
-  final File file = File('${directory.path}/$name');
+  final Directory directory = Directory(directoryPath);
+  final File file = File('${directory.path}${Platform.pathSeparator}$name');
 
   if (file.existsSync()) {
     file.deleteSync();

@@ -4,10 +4,8 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,28 +33,28 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  Future<Directory?>? _tempDirectory;
-  Future<Directory?>? _appSupportDirectory;
-  Future<Directory?>? _appLibraryDirectory;
-  Future<Directory?>? _appDocumentsDirectory;
-  Future<Directory?>? _externalDocumentsDirectory;
-  Future<List<Directory>?>? _externalStorageDirectories;
-  Future<List<Directory>?>? _externalCacheDirectories;
+  final PathProviderPlatform provider = PathProviderPlatform.instance;
+  Future<String?>? _tempDirectory;
+  Future<String?>? _appSupportDirectory;
+  Future<String?>? _appDocumentsDirectory;
+  Future<String?>? _externalDocumentsDirectory;
+  Future<List<String>?>? _externalStorageDirectories;
+  Future<List<String>?>? _externalCacheDirectories;
 
   void _requestTempDirectory() {
     setState(() {
-      _tempDirectory = getTemporaryDirectory();
+      _tempDirectory = provider.getTemporaryPath();
     });
   }
 
   Widget _buildDirectory(
-      BuildContext context, AsyncSnapshot<Directory?> snapshot) {
+      BuildContext context, AsyncSnapshot<String?> snapshot) {
     Text text = const Text('');
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasError) {
         text = Text('Error: ${snapshot.error}');
       } else if (snapshot.hasData) {
-        text = Text('path: ${snapshot.data!.path}');
+        text = Text('path: ${snapshot.data}');
       } else {
         text = const Text('path unavailable');
       }
@@ -65,14 +63,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildDirectories(
-      BuildContext context, AsyncSnapshot<List<Directory>?> snapshot) {
+      BuildContext context, AsyncSnapshot<List<String>?> snapshot) {
     Text text = const Text('');
     if (snapshot.connectionState == ConnectionState.done) {
       if (snapshot.hasError) {
         text = Text('Error: ${snapshot.error}');
       } else if (snapshot.hasData) {
-        final String combined =
-            snapshot.data!.map((Directory d) => d.path).join(', ');
+        final String combined = snapshot.data!.join(', ');
         text = Text('paths: $combined');
       } else {
         text = const Text('path unavailable');
@@ -83,37 +80,32 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _requestAppDocumentsDirectory() {
     setState(() {
-      _appDocumentsDirectory = getApplicationDocumentsDirectory();
+      _appDocumentsDirectory = provider.getApplicationDocumentsPath();
     });
   }
 
   void _requestAppSupportDirectory() {
     setState(() {
-      _appSupportDirectory = getApplicationSupportDirectory();
-    });
-  }
-
-  void _requestAppLibraryDirectory() {
-    setState(() {
-      _appLibraryDirectory = getLibraryDirectory();
+      _appSupportDirectory = provider.getApplicationSupportPath();
     });
   }
 
   void _requestExternalStorageDirectory() {
     setState(() {
-      _externalDocumentsDirectory = getExternalStorageDirectory();
+      _externalDocumentsDirectory = provider.getExternalStoragePath();
     });
   }
 
   void _requestExternalStorageDirectories(StorageDirectory type) {
     setState(() {
-      _externalStorageDirectories = getExternalStorageDirectories(type: type);
+      _externalStorageDirectories =
+          provider.getExternalStoragePaths(type: type);
     });
   }
 
   void _requestExternalCacheDirectories() {
     setState(() {
-      _externalCacheDirectories = getExternalCacheDirectories();
+      _externalCacheDirectories = provider.getExternalCachePaths();
     });
   }
 
@@ -133,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _requestTempDirectory,
               ),
             ),
-            FutureBuilder<Directory?>(
+            FutureBuilder<String?>(
                 future: _tempDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -142,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _requestAppDocumentsDirectory,
               ),
             ),
-            FutureBuilder<Directory?>(
+            FutureBuilder<String?>(
                 future: _appDocumentsDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -151,62 +143,43 @@ class _MyHomePageState extends State<MyHomePage> {
                 onPressed: _requestAppSupportDirectory,
               ),
             ),
-            FutureBuilder<Directory?>(
+            FutureBuilder<String?>(
                 future: _appSupportDirectory, builder: _buildDirectory),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                child: const Text('Get Application Library Directory'),
-                onPressed: _requestAppLibraryDirectory,
+                child: const Text('Get External Storage Directory'),
+                onPressed: _requestExternalStorageDirectory,
               ),
             ),
-            FutureBuilder<Directory?>(
-                future: _appLibraryDirectory, builder: _buildDirectory),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                child: Text(Platform.isIOS
-                    ? 'External directories are unavailable on iOS'
-                    : 'Get External Storage Directory'),
-                onPressed:
-                    Platform.isIOS ? null : _requestExternalStorageDirectory,
-              ),
-            ),
-            FutureBuilder<Directory?>(
+            FutureBuilder<String?>(
                 future: _externalDocumentsDirectory, builder: _buildDirectory),
             Column(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  child: Text(Platform.isIOS
-                      ? 'External directories are unavailable on iOS'
-                      : 'Get External Storage Directories'),
-                  onPressed: Platform.isIOS
-                      ? null
-                      : () {
-                          _requestExternalStorageDirectories(
-                            StorageDirectory.music,
-                          );
-                        },
+                  child: const Text('Get External Storage Directories'),
+                  onPressed: () {
+                    _requestExternalStorageDirectories(
+                      StorageDirectory.music,
+                    );
+                  },
                 ),
               ),
             ]),
-            FutureBuilder<List<Directory>?>(
+            FutureBuilder<List<String>?>(
                 future: _externalStorageDirectories,
                 builder: _buildDirectories),
             Column(children: <Widget>[
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: ElevatedButton(
-                  child: Text(Platform.isIOS
-                      ? 'External directories are unavailable on iOS'
-                      : 'Get External Cache Directories'),
-                  onPressed:
-                      Platform.isIOS ? null : _requestExternalCacheDirectories,
+                  child: const Text('Get External Cache Directories'),
+                  onPressed: _requestExternalCacheDirectories,
                 ),
               ),
             ]),
-            FutureBuilder<List<Directory>?>(
+            FutureBuilder<List<String>?>(
                 future: _externalCacheDirectories, builder: _buildDirectories),
           ],
         ),
