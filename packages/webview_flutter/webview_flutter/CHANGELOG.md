@@ -1,6 +1,6 @@
 ## 2.2.0
 
-* Added `runJavaScript` and `runJavaScriptForResult` to supersede `evaluateJavascript`.
+* Added `runJavascript` and `runJavascriptForResult` to supersede `evaluateJavascript`.
 * Deprecated `evaluateJavascript`.
 
 ## 2.1.2
