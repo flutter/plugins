@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
                  andSKPaymentTransaction:(SKPaymentTransaction *)transaction
     API_AVAILABLE(ios(13), macos(10.15), watchos(6.2));
 
-// Creates an instance of the SKPaymentDiscount class based on the supplied disctionary.
+// Creates an instance of the SKPaymentDiscount class based on the supplied dictionary.
 + (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map API_AVAILABLE(ios(12.2));
 
 @end

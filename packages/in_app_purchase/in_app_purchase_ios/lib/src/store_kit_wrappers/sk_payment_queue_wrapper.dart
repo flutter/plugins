@@ -452,11 +452,12 @@ class SKPaymentWrapper {
   /// testing.
   final bool simulatesAskToBuyInSandbox;
 
-  /// The details of optional discount that should be applied to the payment.
+  /// The details of a discount that should be applied to the payment.
   ///
-  /// See [Setting Up Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/setting_up_promotional_offers?language=objc)
+  /// See [Implementing Promotional Offers in Your App](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/implementing_promotional_offers_in_your_app?language=objc)
   /// for more information on generating keys and creating offers for
-  /// auto-renewable subscriptions.
+  /// auto-renewable subscriptions. If set to `null` no discount will be
+  /// applied to this payment.
   final SKPaymentDiscountWrapper? paymentDiscount;
 
   @override
@@ -489,7 +490,8 @@ class SKPaymentWrapper {
 /// Used to indicate a discount is applicable to a payment. The
 /// [SKPaymentDiscountWrapper] instance should be assigned to the
 /// [SKPaymentWrapper] object to which the discount should be applied.
-/// Discount offers are set up in App Store Connect.
+/// Discount offers are set up in App Store Connect. See [Implementing Promotional Offers in Your App](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/implementing_promotional_offers_in_your_app?language=objc)
+/// for more information.
 @immutable
 @JsonSerializable(createToJson: true)
 class SKPaymentDiscountWrapper {
@@ -505,8 +507,7 @@ class SKPaymentDiscountWrapper {
   /// Constructs an instance of this from a key value map of data.
   ///
   /// The map needs to have named string keys with values matching the names and
-  /// types of all of the members on this class. The `map` parameter must not be
-  /// null.
+  /// types of all of the members on this class.
   factory SKPaymentDiscountWrapper.fromJson(Map<String, dynamic> map) {
     assert(map != null);
     return _$SKPaymentDiscountWrapperFromJson(map);
@@ -530,17 +531,19 @@ class SKPaymentDiscountWrapper {
 
   /// A string identifying the key that is used to generate the signature.
   ///
-  /// Keys are generated and downloaded from App Store Connect. See the "KEY ID"
-  /// column in the App Store Promotions section in App Store Connect to use as
-  /// the keyIdentifier.
+  /// Keys are generated and downloaded from App Store Connect. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
   final String keyIdentifier;
 
-  /// A universal unique identifier created together with the signature.
+  /// A universal unique identifier (UUID) created together with the signature.
   ///
-  /// The unique nonce should be generated on your server when it creates the
-  /// `signature` for the payment discount. The nonce can be used once, a new
-  /// nonce should be created for each payment request.
-  /// The string representation of the nonce must be lowercase.
+  /// The UUID should be generated on your server when it creates the
+  /// `signature` for the payment discount. The UUID can be used once, a new
+  /// UUID should be created for each payment request. The string representation
+  /// of the UUID must be lowercase. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
   final String nonce;
 
   /// A cryptographically signed string representing the to properties of the
@@ -554,7 +557,9 @@ class SKPaymentDiscountWrapper {
 
   /// The date and time the signature was created.
   ///
-  /// The timestamp should be formatted in Unix epoch time.
+  /// The timestamp should be formatted in Unix epoch time. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
   final int timestamp;
 
   @override

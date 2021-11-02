@@ -62,7 +62,7 @@
               forKey:@"subscriptionGroupIdentifier"];
     }
     if (@available(iOS 12.2, *)) {
-      NSMutableArray *discounts = [NSMutableArray new];
+      NSMutableArray *discounts = [[NSMutableArray alloc] init];
       for (NSDictionary *discountMap in map[@"discounts"]) {
         [discounts addObject:[[SKProductDiscountStub alloc] initWithMap:discountMap]];
       }
