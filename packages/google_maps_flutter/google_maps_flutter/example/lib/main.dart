@@ -4,7 +4,10 @@
 
 // ignore_for_file: public_member_api_docs
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:google_maps_flutter_example/lite_mode.dart';
 import 'animate_camera.dart';
 import 'map_click.dart';
@@ -66,5 +69,8 @@ class MapsDemo extends StatelessWidget {
 }
 
 void main() {
+  if (defaultTargetPlatform == TargetPlatform.android) {
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+  }
   runApp(MaterialApp(home: MapsDemo()));
 }
