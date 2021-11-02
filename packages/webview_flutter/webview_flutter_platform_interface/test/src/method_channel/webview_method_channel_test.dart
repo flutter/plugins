@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -95,6 +97,56 @@ void main() {
             arguments: <String, dynamic>{
               'url': 'https://test.url',
               'headers': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {},
+                'body': null,
+              }
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest with optional parameters', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+        headers: {'foo': 'bar'},
+        body: Uint8List.fromList('hello world'.codeUnits),
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {'foo': 'bar'},
+                'body': 'hello world'.codeUnits,
+              }
             },
           ),
         ],
