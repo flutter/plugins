@@ -166,6 +166,7 @@ void main() {
   testWidgets('resize webview', (WidgetTester tester) async {
     final Completer<void> initialResizeCompleter = Completer<void>();
     final Completer<void> buttonTapResizeCompleter = Completer<void>();
+    final Completer<void> onPageFinished = Completer<void>();
 
     bool resizeButtonTapped = false;
     await tester.pumpWidget(ResizableWebView(
@@ -176,8 +177,9 @@ void main() {
           initialResizeCompleter.complete();
         }
       },
-      onPageFinished: () {},
+      onPageFinished: () => onPageFinished.complete(),
     ));
+    await onPageFinished.future;
     await initialResizeCompleter.future;
 
     resizeButtonTapped = true;
