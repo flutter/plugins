@@ -536,6 +536,32 @@ void main() {
       );
     });
   });
+
+  group('Tests limitsNavigationsToAppBoundDomains', () {
+    test('Make sure limitsNavigationsToAppBoundDomains defaults to false', () {
+      final value = MethodChannelWebViewPlatform.creationParamsToMap(
+        CreationParams(
+          webSettings: WebSettings(
+            userAgent: WebSetting<String?>.of(''),
+          ),
+        ),
+      );
+
+      expect(value['limitsNavigationsToAppBoundDomains'], false);
+    });
+    test('Make sure limitsNavigationsToAppBoundDomains can be set to true', () {
+      final value = MethodChannelWebViewPlatform.creationParamsToMap(
+        CreationParams(
+          limitsNavigationsToAppBoundDomains: true,
+          webSettings: WebSettings(
+            userAgent: WebSetting<String?>.of(''),
+          ),
+        ),
+      );
+
+      expect(value['limitsNavigationsToAppBoundDomains'], true);
+    });
+  });
 }
 
 class MockWebViewPlatformCallbacksHandler extends Mock
