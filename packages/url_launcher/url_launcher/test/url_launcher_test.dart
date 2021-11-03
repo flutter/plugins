@@ -344,7 +344,11 @@ void main() {
           iOSOnlyModalPresentationStyle: UIModalPresentationStyle.formSheet,
         )
         ..setResponse(true);
-      expect(await launch('http://flutter.dev/', iOSOnlyModalPresentationStyle: UIModalPresentationStyle.formSheet), isTrue);
+      expect(
+          await launch('http://flutter.dev/',
+              iOSOnlyModalPresentationStyle:
+                  UIModalPresentationStyle.formSheet),
+          isTrue);
     });
   });
 }

@@ -76,8 +76,7 @@ API_AVAILABLE(ios(9.0))
   } else if ([@"launch" isEqualToString:call.method]) {
     NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
     if (useSafariVC.boolValue) {
-
-          [self launchURLInVC:url call:call result:result];
+      [self launchURLInVC:url call:call result:result];
 
     } else {
       [self launchURL:url call:call result:result];
@@ -127,7 +126,7 @@ API_AVAILABLE(ios(9.0))
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
-    NSString *style = call.arguments[@"uiModalPresentationStyle"];
+  NSString *style = call.arguments[@"uiModalPresentationStyle"];
 
   [self setPresentationStyleFromInput:self.currentSession.safari input:style];
   [self.topViewController presentViewController:self.currentSession.safari
@@ -176,24 +175,31 @@ API_AVAILABLE(ios(9.0))
 }
 
 - (void)setPresentationStyleFromInput:(UIViewController *)viewController input:(NSString *)input {
-    NSString *passedPresentationStyle = [input componentsSeparatedByString:@"."][1];
-    NSMutableDictionary *presentationStyles = [[NSMutableDictionary alloc] init];
+  NSString *passedPresentationStyle = [input componentsSeparatedByString:@"."][1];
+  NSMutableDictionary *presentationStyles = [[NSMutableDictionary alloc] init];
 
+  if (@available(iOS 13.0, *)) {
+    [presentationStyles setObject:@"automatic"
+                           forKey:[NSNumber numberWithInt:UIModalPresentationAutomatic]];
+  }
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationFullScreen]
+                         forKey:@"fullScreen"];
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationPageSheet]
+                         forKey:@"pageSheet"];
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationFormSheet]
+                         forKey:@"formSheet"];
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationCurrentContext]
+                         forKey:@"currentContext"];
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationOverFullScreen]
+                         forKey:@"overFullScreen"];
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationOverCurrentContext]
+                         forKey:@"overCurrentContext"];
+  [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationPopover]
+                         forKey:@"popover"];
 
-    if (@available(iOS 13.0, *)) {
-        [presentationStyles setObject:@"automatic" forKey:[NSNumber numberWithInt:UIModalPresentationAutomatic]];
-    }
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationFullScreen] forKey:@"fullScreen"];
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationPageSheet] forKey:@"pageSheet"];
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationFormSheet] forKey:@"formSheet"];
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationCurrentContext] forKey:@"currentContext"];
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationOverFullScreen] forKey:@"overFullScreen"];
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationOverCurrentContext] forKey:@"overCurrentContext"];
-    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationPopover] forKey:@"popover"];
-
-    NSNumber *presentationStyle = [presentationStyles objectForKey:passedPresentationStyle];
-    if (presentationStyle != nil) {
-        viewController.modalPresentationStyle = presentationStyle.intValue;
-    }
+  NSNumber *presentationStyle = [presentationStyles objectForKey:passedPresentationStyle];
+  if (presentationStyle != nil) {
+    viewController.modalPresentationStyle = presentationStyle.intValue;
+  }
 }
 @end
