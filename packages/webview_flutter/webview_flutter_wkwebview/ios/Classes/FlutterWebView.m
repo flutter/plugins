@@ -409,6 +409,11 @@
     if ([key isEqualToString:@"allowsInlineMediaPlayback"]) {
       NSNumber* allowsInlineMediaPlayback = settings[key];
       configuration.allowsInlineMediaPlayback = [allowsInlineMediaPlayback boolValue];
+    } else if ([key isEqualToString:@"limitsNavigationsToAppBoundDomains"]) {
+      if (@available(iOS 14.0, *)) {
+        NSNumber* limitsNavigationsToAppBoundDomains = settings[key];
+        configuration.limitsNavigationsToAppBoundDomains = [limitsNavigationsToAppBoundDomains boolValue];
+      }
     }
   }
 }
