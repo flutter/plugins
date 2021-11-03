@@ -60,6 +60,9 @@ export 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 /// after opening a link on iOS. Does nothing if no value is passed. This does
 /// not handle resetting the previous status bar style.
 ///
+/// [iOSOnlyModalPresentationStyle] is a setting only taking effect on iOS. It determines the way the Safari View Controller is presented
+/// It changes the [UIModalPresentationStyle](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle)
+/// 
 /// Returns true if launch url is successful; false is only returned when [universalLinksOnly]
 /// is set to true and the universal link failed to launch.
 Future<bool> launch(
