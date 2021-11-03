@@ -186,8 +186,9 @@ void main() {
 
     resizeButtonTapped = true;
     await tester.tap(find.byKey(const ValueKey('resizeButton')));
+    await tester.pumpAndSettle();
     expect(buttonTapResizeCompleter.future, completes);
-  }, timeout: Timeout(Duration(seconds: 10)));
+  });
 
   testWidgets('set custom userAgent', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter1 =
