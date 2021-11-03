@@ -24,7 +24,7 @@ Here are some points to consider when choosing between the two:
 * *Hybrid composition* mode has a built-in keyboard support while *Virtual displays* mode has multiple
 [keyboard issues](https://github.com/flutter/flutter/issues?q=is%3Aopen+label%3Avd-only+label%3A%22p%3A+webview-keyboard%22)
 * *Hybrid composition* mode requires Android SDK 19+ while *Virtual displays* mode requires Android SDK 20+
-* *Hybrid composition* mode has [performance limitations](https://flutter.dev/docs/development/platform-integration/platform-views#performance) when working on Android versions prior to Android 10 while *Virtual displays* is performant on all supported Android versions 
+* *Hybrid composition* mode has [performance limitations](https://flutter.dev/docs/development/platform-integration/platform-views#performance) when working on Android versions prior to Android 10 while *Virtual displays* is performant on all supported Android versions
 
 |                             | Hybrid composition  | Virtual displays |
 | --------------------------- | ------------------- | ---------------- |
@@ -60,17 +60,17 @@ android {
 
 2. Set `WebView.platform = SurfaceAndroidWebView();` in `initState()`.
     For example:
-    
+
     ```dart
     import 'dart:io';
-    
+
     import 'package:webview_flutter/webview_flutter.dart';
 
     class WebViewExample extends StatefulWidget {
       @override
       WebViewExampleState createState() => WebViewExampleState();
     }
-    
+
     class WebViewExampleState extends State<WebViewExample> {
       @override
       void initState() {
@@ -92,3 +92,8 @@ android {
 
 To use Material Components when the user interacts with input elements in the WebView,
 follow the steps described in the [Enabling Material Components instructions](https://flutter.dev/docs/deployment/android#enabling-material-components).
+
+## iOS
+
+### Limits Navigations To App Bound Domains
+To take advantage of in-app browsing on iOS 14.0 and iPadOS 14.0, App-Bound Domains can be enabled and setup using the following [guide](https://webkit.org/blog/10882/app-bound-domains/)

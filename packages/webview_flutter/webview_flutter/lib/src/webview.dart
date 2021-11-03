@@ -75,6 +75,8 @@ class WebView extends StatefulWidget {
   /// `onWebViewCreated` callback once the web view is created.
   ///
   /// The `javascriptMode` and `autoMediaPlaybackPolicy` parameters must not be null.
+  ///
+  /// Once the WebView has been initialized, it is not possible to change `limitsNavigationsToAppBoundDomains`
   const WebView({
     Key? key,
     this.onWebViewCreated,
@@ -355,7 +357,8 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
-    limitsNavigationsToAppBoundDomains: widget.limitsNavigationsToAppBoundDomains,
+    limitsNavigationsToAppBoundDomains:
+        widget.limitsNavigationsToAppBoundDomains,
   );
 }
 
