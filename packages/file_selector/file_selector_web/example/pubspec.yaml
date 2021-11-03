@@ -10,7 +10,6 @@ dependencies:
     sdk: flutter
 
 dev_dependencies:
-  build_runner: ^2.0.0
   file_selector_web:
     path: ../
   flutter_driver:
