@@ -47,9 +47,9 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertNotNil(result)
-        let canLuanch = result! as? Bool
-        XCTAssertNotNil(canLuanch)
-        XCTAssertTrue(canLuanch!)
+        let canLaunch = result! as? Bool
+        XCTAssertNotNil(canLaunch)
+        XCTAssertTrue(canLaunch!)
       })
   }
 
@@ -62,9 +62,9 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertNotNil(result)
-        let canLuanch = result! as? Bool
-        XCTAssertNotNil(canLuanch)
-        XCTAssertFalse(canLuanch!)
+        let canLaunch = result! as? Bool
+        XCTAssertNotNil(canLaunch)
+        XCTAssertFalse(canLaunch!)
       })
   }
 
