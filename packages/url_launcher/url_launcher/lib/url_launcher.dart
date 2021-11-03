@@ -62,7 +62,7 @@ export 'package:url_launcher_platform_interface/url_launcher_platform_interface.
 ///
 /// [iOSOnlyModalPresentationStyle] is a setting only taking effect on iOS. It determines the way the Safari View Controller is presented
 /// It changes the [UIModalPresentationStyle](https://developer.apple.com/documentation/uikit/uimodalpresentationstyle)
-/// 
+///
 /// Returns true if launch url is successful; false is only returned when [universalLinksOnly]
 /// is set to true and the universal link failed to launch.
 Future<bool> launch(
