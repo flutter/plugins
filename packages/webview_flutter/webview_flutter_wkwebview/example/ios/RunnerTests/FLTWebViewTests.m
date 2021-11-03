@@ -301,4 +301,48 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 
+- (void)testLimitsNavigationsToAppBoundDomainsDefaultToFalse {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should set limitsNavigationsToAppBoundDomains to false"];
+
+  // Run
+  if (@available(iOS 14.0, *)) {
+    XCTAssertFalse(controller.webView.configuration.limitsNavigationsToAppBoundDomains);
+  }
+
+  [resultExpectation fulfill];
+
+  // Verify
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
+- (void)testLimitsNavigationsToAppBoundDomainsSetToTrue {
+  // Setup
+  NSDictionary* arguments = @{@"limitsNavigationsToAppBoundDomains": @true};
+
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:arguments
+                                  binaryMessenger:self.mockBinaryMessenger];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should set limitsNavigationsToAppBoundDomains to true"];
+
+  // Run
+  if (@available(iOS 14.0, *)) {
+    XCTAssertTrue(controller.webView.configuration.limitsNavigationsToAppBoundDomains);
+  }
+
+  [resultExpectation fulfill];
+
+  // Verify
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
 @end
