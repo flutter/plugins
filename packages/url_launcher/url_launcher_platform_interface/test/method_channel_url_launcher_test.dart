@@ -296,6 +296,34 @@ void main() {
       expect(launched, false);
     });
 
+    test('launch set UIModalPresentationStyle', () async {
+      await launcher.launch(
+        'http://example.com/',
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: const <String, String>{},
+        iOSOnlyModalPresentationStyle: UIModalPresentationStyle.automatic,
+      );
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall('launch', arguments: <String, Object>{
+            'url': 'http://example.com/',
+            'useSafariVC': false,
+            'useWebView': false,
+            'enableJavaScript': false,
+            'enableDomStorage': false,
+            'universalLinksOnly': false,
+            'headers': <String, String>{},
+            'uiModalPresentationStyle': 'UIModalPresentationStyle.automatic',
+          })
+        ],
+      );
+    });
+
     test('closeWebView default behavior', () async {
       await launcher.closeWebView();
       expect(
