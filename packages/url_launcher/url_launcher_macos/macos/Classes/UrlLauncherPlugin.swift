@@ -10,7 +10,7 @@ public protocol URLLauncher {
   func urlForApplication(toOpen: URL) -> URL?
 }
 
-extension NSWorkspace : URLLauncher {}
+extension NSWorkspace: URLLauncher {}
 
 public class UrlLauncherPlugin: NSObject, FlutterPlugin {
 

@@ -89,9 +89,9 @@ class RunnerTests: XCTestCase {
     pluginWithStubWorkspace.handle(
       call,
       result: { (result: Any?) -> Void in
-          XCTAssertNotNil(result)
-          let launch = result! as? Bool
-          XCTAssertNotNil(launch)
+        XCTAssertNotNil(result)
+        let launch = result! as? Bool
+        XCTAssertNotNil(launch)
       })
   }
 
