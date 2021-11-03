@@ -93,6 +93,7 @@ class WebView extends StatefulWidget {
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
+    this.limitsNavigationsToAppBoundDomains = false,
   })  : assert(javascriptMode != null),
         assert(initialMediaPlaybackPolicy != null),
         assert(allowsInlineMediaPlayback != null),
@@ -210,6 +211,13 @@ class WebView extends StatefulWidget {
   ///
   /// By default `allowsInlineMediaPlayback` is false.
   final bool allowsInlineMediaPlayback;
+
+  /// Controls whether navigation is limited to app-bound domains on iOS
+  ///
+  /// This field is ignored on Android and on iOS before iOS 14.0
+  ///
+  /// By default `limitsNavigationsToAppBoundDomains` is false
+  final bool limitsNavigationsToAppBoundDomains;
 
   /// Invoked when a page starts loading.
   final PageStartedCallback? onPageStarted;
@@ -347,6 +355,7 @@ CreationParams _creationParamsfromWidget(WebView widget) {
     javascriptChannelNames: _extractChannelNames(widget.javascriptChannels),
     userAgent: widget.userAgent,
     autoMediaPlaybackPolicy: widget.initialMediaPlaybackPolicy,
+    limitsNavigationsToAppBoundDomains: widget.limitsNavigationsToAppBoundDomains,
   );
 }
 
