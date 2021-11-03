@@ -28,4 +28,5 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   json_serializable: ^6.0.0
+  pedantic: ^1.10.0
   test: ^1.16.0
