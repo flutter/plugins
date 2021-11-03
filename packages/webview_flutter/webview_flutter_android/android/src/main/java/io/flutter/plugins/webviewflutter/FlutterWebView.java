@@ -245,7 +245,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         currentUrl(result);
         break;
       case "evaluateJavascript":
-        evaluateJavaScript(methodCall, result);
+      case "runJavascriptReturningResult":
+        evaluateJavaScript(methodCall, result, true);
+        break;
+      case "runJavascript":
+        evaluateJavaScript(methodCall, result, false);
         break;
       case "addJavascriptChannels":
         addJavaScriptChannels(methodCall, result);
@@ -326,7 +330,8 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   }
 
   @TargetApi(Build.VERSION_CODES.KITKAT)
-  private void evaluateJavaScript(MethodCall methodCall, final Result result) {
+  private void evaluateJavaScript(
+      MethodCall methodCall, final Result result, final boolean returnValue) {
     String jsString = (String) methodCall.arguments;
     if (jsString == null) {
       throw new UnsupportedOperationException("JavaScript string cannot be null");
@@ -336,7 +341,11 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
         new android.webkit.ValueCallback<String>() {
           @Override
           public void onReceiveValue(String value) {
-            result.success(value);
+            if (returnValue) {
+              result.success(value);
+            } else {
+              result.success(null);
+            }
           }
         });
   }
