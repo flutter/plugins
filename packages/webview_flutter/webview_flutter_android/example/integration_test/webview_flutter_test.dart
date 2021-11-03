@@ -168,28 +168,26 @@ void main() {
   }, skip: _skipDueToIssue86757);
 
   testWidgets('resize webview', (WidgetTester tester) async {
-    final Completer<void> pageFinishedCompleter = Completer<void>();
+    final Completer<void> initialResizeCompleter = Completer<void>();
+    final Completer<void> buttonTapResizeCompleter = Completer<void>();
 
-    int resizeCallbackCount = 0;
+    bool resizeButtonTapped = false;
     await tester.pumpWidget(ResizableWebView(
-      onResize: (_) => resizeCallbackCount++,
-      onPageFinished: () {
-        pageFinishedCompleter.complete();
+      onResize: (_) {
+        if (resizeButtonTapped) {
+          buttonTapResizeCompleter.complete();
+        } else {
+          initialResizeCompleter.complete();
+        }
       },
+      onPageFinished: () {},
     ));
-    // This is required to wait for the initial resize of the WebView. The line
-    // pageFinishedCompleter can complete before this.
-    await tester.pump(Duration(seconds: 3));
-    await pageFinishedCompleter.future;
+    await initialResizeCompleter.future;
 
-    final int oldCount = resizeCallbackCount;
-
+    resizeButtonTapped = true;
     await tester.tap(find.byKey(const ValueKey('resizeButton')));
-    // Wait for WebView resize.
-    await tester.pump(Duration(seconds: 3));
-
-    expect(resizeCallbackCount, greaterThan(oldCount));
-  });
+    expect(buttonTapResizeCompleter.future, completes);
+  }, timeout: Timeout(Duration(seconds: 10)));
 
   testWidgets('set custom userAgent', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter1 =
