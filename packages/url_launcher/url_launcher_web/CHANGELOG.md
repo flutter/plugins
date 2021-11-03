@@ -1,3 +1,7 @@
+## 2.0.5
+* Added iOSOnlyModalPresentationStyle parameter
+
+
 ## 2.0.4
 
 * Add `implements` to pubspec.

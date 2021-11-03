@@ -1,3 +1,7 @@
+## 6.0.13
+* Added iOSOnlyModalPresentationStyle parameter to launch
+* Shows the In-App Safari ViewController as a Popover in the example app
+
 ## 6.0.12
 
 * Fixed an error where 'launch' method of url_launcher would cause an error if the provided URL was not valid by RFC 3986.
