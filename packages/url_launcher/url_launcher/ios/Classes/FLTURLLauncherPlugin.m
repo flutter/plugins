@@ -79,7 +79,7 @@ API_AVAILABLE(ios(9.0))
     NSNumber *useSafariVC = call.arguments[@"useSafariVC"];
     if (useSafariVC.boolValue) {
       if (@available(iOS 9.0, *)) {
-        [self launchURLInVC:url result:result];
+          [self launchURLInVC:url call:call result:result];
       } else {
         [self launchURL:url call:call result:result];
       }
@@ -129,13 +129,18 @@ API_AVAILABLE(ios(9.0))
   }
 }
 
-- (void)launchURLInVC:(NSString *)urlString result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
+- (void)launchURLInVC:(NSString *)urlString
+                 call:(FlutterMethodCall *)call
+               result:(FlutterResult)result API_AVAILABLE(ios(9.0)) {
   NSURL *url = [NSURL URLWithString:urlString];
   self.currentSession = [[FLTURLLaunchSession alloc] initWithUrl:url withFlutterResult:result];
   __weak typeof(self) weakSelf = self;
   self.currentSession.didFinish = ^(void) {
     weakSelf.currentSession = nil;
   };
+    NSString *style = call.arguments[@"uiModalPresentationStyle"];
+    
+  [self setPresentationStyleFromInput:self.currentSession.safari input:style];
   [self.topViewController presentViewController:self.currentSession.safari
                                        animated:YES
                                      completion:nil];
@@ -179,5 +184,27 @@ API_AVAILABLE(ios(9.0))
     return [self topViewControllerFromViewController:viewController.presentedViewController];
   }
   return viewController;
+}
+
+- (void)setPresentationStyleFromInput:(UIViewController *)viewController input:(NSString *)input {
+    NSString *passedPresentationStyle = [input componentsSeparatedByString:@"."][1];
+    NSMutableDictionary *presentationStyles = [[NSMutableDictionary alloc] init];
+    
+    
+    if (@available(iOS 13.0, *)) {
+        [presentationStyles setObject:@"automatic" forKey:[NSNumber numberWithInt:UIModalPresentationAutomatic]];
+    }
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationFullScreen] forKey:@"fullScreen"];
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationPageSheet] forKey:@"pageSheet"];
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationFormSheet] forKey:@"formSheet"];
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationCurrentContext] forKey:@"currentContext"];
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationOverFullScreen] forKey:@"overFullScreen"];
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationOverCurrentContext] forKey:@"overCurrentContext"];
+    [presentationStyles setObject:[NSNumber numberWithInt:UIModalPresentationPopover] forKey:@"popover"];
+        
+    NSNumber *presentationStyle = [presentationStyles objectForKey:passedPresentationStyle];
+    if (presentationStyle != nil) {
+        viewController.modalPresentationStyle = presentationStyle.intValue;
+    }
 }
 @end
