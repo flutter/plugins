@@ -8,7 +8,7 @@ import url_launcher_macos
 
 class StubWorkspace: URLLauncher {
   var isSuccessful = true
-    var url = URL.init(string: "https://flutter.dev")
+  var url = URL.init(string: "https://flutter.dev")
 
   func open(_ url: URL) -> Bool {
     return isSuccessful
@@ -23,19 +23,22 @@ class StubWorkspace: URLLauncher {
 class RunnerTests: XCTestCase {
 
   var workspace: StubWorkspace! = nil
+  var pluginWithStubWorkspace: UrlLauncherPlugin! = nil
   var plugin: UrlLauncherPlugin! = nil
 
   override func setUp() {
     workspace = StubWorkspace()
+    pluginWithStubWorkspace = UrlLauncherPlugin(workspace)
     plugin = UrlLauncherPlugin()
   }
 
   override func tearDown() {
     workspace = nil
+    pluginWithStubWorkspace = nil
     plugin = nil
   }
 
-  func testCanLaunch() throws {
+  func testCanLaunchSuccessTrue() throws {
     let call = FlutterMethodCall(
       methodName: "canLaunch",
       arguments: ["url": "https://flutter.dev"])
@@ -43,21 +46,66 @@ class RunnerTests: XCTestCase {
     plugin.handle(
       call,
       result: { (result: Any?) -> Void in
-        let canLaunch: Bool? = result as? Bool
-        XCTAssertTrue(canLaunch == true)
-      }, with: workspace)
+        XCTAssertNotNil(result)
+        let canLuanch = result! as? Bool
+        XCTAssertNotNil(canLuanch)
+        XCTAssertTrue(canLuanch!)
+      })
   }
 
-  func testLaunch() throws {
+  func testCanLaunchFailureFalse() throws {
     let call = FlutterMethodCall(
-      methodName: "launch",
-      arguments: ["url": "https://flutter.dev"])
+      methodName: "canLaunch",
+      arguments: ["url": "brokenUrl"])
 
     plugin.handle(
       call,
       result: { (result: Any?) -> Void in
-        XCTAssertTrue(result as? Bool == true)
-      }, with: workspace)
+        XCTAssertNotNil(result)
+        let canLuanch = result! as? Bool
+        XCTAssertNotNil(canLuanch)
+        XCTAssertFalse(canLuanch!)
+      })
+  }
+
+  func testCanLaunchFailureError() throws {
+    let call = FlutterMethodCall(
+      methodName: "canLaunch",
+      arguments: [])
+
+    plugin.handle(
+      call,
+      result: { (result: Any?) -> Void in
+        XCTAssertNotNil(result)
+        XCTAssertTrue(result! is FlutterError)
+      })
+  }
+
+  func testLaunchSuccess() throws {
+    let call = FlutterMethodCall(
+      methodName: "launch",
+      arguments: ["url": "https://flutter.dev"])
+
+    pluginWithStubWorkspace.handle(
+      call,
+      result: { (result: Any?) -> Void in
+          XCTAssertNotNil(result)
+          let launch = result! as? Bool
+          XCTAssertNotNil(launch)
+      })
+  }
+
+  func testLaunchFailureError() throws {
+    let call = FlutterMethodCall(
+      methodName: "canLaunch",
+      arguments: [])
+
+    pluginWithStubWorkspace.handle(
+      call,
+      result: { (result: Any?) -> Void in
+        XCTAssertNotNil(result)
+        XCTAssertTrue(result! is FlutterError)
+      })
   }
 
 }

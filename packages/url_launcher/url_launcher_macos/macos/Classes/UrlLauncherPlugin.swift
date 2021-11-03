@@ -14,7 +14,11 @@ extension NSWorkspace : URLLauncher {}
 
 public class UrlLauncherPlugin: NSObject, FlutterPlugin {
 
-  private var workspace: URLLauncher = NSWorkspace.shared
+  private var workspace: URLLauncher
+
+  public init(_ workspace: URLLauncher = NSWorkspace.shared) {
+    self.workspace = workspace
+  }
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
@@ -22,13 +26,6 @@ public class UrlLauncherPlugin: NSObject, FlutterPlugin {
       binaryMessenger: registrar.messenger)
     let instance = UrlLauncherPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
-  }
-
-  public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult, with workspace: URLLauncher) {
-    self.workspace = workspace
-    self.handle(call, result: { (resultIn: Any?) -> Void in
-        result(resultIn)
-    })
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
