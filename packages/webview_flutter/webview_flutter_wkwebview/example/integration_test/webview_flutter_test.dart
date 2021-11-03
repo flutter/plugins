@@ -74,6 +74,27 @@ void main() {
     expect(currentUrl, secondaryUrl);
   }, skip: _skipDueToIssue86757);
 
+  testWidgets('evaluateJavascript', (WidgetTester tester) async {
+    final Completer<WebViewController> controllerCompleter =
+        Completer<WebViewController>();
+    await tester.pumpWidget(
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child: WebView(
+          key: GlobalKey(),
+          initialUrl: primaryUrl,
+          onWebViewCreated: (WebViewController controller) {
+            controllerCompleter.complete(controller);
+          },
+          javascriptMode: JavascriptMode.unrestricted,
+        ),
+      ),
+    );
+    final WebViewController controller = await controllerCompleter.future;
+    final String result = await controller.evaluateJavascript('1 + 1');
+    expect(result, equals('2'));
+  });
+
   testWidgets('loadUrl with headers', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -111,11 +132,11 @@ void main() {
     await pageLoads.stream.firstWhere((String url) => url == currentUrl);
 
     final String content = await controller
-        .evaluateJavascript('document.documentElement.innerText');
+        .runJavascriptReturningResult('document.documentElement.innerText');
     expect(content.contains('flutter_test_header'), isTrue);
   });
 
-  testWidgets('JavaScriptChannel', (WidgetTester tester) async {
+  testWidgets('JavascriptChannel', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
     final Completer<void> pageStarted = Completer<void>();
@@ -155,11 +176,7 @@ void main() {
     await pageLoaded.future;
 
     expect(messagesReceived, isEmpty);
-    // Append a return value "1" in the end will prevent an iOS platform exception.
-    // See: https://github.com/flutter/flutter/issues/66318#issuecomment-701105380
-    // TODO(cyanglaz): remove the workaround "1" in the end when the below issue is fixed.
-    // https://github.com/flutter/flutter/issues/66318
-    await controller.evaluateJavascript('Echo.postMessage("hello");1;');
+    await controller.runJavascript('Echo.postMessage("hello");');
     expect(messagesReceived, equals(<String>['hello']));
   });
 
@@ -342,7 +359,8 @@ void main() {
       WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       controllerCompleter = Completer<WebViewController>();
@@ -371,7 +389,7 @@ void main() {
       controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(true));
     });
 
@@ -402,7 +420,8 @@ void main() {
       final WebViewController controller = await controllerCompleter.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       pageLoaded = Completer<void>();
@@ -430,7 +449,7 @@ void main() {
 
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
     });
 
@@ -480,7 +499,7 @@ void main() {
       await videoPlaying.future;
 
       String fullScreen =
-          await controller.evaluateJavascript('isFullScreen();');
+          await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(false));
     });
 
@@ -531,7 +550,7 @@ void main() {
       await videoPlaying.future;
 
       String fullScreen =
-          await controller.evaluateJavascript('isFullScreen();');
+          await controller.runJavascriptReturningResult('isFullScreen();');
       expect(fullScreen, _webviewBool(true));
     });
   });
@@ -597,7 +616,8 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       controllerCompleter = Completer<WebViewController>();
@@ -631,7 +651,7 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(true));
     });
 
@@ -667,7 +687,8 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      String isPaused = await controller.evaluateJavascript('isPaused();');
+      String isPaused =
+          await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
 
       pageStarted = Completer<void>();
@@ -700,7 +721,7 @@ void main() {
       await pageStarted.future;
       await pageLoaded.future;
 
-      isPaused = await controller.evaluateJavascript('isPaused();');
+      isPaused = await controller.runJavascriptReturningResult('isPaused();');
       expect(isPaused, _webviewBool(false));
     });
   });
@@ -857,7 +878,7 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller.evaluateJavascript('location.href = "$secondaryUrl"');
+      await controller.runJavascript('location.href = "$secondaryUrl"');
 
       await pageLoads.stream.first; // Wait for the next page load.
       final String? currentUrl = await controller.currentUrl();
@@ -988,7 +1009,7 @@ void main() {
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
       await controller
-          .evaluateJavascript('location.href = "https://www.youtube.com/"');
+          .runJavascript('location.href = "https://www.youtube.com/"');
 
       // There should never be any second page load, since our new URL is
       // blocked. Still wait for a potential page change for some time in order
@@ -1028,7 +1049,7 @@ void main() {
 
       await pageLoads.stream.first; // Wait for initial page load.
       final WebViewController controller = await controllerCompleter.future;
-      await controller.evaluateJavascript('location.href = "$secondaryUrl"');
+      await controller.runJavascript('location.href = "$secondaryUrl"');
 
       await pageLoads.stream.first; // Wait for second page to load.
       final String? currentUrl = await controller.currentUrl();
@@ -1083,7 +1104,7 @@ void main() {
       ),
     );
     final WebViewController controller = await controllerCompleter.future;
-    await controller.evaluateJavascript('window.open("$primaryUrl", "_blank")');
+    await controller.runJavascript('window.open("$primaryUrl", "_blank")');
     await pageLoaded.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
@@ -1117,7 +1138,7 @@ void main() {
       await pageLoaded.future;
       pageLoaded = Completer<void>();
 
-      await controller.evaluateJavascript('window.open("$secondaryUrl")');
+      await controller.runJavascript('window.open("$secondaryUrl")');
       await pageLoaded.future;
       pageLoaded = Completer<void>();
       expect(controller.currentUrl(), completion(secondaryUrl));
@@ -1142,15 +1163,15 @@ String _webviewBool(bool value) {
 
 /// Returns the value used for the HTTP User-Agent: request header in subsequent HTTP requests.
 Future<String> _getUserAgent(WebViewController controller) async {
-  return _evaluateJavascript(controller, 'navigator.userAgent;');
+  return _runJavascriptReturningResult(controller, 'navigator.userAgent;');
 }
 
-Future<String> _evaluateJavascript(
+Future<String> _runJavascriptReturningResult(
     WebViewController controller, String js) async {
   if (defaultTargetPlatform == TargetPlatform.iOS) {
-    return await controller.evaluateJavascript(js);
+    return await controller.runJavascriptReturningResult(js);
   }
-  return jsonDecode(await controller.evaluateJavascript(js));
+  return jsonDecode(await controller.runJavascriptReturningResult(js));
 }
 
 class ResizableWebView extends StatefulWidget {

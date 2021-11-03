@@ -1,3 +1,7 @@
+## 1.3.0
+
+* Added `loadRequest` method to platform interface.
+
 ## 1.2.0
 
 * Added `runJavascript` and `runJavascriptReturningResult` interface methods to supersede `evaluateJavascript`.
