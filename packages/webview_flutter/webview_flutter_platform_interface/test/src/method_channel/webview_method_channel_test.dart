@@ -544,7 +544,7 @@ void main() {
           webSettings: WebSettings(
             userAgent: WebSetting<String?>.of(''),
           ),
-        )
+        ),
       );
 
       expect(value['limitsNavigationsToAppBoundDomains'], false);
@@ -556,7 +556,7 @@ void main() {
           webSettings: WebSettings(
             userAgent: WebSetting<String?>.of(''),
           ),
-        )
+        ),
       );
 
       expect(value['limitsNavigationsToAppBoundDomains'], true);

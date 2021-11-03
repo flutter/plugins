@@ -324,7 +324,7 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
 - (void)testLimitsNavigationsToAppBoundDomainsSetToTrue {
   // Setup
-  NSDictionary* arguments = @{@"limitsNavigationsToAppBoundDomains": @true};
+  NSDictionary *arguments = @{@"limitsNavigationsToAppBoundDomains" : @true};
 
   FLTWebViewController *controller =
       [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
