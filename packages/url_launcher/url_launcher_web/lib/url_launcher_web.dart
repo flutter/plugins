@@ -81,6 +81,7 @@ class UrlLauncherPlugin extends UrlLauncherPlatform {
     bool universalLinksOnly = false,
     Map<String, String> headers = const <String, String>{},
     String? webOnlyWindowName,
+    UIModalPresentationStyle? iOSOnlyModalPresentationStyle,
   }) {
     return Future<bool>.value(
         openNewWindow(url, webOnlyWindowName: webOnlyWindowName) != null);
