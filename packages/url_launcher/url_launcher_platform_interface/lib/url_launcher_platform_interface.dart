@@ -5,9 +5,12 @@
 import 'dart:async';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:url_launcher_platform_interface/ios_only_ui_modal_presentation_style.dart';
 import 'package:url_launcher_platform_interface/link.dart';
 
 import 'method_channel_url_launcher.dart';
+
+export 'package:url_launcher_platform_interface/ios_only_ui_modal_presentation_style.dart';
 
 /// The interface that implementations of url_launcher must implement.
 ///
@@ -59,6 +62,7 @@ abstract class UrlLauncherPlatform extends PlatformInterface {
     required bool universalLinksOnly,
     required Map<String, String> headers,
     String? webOnlyWindowName,
+    UIModalPresentationStyle? iOSOnlyModalPresentationStyle,
   }) {
     throw UnimplementedError('launch() has not been implemented.');
   }

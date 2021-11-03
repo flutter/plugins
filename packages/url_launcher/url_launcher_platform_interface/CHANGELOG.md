@@ -1,3 +1,6 @@
+## 2.0.5
+* Added iOSOnlyModalPresentationStyle parameter
+
 ## 2.0.4
 
 * Silenced warnings that may occur during build when using a very

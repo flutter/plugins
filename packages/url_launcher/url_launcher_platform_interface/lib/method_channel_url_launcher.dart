@@ -39,6 +39,7 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
     required bool universalLinksOnly,
     required Map<String, String> headers,
     String? webOnlyWindowName,
+    UIModalPresentationStyle? iOSOnlyModalPresentationStyle,
   }) {
     return _channel.invokeMethod<bool>(
       'launch',
@@ -50,6 +51,8 @@ class MethodChannelUrlLauncher extends UrlLauncherPlatform {
         'enableDomStorage': enableDomStorage,
         'universalLinksOnly': universalLinksOnly,
         'headers': headers,
+        if (iOSOnlyModalPresentationStyle != null)
+          'uiModalPresentationStyle': iOSOnlyModalPresentationStyle.toString()
       },
     ).then((value) => value ?? false);
   }
