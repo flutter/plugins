@@ -30,6 +30,7 @@ android {
     }
     lintOptions {
         disable 'InvalidPackage'
+        disable 'GradleDependency'
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
