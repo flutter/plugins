@@ -18,6 +18,7 @@ class MockUrlLauncher extends Fake
   bool? universalLinksOnly;
   Map<String, String>? headers;
   String? webOnlyWindowName;
+  UIModalPresentationStyle? iOSOnlyModalPresentationStyle;
 
   bool? response;
 
@@ -38,6 +39,7 @@ class MockUrlLauncher extends Fake
     required bool universalLinksOnly,
     required Map<String, String> headers,
     required String? webOnlyWindowName,
+    required UIModalPresentationStyle? iOSOnlyModalPresentationStyle,
   }) {
     this.url = url;
     this.useSafariVC = useSafariVC;
@@ -47,6 +49,7 @@ class MockUrlLauncher extends Fake
     this.universalLinksOnly = universalLinksOnly;
     this.headers = headers;
     this.webOnlyWindowName = webOnlyWindowName;
+    this.iOSOnlyModalPresentationStyle = iOSOnlyModalPresentationStyle;
   }
 
   void setResponse(bool response) {
@@ -73,6 +76,7 @@ class MockUrlLauncher extends Fake
     required bool universalLinksOnly,
     required Map<String, String> headers,
     String? webOnlyWindowName,
+    UIModalPresentationStyle? iOSOnlyModalPresentationStyle,
   }) async {
     expect(url, this.url);
     expect(useSafariVC, this.useSafariVC);
@@ -82,6 +86,7 @@ class MockUrlLauncher extends Fake
     expect(universalLinksOnly, this.universalLinksOnly);
     expect(headers, this.headers);
     expect(webOnlyWindowName, this.webOnlyWindowName);
+    expect(iOSOnlyModalPresentationStyle, this.iOSOnlyModalPresentationStyle);
     launchCalled = true;
     return response!;
   }

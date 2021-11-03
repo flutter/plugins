@@ -8,6 +8,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
+export 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart' show UIModalPresentationStyle;
 
 /// Parses the specified URL string and delegates handling of it to the
 /// underlying platform.
@@ -70,6 +71,7 @@ Future<bool> launch(
   Map<String, String> headers = const <String, String>{},
   Brightness? statusBarBrightness,
   String? webOnlyWindowName,
+  UIModalPresentationStyle? iOSOnlyModalPresentationStyle,
 }) async {
   final Uri url = Uri.parse(urlString.trimLeft());
   final bool isWebURL = url.scheme == 'http' || url.scheme == 'https';
@@ -105,6 +107,7 @@ Future<bool> launch(
     universalLinksOnly: universalLinksOnly,
     headers: headers,
     webOnlyWindowName: webOnlyWindowName,
+    iOSOnlyModalPresentationStyle: iOSOnlyModalPresentationStyle,
   );
 
   if (statusBarBrightness != null &&

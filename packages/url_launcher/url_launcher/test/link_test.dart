@@ -62,6 +62,7 @@ void main() {
           enableDomStorage: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       await followLink!();
@@ -92,6 +93,7 @@ void main() {
           enableDomStorage: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       await followLink!();

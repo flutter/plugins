@@ -55,6 +55,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(await launch('http://flutter.dev/'), isTrue);
@@ -71,6 +72,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{'key': 'value'},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(
@@ -92,6 +94,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(await launch('http://flutter.dev/', forceSafariVC: true), isTrue);
@@ -108,6 +111,7 @@ void main() {
           universalLinksOnly: true,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(
@@ -127,6 +131,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(await launch('http://flutter.dev/', forceWebView: true), isTrue);
@@ -143,6 +148,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(
@@ -162,6 +168,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(
@@ -181,6 +188,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(await launch('http://flutter.dev/', forceSafariVC: false), isTrue);
@@ -202,6 +210,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
       expect(await launch('mailto:gmail-noreply@google.com?subject=Hello'),
@@ -235,6 +244,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
 
@@ -264,6 +274,7 @@ void main() {
           universalLinksOnly: false,
           headers: <String, String>{},
           webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: null,
         )
         ..setResponse(true);
 
@@ -280,6 +291,23 @@ void main() {
       expect(binding.renderView.automaticSystemUiAdjustment, true);
       await launchResult;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
+    });
+
+    test('set ModalPresentationStyle', () async {
+      mock
+        ..setLaunchExpectations(
+          url: 'http://flutter.dev/',
+          useSafariVC: true,
+          useWebView: false,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: false,
+          headers: <String, String>{},
+          webOnlyWindowName: null,
+          iOSOnlyModalPresentationStyle: UIModalPresentationStyle.formSheet,
+        )
+        ..setResponse(true);
+      expect(await launch('http://flutter.dev/', iOSOnlyModalPresentationStyle: UIModalPresentationStyle.formSheet), isTrue);
     });
   });
 }
