@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Added `limitsNavigationsToAppBoundDomains` functionality.
+
 ## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
@@ -8,7 +12,7 @@
 
 ## 2.0.14
 
-* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package). 
+* Update example App so navigation menu loads immediatly but only becomes available when `WebViewController` is available (same behavior as example App in webview_flutter package).
 
 ## 2.0.13
 

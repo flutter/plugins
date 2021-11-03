@@ -1,3 +1,7 @@
+## 2.2.0
+
+* Added `limitsNavigationsToAppBoundDomains` functionality for iOS 14.0+.
+
 ## 2.1.2
 
 * Fix typos in the README.

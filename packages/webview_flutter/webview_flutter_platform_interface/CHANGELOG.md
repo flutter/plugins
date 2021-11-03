@@ -1,3 +1,7 @@
+## 1.4.0
+
+* Added `limitsNavigationsToAppBoundDomains` functionality to `CreationParams`.
+
 ## 1.3.0
 
 * Added `loadRequest` method to platform interface.
