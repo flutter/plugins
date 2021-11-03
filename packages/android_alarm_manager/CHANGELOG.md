@@ -1,6 +1,8 @@
 ## NEXT
 
 * Remove support for the V1 Android embedding.
+* Updated Android lint settings.
+* Removed `-Werror` in Android builds.
 
 ## 2.0.2
 

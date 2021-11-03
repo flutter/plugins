@@ -1,6 +1,40 @@
-## NEXT
+## 0.8.4+4
+
+* Fix typos in README.md.
+
+## 0.8.4+3
+
+* Suppress a unchecked cast build warning.
+
+## 0.8.4+2
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 0.8.4+1
+
+* Fix README Example for `ImagePickerCache` to cache multiple files.
+
+## 0.8.4
+
+* Update `ImagePickerCache` to cache multiple files.
+
+## 0.8.3+3
+
+* Fix pickImage not returning a value on iOS when dismissing PHPicker sheet by swiping.
+* Updated Android lint settings.
+
+## 0.8.3+2
+
+* Fix using Camera as image source on Android 11+
+
+## 0.8.3+1
+
+* Fixed README Example.
+
+## 0.8.3
 
 * Move `ImagePickerFromLimitedGalleryUITests` to `RunnerUITests` target.
+* Improved handling of bad image data when applying metadata changes on iOS.
 
 ## 0.8.2
 
@@ -21,6 +55,7 @@
 * Fix image picker causing a crash when the cache directory is deleted.
 
 ## 0.8.1+2
+
 * Update the example app to support the multi-image feature.
 
 ## 0.8.1+1
@@ -53,8 +88,8 @@ see: [#84634](https://github.com/flutter/flutter/issues/84634).
 ## 0.8.0
 
 * BREAKING CHANGE: Changed storage location for captured images and videos to internal cache on Android,
-to comply with new Google Play storage requirements. This means developers are responsible for moving 
-the image or video to a different location in case more permanent storage is required. Other applications 
+to comply with new Google Play storage requirements. This means developers are responsible for moving
+the image or video to a different location in case more permanent storage is required. Other applications
 will no longer be able to access images or videos captured unless they are moved to a publicly accessible location.
 * Updated Mockito to fix Android tests.
 

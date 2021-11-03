@@ -315,6 +315,24 @@ void main() {
           expect(response.file!.path, '/example/path');
         });
 
+        test('retrieveLostData should successfully retrieve multiple files',
+            () async {
+          channel.setMockMethodCallHandler((MethodCall methodCall) async {
+            return <String, dynamic>{
+              'type': 'image',
+              'path': '/example/path1',
+              'pathList': ['/example/path0', '/example/path1'],
+            };
+          });
+
+          final LostDataResponse response = await picker.retrieveLostData();
+          expect(response.type, RetrieveType.image);
+          expect(response.file, isNotNull);
+          expect(response.file!.path, '/example/path1');
+          expect(response.files!.first.path, '/example/path0');
+          expect(response.files!.length, 2);
+        });
+
         test('retrieveLostData get error response', () async {
           channel.setMockMethodCallHandler((MethodCall methodCall) async {
             return <String, String>{
