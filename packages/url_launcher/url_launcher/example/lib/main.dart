@@ -59,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
         forceSafariVC: true,
         forceWebView: true,
         headers: <String, String>{'my_header_key': 'my_header_value'},
+        iOSOnlyModalPresentationStyle: UIModalPresentationStyle.popover,
       );
     } else {
       throw 'Could not launch $url';
