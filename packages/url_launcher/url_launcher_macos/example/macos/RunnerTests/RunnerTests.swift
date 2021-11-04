@@ -16,7 +16,7 @@ class StubWorkspace: SystemURLHandler {
   }
 
   func urlForApplication(toOpen: URL) -> URL? {
-      return toOpen
+    return toOpen
   }
 }
 
@@ -89,7 +89,7 @@ class RunnerTests: XCTestCase {
     pluginWithStubWorkspace.handle(
       call,
       result: { (result: Any?) -> Void in
-          XCTAssertEqual(result as? Bool, true)
+        XCTAssertEqual(result as? Bool, true)
       })
   }
 
