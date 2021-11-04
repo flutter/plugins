@@ -6,7 +6,7 @@ import FlutterMacOS
 import XCTest
 import url_launcher_macos
 
-/// A stub for testing the open method.
+/// A stub to simulate the system Url handler.
 class StubWorkspace: SystemURLHandler {
 
   var isSuccessful = true
