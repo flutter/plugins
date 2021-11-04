@@ -209,9 +209,19 @@
 }
 
 + (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map {
-  if (!map) {
+  if (!map || map.count <= 0) {
     return nil;
   }
+
+  NSAssert(map[@"identifier"],
+           @"When specifying a payment discount the 'identifier' field is mandatory.");
+  NSAssert(map[@"keyIdentifier"],
+           @"When specifying a payment discount the 'keyIdentifier' field is mandatory.");
+  NSAssert(map[@"nonce"], @"When specifying a payment discount the 'nonce' field is mandatory.");
+  NSAssert(map[@"signature"],
+           @"When specifying a payment discount the 'signature' field is mandatory.");
+  NSAssert(map[@"timestamp"],
+           @"When specifying a payment discount the 'timestamp' field is mandatory.");
 
   NSString *identifier = map[@"identifier"];
   NSString *keyIdentifier = map[@"keyIdentifier"];

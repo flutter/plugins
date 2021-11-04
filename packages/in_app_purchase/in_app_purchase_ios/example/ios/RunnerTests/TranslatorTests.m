@@ -200,4 +200,69 @@
   }
 }
 
+- (void)testSKPaymentDiscountFromMapMissingIdentifier {
+  if (@available(iOS 12.2, *)) {
+    NSDictionary *discountMap = @{
+      @"keyIdentifier" : @"payment_discount_key_identifier",
+      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+      @"signature" : @"this is a encrypted signature",
+      @"timestamp" : @([NSDate date].timeIntervalSince1970),
+    };
+
+    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+  }
+}
+
+- (void)testSKPaymentDiscountFromMapMissingKeyIdentifier {
+  if (@available(iOS 12.2, *)) {
+    NSDictionary *discountMap = @{
+      @"identifier" : @"payment_discount_identifier",
+      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+      @"signature" : @"this is a encrypted signature",
+      @"timestamp" : @([NSDate date].timeIntervalSince1970),
+    };
+
+    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+  }
+}
+
+- (void)testSKPaymentDiscountFromMapMissingNonce {
+  if (@available(iOS 12.2, *)) {
+    NSDictionary *discountMap = @{
+      @"identifier" : @"payment_discount_identifier",
+      @"keyIdentifier" : @"payment_discount_key_identifier",
+      @"signature" : @"this is a encrypted signature",
+      @"timestamp" : @([NSDate date].timeIntervalSince1970),
+    };
+
+    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+  }
+}
+
+- (void)testSKPaymentDiscountFromMapMissingSignature {
+  if (@available(iOS 12.2, *)) {
+    NSDictionary *discountMap = @{
+      @"identifier" : @"payment_discount_identifier",
+      @"keyIdentifier" : @"payment_discount_key_identifier",
+      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+      @"timestamp" : @([NSDate date].timeIntervalSince1970),
+    };
+
+    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+  }
+}
+
+- (void)testSKPaymentDiscountFromMapMissingTimestamp {
+  if (@available(iOS 12.2, *)) {
+    NSDictionary *discountMap = @{
+      @"identifier" : @"payment_discount_identifier",
+      @"keyIdentifier" : @"payment_discount_key_identifier",
+      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+      @"signature" : @"this is a encrypted signature",
+    };
+
+    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+  }
+}
+
 @end
