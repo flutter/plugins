@@ -1,6 +1,11 @@
-## 2.2.0
+## 2.3.0
 
 * Add ability to enable/disable zoom functionality.
+
+## 2.2.0
+
+* Added `runJavascript` and `runJavascriptForResult` to supersede `evaluateJavascript`.
+* Deprecated `evaluateJavascript`.
 
 ## 2.1.2
 
