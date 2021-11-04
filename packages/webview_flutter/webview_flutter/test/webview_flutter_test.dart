@@ -372,7 +372,9 @@ void main() {
       ),
     );
     expect(
-        await controller.evaluateJavascript("fake js string"), "fake js string",
+        // ignore: deprecated_member_use_from_same_package
+        await controller.evaluateJavascript("fake js string"),
+        "fake js string",
         reason: 'should get the argument');
   });
 
@@ -389,7 +391,76 @@ void main() {
       ),
     );
     expect(
+      // ignore: deprecated_member_use_from_same_package
       () => controller.evaluateJavascript('fake js string'),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('runJavaScript', (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    await controller.runJavascript('fake js string');
+    expect(fakePlatformViewsController.lastCreatedView?.lastRunJavaScriptString,
+        'fake js string');
+  });
+
+  testWidgets('runJavaScript with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.runJavascript('fake js string'),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(await controller.runJavascriptReturningResult("fake js string"),
+        "fake js string",
+        reason: 'should get the argument');
+  });
+
+  testWidgets('runJavaScriptReturningResult with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.runJavascriptReturningResult('fake js string'),
       throwsA(anything),
     );
   });
@@ -960,6 +1031,8 @@ class FakePlatformWebView {
   bool? debuggingEnabled;
   String? userAgent;
 
+  String? lastRunJavaScriptString;
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case 'loadUrl':
@@ -993,8 +1066,13 @@ class FakePlatformWebView {
         return Future<void>.sync(() {});
       case 'currentUrl':
         return Future<String?>.value(currentUrl);
+      case 'runJavascriptReturningResult':
       case 'evaluateJavascript':
+        lastRunJavaScriptString = call.arguments;
         return Future<dynamic>.value(call.arguments);
+      case 'runJavascript':
+        lastRunJavaScriptString = call.arguments;
+        return Future<void>.sync(() {});
       case 'addJavascriptChannels':
         final List<String> channelNames = List<String>.from(call.arguments);
         javascriptChannelNames!.addAll(channelNames);
