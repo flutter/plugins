@@ -61,6 +61,9 @@ and `mailto` URLs with `url_launcher`. See
 for examples of other queries.
 
 ``` xml
+<!-- If your app emails -->
+<uses-permission android:name="android.permission.QUERY_ALL_PACKAGES"/>
+
 <queries>
   <!-- If your app opens https URLs -->
   <intent>
