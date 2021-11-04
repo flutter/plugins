@@ -241,8 +241,8 @@ class SKProductWrapper {
     required this.price,
     this.subscriptionPeriod,
     this.introductoryPrice,
-    List<SKProductDiscountWrapper>? discounts,
-  }) : this.discounts = discounts ?? <SKProductDiscountWrapper>[];
+    this.discounts = const <SKProductDiscountWrapper>[],
+  });
 
   /// Constructing an instance from a map from the Objective-C layer.
   ///
