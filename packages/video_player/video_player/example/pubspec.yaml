@@ -24,7 +24,7 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  path_provider: ^1.6.27
+  path_provider: ^2.0.6
   pedantic: ^1.10.0
   test: any
 
