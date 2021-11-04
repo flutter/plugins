@@ -50,7 +50,7 @@ class RunnerTests: XCTestCase {
       })
   }
 
-  func testCanLaunchFailureReturnsFalse() throws {
+  func testCanLaunchInvalidUrlReturnsFalse() throws {
     let plugin = UrlLauncherPlugin()
 
     let call = FlutterMethodCall(
