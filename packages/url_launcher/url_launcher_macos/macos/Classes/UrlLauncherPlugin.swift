@@ -5,18 +5,18 @@
 import FlutterMacOS
 import Foundation
 
-public protocol URLLauncher {
+public protocol SystemURLHandler {
   func open(_ url: URL) -> Bool
   func urlForApplication(toOpen: URL) -> URL?
 }
 
-extension NSWorkspace: URLLauncher {}
+extension NSWorkspace: SystemURLHandler {}
 
 public class UrlLauncherPlugin: NSObject, FlutterPlugin {
 
   private var workspace: URLLauncher
 
-  public init(_ workspace: URLLauncher = NSWorkspace.shared) {
+  public init(_ workspace: SystemURLHandler = NSWorkspace.shared) {
     self.workspace = workspace
   }
 

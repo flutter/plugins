@@ -6,7 +6,7 @@ import FlutterMacOS
 import XCTest
 import url_launcher_macos
 
-class StubWorkspace: URLLauncher {
+class StubWorkspace: SystemURLHandler {
   var isSuccessful = true
   var url = URL.init(string: "https://flutter.dev")
 
