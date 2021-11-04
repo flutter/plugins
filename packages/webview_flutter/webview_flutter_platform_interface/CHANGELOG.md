@@ -1,3 +1,7 @@
+## 1.4.0
+
+* Added `loadFile` and `loadHtml` interface methods.
+
 ## 1.3.0
 
 * Added `loadRequest` method to platform interface.
