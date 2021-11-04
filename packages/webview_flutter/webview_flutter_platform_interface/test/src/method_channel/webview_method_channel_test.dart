@@ -57,6 +57,61 @@ void main() {
       log.clear();
     });
 
+    test('loadFile', () async {
+      await webViewPlatform.loadFile(
+        '/folder/asset.html',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadFile',
+            arguments: '/folder/asset.html',
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+        baseUrl: 'https://flutter.dev',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': 'https://flutter.dev',
+            },
+          ),
+        ],
+      );
+    });
+
     test('loadUrl with headers', () async {
       await webViewPlatform.loadUrl(
         'https://test.url',
