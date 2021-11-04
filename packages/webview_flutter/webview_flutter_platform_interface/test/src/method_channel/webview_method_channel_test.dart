@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -55,6 +57,61 @@ void main() {
       log.clear();
     });
 
+    test('loadFile', () async {
+      await webViewPlatform.loadFile(
+        '/folder/asset.html',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadFile',
+            arguments: '/folder/asset.html',
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+        baseUrl: 'https://flutter.dev',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': 'https://flutter.dev',
+            },
+          ),
+        ],
+      );
+    });
+
     test('loadUrl with headers', () async {
       await webViewPlatform.loadUrl(
         'https://test.url',
@@ -95,6 +152,56 @@ void main() {
             arguments: <String, dynamic>{
               'url': 'https://test.url',
               'headers': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {},
+                'body': null,
+              }
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest with optional parameters', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+        headers: {'foo': 'bar'},
+        body: Uint8List.fromList('hello world'.codeUnits),
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {'foo': 'bar'},
+                'body': 'hello world'.codeUnits,
+              }
             },
           ),
         ],

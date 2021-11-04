@@ -25,7 +25,7 @@ import android.widget.ListPopupWindow;
  *
  * <p>See also {@link ThreadedInputConnectionProxyAdapterView}.
  */
-final class InputAwareWebView extends WebView {
+class InputAwareWebView extends WebView {
   private static final String TAG = "InputAwareWebView";
   private View threadedInputConnectionProxyView;
   private ThreadedInputConnectionProxyAdapterView proxyAdapterView;

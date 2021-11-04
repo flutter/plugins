@@ -1,7 +1,15 @@
-## 2.0.16
+## 2.2.1
 
 * Fix `NullPointerException` from a race condition when changing focus. This only affects `WebView`
 when it is created without Hybrid Composition.
+
+## 2.2.0
+
+* Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
+
+## 2.1.0
+
+* Add `zoomEnabled` functionality.
 
 ## 2.0.15
 
