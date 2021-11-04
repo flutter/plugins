@@ -74,7 +74,7 @@ class RunnerTests: XCTestCase {
     plugin.handle(
       call,
       result: { (result: Any?) -> Void in
-        XCTAssertTrue(result! is FlutterError)
+        XCTAssertTrue(result is FlutterError)
       })
   }
 
@@ -104,7 +104,7 @@ class RunnerTests: XCTestCase {
     pluginWithStubWorkspace.handle(
       call,
       result: { (result: Any?) -> Void in
-        XCTAssertTrue(result! is FlutterError)
+        XCTAssertTrue(result is FlutterError)
       })
   }
 }
