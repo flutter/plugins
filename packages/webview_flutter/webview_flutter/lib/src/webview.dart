@@ -148,7 +148,7 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String? initialUrl;
 
-  /// Whether Javascript execution is enabled.
+  /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
@@ -221,9 +221,9 @@ class WebView extends StatefulWidget {
   /// When [onPageFinished] is invoked on Android, the page being rendered may
   /// not be updated yet.
   ///
-  /// When invoked on iOS or Android, any Javascript code that is embedded
+  /// When invoked on iOS or Android, any JavaScript code that is embedded
   /// directly in the HTML has been loaded and code injected with
-  /// [WebViewController.evaluateJavascript] can assume this.
+  /// [WebViewController.runJavascript] or [WebViewController.runJavascriptReturningResult] can assume this.
   final PageFinishedCallback? onPageFinished;
 
   /// Invoked when a page is loading.
@@ -594,25 +594,73 @@ class WebViewController {
   ///
   /// On iOS depending on the value type the return value would be one of:
   ///
-  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
-  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
-  ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
+  ///  - For primitive JavaScript types: the value string formatted
+  ///    (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray
+  ///    (e.g '(1,2,3), note that the string for NSArray is formatted and might
+  ///    contain newlines and extra spaces.').
+  ///  - Other non-primitive types are not supported on iOS and will complete
+  ///    the Future with an error.
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
-  /// evaluated expression is not supported as described above.
+  /// The Future completes with an error if a JavaScript error occurred,
+  /// or on iOS, if the type of the evaluated expression is
+  /// not supported as described above.
   ///
-  /// When evaluating Javascript in a [WebView], it is best practice to wait for
-  /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
+  /// When evaluating JavaScript in a [WebView], it is best practice to wait for
+  /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
   /// embedded in the main frame HTML has been loaded.
+  @Deprecated('Use [runJavascript] or [runJavascriptReturningResult]')
   Future<String> evaluateJavascript(String javascriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       return Future<String>.error(FlutterError(
           'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.'));
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
+  /// Runs the given JavaScript in the context of the current page.
+  /// If you are looking for the result, use [runJavascriptReturningResult] instead.
+  /// The Future completes with an error if a JavaScript error occurred.
+  ///
+  /// When running JavaScript in a [WebView], it is best practice to wait for
+  //  the [WebView.onPageFinished] callback. This guarantees all the JavaScript
+  //  embedded in the main frame HTML has been loaded.
+  Future<void> runJavascript(String javaScriptString) {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      return Future<void>.error(FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling runJavascript.'));
+    }
+    return _webViewPlatformController.runJavascript(javaScriptString);
+  }
+
+  /// Runs the given JavaScript in the context of the current page,
+  /// and returns the result.
+  ///
+  /// On Android returns the evaluation result as a JSON formatted string.
+  ///
+  /// On iOS depending on the value type the return value would be one of:
+  ///
+  ///  - For primitive JavaScript types: the value string formatted
+  ///    (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray
+  ///    (e.g '(1,2,3), note that the string for NSArray is formatted and might
+  ///    contain newlines and extra spaces.').
+  ///
+  /// The Future completes with an error if a JavaScript error occurred,
+  /// or if the type the given expression evaluates to is unsupported.
+  /// Unsupported values include certain non primitive types on iOS, as well as
+  /// `undefined` or `null` on iOS 14+.
+  ///
+  /// When evaluating JavaScript in a [WebView], it is best practice to wait
+  /// for the [WebView.onPageFinished] callback. This guarantees all the
+  /// JavaScript embedded in the main frame HTML has been loaded.
+  Future<String> runJavascriptReturningResult(String javaScriptString) {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      return Future<String>.error(FlutterError(
+          'JavaScript mode must be enabled/unrestricted when calling runJavascriptReturningResult.'));
+    }
+    return _webViewPlatformController
+        .runJavascriptReturningResult(javaScriptString);
   }
 
   /// Returns the title of the currently loaded page.

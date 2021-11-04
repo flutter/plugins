@@ -1,6 +1,10 @@
-## 1.4.0
+## 1.5.0
 
 * Added `limitsNavigationsToAppBoundDomains` functionality to `CreationParams`.
+
+## 1.4.0
+
+* Added `loadFile` and `loadHtml` interface methods.
 
 ## 1.3.0
 
