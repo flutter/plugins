@@ -594,12 +594,17 @@ class WebViewController {
   ///
   /// On iOS depending on the value type the return value would be one of:
   ///
-  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
-  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
-  ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
+  ///  - For primitive JavaScript types: the value string formatted
+  ///    (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray
+  ///    (e.g '(1,2,3), note that the string for NSArray is formatted and might
+  ///    contain newlines and extra spaces.').
+  ///  - Other non-primitive types are not supported on iOS and will complete
+  ///    the Future with an error.
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
-  /// evaluated expression is not supported as described above.
+  /// The Future completes with an error if a JavaScript error occurred,
+  /// or on iOS, if the type of the evaluated expression is
+  /// not supported as described above.
   ///
   /// When evaluating JavaScript in a [WebView], it is best practice to wait for
   /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
@@ -628,22 +633,27 @@ class WebViewController {
     return _webViewPlatformController.runJavascript(javaScriptString);
   }
 
-  /// Runs the given JavaScript in the context of the current page, and returns the result.
+  /// Runs the given JavaScript in the context of the current page,
+  /// and returns the result.
   ///
   /// On Android returns the evaluation result as a JSON formatted string.
   ///
   /// On iOS depending on the value type the return value would be one of:
   ///
-  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
-  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
+  ///  - For primitive JavaScript types: the value string formatted
+  ///    (e.g JavaScript 100 returns '100').
+  ///  - For JavaScript arrays of supported types: a string formatted NSArray
+  ///    (e.g '(1,2,3), note that the string for NSArray is formatted and might
+  ///    contain newlines and extra spaces.').
   ///
-  /// The Future completes with an error if a JavaScript error occurred, or if the
-  /// type the given expression evaluates to is unsupported. Unsupported values include
-  /// certain non primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
+  /// The Future completes with an error if a JavaScript error occurred,
+  /// or if the type the given expression evaluates to is unsupported.
+  /// Unsupported values include certain non primitive types on iOS, as well as
+  /// `undefined` or `null` on iOS 14+.
   ///
-  /// When evaluating JavaScript in a [WebView], it is best practice to wait for
-  /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
-  /// embedded in the main frame HTML has been loaded.
+  /// When evaluating JavaScript in a [WebView], it is best practice to wait
+  /// for the [WebView.onPageFinished] callback. This guarantees all the
+  /// JavaScript embedded in the main frame HTML has been loaded.
   Future<String> runJavascriptReturningResult(String javaScriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       return Future<String>.error(FlutterError(
