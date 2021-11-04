@@ -1,3 +1,7 @@
+## 0.8.4+4
+
+* Fix typos in README.md.
+
 ## 0.8.4+3
 
 * Suppress a unchecked cast build warning.

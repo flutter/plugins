@@ -1,6 +1,12 @@
+## 0.1.6
+
+* Require Dart SDK >= 2.14.
+* Update `json_annotation` dependency to `^4.3.0`.
+
 ## 0.1.5+1
 
 * Fix a broken link in the README.
+
 ## 0.1.5
 
 * Introduced the `SkuDetailsWrapper.introductoryPriceAmountMicros` field of the correct type (`int`) and deprecated the `SkuDetailsWrapper.introductoryPriceMicros` field.

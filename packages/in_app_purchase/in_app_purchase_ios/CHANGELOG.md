@@ -1,3 +1,7 @@
+## 0.1.4
+
+* Require Dart SDK >= 2.14.
+
 ## 0.1.3+5
 
 * Updated example app to handle restored purchases properly.
