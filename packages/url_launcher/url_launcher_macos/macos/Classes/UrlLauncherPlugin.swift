@@ -5,8 +5,13 @@
 import FlutterMacOS
 import Foundation
 
+/// A handler that can launch other apps, check if any app is able to open the URL.
 public protocol SystemURLHandler {
+
+  /// Opens the location at the specified URL.
   func open(_ url: URL) -> Bool
+
+  /// Returns the URL to the default app that would be opened.
   func urlForApplication(toOpen: URL) -> URL?
 }
 
@@ -14,7 +19,7 @@ extension NSWorkspace: SystemURLHandler {}
 
 public class UrlLauncherPlugin: NSObject, FlutterPlugin {
 
-  private var workspace: URLLauncher
+  private var workspace: SystemURLHandler
 
   public init(_ workspace: SystemURLHandler = NSWorkspace.shared) {
     self.workspace = workspace
