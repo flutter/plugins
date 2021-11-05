@@ -1,9 +1,8 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #import "GoogleMapController.h"
-#import "FLTGoogleMapTileOverlayController.h"
 #import "JsonConversions.h"
 
 #pragma mark - Conversion of JSON-like values sent via platform channels. Forward declarations.
@@ -56,7 +55,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
   FLTPolygonsController* _polygonsController;
   FLTPolylinesController* _polylinesController;
   FLTCirclesController* _circlesController;
-  FLTTileOverlaysController* _tileOverlaysController;
+  FLTHeatmapsController* _heatmapsController;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -96,9 +95,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     _circlesController = [[FLTCirclesController alloc] init:_channel
                                                     mapView:_mapView
                                                   registrar:registrar];
-    _tileOverlaysController = [[FLTTileOverlaysController alloc] init:_channel
-                                                              mapView:_mapView
-                                                            registrar:registrar];
+    _heatmapsController = [[FLTHeatmapsController alloc] init:_channel
+                                                      mapView:_mapView
+                                                    registrar:registrar];
     id markersToAdd = args[@"markersToAdd"];
     if ([markersToAdd isKindOfClass:[NSArray class]]) {
       [_markersController addMarkers:markersToAdd];
@@ -115,9 +114,9 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     if ([circlesToAdd isKindOfClass:[NSArray class]]) {
       [_circlesController addCircles:circlesToAdd];
     }
-    id tileOverlaysToAdd = args[@"tileOverlaysToAdd"];
-    if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
-      [_tileOverlaysController addTileOverlays:tileOverlaysToAdd];
+    id heatmapsToAdd = args[@"heatmapsToAdd"];
+    if ([heatmapsToAdd isKindOfClass:[NSArray class]]) {
+      [_heatmapsController addHeatmaps:heatmapsToAdd];
     }
   }
   return self;
@@ -307,29 +306,25 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
       [_circlesController removeCircleIds:circleIdsToRemove];
     }
     result(nil);
-  } else if ([call.method isEqualToString:@"tileOverlays#update"]) {
-    id tileOverlaysToAdd = call.arguments[@"tileOverlaysToAdd"];
-    if ([tileOverlaysToAdd isKindOfClass:[NSArray class]]) {
-      [_tileOverlaysController addTileOverlays:tileOverlaysToAdd];
+  } else if ([call.method isEqualToString:@"heatmaps#update"]) {
+    id heatmapsToAdd = call.arguments[@"heatmapsToAdd"];
+    if ([heatmapsToAdd isKindOfClass:[NSArray class]]) {
+      [_heatmapsController addHeatmaps:heatmapsToAdd];
     }
-    id tileOverlaysToChange = call.arguments[@"tileOverlaysToChange"];
-    if ([tileOverlaysToChange isKindOfClass:[NSArray class]]) {
-      [_tileOverlaysController changeTileOverlays:tileOverlaysToChange];
+    id heatmapsToChange = call.arguments[@"heatmapsToChange"];
+    if ([heatmapsToChange isKindOfClass:[NSArray class]]) {
+      [_heatmapsController changeHeatmaps:heatmapsToChange];
     }
-    id tileOverlayIdsToRemove = call.arguments[@"tileOverlayIdsToRemove"];
-    if ([tileOverlayIdsToRemove isKindOfClass:[NSArray class]]) {
-      [_tileOverlaysController removeTileOverlayIds:tileOverlayIdsToRemove];
+    id heatmapIdsToRemove = call.arguments[@"heatmapIdsToRemove"];
+    if ([heatmapIdsToRemove isKindOfClass:[NSArray class]]) {
+      [_heatmapsController removeHeatmapIds:heatmapIdsToRemove];
     }
-    result(nil);
-  } else if ([call.method isEqualToString:@"tileOverlays#clearTileCache"]) {
-    id rawTileOverlayId = call.arguments[@"tileOverlayId"];
-    [_tileOverlaysController clearTileCache:rawTileOverlayId];
     result(nil);
   } else if ([call.method isEqualToString:@"map#isCompassEnabled"]) {
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
   } else if ([call.method isEqualToString:@"map#isMapToolbarEnabled"]) {
-    NSNumber* isMapToolbarEnabled = @NO;
+    NSNumber* isMapToolbarEnabled = [NSNumber numberWithBool:NO];
     result(isMapToolbarEnabled);
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
@@ -340,7 +335,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
   } else if ([call.method isEqualToString:@"map#isZoomControlsEnabled"]) {
-    NSNumber* isZoomControlsEnabled = @NO;
+    NSNumber* isZoomControlsEnabled = [NSNumber numberWithBool:NO];
     result(isZoomControlsEnabled);
   } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
     NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
@@ -368,9 +363,6 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     } else {
       result(@[ @(NO), error ]);
     }
-  } else if ([call.method isEqualToString:@"map#getTileOverlayInfo"]) {
-    NSString* rawTileOverlayId = call.arguments[@"tileOverlayId"];
-    result([_tileOverlaysController getTileOverlayInfo:rawTileOverlayId]);
   } else {
     result(FlutterMethodNotImplemented);
   }

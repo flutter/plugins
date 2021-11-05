@@ -1,8 +1,10 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues, Offset;
+
+import 'package:meta/meta.dart' show required;
 
 import 'types.dart';
 
@@ -17,7 +19,7 @@ class CameraPosition {
   /// null.
   const CameraPosition({
     this.bearing = 0.0,
-    required this.target,
+    @required this.target,
     this.tilt = 0.0,
     this.zoom = 0.0,
   })  : assert(bearing != null),
@@ -61,7 +63,7 @@ class CameraPosition {
   /// Serializes [CameraPosition].
   ///
   /// Mainly for internal use when calling [CameraUpdate.newCameraPosition].
-  Object toMap() => <String, Object>{
+  dynamic toMap() => <String, dynamic>{
         'bearing': bearing,
         'target': target.toJson(),
         'tilt': tilt,
@@ -71,27 +73,23 @@ class CameraPosition {
   /// Deserializes [CameraPosition] from a map.
   ///
   /// Mainly for internal use.
-  static CameraPosition? fromMap(Object? json) {
-    if (json == null || !(json is Map<dynamic, dynamic>)) {
-      return null;
-    }
-    final LatLng? target = LatLng.fromJson(json['target']);
-    if (target == null) {
+  static CameraPosition fromMap(dynamic json) {
+    if (json == null) {
       return null;
     }
     return CameraPosition(
       bearing: json['bearing'],
-      target: target,
+      target: LatLng.fromJson(json['target']),
       tilt: json['tilt'],
       zoom: json['zoom'],
     );
   }
 
   @override
-  bool operator ==(Object other) {
+  bool operator ==(dynamic other) {
     if (identical(this, other)) return true;
     if (runtimeType != other.runtimeType) return false;
-    final CameraPosition typedOther = other as CameraPosition;
+    final CameraPosition typedOther = other;
     return bearing == typedOther.bearing &&
         target == typedOther.target &&
         tilt == typedOther.tilt &&
@@ -109,19 +107,19 @@ class CameraPosition {
 /// Defines a camera move, supporting absolute moves as well as moves relative
 /// the current position.
 class CameraUpdate {
-  const CameraUpdate._(this._json);
+  CameraUpdate._(this._json);
 
   /// Returns a camera update that moves the camera to the specified position.
   static CameraUpdate newCameraPosition(CameraPosition cameraPosition) {
     return CameraUpdate._(
-      <Object>['newCameraPosition', cameraPosition.toMap()],
+      <dynamic>['newCameraPosition', cameraPosition.toMap()],
     );
   }
 
   /// Returns a camera update that moves the camera target to the specified
   /// geographical location.
   static CameraUpdate newLatLng(LatLng latLng) {
-    return CameraUpdate._(<Object>['newLatLng', latLng.toJson()]);
+    return CameraUpdate._(<dynamic>['newLatLng', latLng.toJson()]);
   }
 
   /// Returns a camera update that transforms the camera so that the specified
@@ -129,7 +127,7 @@ class CameraUpdate {
   /// possible zoom level. A non-zero [padding] insets the bounding box from the
   /// map view's edges. The camera's new tilt and bearing will both be 0.0.
   static CameraUpdate newLatLngBounds(LatLngBounds bounds, double padding) {
-    return CameraUpdate._(<Object>[
+    return CameraUpdate._(<dynamic>[
       'newLatLngBounds',
       bounds.toJson(),
       padding,
@@ -140,7 +138,7 @@ class CameraUpdate {
   /// geographical location and zoom level.
   static CameraUpdate newLatLngZoom(LatLng latLng, double zoom) {
     return CameraUpdate._(
-      <Object>['newLatLngZoom', latLng.toJson(), zoom],
+      <dynamic>['newLatLngZoom', latLng.toJson(), zoom],
     );
   }
 
@@ -152,18 +150,18 @@ class CameraUpdate {
   /// 75 to the south of the current location, measured in screen coordinates.
   static CameraUpdate scrollBy(double dx, double dy) {
     return CameraUpdate._(
-      <Object>['scrollBy', dx, dy],
+      <dynamic>['scrollBy', dx, dy],
     );
   }
 
   /// Returns a camera update that modifies the camera zoom level by the
   /// specified amount. The optional [focus] is a screen point whose underlying
   /// geographical location should be invariant, if possible, by the movement.
-  static CameraUpdate zoomBy(double amount, [Offset? focus]) {
+  static CameraUpdate zoomBy(double amount, [Offset focus]) {
     if (focus == null) {
-      return CameraUpdate._(<Object>['zoomBy', amount]);
+      return CameraUpdate._(<dynamic>['zoomBy', amount]);
     } else {
-      return CameraUpdate._(<Object>[
+      return CameraUpdate._(<dynamic>[
         'zoomBy',
         amount,
         <double>[focus.dx, focus.dy],
@@ -176,7 +174,7 @@ class CameraUpdate {
   ///
   /// Equivalent to the result of calling `zoomBy(1.0)`.
   static CameraUpdate zoomIn() {
-    return const CameraUpdate._(<Object>['zoomIn']);
+    return CameraUpdate._(<dynamic>['zoomIn']);
   }
 
   /// Returns a camera update that zooms the camera out, bringing the camera
@@ -184,16 +182,16 @@ class CameraUpdate {
   ///
   /// Equivalent to the result of calling `zoomBy(-1.0)`.
   static CameraUpdate zoomOut() {
-    return const CameraUpdate._(<Object>['zoomOut']);
+    return CameraUpdate._(<dynamic>['zoomOut']);
   }
 
   /// Returns a camera update that sets the camera zoom level.
   static CameraUpdate zoomTo(double zoom) {
-    return CameraUpdate._(<Object>['zoomTo', zoom]);
+    return CameraUpdate._(<dynamic>['zoomTo', zoom]);
   }
 
-  final Object _json;
+  final dynamic _json;
 
   /// Converts this object to something serializable in JSON.
-  Object toJson() => _json;
+  dynamic toJson() => _json;
 }

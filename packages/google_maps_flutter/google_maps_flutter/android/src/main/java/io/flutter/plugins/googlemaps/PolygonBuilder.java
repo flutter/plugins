@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -39,13 +39,6 @@ class PolygonBuilder implements PolygonOptionsSink {
   @Override
   public void setPoints(List<LatLng> points) {
     polygonOptions.addAll(points);
-  }
-
-  @Override
-  public void setHoles(List<List<LatLng>> holes) {
-    for (List<LatLng> hole : holes) {
-      polygonOptions.addHole(hole);
-    }
   }
 
   @Override

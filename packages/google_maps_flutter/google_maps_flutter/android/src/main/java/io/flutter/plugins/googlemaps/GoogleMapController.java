@@ -1,11 +1,20 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package io.flutter.plugins.googlemaps;
 
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.CREATED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.DESTROYED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.PAUSED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.RESUMED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STARTED;
+import static io.flutter.plugins.googlemaps.GoogleMapsPlugin.STOPPED;
+
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -36,6 +45,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugin.common.PluginRegistry;
 import io.flutter.plugin.platform.PlatformView;
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -43,10 +53,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /** Controller of a single GoogleMaps MapView instance. */
 final class GoogleMapController
-    implements DefaultLifecycleObserver,
+    implements Application.ActivityLifecycleCallbacks,
+        DefaultLifecycleObserver,
         ActivityPluginBinding.OnSaveInstanceStateListener,
         GoogleMapOptionsSink,
         MethodChannel.MethodCallHandler,
@@ -56,9 +68,9 @@ final class GoogleMapController
 
   private static final String TAG = "GoogleMapController";
   private final int id;
+  private final AtomicInteger activityState;
   private final MethodChannel methodChannel;
-  private final GoogleMapOptions options;
-  @Nullable private MapView mapView;
+  private final MapView mapView;
   private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
@@ -70,38 +82,50 @@ final class GoogleMapController
   private boolean disposed = false;
   private final float density;
   private MethodChannel.Result mapReadyResult;
+  private final int
+      activityHashCode; // Do not use directly, use getActivityHashCode() instead to get correct hashCode for both v1 and v2 embedding.
+  private final Lifecycle lifecycle;
   private final Context context;
-  private final LifecycleProvider lifecycleProvider;
+  private final Application
+      mApplication; // Do not use direclty, use getApplication() instead to get correct application object for both v1 and v2 embedding.
+  private final PluginRegistry.Registrar registrar; // For v1 embedding only.
   private final MarkersController markersController;
   private final PolygonsController polygonsController;
   private final PolylinesController polylinesController;
   private final CirclesController circlesController;
-  private final TileOverlaysController tileOverlaysController;
+  private final HeatmapsController heatmapsController;
   private List<Object> initialMarkers;
   private List<Object> initialPolygons;
   private List<Object> initialPolylines;
   private List<Object> initialCircles;
-  private List<Map<String, ?>> initialTileOverlays;
+  private List<Object> initialHeatmaps;
 
   GoogleMapController(
       int id,
       Context context,
+      AtomicInteger activityState,
       BinaryMessenger binaryMessenger,
-      LifecycleProvider lifecycleProvider,
+      Application application,
+      Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
+      int registrarActivityHashCode,
       GoogleMapOptions options) {
     this.id = id;
     this.context = context;
-    this.options = options;
+    this.activityState = activityState;
     this.mapView = new MapView(context, options);
     this.density = context.getResources().getDisplayMetrics().density;
     methodChannel = new MethodChannel(binaryMessenger, "plugins.flutter.io/google_maps_" + id);
     methodChannel.setMethodCallHandler(this);
-    this.lifecycleProvider = lifecycleProvider;
+    mApplication = application;
+    this.lifecycle = lifecycle;
+    this.registrar = registrar;
+    this.activityHashCode = registrarActivityHashCode;
     this.markersController = new MarkersController(methodChannel);
     this.polygonsController = new PolygonsController(methodChannel, density);
     this.polylinesController = new PolylinesController(methodChannel, density);
     this.circlesController = new CirclesController(methodChannel, density);
-    this.tileOverlaysController = new TileOverlaysController(methodChannel);
+    this.heatmapsController = new HeatmapsController(methodChannel);
   }
 
   @Override
@@ -110,7 +134,44 @@ final class GoogleMapController
   }
 
   void init() {
-    lifecycleProvider.getLifecycle().addObserver(this);
+    switch (activityState.get()) {
+      case STOPPED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        mapView.onResume();
+        mapView.onPause();
+        mapView.onStop();
+        break;
+      case PAUSED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        mapView.onResume();
+        mapView.onPause();
+        break;
+      case RESUMED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        mapView.onResume();
+        break;
+      case STARTED:
+        mapView.onCreate(null);
+        mapView.onStart();
+        break;
+      case CREATED:
+        mapView.onCreate(null);
+        break;
+      case DESTROYED:
+        // Nothing to do, the activity has been completely destroyed.
+        break;
+      default:
+        throw new IllegalArgumentException(
+            "Cannot interpret " + activityState.get() + " as an activity state");
+    }
+    if (lifecycle != null) {
+      lifecycle.addObserver(this);
+    } else {
+      getApplication().registerActivityLifecycleCallbacks(this);
+    }
     mapView.getMapAsync(this);
   }
 
@@ -143,12 +204,12 @@ final class GoogleMapController
     polygonsController.setGoogleMap(googleMap);
     polylinesController.setGoogleMap(googleMap);
     circlesController.setGoogleMap(googleMap);
-    tileOverlaysController.setGoogleMap(googleMap);
+    heatmapsController.setGoogleMap(googleMap);
     updateInitialMarkers();
     updateInitialPolygons();
     updateInitialPolylines();
     updateInitialCircles();
-    updateInitialTileOverlays();
+    updateInitialHeatmaps();
   }
 
   @Override
@@ -244,12 +305,12 @@ final class GoogleMapController
         }
       case "markers#update":
         {
-          List<Object> markersToAdd = call.argument("markersToAdd");
-          markersController.addMarkers(markersToAdd);
-          List<Object> markersToChange = call.argument("markersToChange");
-          markersController.changeMarkers(markersToChange);
-          List<Object> markerIdsToRemove = call.argument("markerIdsToRemove");
-          markersController.removeMarkers(markerIdsToRemove);
+          Object markersToAdd = call.argument("markersToAdd");
+          markersController.addMarkers((List<Object>) markersToAdd);
+          Object markersToChange = call.argument("markersToChange");
+          markersController.changeMarkers((List<Object>) markersToChange);
+          Object markerIdsToRemove = call.argument("markerIdsToRemove");
+          markersController.removeMarkers((List<Object>) markerIdsToRemove);
           result.success(null);
           break;
         }
@@ -273,34 +334,45 @@ final class GoogleMapController
         }
       case "polygons#update":
         {
-          List<Object> polygonsToAdd = call.argument("polygonsToAdd");
-          polygonsController.addPolygons(polygonsToAdd);
-          List<Object> polygonsToChange = call.argument("polygonsToChange");
-          polygonsController.changePolygons(polygonsToChange);
-          List<Object> polygonIdsToRemove = call.argument("polygonIdsToRemove");
-          polygonsController.removePolygons(polygonIdsToRemove);
+          Object polygonsToAdd = call.argument("polygonsToAdd");
+          polygonsController.addPolygons((List<Object>) polygonsToAdd);
+          Object polygonsToChange = call.argument("polygonsToChange");
+          polygonsController.changePolygons((List<Object>) polygonsToChange);
+          Object polygonIdsToRemove = call.argument("polygonIdsToRemove");
+          polygonsController.removePolygons((List<Object>) polygonIdsToRemove);
           result.success(null);
           break;
         }
       case "polylines#update":
         {
-          List<Object> polylinesToAdd = call.argument("polylinesToAdd");
-          polylinesController.addPolylines(polylinesToAdd);
-          List<Object> polylinesToChange = call.argument("polylinesToChange");
-          polylinesController.changePolylines(polylinesToChange);
-          List<Object> polylineIdsToRemove = call.argument("polylineIdsToRemove");
-          polylinesController.removePolylines(polylineIdsToRemove);
+          Object polylinesToAdd = call.argument("polylinesToAdd");
+          polylinesController.addPolylines((List<Object>) polylinesToAdd);
+          Object polylinesToChange = call.argument("polylinesToChange");
+          polylinesController.changePolylines((List<Object>) polylinesToChange);
+          Object polylineIdsToRemove = call.argument("polylineIdsToRemove");
+          polylinesController.removePolylines((List<Object>) polylineIdsToRemove);
           result.success(null);
           break;
         }
       case "circles#update":
         {
-          List<Object> circlesToAdd = call.argument("circlesToAdd");
-          circlesController.addCircles(circlesToAdd);
-          List<Object> circlesToChange = call.argument("circlesToChange");
-          circlesController.changeCircles(circlesToChange);
-          List<Object> circleIdsToRemove = call.argument("circleIdsToRemove");
-          circlesController.removeCircles(circleIdsToRemove);
+          Object circlesToAdd = call.argument("circlesToAdd");
+          circlesController.addCircles((List<Object>) circlesToAdd);
+          Object circlesToChange = call.argument("circlesToChange");
+          circlesController.changeCircles((List<Object>) circlesToChange);
+          Object circleIdsToRemove = call.argument("circleIdsToRemove");
+          circlesController.removeCircles((List<Object>) circleIdsToRemove);
+          result.success(null);
+          break;
+        }
+      case "heatmaps#update":
+        {
+          Object heatmapsToAdd = call.argument("heatmapsToAdd");
+          heatmapsController.addHeatmaps((List<Object>) heatmapsToAdd);
+          Object heatmapsToChange = call.argument("heatmapsToChange");
+          heatmapsController.changeHeatmaps((List<Object>) heatmapsToChange);
+          Object heatmapIdsToRemove = call.argument("heatmapIdsToRemove");
+          heatmapsController.removeHeatmaps((List<Object>) heatmapIdsToRemove);
           result.success(null);
           break;
         }
@@ -325,11 +397,6 @@ final class GoogleMapController
       case "map#isZoomGesturesEnabled":
         {
           result.success(googleMap.getUiSettings().isZoomGesturesEnabled());
-          break;
-        }
-      case "map#isLiteModeEnabled":
-        {
-          result.success(options.getLiteMode());
           break;
         }
       case "map#isZoomControlsEnabled":
@@ -388,30 +455,6 @@ final class GoogleMapController
                 "Unable to set the map style. Please check console logs for errors.");
           }
           result.success(mapStyleResult);
-          break;
-        }
-      case "tileOverlays#update":
-        {
-          List<Map<String, ?>> tileOverlaysToAdd = call.argument("tileOverlaysToAdd");
-          tileOverlaysController.addTileOverlays(tileOverlaysToAdd);
-          List<Map<String, ?>> tileOverlaysToChange = call.argument("tileOverlaysToChange");
-          tileOverlaysController.changeTileOverlays(tileOverlaysToChange);
-          List<String> tileOverlaysToRemove = call.argument("tileOverlayIdsToRemove");
-          tileOverlaysController.removeTileOverlays(tileOverlaysToRemove);
-          result.success(null);
-          break;
-        }
-      case "tileOverlays#clearTileCache":
-        {
-          String tileOverlayId = call.argument("tileOverlayId");
-          tileOverlaysController.clearTileCache(tileOverlayId);
-          result.success(null);
-          break;
-        }
-      case "map#getTileOverlayInfo":
-        {
-          String tileOverlayId = call.argument("tileOverlayId");
-          result.success(tileOverlaysController.getTileOverlayInfo(tileOverlayId));
           break;
         }
       default:
@@ -500,11 +543,7 @@ final class GoogleMapController
     disposed = true;
     methodChannel.setMethodCallHandler(null);
     setGoogleMapListener(null);
-    destroyMapViewIfNecessary();
-    Lifecycle lifecycle = lifecycleProvider.getLifecycle();
-    if (lifecycle != null) {
-      lifecycle.removeObserver(this);
-    }
+    getApplication().unregisterActivityLifecycleCallbacks(this);
   }
 
   private void setGoogleMapListener(@Nullable GoogleMapListener listener) {
@@ -525,16 +564,73 @@ final class GoogleMapController
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionLocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
-  }
+  };
 
   // @Override
   // The minimum supported version of Flutter doesn't have this method on the PlatformView interface, but the maximum
   // does. This will override it when available even with the annotation commented out.
   public void onInputConnectionUnlocked() {
     // TODO(mklim): Remove this empty override once https://github.com/flutter/flutter/issues/40126 is fixed in stable.
+  };
+
+  // Application.ActivityLifecycleCallbacks methods
+  @Override
+  public void onActivityCreated(Activity activity, Bundle savedInstanceState) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onCreate(savedInstanceState);
   }
 
-  // DefaultLifecycleObserver
+  @Override
+  public void onActivityStarted(Activity activity) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onStart();
+  }
+
+  @Override
+  public void onActivityResumed(Activity activity) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onResume();
+  }
+
+  @Override
+  public void onActivityPaused(Activity activity) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onPause();
+  }
+
+  @Override
+  public void onActivityStopped(Activity activity) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onStop();
+  }
+
+  @Override
+  public void onActivitySaveInstanceState(Activity activity, Bundle outState) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onSaveInstanceState(outState);
+  }
+
+  @Override
+  public void onActivityDestroyed(Activity activity) {
+    if (disposed || activity.hashCode() != getActivityHashCode()) {
+      return;
+    }
+    mapView.onDestroy();
+  }
+
+  // DefaultLifecycleObserver and OnSaveInstanceStateListener
 
   @Override
   public void onCreate(@NonNull LifecycleOwner owner) {
@@ -578,11 +674,10 @@ final class GoogleMapController
 
   @Override
   public void onDestroy(@NonNull LifecycleOwner owner) {
-    owner.getLifecycle().removeObserver(this);
     if (disposed) {
       return;
     }
-    destroyMapViewIfNecessary();
+    mapView.onDestroy();
   }
 
   @Override
@@ -670,12 +765,6 @@ final class GoogleMapController
     googleMap.getUiSettings().setZoomGesturesEnabled(zoomGesturesEnabled);
   }
 
-  /** This call will have no effect on already created map */
-  @Override
-  public void setLiteModeEnabled(boolean liteModeEnabled) {
-    options.liteMode(liteModeEnabled);
-  }
-
   @Override
   public void setMyLocationEnabled(boolean myLocationEnabled) {
     if (this.myLocationEnabled == myLocationEnabled) {
@@ -711,8 +800,7 @@ final class GoogleMapController
 
   @Override
   public void setInitialMarkers(Object initialMarkers) {
-    ArrayList<?> markers = (ArrayList<?>) initialMarkers;
-    this.initialMarkers = markers != null ? new ArrayList<>(markers) : null;
+    this.initialMarkers = (List<Object>) initialMarkers;
     if (googleMap != null) {
       updateInitialMarkers();
     }
@@ -724,8 +812,7 @@ final class GoogleMapController
 
   @Override
   public void setInitialPolygons(Object initialPolygons) {
-    ArrayList<?> polygons = (ArrayList<?>) initialPolygons;
-    this.initialPolygons = polygons != null ? new ArrayList<>(polygons) : null;
+    this.initialPolygons = (List<Object>) initialPolygons;
     if (googleMap != null) {
       updateInitialPolygons();
     }
@@ -737,8 +824,7 @@ final class GoogleMapController
 
   @Override
   public void setInitialPolylines(Object initialPolylines) {
-    ArrayList<?> polylines = (ArrayList<?>) initialPolylines;
-    this.initialPolylines = polylines != null ? new ArrayList<>(polylines) : null;
+    this.initialPolylines = (List<Object>) initialPolylines;
     if (googleMap != null) {
       updateInitialPolylines();
     }
@@ -750,8 +836,7 @@ final class GoogleMapController
 
   @Override
   public void setInitialCircles(Object initialCircles) {
-    ArrayList<?> circles = (ArrayList<?>) initialCircles;
-    this.initialCircles = circles != null ? new ArrayList<>(circles) : null;
+    this.initialCircles = (List<Object>) initialCircles;
     if (googleMap != null) {
       updateInitialCircles();
     }
@@ -762,15 +847,15 @@ final class GoogleMapController
   }
 
   @Override
-  public void setInitialTileOverlays(List<Map<String, ?>> initialTileOverlays) {
-    this.initialTileOverlays = initialTileOverlays;
+  public void setInitialHeatmaps(Object initialHeatmaps) {
+    this.initialHeatmaps = (List<Object>) initialHeatmaps;
     if (googleMap != null) {
-      updateInitialTileOverlays();
+      updateInitialHeatmaps();
     }
   }
 
-  private void updateInitialTileOverlays() {
-    tileOverlaysController.addTileOverlays(initialTileOverlays);
+  private void updateInitialHeatmaps() {
+    heatmapsController.addHeatmaps(initialHeatmaps);
   }
 
   @SuppressLint("MissingPermission")
@@ -805,12 +890,20 @@ final class GoogleMapController
         permission, android.os.Process.myPid(), android.os.Process.myUid());
   }
 
-  private void destroyMapViewIfNecessary() {
-    if (mapView == null) {
-      return;
+  private int getActivityHashCode() {
+    if (registrar != null && registrar.activity() != null) {
+      return registrar.activity().hashCode();
+    } else {
+      return activityHashCode;
     }
-    mapView.onDestroy();
-    mapView = null;
+  }
+
+  private Application getApplication() {
+    if (registrar != null && registrar.activity() != null) {
+      return registrar.activity().getApplication();
+    } else {
+      return mApplication;
+    }
   }
 
   public void setIndoorEnabled(boolean indoorEnabled) {
@@ -829,3 +922,16 @@ final class GoogleMapController
     this.buildingsEnabled = buildingsEnabled;
   }
 }
+
+interface GoogleMapListener
+    extends GoogleMap.OnCameraIdleListener,
+        GoogleMap.OnCameraMoveListener,
+        GoogleMap.OnCameraMoveStartedListener,
+        GoogleMap.OnInfoWindowClickListener,
+        GoogleMap.OnMarkerClickListener,
+        GoogleMap.OnPolygonClickListener,
+        GoogleMap.OnPolylineClickListener,
+        GoogleMap.OnCircleClickListener,
+        GoogleMap.OnMapClickListener,
+        GoogleMap.OnMapLongClickListener,
+        GoogleMap.OnMarkerDragListener {}

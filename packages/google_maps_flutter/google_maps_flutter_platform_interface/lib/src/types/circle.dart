@@ -1,10 +1,10 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'package:flutter/foundation.dart' show VoidCallback;
 import 'package:flutter/material.dart' show Color, Colors;
-import 'package:meta/meta.dart' show immutable;
+import 'package:meta/meta.dart' show immutable, required;
 
 import 'types.dart';
 
@@ -12,17 +12,36 @@ import 'types.dart';
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class CircleId extends MapsObjectId<Circle> {
+class CircleId {
   /// Creates an immutable identifier for a [Circle].
-  const CircleId(String value) : super(value);
+  CircleId(this.value) : assert(value != null);
+
+  /// value of the [CircleId].
+  final String value;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final CircleId typedOther = other;
+    return value == typedOther.value;
+  }
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'CircleId{value: $value}';
+  }
 }
 
 /// Draws a circle on the map.
 @immutable
-class Circle implements MapsObject<Circle> {
+class Circle {
   /// Creates an immutable representation of a [Circle] to draw on [GoogleMap].
   const Circle({
-    required this.circleId,
+    @required this.circleId,
     this.consumeTapEvents = false,
     this.fillColor = Colors.transparent,
     this.center = const LatLng(0.0, 0.0),
@@ -36,9 +55,6 @@ class Circle implements MapsObject<Circle> {
 
   /// Uniquely identifies a [Circle].
   final CircleId circleId;
-
-  @override
-  CircleId get mapsId => circleId;
 
   /// True if the [Circle] consumes tap events.
   ///
@@ -75,20 +91,20 @@ class Circle implements MapsObject<Circle> {
   final int zIndex;
 
   /// Callbacks to receive tap events for circle placed on this map.
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   /// Creates a new [Circle] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Circle copyWith({
-    bool? consumeTapEventsParam,
-    Color? fillColorParam,
-    LatLng? centerParam,
-    double? radiusParam,
-    Color? strokeColorParam,
-    int? strokeWidthParam,
-    bool? visibleParam,
-    int? zIndexParam,
-    VoidCallback? onTapParam,
+    bool consumeTapEventsParam,
+    Color fillColorParam,
+    LatLng centerParam,
+    double radiusParam,
+    Color strokeColorParam,
+    int strokeWidthParam,
+    bool visibleParam,
+    int zIndexParam,
+    VoidCallback onTapParam,
   }) {
     return Circle(
       circleId: circleId,
@@ -108,10 +124,10 @@ class Circle implements MapsObject<Circle> {
   Circle clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
-  Object toJson() {
-    final Map<String, Object> json = <String, Object>{};
+  dynamic toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, Object? value) {
+    void addIfPresent(String fieldName, dynamic value) {
       if (value != null) {
         json[fieldName] = value;
       }
@@ -134,7 +150,7 @@ class Circle implements MapsObject<Circle> {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Circle typedOther = other as Circle;
+    final Circle typedOther = other;
     return circleId == typedOther.circleId &&
         consumeTapEvents == typedOther.consumeTapEvents &&
         fillColor == typedOther.fillColor &&

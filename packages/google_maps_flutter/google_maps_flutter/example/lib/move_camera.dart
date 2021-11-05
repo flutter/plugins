@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -25,7 +25,7 @@ class MoveCamera extends StatefulWidget {
 }
 
 class MoveCameraState extends State<MoveCamera> {
-  GoogleMapController? mapController;
+  GoogleMapController mapController;
 
   void _onMapCreated(GoogleMapController controller) {
     mapController = controller;
@@ -53,9 +53,9 @@ class MoveCameraState extends State<MoveCamera> {
           children: <Widget>[
             Column(
               children: <Widget>[
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.newCameraPosition(
                         const CameraPosition(
                           bearing: 270.0,
@@ -68,9 +68,9 @@ class MoveCameraState extends State<MoveCamera> {
                   },
                   child: const Text('newCameraPosition'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.newLatLng(
                         const LatLng(56.1725505, 10.1850512),
                       ),
@@ -78,9 +78,9 @@ class MoveCameraState extends State<MoveCamera> {
                   },
                   child: const Text('newLatLng'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.newLatLngBounds(
                         LatLngBounds(
                           southwest: const LatLng(-38.483935, 113.248673),
@@ -92,9 +92,9 @@ class MoveCameraState extends State<MoveCamera> {
                   },
                   child: const Text('newLatLngBounds'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.newLatLngZoom(
                         const LatLng(37.4231613, -122.087159),
                         11.0,
@@ -103,9 +103,9 @@ class MoveCameraState extends State<MoveCamera> {
                   },
                   child: const Text('newLatLngZoom'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.scrollBy(150.0, -225.0),
                     );
                   },
@@ -115,9 +115,9 @@ class MoveCameraState extends State<MoveCamera> {
             ),
             Column(
               children: <Widget>[
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.zoomBy(
                         -0.5,
                         const Offset(30.0, 20.0),
@@ -126,33 +126,33 @@ class MoveCameraState extends State<MoveCamera> {
                   },
                   child: const Text('zoomBy with focus'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.zoomBy(-0.5),
                     );
                   },
                   child: const Text('zoomBy'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.zoomIn(),
                     );
                   },
                   child: const Text('zoomIn'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.zoomOut(),
                     );
                   },
                   child: const Text('zoomOut'),
                 ),
-                TextButton(
+                FlatButton(
                   onPressed: () {
-                    mapController?.moveCamera(
+                    mapController.moveCamera(
                       CameraUpdate.zoomTo(16.0),
                     );
                   },

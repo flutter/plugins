@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -23,7 +23,8 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PatternItem;
 import com.google.android.gms.maps.model.RoundCap;
 import com.google.android.gms.maps.model.SquareCap;
-import com.google.android.gms.maps.model.Tile;
+import com.google.maps.android.heatmaps.Gradient;
+import com.google.maps.android.heatmaps.WeightedLatLng;
 import io.flutter.view.FlutterMain;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -34,9 +35,6 @@ import java.util.Map;
 /** Conversions between JSON-like values and GoogleMaps data types. */
 class Convert {
 
-  // TODO(hamdikahloun): FlutterMain has been deprecated and should be replaced with FlutterLoader
-  //  when it's available in Stable channel: https://github.com/flutter/flutter/issues/70923.
-  @SuppressWarnings("deprecation")
   private static BitmapDescriptor toBitmapDescriptor(Object o) {
     final List<?> data = toList(o);
     switch (toString(data.get(0))) {
@@ -79,8 +77,7 @@ class Convert {
       }
     } else {
       throw new IllegalArgumentException(
-          "fromBytes should have exactly one argument, interpretTileOverlayOptions the bytes. Got: "
-              + data.size());
+          "fromBytes should have exactly one argument, the bytes. Got: " + data.size());
     }
   }
 
@@ -193,26 +190,12 @@ class Convert {
     return data;
   }
 
-  static Object circleIdToJson(String circleId) {
-    if (circleId == null) {
+  static Object heatmapIdToJson(String heatmapId) {
+    if (heatmapId == null) {
       return null;
     }
     final Map<String, Object> data = new HashMap<>(1);
-    data.put("circleId", circleId);
-    return data;
-  }
-
-  static Map<String, Object> tileOverlayArgumentsToJson(
-      String tileOverlayId, int x, int y, int zoom) {
-
-    if (tileOverlayId == null) {
-      return null;
-    }
-    final Map<String, Object> data = new HashMap<>(4);
-    data.put("tileOverlayId", tileOverlayId);
-    data.put("x", x);
-    data.put("y", y);
-    data.put("zoom", zoom);
+    data.put("heatmapId", heatmapId);
     return data;
   }
 
@@ -226,9 +209,8 @@ class Convert {
   }
 
   static Point toPoint(Object o) {
-    Object x = toMap(o).get("x");
-    Object y = toMap(o).get("y");
-    return new Point((int) x, (int) y);
+    Map<String, Integer> screenCoordinate = (Map<String, Integer>) o;
+    return new Point(screenCoordinate.get("x"), screenCoordinate.get("y"));
   }
 
   static Map<String, Integer> pointToJson(Point point) {
@@ -252,18 +234,6 @@ class Convert {
 
   private static Map<?, ?> toMap(Object o) {
     return (Map<?, ?>) o;
-  }
-
-  private static Map<String, Object> toObjectMap(Object o) {
-    Map<String, Object> hashMap = new HashMap<>();
-    Map<?, ?> map = (Map<?, ?>) o;
-    for (Object key : map.keySet()) {
-      Object object = map.get(key);
-      if (object != null) {
-        hashMap.put((String) key, object);
-      }
-    }
-    return hashMap;
   }
 
   private static float toFractionalPixels(Object o, float density) {
@@ -348,10 +318,6 @@ class Convert {
     if (zoomGesturesEnabled != null) {
       sink.setZoomGesturesEnabled(toBoolean(zoomGesturesEnabled));
     }
-    final Object liteModeEnabled = data.get("liteModeEnabled");
-    if (liteModeEnabled != null) {
-      sink.setLiteModeEnabled(toBoolean(liteModeEnabled));
-    }
     final Object myLocationEnabled = data.get("myLocationEnabled");
     if (myLocationEnabled != null) {
       sink.setMyLocationEnabled(toBoolean(myLocationEnabled));
@@ -409,7 +375,7 @@ class Convert {
 
     final Object infoWindow = data.get("infoWindow");
     if (infoWindow != null) {
-      interpretInfoWindowOptions(sink, toObjectMap(infoWindow));
+      interpretInfoWindowOptions(sink, (Map<String, Object>) infoWindow);
     }
     final Object position = data.get("position");
     if (position != null) {
@@ -483,10 +449,6 @@ class Convert {
     final Object points = data.get("points");
     if (points != null) {
       sink.setPoints(toPoints(points));
-    }
-    final Object holes = data.get("holes");
-    if (holes != null) {
-      sink.setHoles(toHoles(holes));
     }
     final String polygonId = (String) data.get("polygonId");
     if (polygonId == null) {
@@ -592,25 +554,109 @@ class Convert {
     }
   }
 
+  /**
+   * Converts the heatmap from JSON to a java object.
+   *
+   * @param Object heatmapObject
+   * @param HeatmapOptionsSink sink
+   * @return String The id of the heatmap
+   */
+  static String interpretHeatmapOptions(Object heatmapObject, HeatmapOptionsSink sink) {
+    final Map<?, ?> data = toMap(heatmapObject);
+    final Object points = data.get("points");
+    if (points != null) {
+      sink.setPoints(toWeightedPoints(points));
+    }
+    final Object gradient = data.get("gradient");
+    if (gradient != null) {
+      sink.setGradient(toGradient(gradient));
+    }
+    final Object opacity = data.get("opacity");
+    if (opacity != null) {
+      sink.setOpacity(toDouble(opacity));
+    }
+    final Object radius = data.get("radius");
+    if (radius != null) {
+      sink.setRadius(toInt(radius));
+    }
+    final Object fadeIn = data.get("fadeIn");
+    if (fadeIn != null) {
+      sink.setFadeIn(toBoolean(fadeIn));
+    }
+    final Object transparency = data.get("transparency");
+    if (transparency != null) {
+      sink.setTransparency(toFloat(transparency));
+    }
+    final Object visible = data.get("visible");
+    if (visible != null) {
+      sink.setVisible(toBoolean(visible));
+    }
+    final Object zIndex = data.get("zIndex");
+    if (zIndex != null) {
+      sink.setZIndex(toFloat(zIndex));
+    }
+    final String heatmapId = (String) data.get("heatmapId");
+    if (heatmapId == null) {
+      throw new IllegalArgumentException("heatmapId was null");
+    } else {
+      return heatmapId;
+    }
+  }
+
   private static List<LatLng> toPoints(Object o) {
     final List<?> data = toList(o);
     final List<LatLng> points = new ArrayList<>(data.size());
 
-    for (Object rawPoint : data) {
-      final List<?> point = toList(rawPoint);
+    for (Object ob : data) {
+      final List<?> point = toList(ob);
       points.add(new LatLng(toFloat(point.get(0)), toFloat(point.get(1))));
     }
     return points;
   }
 
-  private static List<List<LatLng>> toHoles(Object o) {
-    final List<?> data = toList(o);
-    final List<List<LatLng>> holes = new ArrayList<>(data.size());
+  private static List<WeightedLatLng> toWeightedPoints(Object weightedPointsObject) {
+    final List<?> data = toList(weightedPointsObject);
+    final List<WeightedLatLng> points = new ArrayList<>(data.size());
 
-    for (Object rawHole : data) {
-      holes.add(toPoints(rawHole));
+    for (Object ob : data) {
+      final List<?> weightedPoint = toList(ob);
+      final List<?> point = toList(weightedPoint.get(0));
+      points.add(
+          new WeightedLatLng(
+              new LatLng(toFloat(point.get(0)), toFloat(point.get(1))),
+              toInt(weightedPoint.get(1))));
     }
-    return holes;
+    return points;
+  }
+
+  private static Gradient toGradient(Object o) {
+    final List<?> data = toList(o);
+    int[] colors = toIntArray(data.get(0));
+    float[] startPoints = toFloatArray(data.get(1));
+    int colorMapSize = toInt(data.get(2));
+    return new Gradient(colors, startPoints, colorMapSize);
+  }
+
+  private static int[] toIntArray(Object o) {
+    final List<?> data = toList(o);
+    final int[] ints = new int[data.size()];
+
+    int index = 0;
+    for (Object ob : data) {
+      ints[index++] = toInt(ob);
+    }
+    return ints;
+  }
+
+  private static float[] toFloatArray(Object o) {
+    final List<?> data = toList(o);
+    final float[] floats = new float[data.size()];
+
+    int index = 0;
+    for (Object ob : data) {
+      floats[index++] = toFloat(ob);
+    }
+    return floats;
   }
 
   private static List<PatternItem> toPattern(Object o) {
@@ -660,40 +706,5 @@ class Convert {
       default:
         throw new IllegalArgumentException("Cannot interpret " + o + " as Cap");
     }
-  }
-
-  static String interpretTileOverlayOptions(Map<String, ?> data, TileOverlaySink sink) {
-    final Object fadeIn = data.get("fadeIn");
-    if (fadeIn != null) {
-      sink.setFadeIn(toBoolean(fadeIn));
-    }
-    final Object transparency = data.get("transparency");
-    if (transparency != null) {
-      sink.setTransparency(toFloat(transparency));
-    }
-    final Object zIndex = data.get("zIndex");
-    if (zIndex != null) {
-      sink.setZIndex(toFloat(zIndex));
-    }
-    final Object visible = data.get("visible");
-    if (visible != null) {
-      sink.setVisible(toBoolean(visible));
-    }
-    final String tileOverlayId = (String) data.get("tileOverlayId");
-    if (tileOverlayId == null) {
-      throw new IllegalArgumentException("tileOverlayId was null");
-    } else {
-      return tileOverlayId;
-    }
-  }
-
-  static Tile interpretTile(Map<String, ?> data) {
-    int width = toInt(data.get("width"));
-    int height = toInt(data.get("height"));
-    byte[] dataArray = null;
-    if (data.get("data") != null) {
-      dataArray = (byte[]) data.get("data");
-    }
-    return new Tile(width, height, dataArray);
   }
 }
