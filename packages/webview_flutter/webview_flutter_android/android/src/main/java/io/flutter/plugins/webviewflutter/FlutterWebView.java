@@ -9,6 +9,7 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.view.View;
 import android.webkit.DownloadListener;
@@ -20,6 +21,7 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.os.HandlerCompat;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -28,6 +30,8 @@ import io.flutter.plugin.platform.PlatformView;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class FlutterWebView implements PlatformView, MethodCallHandler {
 
@@ -36,6 +40,7 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
   private final MethodChannel methodChannel;
   private final FlutterWebViewClient flutterWebViewClient;
   private final Handler platformThreadHandler;
+  private final HttpRequestManager httpRequestManager;
 
   // Verifies that a url opened by `Window.open` has a secure url.
   private class FlutterWebChromeClient extends WebChromeClient {
@@ -95,6 +100,10 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     DisplayManager displayManager =
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
+
+    httpRequestManager =
+        HttpRequestManagerFactory.create(
+            Executors.newCachedThreadPool(), HandlerCompat.createAsync(Looper.getMainLooper()));
 
     this.methodChannel = methodChannel;
     this.methodChannel.setMethodCallHandler(this);
@@ -223,6 +232,9 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       case "loadUrl":
         loadUrl(methodCall, result);
         break;
+      case "loadRequest":
+        loadRequest(methodCall, result);
+        break;
       case "updateSettings":
         updateSettings(methodCall, result);
         break;
@@ -290,6 +302,67 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
     }
     webView.loadUrl(url, headers);
     result.success(null);
+  }
+
+  private void loadRequest(MethodCall methodCall, Result result) {
+    final WebViewRequest webViewRequest = buildWebViewRequest(methodCall);
+    if (webViewRequest == null) {
+      result.error("missing_args", "Missing arguments", null);
+      return;
+    }
+    switch (webViewRequest.getMethod()) {
+      case GET:
+        webView.loadUrl(webViewRequest.getUri(), webViewRequest.getHeaders());
+        result.success(null);
+        break;
+      case POST:
+        if (webViewRequest.getHeaders().isEmpty()) {
+          webView.postUrl(webViewRequest.getUri(), webViewRequest.getBody());
+          result.success(null);
+        } else {
+          // Execute the request manually to be able to provide headers with the post request.
+          httpRequestManager.requestAsync(
+              webViewRequest,
+              new HttpRequestCallback() {
+                @Override
+                public void onComplete(String content) {
+                  if (!webView.isAttachedToWindow()) {
+                    result.error(
+                        "webview_destroyed",
+                        "Could not complete the post request because the webview is destroyed",
+                        null);
+                  } else {
+                    // TODO (BeMacized): Check if this still works in the case of a server side redirect
+                    webView.loadDataWithBaseURL(
+                        webViewRequest.getUri(), content, "text/html", "UTF-8", null);
+                    result.success(null);
+                  }
+                }
+
+                @Override
+                public void onError(Exception error) {
+                  result.error("request_failed", "HttpURLConnection has failed", null);
+                }
+              });
+        }
+        break;
+      default:
+        result.error("unsupported_method", "Unsupported HTTP method", null);
+    }
+  }
+
+  private WebViewRequest buildWebViewRequest(MethodCall methodCall) {
+    Map<String, Object> request = (Map<String, Object>) methodCall.arguments;
+    if (request == null) {
+      return null;
+    }
+
+    Map<String, Object> requestObject = (Map<String, Object>) request.get("request");
+    if (requestObject == null) {
+      return null;
+    }
+
+    return WebViewRequest.fromMap(requestObject);
   }
 
   private void canGoBack(Result result) {
@@ -491,5 +564,23 @@ public class FlutterWebView implements PlatformView, MethodCallHandler {
       ((InputAwareWebView) webView).dispose();
     }
     webView.destroy();
+  }
+
+  /** Factory class for creating a {@link HttpRequestManager} */
+  static class HttpRequestManagerFactory {
+    /**
+     * Creates a {@link HttpRequestManager}.
+     *
+     * <p><strong>Important:</strong> This method is visible for testing purposes only and should
+     * never be called from outside this class.
+     *
+     * @param executor a {@link Executor} to run network request on background thread.
+     * @param resultHandler a {@link Handler} to communicate back with main thread.
+     * @return The new {@link HttpRequestManager} object.
+     */
+    @VisibleForTesting
+    public static HttpRequestManager create(Executor executor, Handler resultHandler) {
+      return new HttpRequestManager(executor, resultHandler);
+    }
   }
 }
