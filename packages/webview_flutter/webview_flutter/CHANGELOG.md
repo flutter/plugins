@@ -1,6 +1,10 @@
-## 2.3.0
+## 2.4.0
 
 * Added `limitsNavigationsToAppBoundDomains` functionality for iOS 14.0+.
+
+## 2.3.0
+
+* Add ability to enable/disable zoom functionality.
 
 ## 2.2.0
 
