@@ -181,7 +181,6 @@ void main() {
   });
 
   testWidgets('resize webview', (WidgetTester tester) async {
-    final Completer<void> initialResizeCompleter = Completer<void>();
     final Completer<void> buttonTapResizeCompleter = Completer<void>();
     final Completer<void> onPageFinished = Completer<void>();
 
@@ -190,14 +189,11 @@ void main() {
       onResize: (_) {
         if (resizeButtonTapped) {
           buttonTapResizeCompleter.complete();
-        } else {
-          initialResizeCompleter.complete();
         }
       },
       onPageFinished: () => onPageFinished.complete(),
     ));
     await onPageFinished.future;
-    await initialResizeCompleter.future;
 
     resizeButtonTapped = true;
     await tester.tap(find.byKey(const ValueKey('resizeButton')));

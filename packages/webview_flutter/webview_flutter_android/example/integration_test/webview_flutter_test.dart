@@ -192,6 +192,7 @@ void main() {
     bool resizeButtonTapped = false;
     await tester.pumpWidget(ResizableWebView(
       onResize: (_) {
+        print(resizeButtonTapped);
         if (resizeButtonTapped) {
           buttonTapResizeCompleter.complete();
         } else {
