@@ -99,4 +99,7 @@ class RunnerTests: XCTestCase {
         true
       ).first)
   }
+
+  func testNewThing() throws {
+  }
 }
