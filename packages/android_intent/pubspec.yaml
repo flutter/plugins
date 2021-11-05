@@ -26,4 +26,4 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   pedantic: ^1.10.0
-  build_runner: ^1.11.1
+  build_runner: ^2.0.0
