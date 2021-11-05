@@ -18,7 +18,9 @@
 - [ ] I added new tests to check the change I am making, or this PR is [test-exempt]. (Note that the bot is not yet running for this repository.)
 - [ ] All existing and new tests are passing.
 
+<!--
 If you need help, consider asking for advice on the #hackers-new channel on [Discord].
+-->
 
 <!-- Links -->
 [Contributor Guide]: https://github.com/flutter/plugins/blob/master/CONTRIBUTING.md
