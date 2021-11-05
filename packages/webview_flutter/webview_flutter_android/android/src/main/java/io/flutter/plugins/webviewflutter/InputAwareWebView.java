@@ -158,7 +158,7 @@ class InputAwareWebView extends WebView {
    * <p>{@code targetView} should have a {@link View#getHandler} method with the thread that future
    * InputConnections should be created on.
    */
-  private void setInputConnectionTarget(final View targetView) {
+  void setInputConnectionTarget(final View targetView) {
     if (containerView == null) {
       Log.e(
           TAG,
@@ -171,6 +171,13 @@ class InputAwareWebView extends WebView {
         new Runnable() {
           @Override
           public void run() {
+            if (containerView == null) {
+              Log.e(
+                  TAG,
+                  "Can't set the input connection target because there is no containerView to use as a handler.");
+              return;
+            }
+
             InputMethodManager imm =
                 (InputMethodManager) getContext().getSystemService(INPUT_METHOD_SERVICE);
             // This is a hack to make InputMethodManager believe that the target view now has focus.
