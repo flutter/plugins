@@ -27,13 +27,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIView*)view;
 
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result;
-
-- (NSURLRequest*)buildNSURLRequest:(NSDictionary<NSString*, id>*)arguments;
-
-- (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result;
-
-- (void)onLoadRequest:(FlutterMethodCall*)call result:(FlutterResult)result;
-
 @end
 
 @interface FLTWebViewFactory : NSObject <FlutterPlatformViewFactory>
