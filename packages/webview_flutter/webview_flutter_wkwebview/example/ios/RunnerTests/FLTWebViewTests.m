@@ -88,6 +88,104 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
+- (void)testLoadFileSucceeds {
+  NSString *testFilePath = @"/assets/file.html";
+  NSURL *url = [NSURL fileURLWithPath:testFilePath isDirectory:NO];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return successful result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile"
+                                                             arguments:testFilePath]
+                    result:^(id _Nullable result) {
+                      XCTAssertNil(result);
+                      [resultExpectation fulfill];
+                    }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:30.0];
+  OCMVerify([mockWebView loadFileURL:url
+             allowingReadAccessToURL:[url URLByDeletingLastPathComponent]]);
+}
+
+- (void)testLoadFileFailsWithNilPath {
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return failed result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile" arguments:nil]
+                    result:^(id _Nullable result) {
+                      XCTAssertTrue([result class] == [FlutterError class]);
+                      FlutterError *errorResult = result;
+                      XCTAssertEqualObjects(errorResult.code, @"loadFile_failed");
+                      XCTAssertEqualObjects(errorResult.message, @"Failed parsing file path.");
+                      XCTAssertEqualObjects(errorResult.details, @"Argument is nil.");
+                      [resultExpectation fulfill];
+                    }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:1.0];
+  OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
+}
+
+- (void)testLoadFileFailsWithNonStringPath {
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return failed result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile" arguments:@(10)]
+            result:^(id _Nullable result) {
+              XCTAssertTrue([result class] == [FlutterError class]);
+              FlutterError *errorResult = result;
+              XCTAssertEqualObjects(errorResult.code, @"loadFile_failed");
+              XCTAssertEqualObjects(errorResult.message, @"Failed parsing file path.");
+              XCTAssertEqualObjects(errorResult.details, @"Argument is not of type NSString.");
+              [resultExpectation fulfill];
+            }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:1.0];
+  OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
+}
+
+- (void)testLoadFileFailsWithEmptyPath {
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return failed result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile" arguments:@""]
+            result:^(id _Nullable result) {
+              XCTAssertTrue([result class] == [FlutterError class]);
+              FlutterError *errorResult = result;
+              XCTAssertEqualObjects(errorResult.code, @"loadFile_failed");
+              XCTAssertEqualObjects(errorResult.message, @"Failed parsing file path.");
+              XCTAssertEqualObjects(errorResult.details, @"Argument contains an empty string.");
+              [resultExpectation fulfill];
+            }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:1.0];
+  OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
+}
+
 - (void)testRunJavascriptFailsForNullString {
   // Setup
   FLTWebViewController *controller =

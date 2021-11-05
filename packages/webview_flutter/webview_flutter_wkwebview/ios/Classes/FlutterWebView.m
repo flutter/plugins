@@ -135,6 +135,8 @@
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"updateSettings"]) {
     [self onUpdateSettings:call result:result];
+  } else if ([[call method] isEqualToString:@"loadFile"]) {
+    [self onLoadFile:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
@@ -183,6 +185,22 @@
     return;
   }
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
+}
+
+- (void)onLoadFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadFile_failed"
+                               message:@"Failed parsing file path."
+                               details:error]);
+    return;
+  }
+
+  NSURL* url = [NSURL fileURLWithPath:[call arguments] isDirectory:NO];
+  NSURL* baseUrl = [url URLByDeletingLastPathComponent];
+
+  [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
+  result(nil);
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -515,6 +533,29 @@
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
++ (bool)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
+  if (!argument) {
+    if (errorDetails) {
+      *errorDetails = @"Argument is nil.";
+    }
+    return NO;
+  }
+  if (![argument isKindOfClass:NSString.class]) {
+    if (errorDetails) {
+      *errorDetails = @"Argument is not of type NSString.";
+    }
+    return NO;
+  }
+  if (![argument length]) {
+    if (errorDetails) {
+      *errorDetails = @"Argument contains an empty string.";
+    }
+    return NO;
+  }
+
+  return YES;
 }
 
 #pragma mark WKUIDelegate

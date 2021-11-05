@@ -305,6 +305,20 @@ class WebViewController {
 
   WebView _widget;
 
+  /// Loads the file located on the specified [absoluteFilePath].
+  ///
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(
+    String absoluteFilePath,
+  ) {
+    assert(absoluteFilePath != null || absoluteFilePath.isNotEmpty);
+    return _webViewPlatformController.loadFile(absoluteFilePath);
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
