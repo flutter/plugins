@@ -93,7 +93,7 @@ public class HttpRequestManager {
         // because otherwise HTTPUrlConnection will be forced to buffer the complete
         // request body in memory before it is transmitted, wasting (and possibly exhausting)
         // heap and increasing latency.
-        //        httpURLConnection.setFixedLengthStreamingMode(request.getBody().length);
+        httpURLConnection.setFixedLengthStreamingMode(request.getBody().length);
 
         httpURLConnection.setDoOutput(true);
         OutputStream os = BufferedOutputStreamFactory.create(httpURLConnection.getOutputStream());
