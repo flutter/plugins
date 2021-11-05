@@ -298,6 +298,7 @@ class _ControlsOverlay extends StatelessWidget {
                       Icons.play_arrow,
                       color: Colors.white,
                       size: 100.0,
+                      semanticLabel: 'Play',
                     ),
                   ),
                 ),
