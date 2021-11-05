@@ -15,6 +15,8 @@
   length.
 - Fix `license-check` when run on Windows with line ending conversion enabled.
 - Fixed `pubspec-check` on Windows.
+- `native-test` now builds unit tests before running them on Windows and Linux,
+  matching the behavior of other platforms.
 
 ## 0.7.1
 

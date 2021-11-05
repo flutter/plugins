@@ -5,6 +5,7 @@
 import 'package:file/file.dart';
 import 'package:platform/platform.dart';
 
+import 'common/cmake.dart';
 import 'common/core.dart';
 import 'common/gradle.dart';
 import 'common/package_looping_command.dart';
@@ -456,8 +457,7 @@ this command.
           file.basename.endsWith('_tests.exe');
     }
 
-    return _runGoogleTestTests(plugin,
-        buildDirectoryName: 'windows', isTestBinary: isTestBinary);
+    return _runGoogleTestTests(plugin, 'Windows', isTestBinary: isTestBinary);
   }
 
   Future<_PlatformResult> _testLinux(
@@ -471,8 +471,7 @@ this command.
           file.basename.endsWith('_tests');
     }
 
-    return _runGoogleTestTests(plugin,
-        buildDirectoryName: 'linux', isTestBinary: isTestBinary);
+    return _runGoogleTestTests(plugin, 'Linux', isTestBinary: isTestBinary);
   }
 
   /// Finds every file in the [buildDirectoryName] subdirectory of [plugin]'s
@@ -482,29 +481,53 @@ this command.
   /// The binaries are assumed to be Google Test test binaries, thus returning
   /// zero for success and non-zero for failure.
   Future<_PlatformResult> _runGoogleTestTests(
-    RepositoryPackage plugin, {
-    required String buildDirectoryName,
+    RepositoryPackage plugin,
+    String platformName, {
     required bool Function(File) isTestBinary,
   }) async {
     final List<File> testBinaries = <File>[];
+    bool hasMissingBuild = false;
+    bool buildFailed = false;
     for (final RepositoryPackage example in plugin.getExamples()) {
-      final Directory buildDir = example.directory
-          .childDirectory('build')
-          .childDirectory(buildDirectoryName);
-      if (!buildDir.existsSync()) {
+      final CMakeProject project = CMakeProject(example.directory,
+          buildMode: 'Debug', processRunner: processRunner, platform: platform);
+      if (!project.isConfigured()) {
+        printError('ERROR: Run "flutter build" on ${example.displayName}, '
+            'or run this tool\'s "build-examples" command, for the target '
+            'platform before executing tests.');
+        hasMissingBuild = true;
         continue;
       }
-      testBinaries.addAll(buildDir
+
+      // By repository convention, example projects create an aggregate target
+      // called 'unit_tests' that builds all unit tests (usually just an alias
+      // for a specific test target).
+      final int exitCode = await project.runBuild('unit_tests');
+      if (exitCode != 0) {
+        printError('${example.displayName} unit tests failed to build.');
+        buildFailed = true;
+      }
+
+      testBinaries.addAll(project.buildDirectory
           .listSync(recursive: true)
           .whereType<File>()
           .where(isTestBinary)
           .where((File file) {
-        // Only run the release build of the unit tests, to avoid running the
-        // same tests multiple times. Release is used rather than debug since
-        // `build-examples` builds release versions.
+        // Only run the debug build of the unit tests, to avoid running the
+        // same tests multiple times.
         final List<String> components = path.split(file.path);
-        return components.contains('release') || components.contains('Release');
+        return components.contains('debug') || components.contains('Debug');
       }));
+    }
+
+    if (hasMissingBuild) {
+      return _PlatformResult(RunState.failed,
+          error: 'Examples must be built before testing.');
+    }
+
+    if (buildFailed) {
+      return _PlatformResult(RunState.failed,
+          error: 'Failed to build $platformName unit tests.');
     }
 
     if (testBinaries.isEmpty) {
@@ -513,7 +536,7 @@ this command.
           'No test binaries found. At least one *_test(s)$binaryExtension '
           'binary should be built by the example(s)');
       return _PlatformResult(RunState.failed,
-          error: 'No $buildDirectoryName unit tests found');
+          error: 'No $platformName unit tests found');
     }
 
     bool passing = true;
