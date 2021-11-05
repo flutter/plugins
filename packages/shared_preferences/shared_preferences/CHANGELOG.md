@@ -1,6 +1,6 @@
 ## 2.0.9
 
-* Correct example for mocking in readme 
+* Correct example for mocking in readme.
 
 ## 2.0.8
 
