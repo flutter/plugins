@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Implemented new `loadRequest` method from platform interface.
+
 ## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
