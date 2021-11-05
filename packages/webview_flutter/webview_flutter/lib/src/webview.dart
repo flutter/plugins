@@ -272,7 +272,7 @@ class WebView extends StatefulWidget {
   /// A Boolean value indicating whether the WebView should support zooming
   /// using its on-screen zoom controls and gestures.
   ///
-  /// *Note: On iOS [JavascriptMode] must be set to
+  /// *Note: On iOS [javascriptMode] must be set to
   /// [JavascriptMode.unrestricted] in order to set [zoomEnabled] to false
   ///
   /// By default 'zoomEnabled' is true
