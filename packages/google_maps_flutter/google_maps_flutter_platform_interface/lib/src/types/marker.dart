@@ -1,16 +1,19 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues, Offset;
 
 import 'package:flutter/foundation.dart' show ValueChanged, VoidCallback;
-import 'package:meta/meta.dart' show immutable;
+import 'package:meta/meta.dart' show immutable, required;
 
 import 'types.dart';
 
-Object _offsetToJson(Offset offset) {
-  return <Object>[offset.dx, offset.dy];
+dynamic _offsetToJson(Offset offset) {
+  if (offset == null) {
+    return null;
+  }
+  return <dynamic>[offset.dx, offset.dy];
 }
 
 /// Text labels for a [Marker] info window.
@@ -29,12 +32,12 @@ class InfoWindow {
   /// Text displayed in an info window when the user taps the marker.
   ///
   /// A null value means no title.
-  final String? title;
+  final String title;
 
   /// Additional text displayed below the [title].
   ///
   /// A null value means no additional text.
-  final String? snippet;
+  final String snippet;
 
   /// The icon image point that will be the anchor of the info window when
   /// displayed.
@@ -45,15 +48,15 @@ class InfoWindow {
   final Offset anchor;
 
   /// onTap callback for this [InfoWindow].
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   /// Creates a new [InfoWindow] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   InfoWindow copyWith({
-    String? titleParam,
-    String? snippetParam,
-    Offset? anchorParam,
-    VoidCallback? onTapParam,
+    String titleParam,
+    String snippetParam,
+    Offset anchorParam,
+    VoidCallback onTapParam,
   }) {
     return InfoWindow(
       title: titleParam ?? title,
@@ -63,10 +66,10 @@ class InfoWindow {
     );
   }
 
-  Object _toJson() {
-    final Map<String, Object> json = <String, Object>{};
+  dynamic _toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, Object? value) {
+    void addIfPresent(String fieldName, dynamic value) {
       if (value != null) {
         json[fieldName] = value;
       }
@@ -83,7 +86,7 @@ class InfoWindow {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final InfoWindow typedOther = other as InfoWindow;
+    final InfoWindow typedOther = other;
     return title == typedOther.title &&
         snippet == typedOther.snippet &&
         anchor == typedOther.anchor;
@@ -102,9 +105,28 @@ class InfoWindow {
 ///
 /// This does not have to be globally unique, only unique among the list.
 @immutable
-class MarkerId extends MapsObjectId<Marker> {
+class MarkerId {
   /// Creates an immutable identifier for a [Marker].
-  const MarkerId(String value) : super(value);
+  MarkerId(this.value) : assert(value != null);
+
+  /// value of the [MarkerId].
+  final String value;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other.runtimeType != runtimeType) return false;
+    final MarkerId typedOther = other;
+    return value == typedOther.value;
+  }
+
+  @override
+  int get hashCode => value.hashCode;
+
+  @override
+  String toString() {
+    return 'MarkerId{value: $value}';
+  }
 }
 
 /// Marks a geographical location on the map.
@@ -113,7 +135,7 @@ class MarkerId extends MapsObjectId<Marker> {
 /// the map's surface; that is, it will not necessarily change orientation
 /// due to map rotations, tilting, or zooming.
 @immutable
-class Marker implements MapsObject {
+class Marker {
   /// Creates a set of marker configuration options.
   ///
   /// Default marker options.
@@ -134,7 +156,7 @@ class Marker implements MapsObject {
   /// * reports [onTap] events
   /// * reports [onDragEnd] events
   const Marker({
-    required this.markerId,
+    @required this.markerId,
     this.alpha = 1.0,
     this.anchor = const Offset(0.5, 1.0),
     this.consumeTapEvents = false,
@@ -152,9 +174,6 @@ class Marker implements MapsObject {
 
   /// Uniquely identifies a [Marker].
   final MarkerId markerId;
-
-  @override
-  MarkerId get mapsId => markerId;
 
   /// The opacity of the marker, between 0.0 and 1.0 inclusive.
   ///
@@ -205,27 +224,27 @@ class Marker implements MapsObject {
   final double zIndex;
 
   /// Callbacks to receive tap events for markers placed on this map.
-  final VoidCallback? onTap;
+  final VoidCallback onTap;
 
   /// Signature reporting the new [LatLng] at the end of a drag event.
-  final ValueChanged<LatLng>? onDragEnd;
+  final ValueChanged<LatLng> onDragEnd;
 
   /// Creates a new [Marker] object whose values are the same as this instance,
   /// unless overwritten by the specified parameters.
   Marker copyWith({
-    double? alphaParam,
-    Offset? anchorParam,
-    bool? consumeTapEventsParam,
-    bool? draggableParam,
-    bool? flatParam,
-    BitmapDescriptor? iconParam,
-    InfoWindow? infoWindowParam,
-    LatLng? positionParam,
-    double? rotationParam,
-    bool? visibleParam,
-    double? zIndexParam,
-    VoidCallback? onTapParam,
-    ValueChanged<LatLng>? onDragEndParam,
+    double alphaParam,
+    Offset anchorParam,
+    bool consumeTapEventsParam,
+    bool draggableParam,
+    bool flatParam,
+    BitmapDescriptor iconParam,
+    InfoWindow infoWindowParam,
+    LatLng positionParam,
+    double rotationParam,
+    bool visibleParam,
+    double zIndexParam,
+    VoidCallback onTapParam,
+    ValueChanged<LatLng> onDragEndParam,
   }) {
     return Marker(
       markerId: markerId,
@@ -249,10 +268,10 @@ class Marker implements MapsObject {
   Marker clone() => copyWith();
 
   /// Converts this object to something serializable in JSON.
-  Object toJson() {
-    final Map<String, Object> json = <String, Object>{};
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> json = <String, dynamic>{};
 
-    void addIfPresent(String fieldName, Object? value) {
+    void addIfPresent(String fieldName, dynamic value) {
       if (value != null) {
         json[fieldName] = value;
       }
@@ -264,9 +283,9 @@ class Marker implements MapsObject {
     addIfPresent('consumeTapEvents', consumeTapEvents);
     addIfPresent('draggable', draggable);
     addIfPresent('flat', flat);
-    addIfPresent('icon', icon.toJson());
-    addIfPresent('infoWindow', infoWindow._toJson());
-    addIfPresent('position', position.toJson());
+    addIfPresent('icon', icon?.toJson());
+    addIfPresent('infoWindow', infoWindow?._toJson());
+    addIfPresent('position', position?.toJson());
     addIfPresent('rotation', rotation);
     addIfPresent('visible', visible);
     addIfPresent('zIndex', zIndex);
@@ -277,7 +296,7 @@ class Marker implements MapsObject {
   bool operator ==(Object other) {
     if (identical(this, other)) return true;
     if (other.runtimeType != runtimeType) return false;
-    final Marker typedOther = other as Marker;
+    final Marker typedOther = other;
     return markerId == typedOther.markerId &&
         alpha == typedOther.alpha &&
         anchor == typedOther.anchor &&

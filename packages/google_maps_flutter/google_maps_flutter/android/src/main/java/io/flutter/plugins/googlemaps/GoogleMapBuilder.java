@@ -1,17 +1,19 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 package io.flutter.plugins.googlemaps;
 
+import android.app.Application;
 import android.content.Context;
 import android.graphics.Rect;
+import androidx.lifecycle.Lifecycle;
 import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLngBounds;
 import io.flutter.plugin.common.BinaryMessenger;
-import java.util.List;
-import java.util.Map;
+import io.flutter.plugin.common.PluginRegistry;
+import java.util.concurrent.atomic.AtomicInteger;
 
 class GoogleMapBuilder implements GoogleMapOptionsSink {
   private final GoogleMapOptions options = new GoogleMapOptions();
@@ -24,17 +26,30 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   private Object initialMarkers;
   private Object initialPolygons;
   private Object initialPolylines;
+  private Object initialHeatmaps;
   private Object initialCircles;
-  private List<Map<String, ?>> initialTileOverlays;
   private Rect padding = new Rect(0, 0, 0, 0);
 
   GoogleMapController build(
       int id,
       Context context,
+      AtomicInteger state,
       BinaryMessenger binaryMessenger,
-      LifecycleProvider lifecycleProvider) {
+      Application application,
+      Lifecycle lifecycle,
+      PluginRegistry.Registrar registrar,
+      int activityHashCode) {
     final GoogleMapController controller =
-        new GoogleMapController(id, context, binaryMessenger, lifecycleProvider, options);
+        new GoogleMapController(
+            id,
+            context,
+            state,
+            binaryMessenger,
+            application,
+            lifecycle,
+            registrar,
+            activityHashCode,
+            options);
     controller.init();
     controller.setMyLocationEnabled(myLocationEnabled);
     controller.setMyLocationButtonEnabled(myLocationButtonEnabled);
@@ -45,9 +60,9 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
     controller.setInitialMarkers(initialMarkers);
     controller.setInitialPolygons(initialPolygons);
     controller.setInitialPolylines(initialPolylines);
+    controller.setInitialHeatmaps(initialHeatmaps);
     controller.setInitialCircles(initialCircles);
     controller.setPadding(padding.top, padding.left, padding.bottom, padding.right);
-    controller.setInitialTileOverlays(initialTileOverlays);
     return controller;
   }
 
@@ -116,11 +131,6 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
-  public void setLiteModeEnabled(boolean liteModeEnabled) {
-    options.liteMode(liteModeEnabled);
-  }
-
-  @Override
   public void setIndoorEnabled(boolean indoorEnabled) {
     this.indoorEnabled = indoorEnabled;
   }
@@ -171,7 +181,7 @@ class GoogleMapBuilder implements GoogleMapOptionsSink {
   }
 
   @Override
-  public void setInitialTileOverlays(List<Map<String, ?>> initialTileOverlays) {
-    this.initialTileOverlays = initialTileOverlays;
+  public void setInitialHeatmaps(Object initialHeatmaps) {
+    this.initialHeatmaps = initialHeatmaps;
   }
 }

@@ -1,4 +1,4 @@
-// Copyright 2013 The Flutter Authors. All rights reserved.
+// Copyright 2019 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -28,10 +28,10 @@ class PlaceCircleBody extends StatefulWidget {
 class PlaceCircleBodyState extends State<PlaceCircleBody> {
   PlaceCircleBodyState();
 
-  GoogleMapController? controller;
+  GoogleMapController controller;
   Map<CircleId, Circle> circles = <CircleId, Circle>{};
   int _circleIdCounter = 1;
-  CircleId? selectedCircle;
+  CircleId selectedCircle;
 
   // Values when toggling circle color
   int fillColorsIndex = 0;
@@ -62,14 +62,12 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     });
   }
 
-  void _remove(CircleId circleId) {
+  void _remove() {
     setState(() {
-      if (circles.containsKey(circleId)) {
-        circles.remove(circleId);
+      if (circles.containsKey(selectedCircle)) {
+        circles.remove(selectedCircle);
       }
-      if (circleId == selectedCircle) {
-        selectedCircle = null;
-      }
+      selectedCircle = null;
     });
   }
 
@@ -102,37 +100,37 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
     });
   }
 
-  void _toggleVisible(CircleId circleId) {
-    final Circle circle = circles[circleId]!;
+  void _toggleVisible() {
+    final Circle circle = circles[selectedCircle];
     setState(() {
-      circles[circleId] = circle.copyWith(
+      circles[selectedCircle] = circle.copyWith(
         visibleParam: !circle.visible,
       );
     });
   }
 
-  void _changeFillColor(CircleId circleId) {
-    final Circle circle = circles[circleId]!;
+  void _changeFillColor() {
+    final Circle circle = circles[selectedCircle];
     setState(() {
-      circles[circleId] = circle.copyWith(
+      circles[selectedCircle] = circle.copyWith(
         fillColorParam: colors[++fillColorsIndex % colors.length],
       );
     });
   }
 
-  void _changeStrokeColor(CircleId circleId) {
-    final Circle circle = circles[circleId]!;
+  void _changeStrokeColor() {
+    final Circle circle = circles[selectedCircle];
     setState(() {
-      circles[circleId] = circle.copyWith(
+      circles[selectedCircle] = circle.copyWith(
         strokeColorParam: colors[++strokeColorsIndex % colors.length],
       );
     });
   }
 
-  void _changeStrokeWidth(CircleId circleId) {
-    final Circle circle = circles[circleId]!;
+  void _changeStrokeWidth() {
+    final Circle circle = circles[selectedCircle];
     setState(() {
-      circles[circleId] = circle.copyWith(
+      circles[selectedCircle] = circle.copyWith(
         strokeWidthParam: widths[++widthsIndex % widths.length],
       );
     });
@@ -140,7 +138,6 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
 
   @override
   Widget build(BuildContext context) {
-    final CircleId? selectedId = selectedCircle;
     return Column(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -168,43 +165,40 @@ class PlaceCircleBodyState extends State<PlaceCircleBody> {
                   children: <Widget>[
                     Column(
                       children: <Widget>[
-                        TextButton(
+                        FlatButton(
                           child: const Text('add'),
                           onPressed: _add,
                         ),
-                        TextButton(
+                        FlatButton(
                           child: const Text('remove'),
-                          onPressed: (selectedId == null)
-                              ? null
-                              : () => _remove(selectedId),
+                          onPressed: (selectedCircle == null) ? null : _remove,
                         ),
-                        TextButton(
+                        FlatButton(
                           child: const Text('toggle visible'),
-                          onPressed: (selectedId == null)
-                              ? null
-                              : () => _toggleVisible(selectedId),
+                          onPressed:
+                              (selectedCircle == null) ? null : _toggleVisible,
                         ),
                       ],
                     ),
                     Column(
                       children: <Widget>[
-                        TextButton(
+                        FlatButton(
                           child: const Text('change stroke width'),
-                          onPressed: (selectedId == null)
+                          onPressed: (selectedCircle == null)
                               ? null
-                              : () => _changeStrokeWidth(selectedId),
+                              : _changeStrokeWidth,
                         ),
-                        TextButton(
+                        FlatButton(
                           child: const Text('change stroke color'),
-                          onPressed: (selectedId == null)
+                          onPressed: (selectedCircle == null)
                               ? null
-                              : () => _changeStrokeColor(selectedId),
+                              : _changeStrokeColor,
                         ),
-                        TextButton(
+                        FlatButton(
                           child: const Text('change fill color'),
-                          onPressed: (selectedId == null)
+                          onPressed: (selectedCircle == null)
                               ? null
-                              : () => _changeFillColor(selectedId),
+                              : _changeFillColor,
                         ),
                       ],
                     )
