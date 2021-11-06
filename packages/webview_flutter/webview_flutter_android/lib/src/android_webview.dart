@@ -401,9 +401,9 @@ class WebSettings {
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(this.channelName) {
-    if (!_flutterApisHaveBeenSetup) {
+    if (!_flutterApisHaveBeenSetUp) {
       JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
-      _flutterApisHaveBeenSetup = true;
+      _flutterApisHaveBeenSetUp = true;
     }
   }
 
@@ -411,7 +411,7 @@ abstract class JavaScriptChannel {
   @visibleForTesting
   static JavaScriptChannelHostApiImpl api = JavaScriptChannelHostApiImpl();
 
-  static bool _flutterApisHaveBeenSetup = false;
+  static bool _flutterApisHaveBeenSetUp = false;
 
   /// Used to identify this object to receive messages from javaScript.
   final String channelName;
@@ -424,60 +424,92 @@ abstract class JavaScriptChannel {
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
   WebViewClient({this.shouldOverrideUrlLoading = true}) {
-    if (!_flutterApisHaveBeenSetup) {
+    if (!_flutterApisHaveBeenSetUp) {
       WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
-      _flutterApisHaveBeenSetup = true;
+      _flutterApisHaveBeenSetUp = true;
     }
   }
 
-  static bool _flutterApisHaveBeenSetup = false;
+  static bool _flutterApisHaveBeenSetUp = false;
 
   /// User authentication failed on server.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_AUTHENTICATION
   static const int errorAuthentication = -4;
 
   /// Malformed URL.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_BAD_URL
   static const int errorBadUrl = -12;
 
   /// Failed to connect to the server.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_CONNECT
   static const int errorConnect = -6;
 
   /// Failed to perform SSL handshake.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_FAILED_SSL_HANDSHAKE
   static const int errorFailedSslHandshake = -11;
 
   /// Generic file error.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_FILE
   static const int errorFile = -13;
 
   /// File not found.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_FILE_NOT_FOUND
   static const int errorFileNotFound = -14;
 
   /// Server or proxy hostname lookup failed.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_HOST_LOOKUP
   static const int errorHostLookup = -2;
 
   /// Failed to read or write to the server.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_IO
   static const int errorIO = -7;
 
   /// User authentication failed on proxy.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_PROXY_AUTHENTICATION
   static const int errorProxyAuthentication = -5;
 
   /// Too many redirects.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_REDIRECT_LOOP
   static const int errorRedirectLoop = -9;
 
   /// Connection timed out.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_TIMEOUT
   static const int errorTimeout = -8;
 
   /// Too many requests during this load.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_TOO_MANY_REQUESTS
   static const int errorTooManyRequests = -15;
 
   /// Generic error.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNKNOWN
   static const int errorUnknown = -1;
 
   /// Resource load was canceled by Safe Browsing.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNSAFE_RESOURCE
   static const int errorUnsafeResource = -16;
 
   /// Unsupported authentication scheme (not basic or digest).
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNSUPPORTED_AUTH_SCHEME
   static const int errorUnsupportedAuthScheme = -3;
 
   /// Unsupported URI scheme.
+  ///
+  /// See https://developer.android.com/reference/android/webkit/WebViewClient#ERROR_UNSUPPORTED_SCHEME
   static const int errorUnsupportedScheme = -10;
 
   /// Pigeon Host Api implementation for [WebViewClient].
@@ -566,13 +598,13 @@ abstract class WebViewClient {
 abstract class DownloadListener {
   /// Constructs a [DownloadListener].
   DownloadListener() {
-    if (!_flutterApisHaveBeenSetup) {
+    if (!_flutterApisHaveBeenSetUp) {
       DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
-      _flutterApisHaveBeenSetup = true;
+      _flutterApisHaveBeenSetUp = true;
     }
   }
 
-  static bool _flutterApisHaveBeenSetup = false;
+  static bool _flutterApisHaveBeenSetUp = false;
 
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
@@ -592,13 +624,13 @@ abstract class DownloadListener {
 abstract class WebChromeClient {
   /// Constructs a [WebChromeClient].
   WebChromeClient() {
-    if (!_flutterApisHaveBeenSetup) {
+    if (!_flutterApisHaveBeenSetUp) {
       WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
-      _flutterApisHaveBeenSetup = true;
+      _flutterApisHaveBeenSetUp = true;
     }
   }
 
-  static bool _flutterApisHaveBeenSetup = false;
+  static bool _flutterApisHaveBeenSetUp = false;
 
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting
