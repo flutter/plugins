@@ -13,43 +13,42 @@ import 'android_webview.pigeon.dart';
 import 'android_webview_test.mocks.dart';
 
 @GenerateMocks([
-  TestWebViewHostApi,
+  DownloadListener,
+  JavaScriptChannel,
+  TestDownloadListenerHostApi,
+  TestJavaScriptChannelHostApi,
+  TestWebChromeClientHostApi,
   TestWebSettingsHostApi,
   TestWebViewClientHostApi,
-  TestWebChromeClientHostApi,
-  TestJavaScriptChannelHostApi,
-  TestDownloadListenerHostApi
+  TestWebViewHostApi,
+  WebChromeClient,
+  WebViewClient,
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Android WebView', () {
     group('$WebView', () {
-      late MockTestWebViewHostApi mockPlatformHostApi =
-          MockTestWebViewHostApi();
+      late MockTestWebViewHostApi mockPlatformHostApi;
 
-      late InstanceManager testInstanceManager;
-      late WebViewHostApiImpl testWebViewHostApi;
+      late InstanceManager instanceManager;
 
-      late WebView testWebView;
-      late int testWebViewInstanceId;
+      late WebView webView;
+      late int webViewInstanceId;
 
       setUp(() {
         mockPlatformHostApi = MockTestWebViewHostApi();
         TestWebViewHostApi.setup(mockPlatformHostApi);
 
-        testInstanceManager = InstanceManager();
-        testWebViewHostApi = WebViewHostApiImpl(
-          instanceManager: testInstanceManager,
-        );
-        WebView.api = testWebViewHostApi;
+        instanceManager = InstanceManager();
+        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
 
-        testWebView = WebView();
-        testWebViewInstanceId = testInstanceManager.getInstanceId(testWebView)!;
+        webView = WebView();
+        webViewInstanceId = instanceManager.getInstanceId(webView)!;
       });
 
       test('create', () {
-        verify(mockPlatformHostApi.create(testWebViewInstanceId, false));
+        verify(mockPlatformHostApi.create(webViewInstanceId, false));
       });
 
       test('setWebContentsDebuggingEnabled', () {
@@ -58,99 +57,97 @@ void main() {
       });
 
       test('loadUrl', () {
-        testWebView.loadUrl('hello', <String, String>{'a': 'header'});
+        webView.loadUrl('hello', <String, String>{'a': 'header'});
         verify(mockPlatformHostApi.loadUrl(
-          testWebViewInstanceId,
+          webViewInstanceId,
           'hello',
           <String, String>{'a': 'header'},
         ));
       });
 
       test('canGoBack', () {
-        when(mockPlatformHostApi.canGoBack(testWebViewInstanceId))
+        when(mockPlatformHostApi.canGoBack(webViewInstanceId))
             .thenReturn(false);
-        expect(testWebView.canGoBack(), completion(false));
+        expect(webView.canGoBack(), completion(false));
       });
 
       test('canGoForward', () {
-        when(mockPlatformHostApi.canGoForward(testWebViewInstanceId))
+        when(mockPlatformHostApi.canGoForward(webViewInstanceId))
             .thenReturn(true);
-        expect(testWebView.canGoForward(), completion(true));
+        expect(webView.canGoForward(), completion(true));
       });
 
       test('goBack', () {
-        testWebView.goBack();
-        verify(mockPlatformHostApi.goBack(testWebViewInstanceId));
+        webView.goBack();
+        verify(mockPlatformHostApi.goBack(webViewInstanceId));
       });
 
       test('goForward', () {
-        testWebView.goForward();
-        verify(mockPlatformHostApi.goForward(testWebViewInstanceId));
+        webView.goForward();
+        verify(mockPlatformHostApi.goForward(webViewInstanceId));
       });
 
       test('reload', () {
-        testWebView.reload();
-        verify(mockPlatformHostApi.reload(testWebViewInstanceId));
+        webView.reload();
+        verify(mockPlatformHostApi.reload(webViewInstanceId));
       });
 
       test('clearCache', () {
-        testWebView.clearCache(false);
-        verify(mockPlatformHostApi.clearCache(testWebViewInstanceId, false));
+        webView.clearCache(false);
+        verify(mockPlatformHostApi.clearCache(webViewInstanceId, false));
       });
 
       test('evaluateJavascript', () {
         when(
           mockPlatformHostApi.evaluateJavascript(
-              testWebViewInstanceId, 'runJavaScript'),
+              webViewInstanceId, 'runJavaScript'),
         ).thenAnswer((_) => Future<String>.value('returnValue'));
         expect(
-          testWebView.evaluateJavascript('runJavaScript'),
+          webView.evaluateJavascript('runJavaScript'),
           completion('returnValue'),
         );
       });
 
       test('getTitle', () {
-        when(mockPlatformHostApi.getTitle(testWebViewInstanceId))
+        when(mockPlatformHostApi.getTitle(webViewInstanceId))
             .thenReturn('aTitle');
-        expect(testWebView.getTitle(), completion('aTitle'));
+        expect(webView.getTitle(), completion('aTitle'));
       });
 
       test('scrollTo', () {
-        testWebView.scrollTo(12, 13);
-        verify(mockPlatformHostApi.scrollTo(testWebViewInstanceId, 12, 13));
+        webView.scrollTo(12, 13);
+        verify(mockPlatformHostApi.scrollTo(webViewInstanceId, 12, 13));
       });
 
       test('scrollBy', () {
-        testWebView.scrollBy(12, 14);
-        verify(mockPlatformHostApi.scrollBy(testWebViewInstanceId, 12, 14));
+        webView.scrollBy(12, 14);
+        verify(mockPlatformHostApi.scrollBy(webViewInstanceId, 12, 14));
       });
 
       test('getScrollX', () {
-        when(mockPlatformHostApi.getScrollX(testWebViewInstanceId))
-            .thenReturn(67);
-        expect(testWebView.getScrollX(), completion(67));
+        when(mockPlatformHostApi.getScrollX(webViewInstanceId)).thenReturn(67);
+        expect(webView.getScrollX(), completion(67));
       });
 
       test('getScrollY', () {
-        when(mockPlatformHostApi.getScrollY(testWebViewInstanceId))
-            .thenReturn(56);
-        expect(testWebView.getScrollY(), completion(56));
+        when(mockPlatformHostApi.getScrollY(webViewInstanceId)).thenReturn(56);
+        expect(webView.getScrollY(), completion(56));
       });
 
       test('setWebViewClient', () {
         TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
         WebViewClient.api = WebViewClientHostApiImpl(
-          instanceManager: testInstanceManager,
+          instanceManager: instanceManager,
         );
 
         final WebViewClient webViewClient =
             TestWebViewClient(shouldOverrideUrlLoading: false);
-        testWebView.setWebViewClient(webViewClient);
+        webView.setWebViewClient(webViewClient);
 
         final int webViewClientInstanceId =
-            testInstanceManager.getInstanceId(webViewClient)!;
+            instanceManager.getInstanceId(webViewClient)!;
         verify(mockPlatformHostApi.setWebViewClient(
-          testWebViewInstanceId,
+          webViewInstanceId,
           webViewClientInstanceId,
         ));
       });
@@ -158,17 +155,18 @@ void main() {
       test('addJavaScriptChannel', () {
         TestJavaScriptChannelHostApi.setup(MockTestJavaScriptChannelHostApi());
         JavaScriptChannel.api = JavaScriptChannelHostApiImpl(
-          instanceManager: testInstanceManager,
+          instanceManager: instanceManager,
         );
 
-        final JavaScriptChannel javaScriptChannel =
-            TestJavaScriptChannel('jChannel');
-        testWebView.addJavaScriptChannel(javaScriptChannel);
+        final JavaScriptChannel mockJavaScriptChannel = MockJavaScriptChannel();
+        when(mockJavaScriptChannel.channelName).thenReturn('aChannel');
+
+        webView.addJavaScriptChannel(mockJavaScriptChannel);
 
         final int javaScriptChannelInstanceId =
-            testInstanceManager.getInstanceId(javaScriptChannel)!;
+            instanceManager.getInstanceId(mockJavaScriptChannel)!;
         verify(mockPlatformHostApi.addJavaScriptChannel(
-          testWebViewInstanceId,
+          webViewInstanceId,
           javaScriptChannelInstanceId,
         ));
       });
@@ -176,24 +174,24 @@ void main() {
       test('removeJavaScriptChannel', () {
         TestJavaScriptChannelHostApi.setup(MockTestJavaScriptChannelHostApi());
         JavaScriptChannel.api = JavaScriptChannelHostApiImpl(
-          instanceManager: testInstanceManager,
+          instanceManager: instanceManager,
         );
 
-        final JavaScriptChannel javaScriptChannel =
-            TestJavaScriptChannel('jChannel');
+        final JavaScriptChannel mockJavaScriptChannel = MockJavaScriptChannel();
+        when(mockJavaScriptChannel.channelName).thenReturn('aChannel');
 
         expect(
-          testWebView.removeJavaScriptChannel(javaScriptChannel),
+          webView.removeJavaScriptChannel(mockJavaScriptChannel),
           completes,
         );
 
-        testWebView.addJavaScriptChannel(javaScriptChannel);
-        testWebView.removeJavaScriptChannel(javaScriptChannel);
+        webView.addJavaScriptChannel(mockJavaScriptChannel);
+        webView.removeJavaScriptChannel(mockJavaScriptChannel);
 
         final int javaScriptChannelInstanceId =
-            testInstanceManager.getInstanceId(javaScriptChannel)!;
+            instanceManager.getInstanceId(mockJavaScriptChannel)!;
         verify(mockPlatformHostApi.removeJavaScriptChannel(
-          testWebViewInstanceId,
+          webViewInstanceId,
           javaScriptChannelInstanceId,
         ));
       });
@@ -201,16 +199,16 @@ void main() {
       test('setDownloadListener', () {
         TestDownloadListenerHostApi.setup(MockTestDownloadListenerHostApi());
         DownloadListener.api = DownloadListenerHostApiImpl(
-          instanceManager: testInstanceManager,
+          instanceManager: instanceManager,
         );
 
         final DownloadListener downloadListener = TestDownloadListener();
-        testWebView.setDownloadListener(downloadListener);
+        webView.setDownloadListener(downloadListener);
 
         final int downloadListenerInstanceId =
-            testInstanceManager.getInstanceId(downloadListener)!;
+            instanceManager.getInstanceId(downloadListener)!;
         verify(mockPlatformHostApi.setDownloadListener(
-          testWebViewInstanceId,
+          webViewInstanceId,
           downloadListenerInstanceId,
         ));
       });
@@ -219,81 +217,177 @@ void main() {
         // Setting a WebChromeClient requires setting a WebViewClient first.
         TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
         WebViewClient.api = WebViewClientHostApiImpl(
-          instanceManager: testInstanceManager,
+          instanceManager: instanceManager,
         );
         final WebViewClient webViewClient =
             TestWebViewClient(shouldOverrideUrlLoading: false);
-        testWebView.setWebViewClient(webViewClient);
+        webView.setWebViewClient(webViewClient);
 
         TestWebChromeClientHostApi.setup(MockTestWebChromeClientHostApi());
         WebChromeClient.api = WebChromeClientHostApiImpl(
-          instanceManager: testInstanceManager,
+          instanceManager: instanceManager,
         );
 
         final WebChromeClient webChromeClient = TestWebChromeClient();
-        testWebView.setWebChromeClient(webChromeClient);
+        webView.setWebChromeClient(webChromeClient);
 
         final int webChromeClientInstanceId =
-            testInstanceManager.getInstanceId(webChromeClient)!;
+            instanceManager.getInstanceId(webChromeClient)!;
         verify(mockPlatformHostApi.setWebChromeClient(
-          testWebViewInstanceId,
+          webViewInstanceId,
           webChromeClientInstanceId,
         ));
       });
 
       test('release', () {
-        testWebView.release();
-        verify(mockPlatformHostApi.dispose(testWebViewInstanceId));
+        webView.release();
+        verify(mockPlatformHostApi.dispose(webViewInstanceId));
       });
     });
 
     group('$WebSettings', () {
-      setUpAll(() {
-        TestWebViewHostApi.setup(MockTestWebViewHostApi());
-        TestWebSettingsHostApi.setup(MockTestWebSettingsHostApi());
-      });
+      late MockTestWebSettingsHostApi mockPlatformHostApi;
+
+      late InstanceManager instanceManager;
+
+      late WebSettings webSettings;
+      late int webSettingsInstanceId;
 
       setUp(() {
-        final InstanceManager instanceManager = InstanceManager();
+        instanceManager = InstanceManager();
+
+        TestWebViewHostApi.setup(MockTestWebViewHostApi());
         WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
+
+        mockPlatformHostApi = MockTestWebSettingsHostApi();
+        TestWebSettingsHostApi.setup(mockPlatformHostApi);
+
         WebSettings.api = WebSettingsHostApiImpl(
           instanceManager: instanceManager,
         );
+
+        webSettings = WebSettings(WebView());
+        webSettingsInstanceId = instanceManager.getInstanceId(webSettings)!;
       });
 
       test('create', () {
-        final WebView webView = WebView();
-        final WebSettings webSettings = WebSettings(webView);
-        expect(
-          WebSettings.api.instanceManager.getInstanceId(webSettings),
-          isNotNull,
-        );
+        verify(mockPlatformHostApi.create(webSettingsInstanceId, any));
+      });
+
+      test('setDomStorageEnabled', () {
+        webSettings.setDomStorageEnabled(false);
+        verify(mockPlatformHostApi.setDomStorageEnabled(
+          webSettingsInstanceId,
+          false,
+        ));
+      });
+
+      test('setJavaScriptCanOpenWindowsAutomatically', () {
+        webSettings.setJavaScriptCanOpenWindowsAutomatically(true);
+        verify(mockPlatformHostApi.setJavaScriptCanOpenWindowsAutomatically(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
+
+      test('setSupportMultipleWindows', () {
+        webSettings.setSupportMultipleWindows(false);
+        verify(mockPlatformHostApi.setSupportMultipleWindows(
+          webSettingsInstanceId,
+          false,
+        ));
+      });
+
+      test('setJavaScriptEnabled', () {
+        webSettings.setJavaScriptEnabled(true);
+        verify(mockPlatformHostApi.setJavaScriptEnabled(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
+
+      test('setUserAgentString', () {
+        webSettings.setUserAgentString('hola');
+        verify(mockPlatformHostApi.setUserAgentString(
+          webSettingsInstanceId,
+          'hola',
+        ));
+      });
+
+      test('setMediaPlaybackRequiresUserGesture', () {
+        webSettings.setMediaPlaybackRequiresUserGesture(false);
+        verify(mockPlatformHostApi.setMediaPlaybackRequiresUserGesture(
+          webSettingsInstanceId,
+          false,
+        ));
+      });
+
+      test('setSupportZoom', () {
+        webSettings.setSupportZoom(true);
+        verify(mockPlatformHostApi.setSupportZoom(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
+
+      test('setLoadWithOverviewMode', () {
+        webSettings.setLoadWithOverviewMode(false);
+        verify(mockPlatformHostApi.setLoadWithOverviewMode(
+          webSettingsInstanceId,
+          false,
+        ));
+      });
+
+      test('setUseWideViewPort', () {
+        webSettings.setUseWideViewPort(true);
+        verify(mockPlatformHostApi.setUseWideViewPort(
+          webSettingsInstanceId,
+          true,
+        ));
+      });
+
+      test('setDisplayZoomControls', () {
+        webSettings.setDisplayZoomControls(false);
+        verify(mockPlatformHostApi.setDisplayZoomControls(
+          webSettingsInstanceId,
+          false,
+        ));
+      });
+
+      test('setBuiltInZoomControls', () {
+        webSettings.setBuiltInZoomControls(true);
+        verify(mockPlatformHostApi.setBuiltInZoomControls(
+          webSettingsInstanceId,
+          true,
+        ));
       });
     });
 
     group('$JavaScriptChannel', () {
-      setUpAll(() {
-        TestWebViewHostApi.setup(MockTestWebViewHostApi());
-        TestJavaScriptChannelHostApi.setup(MockTestJavaScriptChannelHostApi());
-      });
+      late JavaScriptChannelFlutterApiImpl flutterApi;
+
+      late InstanceManager instanceManager;
+
+      late MockJavaScriptChannel mockJavaScriptChannel;
+      late int mockJavaScriptChannelInstanceId;
 
       setUp(() {
-        final InstanceManager instanceManager = InstanceManager();
-        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
-        JavaScriptChannel.api = JavaScriptChannelHostApiImpl(
+        instanceManager = InstanceManager();
+        flutterApi = JavaScriptChannelFlutterApiImpl(
           instanceManager: instanceManager,
         );
+
+        mockJavaScriptChannel = MockJavaScriptChannel();
+        mockJavaScriptChannelInstanceId =
+            instanceManager.tryAddInstance(mockJavaScriptChannel)!;
       });
 
-      test('create', () {
-        final WebView webView = WebView();
-        final JavaScriptChannel channel = TestJavaScriptChannel('myChannel');
-
-        webView.addJavaScriptChannel(channel);
-        expect(
-          JavaScriptChannel.api.instanceManager.getInstanceId(channel),
-          isNotNull,
+      test('postMessage', () {
+        flutterApi.postMessage(
+          mockJavaScriptChannelInstanceId,
+          'Hello, World!',
         );
+        verify(mockJavaScriptChannel.postMessage('Hello, World!'));
       });
     });
 
@@ -383,13 +477,6 @@ void main() {
       });
     });
   });
-}
-
-class TestJavaScriptChannel extends JavaScriptChannel {
-  TestJavaScriptChannel(String channelName) : super(channelName);
-
-  @override
-  void postMessage(String message) {}
 }
 
 class TestWebViewClient extends WebViewClient {
