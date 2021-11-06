@@ -638,7 +638,7 @@ class WebResourceRequest {
   final String method;
 
   /// Gets the headers associated with the request.
-  final Map<String, String>? requestHeaders;
+  final Map<String, String> requestHeaders;
 }
 
 /// Encapsulates information about errors occurred during loading of web resources.
