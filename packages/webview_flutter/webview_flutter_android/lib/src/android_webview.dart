@@ -417,7 +417,7 @@ abstract class JavaScriptChannel {
   final String channelName;
 
   /// Callback method when javaScript calls `postMessage` on the object instance passed.
-  void postMessage(String message) {}
+  void postMessage(String message);
 }
 
 /// Receive various notifications and requests for [WebView].
@@ -605,7 +605,7 @@ abstract class WebChromeClient {
   static WebChromeClientHostApiImpl api = WebChromeClientHostApiImpl();
 
   /// Notify the host application that a file should be downloaded.
-  void onProgressChanged(WebView webView, int progress);
+  void onProgressChanged(WebView webView, int progress) {}
 }
 
 /// Encompasses parameters to the [WebViewClient.requestLoading] method.
@@ -620,24 +620,24 @@ class WebResourceRequest {
     required this.requestHeaders,
   });
 
-  /// Gets the URL for which the resource request was made.
+  /// The URL for which the resource request was made.
   final String url;
 
-  /// Gets whether the request was made in order to fetch the main frame's document.
-  final isForMainFrame;
+  /// Whether the request was made in order to fetch the main frame's document.
+  final bool isForMainFrame;
 
-  /// Gets whether the request was a result of a server-side redirect.
+  /// Whether the request was a result of a server-side redirect.
   ///
   /// Only supported on Android version >= 24.
   final bool? isRedirect;
 
-  /// Gets whether a gesture (such as a click) was associated with the request.
+  /// Whether a gesture (such as a click) was associated with the request.
   final bool hasGesture;
 
-  /// Gets the method associated with the request, for example "GET".
+  /// The method associated with the request, for example "GET".
   final String method;
 
-  /// Gets the headers associated with the request.
+  /// The headers associated with the request.
   final Map<String, String> requestHeaders;
 }
 

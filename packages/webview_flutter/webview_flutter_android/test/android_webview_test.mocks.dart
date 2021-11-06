@@ -22,6 +22,8 @@ import 'android_webview.pigeon.dart' as _i3;
 // ignore_for_file: unnecessary_parenthesis
 // ignore_for_file: camel_case_types
 
+class _FakeWebSettings_0 extends _i1.Fake implements _i2.WebSettings {}
+
 /// A class which mocks [DownloadListener].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -336,6 +338,123 @@ class MockWebChromeClient extends _i1.Mock implements _i2.WebChromeClient {
   void onProgressChanged(_i2.WebView? webView, int? progress) => super
       .noSuchMethod(Invocation.method(#onProgressChanged, [webView, progress]),
           returnValueForMissingStub: null);
+  @override
+  String toString() => super.toString();
+}
+
+/// A class which mocks [WebView].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWebView extends _i1.Mock implements _i2.WebView {
+  MockWebView() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  bool get useHybridComposition =>
+      (super.noSuchMethod(Invocation.getter(#useHybridComposition),
+          returnValue: false) as bool);
+  @override
+  _i2.WebSettings get settings =>
+      (super.noSuchMethod(Invocation.getter(#settings),
+          returnValue: _FakeWebSettings_0()) as _i2.WebSettings);
+  @override
+  _i4.Future<void> loadUrl(String? url, Map<String, String>? headers) =>
+      (super.noSuchMethod(Invocation.method(#loadUrl, [url, headers]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<String?> getUrl() =>
+      (super.noSuchMethod(Invocation.method(#getUrl, []),
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
+  @override
+  _i4.Future<bool> canGoBack() =>
+      (super.noSuchMethod(Invocation.method(#canGoBack, []),
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+  @override
+  _i4.Future<bool> canGoForward() =>
+      (super.noSuchMethod(Invocation.method(#canGoForward, []),
+          returnValue: Future<bool>.value(false)) as _i4.Future<bool>);
+  @override
+  _i4.Future<void> goBack() =>
+      (super.noSuchMethod(Invocation.method(#goBack, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> goForward() =>
+      (super.noSuchMethod(Invocation.method(#goForward, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> reload() =>
+      (super.noSuchMethod(Invocation.method(#reload, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> clearCache(bool? includeDiskFiles) =>
+      (super.noSuchMethod(Invocation.method(#clearCache, [includeDiskFiles]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<String?> evaluateJavascript(String? javascriptString) => (super
+      .noSuchMethod(Invocation.method(#evaluateJavascript, [javascriptString]),
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
+  @override
+  _i4.Future<String?> getTitle() =>
+      (super.noSuchMethod(Invocation.method(#getTitle, []),
+          returnValue: Future<String?>.value()) as _i4.Future<String?>);
+  @override
+  _i4.Future<void> scrollTo(int? x, int? y) =>
+      (super.noSuchMethod(Invocation.method(#scrollTo, [x, y]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> scrollBy(int? x, int? y) =>
+      (super.noSuchMethod(Invocation.method(#scrollBy, [x, y]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<int> getScrollX() =>
+      (super.noSuchMethod(Invocation.method(#getScrollX, []),
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
+  @override
+  _i4.Future<int> getScrollY() =>
+      (super.noSuchMethod(Invocation.method(#getScrollY, []),
+          returnValue: Future<int>.value(0)) as _i4.Future<int>);
+  @override
+  _i4.Future<void> setWebViewClient(_i2.WebViewClient? webViewClient) =>
+      (super.noSuchMethod(Invocation.method(#setWebViewClient, [webViewClient]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> addJavaScriptChannel(
+          _i2.JavaScriptChannel? javaScriptChannel) =>
+      (super.noSuchMethod(
+          Invocation.method(#addJavaScriptChannel, [javaScriptChannel]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> removeJavaScriptChannel(
+          _i2.JavaScriptChannel? javaScriptChannel) =>
+      (super.noSuchMethod(
+          Invocation.method(#removeJavaScriptChannel, [javaScriptChannel]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> setDownloadListener(_i2.DownloadListener? listener) =>
+      (super.noSuchMethod(Invocation.method(#setDownloadListener, [listener]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> setWebChromeClient(_i2.WebChromeClient? client) =>
+      (super.noSuchMethod(Invocation.method(#setWebChromeClient, [client]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
+  @override
+  _i4.Future<void> release() =>
+      (super.noSuchMethod(Invocation.method(#release, []),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   String toString() => super.toString();
 }

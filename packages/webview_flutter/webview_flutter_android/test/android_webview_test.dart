@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart';
+import 'package:webview_flutter_android/src/android_webview.pigeon.dart';
 import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
 import 'package:webview_flutter_android/src/instance_manager.dart';
 
@@ -22,6 +23,7 @@ import 'android_webview_test.mocks.dart';
   TestWebViewClientHostApi,
   TestWebViewHostApi,
   WebChromeClient,
+  WebView,
   WebViewClient,
 ])
 void main() {
@@ -140,12 +142,12 @@ void main() {
           instanceManager: instanceManager,
         );
 
-        final WebViewClient webViewClient =
-            TestWebViewClient(shouldOverrideUrlLoading: false);
-        webView.setWebViewClient(webViewClient);
+        final WebViewClient mockWebViewClient = MockWebViewClient();
+        when(mockWebViewClient.shouldOverrideUrlLoading).thenReturn(false);
+        webView.setWebViewClient(mockWebViewClient);
 
         final int webViewClientInstanceId =
-            instanceManager.getInstanceId(webViewClient)!;
+            instanceManager.getInstanceId(mockWebViewClient)!;
         verify(mockPlatformHostApi.setWebViewClient(
           webViewInstanceId,
           webViewClientInstanceId,
@@ -202,11 +204,11 @@ void main() {
           instanceManager: instanceManager,
         );
 
-        final DownloadListener downloadListener = TestDownloadListener();
-        webView.setDownloadListener(downloadListener);
+        final DownloadListener mockDownloadListener = MockDownloadListener();
+        webView.setDownloadListener(mockDownloadListener);
 
         final int downloadListenerInstanceId =
-            instanceManager.getInstanceId(downloadListener)!;
+            instanceManager.getInstanceId(mockDownloadListener)!;
         verify(mockPlatformHostApi.setDownloadListener(
           webViewInstanceId,
           downloadListenerInstanceId,
@@ -219,20 +221,20 @@ void main() {
         WebViewClient.api = WebViewClientHostApiImpl(
           instanceManager: instanceManager,
         );
-        final WebViewClient webViewClient =
-            TestWebViewClient(shouldOverrideUrlLoading: false);
-        webView.setWebViewClient(webViewClient);
+        final WebViewClient mockWebViewClient = MockWebViewClient();
+        when(mockWebViewClient.shouldOverrideUrlLoading).thenReturn(false);
+        webView.setWebViewClient(mockWebViewClient);
 
         TestWebChromeClientHostApi.setup(MockTestWebChromeClientHostApi());
         WebChromeClient.api = WebChromeClientHostApiImpl(
           instanceManager: instanceManager,
         );
 
-        final WebChromeClient webChromeClient = TestWebChromeClient();
-        webView.setWebChromeClient(webChromeClient);
+        final WebChromeClient mockWebChromeClient = MockWebChromeClient();
+        webView.setWebChromeClient(mockWebChromeClient);
 
         final int webChromeClientInstanceId =
-            instanceManager.getInstanceId(webChromeClient)!;
+            instanceManager.getInstanceId(mockWebChromeClient)!;
         verify(mockPlatformHostApi.setWebChromeClient(
           webViewInstanceId,
           webChromeClientInstanceId,
@@ -392,110 +394,191 @@ void main() {
     });
 
     group('$WebViewClient', () {
-      setUpAll(() {
-        TestWebViewHostApi.setup(MockTestWebViewHostApi());
-        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
-      });
+      late WebViewClientFlutterApiImpl flutterApi;
+
+      late InstanceManager instanceManager;
+
+      late MockWebViewClient mockWebViewClient;
+      late int mockWebViewClientInstanceId;
+
+      late MockWebView mockWebView;
+      late int mockWebViewInstanceId;
 
       setUp(() {
-        final InstanceManager instanceManager = InstanceManager();
-        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
-        WebViewClient.api = WebViewClientHostApiImpl(
+        instanceManager = InstanceManager();
+        flutterApi = WebViewClientFlutterApiImpl(
           instanceManager: instanceManager,
         );
+
+        mockWebViewClient = MockWebViewClient();
+        mockWebViewClientInstanceId =
+            instanceManager.tryAddInstance(mockWebViewClient)!;
+
+        mockWebView = MockWebView();
+        mockWebViewInstanceId = instanceManager.tryAddInstance(mockWebView)!;
       });
 
-      test('create', () {
-        final WebView webView = WebView();
-        final WebViewClient webViewClient =
-            TestWebViewClient(shouldOverrideUrlLoading: true);
-
-        webView.setWebViewClient(webViewClient);
-        expect(
-          WebViewClient.api.instanceManager.getInstanceId(webViewClient),
-          isNotNull,
+      test('onPageStarted', () {
+        flutterApi.onPageStarted(
+          mockWebViewClientInstanceId,
+          mockWebViewInstanceId,
+          'https://www.google.com',
         );
+        verify(mockWebViewClient.onPageStarted(
+          mockWebView,
+          'https://www.google.com',
+        ));
+      });
+
+      test('onPageFinished', () {
+        flutterApi.onPageFinished(
+          mockWebViewClientInstanceId,
+          mockWebViewInstanceId,
+          'https://www.google.com',
+        );
+        verify(mockWebViewClient.onPageFinished(
+          mockWebView,
+          'https://www.google.com',
+        ));
+      });
+
+      test('onReceivedRequestError', () {
+        flutterApi.onReceivedRequestError(
+          mockWebViewClientInstanceId,
+          mockWebViewInstanceId,
+          WebResourceRequestData()
+            ..url = 'https://www.google.com'
+            ..isForMainFrame = true
+            ..hasGesture = true
+            ..method = 'POST',
+          WebResourceErrorData()
+            ..errorCode = 34
+            ..description = 'error description',
+        );
+
+        verify(mockWebViewClient.onReceivedRequestError(
+          mockWebView,
+          argThat(isNotNull),
+          argThat(isNotNull),
+        ));
+      });
+
+      test('onReceivedError', () {
+        flutterApi.onReceivedError(
+          mockWebViewClientInstanceId,
+          mockWebViewInstanceId,
+          14,
+          'desc',
+          'https://www.google.com',
+        );
+
+        verify(mockWebViewClient.onReceivedError(
+          mockWebView,
+          14,
+          'desc',
+          'https://www.google.com',
+        ));
+      });
+
+      test('requestLoading', () {
+        flutterApi.requestLoading(
+          mockWebViewClientInstanceId,
+          mockWebViewInstanceId,
+          WebResourceRequestData()
+            ..url = 'https://www.google.com'
+            ..isForMainFrame = true
+            ..hasGesture = true
+            ..method = 'POST',
+        );
+
+        verify(mockWebViewClient.requestLoading(
+          mockWebView,
+          argThat(isNotNull),
+        ));
+      });
+
+      test('urlLoading', () {
+        flutterApi.urlLoading(mockWebViewClientInstanceId,
+            mockWebViewInstanceId, 'https://www.google.com');
+
+        verify(mockWebViewClient.urlLoading(
+          mockWebView,
+          'https://www.google.com',
+        ));
       });
     });
 
     group('$DownloadListener', () {
-      setUpAll(() {
-        TestWebViewHostApi.setup(MockTestWebViewHostApi());
-        TestDownloadListenerHostApi.setup(MockTestDownloadListenerHostApi());
-      });
+      late DownloadListenerFlutterApiImpl flutterApi;
+
+      late InstanceManager instanceManager;
+
+      late MockDownloadListener mockDownloadListener;
+      late int mockDownloadListenerInstanceId;
 
       setUp(() {
-        final InstanceManager instanceManager = InstanceManager();
-        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
-        DownloadListener.api = DownloadListenerHostApiImpl(
+        instanceManager = InstanceManager();
+        flutterApi = DownloadListenerFlutterApiImpl(
           instanceManager: instanceManager,
         );
+
+        mockDownloadListener = MockDownloadListener();
+        mockDownloadListenerInstanceId =
+            instanceManager.tryAddInstance(mockDownloadListener)!;
       });
 
-      test('create', () {
-        final WebView webView = WebView();
-        final DownloadListener downloadListener = TestDownloadListener();
-
-        webView.setDownloadListener(downloadListener);
-        expect(
-          DownloadListener.api.instanceManager.getInstanceId(downloadListener),
-          isNotNull,
+      test('onPageStarted', () {
+        flutterApi.onDownloadStart(
+          mockDownloadListenerInstanceId,
+          'url',
+          'userAgent',
+          'contentDescription',
+          'mimetype',
+          45,
         );
+        verify(mockDownloadListener.onDownloadStart(
+          'url',
+          'userAgent',
+          'contentDescription',
+          'mimetype',
+          45,
+        ));
       });
     });
 
     group('$WebChromeClient', () {
-      setUpAll(() {
-        TestWebViewHostApi.setup(MockTestWebViewHostApi());
-        TestWebViewClientHostApi.setup(MockTestWebViewClientHostApi());
-        TestWebChromeClientHostApi.setup(MockTestWebChromeClientHostApi());
-      });
+      late WebChromeClientFlutterApiImpl flutterApi;
+
+      late InstanceManager instanceManager;
+
+      late MockWebChromeClient mockWebChromeClient;
+      late int mockWebChromeClientInstanceId;
+
+      late MockWebView mockWebView;
+      late int mockWebViewInstanceId;
 
       setUp(() {
-        final InstanceManager instanceManager = InstanceManager();
-        WebView.api = WebViewHostApiImpl(instanceManager: instanceManager);
-        WebViewClient.api = WebViewClientHostApiImpl(
+        instanceManager = InstanceManager();
+        flutterApi = WebChromeClientFlutterApiImpl(
           instanceManager: instanceManager,
         );
-        WebChromeClient.api = WebChromeClientHostApiImpl(
-          instanceManager: instanceManager,
-        );
+
+        mockWebChromeClient = MockWebChromeClient();
+        mockWebChromeClientInstanceId =
+            instanceManager.tryAddInstance(mockWebChromeClient)!;
+
+        mockWebView = MockWebView();
+        mockWebViewInstanceId = instanceManager.tryAddInstance(mockWebView)!;
       });
 
-      test('create', () {
-        final WebView webView = WebView();
-        webView.setWebViewClient(
-            TestWebViewClient(shouldOverrideUrlLoading: true));
-
-        final WebChromeClient webChromeClient = TestWebChromeClient();
-
-        webView.setWebChromeClient(webChromeClient);
-        expect(
-          WebChromeClient.api.instanceManager.getInstanceId(webChromeClient),
-          isNotNull,
+      test('onPageStarted', () {
+        flutterApi.onProgressChanged(
+          mockWebChromeClientInstanceId,
+          mockWebViewInstanceId,
+          76,
         );
+        verify(mockWebChromeClient.onProgressChanged(mockWebView, 76));
       });
     });
   });
-}
-
-class TestWebViewClient extends WebViewClient {
-  TestWebViewClient({required bool shouldOverrideUrlLoading})
-      : super(shouldOverrideUrlLoading: shouldOverrideUrlLoading);
-}
-
-class TestDownloadListener extends DownloadListener {
-  @override
-  void onDownloadStart(
-    String url,
-    String userAgent,
-    String contentDisposition,
-    String mimetype,
-    int contentLength,
-  ) {}
-}
-
-class TestWebChromeClient extends WebChromeClient {
-  @override
-  void onProgressChanged(WebView webView, int progress) {}
 }

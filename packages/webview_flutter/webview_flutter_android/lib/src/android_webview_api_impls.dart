@@ -8,6 +8,27 @@ import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
 
+/// Converts [WebResourceRequestData] to [WebResourceRequest]
+WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {
+  return WebResourceRequest(
+    url: data.url!,
+    isForMainFrame: data.isForMainFrame!,
+    isRedirect: data.isRedirect,
+    hasGesture: data.hasGesture!,
+    method: data.method!,
+    requestHeaders:
+        data.requestHeaders?.cast<String, String>() ?? <String, String>{},
+  );
+}
+
+/// Converts [WebResourceErrorData] to [WebResourceError].
+WebResourceError _toWebResourceError(WebResourceErrorData data) {
+  return WebResourceError(
+    errorCode: data.errorCode!,
+    description: data.description!,
+  );
+}
+
 /// Host api implementation for [WebView].
 class WebViewHostApiImpl extends WebViewHostApi {
   /// Constructs a [WebViewHostApiImpl].
@@ -449,18 +470,8 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
         instanceManager.getInstance(instanceId) as WebViewClient;
     instance.onReceivedRequestError(
       instanceManager.getInstance(webViewInstanceId) as WebView,
-      WebResourceRequest(
-        url: request.url!,
-        isForMainFrame: request.isForMainFrame!,
-        isRedirect: request.isRedirect,
-        hasGesture: request.hasGesture!,
-        method: request.method!,
-        requestHeaders: request.requestHeaders!.cast<String, String>(),
-      ),
-      WebResourceError(
-        errorCode: error.errorCode!,
-        description: error.description!,
-      ),
+      _toWebResourceRequest(request),
+      _toWebResourceError(error),
     );
   }
 
@@ -474,15 +485,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
         instanceManager.getInstance(instanceId) as WebViewClient;
     instance.requestLoading(
       instanceManager.getInstance(webViewInstanceId) as WebView,
-      WebResourceRequest(
-        url: request.url!,
-        isForMainFrame: request.isForMainFrame!,
-        isRedirect: request.isRedirect,
-        hasGesture: request.hasGesture!,
-        method: request.method!,
-        requestHeaders: request.requestHeaders?.cast<String, String>() ??
-            <String, String>{},
-      ),
+      _toWebResourceRequest(request),
     );
   }
 
