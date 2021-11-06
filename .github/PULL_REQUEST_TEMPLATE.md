@@ -12,8 +12,8 @@
 - [ ] I signed the [CLA].
 - [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. `[shared_preferences]`
 - [ ] I listed at least one issue that this PR fixes in the description above.
-- [ ] I updated pubspec.yaml with an appropriate new version according to the [pub versioning philosophy], or this PR is [exempt from version changes].
-- [ ] I updated CHANGELOG.md to add a description of the change.
+- [ ] I updated `pubspec.yaml` with an appropriate new version according to the [pub versioning philosophy], or this PR is [exempt from version changes].
+- [ ] I updated `CHANGELOG.md` to add a description of the change.
 - [ ] I updated/added relevant documentation (doc comments with `///`).
 - [ ] I added new tests to check the change I am making, or this PR is [test-exempt].
 - [ ] All existing and new tests are passing.
