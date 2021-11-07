@@ -5,21 +5,36 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.webkit.DownloadListener;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
-class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadListenerHostApi {
+/**
+ * Host api implementation for {@link DownloadListener}.
+ *
+ * <p>
+ *   Handles creating {@link DownloadListener}s that intercommunicate with a paired Dart object.
+ * </p>
+ */
+public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
   private final InstanceManager instanceManager;
   private final DownloadListenerCreator downloadListenerCreator;
   private final DownloadListenerFlutterApiImpl flutterApi;
 
-  static class DownloadListenerImpl implements DownloadListener, Releasable {
-    private final Long instanceId;
-    private final DownloadListenerFlutterApiImpl flutterApi;
-    private boolean ignoreCallbacks = false;
+  /**
+   * Implementation of {@link DownloadListener} that passes arguments of callback methods to Dart.
+   */
+  public static class DownloadListenerImpl implements DownloadListener, Releasable {
+    @Nullable
+    private DownloadListenerFlutterApiImpl flutterApi;
 
-    DownloadListenerImpl(
-        Long instanceId, DownloadListenerFlutterApiImpl downloadListenerFlutterApi) {
-      this.instanceId = instanceId;
-      this.flutterApi = downloadListenerFlutterApi;
+    /**
+     * Creates a {@link DownloadListener} that passes arguments of callbacks methods to Dart.
+     *
+     * @param flutterApi handles sending messages to Dart
+     */
+    public DownloadListenerImpl(@NonNull DownloadListenerFlutterApiImpl flutterApi) {
+      this.flutterApi = flutterApi;
     }
 
     @Override
@@ -29,27 +44,44 @@ class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadLis
         String contentDisposition,
         String mimetype,
         long contentLength) {
-      if (!ignoreCallbacks) {
+      if (flutterApi != null) {
         flutterApi.onDownloadStart(
-            instanceId, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
+            this, url, userAgent, contentDisposition, mimetype, contentLength, reply -> { });
       }
     }
 
     @Override
     public void release() {
-      ignoreCallbacks = true;
-      flutterApi.dispose(this, reply -> {});
+      if (flutterApi != null) {
+        flutterApi.dispose(this, reply -> { });
+      }
+      flutterApi = null;
     }
   }
 
-  static class DownloadListenerCreator {
-    DownloadListener createDownloadListener(
-        Long instanceId, DownloadListenerFlutterApiImpl flutterApi) {
-      return new DownloadListenerImpl(instanceId, flutterApi);
+  /**
+   * Handles creating {@link DownloadListenerImpl}s for a {@link DownloadListenerHostApiImpl}.
+   */
+  public static class DownloadListenerCreator {
+    /**
+     * Creates a {@link DownloadListenerImpl}.
+     *
+     * @param flutterApi handles sending messages to Dart
+     * @return the created {@link DownloadListenerImpl}
+     */
+    public DownloadListenerImpl createDownloadListener(DownloadListenerFlutterApiImpl flutterApi) {
+      return new DownloadListenerImpl(flutterApi);
     }
   }
 
-  DownloadListenerHostApiImpl(
+  /**
+   * Creates a host API that handles creating {@link DownloadListener}s.
+   *
+   * @param instanceManager maintains instances stored to communicate with Dart objects
+   * @param downloadListenerCreator handles creating {@link DownloadListenerImpl}s
+   * @param flutterApi handles sending messages to Dart
+   */
+  public DownloadListenerHostApiImpl(
       InstanceManager instanceManager,
       DownloadListenerCreator downloadListenerCreator,
       DownloadListenerFlutterApiImpl flutterApi) {
@@ -60,8 +92,7 @@ class DownloadListenerHostApiImpl implements GeneratedAndroidWebView.DownloadLis
 
   @Override
   public void create(Long instanceId) {
-    final DownloadListener downloadListener =
-        downloadListenerCreator.createDownloadListener(instanceId, flutterApi);
+    final DownloadListener downloadListener = downloadListenerCreator.createDownloadListener(flutterApi);
     instanceManager.addInstance(downloadListener, instanceId);
   }
 }

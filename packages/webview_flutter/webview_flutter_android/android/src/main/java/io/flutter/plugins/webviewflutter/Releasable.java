@@ -9,5 +9,8 @@ package io.flutter.plugins.webviewflutter;
  * needed.
  */
 interface Releasable {
+  /**
+   * Notify that that the reference to an object will be removed by a holder.
+   */
   void release();
 }

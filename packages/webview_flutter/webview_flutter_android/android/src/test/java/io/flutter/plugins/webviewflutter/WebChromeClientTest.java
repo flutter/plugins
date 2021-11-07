@@ -8,10 +8,11 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
-import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientCreator;
+import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
+
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,39 +29,36 @@ public class WebChromeClientTest {
 
   @Mock public WebViewClient mockWebViewClient;
 
-  InstanceManager testInstanceManager;
-  WebChromeClientHostApiImpl testHostApiImpl;
-  WebChromeClient testWebChromeClient;
+  InstanceManager instanceManager;
+  WebChromeClientHostApiImpl hostApiImpl;
+  WebChromeClientImpl webChromeClient;
 
   @Before
   public void setUp() {
-    testInstanceManager = new InstanceManager();
-    testInstanceManager.addInstance(mockWebView, 0L);
-    testInstanceManager.addInstance(mockWebViewClient, 1L);
+    instanceManager = new InstanceManager();
+    instanceManager.addInstance(mockWebView, 0L);
+    instanceManager.addInstance(mockWebViewClient, 1L);
 
     final WebChromeClientCreator webChromeClientCreator =
         new WebChromeClientCreator() {
           @Override
-          WebChromeClient createWebChromeClient(
-              Long instanceId,
-              InstanceManager instanceManager,
-              WebChromeClientFlutterApiImpl webChromeClientFlutterApi,
+          public WebChromeClientImpl createWebChromeClient(
+              WebChromeClientFlutterApiImpl flutterApi,
               WebViewClient webViewClient) {
-            testWebChromeClient =
-                super.createWebChromeClient(
-                    instanceId, instanceManager, webChromeClientFlutterApi, webViewClient);
-            return testWebChromeClient;
+            webChromeClient =
+                super.createWebChromeClient(flutterApi, webViewClient);
+            return webChromeClient;
           }
         };
 
-    testHostApiImpl =
-        new WebChromeClientHostApiImpl(testInstanceManager, webChromeClientCreator, mockFlutterApi);
-    testHostApiImpl.create(2L, 1L);
+    hostApiImpl =
+        new WebChromeClientHostApiImpl(instanceManager, webChromeClientCreator, mockFlutterApi);
+    hostApiImpl.create(2L, 1L);
   }
 
   @Test
   public void onProgressChanged() {
-    testWebChromeClient.onProgressChanged(mockWebView, 23);
+    webChromeClient.onProgressChanged(mockWebView, 23);
     verify(mockFlutterApi).onProgressChanged(eq(2L), eq(0L), eq(23L), any());
   }
 }

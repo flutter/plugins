@@ -36,15 +36,9 @@ public class WebViewClientTest {
 
     final WebViewClientCreator webViewClientCreator =
         new WebViewClientCreator() {
-          @Override
-          WebViewClient createWebViewClient(
-              Long instanceId,
-              InstanceManager instanceManager,
-              Boolean shouldOverrideUrlLoading,
-              WebViewClientFlutterApiImpl webViewClientFlutterApi) {
-            testWebViewClient =
-                super.createWebViewClient(
-                    instanceId, instanceManager, shouldOverrideUrlLoading, webViewClientFlutterApi);
+      @Override
+          public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
+            testWebViewClient = super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
             return testWebViewClient;
           }
         };

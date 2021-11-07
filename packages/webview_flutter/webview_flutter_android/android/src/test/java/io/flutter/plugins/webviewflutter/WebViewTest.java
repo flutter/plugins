@@ -261,7 +261,7 @@ public class WebViewTest {
   @Test
   public void addJavaScriptChannel() {
     final JavaScriptChannel javaScriptChannel =
-        new JavaScriptChannel(0L, mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
+        new JavaScriptChannel(mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
     testInstanceManager.addInstance(javaScriptChannel, 1L);
 
     testHostApiImpl.addJavaScriptChannel(0L, 1L);
@@ -271,7 +271,7 @@ public class WebViewTest {
   @Test
   public void removeJavaScriptChannel() {
     final JavaScriptChannel javaScriptChannel =
-        new JavaScriptChannel(0L, mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
+        new JavaScriptChannel(mock(JavaScriptChannelFlutterApiImpl.class), "aName", null);
     testInstanceManager.addInstance(javaScriptChannel, 1L);
 
     testHostApiImpl.removeJavaScriptChannel(0L, 1L);

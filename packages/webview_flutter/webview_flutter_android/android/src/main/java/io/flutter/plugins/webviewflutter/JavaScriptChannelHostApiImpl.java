@@ -5,40 +5,50 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.os.Handler;
-import android.os.Looper;
-import android.webkit.JavascriptInterface;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChannelHostApi;
 
-class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScriptChannelHostApi {
+/**
+ * Host api implementation for {@link JavaScriptChannel}.
+ *
+ * <p>
+ *   Handles creating {@link JavaScriptChannel}s that intercommunicate with a paired Dart object.
+ * </p>
+ */
+public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
   private final JavaScriptChannelCreator javaScriptChannelCreator;
   private final JavaScriptChannelFlutterApiImpl flutterApi;
   private final Handler platformThreadHandler;
 
-  static class JavaScriptChannelCreator {
-    JavaScriptChannel createJavaScriptChannel(
-        Long instanceId,
+  /**
+   * Handles creating {@link JavaScriptChannel}s for a {@link JavaScriptChannelHostApiImpl}.
+   */
+  public static class JavaScriptChannelCreator {
+    /**
+     * Creates a {@link JavaScriptChannel}.
+     *
+     * @param flutterApi handles sending messages to Dart
+     * @param channelName JavaScript channel the message should be sent through
+     * @param platformThreadHandler handles making callbacks on the desired thread
+     * @return the created {@link JavaScriptChannel}
+     */
+    public JavaScriptChannel createJavaScriptChannel(
         JavaScriptChannelFlutterApiImpl flutterApi,
         String channelName,
         Handler platformThreadHandler) {
-      return new JavaScriptChannel(instanceId, flutterApi, channelName, platformThreadHandler) {
-        @JavascriptInterface
-        @Override
-        public void postMessage(String message) {
-          if (!ignoreCallbacks) {
-            final Runnable postMessageRunnable =
-                () -> flutterApi.postMessage(instanceId, message, reply -> {});
-            if (platformThreadHandler.getLooper() == Looper.myLooper()) {
-              postMessageRunnable.run();
-            } else {
-              platformThreadHandler.post(postMessageRunnable);
-            }
-          }
-        }
-      };
+      return new JavaScriptChannel(flutterApi, channelName, platformThreadHandler);
     }
   }
 
-  JavaScriptChannelHostApiImpl(
+  /**
+   * Creates a host API that handles creating {@link JavaScriptChannel}s.
+   *
+   * @param instanceManager maintains instances stored to communicate with Dart objects
+   * @param javaScriptChannelCreator handles creating {@link JavaScriptChannel}s
+   * @param flutterApi handles sending messages to Dart
+   * @param platformThreadHandler handles making callbacks on the desired thread
+   */
+  public JavaScriptChannelHostApiImpl(
       InstanceManager instanceManager,
       JavaScriptChannelCreator javaScriptChannelCreator,
       JavaScriptChannelFlutterApiImpl flutterApi,
@@ -52,8 +62,7 @@ class JavaScriptChannelHostApiImpl implements GeneratedAndroidWebView.JavaScript
   @Override
   public void create(Long instanceId, String channelName) {
     final JavaScriptChannel javaScriptChannel =
-        javaScriptChannelCreator.createJavaScriptChannel(
-            instanceId, flutterApi, channelName, platformThreadHandler);
+        javaScriptChannelCreator.createJavaScriptChannel(flutterApi, channelName, platformThreadHandler);
     instanceManager.addInstance(javaScriptChannel, instanceId);
   }
 }

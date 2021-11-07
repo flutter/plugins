@@ -22,38 +22,36 @@ public class JavaScriptChannelTest {
 
   @Mock public JavaScriptChannelFlutterApiImpl mockFlutterApi;
 
-  InstanceManager testInstanceManager;
-  JavaScriptChannelHostApiImpl testHostApiImpl;
-  JavaScriptChannel testJavaScriptChannel;
+  InstanceManager instanceManager;
+  JavaScriptChannelHostApiImpl hostApiImpl;
+  JavaScriptChannel javaScriptChannel;
 
   @Before
   public void setUp() {
-    testInstanceManager = new InstanceManager();
+    instanceManager = new InstanceManager();
 
     final JavaScriptChannelCreator javaScriptChannelCreator =
         new JavaScriptChannelCreator() {
           @Override
-          JavaScriptChannel createJavaScriptChannel(
-              Long instanceId,
+          public JavaScriptChannel createJavaScriptChannel(
               JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi,
               String channelName,
               Handler platformThreadHandler) {
-            testJavaScriptChannel =
-                super.createJavaScriptChannel(
-                    instanceId, javaScriptChannelFlutterApi, channelName, platformThreadHandler);
-            return testJavaScriptChannel;
+            javaScriptChannel =
+                super.createJavaScriptChannel(javaScriptChannelFlutterApi, channelName, platformThreadHandler);
+            return javaScriptChannel;
           }
         };
 
-    testHostApiImpl =
+    hostApiImpl =
         new JavaScriptChannelHostApiImpl(
-            testInstanceManager, javaScriptChannelCreator, mockFlutterApi, new Handler());
-    testHostApiImpl.create(0L, "aChannelName");
+            instanceManager, javaScriptChannelCreator, mockFlutterApi, new Handler());
+    hostApiImpl.create(0L, "aChannelName");
   }
 
   @Test
   public void postMessage() {
-    testJavaScriptChannel.postMessage("A message post.");
+    javaScriptChannel.postMessage("A message post.");
     verify(mockFlutterApi).postMessage(eq(0L), eq("A message post."), any());
   }
 }

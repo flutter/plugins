@@ -6,17 +6,50 @@ package io.flutter.plugins.webviewflutter;
 
 import android.webkit.DownloadListener;
 import io.flutter.plugin.common.BinaryMessenger;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerFlutterApi;
 
-public class DownloadListenerFlutterApiImpl
-    extends GeneratedAndroidWebView.DownloadListenerFlutterApi {
+/**
+ * Flutter Api implementation for {@link DownloadListener}.
+ *
+ * <p>
+ *  Passes arguments of callbacks methods from a {@link DownloadListener} to Dart.
+ * </p>
+ */
+public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
   private final InstanceManager instanceManager;
 
-  public DownloadListenerFlutterApiImpl(
-      BinaryMessenger argBinaryMessenger, InstanceManager instanceManager) {
-    super(argBinaryMessenger);
+  /**
+   * Creates a Flutter api that sends messages to Dart.
+   *
+   * @param binaryMessenger handles sending messages to Dart
+   * @param instanceManager maintains instances stored to communicate with Dart objects
+   */
+  public DownloadListenerFlutterApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+    super(binaryMessenger);
     this.instanceManager = instanceManager;
   }
 
+  /**
+   * Passes arguments from {@link DownloadListener#onDownloadStart} to Dart.
+   */
+  public void onDownloadStart(
+      DownloadListener downloadListener,
+      String url,
+      String userAgent,
+      String contentDisposition,
+      String mimetype,
+      long contentLength,
+      Reply<Void> callback) {
+    System.out.println("GOOOOOOO");
+    onDownloadStart(instanceManager.getInstanceId(downloadListener), url, userAgent, contentDisposition, mimetype, contentLength, callback);
+  }
+
+  /**
+   * Communicates to Dart that the reference to a {@link DownloadListener} was removed.
+   *
+   * @param downloadListener the instance whose reference will be removed
+   * @param callback reply callback with return value from Dart
+   */
   public void dispose(DownloadListener downloadListener, Reply<Void> callback) {
     final Long instanceId = instanceManager.removeInstance(downloadListener);
     if (instanceId != null) {
