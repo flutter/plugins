@@ -20,6 +20,7 @@ import android.hardware.camera2.TotalCaptureResult;
 import android.hardware.camera2.params.OutputConfiguration;
 import android.hardware.camera2.params.SessionConfiguration;
 import android.media.CamcorderProfile;
+import android.media.EncoderProfiles;
 import android.media.Image;
 import android.media.ImageReader;
 import android.media.MediaRecorder;
@@ -199,8 +200,16 @@ class Camera
         ((SensorOrientationFeature) cameraFeatures.getSensorOrientation())
             .getLockedCaptureOrientation();
 
+    MediaRecorderBuilder mediaRecorderBuilder;
+
+    if (Build.VERSION.SDK_INT >= 31) {
+      mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfile(), outputFilePath);
+    } else {
+      mediaRecorderBuilder = new MediaRecorderBuilder(getRecordingProfileLegacy(), outputFilePath);
+    }
+
     mediaRecorder =
-        new MediaRecorderBuilder(getRecordingProfile(), outputFilePath)
+        mediaRecorderBuilder
             .setEnableAudio(enableAudio)
             .setMediaOrientation(
                 lockedOrientation == null
@@ -918,8 +927,12 @@ class Camera
     return cameraFeatures.getZoomLevel().getMinimumZoomLevel();
   }
 
-  /** Shortcut to get current recording profile. */
-  CamcorderProfile getRecordingProfile() {
+  /** Shortcut to get current recording profile. Legacy method provides support for SDK < 31. */
+  CamcorderProfile getRecordingProfileLegacy() {
+    return cameraFeatures.getResolution().getRecordingProfileLegacy();
+  }
+
+  EncoderProfiles getRecordingProfile() {
     return cameraFeatures.getResolution().getRecordingProfile();
   }
 
