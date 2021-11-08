@@ -53,6 +53,16 @@ public class QuickActionsTest {
     public void setMessageHandler(@NonNull String channel, @Nullable BinaryMessageHandler handler) {
       // Do nothing.
     }
+
+    @Override
+    void enableBufferingIncomingMessages() {
+      // Do nothing.
+    }
+
+    @Override
+    void disableBufferingIncomingMessages() {
+      // Do nothing.
+    }
   }
 
   static final int SUPPORTED_BUILD = 25;
