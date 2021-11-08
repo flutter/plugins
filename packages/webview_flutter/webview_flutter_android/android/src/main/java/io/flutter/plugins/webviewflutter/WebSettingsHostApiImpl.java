@@ -8,7 +8,6 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
 
-
 /**
  * Host api implementation for {@link WebSettings}.
  *
@@ -24,7 +23,6 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
      * Creates a {@link WebSettings}.
      *
      * @param webView the {@link WebView} which the settings affect
-     *                
      * @return the created {@link WebSettings}
      */
     public WebSettings createWebSettings(WebView webView) {
@@ -38,7 +36,8 @@ public class WebSettingsHostApiImpl implements WebSettingsHostApi {
    * @param instanceManager maintains instances stored to communicate with Dart objects
    * @param webSettingsCreator handles creating {@link WebSettings}s
    */
-  public WebSettingsHostApiImpl(InstanceManager instanceManager, WebSettingsCreator webSettingsCreator) {
+  public WebSettingsHostApiImpl(
+      InstanceManager instanceManager, WebSettingsCreator webSettingsCreator) {
     this.instanceManager = instanceManager;
     this.webSettingsCreator = webSettingsCreator;
   }

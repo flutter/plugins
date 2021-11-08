@@ -14,7 +14,6 @@ import android.content.Context;
 import android.webkit.DownloadListener;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
-import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
@@ -46,7 +45,8 @@ public class WebViewTest {
   public void setUp() {
     testInstanceManager = new InstanceManager();
     when(mockWebViewProxy.createWebView(mockContext)).thenReturn(mockWebView);
-    testHostApiImpl = new WebViewHostApiImpl(testInstanceManager, mockWebViewProxy, mockContext, null);
+    testHostApiImpl =
+        new WebViewHostApiImpl(testInstanceManager, mockWebViewProxy, mockContext, null);
     testHostApiImpl.create(0L, true);
   }
 

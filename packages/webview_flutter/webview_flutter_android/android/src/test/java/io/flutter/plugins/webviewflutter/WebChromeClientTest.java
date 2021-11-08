@@ -60,7 +60,7 @@ public class WebChromeClientTest {
   public void onProgressChanged() {
     webChromeClient.onProgressChanged(mockWebView, 23);
     verify(mockFlutterApi).onProgressChanged(eq(webChromeClient), eq(mockWebView), eq(23L), any());
-    
+
     reset(mockFlutterApi);
     webChromeClient.release();
     webChromeClient.onProgressChanged(mockWebView, 11);

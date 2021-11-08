@@ -14,10 +14,9 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import io.flutter.plugin.platform.PlatformView;
-import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
+import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,8 +35,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   private final WebViewProxy webViewProxy;
   private final Context context;
   // Only used with WebView using virtual displays.
-  @Nullable
-  private final View containerView;
+  @Nullable private final View containerView;
 
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
@@ -58,7 +56,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      * @param containerView parent View of the WebView
      * @return the created {@link InputAwareWebViewPlatformView}
      */
-    public InputAwareWebViewPlatformView createInputAwareWebView(Context context, @Nullable View containerView) {
+    public InputAwareWebViewPlatformView createInputAwareWebView(
+        Context context, @Nullable View containerView) {
       return new InputAwareWebViewPlatformView(context, containerView);
     }
 
@@ -87,14 +86,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     }
   }
 
-  /**
-   * Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s.
-   */
+  /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
   public static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
     private ReleasableChild<WebViewClient> currentWebViewClient = new ReleasableChild<>(null);
     private ReleasableChild<DownloadListener> currentDownloadListener = new ReleasableChild<>(null);
     private ReleasableChild<WebChromeClient> currentWebChromeClient = new ReleasableChild<>(null);
-    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces = new HashMap<>();
+    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces =
+        new HashMap<>();
 
     /**
      * Creates a {@link WebViewPlatformView}.
@@ -171,7 +169,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   }
 
   /**
-   * Implementation of {@link InputAwareWebView} that can be used as a Flutter {@link PlatformView}s.
+   * Implementation of {@link InputAwareWebView} that can be used as a Flutter {@link
+   * PlatformView}s.
    */
   @SuppressLint("ViewConstructor")
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
@@ -179,7 +178,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     private ReleasableChild<WebViewClient> currentWebViewClient = new ReleasableChild<>(null);
     private ReleasableChild<DownloadListener> currentDownloadListener = new ReleasableChild<>(null);
     private ReleasableChild<WebChromeClient> currentWebChromeClient = new ReleasableChild<>(null);
-    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces = new HashMap<>();
+    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces =
+        new HashMap<>();
 
     /**
      * Creates a {@link InputAwareWebViewPlatformView}.
@@ -284,7 +284,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
    * @param context an Activity Context to access application assets. This value cannot be null.
    * @param containerView parent of the webView
    */
-  public WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context, @Nullable View containerView) {
+  public WebViewHostApiImpl(
+      InstanceManager instanceManager,
+      WebViewProxy webViewProxy,
+      Context context,
+      @Nullable View containerView) {
     this.instanceManager = instanceManager;
     this.webViewProxy = webViewProxy;
     this.context = context;
@@ -298,9 +302,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    final WebView webView = useHybridComposition ?
-        webViewProxy.createWebView(context) :
-        webViewProxy.createInputAwareWebView(context, containerView);
+    final WebView webView =
+        useHybridComposition
+            ? webViewProxy.createWebView(context)
+            : webViewProxy.createInputAwareWebView(context, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addInstance(webView, instanceId);

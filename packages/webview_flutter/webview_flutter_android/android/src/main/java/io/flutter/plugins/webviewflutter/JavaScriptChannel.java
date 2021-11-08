@@ -18,8 +18,8 @@ import java.util.HashMap;
  *
  * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message to the Dart
  * code.
- * 
- * <p>No messages are sent to Dart after {@link JavaScriptChannel#release} is called. 
+ *
+ * <p>No messages are sent to Dart after {@link JavaScriptChannel#release} is called.
  */
 public class JavaScriptChannel implements Releasable {
   private final MethodChannel methodChannel;

@@ -18,8 +18,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClient
 /**
  * Host api implementation for {@link WebChromeClient}.
  *
- * <p>Handles creating {@link WebChromeClient}s that intercommunicate with a paired
- * Dart object.
+ * <p>Handles creating {@link WebChromeClient}s that intercommunicate with a paired Dart object.
  */
 public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   private final InstanceManager instanceManager;

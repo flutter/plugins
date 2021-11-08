@@ -20,8 +20,7 @@ public class InstanceManager {
   /**
    * Add a new instance to the manager.
    *
-   * <p>If an instance or instanceId has already been added,
-   * it will be replaced by the new values.</p>
+   * <p>If an instance or instanceId has already been added, it will be replaced by the new values.
    *
    * @param instance the new object to be added
    * @param instanceId unique id of the added object
@@ -50,7 +49,8 @@ public class InstanceManager {
    * Remove the instance from the manager.
    *
    * @param instance the instance to be removed
-   * @return the instanceId of the removed instance if the manager contains the value, otherwise null
+   * @return the instanceId of the removed instance if the manager contains the value, otherwise
+   *     null
    */
   public Long removeInstance(Object instance) {
     final Long instanceId = instancesToInstanceIds.get(instance);
@@ -63,9 +63,10 @@ public class InstanceManager {
 
   /**
    * Retrieve the Object paired with instanceId.
-   * 
+   *
    * @param instanceId the instanceId of the desired instance
-   * @return the instance stored with the instanceId if the manager contains the value, otherwise null 
+   * @return the instance stored with the instanceId if the manager contains the value, otherwise
+   *     null
    */
   public Object getInstance(long instanceId) {
     return instanceIdsToInstances.get(instanceId);
@@ -73,9 +74,8 @@ public class InstanceManager {
 
   /**
    * Retrieve the instanceId paired with an instance.
-   * 
+   *
    * @param instance the value paired with the desired instanceId
-   *                 
    * @return the instanceId paired with instance if the manager contains the value, otherwise null
    */
   public Long getInstanceId(Object instance) {

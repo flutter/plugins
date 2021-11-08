@@ -9,7 +9,6 @@ import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.KeyEvent;
-import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -23,8 +22,7 @@ import androidx.webkit.WebViewClientCompat;
 /**
  * Host api implementation for {@link WebViewClient}.
  *
- * <p>Handles creating {@link WebViewClient}s that intercommunicate with a paired
- * Dart object.
+ * <p>Handles creating {@link WebViewClient}s that intercommunicate with a paired Dart object.
  */
 public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
   private final InstanceManager instanceManager;

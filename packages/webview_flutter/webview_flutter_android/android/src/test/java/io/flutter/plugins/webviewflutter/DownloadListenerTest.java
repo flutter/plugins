@@ -11,7 +11,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 import android.webkit.DownloadListener;
-
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerCreator;
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
 import org.junit.Before;
@@ -66,6 +65,7 @@ public class DownloadListenerTest {
     reset(mockFlutterApi);
     downloadListener.release();
     downloadListener.onDownloadStart("", "", "", "", 23);
-    verify(mockFlutterApi, never()).onDownloadStart((DownloadListener) any(), any(), any(), any(), any(), eq(23), any());
+    verify(mockFlutterApi, never())
+        .onDownloadStart((DownloadListener) any(), any(), any(), any(), any(), eq(23), any());
   }
 }

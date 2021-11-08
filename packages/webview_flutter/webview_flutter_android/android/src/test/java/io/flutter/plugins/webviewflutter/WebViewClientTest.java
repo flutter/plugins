@@ -12,8 +12,8 @@ import static org.mockito.Mockito.verify;
 
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCreator;
 import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCompatImpl;
+import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.WebViewClientCreator;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -42,7 +42,9 @@ public class WebViewClientTest {
           @Override
           public WebViewClient createWebViewClient(
               WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
-            webViewClient = (WebViewClientCompatImpl) super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
+            webViewClient =
+                (WebViewClientCompatImpl)
+                    super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
             return webViewClient;
           }
         };
@@ -79,7 +81,8 @@ public class WebViewClientTest {
     reset(mockFlutterApi);
     webViewClient.release();
     webViewClient.onReceivedError(mockWebView, 33, "", "");
-    verify(mockFlutterApi, never()).onReceivedError((WebViewClient) any(), any(), any(), any(), any(), any());
+    verify(mockFlutterApi, never())
+        .onReceivedError((WebViewClient) any(), any(), any(), any(), any(), any());
   }
 
   @Test
