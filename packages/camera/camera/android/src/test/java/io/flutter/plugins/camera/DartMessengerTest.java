@@ -47,16 +47,6 @@ public class DartMessengerTest {
     List<ByteBuffer> getMessages() {
       return new ArrayList<>(sentMessages);
     }
-
-    @Override
-    public void enableBufferingIncomingMessages() {
-      // Do nothing.
-    }
-
-    @Override
-    public void disableBufferingIncomingMessages() {
-      // Do nothing.
-    }
   }
 
   private Handler mockHandler;
