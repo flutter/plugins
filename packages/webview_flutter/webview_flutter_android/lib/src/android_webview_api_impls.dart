@@ -52,10 +52,11 @@ class WebViewHostApiImpl extends WebViewHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(WebView instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
+    final int? instanceId = instanceManager.getInstanceId(instance);
     if (instanceId != null) {
-      return dispose(instanceId);
+      await dispose(instanceId);
     }
+    instanceManager.removeInstance(instance);
   }
 
   /// Helper method to convert instances ids to objects.
