@@ -10,8 +10,8 @@ import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 typedef void VoidCallback();
 
@@ -372,7 +372,9 @@ void main() {
       ),
     );
     expect(
-        await controller.evaluateJavascript("fake js string"), "fake js string",
+        // ignore: deprecated_member_use_from_same_package
+        await controller.evaluateJavascript("fake js string"),
+        "fake js string",
         reason: 'should get the argument');
   });
 
@@ -389,7 +391,76 @@ void main() {
       ),
     );
     expect(
+      // ignore: deprecated_member_use_from_same_package
       () => controller.evaluateJavascript('fake js string'),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('runJavaScript', (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    await controller.runJavascript('fake js string');
+    expect(fakePlatformViewsController.lastCreatedView?.lastRunJavaScriptString,
+        'fake js string');
+  });
+
+  testWidgets('runJavaScript with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.runJavascript('fake js string'),
+      throwsA(anything),
+    );
+  });
+
+  testWidgets('runJavaScriptReturningResult', (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.unrestricted,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(await controller.runJavascriptReturningResult("fake js string"),
+        "fake js string",
+        reason: 'should get the argument');
+  });
+
+  testWidgets('runJavaScriptReturningResult with JavascriptMode disabled',
+      (WidgetTester tester) async {
+    late WebViewController controller;
+    await tester.pumpWidget(
+      WebView(
+        initialUrl: 'https://flutter.io',
+        javascriptMode: JavascriptMode.disabled,
+        onWebViewCreated: (WebViewController webViewController) {
+          controller = webViewController;
+        },
+      ),
+    );
+    expect(
+      () => controller.runJavascriptReturningResult('fake js string'),
       throwsA(anything),
     );
   });
@@ -844,6 +915,50 @@ void main() {
     });
   });
 
+  group('zoomEnabled', () {
+    testWidgets('Enable zoom', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView(
+        zoomEnabled: true,
+      ));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.zoomEnabled, isTrue);
+    });
+
+    testWidgets('defaults to true', (WidgetTester tester) async {
+      await tester.pumpWidget(const WebView());
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      expect(platformWebView.zoomEnabled, isTrue);
+    });
+
+    testWidgets('can be changed', (WidgetTester tester) async {
+      final GlobalKey key = GlobalKey();
+      await tester.pumpWidget(WebView(key: key));
+
+      final FakePlatformWebView platformWebView =
+          fakePlatformViewsController.lastCreatedView!;
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        zoomEnabled: true,
+      ));
+
+      expect(platformWebView.zoomEnabled, isTrue);
+
+      await tester.pumpWidget(WebView(
+        key: key,
+        zoomEnabled: false,
+      ));
+
+      expect(platformWebView.zoomEnabled, isFalse);
+    });
+  });
+
   group('Custom platform implementation', () {
     setUpAll(() {
       WebView.platform = MyWebViewPlatform();
@@ -873,6 +988,7 @@ void main() {
               debuggingEnabled: false,
               userAgent: WebSetting<String?>.of(null),
               gestureNavigationEnabled: true,
+              zoomEnabled: true,
             ),
           )));
     });
@@ -940,6 +1056,7 @@ class FakePlatformWebView {
         params['settings']['hasNavigationDelegate'] ?? false;
     debuggingEnabled = params['settings']['debuggingEnabled'];
     userAgent = params['settings']['userAgent'];
+    zoomEnabled = params['settings']['zoomEnabled'] ?? true;
     channel = MethodChannel(
         'plugins.flutter.io/webview_$id', const StandardMethodCodec());
     channel.setMockMethodCallHandler(onMethodCall);
@@ -959,6 +1076,9 @@ class FakePlatformWebView {
   bool? hasNavigationDelegate;
   bool? debuggingEnabled;
   String? userAgent;
+  bool? zoomEnabled;
+
+  String? lastRunJavaScriptString;
 
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
@@ -977,6 +1097,9 @@ class FakePlatformWebView {
           debuggingEnabled = call.arguments['debuggingEnabled'];
         }
         userAgent = call.arguments['userAgent'];
+        if (call.arguments['zoomEnabled'] != null) {
+          zoomEnabled = call.arguments['zoomEnabled'];
+        }
         break;
       case 'canGoBack':
         return Future<bool>.sync(() => currentPosition > 0);
@@ -993,8 +1116,13 @@ class FakePlatformWebView {
         return Future<void>.sync(() {});
       case 'currentUrl':
         return Future<String?>.value(currentUrl);
+      case 'runJavascriptReturningResult':
       case 'evaluateJavascript':
+        lastRunJavaScriptString = call.arguments;
         return Future<dynamic>.value(call.arguments);
+      case 'runJavascript':
+        lastRunJavaScriptString = call.arguments;
+        return Future<void>.sync(() {});
       case 'addJavascriptChannels':
         final List<String> channelNames = List<String>.from(call.arguments);
         javascriptChannelNames!.addAll(channelNames);
@@ -1229,7 +1357,8 @@ class MatchesWebSettings extends Matcher {
         _webSettings!.debuggingEnabled == webSettings.debuggingEnabled &&
         _webSettings!.gestureNavigationEnabled ==
             webSettings.gestureNavigationEnabled &&
-        _webSettings!.userAgent == webSettings.userAgent;
+        _webSettings!.userAgent == webSettings.userAgent &&
+        _webSettings!.zoomEnabled == webSettings.zoomEnabled;
   }
 }
 

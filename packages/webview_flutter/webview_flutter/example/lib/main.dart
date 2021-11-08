@@ -7,6 +7,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -210,14 +211,14 @@ class SampleMenu extends StatelessWidget {
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Toaster JavaScript channel we registered
     // with the WebView.
-    await controller.evaluateJavascript(
+    await controller.runJavascript(
         'Toaster.postMessage("User Agent: " + navigator.userAgent);');
   }
 
   void _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
-        await controller.evaluateJavascript('document.cookie');
+        await controller.runJavascriptReturningResult('document.cookie');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(SnackBar(
       content: Column(
@@ -232,7 +233,7 @@ class SampleMenu extends StatelessWidget {
   }
 
   void _onAddToCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript(
+    await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
@@ -241,7 +242,7 @@ class SampleMenu extends StatelessWidget {
   }
 
   void _onListCache(WebViewController controller, BuildContext context) async {
-    await controller.evaluateJavascript('caches.keys()'
+    await controller.runJavascript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Toaster.postMessage(caches))');
   }
@@ -302,7 +303,7 @@ class NavigationControls extends StatelessWidget {
           (BuildContext context, AsyncSnapshot<WebViewController> snapshot) {
         final bool webViewReady =
             snapshot.connectionState == ConnectionState.done;
-        final WebViewController controller = snapshot.data!;
+        final WebViewController? controller = snapshot.data;
         return Row(
           children: <Widget>[
             IconButton(
@@ -310,7 +311,7 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                      if (await controller.canGoBack()) {
+                      if (await controller!.canGoBack()) {
                         await controller.goBack();
                       } else {
                         // ignore: deprecated_member_use
@@ -326,7 +327,7 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () async {
-                      if (await controller.canGoForward()) {
+                      if (await controller!.canGoForward()) {
                         await controller.goForward();
                       } else {
                         // ignore: deprecated_member_use
@@ -343,7 +344,7 @@ class NavigationControls extends StatelessWidget {
               onPressed: !webViewReady
                   ? null
                   : () {
-                      controller.reload();
+                      controller!.reload();
                     },
             ),
           ],

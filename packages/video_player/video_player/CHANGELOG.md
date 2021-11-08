@@ -1,6 +1,10 @@
-## 2.2.6
+## 2.2.7
 
 * iOS: Update texture on `seekTo`.
+
+## 2.2.6
+
+* Initialize player when size and duration become available on iOS
 
 ## 2.2.5
 

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-
 import 'package:webview_flutter_platform_interface/src/method_channel/webview_method_channel.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -31,6 +32,7 @@ void main() {
         case 'canGoBack':
         case 'canGoForward':
           return true;
+        case 'runJavascriptReturningResult':
         case 'evaluateJavascript':
           return methodCall.arguments as String;
         case 'getScrollX':
@@ -53,6 +55,61 @@ void main() {
 
     tearDown(() {
       log.clear();
+    });
+
+    test('loadFile', () async {
+      await webViewPlatform.loadFile(
+        '/folder/asset.html',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadFile',
+            arguments: '/folder/asset.html',
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+        baseUrl: 'https://flutter.dev',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': 'https://flutter.dev',
+            },
+          ),
+        ],
+      );
     });
 
     test('loadUrl with headers', () async {
@@ -95,6 +152,56 @@ void main() {
             arguments: <String, dynamic>{
               'url': 'https://test.url',
               'headers': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {},
+                'body': null,
+              }
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest with optional parameters', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+        headers: {'foo': 'bar'},
+        body: Uint8List.fromList('hello world'.codeUnits),
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {'foo': 'bar'},
+                'body': 'hello world'.codeUnits,
+              }
             },
           ),
         ],
@@ -229,6 +336,7 @@ void main() {
         debuggingEnabled: true,
         gestureNavigationEnabled: true,
         allowsInlineMediaPlayback: true,
+        zoomEnabled: false,
       );
       await webViewPlatform.updateSettings(settings);
 
@@ -245,6 +353,7 @@ void main() {
               'debuggingEnabled': true,
               'gestureNavigationEnabled': true,
               'allowsInlineMediaPlayback': true,
+              'zoomEnabled': false,
             },
           ),
         ],
@@ -265,16 +374,50 @@ void main() {
     test('evaluateJavascript', () async {
       final String evaluateJavascript =
           await webViewPlatform.evaluateJavascript(
-        'This simulates some Javascript code.',
+        'This simulates some JavaScript code.',
       );
 
-      expect('This simulates some Javascript code.', evaluateJavascript);
+      expect('This simulates some JavaScript code.', evaluateJavascript);
       expect(
         log,
         <Matcher>[
           isMethodCall(
             'evaluateJavascript',
-            arguments: 'This simulates some Javascript code.',
+            arguments: 'This simulates some JavaScript code.',
+          ),
+        ],
+      );
+    });
+
+    test('runJavascript', () async {
+      await webViewPlatform.runJavascript(
+        'This simulates some JavaScript code.',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'runJavascript',
+            arguments: 'This simulates some JavaScript code.',
+          ),
+        ],
+      );
+    });
+
+    test('runJavascriptReturningResult', () async {
+      final String evaluateJavascript =
+          await webViewPlatform.runJavascriptReturningResult(
+        'This simulates some JavaScript code.',
+      );
+
+      expect('This simulates some JavaScript code.', evaluateJavascript);
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'runJavascriptReturningResult',
+            arguments: 'This simulates some JavaScript code.',
           ),
         ],
       );

@@ -52,6 +52,8 @@
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
+static void* presentationSizeContext = &presentationSizeContext;
+static void* durationContext = &durationContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
@@ -71,6 +73,14 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"status"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"presentationSize"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:presentationSizeContext];
+  [item addObserver:self
+         forKeyPath:@"duration"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:durationContext];
   [item addObserver:self
          forKeyPath:@"playbackLikelyToKeepUp"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -282,9 +292,18 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         break;
       case AVPlayerItemStatusReadyToPlay:
         [item addOutput:_videoOutput];
-        [self sendInitialized];
+        [self setupEventSinkIfReadyToPlay];
         [self updatePlayingState];
         break;
+    }
+  } else if (context == presentationSizeContext || context == durationContext) {
+    AVPlayerItem* item = (AVPlayerItem*)object;
+    if (item.status == AVPlayerItemStatusReadyToPlay) {
+      // Due to an apparent bug, when the player item is ready, it still may not have determined
+      // its presentation size or duration. When these properties are finally set, re-check if
+      // all required properties and instantiate the event sink if it is not already set up.
+      [self setupEventSinkIfReadyToPlay];
+      [self updatePlayingState];
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
@@ -316,7 +335,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = !_isPlaying;
 }
 
-- (void)sendInitialized {
+- (void)setupEventSinkIfReadyToPlay {
   if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
@@ -425,7 +444,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // This line ensures the 'initialized' event is sent when the event
   // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
   // onListenWithArguments is called)
-  [self sendInitialized];
+  [self setupEventSinkIfReadyToPlay];
   return nil;
 }
 

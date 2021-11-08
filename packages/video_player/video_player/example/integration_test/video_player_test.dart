@@ -3,11 +3,15 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:integration_test/integration_test.dart';
+import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 const Duration _playDuration = Duration(seconds: 1);
@@ -224,5 +228,23 @@ void main() {
         skip: kIsWeb || // Web does not support local assets.
             // Extremely flaky on iOS: https://github.com/flutter/flutter/issues/86915
             defaultTargetPlatform == TargetPlatform.iOS);
+
+    testWidgets('test video player using static file() method as constructor',
+        (WidgetTester tester) async {
+      String tempDir = (await getTemporaryDirectory()).path;
+      ByteData bytes = await rootBundle.load('assets/Butterfly-209.mp4');
+
+      File file = File('$tempDir/Butterfly-209.mp4');
+      await file.writeAsBytes(bytes.buffer.asInt8List());
+
+      VideoPlayerController fileController = VideoPlayerController.file(file);
+      await fileController.initialize();
+
+      await fileController.play();
+      expect(fileController.value.isPlaying, true);
+
+      await fileController.pause();
+      expect(fileController.value.isPlaying, false);
+    }, skip: kIsWeb);
   });
 }

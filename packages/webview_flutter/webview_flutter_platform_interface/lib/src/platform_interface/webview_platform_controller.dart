@@ -23,6 +23,32 @@ abstract class WebViewPlatformController {
   /// The `handler` parameter must not be null.
   WebViewPlatformController(WebViewPlatformCallbacksHandler handler);
 
+  /// Loads the file located on the specified [absoluteFilePath].
+  ///
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(
+    String absoluteFilePath,
+  ) {
+    throw UnimplementedError(
+        "WebView loadFlutterAsset is not implemented on the current platform");
+  }
+
+  /// Loads the supplied HTML string.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) {
+    throw UnimplementedError(
+        "WebView loadHtmlString is not implemented on the current platform");
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
@@ -37,6 +63,25 @@ abstract class WebViewPlatformController {
   ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
+  }
+
+  /// Makes a specific HTTP request ands loads the response in the webview.
+  ///
+  /// [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in [WebViewRequestMethod].
+  ///
+  /// If [WebViewRequest.headers] is not empty, its key-value pairs will be
+  /// added as the headers for the request.
+  ///
+  /// If [WebViewRequest.body] is not null, it will be added as the body
+  /// for the request.
+  ///
+  /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
+  Future<void> loadRequest(
+    WebViewRequest request,
+  ) {
+    throw UnimplementedError(
+        "WebView loadRequest is not implemented on the current platform");
   }
 
   /// Updates the webview settings.
@@ -106,10 +151,28 @@ abstract class WebViewPlatformController {
   /// Evaluates a JavaScript expression in the context of the current page.
   ///
   /// The Future completes with an error if a JavaScript error occurred, or if the type of the
-  /// evaluated expression is not supported(e.g on iOS not all non primitive type can be evaluated).
-  Future<String> evaluateJavascript(String javascriptString) {
+  /// evaluated expression is not supported (e.g on iOS not all non-primitive types can be evaluated).
+  Future<String> evaluateJavascript(String javascript) {
     throw UnimplementedError(
         "WebView evaluateJavascript is not implemented on the current platform");
+  }
+
+  /// Runs the given JavaScript in the context of the current page.
+  ///
+  /// The Future completes with an error if a JavaScript error occurred.
+  Future<void> runJavascript(String javascript) {
+    throw UnimplementedError(
+        "WebView runJavascript is not implemented on the current platform");
+  }
+
+  /// Runs the given JavaScript in the context of the current page, and returns the result.
+  ///
+  /// The Future completes with an error if a JavaScript error occurred, or if the
+  /// type the given expression evaluates to is unsupported. Unsupported values include
+  /// certain non-primitive types on iOS, as well as `undefined` or `null` on iOS 14+.
+  Future<String> runJavascriptReturningResult(String javascript) {
+    throw UnimplementedError(
+        "WebView runJavascriptReturningResult is not implemented on the current platform");
   }
 
   /// Adds new JavaScript channels to the set of enabled channels.
@@ -130,7 +193,7 @@ abstract class WebViewPlatformController {
 
   /// Removes JavaScript channel names from the set of enabled channels.
   ///
-  /// This disables channels that were previously enabled by [addJavaScriptChannels] or through
+  /// This disables channels that were previously enabled by [addJavascriptChannels] or through
   /// [CreationParams.javascriptChannelNames].
   Future<void> removeJavascriptChannels(Set<String> javascriptChannelNames) {
     throw UnimplementedError(
