@@ -21,12 +21,14 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
 
   /**
    * Implementation of {@link DownloadListener} that passes arguments of callback methods to Dart.
+   * 
+   * <p>No messages are sent to Dart after {@link DownloadListenerImpl#release} is called. 
    */
   public static class DownloadListenerImpl implements DownloadListener, Releasable {
     @Nullable private DownloadListenerFlutterApiImpl flutterApi;
 
     /**
-     * Creates a {@link DownloadListener} that passes arguments of callbacks methods to Dart.
+     * Creates a {@link DownloadListenerImpl} that passes arguments of callbacks methods to Dart.
      *
      * @param flutterApi handles sending messages to Dart
      */

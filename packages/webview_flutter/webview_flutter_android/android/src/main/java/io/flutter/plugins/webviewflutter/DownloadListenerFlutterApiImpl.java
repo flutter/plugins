@@ -37,7 +37,6 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
       String mimetype,
       long contentLength,
       Reply<Void> callback) {
-    System.out.println("GOOOOOOO");
     onDownloadStart(
         instanceManager.getInstanceId(downloadListener),
         url,

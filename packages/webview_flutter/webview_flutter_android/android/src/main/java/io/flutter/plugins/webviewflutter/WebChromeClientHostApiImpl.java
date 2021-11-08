@@ -16,12 +16,12 @@ import androidx.annotation.RequiresApi;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 
 /**
- * Host api implementation for {@link android.webkit.WebChromeClient}.
+ * Host api implementation for {@link WebChromeClient}.
  *
- * <p>Handles creating {@link android.webkit.WebChromeClient}s that intercommunicate with a paired
+ * <p>Handles creating {@link WebChromeClient}s that intercommunicate with a paired
  * Dart object.
  */
-class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
+public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   private final InstanceManager instanceManager;
   private final WebChromeClientCreator webChromeClientCreator;
   private final WebChromeClientFlutterApiImpl flutterApi;
@@ -89,7 +89,7 @@ class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
      *
      * @param webViewClient the forwarding {@link WebViewClient}
      */
-    void setWebViewClient(WebViewClient webViewClient) {
+    public void setWebViewClient(WebViewClient webViewClient) {
       this.webViewClient = webViewClient;
     }
 

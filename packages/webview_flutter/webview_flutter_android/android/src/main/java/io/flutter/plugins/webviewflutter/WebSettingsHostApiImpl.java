@@ -7,17 +7,17 @@ package io.flutter.plugins.webviewflutter;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostApi {
+public class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostApi {
   private final InstanceManager instanceManager;
   private final WebSettingsCreator webSettingsCreator;
 
-  static class WebSettingsCreator {
+  public static class WebSettingsCreator {
     WebSettings createWebSettings(WebView webView) {
       return webView.getSettings();
     }
   }
 
-  WebSettingsHostApiImpl(InstanceManager instanceManager, WebSettingsCreator webSettingsCreator) {
+  public WebSettingsHostApiImpl(InstanceManager instanceManager, WebSettingsCreator webSettingsCreator) {
     this.instanceManager = instanceManager;
     this.webSettingsCreator = webSettingsCreator;
   }
@@ -30,7 +30,7 @@ class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostA
 
   @Override
   public void dispose(Long instanceId) {
-    instanceManager.removeInstanceWithInstanceId(instanceId);
+    instanceManager.removeInstanceWithId(instanceId);
   }
 
   @Override

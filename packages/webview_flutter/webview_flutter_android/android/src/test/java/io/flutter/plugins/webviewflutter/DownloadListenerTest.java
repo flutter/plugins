@@ -6,6 +6,7 @@ package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerCreator;
@@ -58,5 +59,9 @@ public class DownloadListenerTest {
             eq("mimetype"),
             eq(54L),
             any());
+
+    downloadListener.release();
+    downloadListener.onDownloadStart("", "", "", "", 23);
+    verify(mockFlutterApi, never()).onDownloadStart(any(), any(), any(), any(), any(), any(), any());
   }
 }

@@ -179,6 +179,9 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
         ((Releasable) currentWebViewClient).release();
       }
       currentWebViewClient = (WebViewClient) webViewClient;
+      if (currentWebChromeClient != null && currentWebChromeClient instanceof WebChromeClientImpl) {
+        ((WebChromeClientImpl) currentWebChromeClient).setWebViewClient(currentWebViewClient);
+      }
     }
 
     @Override
@@ -195,10 +198,6 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
       super.setWebChromeClient(client);
       if (currentWebChromeClient instanceof Releasable) {
         ((Releasable) currentWebChromeClient).release();
-      }
-
-      if (client instanceof WebChromeClientImpl) {
-        ((WebChromeClientImpl) client).setWebViewClient(currentWebViewClient);
       }
       currentWebChromeClient = client;
     }
@@ -267,7 +266,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
 
   @Override
   public void dispose(Long instanceId) {
-    final WebView instance = (WebView) instanceManager.removeInstanceWithInstanceId(instanceId);
+    final WebView instance = (WebView) instanceManager.removeInstanceWithId(instanceId);
     if (instance != null) {
       ((Releasable) instance).release();
     }

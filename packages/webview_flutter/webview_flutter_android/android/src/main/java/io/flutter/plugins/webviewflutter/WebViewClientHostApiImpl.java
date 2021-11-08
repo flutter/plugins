@@ -9,6 +9,7 @@ import android.annotation.TargetApi;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.view.KeyEvent;
+import android.webkit.WebChromeClient;
 import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -19,6 +20,12 @@ import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
 import androidx.webkit.WebViewClientCompat;
 
+/**
+ * Host api implementation for {@link WebViewClient}.
+ *
+ * <p>Handles creating {@link WebViewClient}s that intercommunicate with a paired
+ * Dart object.
+ */
 public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientHostApi {
   private final InstanceManager instanceManager;
   private final WebViewClientCreator webViewClientCreator;
@@ -30,6 +37,12 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
     @Nullable private WebViewClientFlutterApiImpl flutterApi;
     private final boolean shouldOverrideUrlLoading;
 
+    /**
+     * Creates a {@link WebViewClient} that passes arguments of callbacks methods to Dart.
+     *
+     * @param flutterApi handles sending messages to Dart
+     * @param shouldOverrideUrlLoading whether loading a url should be overridden
+     */
     public WebViewClientImpl(
         @NonNull WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
       this.shouldOverrideUrlLoading = shouldOverrideUrlLoading;
