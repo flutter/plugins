@@ -128,7 +128,7 @@ Future<Directory> getLibraryDirectory() async {
 /// On iOS, this uses the `NSDocumentDirectory` API. Consider using
 /// [getApplicationSupportDirectory] instead if the data is not user-generated.
 ///
-/// On Android, this uses the `getDataDirectory` API on the context. Consider
+/// On Android, this uses the `getDir` API on the context. Consider
 /// using [getExternalStorageDirectory] instead if data is intended to be visible
 /// to the user.
 ///
