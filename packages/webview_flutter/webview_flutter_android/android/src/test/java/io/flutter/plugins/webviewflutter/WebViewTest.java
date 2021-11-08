@@ -45,7 +45,7 @@ public class WebViewTest {
   @Before
   public void setUp() {
     testInstanceManager = new InstanceManager();
-    when(mockWebViewProxy.createWebView(mockContext)).thenReturn(mockWebView);
+    when(mockWebViewProxy.createWebView(mockContext, true)).thenReturn(mockWebView);
     testHostApiImpl = new WebViewHostApiImpl(testInstanceManager, mockWebViewProxy, mockContext);
     testHostApiImpl.create(0L, true);
   }

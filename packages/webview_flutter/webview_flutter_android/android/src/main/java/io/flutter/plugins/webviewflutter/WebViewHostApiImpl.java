@@ -10,6 +10,7 @@ import android.hardware.display.DisplayManager;
 import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
@@ -18,36 +19,59 @@ import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeCli
 import java.util.HashMap;
 import java.util.Map;
 
-class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
+/**
+ * Host api implementation for {@link WebView}.
+ *
+ * <p>Handles creating {@link WebView}s that intercommunicate with a paired Dart object.
+ */
+public class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
   // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
   // Workaround to represent null Strings since pigeon doesn't support null
   // values.
-  static final String nullStringIdentifier = "<null-value>";
+  private static final String nullStringIdentifier = "<null-value>";
 
   private final InstanceManager instanceManager;
   private final WebViewProxy webViewProxy;
   private final Context context;
 
-  static class WebViewProxy {
-    WebView createWebView(Context context) {
-      return new WebViewPlatformView(context);
+  /** Handles creating and calling static methods for {@link WebView}s. */
+  public static class WebViewProxy {
+    /**
+     * Creates a {@link WebSettings}.
+     *
+     * @param usesHybridComposition whether the widget of the `WebView` will be rendered with Hybrid Composition
+     *
+     * @return the created {@link WebView}
+     */
+    public WebView createWebView(Context context, boolean usesHybridComposition) {
+      return usesHybridComposition ?
+          new WebViewPlatformView(context) : new InputAwareWebView(context, null);
     }
 
-    WebView createInputAwareWebView(Context context) {
-      return new InputAwareWebViewPlatformView(context, null);
-    }
-
-    void setWebContentsDebuggingEnabled(boolean enabled) {
+    /**
+     * Forwards call to {@link WebView#setWebContentsDebuggingEnabled}.
+     *
+     * @param enabled whether debugging should be enabled
+     */
+    public void setWebContentsDebuggingEnabled(boolean enabled) {
       WebView.setWebContentsDebuggingEnabled(enabled);
     }
   }
 
-  static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
+  /**
+   * Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s.
+   */
+  public static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
     private WebViewClient currentWebViewClient;
     private DownloadListener currentDownloadListener;
     private WebChromeClient currentWebChromeClient;
     private final Map<String, JavaScriptChannel> javaScriptInterfaces = new HashMap<>();
 
+    /**
+     * Creates a {@link WebViewPlatformView}.
+     *
+     * @param context an Activity Context to access application assets. This value cannot be null.
+     */
     public WebViewPlatformView(Context context) {
       super(context);
     }
@@ -129,15 +153,23 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
+  /**
+   * Implementation of {@link InputAwareWebView} that can be used as a Flutter {@link PlatformView}s.
+   */
   @SuppressLint("ViewConstructor")
-  static class InputAwareWebViewPlatformView extends InputAwareWebView
+  public static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView, Releasable {
     private WebViewClient currentWebViewClient;
     private DownloadListener currentDownloadListener;
     private WebChromeClient currentWebChromeClient;
     private final Map<String, JavaScriptChannel> javaScriptInterfaces = new HashMap<>();
 
-    InputAwareWebViewPlatformView(Context context, View containerView) {
+    /**
+     * Creates a {@link InputAwareWebViewPlatformView}.
+     *
+     * @param context an Activity Context to access application assets. This value cannot be null.
+     */
+    public InputAwareWebViewPlatformView(Context context, View containerView) {
       super(context, containerView);
     }
 
@@ -242,7 +274,14 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
     }
   }
 
-  WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context) {
+  /**
+   * Creates a host API that handles creating {@link WebView}s and invoking its methods.
+   *
+   * @param instanceManager maintains instances stored to communicate with Dart objects
+   * @param webViewProxy handles creating {@link WebView}s and calling its static methods
+   * @param context an Activity Context to access application assets. This value cannot be null.
+   */
+  public WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context) {
     this.instanceManager = instanceManager;
     this.webViewProxy = webViewProxy;
     this.context = context;
@@ -255,10 +294,7 @@ class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    final WebView webView =
-        useHybridComposition
-            ? webViewProxy.createWebView(context)
-            : webViewProxy.createInputAwareWebView(context);
+    final WebView webView = webViewProxy.createWebView(context, useHybridComposition);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addInstance(webView, instanceId);
