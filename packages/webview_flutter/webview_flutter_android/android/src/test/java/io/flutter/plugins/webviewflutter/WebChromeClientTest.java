@@ -6,8 +6,11 @@ package io.flutter.plugins.webviewflutter;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
+import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientCreator;
@@ -57,5 +60,10 @@ public class WebChromeClientTest {
   public void onProgressChanged() {
     webChromeClient.onProgressChanged(mockWebView, 23);
     verify(mockFlutterApi).onProgressChanged(eq(webChromeClient), eq(mockWebView), eq(23L), any());
+    
+    reset(mockFlutterApi);
+    webChromeClient.release();
+    webChromeClient.onProgressChanged(mockWebView, 11);
+    verify(mockFlutterApi, never()).onProgressChanged((WebChromeClient) any(), any(), any(), any());
   }
 }
