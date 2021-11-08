@@ -39,21 +39,6 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @Nullable
   private final View containerView;
 
-  private static class ReleasableChild<T> {
-    @Nullable private T child;
-
-    private ReleasableChild(@Nullable T child) {
-      this.child = child;
-    }
-
-    private void release() {
-      if (child instanceof Releasable) {
-        ((Releasable) child).release();
-      }
-      child = null;
-    }
-  }
-
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
     /**
@@ -84,6 +69,21 @@ public class WebViewHostApiImpl implements WebViewHostApi {
      */
     public void setWebContentsDebuggingEnabled(boolean enabled) {
       WebView.setWebContentsDebuggingEnabled(enabled);
+    }
+  }
+
+  private static class ReleasableChild<T> {
+    @Nullable private T child;
+
+    private ReleasableChild(@Nullable T child) {
+      this.child = child;
+    }
+
+    private void release() {
+      if (child instanceof Releasable) {
+        ((Releasable) child).release();
+      }
+      child = null;
     }
   }
 
