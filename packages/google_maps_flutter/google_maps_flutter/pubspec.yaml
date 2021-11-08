@@ -27,11 +27,6 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # TODO(iskakaushik): The following dependencies can be removed once
-  # https://github.com/dart-lang/pub/issues/2101 is resolved.
-  flutter_driver:
-    sdk: flutter
-  test: ^1.16.0
   pedantic: ^1.10.0
   plugin_platform_interface: ^2.0.0
   stream_transform: ^2.0.0
