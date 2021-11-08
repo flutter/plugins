@@ -40,12 +40,12 @@ const String kLocalFileExamplePage = '''
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<title>Local demo page</title>
+<title>Load file or HTML string example</title>
 </head>
 <body>
 
 <h1>Local demo page</h1>
-<p>This is a local page used to demonstrate how to load a local file using the <a href="https://pub.dev/packages/webview_flutter">Flutter webview</a> plugin.</p>
+<p>This is an example page used to demonstrate how to load a local file or HTML string using the <a href="https://pub.dev/packages/webview_flutter">Flutter webview</a> plugin.</p>
 
 </body>
 </html>
@@ -139,6 +139,7 @@ enum _MenuOptions {
   clearCache,
   navigationDelegate,
   loadLocalFile,
+  loadHtmlString,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -179,6 +180,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.loadLocalFile:
                 _onLoadLocalFileExample(controller.data!, context);
                 break;
+              case _MenuOptions.loadHtmlString:
+                _onLoadHtmlStringExample(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -210,6 +214,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.loadHtmlString,
+              child: Text('Load HTML string'),
             ),
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.loadLocalFile,
@@ -290,6 +298,11 @@ class _SampleMenu extends StatelessWidget {
     String pathToIndex = await _prepareLocalFile();
 
     await controller.loadFile(pathToIndex);
+  }
+
+  void _onLoadHtmlStringExample(
+      WebViewController controller, BuildContext context) async {
+    await controller.loadHtmlString(kLocalFileExamplePage);
   }
 
   Widget _getCookieList(String cookies) {

@@ -137,6 +137,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadFile"]) {
     [self onLoadFile:call result:result];
+  } else if ([[call method] isEqualToString:@"loadHtmlString"]) {
+    [self onLoadHtmlString:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
@@ -200,6 +202,33 @@
   NSURL* baseUrl = [url URLByDeletingLastPathComponent];
 
   [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
+  result(nil);
+}
+
+- (void)onLoadHtmlString:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary* arguments = [call arguments];
+  if (!arguments || ![arguments isKindOfClass:NSDictionary.class]) {
+    result([FlutterError
+        errorWithCode:@"loadHtmlString_failed"
+              message:@"Failed parsing arguments."
+              details:@"Arguments should be a dictionary containing at least a 'html' element and "
+                      @"optionally a 'baseUrl' argument. For example: `@{ @\"html\": @\"some html "
+                      @"code\", @\"baseUrl\": @\"https://flutter.dev\" }`"]);
+    return;
+  }
+
+  NSString* htmlString = [call arguments][@"html"];
+  NSString* baseUrl =
+      [call arguments][@"baseUrl"] == [NSNull null] ? nil : [call arguments][@"baseUrl"];
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:htmlString withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadHtmlString_failed"
+                               message:@"Failed parsing HTML string argument."
+                               details:error]);
+    return;
+  }
+
+  [_webView loadHTMLString:htmlString baseURL:[NSURL URLWithString:baseUrl]];
   result(nil);
 }
 

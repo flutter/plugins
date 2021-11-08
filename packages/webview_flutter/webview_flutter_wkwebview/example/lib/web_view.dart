@@ -319,6 +319,21 @@ class WebViewController {
     return _webViewPlatformController.loadFile(absoluteFilePath);
   }
 
+  /// Loads the supplied HTML string.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) {
+    assert(html != null || html.isNotEmpty);
+    return _webViewPlatformController.loadHtmlString(
+      html,
+      baseUrl: baseUrl,
+    );
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
