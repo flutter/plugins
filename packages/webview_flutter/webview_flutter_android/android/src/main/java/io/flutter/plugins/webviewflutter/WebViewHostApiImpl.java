@@ -39,6 +39,21 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @Nullable
   private final View containerView;
 
+  private static class ReleasableChild<T> {
+    @Nullable private T child;
+
+    private ReleasableChild(@Nullable T child) {
+      this.child = child;
+    }
+
+    private void release() {
+      if (child instanceof Releasable) {
+        ((Releasable) child).release();
+      }
+      child = null;
+    }
+  }
+
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
     /**
@@ -76,10 +91,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
    * Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s.
    */
   public static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
-    private WebViewClient currentWebViewClient;
-    private DownloadListener currentDownloadListener;
-    private WebChromeClient currentWebChromeClient;
-    private final Map<String, JavaScriptChannel> javaScriptInterfaces = new HashMap<>();
+    private ReleasableChild<WebViewClient> currentWebViewClient = new ReleasableChild<>(null);
+    private ReleasableChild<DownloadListener> currentDownloadListener = new ReleasableChild<>(null);
+    private ReleasableChild<WebChromeClient> currentWebChromeClient = new ReleasableChild<>(null);
+    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces = new HashMap<>();
 
     /**
      * Creates a {@link WebViewPlatformView}.
@@ -103,28 +118,27 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
-      if (currentWebViewClient instanceof Releasable) {
-        ((Releasable) currentWebViewClient).release();
+      currentWebViewClient.release();
+      currentWebViewClient = new ReleasableChild<>(webViewClient);
+
+      final WebChromeClient webChromeClient = currentWebChromeClient.child;
+      if (webChromeClient instanceof WebChromeClientImpl) {
+        ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
       }
-      currentWebViewClient = (WebViewClient) webViewClient;
     }
 
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
-      if (currentDownloadListener instanceof Releasable) {
-        ((Releasable) currentDownloadListener).release();
-      }
-      currentDownloadListener = listener;
+      currentDownloadListener.release();
+      currentDownloadListener = new ReleasableChild<>(listener);
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      if (currentWebChromeClient instanceof Releasable) {
-        ((Releasable) currentWebChromeClient).release();
-      }
-      currentWebChromeClient = client;
+      currentWebChromeClient.release();
+      currentWebChromeClient = new ReleasableChild<>(client);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -132,35 +146,24 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public void addJavascriptInterface(Object object, String name) {
       super.addJavascriptInterface(object, name);
       if (object instanceof JavaScriptChannel) {
-        javaScriptInterfaces.put(name, (JavaScriptChannel) object);
+        javaScriptInterfaces.put(name, new ReleasableChild<>((JavaScriptChannel) object));
       }
     }
 
     @Override
     public void removeJavascriptInterface(@NonNull String name) {
       super.removeJavascriptInterface(name);
-      final JavaScriptChannel javaScriptChannel = javaScriptInterfaces.get(name);
-      if (javaScriptChannel != null) {
-        javaScriptChannel.release();
-      }
+      final ReleasableChild<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
+      javaScriptChannel.release();
       javaScriptInterfaces.remove(name);
     }
 
     @Override
     public void release() {
-      if (currentWebViewClient instanceof Releasable) {
-        ((Releasable) currentWebViewClient).release();
-        currentWebViewClient = null;
-      }
-      if (currentDownloadListener instanceof Releasable) {
-        ((Releasable) currentDownloadListener).release();
-        currentDownloadListener = null;
-      }
-      if (currentWebChromeClient instanceof Releasable) {
-        ((Releasable) currentWebChromeClient).release();
-        currentWebChromeClient = null;
-      }
-      for (JavaScriptChannel channel : javaScriptInterfaces.values()) {
+      currentWebViewClient.release();
+      currentDownloadListener.release();
+      currentWebChromeClient.release();
+      for (ReleasableChild<JavaScriptChannel> channel : javaScriptInterfaces.values()) {
         channel.release();
       }
       javaScriptInterfaces.clear();
@@ -173,10 +176,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @SuppressLint("ViewConstructor")
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView, Releasable {
-    private WebViewClient currentWebViewClient;
-    private DownloadListener currentDownloadListener;
-    private WebChromeClient currentWebChromeClient;
-    private final Map<String, JavaScriptChannel> javaScriptInterfaces = new HashMap<>();
+    private ReleasableChild<WebViewClient> currentWebViewClient = new ReleasableChild<>(null);
+    private ReleasableChild<DownloadListener> currentDownloadListener = new ReleasableChild<>(null);
+    private ReleasableChild<WebChromeClient> currentWebChromeClient = new ReleasableChild<>(null);
+    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces = new HashMap<>();
 
     /**
      * Creates a {@link InputAwareWebViewPlatformView}.
@@ -221,31 +224,27 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
-      if (currentWebViewClient instanceof Releasable) {
-        ((Releasable) currentWebViewClient).release();
-      }
-      currentWebViewClient = (WebViewClient) webViewClient;
-      if (currentWebChromeClient != null && currentWebChromeClient instanceof WebChromeClientImpl) {
-        ((WebChromeClientImpl) currentWebChromeClient).setWebViewClient(currentWebViewClient);
+      currentWebViewClient.release();
+      currentWebViewClient = new ReleasableChild<>(webViewClient);
+
+      final WebChromeClient webChromeClient = currentWebChromeClient.child;
+      if (webChromeClient instanceof WebChromeClientImpl) {
+        ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
       }
     }
 
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
-      if (currentDownloadListener instanceof Releasable) {
-        ((Releasable) currentDownloadListener).release();
-      }
-      currentDownloadListener = listener;
+      currentDownloadListener.release();
+      currentDownloadListener = new ReleasableChild<>(listener);
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      if (currentWebChromeClient instanceof Releasable) {
-        ((Releasable) currentWebChromeClient).release();
-      }
-      currentWebChromeClient = client;
+      currentWebChromeClient.release();
+      currentWebChromeClient = new ReleasableChild<>(client);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -253,35 +252,24 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public void addJavascriptInterface(Object object, String name) {
       super.addJavascriptInterface(object, name);
       if (object instanceof JavaScriptChannel) {
-        javaScriptInterfaces.put(name, (JavaScriptChannel) object);
+        javaScriptInterfaces.put(name, new ReleasableChild<>((JavaScriptChannel) object));
       }
     }
 
     @Override
     public void removeJavascriptInterface(@NonNull String name) {
       super.removeJavascriptInterface(name);
-      final JavaScriptChannel javaScriptChannel = javaScriptInterfaces.get(name);
-      if (javaScriptChannel != null) {
-        javaScriptChannel.release();
-      }
+      final ReleasableChild<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
+      javaScriptChannel.release();
       javaScriptInterfaces.remove(name);
     }
 
     @Override
     public void release() {
-      if (currentWebViewClient instanceof Releasable) {
-        ((Releasable) currentWebViewClient).release();
-        currentWebViewClient = null;
-      }
-      if (currentDownloadListener instanceof Releasable) {
-        ((Releasable) currentDownloadListener).release();
-        currentDownloadListener = null;
-      }
-      if (currentWebChromeClient instanceof Releasable) {
-        ((Releasable) currentWebChromeClient).release();
-        currentWebChromeClient = null;
-      }
-      for (JavaScriptChannel channel : javaScriptInterfaces.values()) {
+      currentWebViewClient.release();
+      currentDownloadListener.release();
+      currentWebChromeClient.release();
+      for (ReleasableChild<JavaScriptChannel> channel : javaScriptInterfaces.values()) {
         channel.release();
       }
       javaScriptInterfaces.clear();
