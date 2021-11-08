@@ -188,8 +188,9 @@
 
 - (void)testSKPaymentDiscountFromMap {
   if (@available(iOS 12.2, *)) {
+    NSString *error = nil;
     SKPaymentDiscount *paymentDiscount =
-        [FIAObjectTranslator getSKPaymentDiscountFromMap:self.paymentDiscountMap];
+        [FIAObjectTranslator getSKPaymentDiscountFromMap:self.paymentDiscountMap withError:&error];
 
     XCTAssertEqual(paymentDiscount.identifier, self.paymentDiscountMap[@"identifier"]);
     XCTAssertEqual(paymentDiscount.keyIdentifier, self.paymentDiscountMap[@"keyIdentifier"]);
@@ -202,66 +203,116 @@
 
 - (void)testSKPaymentDiscountFromMapMissingIdentifier {
   if (@available(iOS 12.2, *)) {
-    NSDictionary *discountMap = @{
-      @"keyIdentifier" : @"payment_discount_key_identifier",
-      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
-      @"signature" : @"this is a encrypted signature",
-      @"timestamp" : @([NSDate date].timeIntervalSince1970),
-    };
+    NSArray *invalidValues = @[ [NSNull null], @(1), @"" ];
 
-    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+    for (id value in invalidValues) {
+      NSDictionary *discountMap = @{
+        @"identifier" : value,
+        @"keyIdentifier" : @"payment_discount_key_identifier",
+        @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+        @"signature" : @"this is a encrypted signature",
+        @"timestamp" : @([NSDate date].timeIntervalSince1970),
+      };
+
+      NSString *error = nil;
+      [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+
+      XCTAssertNotNil(error);
+      XCTAssertEqualObjects(
+          error, @"When specifying a payment discount the 'identifier' field is mandatory.");
+    }
   }
 }
 
 - (void)testSKPaymentDiscountFromMapMissingKeyIdentifier {
   if (@available(iOS 12.2, *)) {
-    NSDictionary *discountMap = @{
-      @"identifier" : @"payment_discount_identifier",
-      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
-      @"signature" : @"this is a encrypted signature",
-      @"timestamp" : @([NSDate date].timeIntervalSince1970),
-    };
+    NSArray *invalidValues = @[ [NSNull null], @(1), @"" ];
 
-    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+    for (id value in invalidValues) {
+      NSDictionary *discountMap = @{
+        @"identifier" : @"payment_discount_identifier",
+        @"keyIdentifier" : value,
+        @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+        @"signature" : @"this is a encrypted signature",
+        @"timestamp" : @([NSDate date].timeIntervalSince1970),
+      };
+
+      NSString *error = nil;
+      [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+
+      XCTAssertNotNil(error);
+      XCTAssertEqualObjects(
+          error, @"When specifying a payment discount the 'keyIdentifier' field is mandatory.");
+    }
   }
 }
 
 - (void)testSKPaymentDiscountFromMapMissingNonce {
   if (@available(iOS 12.2, *)) {
-    NSDictionary *discountMap = @{
-      @"identifier" : @"payment_discount_identifier",
-      @"keyIdentifier" : @"payment_discount_key_identifier",
-      @"signature" : @"this is a encrypted signature",
-      @"timestamp" : @([NSDate date].timeIntervalSince1970),
-    };
+    NSArray *invalidValues = @[ [NSNull null], @(1), @"" ];
 
-    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+    for (id value in invalidValues) {
+      NSDictionary *discountMap = @{
+        @"identifier" : @"payment_discount_identifier",
+        @"keyIdentifier" : @"payment_discount_key_identifier",
+        @"nonce" : value,
+        @"signature" : @"this is a encrypted signature",
+        @"timestamp" : @([NSDate date].timeIntervalSince1970),
+      };
+
+      NSString *error = nil;
+      [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+
+      XCTAssertNotNil(error);
+      XCTAssertEqualObjects(error,
+                            @"When specifying a payment discount the 'nonce' field is mandatory.");
+    }
   }
 }
 
 - (void)testSKPaymentDiscountFromMapMissingSignature {
   if (@available(iOS 12.2, *)) {
-    NSDictionary *discountMap = @{
-      @"identifier" : @"payment_discount_identifier",
-      @"keyIdentifier" : @"payment_discount_key_identifier",
-      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
-      @"timestamp" : @([NSDate date].timeIntervalSince1970),
-    };
+    NSArray *invalidValues = @[ [NSNull null], @(1), @"" ];
 
-    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+    for (id value in invalidValues) {
+      NSDictionary *discountMap = @{
+        @"identifier" : @"payment_discount_identifier",
+        @"keyIdentifier" : @"payment_discount_key_identifier",
+        @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+        @"signature" : value,
+        @"timestamp" : @([NSDate date].timeIntervalSince1970),
+      };
+
+      NSString *error = nil;
+      [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+
+      XCTAssertNotNil(error);
+      XCTAssertEqualObjects(
+          error, @"When specifying a payment discount the 'signature' field is mandatory.");
+    }
   }
 }
 
 - (void)testSKPaymentDiscountFromMapMissingTimestamp {
   if (@available(iOS 12.2, *)) {
-    NSDictionary *discountMap = @{
-      @"identifier" : @"payment_discount_identifier",
-      @"keyIdentifier" : @"payment_discount_key_identifier",
-      @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
-      @"signature" : @"this is a encrypted signature",
-    };
+    NSArray *invalidValues = @[ [NSNull null], @"", @(-1) ];
 
-    XCTAssertThrows([FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap]);
+    for (id value in invalidValues) {
+      NSDictionary *discountMap = @{
+        @"identifier" : @"payment_discount_identifier",
+        @"keyIdentifier" : @"payment_discount_key_identifier",
+        @"nonce" : @"d18981e0-9003-4365-98a2-4b90e3b62c52",
+        @"signature" : @"this is a encrypted signature",
+        @"timestamp" : value,
+      };
+
+      NSString *error = nil;
+      [FIAObjectTranslator getSKPaymentDiscountFromMap:discountMap withError:&error];
+
+      XCTAssertNotNil(error);
+      XCTAssertEqualObjects(
+          error, @"When specifying a payment discount the 'timestamp' field is mandatory.");
+    }
   }
 }
 

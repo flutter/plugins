@@ -204,8 +204,21 @@
                                            : [simulatesAskToBuyInSandbox boolValue];
 
   if (@available(iOS 12.2, *)) {
+    NSString *error = nil;
     SKPaymentDiscount *paymentDiscount = [FIAObjectTranslator
-        getSKPaymentDiscountFromMap:[paymentMap objectForKey:@"paymentDiscount"]];
+        getSKPaymentDiscountFromMap:[paymentMap objectForKey:@"paymentDiscount"]
+                          withError:&error];
+
+    if (error) {
+      result([FlutterError
+          errorWithCode:@"storekit_invalid_payment_discount_object"
+                message:[NSString stringWithFormat:@"You have requested a payment and specified a "
+                                                   @"payment discount with invalid properties. %@",
+                                                   error]
+                details:call.arguments]);
+      return;
+    }
+
     payment.paymentDiscount = paymentDiscount;
   }
 

@@ -203,6 +203,40 @@
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
 }
 
+- (void)testAddPaymentFailureWithInvalidPaymentDiscount {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return success state"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandbox" : @YES,
+                                          @"paymentDiscount" : @{
+                                            @"keyIdentifier" : @"test_key_identifier",
+                                            @"nonce" : @"4a11a9cc-3bc3-11ec-8d3d-0242ac130003",
+                                            @"signature" : @"test_signature",
+                                            @"timestamp" : @(1635847102),
+                                          }
+                                        }];
+
+  [self.plugin
+      handleMethodCall:call
+                result:^(id r) {
+                  XCTAssertTrue([r isKindOfClass:FlutterError.class]);
+                  FlutterError* result = r;
+                  XCTAssertEqualObjects(result.code, @"storekit_invalid_payment_discount_object");
+                  XCTAssertEqualObjects(result.message,
+                                        @"You have requested a payment and specified a payment "
+                                        @"discount with invalid properties. When specifying a "
+                                        @"payment discount the 'identifier' field is mandatory.");
+                  XCTAssertEqualObjects(result.details, call.arguments);
+                  [expectation fulfill];
+                }];
+
+  [self waitForExpectations:@[ expectation ] timeout:5];
+}
+
 - (void)testAddPaymentWithNullSandboxArgument {
   XCTestExpectation* expectation =
       [self expectationWithDescription:@"result should return success state"];

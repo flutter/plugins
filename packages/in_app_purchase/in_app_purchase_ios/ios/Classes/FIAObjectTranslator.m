@@ -208,32 +208,51 @@
   return map;
 }
 
-+ (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map {
++ (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map
+                                         withError:(NSString **)error {
   if (!map || map.count <= 0) {
     return nil;
   }
 
-  NSAssert(map[@"identifier"],
-           @"When specifying a payment discount the 'identifier' field is mandatory.");
-  NSAssert(map[@"keyIdentifier"],
-           @"When specifying a payment discount the 'keyIdentifier' field is mandatory.");
-  NSAssert(map[@"nonce"], @"When specifying a payment discount the 'nonce' field is mandatory.");
-  NSAssert(map[@"signature"],
-           @"When specifying a payment discount the 'signature' field is mandatory.");
-  NSAssert(map[@"timestamp"],
-           @"When specifying a payment discount the 'timestamp' field is mandatory.");
-
   NSString *identifier = map[@"identifier"];
   NSString *keyIdentifier = map[@"keyIdentifier"];
-  NSUUID *nonce = [[NSUUID alloc] initWithUUIDString:map[@"nonce"]];
+  NSString *nonce = map[@"nonce"];
   NSString *signature = map[@"signature"];
   NSNumber *timestamp = map[@"timestamp"];
 
-  SKPaymentDiscount *discount = [[SKPaymentDiscount alloc] initWithIdentifier:identifier
-                                                                keyIdentifier:keyIdentifier
-                                                                        nonce:nonce
-                                                                    signature:signature
-                                                                    timestamp:timestamp];
+  if (!identifier || ![identifier isKindOfClass:NSString.class] ||
+      [identifier isEqualToString:@""]) {
+    *error = @"When specifying a payment discount the 'identifier' field is mandatory.";
+    return nil;
+  }
+
+  if (!keyIdentifier || ![keyIdentifier isKindOfClass:NSString.class] ||
+      [keyIdentifier isEqualToString:@""]) {
+    *error = @"When specifying a payment discount the 'keyIdentifier' field is mandatory.";
+    return nil;
+  }
+
+  if (!nonce || ![nonce isKindOfClass:NSString.class] || [nonce isEqualToString:@""]) {
+    *error = @"When specifying a payment discount the 'nonce' field is mandatory.";
+    return nil;
+  }
+
+  if (!signature || ![signature isKindOfClass:NSString.class] || [signature isEqualToString:@""]) {
+    *error = @"When specifying a payment discount the 'signature' field is mandatory.";
+    return nil;
+  }
+
+  if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || [timestamp intValue] <= 0) {
+    *error = @"When specifying a payment discount the 'timestamp' field is mandatory.";
+    return nil;
+  }
+
+  SKPaymentDiscount *discount =
+      [[SKPaymentDiscount alloc] initWithIdentifier:identifier
+                                      keyIdentifier:keyIdentifier
+                                              nonce:[[NSUUID alloc] initWithUUIDString:nonce]
+                                          signature:signature
+                                          timestamp:timestamp];
 
   return discount;
 }
