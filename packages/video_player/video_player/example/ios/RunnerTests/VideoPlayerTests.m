@@ -28,8 +28,8 @@
   OCMStub([partialRegistrar textures]).andReturn(mockTextureRegistry);
   [FLTVideoPlayerPlugin registerWithRegistrar:partialRegistrar];
   FLTVideoPlayerPlugin<FLTVideoPlayerApi> *videoPlayerPlugin =
-      (FLTVideoPlayerPlugin<FLTVideoPlayerApi> *)[registry
-          valuePublishedByPlugin:@"TEST_FLTVideoPlayerPlugin"];
+      (FLTVideoPlayerPlugin<FLTVideoPlayerApi> *)[[FLTVideoPlayerPlugin alloc]
+          initWithRegistrar:partialRegistrar];
   FLTPositionMessage *message = [[FLTPositionMessage alloc] init];
   message.textureId = @101;
   message.position = @0;
