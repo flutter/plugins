@@ -6,13 +6,15 @@ package io.flutter.plugins.webviewflutter;
 
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebSettingsHostApi;
+
 
 /**
  * Host api implementation for {@link WebSettings}.
  *
  * <p>Handles creating {@link WebSettings}s that intercommunicate with a paired Dart object.
  */
-public class WebSettingsHostApiImpl implements GeneratedAndroidWebView.WebSettingsHostApi {
+public class WebSettingsHostApiImpl implements WebSettingsHostApi {
   private final InstanceManager instanceManager;
   private final WebSettingsCreator webSettingsCreator;
 

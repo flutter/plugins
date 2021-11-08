@@ -10,12 +10,14 @@ import android.hardware.display.DisplayManager;
 import android.view.View;
 import android.webkit.DownloadListener;
 import android.webkit.WebChromeClient;
-import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import io.flutter.plugin.platform.PlatformView;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,7 +26,7 @@ import java.util.Map;
  *
  * <p>Handles creating {@link WebView}s that intercommunicate with a paired Dart object.
  */
-public class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostApi {
+public class WebViewHostApiImpl implements WebViewHostApi {
   // TODO(bparrishMines): This can be removed once pigeon supports null values: https://github.com/flutter/flutter/issues/59118
   // Workaround to represent null Strings since pigeon doesn't support null
   // values.
@@ -33,19 +35,31 @@ public class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostAp
   private final InstanceManager instanceManager;
   private final WebViewProxy webViewProxy;
   private final Context context;
+  // Only used with WebView using virtual displays.
+  @Nullable
+  private final View containerView;
 
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
     /**
-     * Creates a {@link WebSettings}.
+     * Creates a {@link WebViewPlatformView}.
      *
-     * @param usesHybridComposition whether the widget of the `WebView` will be rendered with Hybrid Composition
-     *
-     * @return the created {@link WebView}
+     * @param context an Activity Context to access application assets
+     * @return the created {@link WebViewPlatformView}
      */
-    public WebView createWebView(Context context, boolean usesHybridComposition) {
-      return usesHybridComposition ?
-          new WebViewPlatformView(context) : new InputAwareWebView(context, null);
+    public WebViewPlatformView createWebView(Context context) {
+      return new WebViewPlatformView(context);
+    }
+
+    /**
+     * Creates a {@link InputAwareWebViewPlatformView}.
+     *
+     * @param context an Activity Context to access application assets
+     * @param containerView parent View of the WebView
+     * @return the created {@link InputAwareWebViewPlatformView}
+     */
+    public InputAwareWebViewPlatformView createInputAwareWebView(Context context, @Nullable View containerView) {
+      return new InputAwareWebViewPlatformView(context, containerView);
     }
 
     /**
@@ -280,11 +294,13 @@ public class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostAp
    * @param instanceManager maintains instances stored to communicate with Dart objects
    * @param webViewProxy handles creating {@link WebView}s and calling its static methods
    * @param context an Activity Context to access application assets. This value cannot be null.
+   * @param containerView parent of the webView
    */
-  public WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context) {
+  public WebViewHostApiImpl(InstanceManager instanceManager, WebViewProxy webViewProxy, Context context, @Nullable View containerView) {
     this.instanceManager = instanceManager;
     this.webViewProxy = webViewProxy;
     this.context = context;
+    this.containerView = containerView;
   }
 
   @Override
@@ -294,7 +310,9 @@ public class WebViewHostApiImpl implements GeneratedAndroidWebView.WebViewHostAp
         (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
     displayListenerProxy.onPreWebViewInitialization(displayManager);
 
-    final WebView webView = webViewProxy.createWebView(context, useHybridComposition);
+    final WebView webView = useHybridComposition ?
+        webViewProxy.createWebView(context) :
+        webViewProxy.createInputAwareWebView(context, containerView);
 
     displayListenerProxy.onPostWebViewInitialization(displayManager);
     instanceManager.addInstance(webView, instanceId);
