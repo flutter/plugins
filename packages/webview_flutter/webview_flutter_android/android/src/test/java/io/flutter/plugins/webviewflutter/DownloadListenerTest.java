@@ -33,13 +33,15 @@ public class DownloadListenerTest {
     final DownloadListenerCreator downloadListenerCreator =
         new DownloadListenerCreator() {
           @Override
-          public DownloadListenerImpl createDownloadListener(DownloadListenerFlutterApiImpl flutterApi) {
+          public DownloadListenerImpl createDownloadListener(
+              DownloadListenerFlutterApiImpl flutterApi) {
             downloadListener = super.createDownloadListener(flutterApi);
             return downloadListener;
           }
         };
 
-    hostApiImpl = new DownloadListenerHostApiImpl(instanceManager, downloadListenerCreator, mockFlutterApi);
+    hostApiImpl =
+        new DownloadListenerHostApiImpl(instanceManager, downloadListenerCreator, mockFlutterApi);
     hostApiImpl.create(0L);
   }
 
@@ -49,7 +51,7 @@ public class DownloadListenerTest {
         "https://www.google.com", "userAgent", "contentDisposition", "mimetype", 54);
     verify(mockFlutterApi)
         .onDownloadStart(
-            eq(0L),
+            eq(downloadListener),
             eq("https://www.google.com"),
             eq("userAgent"),
             eq("contentDisposition"),

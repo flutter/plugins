@@ -11,9 +11,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListene
 /**
  * Flutter Api implementation for {@link DownloadListener}.
  *
- * <p>
- *  Passes arguments of callbacks methods from a {@link DownloadListener} to Dart.
- * </p>
+ * <p>Passes arguments of callbacks methods from a {@link DownloadListener} to Dart.
  */
 public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
   private final InstanceManager instanceManager;
@@ -24,14 +22,13 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
    * @param binaryMessenger handles sending messages to Dart
    * @param instanceManager maintains instances stored to communicate with Dart objects
    */
-  public DownloadListenerFlutterApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+  public DownloadListenerFlutterApiImpl(
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);
     this.instanceManager = instanceManager;
   }
 
-  /**
-   * Passes arguments from {@link DownloadListener#onDownloadStart} to Dart.
-   */
+  /** Passes arguments from {@link DownloadListener#onDownloadStart} to Dart. */
   public void onDownloadStart(
       DownloadListener downloadListener,
       String url,
@@ -41,7 +38,14 @@ public class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
       long contentLength,
       Reply<Void> callback) {
     System.out.println("GOOOOOOO");
-    onDownloadStart(instanceManager.getInstanceId(downloadListener), url, userAgent, contentDisposition, mimetype, contentLength, callback);
+    onDownloadStart(
+        instanceManager.getInstanceId(downloadListener),
+        url,
+        userAgent,
+        contentDisposition,
+        mimetype,
+        contentLength,
+        callback);
   }
 
   /**

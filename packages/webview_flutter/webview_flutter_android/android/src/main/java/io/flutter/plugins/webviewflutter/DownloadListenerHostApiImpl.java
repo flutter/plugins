@@ -5,16 +5,14 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.webkit.DownloadListener;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.DownloadListenerHostApi;
 
 /**
  * Host api implementation for {@link DownloadListener}.
  *
- * <p>
- *   Handles creating {@link DownloadListener}s that intercommunicate with a paired Dart object.
- * </p>
+ * <p>Handles creating {@link DownloadListener}s that intercommunicate with a paired Dart object.
  */
 public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
   private final InstanceManager instanceManager;
@@ -25,8 +23,7 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
    * Implementation of {@link DownloadListener} that passes arguments of callback methods to Dart.
    */
   public static class DownloadListenerImpl implements DownloadListener, Releasable {
-    @Nullable
-    private DownloadListenerFlutterApiImpl flutterApi;
+    @Nullable private DownloadListenerFlutterApiImpl flutterApi;
 
     /**
      * Creates a {@link DownloadListener} that passes arguments of callbacks methods to Dart.
@@ -46,22 +43,20 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
         long contentLength) {
       if (flutterApi != null) {
         flutterApi.onDownloadStart(
-            this, url, userAgent, contentDisposition, mimetype, contentLength, reply -> { });
+            this, url, userAgent, contentDisposition, mimetype, contentLength, reply -> {});
       }
     }
 
     @Override
     public void release() {
       if (flutterApi != null) {
-        flutterApi.dispose(this, reply -> { });
+        flutterApi.dispose(this, reply -> {});
       }
       flutterApi = null;
     }
   }
 
-  /**
-   * Handles creating {@link DownloadListenerImpl}s for a {@link DownloadListenerHostApiImpl}.
-   */
+  /** Handles creating {@link DownloadListenerImpl}s for a {@link DownloadListenerHostApiImpl}. */
   public static class DownloadListenerCreator {
     /**
      * Creates a {@link DownloadListenerImpl}.
@@ -92,7 +87,8 @@ public class DownloadListenerHostApiImpl implements DownloadListenerHostApi {
 
   @Override
   public void create(Long instanceId) {
-    final DownloadListener downloadListener = downloadListenerCreator.createDownloadListener(flutterApi);
+    final DownloadListener downloadListener =
+        downloadListenerCreator.createDownloadListener(flutterApi);
     instanceManager.addInstance(downloadListener, instanceId);
   }
 }

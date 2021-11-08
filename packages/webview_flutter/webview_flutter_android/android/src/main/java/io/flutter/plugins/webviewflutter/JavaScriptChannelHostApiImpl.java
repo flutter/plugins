@@ -10,9 +10,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChann
 /**
  * Host api implementation for {@link JavaScriptChannel}.
  *
- * <p>
- *   Handles creating {@link JavaScriptChannel}s that intercommunicate with a paired Dart object.
- * </p>
+ * <p>Handles creating {@link JavaScriptChannel}s that intercommunicate with a paired Dart object.
  */
 public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
   private final InstanceManager instanceManager;
@@ -20,9 +18,7 @@ public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
   private final JavaScriptChannelFlutterApiImpl flutterApi;
   private final Handler platformThreadHandler;
 
-  /**
-   * Handles creating {@link JavaScriptChannel}s for a {@link JavaScriptChannelHostApiImpl}.
-   */
+  /** Handles creating {@link JavaScriptChannel}s for a {@link JavaScriptChannelHostApiImpl}. */
   public static class JavaScriptChannelCreator {
     /**
      * Creates a {@link JavaScriptChannel}.
@@ -62,7 +58,8 @@ public class JavaScriptChannelHostApiImpl implements JavaScriptChannelHostApi {
   @Override
   public void create(Long instanceId, String channelName) {
     final JavaScriptChannel javaScriptChannel =
-        javaScriptChannelCreator.createJavaScriptChannel(flutterApi, channelName, platformThreadHandler);
+        javaScriptChannelCreator.createJavaScriptChannel(
+            flutterApi, channelName, platformThreadHandler);
     instanceManager.addInstance(javaScriptChannel, instanceId);
   }
 }

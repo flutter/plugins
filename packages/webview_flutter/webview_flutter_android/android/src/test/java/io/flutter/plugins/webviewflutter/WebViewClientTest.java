@@ -25,46 +25,54 @@ public class WebViewClientTest {
 
   @Mock public WebView mockWebView;
 
-  InstanceManager testInstanceManager;
-  WebViewClientHostApiImpl testHostApiImpl;
-  WebViewClient testWebViewClient;
+  InstanceManager instanceManager;
+  WebViewClientHostApiImpl hostApiImpl;
+  WebViewClient webViewClient;
 
   @Before
   public void setUp() {
-    testInstanceManager = new InstanceManager();
-    testInstanceManager.addInstance(mockWebView, 0L);
+    instanceManager = new InstanceManager();
+    instanceManager.addInstance(mockWebView, 0L);
 
     final WebViewClientCreator webViewClientCreator =
         new WebViewClientCreator() {
-      @Override
-          public WebViewClient createWebViewClient(WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
-            testWebViewClient = super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
-            return testWebViewClient;
+          @Override
+          public WebViewClient createWebViewClient(
+              WebViewClientFlutterApiImpl flutterApi, boolean shouldOverrideUrlLoading) {
+            webViewClient = super.createWebViewClient(flutterApi, shouldOverrideUrlLoading);
+            return webViewClient;
           }
         };
 
-    testHostApiImpl =
-        new WebViewClientHostApiImpl(testInstanceManager, webViewClientCreator, mockFlutterApi);
-    testHostApiImpl.create(1L, true);
+    hostApiImpl =
+        new WebViewClientHostApiImpl(instanceManager, webViewClientCreator, mockFlutterApi);
+    hostApiImpl.create(1L, true);
   }
 
   @Test
   public void onPageStarted() {
-    testWebViewClient.onPageStarted(mockWebView, "https://www.google.com", null);
-    verify(mockFlutterApi).onPageStarted(eq(1L), eq(0L), eq("https://www.google.com"), any());
+    webViewClient.onPageStarted(mockWebView, "https://www.google.com", null);
+    verify(mockFlutterApi)
+        .onPageStarted(eq(webViewClient), eq(mockWebView), eq("https://www.google.com"), any());
   }
 
   @Test
   public void onReceivedError() {
-    testWebViewClient.onReceivedError(mockWebView, 32, "description", "https://www.google.com");
+    webViewClient.onReceivedError(mockWebView, 32, "description", "https://www.google.com");
     verify(mockFlutterApi)
         .onReceivedError(
-            eq(1L), eq(0L), eq(32L), eq("description"), eq("https://www.google.com"), any());
+            eq(webViewClient),
+            eq(mockWebView),
+            eq(32L),
+            eq("description"),
+            eq("https://www.google.com"),
+            any());
   }
 
   @Test
   public void urlLoading() {
-    testWebViewClient.shouldOverrideUrlLoading(mockWebView, "https://www.google.com");
-    verify(mockFlutterApi).urlLoading(eq(1L), eq(0L), eq("https://www.google.com"), any());
+    webViewClient.shouldOverrideUrlLoading(mockWebView, "https://www.google.com");
+    verify(mockFlutterApi)
+        .urlLoading(eq(webViewClient), eq(mockWebView), eq("https://www.google.com"), any());
   }
 }

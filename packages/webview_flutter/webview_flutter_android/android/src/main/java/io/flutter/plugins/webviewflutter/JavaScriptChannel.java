@@ -7,10 +7,8 @@ package io.flutter.plugins.webviewflutter;
 import android.os.Handler;
 import android.os.Looper;
 import android.webkit.JavascriptInterface;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import io.flutter.plugin.common.MethodChannel;
 import java.util.HashMap;
 
@@ -18,7 +16,8 @@ import java.util.HashMap;
  * Added as a JavaScript interface to the WebView for any JavaScript channel that the Dart code sets
  * up.
  *
- * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message to the Dart code.
+ * <p>Exposes a single method named `postMessage` to JavaScript, which sends a message to the Dart
+ * code.
  */
 public class JavaScriptChannel implements Releasable {
   private final MethodChannel methodChannel;
@@ -63,13 +62,7 @@ public class JavaScriptChannel implements Releasable {
     Runnable postMessageRunnable = null;
 
     if (flutterApi != null) {
-      postMessageRunnable =
-          () -> flutterApi.postMessage(this, message, reply -> {});
-      if (platformThreadHandler.getLooper() == Looper.myLooper()) {
-        postMessageRunnable.run();
-      } else {
-        platformThreadHandler.post(postMessageRunnable);
-      }
+      postMessageRunnable = () -> flutterApi.postMessage(this, message, reply -> {});
     } else if (methodChannel != null) {
       postMessageRunnable =
           new Runnable() {
@@ -95,7 +88,7 @@ public class JavaScriptChannel implements Releasable {
   @Override
   public void release() {
     if (flutterApi != null) {
-      flutterApi.dispose(this, reply -> { });
+      flutterApi.dispose(this, reply -> {});
     }
     flutterApi = null;
   }

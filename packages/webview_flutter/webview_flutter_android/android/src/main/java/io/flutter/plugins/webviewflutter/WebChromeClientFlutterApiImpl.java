@@ -6,18 +6,13 @@ package io.flutter.plugins.webviewflutter;
 
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
-
 
 /**
  * Flutter Api implementation for {@link WebChromeClient}.
  *
- * <p>
- *  Passes arguments of callbacks methods from a {@link WebChromeClient} to Dart.
- * </p>
+ * <p>Passes arguments of callbacks methods from a {@link WebChromeClient} to Dart.
  */
 public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
   private final InstanceManager instanceManager;
@@ -34,11 +29,14 @@ public class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
     this.instanceManager = instanceManager;
   }
 
-  /**
-   * Passes arguments from {@link WebChromeClient#onProgressChanged} to Dart.
-   */
-  public void onProgressChanged(WebChromeClient webChromeClient, WebView webView, Long progress, Reply<Void> callback) {
-    super.onProgressChanged(instanceManager.getInstanceId(webChromeClient), instanceManager.getInstanceId(webView), progress, callback);
+  /** Passes arguments from {@link WebChromeClient#onProgressChanged} to Dart. */
+  public void onProgressChanged(
+      WebChromeClient webChromeClient, WebView webView, Long progress, Reply<Void> callback) {
+    super.onProgressChanged(
+        instanceManager.getInstanceId(webChromeClient),
+        instanceManager.getInstanceId(webView),
+        progress,
+        callback);
   }
 
   /**

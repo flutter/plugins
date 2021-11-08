@@ -38,7 +38,8 @@ public class JavaScriptChannelTest {
               String channelName,
               Handler platformThreadHandler) {
             javaScriptChannel =
-                super.createJavaScriptChannel(javaScriptChannelFlutterApi, channelName, platformThreadHandler);
+                super.createJavaScriptChannel(
+                    javaScriptChannelFlutterApi, channelName, platformThreadHandler);
             return javaScriptChannel;
           }
         };
@@ -52,6 +53,6 @@ public class JavaScriptChannelTest {
   @Test
   public void postMessage() {
     javaScriptChannel.postMessage("A message post.");
-    verify(mockFlutterApi).postMessage(eq(0L), eq("A message post."), any());
+    verify(mockFlutterApi).postMessage(eq(javaScriptChannel), eq("A message post."), any());
   }
 }

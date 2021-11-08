@@ -10,21 +10,15 @@ import android.webkit.WebResourceError;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
-
 import androidx.annotation.RequiresApi;
 import androidx.webkit.WebResourceErrorCompat;
-import androidx.webkit.WebResourceRequestCompat;
-
 import io.flutter.plugin.common.BinaryMessenger;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewClientFlutterApi;
 
 /**
  * Flutter Api implementation for {@link WebViewClient}.
  *
- * <p>
- *  Passes arguments of callbacks methods from a {@link WebViewClient} to Dart.
- * </p>
+ * <p>Passes arguments of callbacks methods from a {@link WebViewClient} to Dart.
  */
 public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   private final InstanceManager instanceManager;
@@ -80,56 +74,111 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
     this.instanceManager = instanceManager;
   }
 
-  /**
-   * Passes arguments from {@link WebViewClient#onPageStarted} to Dart.
-   */
-  public void onPageStarted(WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
-    onPageStarted(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webViewClient), urlArg, callback);
+  /** Passes arguments from {@link WebViewClient#onPageStarted} to Dart. */
+  public void onPageStarted(
+      WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
+    onPageStarted(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        urlArg,
+        callback);
+  }
+
+  /** Passes arguments from {@link WebViewClient#onPageFinished} to Dart. */
+  public void onPageFinished(
+      WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
+    onPageFinished(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        urlArg,
+        callback);
   }
 
   /**
-   * Passes arguments from {@link WebViewClient#onPageFinished} to Dart.
-   */
-  public void onPageFinished(WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
-    onPageFinished(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webView), urlArg, callback);
-  }
-
-  /**
-   * Passes arguments from {@link WebViewClient#onReceivedError(WebView, WebResourceRequest, WebResourceError)} to Dart.
+   * Passes arguments from {@link WebViewClient#onReceivedError(WebView, WebResourceRequest,
+   * WebResourceError)} to Dart.
    */
   @RequiresApi(api = Build.VERSION_CODES.M)
-  public void onReceivedRequestError(WebViewClient webViewClient, WebView webView, WebResourceRequest request, WebResourceError error, Reply<Void> callback) {
-    onReceivedRequestError(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webView), createWebResourceRequestData(request), createWebResourceErrorData(error), callback);
+  public void onReceivedRequestError(
+      WebViewClient webViewClient,
+      WebView webView,
+      WebResourceRequest request,
+      WebResourceError error,
+      Reply<Void> callback) {
+    onReceivedRequestError(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        createWebResourceRequestData(request),
+        createWebResourceErrorData(error),
+        callback);
   }
 
   /**
-   * Passes arguments from {@link androidx.webkit.WebViewClientCompat#onReceivedError(WebView, WebResourceRequest, WebResourceError)} to Dart.
+   * Passes arguments from {@link androidx.webkit.WebViewClientCompat#onReceivedError(WebView,
+   * WebResourceRequest, WebResourceError)} to Dart.
    */
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void onReceivedRequestError(WebViewClient webViewClient, WebView webView, WebResourceRequest request, WebResourceErrorCompat error, Reply<Void> callback) {
-    onReceivedRequestError(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webView), createWebResourceRequestData(request), createWebResourceErrorData(error), callback);
+  public void onReceivedRequestError(
+      WebViewClient webViewClient,
+      WebView webView,
+      WebResourceRequest request,
+      WebResourceErrorCompat error,
+      Reply<Void> callback) {
+    onReceivedRequestError(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        createWebResourceRequestData(request),
+        createWebResourceErrorData(error),
+        callback);
   }
 
   /**
-   * Passes arguments from {@link WebViewClient#onReceivedError(WebView, int, String, String)} to Dart.
+   * Passes arguments from {@link WebViewClient#onReceivedError(WebView, int, String, String)} to
+   * Dart.
    */
-  public void onReceivedError(WebViewClient webViewClient, WebView webView, Long errorCodeArg, String descriptionArg, String failingUrlArg, Reply<Void> callback) {
-    onReceivedError(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webView), errorCodeArg, descriptionArg, failingUrlArg, callback);
+  public void onReceivedError(
+      WebViewClient webViewClient,
+      WebView webView,
+      Long errorCodeArg,
+      String descriptionArg,
+      String failingUrlArg,
+      Reply<Void> callback) {
+    onReceivedError(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        errorCodeArg,
+        descriptionArg,
+        failingUrlArg,
+        callback);
   }
 
   /**
-   * Passes arguments from {@link WebViewClient#shouldOverrideUrlLoading(WebView, WebResourceRequest)} to Dart.
+   * Passes arguments from {@link WebViewClient#shouldOverrideUrlLoading(WebView,
+   * WebResourceRequest)} to Dart.
    */
   @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-  public void requestLoading(WebViewClient webViewClient, WebView webView, WebResourceRequest request, Reply<Void> callback) {
-    requestLoading(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webView), createWebResourceRequestData(request), callback);
+  public void requestLoading(
+      WebViewClient webViewClient,
+      WebView webView,
+      WebResourceRequest request,
+      Reply<Void> callback) {
+    requestLoading(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        createWebResourceRequestData(request),
+        callback);
   }
 
   /**
    * Passes arguments from {@link WebViewClient#shouldOverrideUrlLoading(WebView, String)} to Dart.
    */
-  public void urlLoading(WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
-    urlLoading(instanceManager.getInstanceId(webViewClient), instanceManager.getInstanceId(webView), urlArg, callback);
+  public void urlLoading(
+      WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
+    urlLoading(
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        urlArg,
+        callback);
   }
 
   /**

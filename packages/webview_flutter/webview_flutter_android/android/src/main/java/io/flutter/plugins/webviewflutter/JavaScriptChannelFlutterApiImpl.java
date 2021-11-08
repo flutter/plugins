@@ -10,9 +10,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.JavaScriptChann
 /**
  * Flutter Api implementation for {@link JavaScriptChannel}.
  *
- * <p>
- *  Passes arguments of callbacks methods from a {@link JavaScriptChannel} to Dart.
- * </p>
+ * <p>Passes arguments of callbacks methods from a {@link JavaScriptChannel} to Dart.
  */
 public class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
   private final InstanceManager instanceManager;
@@ -23,15 +21,15 @@ public class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi
    * @param binaryMessenger Handles sending messages to Dart.
    * @param instanceManager Maintains instances stored to communicate with Dart objects.
    */
-  public JavaScriptChannelFlutterApiImpl(BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
+  public JavaScriptChannelFlutterApiImpl(
+      BinaryMessenger binaryMessenger, InstanceManager instanceManager) {
     super(binaryMessenger);
     this.instanceManager = instanceManager;
   }
 
-  /**
-   * Passes arguments from {@link JavaScriptChannel#postMessage} to Dart.
-   */
-  public void postMessage(JavaScriptChannel javaScriptChannel, String messageArg, Reply<Void> callback) {
+  /** Passes arguments from {@link JavaScriptChannel#postMessage} to Dart. */
+  public void postMessage(
+      JavaScriptChannel javaScriptChannel, String messageArg, Reply<Void> callback) {
     super.postMessage(instanceManager.getInstanceId(javaScriptChannel), messageArg, callback);
   }
 
