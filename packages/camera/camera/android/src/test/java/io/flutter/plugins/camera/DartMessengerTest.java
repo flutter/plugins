@@ -49,12 +49,12 @@ public class DartMessengerTest {
     }
 
     @Override
-    void enableBufferingIncomingMessages() {
+    public void enableBufferingIncomingMessages() {
       // Do nothing.
     }
 
     @Override
-    void disableBufferingIncomingMessages() {
+    public void disableBufferingIncomingMessages() {
       // Do nothing.
     }
   }

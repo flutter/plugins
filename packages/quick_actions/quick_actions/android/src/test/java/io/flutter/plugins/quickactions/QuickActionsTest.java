@@ -55,12 +55,12 @@ public class QuickActionsTest {
     }
 
     @Override
-    void enableBufferingIncomingMessages() {
+    public void enableBufferingIncomingMessages() {
       // Do nothing.
     }
 
     @Override
-    void disableBufferingIncomingMessages() {
+    public void disableBufferingIncomingMessages() {
       // Do nothing.
     }
   }
