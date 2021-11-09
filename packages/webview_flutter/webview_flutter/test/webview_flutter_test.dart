@@ -1041,6 +1041,9 @@ List<dynamic> captureBuildArgs(
   )).captured;
 }
 
+// This Widget ensures that onWebViewPlatformCreated is only called once when
+// making multiple calls to `WidgetTester.pumpWidget` with different parameters
+// for the WebView.
 class TestPlatformWebView extends StatefulWidget {
   const TestPlatformWebView({
     Key? key,
