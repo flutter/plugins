@@ -10,11 +10,16 @@ import 'package:flutter/src/foundation/basic_types.dart';
 import 'package:flutter/src/gestures/recognizer.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'webview_flutter_test.mocks.dart';
+
 typedef void VoidCallback();
 
+@GenerateMocks([WebViewPlatform, WebViewPlatformController])
 class BadPlatform extends WebViewPlatform {
   @override
   Widget build({
@@ -45,48 +50,76 @@ void main() {
     //     .setMockMethodCallHandler(_fakeCookieManager.onMethodCall);
   });
 
+  late MockWebViewPlatform mockWebViewPlatform;
+  late MockWebViewPlatformController mockWebViewPlatformController;
+
   setUp(() {
     // fakePlatformViewsController.reset();
     // _fakeCookieManager.reset();
-    WebView.platform = MethodChannelPlatform();
+    mockWebViewPlatformController = MockWebViewPlatformController();
+    mockWebViewPlatform = MockWebViewPlatform();
+    when(mockWebViewPlatform.build(
+      context: anyNamed('context'),
+      creationParams: anyNamed('creationParams'),
+      webViewPlatformCallbacksHandler:
+          anyNamed('webViewPlatformCallbacksHandler'),
+      javascriptChannelRegistry: anyNamed('javascriptChannelRegistry'),
+      onWebViewPlatformCreated: anyNamed('onWebViewPlatformCreated'),
+      gestureRecognizers: anyNamed('gestureRecognizers'),
+    )).thenAnswer((Invocation invocation) {
+      final WebViewPlatformCreatedCallback onWebViewPlatformCreated =
+          invocation.namedArguments[Symbol('onWebViewPlatformCreated')];
+      return TestPlatformWebView(
+        mockWebViewPlatformController: mockWebViewPlatformController,
+        onWebViewPlatformCreated: onWebViewPlatformCreated,
+      );
+    });
+
+    WebView.platform = mockWebViewPlatform;
   });
 
-  // testWidgets('Create WebView', (WidgetTester tester) async {
-  //   await tester.pumpWidget(const WebView());
-  // });
-  //
-  // testWidgets('Initial url', (WidgetTester tester) async {
-  //   late WebViewController controller;
-  //   await tester.pumpWidget(
-  //     WebView(
-  //       initialUrl: 'https://youtube.com',
-  //       onWebViewCreated: (WebViewController webViewController) {
-  //         controller = webViewController;
-  //       },
-  //     ),
-  //   );
-  //
-  //   expect(await controller.currentUrl(), 'https://youtube.com');
-  // });
-  //
-  // testWidgets('Javascript mode', (WidgetTester tester) async {
-  //   await tester.pumpWidget(const WebView(
-  //     initialUrl: 'https://youtube.com',
-  //     javascriptMode: JavascriptMode.unrestricted,
-  //   ));
-  //
-  //   final FakePlatformWebView platformWebView =
-  //       fakePlatformViewsController.lastCreatedView!;
-  //
-  //   expect(platformWebView.javascriptMode, JavascriptMode.unrestricted);
-  //
-  //   await tester.pumpWidget(const WebView(
-  //     initialUrl: 'https://youtube.com',
-  //     javascriptMode: JavascriptMode.disabled,
-  //   ));
-  //   expect(platformWebView.javascriptMode, JavascriptMode.disabled);
-  // });
-  //
+  testWidgets('Create WebView', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView());
+  });
+
+  testWidgets('Initial url', (WidgetTester tester) async {
+    await tester.pumpWidget(WebView(initialUrl: 'https://youtube.com'));
+
+    final CreationParams params = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single;
+
+    expect(params.initialUrl, 'https://youtube.com');
+  });
+
+  testWidgets('Javascript mode', (WidgetTester tester) async {
+    await tester.pumpWidget(const WebView(
+      javascriptMode: JavascriptMode.unrestricted,
+    ));
+
+    final CreationParams unrestrictedparams = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single;
+
+    expect(
+      unrestrictedparams.webSettings!.javascriptMode,
+      JavascriptMode.unrestricted,
+    );
+
+    await tester.pumpWidget(const WebView(
+      javascriptMode: JavascriptMode.disabled,
+    ));
+
+    final CreationParams disabledparams = captureBuildArgs(
+      mockWebViewPlatform,
+      creationParams: true,
+    ).single;
+
+    expect(disabledparams.webSettings!.javascriptMode, JavascriptMode.disabled);
+  });
+
   // testWidgets('Load url', (WidgetTester tester) async {
   //   WebViewController? controller;
   //   await tester.pumpWidget(
@@ -97,11 +130,15 @@ void main() {
   //     ),
   //   );
   //
+  //   final CreationParams disabledparams = captureBuildArgs(
+  //     mockWebViewPlatform,
+  //     creationParams: true,
+  //   ).single;
+  //
   //   expect(controller, isNotNull);
   //
   //   await controller!.loadUrl('https://flutter.io');
   //
-  //   expect(await controller!.currentUrl(), 'https://flutter.io');
   // });
   //
   // testWidgets('Invalid urls', (WidgetTester tester) async {
@@ -1055,19 +1092,84 @@ void main() {
   // });
 }
 
-class FakePlatformWebView extends WebViewPlatform {
+List<dynamic> captureBuildArgs(
+  MockWebViewPlatform mockWebViewPlatform, {
+  bool context = false,
+  bool creationParams = false,
+  bool webViewPlatformCallbacksHandler = false,
+  bool javascriptChannelRegistry = false,
+  bool onWebViewPlatformCreated = false,
+  bool gestureRecognizers = false,
+}) {
+  return verify(mockWebViewPlatform.build(
+    context: context ? captureAnyNamed('context') : anyNamed('context'),
+    creationParams: creationParams
+        ? captureAnyNamed('creationParams')
+        : anyNamed('creationParams'),
+    webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler
+        ? captureAnyNamed('webViewPlatformCallbacksHandler')
+        : anyNamed('webViewPlatformCallbacksHandler'),
+    javascriptChannelRegistry: javascriptChannelRegistry
+        ? captureAnyNamed('javascriptChannelRegistry')
+        : anyNamed('javascriptChannelRegistry'),
+    onWebViewPlatformCreated: onWebViewPlatformCreated
+        ? captureAnyNamed('onWebViewPlatformCreated')
+        : anyNamed('onWebViewPlatformCreated'),
+    gestureRecognizers: gestureRecognizers
+        ? captureAnyNamed('gestureRecognizers')
+        : anyNamed('gestureRecognizers'),
+  )).captured;
+}
+
+class TestPlatformWebView extends StatefulWidget {
+  const TestPlatformWebView({
+    Key? key,
+    required this.mockWebViewPlatformController,
+    this.onWebViewPlatformCreated,
+  }) : super(key: key);
+
+  final MockWebViewPlatformController mockWebViewPlatformController;
+  final WebViewPlatformCreatedCallback? onWebViewPlatformCreated;
+
   @override
-  Widget build({
-    required BuildContext context,
-    required CreationParams creationParams,
-    required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
-    required JavascriptChannelRegistry javascriptChannelRegistry,
-    WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
-    Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
-  }) {
+  State<StatefulWidget> createState() => TestPlatformWebViewState();
+}
+
+class TestPlatformWebViewState extends State<TestPlatformWebView> {
+  @override
+  void initState() {
+    super.initState();
+    WebViewPlatformCreatedCallback? onWebViewPlatformCreated =
+        widget.onWebViewPlatformCreated;
+    if (onWebViewPlatformCreated != null) {
+      onWebViewPlatformCreated(widget.mockWebViewPlatformController);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container();
   }
 }
+
+// class TestWebViewPlatform extends WebViewPlatform {
+//   @override
+//   Widget build({
+//     required BuildContext context,
+//     required CreationParams creationParams,
+//     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
+//     required JavascriptChannelRegistry javascriptChannelRegistry,
+//     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
+//     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
+//   }) {
+//     return Container();
+//   }
+// }
+
+// class TestWebViewPlatformController extends WebViewPlatformController {
+//   TestWebViewPlatformController(WebViewPlatformCallbacksHandler handler)
+//       : super(handler);
+// }
 
 // class MethodChannelPlatform extends WebViewPlatform {
 //   int _nextPlatformWebViewId = 0;
