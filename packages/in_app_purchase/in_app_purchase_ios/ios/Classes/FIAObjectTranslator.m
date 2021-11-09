@@ -222,28 +222,38 @@
 
   if (!identifier || ![identifier isKindOfClass:NSString.class] ||
       [identifier isEqualToString:@""]) {
-    *error = @"When specifying a payment discount the 'identifier' field is mandatory.";
+    if (error) {
+      *error = @"When specifying a payment discount the 'identifier' field is mandatory.";
+    }
     return nil;
   }
 
   if (!keyIdentifier || ![keyIdentifier isKindOfClass:NSString.class] ||
       [keyIdentifier isEqualToString:@""]) {
-    *error = @"When specifying a payment discount the 'keyIdentifier' field is mandatory.";
+    if (error) {
+      *error = @"When specifying a payment discount the 'keyIdentifier' field is mandatory.";
+    }
     return nil;
   }
 
   if (!nonce || ![nonce isKindOfClass:NSString.class] || [nonce isEqualToString:@""]) {
-    *error = @"When specifying a payment discount the 'nonce' field is mandatory.";
+    if (error) {
+      *error = @"When specifying a payment discount the 'nonce' field is mandatory.";
+    }
     return nil;
   }
 
   if (!signature || ![signature isKindOfClass:NSString.class] || [signature isEqualToString:@""]) {
-    *error = @"When specifying a payment discount the 'signature' field is mandatory.";
+    if (error) {
+      *error = @"When specifying a payment discount the 'signature' field is mandatory.";
+    }
     return nil;
   }
 
   if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || [timestamp intValue] <= 0) {
-    *error = @"When specifying a payment discount the 'timestamp' field is mandatory.";
+    if (error) {
+      *error = @"When specifying a payment discount the 'timestamp' field is mandatory.";
+    }
     return nil;
   }
 
