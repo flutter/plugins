@@ -257,10 +257,10 @@ class WebView {
 
   /// Releases all resources used by the [WebView].
   ///
-  /// Any methods called on the [WebView] instance after [release] will throw
-  /// an exception.
+  /// Any methods called after [release] will throw an exception.
   Future<void> release() {
     _currentWebViewClient = null;
+    WebSettings.api.disposeFromInstance(settings);
     return api.disposeFromInstance(this);
   }
 }
