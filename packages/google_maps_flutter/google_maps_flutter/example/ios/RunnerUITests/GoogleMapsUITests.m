@@ -42,7 +42,8 @@
                                       }];
 }
 
-- (void)testUserInterface {
+// Temporarily disabled due to https://github.com/flutter/flutter/issues/93325
+- (void)skip_testUserInterface {
   XCUIApplication* app = self.app;
   XCUIElement* userInteface = app.staticTexts[@"User interface"];
   if (![userInteface waitForExistenceWithTimeout:30.0]) {
