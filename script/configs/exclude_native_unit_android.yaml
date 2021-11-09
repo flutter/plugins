@@ -9,3 +9,7 @@
 
 # No need for unit tests:
 - espresso
+
+# TODO(egarciad): Re-enable these tests https://github.com/flutter/flutter/issues/93286
+- camera/camera
+- quick_actions/quick_actions
