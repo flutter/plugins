@@ -59,7 +59,7 @@ const String _fakeCmakeCommand = 'path/to/cmake';
 
 void _createFakeCmakeCache(Directory pluginDir, Platform platform) {
   final CMakeProject project = CMakeProject(pluginDir.childDirectory('example'),
-      platform: platform, buildMode: 'Debug');
+      platform: platform, buildMode: 'Release');
   final File cache = project.buildDirectory.childFile('CMakeCache.txt');
   cache.createSync(recursive: true);
   cache.writeAsStringSync('CMAKE_COMMAND:INTERNAL=$_fakeCmakeCommand');
@@ -160,7 +160,7 @@ void main() {
                 .childDirectory('build')
                 .childDirectory('linux')
                 .childDirectory('x64')
-                .childDirectory('debug')
+                .childDirectory('release')
                 .path,
             '--target',
             'unit_tests'
@@ -881,7 +881,7 @@ void main() {
     group('Linux', () {
       test('builds and runs unit tests', () async {
         const String testBinaryRelativePath =
-            'build/linux/x64/debug/bar/plugin_test';
+            'build/linux/x64/release/bar/plugin_test';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'
@@ -915,7 +915,7 @@ void main() {
             ]));
       });
 
-      test('only runs debug unit tests', () async {
+      test('only runs release unit tests', () async {
         const String debugTestBinaryRelativePath =
             'build/linux/x64/debug/bar/plugin_test';
         const String releaseTestBinaryRelativePath =
@@ -929,8 +929,9 @@ void main() {
         });
         _createFakeCmakeCache(pluginDirectory, mockPlatform);
 
-        final File debugTestBinary = childFileWithSubcomponents(pluginDirectory,
-            <String>['example', ...debugTestBinaryRelativePath.split('/')]);
+        final File releaseTestBinary = childFileWithSubcomponents(
+            pluginDirectory,
+            <String>['example', ...releaseTestBinaryRelativePath.split('/')]);
 
         final List<String> output = await runCapturingPrint(runner, <String>[
           'native-test',
@@ -950,7 +951,7 @@ void main() {
             processRunner.recordedCalls,
             orderedEquals(<ProcessCall>[
               _getLinuxBuildCall(pluginDirectory),
-              ProcessCall(debugTestBinary.path, const <String>[], null),
+              ProcessCall(releaseTestBinary.path, const <String>[], null),
             ]));
       });
 
@@ -1015,7 +1016,7 @@ void main() {
 
       test('fails if a unit test fails', () async {
         const String testBinaryRelativePath =
-            'build/linux/x64/debug/bar/plugin_test';
+            'build/linux/x64/release/bar/plugin_test';
         final Directory pluginDirectory =
             createFakePlugin('plugin', packagesDir, extraFiles: <String>[
           'example/$testBinaryRelativePath'

@@ -457,7 +457,8 @@ this command.
           file.basename.endsWith('_tests.exe');
     }
 
-    return _runGoogleTestTests(plugin, 'Windows', isTestBinary: isTestBinary);
+    return _runGoogleTestTests(plugin, 'Windows', 'Debug',
+        isTestBinary: isTestBinary);
   }
 
   Future<_PlatformResult> _testLinux(
@@ -471,7 +472,16 @@ this command.
           file.basename.endsWith('_tests');
     }
 
-    return _runGoogleTestTests(plugin, 'Linux', isTestBinary: isTestBinary);
+    // Since Linux uses a single-config generator, building-examples only
+    // generates the build files for release, so the tests have to be run in
+    // release mode as well.
+    //
+    // TODO(stuartmorgan): Consider adding a command to `flutter` that would
+    // generate build files without doing a build, and using that instead of
+    // relying on running build-examples. See
+    // https://github.com/flutter/flutter/issues/93407.
+    return _runGoogleTestTests(plugin, 'Linux', 'Release',
+        isTestBinary: isTestBinary);
   }
 
   /// Finds every file in the [buildDirectoryName] subdirectory of [plugin]'s
@@ -482,7 +492,8 @@ this command.
   /// zero for success and non-zero for failure.
   Future<_PlatformResult> _runGoogleTestTests(
     RepositoryPackage plugin,
-    String platformName, {
+    String platformName,
+    String buildMode, {
     required bool Function(File) isTestBinary,
   }) async {
     final List<File> testBinaries = <File>[];
@@ -490,7 +501,9 @@ this command.
     bool buildFailed = false;
     for (final RepositoryPackage example in plugin.getExamples()) {
       final CMakeProject project = CMakeProject(example.directory,
-          buildMode: 'Debug', processRunner: processRunner, platform: platform);
+          buildMode: buildMode,
+          processRunner: processRunner,
+          platform: platform);
       if (!project.isConfigured()) {
         printError('ERROR: Run "flutter build" on ${example.displayName}, '
             'or run this tool\'s "build-examples" command, for the target '
@@ -513,10 +526,11 @@ this command.
           .whereType<File>()
           .where(isTestBinary)
           .where((File file) {
-        // Only run the debug build of the unit tests, to avoid running the
-        // same tests multiple times.
+        // Only run the `buildMode` build of the unit tests, to avoid running
+        // the same tests multiple times.
         final List<String> components = path.split(file.path);
-        return components.contains('debug') || components.contains('Debug');
+        return components.contains(buildMode) ||
+            components.contains(buildMode.toLowerCase());
       }));
     }
 
