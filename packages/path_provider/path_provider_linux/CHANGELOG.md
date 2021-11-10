@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Removed obsolete `pluginClass: none` from pubpsec.
+
 ## 2.1.0
 
 * Now `getTemporaryPath` returns the value of the `TMPDIR` environment variable primarily. If `TMPDIR` is not set, `/tmp` is returned.
