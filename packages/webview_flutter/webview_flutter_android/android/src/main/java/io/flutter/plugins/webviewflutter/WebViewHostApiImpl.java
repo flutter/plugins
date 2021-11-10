@@ -71,27 +71,40 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     }
   }
 
-  private static class ReleasableChild<T> {
-    @Nullable private T child;
+  private static class ReleasableValue<T> {
+    @Nullable private T value;
 
-    private ReleasableChild(@Nullable T child) {
-      this.child = child;
+    ReleasableValue() {}
+
+    ReleasableValue(@Nullable T value) {
+      this.value = value;
     }
 
-    private void release() {
-      if (child instanceof Releasable) {
-        ((Releasable) child).release();
+    void set(@Nullable T newValue) {
+      release();
+      value = newValue;
+    }
+
+    @Nullable
+    T get() {
+      return value;
+    }
+
+    void release() {
+      if (value instanceof Releasable) {
+        ((Releasable) value).release();
       }
-      child = null;
+      value = null;
     }
   }
 
   /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
   public static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
-    private ReleasableChild<WebViewClient> currentWebViewClient = new ReleasableChild<>(null);
-    private ReleasableChild<DownloadListener> currentDownloadListener = new ReleasableChild<>(null);
-    private ReleasableChild<WebChromeClient> currentWebChromeClient = new ReleasableChild<>(null);
-    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces =
+    private final ReleasableValue<WebViewClient> currentWebViewClient = new ReleasableValue<>();
+    private final ReleasableValue<DownloadListener> currentDownloadListener =
+        new ReleasableValue<>();
+    private final ReleasableValue<WebChromeClient> currentWebChromeClient = new ReleasableValue<>();
+    private final Map<String, ReleasableValue<JavaScriptChannel>> javaScriptInterfaces =
         new HashMap<>();
 
     /**
@@ -116,10 +129,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
-      currentWebViewClient.release();
-      currentWebViewClient = new ReleasableChild<>(webViewClient);
+      currentWebViewClient.set(webViewClient);
 
-      final WebChromeClient webChromeClient = currentWebChromeClient.child;
+      final WebChromeClient webChromeClient = currentWebChromeClient.get();
       if (webChromeClient instanceof WebChromeClientImpl) {
         ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
       }
@@ -128,15 +140,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
-      currentDownloadListener.release();
-      currentDownloadListener = new ReleasableChild<>(listener);
+      currentDownloadListener.set(listener);
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      currentWebChromeClient.release();
-      currentWebChromeClient = new ReleasableChild<>(client);
+      currentWebChromeClient.set(client);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -144,14 +154,14 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public void addJavascriptInterface(Object object, String name) {
       super.addJavascriptInterface(object, name);
       if (object instanceof JavaScriptChannel) {
-        javaScriptInterfaces.put(name, new ReleasableChild<>((JavaScriptChannel) object));
+        javaScriptInterfaces.put(name, new ReleasableValue<>((JavaScriptChannel) object));
       }
     }
 
     @Override
     public void removeJavascriptInterface(@NonNull String name) {
       super.removeJavascriptInterface(name);
-      final ReleasableChild<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
+      final ReleasableValue<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
       javaScriptChannel.release();
       javaScriptInterfaces.remove(name);
     }
@@ -161,7 +171,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       currentWebViewClient.release();
       currentDownloadListener.release();
       currentWebChromeClient.release();
-      for (ReleasableChild<JavaScriptChannel> channel : javaScriptInterfaces.values()) {
+      for (ReleasableValue<JavaScriptChannel> channel : javaScriptInterfaces.values()) {
         channel.release();
       }
       javaScriptInterfaces.clear();
@@ -175,10 +185,11 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @SuppressLint("ViewConstructor")
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView, Releasable {
-    private ReleasableChild<WebViewClient> currentWebViewClient = new ReleasableChild<>(null);
-    private ReleasableChild<DownloadListener> currentDownloadListener = new ReleasableChild<>(null);
-    private ReleasableChild<WebChromeClient> currentWebChromeClient = new ReleasableChild<>(null);
-    private final Map<String, ReleasableChild<JavaScriptChannel>> javaScriptInterfaces =
+    private final ReleasableValue<WebViewClient> currentWebViewClient = new ReleasableValue<>();
+    private final ReleasableValue<DownloadListener> currentDownloadListener =
+        new ReleasableValue<>();
+    private final ReleasableValue<WebChromeClient> currentWebChromeClient = new ReleasableValue<>();
+    private final Map<String, ReleasableValue<JavaScriptChannel>> javaScriptInterfaces =
         new HashMap<>();
 
     /**
@@ -224,10 +235,9 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
-      currentWebViewClient.release();
-      currentWebViewClient = new ReleasableChild<>(webViewClient);
+      currentWebViewClient.set(webViewClient);
 
-      final WebChromeClient webChromeClient = currentWebChromeClient.child;
+      final WebChromeClient webChromeClient = currentWebChromeClient.get();
       if (webChromeClient instanceof WebChromeClientImpl) {
         ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
       }
@@ -236,15 +246,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
-      currentDownloadListener.release();
-      currentDownloadListener = new ReleasableChild<>(listener);
+      currentDownloadListener.set(listener);
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      currentWebChromeClient.release();
-      currentWebChromeClient = new ReleasableChild<>(client);
+      currentWebChromeClient.set(client);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -252,14 +260,14 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public void addJavascriptInterface(Object object, String name) {
       super.addJavascriptInterface(object, name);
       if (object instanceof JavaScriptChannel) {
-        javaScriptInterfaces.put(name, new ReleasableChild<>((JavaScriptChannel) object));
+        javaScriptInterfaces.put(name, new ReleasableValue<>((JavaScriptChannel) object));
       }
     }
 
     @Override
     public void removeJavascriptInterface(@NonNull String name) {
       super.removeJavascriptInterface(name);
-      final ReleasableChild<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
+      final ReleasableValue<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
       javaScriptChannel.release();
       javaScriptInterfaces.remove(name);
     }
@@ -269,7 +277,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
       currentWebViewClient.release();
       currentDownloadListener.release();
       currentWebChromeClient.release();
-      for (ReleasableChild<JavaScriptChannel> channel : javaScriptInterfaces.values()) {
+      for (ReleasableValue<JavaScriptChannel> channel : javaScriptInterfaces.values()) {
         channel.release();
       }
       javaScriptInterfaces.clear();
