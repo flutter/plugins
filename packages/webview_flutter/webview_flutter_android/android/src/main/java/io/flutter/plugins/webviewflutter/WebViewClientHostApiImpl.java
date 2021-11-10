@@ -29,9 +29,14 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
   private final WebViewClientCreator webViewClientCreator;
   private final WebViewClientFlutterApiImpl flutterApi;
 
+  /**
+   * An interface implemented by a class that extends {@link WebViewClient} and {@link Releasable}.
+   */
+  public interface ReleasableWebViewClient extends Releasable {}
+
   /** Implementation of {@link WebViewClient} that passes arguments of callback methods to Dart. */
   @RequiresApi(Build.VERSION_CODES.N)
-  public static class WebViewClientImpl extends WebViewClient implements Releasable {
+  public static class WebViewClientImpl extends WebViewClient implements ReleasableWebViewClient {
     @Nullable private WebViewClientFlutterApiImpl flutterApi;
     private final boolean shouldOverrideUrlLoading;
 
@@ -112,7 +117,8 @@ public class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebView
    * Implementation of {@link WebViewClientCompat} that passes arguments of callback methods to
    * Dart.
    */
-  public static class WebViewClientCompatImpl extends WebViewClientCompat implements Releasable {
+  public static class WebViewClientCompatImpl extends WebViewClientCompat
+      implements ReleasableWebViewClient {
     private @Nullable WebViewClientFlutterApiImpl flutterApi;
     private final boolean shouldOverrideUrlLoading;
 

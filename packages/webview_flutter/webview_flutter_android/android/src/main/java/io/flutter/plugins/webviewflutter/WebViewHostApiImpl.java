@@ -15,8 +15,10 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import io.flutter.plugin.platform.PlatformView;
+import io.flutter.plugins.webviewflutter.DownloadListenerHostApiImpl.DownloadListenerImpl;
 import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
 import io.flutter.plugins.webviewflutter.WebChromeClientHostApiImpl.WebChromeClientImpl;
+import io.flutter.plugins.webviewflutter.WebViewClientHostApiImpl.ReleasableWebViewClient;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -71,7 +73,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     }
   }
 
-  private static class ReleasableValue<T> {
+  private static class ReleasableValue<T extends Releasable> {
     @Nullable private T value;
 
     ReleasableValue() {}
@@ -91,8 +93,8 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     }
 
     void release() {
-      if (value instanceof Releasable) {
-        ((Releasable) value).release();
+      if (value != null) {
+        value.release();
       }
       value = null;
     }
@@ -100,10 +102,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   /** Implementation of {@link WebView} that can be used as a Flutter {@link PlatformView}s. */
   public static class WebViewPlatformView extends WebView implements PlatformView, Releasable {
-    private final ReleasableValue<WebViewClient> currentWebViewClient = new ReleasableValue<>();
-    private final ReleasableValue<DownloadListener> currentDownloadListener =
+    private final ReleasableValue<WebViewClientHostApiImpl.ReleasableWebViewClient>
+        currentWebViewClient = new ReleasableValue<>();
+    private final ReleasableValue<DownloadListenerImpl> currentDownloadListener =
         new ReleasableValue<>();
-    private final ReleasableValue<WebChromeClient> currentWebChromeClient = new ReleasableValue<>();
+    private final ReleasableValue<WebChromeClientImpl> currentWebChromeClient =
+        new ReleasableValue<>();
     private final Map<String, ReleasableValue<JavaScriptChannel>> javaScriptInterfaces =
         new HashMap<>();
 
@@ -129,10 +133,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
-      currentWebViewClient.set(webViewClient);
+      currentWebViewClient.set((ReleasableWebViewClient) webViewClient);
 
-      final WebChromeClient webChromeClient = currentWebChromeClient.get();
-      if (webChromeClient instanceof WebChromeClientImpl) {
+      final WebChromeClientImpl webChromeClient = currentWebChromeClient.get();
+      if (webChromeClient != null) {
         ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
       }
     }
@@ -140,13 +144,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
-      currentDownloadListener.set(listener);
+      currentDownloadListener.set((DownloadListenerImpl) listener);
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      currentWebChromeClient.set(client);
+      currentWebChromeClient.set((WebChromeClientImpl) client);
     }
 
     @SuppressLint("JavascriptInterface")
@@ -185,10 +189,12 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @SuppressLint("ViewConstructor")
   public static class InputAwareWebViewPlatformView extends InputAwareWebView
       implements PlatformView, Releasable {
-    private final ReleasableValue<WebViewClient> currentWebViewClient = new ReleasableValue<>();
-    private final ReleasableValue<DownloadListener> currentDownloadListener =
+    private final ReleasableValue<WebViewClientHostApiImpl.ReleasableWebViewClient>
+        currentWebViewClient = new ReleasableValue<>();
+    private final ReleasableValue<DownloadListenerImpl> currentDownloadListener =
         new ReleasableValue<>();
-    private final ReleasableValue<WebChromeClient> currentWebChromeClient = new ReleasableValue<>();
+    private final ReleasableValue<WebChromeClientImpl> currentWebChromeClient =
+        new ReleasableValue<>();
     private final Map<String, ReleasableValue<JavaScriptChannel>> javaScriptInterfaces =
         new HashMap<>();
 
@@ -235,24 +241,24 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     @Override
     public void setWebViewClient(WebViewClient webViewClient) {
       super.setWebViewClient(webViewClient);
-      currentWebViewClient.set(webViewClient);
+      currentWebViewClient.set((ReleasableWebViewClient) webViewClient);
 
-      final WebChromeClient webChromeClient = currentWebChromeClient.get();
-      if (webChromeClient instanceof WebChromeClientImpl) {
-        ((WebChromeClientImpl) webChromeClient).setWebViewClient(webViewClient);
+      final WebChromeClientImpl webChromeClient = currentWebChromeClient.get();
+      if (webChromeClient != null) {
+        webChromeClient.setWebViewClient(webViewClient);
       }
     }
 
     @Override
     public void setDownloadListener(DownloadListener listener) {
       super.setDownloadListener(listener);
-      currentDownloadListener.set(listener);
+      currentDownloadListener.set((DownloadListenerImpl) listener);
     }
 
     @Override
     public void setWebChromeClient(WebChromeClient client) {
       super.setWebChromeClient(client);
-      currentWebChromeClient.set(client);
+      currentWebChromeClient.set((WebChromeClientImpl) client);
     }
 
     @SuppressLint("JavascriptInterface")
