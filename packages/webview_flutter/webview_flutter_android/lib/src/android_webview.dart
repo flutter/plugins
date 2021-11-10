@@ -401,7 +401,7 @@ class WebSettings {
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(this.channelName) {
-    AndroidWebViewFlutterApis.instance.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
@@ -419,7 +419,7 @@ abstract class JavaScriptChannel {
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
   WebViewClient({this.shouldOverrideUrlLoading = true}) {
-    AndroidWebViewFlutterApis.instance.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
 
   /// User authentication failed on server.
@@ -588,7 +588,7 @@ abstract class WebViewClient {
 abstract class DownloadListener {
   /// Constructs a [DownloadListener].
   DownloadListener() {
-    AndroidWebViewFlutterApis.instance.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
 
   /// Pigeon Host Api implementation for [DownloadListener].
@@ -609,7 +609,7 @@ abstract class DownloadListener {
 abstract class WebChromeClient {
   /// Constructs a [WebChromeClient].
   WebChromeClient() {
-    AndroidWebViewFlutterApis.instance.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureSetUp();
   }
 
   /// Pigeon Host Api implementation for [WebChromeClient].

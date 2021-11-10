@@ -48,7 +48,7 @@ class AndroidWebViewFlutterApis {
         javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
   }
 
-  static bool _flutterApisHaveBeenSetUp = false;
+  static bool _haveBeenSetUp = false;
 
   /// Mutable instance containing all Flutter Apis for Android WebView.
   ///
@@ -68,13 +68,13 @@ class AndroidWebViewFlutterApis {
   late final JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi;
 
   /// Ensures all the Flutter APIs have been setup to receive calls from native code.
-  void ensureInitialized() {
-    if (!_flutterApisHaveBeenSetUp) {
+  void ensureSetUp() {
+    if (!_haveBeenSetUp) {
       DownloadListenerFlutterApi.setup(downloadListenerFlutterApi);
       WebViewClientFlutterApi.setup(webViewClientFlutterApi);
       WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
       JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
-      _flutterApisHaveBeenSetUp = true;
+      _haveBeenSetUp = true;
     }
   }
 }
