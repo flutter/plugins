@@ -105,24 +105,24 @@ abstract class WebSettingsHostApi {
 @HostApi(dartHostTestHandler: 'TestJavaScriptChannelHostApi')
 abstract class JavaScriptChannelHostApi {
   void create(int instanceId, String channelName);
-
-  void dispose(int instanceId);
 }
 
 @FlutterApi()
 abstract class JavaScriptChannelFlutterApi {
+  void dispose(int instanceId);
+
   void postMessage(int instanceId, String message);
 }
 
 @HostApi(dartHostTestHandler: 'TestWebViewClientHostApi')
 abstract class WebViewClientHostApi {
   void create(int instanceId, bool shouldOverrideUrlLoading);
-
-  void dispose(int instanceId);
 }
 
 @FlutterApi()
 abstract class WebViewClientFlutterApi {
+  void dispose(int instanceId);
+
   void onPageStarted(int instanceId, int webViewInstanceId, String url);
 
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
@@ -154,11 +154,12 @@ abstract class WebViewClientFlutterApi {
 @HostApi(dartHostTestHandler: 'TestDownloadListenerHostApi')
 abstract class DownloadListenerHostApi {
   void create(int instanceId);
-  void dispose(int instanceId);
 }
 
 @FlutterApi()
 abstract class DownloadListenerFlutterApi {
+  void dispose(int instanceId);
+
   void onDownloadStart(
     int instanceId,
     String url,
@@ -172,10 +173,11 @@ abstract class DownloadListenerFlutterApi {
 @HostApi(dartHostTestHandler: 'TestWebChromeClientHostApi')
 abstract class WebChromeClientHostApi {
   void create(int instanceId, int webViewClientInstanceId);
-  void dispose(int instanceId);
 }
 
 @FlutterApi()
 abstract class WebChromeClientFlutterApi {
+  void dispose(int instanceId);
+
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress);
 }
