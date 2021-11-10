@@ -13,20 +13,6 @@ import 'android_webview_api_impls.dart';
 // values.
 const String _nullStringIdentifier = '<null-value>';
 
-class _AndroidWebViewFlutterApis {
-  static bool _flutterApisHaveBeenSetUp = false;
-
-  static void ensureInitialized() {
-    if (!_flutterApisHaveBeenSetUp) {
-      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
-      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
-      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
-      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
-      _flutterApisHaveBeenSetUp = true;
-    }
-  }
-}
-
 /// An Android View that displays web pages.
 ///
 /// **Basic usage**
@@ -415,7 +401,7 @@ class WebSettings {
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(this.channelName) {
-    _AndroidWebViewFlutterApis.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureInitialized();
   }
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
@@ -433,7 +419,7 @@ abstract class JavaScriptChannel {
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
   WebViewClient({this.shouldOverrideUrlLoading = true}) {
-    _AndroidWebViewFlutterApis.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureInitialized();
   }
 
   /// User authentication failed on server.
@@ -602,7 +588,7 @@ abstract class WebViewClient {
 abstract class DownloadListener {
   /// Constructs a [DownloadListener].
   DownloadListener() {
-    _AndroidWebViewFlutterApis.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureInitialized();
   }
 
   /// Pigeon Host Api implementation for [DownloadListener].
@@ -623,7 +609,7 @@ abstract class DownloadListener {
 abstract class WebChromeClient {
   /// Constructs a [WebChromeClient].
   WebChromeClient() {
-    _AndroidWebViewFlutterApis.ensureInitialized();
+    AndroidWebViewFlutterApis.instance.ensureInitialized();
   }
 
   /// Pigeon Host Api implementation for [WebChromeClient].

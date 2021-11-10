@@ -29,6 +29,56 @@ WebResourceError _toWebResourceError(WebResourceErrorData data) {
   );
 }
 
+/// Handles initialization of Flutter APIs for Android WebView.
+class AndroidWebViewFlutterApis {
+  /// Creates a [AndroidWebViewFlutterApis].
+  AndroidWebViewFlutterApis({
+    DownloadListenerFlutterApiImpl? downloadListenerFlutterApi,
+    WebViewClientFlutterApiImpl? webViewClientFlutterApi,
+    WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
+    JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
+  }) {
+    this.downloadListenerFlutterApi =
+        downloadListenerFlutterApi ?? DownloadListenerFlutterApiImpl();
+    this.webViewClientFlutterApi =
+        webViewClientFlutterApi ?? WebViewClientFlutterApiImpl();
+    this.webChromeClientFlutterApi =
+        webChromeClientFlutterApi ?? WebChromeClientFlutterApiImpl();
+    this.javaScriptChannelFlutterApi =
+        javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
+  }
+
+  static bool _flutterApisHaveBeenSetUp = false;
+
+  /// Mutable instance containing all Flutter Apis for Android WebView.
+  ///
+  /// This should only be changed for testing purposes.
+  static AndroidWebViewFlutterApis instance = AndroidWebViewFlutterApis();
+
+  /// Flutter Api for [DownloadListener].
+  late final DownloadListenerFlutterApiImpl downloadListenerFlutterApi;
+
+  /// Flutter Api for [WebViewClient].
+  late final WebViewClientFlutterApiImpl webViewClientFlutterApi;
+
+  /// Flutter Api for [WebChromeClient].
+  late final WebChromeClientFlutterApiImpl webChromeClientFlutterApi;
+
+  /// Flutter Api for [JavaScriptChannel].
+  late final JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi;
+
+  /// Ensures all the Flutter APIs have been setup to receive calls from native code.
+  void ensureInitialized() {
+    if (!_flutterApisHaveBeenSetUp) {
+      DownloadListenerFlutterApi.setup(downloadListenerFlutterApi);
+      WebViewClientFlutterApi.setup(webViewClientFlutterApi);
+      WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
+      JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
+      _flutterApisHaveBeenSetUp = true;
+    }
+  }
+}
+
 /// Host api implementation for [WebView].
 class WebViewHostApiImpl extends WebViewHostApi {
   /// Constructs a [WebViewHostApiImpl].
