@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "FLTWKProgressionDelegate.h"
+#import "FlutterWebView_Test.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
