@@ -20,6 +20,8 @@ dependencies:
   flutter:
     sdk: flutter
   webview_flutter_platform_interface: ^1.2.0
+  flutter_web_plugins:
+    sdk: flutter
 
 dev_dependencies:
   flutter_driver:
@@ -28,4 +30,5 @@ dev_dependencies:
     sdk: flutter
   pigeon: 1.0.7
   pedantic: ^1.10.0
+  mockito: ^5.0.0
 

@@ -7,7 +7,7 @@ import 'dart:html';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_web_plugins/src/plugin_registry.dart';
+import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 import 'shims/dart_ui.dart' as ui;
 
@@ -30,7 +30,7 @@ class WebWebViewPlatform implements WebViewPlatform {
     required BuildContext context,
     required CreationParams creationParams,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
-    required JavascriptChannelRegistry javascriptChannelRegistry,
+    required JavascriptChannelRegistry? javascriptChannelRegistry,
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
@@ -47,7 +47,7 @@ class WebWebViewPlatform implements WebViewPlatform {
           element.src = creationParams.initialUrl;
         }
         onWebViewPlatformCreated(WebWebViewPlatformController(
-          viewId,
+          element,
           webViewPlatformCallbacksHandler,
         ));
       },
@@ -55,17 +55,17 @@ class WebWebViewPlatform implements WebViewPlatform {
   }
 
   @override
-  Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
+  Future<bool> clearCookies() async => false;
 
   static void registerWith(Registrar registrar) {}
 }
 
 class WebWebViewPlatformController implements WebViewPlatformController {
-  final int viewId;
-  final WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler;
+  final IFrameElement _element;
+  final WebViewPlatformCallbacksHandler _webViewPlatformCallbacksHandler;
 
   WebWebViewPlatformController(
-      this.viewId, this.webViewPlatformCallbacksHandler);
+      this._element, this._webViewPlatformCallbacksHandler);
 
   @override
   Future<void> addJavascriptChannels(Set<String> javascriptChannelNames) {
@@ -134,9 +134,9 @@ class WebWebViewPlatformController implements WebViewPlatformController {
   }
 
   @override
-  Future<void> loadUrl(String url, Map<String, String>? headers) {
-    // TODO: implement loadUrl
-    throw UnimplementedError();
+  Future<void> loadUrl(String url, Map<String, String>? headers) async {
+    // TODO: Utilize headers
+    _element.src = url;
   }
 
   @override

@@ -30,6 +30,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/sample_audio.ogg
-    - assets/sample_video.mp4
