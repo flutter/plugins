@@ -1,6 +1,11 @@
-## 2.2.7
+## 2.2.8
 
 * iOS: Update texture on `seekTo`.
+
+## 2.2.7
+
+* Fixes a regression where dragging a [VideoProgressIndicator] while playing
+  would restart playback from the start of the video.
 
 ## 2.2.6
 
