@@ -80,11 +80,16 @@ public class WebViewTest {
     final WebChromeClientImpl mockWebChromeClient = mock(WebChromeClientImpl.class);
     final DownloadListenerImpl mockDownloadListener = mock(DownloadListenerImpl.class);
     final JavaScriptChannel mockJavaScriptChannel = mock(JavaScriptChannel.class);
+    final JavaScriptChannel mockJavaScriptChannel2 = mock(JavaScriptChannel.class);
 
     webView.setWebViewClient(mockWebViewClient);
     webView.setWebChromeClient(mockWebChromeClient);
     webView.setDownloadListener(mockDownloadListener);
     webView.addJavascriptInterface(mockJavaScriptChannel, "jchannel");
+
+    // Release should be called on the object added above.
+    webView.addJavascriptInterface(mockJavaScriptChannel2, "jchannel");
+    verify(mockJavaScriptChannel).release();
 
     webView.setWebViewClient(null);
     webView.setWebChromeClient(null);
@@ -94,7 +99,7 @@ public class WebViewTest {
     verify(mockWebViewClient).release();
     verify(mockWebChromeClient).release();
     verify(mockDownloadListener).release();
-    verify(mockJavaScriptChannel).release();
+    verify(mockJavaScriptChannel2).release();
   }
 
   @Test
@@ -129,11 +134,16 @@ public class WebViewTest {
     final WebChromeClientImpl mockWebChromeClient = mock(WebChromeClientImpl.class);
     final DownloadListenerImpl mockDownloadListener = mock(DownloadListenerImpl.class);
     final JavaScriptChannel mockJavaScriptChannel = mock(JavaScriptChannel.class);
+    final JavaScriptChannel mockJavaScriptChannel2 = mock(JavaScriptChannel.class);
 
     webView.setWebViewClient(mockWebViewClient);
     webView.setWebChromeClient(mockWebChromeClient);
     webView.setDownloadListener(mockDownloadListener);
     webView.addJavascriptInterface(mockJavaScriptChannel, "jchannel");
+
+    // Release should be called on the object added above.
+    webView.addJavascriptInterface(mockJavaScriptChannel2, "jchannel");
+    verify(mockJavaScriptChannel).release();
 
     webView.setWebViewClient(null);
     webView.setWebChromeClient(null);
@@ -143,7 +153,7 @@ public class WebViewTest {
     verify(mockWebViewClient).release();
     verify(mockWebChromeClient).release();
     verify(mockDownloadListener).release();
-    verify(mockJavaScriptChannel).release();
+    verify(mockJavaScriptChannel2).release();
   }
 
   @Test

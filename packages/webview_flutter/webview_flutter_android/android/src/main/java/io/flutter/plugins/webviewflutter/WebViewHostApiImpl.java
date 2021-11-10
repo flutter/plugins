@@ -158,6 +158,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public void addJavascriptInterface(Object object, String name) {
       super.addJavascriptInterface(object, name);
       if (object instanceof JavaScriptChannel) {
+        final ReleasableValue<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
+        if (javaScriptChannel != null && javaScriptChannel.get() != object) {
+          javaScriptChannel.release();
+        }
         javaScriptInterfaces.put(name, new ReleasableValue<>((JavaScriptChannel) object));
       }
     }
@@ -266,6 +270,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     public void addJavascriptInterface(Object object, String name) {
       super.addJavascriptInterface(object, name);
       if (object instanceof JavaScriptChannel) {
+        final ReleasableValue<JavaScriptChannel> javaScriptChannel = javaScriptInterfaces.get(name);
+        if (javaScriptChannel != null && javaScriptChannel.get() != object) {
+          javaScriptChannel.release();
+        }
         javaScriptInterfaces.put(name, new ReleasableValue<>((JavaScriptChannel) object));
       }
     }
