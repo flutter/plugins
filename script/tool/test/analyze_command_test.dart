@@ -253,7 +253,7 @@ void main() {
   });
 
   // Ensure that the command used to analyze flutter/plugins in the Dart repo:
-  // https://github.com/dart-lang/sdk/blob/master/tools/bots/flutter/analyze_flutter_plugins.sh
+  // https://github.com/dart-lang/sdk/blob/main/tools/bots/flutter/analyze_flutter_plugins.sh
   // continues to work.
   //
   // DO NOT remove or modify this test without a coordination plan in place to

@@ -81,7 +81,8 @@ abstract class PluginCommand extends Command<void> {
     argParser.addFlag(_packagesForBranchArg,
         help:
             'This runs on all packages (equivalent to no package selection flag)\n'
-            'on master, and behaves like --run-on-changed-packages on any other branch.\n\n'
+            'on main (or master), and behaves like --run-on-changed-packages on '
+            'any other branch.\n\n'
             'Cannot be combined with $_packagesArg.\n\n'
             'This is intended for use in CI.\n',
         hide: true);
@@ -301,7 +302,7 @@ abstract class PluginCommand extends Command<void> {
             'only be used in a git repository.');
         throw ToolExit(exitInvalidArguments);
       } else {
-        runOnChangedPackages = branch != 'master';
+        runOnChangedPackages = branch != 'master' && branch != 'main';
         // Log the mode for auditing what was intended to run.
         print('--$_packagesForBranchArg: running on '
             '${runOnChangedPackages ? 'changed' : 'all'} packages');
