@@ -13,6 +13,20 @@ import 'android_webview_api_impls.dart';
 // values.
 const String _nullStringIdentifier = '<null-value>';
 
+class _AndroidWebViewFlutterApis {
+  static bool _flutterApisHaveBeenSetUp = false;
+
+  static void ensureInitialized() {
+    if (!_flutterApisHaveBeenSetUp) {
+      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
+      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
+      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
+      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
+      _flutterApisHaveBeenSetUp = true;
+    }
+  }
+}
+
 /// An Android View that displays web pages.
 ///
 /// **Basic usage**
@@ -401,17 +415,12 @@ class WebSettings {
 abstract class JavaScriptChannel {
   /// Constructs a [JavaScriptChannel].
   JavaScriptChannel(this.channelName) {
-    if (!_flutterApisHaveBeenSetUp) {
-      JavaScriptChannelFlutterApi.setup(JavaScriptChannelFlutterApiImpl());
-      _flutterApisHaveBeenSetUp = true;
-    }
+    _AndroidWebViewFlutterApis.ensureInitialized();
   }
 
   /// Pigeon Host Api implementation for [JavaScriptChannel].
   @visibleForTesting
   static JavaScriptChannelHostApiImpl api = JavaScriptChannelHostApiImpl();
-
-  static bool _flutterApisHaveBeenSetUp = false;
 
   /// Used to identify this object to receive messages from javaScript.
   final String channelName;
@@ -424,13 +433,8 @@ abstract class JavaScriptChannel {
 abstract class WebViewClient {
   /// Constructs a [WebViewClient].
   WebViewClient({this.shouldOverrideUrlLoading = true}) {
-    if (!_flutterApisHaveBeenSetUp) {
-      WebViewClientFlutterApi.setup(WebViewClientFlutterApiImpl());
-      _flutterApisHaveBeenSetUp = true;
-    }
+    _AndroidWebViewFlutterApis.ensureInitialized();
   }
-
-  static bool _flutterApisHaveBeenSetUp = false;
 
   /// User authentication failed on server.
   ///
@@ -598,13 +602,8 @@ abstract class WebViewClient {
 abstract class DownloadListener {
   /// Constructs a [DownloadListener].
   DownloadListener() {
-    if (!_flutterApisHaveBeenSetUp) {
-      DownloadListenerFlutterApi.setup(DownloadListenerFlutterApiImpl());
-      _flutterApisHaveBeenSetUp = true;
-    }
+    _AndroidWebViewFlutterApis.ensureInitialized();
   }
-
-  static bool _flutterApisHaveBeenSetUp = false;
 
   /// Pigeon Host Api implementation for [DownloadListener].
   @visibleForTesting
@@ -624,13 +623,8 @@ abstract class DownloadListener {
 abstract class WebChromeClient {
   /// Constructs a [WebChromeClient].
   WebChromeClient() {
-    if (!_flutterApisHaveBeenSetUp) {
-      WebChromeClientFlutterApi.setup(WebChromeClientFlutterApiImpl());
-      _flutterApisHaveBeenSetUp = true;
-    }
+    _AndroidWebViewFlutterApis.ensureInitialized();
   }
-
-  static bool _flutterApisHaveBeenSetUp = false;
 
   /// Pigeon Host Api implementation for [WebChromeClient].
   @visibleForTesting

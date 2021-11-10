@@ -242,7 +242,17 @@ void main() {
       });
 
       test('release', () {
+        final MockTestWebSettingsHostApi mockWebSettingsPlatformHostApi =
+            MockTestWebSettingsHostApi();
+        TestWebSettingsHostApi.setup(mockWebSettingsPlatformHostApi);
+
+        WebSettings.api =
+            WebSettingsHostApiImpl(instanceManager: instanceManager);
+        final int webSettingsInstanceId =
+            instanceManager.getInstanceId(webView.settings)!;
+
         webView.release();
+        verify(mockWebSettingsPlatformHostApi.dispose(webSettingsInstanceId));
         verify(mockPlatformHostApi.dispose(webViewInstanceId));
       });
     });
