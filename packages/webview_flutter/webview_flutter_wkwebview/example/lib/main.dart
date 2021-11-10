@@ -6,6 +6,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
@@ -120,6 +121,7 @@ enum _MenuOptions {
   listCache,
   clearCache,
   navigationDelegate,
+  doPostRequest,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -157,6 +159,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.navigationDelegate:
                 _onNavigationDelegateExample(controller.data!, context);
                 break;
+              case _MenuOptions.doPostRequest:
+                _onDoPostRequest(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -188,6 +193,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.navigationDelegate,
               child: Text('Navigation Delegate example'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.doPostRequest,
+              child: Text('Post Request'),
             ),
           ],
         );
@@ -257,6 +266,17 @@ class _SampleMenu extends StatelessWidget {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));
     await controller.loadUrl('data:text/html;base64,$contentBase64');
+  }
+
+  void _onDoPostRequest(
+      WebViewController controller, BuildContext context) async {
+    WebViewRequest request = WebViewRequest(
+      uri: Uri.parse('https://httpbin.org/post'),
+      method: WebViewRequestMethod.post,
+      headers: {'foo': 'bar', 'Content-Type': 'text/plain'},
+      body: Uint8List.fromList('Test Body'.codeUnits),
+    );
+    await controller.loadRequest(request);
   }
 
   Widget _getCookieList(String cookies) {

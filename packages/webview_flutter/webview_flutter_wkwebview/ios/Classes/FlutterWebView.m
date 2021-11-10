@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "FLTWKProgressionDelegate.h"
+#import "FlutterWebView_Test.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -116,7 +117,11 @@
 
     NSString* initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+      NSURL* url = [NSURL URLWithString:initialUrl];
+      if (url) {
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+        [_webView loadRequest:request];
+      }
     }
   }
   return self;
@@ -137,6 +142,8 @@
     [self onUpdateSettings:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadRequest"]) {
+    [self onLoadRequest:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -186,12 +193,34 @@
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if (![self loadRequest:[call arguments]]) {
+  NSMutableDictionary* requestData = [[NSMutableDictionary alloc] init];
+  if (call.arguments[@"url"]) {
+    requestData[@"uri"] = call.arguments[@"url"];
+  }
+  if (call.arguments[@"headers"]) {
+    requestData[@"headers"] = call.arguments[@"headers"];
+  }
+  NSURLRequest* request = [self buildNSURLRequest:@{@"request" : requestData}];
+  if (!request) {
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
+    [_webView loadRequest:request];
+    result(nil);
+  }
+}
+
+- (void)onLoadRequest:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSURLRequest* request = [self buildNSURLRequest:[call arguments]];
+  if (!request) {
+    result([FlutterError
+        errorWithCode:@"loadRequest_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    [_webView loadRequest:request];
     result(nil);
   }
 }
@@ -459,37 +488,47 @@
   }
 }
 
-- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
-  if (!request) {
-    return false;
+/**
+ * Parses the method call arguments and converts them to an NSURLRequest object.
+ *
+ * @param arguments the method call arguments.
+ *
+ * @return NSURLRequest object.
+ */
+- (NSURLRequest*)buildNSURLRequest:(NSDictionary<NSString*, id>*)arguments {
+  id requestParameters = arguments[@"request"];
+  if (![requestParameters isKindOfClass:[NSDictionary class]]) {
+    return nil;
   }
 
-  NSString* url = request[@"url"];
-  if ([url isKindOfClass:[NSString class]]) {
-    id headers = request[@"headers"];
-    if ([headers isKindOfClass:[NSDictionary class]]) {
-      return [self loadUrl:url withHeaders:headers];
-    } else {
-      return [self loadUrl:url];
-    }
+  NSString* urlString = requestParameters[@"uri"];
+  if (!urlString) {
+    return nil;
   }
 
-  return false;
-}
-
-- (bool)loadUrl:(NSString*)url {
-  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
-}
-
-- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
-  NSURL* nsUrl = [NSURL URLWithString:url];
-  if (!nsUrl) {
-    return false;
+  NSURL* url = [NSURL URLWithString:urlString];
+  if (!url) {
+    return nil;
   }
-  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-  [request setAllHTTPHeaderFields:headers];
-  [_webView loadRequest:request];
-  return true;
+
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+
+  NSString* httpMethod = requestParameters[@"method"];
+  if (httpMethod) {
+    [request setHTTPMethod:httpMethod];
+  }
+
+  id httpBody = requestParameters[@"body"];
+  if ([httpBody isKindOfClass:[FlutterStandardTypedData class]]) {
+    [request setHTTPBody:[httpBody data]];
+  }
+
+  id headers = requestParameters[@"headers"];
+  if ([headers isKindOfClass:[NSDictionary class]]) {
+    [request setAllHTTPHeaderFields:headers];
+  }
+
+  return request;
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
