@@ -12,6 +12,7 @@ import 'package:platform/platform.dart';
 import 'common/core.dart';
 import 'common/package_looping_command.dart';
 import 'common/process_runner.dart';
+import 'common/repository_package.dart';
 
 const int _exitUnsupportedPlatform = 2;
 const int _exitPodNotInstalled = 3;
@@ -64,7 +65,7 @@ class LintPodspecsCommand extends PackageLoopingCommand {
   }
 
   @override
-  Future<PackageResult> runForPackage(Directory package) async {
+  Future<PackageResult> runForPackage(RepositoryPackage package) async {
     final List<String> errors = <String>[];
 
     final List<File> podspecs = await _podspecsToLint(package);
@@ -82,7 +83,7 @@ class LintPodspecsCommand extends PackageLoopingCommand {
         : PackageResult.fail(errors);
   }
 
-  Future<List<File>> _podspecsToLint(Directory package) async {
+  Future<List<File>> _podspecsToLint(RepositoryPackage package) async {
     final List<File> podspecs =
         await getFilesForPackage(package).where((File entity) {
       final String filePath = entity.path;

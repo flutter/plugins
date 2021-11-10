@@ -8,14 +8,14 @@
 
 - [ ] I read the [Contributor Guide] and followed the process outlined there for submitting PRs.
 - [ ] I read the [Tree Hygiene] wiki page, which explains my responsibilities.
-- [ ] I read and followed the [relevant style guides] and ran [the auto-formatter]. (Note that unlike the flutter/flutter repo, the flutter/plugins repo does use `dart format`.)
+- [ ] I read and followed the [relevant style guides] and ran [the auto-formatter]. (Unlike the flutter/flutter repo, the flutter/plugins repo does use `dart format`.)
 - [ ] I signed the [CLA].
 - [ ] The title of the PR starts with the name of the plugin surrounded by square brackets, e.g. `[shared_preferences]`
 - [ ] I listed at least one issue that this PR fixes in the description above.
-- [ ] I [updated pubspec.yaml](https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#version-and-changelog-updates) with an appropriate new version according to the [pub versioning philosophy].
-- [ ] I updated CHANGELOG.md to add a description of the change.
+- [ ] I updated `pubspec.yaml` with an appropriate new version according to the [pub versioning philosophy], or this PR is [exempt from version changes].
+- [ ] I updated `CHANGELOG.md` to add a description of the change.
 - [ ] I updated/added relevant documentation (doc comments with `///`).
-- [ ] I added new tests to check the change I am making or feature I am adding, or Hixie said the PR is test exempt.
+- [ ] I added new tests to check the change I am making, or this PR is [test-exempt].
 - [ ] All existing and new tests are passing.
 
 If you need help, consider asking for advice on the #hackers-new channel on [Discord].
@@ -29,4 +29,6 @@ If you need help, consider asking for advice on the #hackers-new channel on [Dis
 [breaking change policy]: https://github.com/flutter/flutter/wiki/Tree-hygiene#handling-breaking-changes
 [Discord]: https://github.com/flutter/flutter/wiki/Chat
 [pub versioning philosophy]: https://dart.dev/tools/pub/versioning
+[exempt from version changes]: https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages#version-and-changelog-updates
 [the auto-formatter]: https://github.com/flutter/plugins/blob/master/script/tool/README.md#format-code
+[test-exempt]: https://github.com/flutter/flutter/wiki/Tree-hygiene#tests

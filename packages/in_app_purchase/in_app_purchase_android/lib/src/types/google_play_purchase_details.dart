@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_android/src/billing_client_wrappers/enum_converters.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../../billing_client_wrappers.dart';
@@ -20,29 +19,18 @@ class GooglePlayPurchaseDetails extends PurchaseDetails {
     required this.billingClientPurchase,
     required PurchaseStatus status,
   }) : super(
-            productID: productID,
-            purchaseID: purchaseID,
-            transactionDate: transactionDate,
-            verificationData: verificationData,
-            status: status) {
-    this.status = status;
+          productID: productID,
+          purchaseID: purchaseID,
+          transactionDate: transactionDate,
+          verificationData: verificationData,
+          status: status,
+        ) {
+    this.pendingCompletePurchase = !billingClientPurchase.isAcknowledged;
   }
 
   /// Points back to the [PurchaseWrapper] which was used to generate this
   /// [GooglePlayPurchaseDetails] object.
   final PurchaseWrapper billingClientPurchase;
-
-  late PurchaseStatus _status;
-
-  /// The status that this [PurchaseDetails] is currently on.
-  PurchaseStatus get status => _status;
-  set status(PurchaseStatus status) {
-    _pendingCompletePurchase = status == PurchaseStatus.purchased;
-    _status = status;
-  }
-
-  bool _pendingCompletePurchase = false;
-  bool get pendingCompletePurchase => _pendingCompletePurchase;
 
   /// Generate a [PurchaseDetails] object based on an Android [Purchase] object.
   factory GooglePlayPurchaseDetails.fromPurchase(PurchaseWrapper purchase) {

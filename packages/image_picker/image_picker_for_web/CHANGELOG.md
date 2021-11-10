@@ -1,3 +1,12 @@
+## 2.1.4
+
+* Implemented `maxWidth`, `maxHeight` and `imageQuality` when selecting images
+  (except for gifs).
+
+## 2.1.3
+
+* Add `implements` to pubspec.
+
 ## 2.1.2
 
 * Updated installation instructions in README.
