@@ -1,3 +1,7 @@
+## 2.0.7
+
+* Moved Android and iOS implementations to federated packages.
+
 ## 2.0.6
 
 * Added support for Background Platform Channels on Android when it is
