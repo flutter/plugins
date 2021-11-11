@@ -42,13 +42,13 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Construct a [WebViewAndroidPlatformController].
   WebViewAndroidPlatformController({
     required this.webView,
-    WebViewAndroidWebViewClient? webViewClient,
     WebViewAndroidDownloadListener? downloadListener,
     WebViewAndroidWebChromeClient? webChromeClient,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
-  }) : super(callbacksHandler) {
+  })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
+        super(callbacksHandler) {
     webView.settings.setDomStorageEnabled(true);
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
     webView.settings.setSupportMultipleWindows(true);
@@ -57,28 +57,19 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     webView.settings.setDisplayZoomControls(false);
     webView.settings.setBuiltInZoomControls(true);
 
-    _webViewClient = webViewClient ??
-        WebViewAndroidWebViewClient(
-          callbacksHandler: callbacksHandler,
-          loadUrl: loadUrl,
-          hasNavigationDelegate:
-              creationParams.webSettings?.hasNavigationDelegate ?? false,
-        );
+    this.downloadListener =
+        downloadListener ?? WebViewAndroidDownloadListener(loadUrl: loadUrl);
+    this.webChromeClient = webChromeClient ?? WebViewAndroidWebChromeClient();
 
-    this.downloadListener = downloadListener ??
-        WebViewAndroidDownloadListener(
-          callbacksHandler: callbacksHandler,
-          loadUrl: loadUrl,
-        );
+    _setCreationParams(creationParams);
 
-    this.webChromeClient = webChromeClient ??
-        WebViewAndroidWebChromeClient(callbacksHandler: callbacksHandler);
-
-    webView.setWebViewClient(this.webViewClient);
     webView.setDownloadListener(this.downloadListener);
     webView.setWebChromeClient(this.webChromeClient);
 
-    _setCreationParams(creationParams);
+    final String? initialUrl = creationParams.initialUrl;
+    if (initialUrl != null) {
+      loadUrl(initialUrl, <String, String>{});
+    }
   }
 
   /// Initial parameters used to setup the WebView.
@@ -238,16 +229,13 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     }
 
     addJavascriptChannels(creationParams.javascriptChannelNames);
-
-    final String? initialUrl = creationParams.initialUrl;
-    if (initialUrl != null) {
-      loadUrl(initialUrl, <String, String>{});
-    }
   }
 
   Future<void> _trySetHasProgressTracking(bool? hasProgressTracking) {
-    if (hasProgressTracking != null) {
-      webChromeClient.hasProgressTracking = hasProgressTracking;
+    if (hasProgressTracking == true) {
+      webChromeClient._onProgress = callbacksHandler.onProgress;
+    } else if (hasProgressTracking == false) {
+      webChromeClient._onProgress = null;
     }
 
     return Future<void>.sync(() => null);
@@ -256,17 +244,24 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<void> _trySetHasNavigationDelegate(bool? hasNavigationDelegate) {
     if (hasNavigationDelegate == null) return Future<void>.sync(() => null);
 
-    downloadListener.hasNavigationDelegate = hasNavigationDelegate;
-    if (_webViewClient.hasNavigationDelegate != hasNavigationDelegate) {
-      _webViewClient = WebViewAndroidWebViewClient(
-        callbacksHandler: callbacksHandler,
+    downloadListener._onNavigationRequest =
+        callbacksHandler.onNavigationRequest;
+    if (hasNavigationDelegate) {
+      _webViewClient = WebViewAndroidWebViewClient.handlesNavigation(
+        onPageStartedCallback: callbacksHandler.onPageStarted,
+        onPageFinishedCallback: callbacksHandler.onPageFinished,
+        onWebResourceErrorCallback: callbacksHandler.onWebResourceError,
         loadUrl: loadUrl,
-        hasNavigationDelegate: hasNavigationDelegate,
+        onNavigationRequestCallback: callbacksHandler.onNavigationRequest,
       );
-      return webView.setWebViewClient(_webViewClient);
+    } else {
+      _webViewClient = WebViewAndroidWebViewClient(
+        onPageStartedCallback: callbacksHandler.onPageStarted,
+        onPageFinishedCallback: callbacksHandler.onPageFinished,
+        onWebResourceErrorCallback: callbacksHandler.onWebResourceError,
+      );
     }
-
-    return Future<void>.sync(() => null);
+    return webView.setWebViewClient(_webViewClient);
   }
 
   Future<void> _trySetJavaScriptMode(JavascriptMode? mode) async {
@@ -316,14 +311,13 @@ class WebViewAndroidJavaScriptChannel
 }
 
 class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
-  WebViewAndroidDownloadListener({
-    required this.callbacksHandler,
-    required this.loadUrl,
-  });
+  WebViewAndroidDownloadListener({required this.loadUrl});
 
-  final WebViewPlatformCallbacksHandler callbacksHandler;
   final Future<void> Function(String url, Map<String, String>? headers) loadUrl;
-  bool hasNavigationDelegate = false;
+  FutureOr<bool> Function({
+    required String url,
+    required bool isForMainFrame,
+  })? _onNavigationRequest;
 
   @override
   void onDownloadStart(
@@ -333,9 +327,9 @@ class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
     String mimetype,
     int contentLength,
   ) {
-    if (!hasNavigationDelegate) return;
+    if (_onNavigationRequest == null) return;
 
-    final FutureOr<bool> returnValue = callbacksHandler.onNavigationRequest(
+    final FutureOr<bool> returnValue = _onNavigationRequest!(
       url: url,
       isForMainFrame: true,
     );
@@ -354,14 +348,41 @@ class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
 
 class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
   WebViewAndroidWebViewClient({
-    required this.callbacksHandler,
-    required this.loadUrl,
-    this.hasNavigationDelegate = false,
-  }) : super(shouldOverrideUrlLoading: hasNavigationDelegate);
+    required this.onPageStartedCallback,
+    required this.onPageFinishedCallback,
+    required this.onWebResourceErrorCallback,
+  })  : loadUrl = null,
+        onNavigationRequestCallback = null,
+        super(shouldOverrideUrlLoading: false);
 
-  final WebViewPlatformCallbacksHandler callbacksHandler;
-  final Future<void> Function(String url, Map<String, String>? headers) loadUrl;
-  final bool hasNavigationDelegate;
+  WebViewAndroidWebViewClient.handlesNavigation({
+    required this.onPageStartedCallback,
+    required this.onPageFinishedCallback,
+    required this.onWebResourceErrorCallback,
+    required FutureOr<bool> Function({
+      required String url,
+      required bool isForMainFrame,
+    })
+        onNavigationRequestCallback,
+    required Future<void> Function(String url, Map<String, String>? headers)
+        loadUrl,
+  })  : onNavigationRequestCallback = onNavigationRequestCallback,
+        loadUrl = loadUrl,
+        super(shouldOverrideUrlLoading: true);
+
+  final void Function(String url) onPageStartedCallback;
+
+  final void Function(String url) onPageFinishedCallback;
+
+  void Function(WebResourceError error) onWebResourceErrorCallback;
+
+  final FutureOr<bool> Function({
+    required String url,
+    required bool isForMainFrame,
+  })? onNavigationRequestCallback;
+
+  final Future<void> Function(String url, Map<String, String>? headers)?
+      loadUrl;
 
   static WebResourceErrorType _errorCodeToErrorType(int errorCode) {
     switch (errorCode) {
@@ -404,14 +425,17 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     );
   }
 
+  bool get handlesNavigation =>
+      loadUrl != null && onNavigationRequestCallback != null;
+
   @override
   void onPageStarted(android_webview.WebView webView, String url) {
-    callbacksHandler.onPageStarted(url);
+    onPageStartedCallback(url);
   }
 
   @override
   void onPageFinished(android_webview.WebView webView, String url) {
-    callbacksHandler.onPageFinished(url);
+    onPageFinishedCallback(url);
   }
 
   @override
@@ -421,7 +445,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     String description,
     String failingUrl,
   ) {
-    callbacksHandler.onWebResourceError(WebResourceError(
+    onWebResourceErrorCallback(WebResourceError(
       errorCode: errorCode,
       description: description,
       failingUrl: failingUrl,
@@ -436,7 +460,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     android_webview.WebResourceError error,
   ) {
     if (request.isForMainFrame) {
-      callbacksHandler.onWebResourceError(WebResourceError(
+      onWebResourceErrorCallback(WebResourceError(
         errorCode: error.errorCode,
         description: error.description,
         failingUrl: request.url,
@@ -447,19 +471,19 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
   @override
   void urlLoading(android_webview.WebView webView, String url) {
-    if (!hasNavigationDelegate) return;
+    if (!handlesNavigation) return;
 
-    final FutureOr<bool> returnValue = callbacksHandler.onNavigationRequest(
+    final FutureOr<bool> returnValue = onNavigationRequestCallback!(
       url: url,
       isForMainFrame: true,
     );
 
     if (returnValue is bool && returnValue) {
-      loadUrl(url, <String, String>{});
+      loadUrl!(url, <String, String>{});
     } else {
       (returnValue as Future<bool>).then((bool shouldLoadUrl) {
         if (shouldLoadUrl) {
-          loadUrl(url, <String, String>{});
+          loadUrl!(url, <String, String>{});
         }
       });
     }
@@ -470,19 +494,19 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     android_webview.WebView webView,
     android_webview.WebResourceRequest request,
   ) {
-    if (!hasNavigationDelegate) return;
+    if (!handlesNavigation) return;
 
-    final FutureOr<bool> returnValue = callbacksHandler.onNavigationRequest(
+    final FutureOr<bool> returnValue = onNavigationRequestCallback!(
       url: request.url,
       isForMainFrame: request.isForMainFrame,
     );
 
     if (returnValue is bool && returnValue) {
-      loadUrl(request.url, <String, String>{});
+      loadUrl!(request.url, <String, String>{});
     } else {
       (returnValue as Future<bool>).then((bool shouldLoadUrl) {
         if (shouldLoadUrl) {
-          loadUrl(request.url, <String, String>{});
+          loadUrl!(request.url, <String, String>{});
         }
       });
     }
@@ -490,13 +514,12 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 }
 
 class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {
-  WebViewAndroidWebChromeClient({required this.callbacksHandler});
-
-  final WebViewPlatformCallbacksHandler callbacksHandler;
-  bool hasProgressTracking = false;
+  void Function(int progress)? _onProgress;
 
   @override
   void onProgressChanged(android_webview.WebView webView, int progress) {
-    if (hasProgressTracking) callbacksHandler.onProgress(progress);
+    if (_onProgress != null) {
+      _onProgress!(progress);
+    }
   }
 }
