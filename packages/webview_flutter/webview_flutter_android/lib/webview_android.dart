@@ -12,6 +12,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import 'webview_widget.dart';
 import 'src/instance_manager.dart';
+import 'src/android_webview.dart';
 
 /// Builds an Android webview.
 ///
@@ -28,12 +29,17 @@ class AndroidWebView implements WebViewPlatform {
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
-    return AndroidWebViewWidget(
+    final WebViewAndroidPlatformController controller =
+        WebViewAndroidPlatformController(
+      webView: WebView(useHybridComposition: false),
       creationParams: creationParams,
-      webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler,
+      callbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,
-      useHybridComposition: false,
-      onBuildWidget: (AndroidWebViewPlatformController platformController) {
+    );
+
+    return AndroidWebViewWidget(
+      controller: controller,
+      onBuildWidget: () {
         return GestureDetector(
           // We prevent text selection by intercepting the long press event.
           // This is a temporary stop gap due to issues with text selection on Android:
@@ -48,14 +54,14 @@ class AndroidWebView implements WebViewPlatform {
             viewType: 'plugins.flutter.io/webview',
             onPlatformViewCreated: (int id) {
               if (onWebViewPlatformCreated != null) {
-                onWebViewPlatformCreated(platformController);
+                onWebViewPlatformCreated(controller);
               }
             },
             gestureRecognizers: gestureRecognizers,
             layoutDirection:
                 Directionality.maybeOf(context) ?? TextDirection.rtl,
-            creationParams: InstanceManager.instance
-                .getInstanceId(platformController.webView),
+            creationParams:
+                InstanceManager.instance.getInstanceId(controller.webView),
             creationParamsCodec: const StandardMessageCodec(),
           ),
         );

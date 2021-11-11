@@ -13,44 +13,42 @@ import 'src/android_webview.dart' as android_webview;
 /// Creates a [Widget] with a [android_webview.WebView].
 class AndroidWebViewWidget extends StatefulWidget {
   /// Constructs a [AndroidWebViewWidget].
-  AndroidWebViewWidget({
-    required this.creationParams,
-    required this.webViewPlatformCallbacksHandler,
-    required this.javascriptChannelRegistry,
-    required this.useHybridComposition,
-    required this.onBuildWidget,
-  });
+  AndroidWebViewWidget({required this.controller, required this.onBuildWidget});
 
-  /// Initial parameters used to setup the WebView.
-  final CreationParams creationParams;
-
-  /// Handles callbacks that are made by the created [AndroidWebViewPlatformController].
-  final WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler;
-
-  /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
-  final JavascriptChannelRegistry javascriptChannelRegistry;
-
-  /// Whether the Widget will be rendered with Hybrid Composition.
-  final bool useHybridComposition;
+  final WebViewAndroidPlatformController controller;
 
   /// Callback to build a widget once [android_webview.WebView] has been initialized.
-  final Widget Function(AndroidWebViewPlatformController platformController)
-      onBuildWidget;
+  final Widget Function() onBuildWidget;
 
   @override
   State<StatefulWidget> createState() => _AndroidWebViewWidgetState();
 }
 
 class _AndroidWebViewWidgetState extends State<AndroidWebViewWidget> {
-  late android_webview.WebView webView;
-  late AndroidWebViewPlatformController platformController;
+  @override
+  void dispose() {
+    super.dispose();
+    widget.controller.release();
+  }
 
   @override
-  void initState() {
-    super.initState();
-    webView = android_webview.WebView(
-      useHybridComposition: widget.useHybridComposition,
-    );
+  Widget build(BuildContext context) {
+    return widget.onBuildWidget();
+  }
+}
+
+/// Implementation of [WebViewPlatformController] with the Android WebView api.
+class WebViewAndroidPlatformController extends WebViewPlatformController {
+  /// Construct a [WebViewAndroidPlatformController].
+  WebViewAndroidPlatformController({
+    required this.webView,
+    WebViewAndroidWebViewClient? webViewClient,
+    WebViewAndroidDownloadListener? downloadListener,
+    WebViewAndroidWebChromeClient? webChromeClient,
+    required this.creationParams,
+    required this.callbacksHandler,
+    required this.javascriptChannelRegistry,
+  }) : super(callbacksHandler) {
     webView.settings.setDomStorageEnabled(true);
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
     webView.settings.setSupportMultipleWindows(true);
@@ -59,83 +57,32 @@ class _AndroidWebViewWidgetState extends State<AndroidWebViewWidget> {
     webView.settings.setDisplayZoomControls(false);
     webView.settings.setBuiltInZoomControls(true);
 
-    platformController = AndroidWebViewPlatformController(
-      webView: webView,
-      callbacksHandler: widget.webViewPlatformCallbacksHandler,
-      javascriptChannelRegistry: widget.javascriptChannelRegistry,
-      hasNavigationDelegate:
-          widget.creationParams.webSettings?.hasNavigationDelegate ?? false,
-    );
+    _webViewClient = webViewClient ??
+        WebViewAndroidWebViewClient(
+          callbacksHandler: callbacksHandler,
+          loadUrl: loadUrl,
+          hasNavigationDelegate:
+              creationParams.webSettings?.hasNavigationDelegate ?? false,
+        );
 
-    setCreationParams(widget.creationParams);
+    this.downloadListener = downloadListener ??
+        WebViewAndroidDownloadListener(
+          callbacksHandler: callbacksHandler,
+          loadUrl: loadUrl,
+        );
+
+    this.webChromeClient =
+        WebViewAndroidWebChromeClient(callbacksHandler: callbacksHandler);
+
+    webView.setWebViewClient(this.webViewClient);
+    webView.setDownloadListener(this.downloadListener);
+    webView.setWebChromeClient(this.webChromeClient);
+
+    _setCreationParams(creationParams);
   }
 
-  void setCreationParams(CreationParams creationParams) {
-    final WebSettings? webSettings = creationParams.webSettings;
-    if (webSettings != null) {
-      platformController.updateSettings(webSettings);
-    }
-
-    final String? userAgent = creationParams.userAgent;
-    if (userAgent != null) {
-      webView.settings.setUserAgentString(userAgent);
-    }
-
-    final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy =
-        creationParams.autoMediaPlaybackPolicy;
-    switch (autoMediaPlaybackPolicy) {
-      case AutoMediaPlaybackPolicy.always_allow:
-        webView.settings.setMediaPlaybackRequiresUserGesture(false);
-        break;
-      default:
-        webView.settings.setMediaPlaybackRequiresUserGesture(true);
-    }
-
-    platformController.addJavascriptChannels(
-      creationParams.javascriptChannelNames,
-    );
-
-    final String? initialUrl = creationParams.initialUrl;
-    if (initialUrl != null) {
-      platformController.loadUrl(initialUrl, <String, String>{});
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    platformController.webView.release();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.onBuildWidget(platformController);
-  }
-}
-
-/// Implementation of [WebViewPlatformController] with the Android WebView api.
-class AndroidWebViewPlatformController extends WebViewPlatformController {
-  /// Construct a [AndroidWebViewPlatformController].
-  AndroidWebViewPlatformController({
-    required this.webView,
-    required this.callbacksHandler,
-    required this.javascriptChannelRegistry,
-    required bool hasNavigationDelegate,
-  }) : super(callbacksHandler) {
-    _webViewClient = _WebViewClientImpl(
-      callbacksHandler: callbacksHandler,
-      loadUrl: loadUrl,
-      hasNavigationDelegate: hasNavigationDelegate,
-    );
-    _downloadListener = _DownloadListenerImpl(
-      callbacksHandler: callbacksHandler,
-      loadUrl: loadUrl,
-    );
-    _webChromeClient = _WebChromeClientImpl(callbacksHandler: callbacksHandler);
-    webView.setWebViewClient(_webViewClient);
-    webView.setDownloadListener(_downloadListener);
-    webView.setWebChromeClient(_webChromeClient);
-  }
+  /// Initial parameters used to setup the WebView.
+  final CreationParams creationParams;
 
   /// Represents the WebView maintained by platform code.
   final android_webview.WebView webView;
@@ -146,11 +93,16 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
   /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
-  final Map<String, _JavaScriptChannelImpl> _javaScriptChannels =
-      <String, _JavaScriptChannelImpl>{};
-  late final _DownloadListenerImpl _downloadListener;
-  late final _WebChromeClientImpl _webChromeClient;
-  late _WebViewClientImpl _webViewClient;
+  final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
+      <String, WebViewAndroidJavaScriptChannel>{};
+
+  late final WebViewAndroidDownloadListener downloadListener;
+
+  late final WebViewAndroidWebChromeClient webChromeClient;
+
+  late WebViewAndroidWebViewClient _webViewClient;
+
+  WebViewAndroidWebViewClient get webViewClient => _webViewClient;
 
   @override
   Future<void> loadUrl(
@@ -217,8 +169,9 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
         },
       ).map<Future<void>>(
         (String channelName) {
-          final _JavaScriptChannelImpl javaScriptChannel =
-              _JavaScriptChannelImpl(channelName, javascriptChannelRegistry);
+          final WebViewAndroidJavaScriptChannel javaScriptChannel =
+              WebViewAndroidJavaScriptChannel(
+                  channelName, javascriptChannelRegistry);
           _javaScriptChannels[channelName] = javaScriptChannel;
           return webView.addJavaScriptChannel(javaScriptChannel);
         },
@@ -237,7 +190,7 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
         },
       ).map<Future<void>>(
         (String channelName) {
-          final _JavaScriptChannelImpl javaScriptChannel =
+          final WebViewAndroidJavaScriptChannel javaScriptChannel =
               _javaScriptChannels[channelName]!;
           _javaScriptChannels.remove(channelName);
           return webView.removeJavaScriptChannel(javaScriptChannel);
@@ -261,9 +214,40 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
   @override
   Future<int> getScrollY() => webView.getScrollY();
 
+  Future<void> release() => webView.release();
+
+  void _setCreationParams(CreationParams creationParams) {
+    final WebSettings? webSettings = creationParams.webSettings;
+    if (webSettings != null) {
+      updateSettings(webSettings);
+    }
+
+    final String? userAgent = creationParams.userAgent;
+    if (userAgent != null) {
+      webView.settings.setUserAgentString(userAgent);
+    }
+
+    final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy =
+        creationParams.autoMediaPlaybackPolicy;
+    switch (autoMediaPlaybackPolicy) {
+      case AutoMediaPlaybackPolicy.always_allow:
+        webView.settings.setMediaPlaybackRequiresUserGesture(false);
+        break;
+      default:
+        webView.settings.setMediaPlaybackRequiresUserGesture(true);
+    }
+
+    addJavascriptChannels(creationParams.javascriptChannelNames);
+
+    final String? initialUrl = creationParams.initialUrl;
+    if (initialUrl != null) {
+      loadUrl(initialUrl, <String, String>{});
+    }
+  }
+
   Future<void> _trySetHasProgressTracking(bool? hasProgressTracking) {
     if (hasProgressTracking != null) {
-      _webChromeClient.hasProgressTracking = hasProgressTracking;
+      webChromeClient.hasProgressTracking = hasProgressTracking;
     }
 
     return Future<void>.sync(() => null);
@@ -272,9 +256,9 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
   Future<void> _trySetHasNavigationDelegate(bool? hasNavigationDelegate) {
     if (hasNavigationDelegate == null) return Future<void>.sync(() => null);
 
-    _downloadListener.hasNavigationDelegate = hasNavigationDelegate;
+    downloadListener.hasNavigationDelegate = hasNavigationDelegate;
     if (_webViewClient.hasNavigationDelegate != hasNavigationDelegate) {
-      _webViewClient = _WebViewClientImpl(
+      _webViewClient = WebViewAndroidWebViewClient(
         callbacksHandler: callbacksHandler,
         loadUrl: loadUrl,
         hasNavigationDelegate: hasNavigationDelegate,
@@ -317,8 +301,10 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
   }
 }
 
-class _JavaScriptChannelImpl extends android_webview.JavaScriptChannel {
-  _JavaScriptChannelImpl(String channelName, this.javascriptChannelRegistry)
+class WebViewAndroidJavaScriptChannel
+    extends android_webview.JavaScriptChannel {
+  WebViewAndroidJavaScriptChannel(
+      String channelName, this.javascriptChannelRegistry)
       : super(channelName);
 
   final JavascriptChannelRegistry javascriptChannelRegistry;
@@ -329,8 +315,8 @@ class _JavaScriptChannelImpl extends android_webview.JavaScriptChannel {
   }
 }
 
-class _DownloadListenerImpl extends android_webview.DownloadListener {
-  _DownloadListenerImpl({
+class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
+  WebViewAndroidDownloadListener({
     required this.callbacksHandler,
     required this.loadUrl,
   });
@@ -366,8 +352,8 @@ class _DownloadListenerImpl extends android_webview.DownloadListener {
   }
 }
 
-class _WebViewClientImpl extends android_webview.WebViewClient {
-  _WebViewClientImpl({
+class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
+  WebViewAndroidWebViewClient({
     required this.callbacksHandler,
     required this.loadUrl,
     required this.hasNavigationDelegate,
@@ -503,8 +489,8 @@ class _WebViewClientImpl extends android_webview.WebViewClient {
   }
 }
 
-class _WebChromeClientImpl extends android_webview.WebChromeClient {
-  _WebChromeClientImpl({required this.callbacksHandler});
+class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {
+  WebViewAndroidWebChromeClient({required this.callbacksHandler});
 
   final WebViewPlatformCallbacksHandler callbacksHandler;
   bool hasProgressTracking = false;

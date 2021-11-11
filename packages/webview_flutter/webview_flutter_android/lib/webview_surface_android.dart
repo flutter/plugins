@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'src/android_webview.dart';
 import 'src/instance_manager.dart';
 import 'webview_widget.dart';
 import 'webview_android.dart';
@@ -32,12 +33,17 @@ class SurfaceAndroidWebView extends AndroidWebView {
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
   }) {
-    return AndroidWebViewWidget(
+    final WebViewAndroidPlatformController controller =
+        WebViewAndroidPlatformController(
+      webView: WebView(useHybridComposition: true),
       creationParams: creationParams,
-      webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler,
+      callbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,
-      useHybridComposition: true,
-      onBuildWidget: (AndroidWebViewPlatformController platformController) {
+    );
+
+    return AndroidWebViewWidget(
+      controller: controller,
+      onBuildWidget: () {
         return PlatformViewLink(
           viewType: 'plugins.flutter.io/webview',
           surfaceFactory: (
@@ -59,14 +65,14 @@ class SurfaceAndroidWebView extends AndroidWebView {
               // we explicitly set it here so that the widget doesn't require an ambient
               // directionality.
               layoutDirection: TextDirection.rtl,
-              creationParams: InstanceManager.instance
-                  .getInstanceId(platformController.webView),
+              creationParams:
+                  InstanceManager.instance.getInstanceId(controller.webView),
               creationParamsCodec: const StandardMessageCodec(),
             )
               ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
               ..addOnPlatformViewCreatedListener((int id) {
                 if (onWebViewPlatformCreated != null) {
-                  onWebViewPlatformCreated(platformController);
+                  onWebViewPlatformCreated(controller);
                 }
               })
               ..create();
