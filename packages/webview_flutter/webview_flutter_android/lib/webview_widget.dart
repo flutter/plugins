@@ -71,7 +71,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
           loadUrl: loadUrl,
         );
 
-    this.webChromeClient =
+    this.webChromeClient = webChromeClient ??
         WebViewAndroidWebChromeClient(callbacksHandler: callbacksHandler);
 
     webView.setWebViewClient(this.webViewClient);
@@ -356,7 +356,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
   WebViewAndroidWebViewClient({
     required this.callbacksHandler,
     required this.loadUrl,
-    required this.hasNavigationDelegate,
+    this.hasNavigationDelegate = false,
   }) : super(shouldOverrideUrlLoading: hasNavigationDelegate);
 
   final WebViewPlatformCallbacksHandler callbacksHandler;

@@ -10,8 +10,6 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
-import 'package:webview_flutter_android/src/android_webview_api_impls.dart';
-import 'package:webview_flutter_android/src/instance_manager.dart';
 import 'package:webview_flutter_android/webview_widget.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
@@ -43,65 +41,92 @@ void main() {
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
 
-    late MockWebViewAndroidDownloadListener mockDownloadListener;
-        late MockWebViewAndroidJavaScriptChannel mockJavaScriptChannel;
-    late MockWebViewAndroidWebChromeClient mockWebChromeClient;
-    late MockWebViewAndroidWebViewClient mockWebViewClient;
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
+    late WebViewAndroidWebViewClient webViewClient;
+    late WebViewAndroidDownloadListener downloadListener;
+    late WebViewAndroidWebChromeClient webChromeClient;
+
+    //late WebViewAndroidJavaScriptChannel javaScriptChannel;
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
     //
-    // setUp(() {
-    //   mockWebViewHostApi = MockTestWebViewHostApi();
-    //   mockWebSettingsHostApi = MockTestWebSettingsHostApi();
-    //   mockWebViewClientHostApi = MockTestWebViewClientHostApi();
-    //   mockWebChromeClientHostApi = MockTestWebChromeClientHostApi();
-    //   mockJavaScriptChannelHostApi = MockTestJavaScriptChannelHostApi();
-    //   mockDownloadListenerHostApi = MockTestDownloadListenerHostApi();
-    //
-    //   TestWebViewHostApi.setup(mockWebViewHostApi);
-    //   TestWebSettingsHostApi.setup(mockWebSettingsHostApi);
-    //   TestWebViewClientHostApi.setup(mockWebViewClientHostApi);
-    //   TestWebChromeClientHostApi.setup(mockWebChromeClientHostApi);
-    //   TestJavaScriptChannelHostApi.setup(mockJavaScriptChannelHostApi);
-    //   TestDownloadListenerHostApi.setup(mockDownloadListenerHostApi);
-    //
+    setUp(() {
+      //   mockWebViewHostApi = MockTestWebViewHostApi();
+      //   mockWebSettingsHostApi = MockTestWebSettingsHostApi();
+      //   mockWebViewClientHostApi = MockTestWebViewClientHostApi();
+      //   mockWebChromeClientHostApi = MockTestWebChromeClientHostApi();
+      //   mockJavaScriptChannelHostApi = MockTestJavaScriptChannelHostApi();
+      //   mockDownloadListenerHostApi = MockTestDownloadListenerHostApi();
+      //
+      //   TestWebViewHostApi.setup(mockWebViewHostApi);
+      //   TestWebSettingsHostApi.setup(mockWebSettingsHostApi);
+      //   TestWebViewClientHostApi.setup(mockWebViewClientHostApi);
+      //   TestWebChromeClientHostApi.setup(mockWebChromeClientHostApi);
+      //   TestJavaScriptChannelHostApi.setup(mockJavaScriptChannelHostApi);
+      //   TestDownloadListenerHostApi.setup(mockDownloadListenerHostApi);
+      //
+
+      mockWebView = MockWebView();
+      mockWebSettings = MockWebSettings();
+      when(mockWebView.settings).thenReturn(mockWebSettings);
 
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
+
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
-    //
-    //   final InstanceManager instanceManager = InstanceManager();
-    //   android_webview.WebView.api = WebViewHostApiImpl(
-    //     instanceManager: instanceManager,
-    //   );
-    //   android_webview.WebSettings.api = WebSettingsHostApiImpl(
-    //     instanceManager: instanceManager,
-    //   );
-    //   android_webview.JavaScriptChannel.api = JavaScriptChannelHostApiImpl(
-    //     instanceManager: instanceManager,
-    //   );
-    //   android_webview.WebViewClient.api = WebViewClientHostApiImpl(
-    //     instanceManager: instanceManager,
-    //   );
-    //   android_webview.DownloadListener.api = DownloadListenerHostApiImpl(
-    //     instanceManager: instanceManager,
-    //   );
-    //   android_webview.WebChromeClient.api = WebChromeClientHostApiImpl(
-    //     instanceManager: instanceManager,
-    //   );
-    // });
+
+      //
+      //   final InstanceManager instanceManager = InstanceManager();
+      //   android_webview.WebView.api = WebViewHostApiImpl(
+      //     instanceManager: instanceManager,
+      //   );
+      //   android_webview.WebSettings.api = WebSettingsHostApiImpl(
+      //     instanceManager: instanceManager,
+      //   );
+      //   android_webview.JavaScriptChannel.api = JavaScriptChannelHostApiImpl(
+      //     instanceManager: instanceManager,
+      //   );
+      //   android_webview.WebViewClient.api = WebViewClientHostApiImpl(
+      //     instanceManager: instanceManager,
+      //   );
+      //   android_webview.DownloadListener.api = DownloadListenerHostApiImpl(
+      //     instanceManager: instanceManager,
+      //   );
+      //   android_webview.WebChromeClient.api = WebChromeClientHostApiImpl(
+      //     instanceManager: instanceManager,
+      //   );
+    });
 
     // Builds a AndroidWebViewWidget with default parameters.
     Future<WebViewAndroidPlatformController> buildWidget(
       WidgetTester tester, {
       CreationParams? creationParams,
-      WebViewPlatformCallbacksHandler? webViewPlatformCallbacksHandler,
-      JavascriptChannelRegistry? javascriptChannelRegistry,
-      bool? useHybridComposition,
-      Widget Function(WebViewAndroidPlatformController platformController)?
-          onBuildWidget,
     }) async {
-      final Completer<WebViewAndroidPlatformController> controllerCompleter =
-          Completer<WebViewAndroidPlatformController>();
+      webViewClient = WebViewAndroidWebViewClient(
+        callbacksHandler: mockCallbacksHandler,
+        loadUrl: mockWebView.loadUrl,
+      );
+      downloadListener = WebViewAndroidDownloadListener(
+        callbacksHandler: mockCallbacksHandler,
+        loadUrl: mockWebView.loadUrl,
+      );
+      webChromeClient = WebViewAndroidWebChromeClient(
+        callbacksHandler: mockCallbacksHandler,
+      );
+
+      final WebViewAndroidPlatformController controller =
+          WebViewAndroidPlatformController(
+        webView: mockWebView,
+        webViewClient: webViewClient,
+        downloadListener: downloadListener,
+        webChromeClient: webChromeClient,
+        creationParams: creationParams ?? CreationParams(),
+        callbacksHandler: mockCallbacksHandler,
+        javascriptChannelRegistry: mockJavascriptChannelRegistry,
+      );
+
+      await tester.pumpWidget(AndroidWebViewWidget(
+        controller: controller,
+        onBuildWidget: () => Container(),
+      ));
 
       // await tester.pumpWidget(
       //   AndroidWebViewWidget(
@@ -112,38 +137,34 @@ void main() {
       //         },
       //     creationParams: creationParams ?? CreationParams(),
       //     webViewPlatformCallbacksHandler:
-      //         webViewPlatformCallbacksHandler ?? mockCallbacksHandler,
+      //         callbacksHandler ?? mockCallbacksHandler,
       //     javascriptChannelRegistry:
       //         javascriptChannelRegistry ?? mockJavascriptChannelRegistry,
       //     useHybridComposition: useHybridComposition ?? false,
       //   ),
       // );
 
-      return controllerCompleter.future;
+      return controller;
     }
 
     testWidgets('Create Widget', (WidgetTester tester) async {
       await buildWidget(tester);
 
-      // verify(mockWebSettingsHostApi.setDomStorageEnabled(1, true));
-      // verify(mockWebSettingsHostApi.setJavaScriptCanOpenWindowsAutomatically(
-      //   1,
-      //   true,
-      // ));
-      // verify(mockWebSettingsHostApi.setSupportMultipleWindows(1, true));
-      // verify(mockWebSettingsHostApi.setLoadWithOverviewMode(1, true));
-      // verify(mockWebSettingsHostApi.setUseWideViewPort(1, true));
-      // verify(mockWebSettingsHostApi.setDisplayZoomControls(1, false));
-      // verify(mockWebSettingsHostApi.setBuiltInZoomControls(1, true));
-      //
-      // verifyInOrder([
-      //   mockWebViewHostApi.create(0, false),
-      //   mockWebViewHostApi.setWebViewClient(0, any),
-      //   mockWebViewHostApi.setDownloadListener(0, any),
-      //   mockWebViewHostApi.setWebChromeClient(0, any),
-      // ]);
+      verify(mockWebSettings.setDomStorageEnabled(true));
+      verify(mockWebSettings.setJavaScriptCanOpenWindowsAutomatically(true));
+      verify(mockWebSettings.setSupportMultipleWindows(true));
+      verify(mockWebSettings.setLoadWithOverviewMode(true));
+      verify(mockWebSettings.setUseWideViewPort(true));
+      verify(mockWebSettings.setDisplayZoomControls(false));
+      verify(mockWebSettings.setBuiltInZoomControls(true));
+
+      verifyInOrder([
+        mockWebView.setWebViewClient(webViewClient),
+        mockWebView.setDownloadListener(downloadListener),
+        mockWebView.setWebChromeClient(webChromeClient),
+      ]);
     });
-    //
+
     // testWidgets(
     //   'Create Widget with Hybrid Composition',
     //   (WidgetTester tester) async {
@@ -152,287 +173,315 @@ void main() {
     //   },
     // );
     //
-    // group('CreationParams', () {
-    //   testWidgets('initialUrl', (WidgetTester tester) async {
-    //     await buildWidget(
-    //       tester,
-    //       creationParams: CreationParams(initialUrl: 'https://www.google.com'),
-    //     );
-    //     verify(mockWebViewHostApi.loadUrl(
-    //       0,
-    //       'https://www.google.com',
-    //       <String, String>{},
-    //     ));
-    //   });
-    //
-    //   testWidgets('userAgent', (WidgetTester tester) async {
-    //     await buildWidget(
-    //       tester,
-    //       creationParams: CreationParams(userAgent: 'MyUserAgent'),
-    //     );
-    //
-    //     verify(mockWebSettingsHostApi.setUserAgentString(1, 'MyUserAgent'));
-    //   });
-    //
-    //   testWidgets('autoMediaPlaybackPolicy true', (WidgetTester tester) async {
-    //     await buildWidget(
-    //       tester,
-    //       creationParams: CreationParams(
-    //         autoMediaPlaybackPolicy:
-    //             AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
-    //       ),
-    //     );
-    //
-    //     verify(
-    //       mockWebSettingsHostApi.setMediaPlaybackRequiresUserGesture(any, true),
-    //     );
-    //   });
-    //
-    //   testWidgets('autoMediaPlaybackPolicy false', (WidgetTester tester) async {
-    //     await buildWidget(
-    //       tester,
-    //       creationParams: CreationParams(
-    //         autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
-    //       ),
-    //     );
-    //
-    //     verify(mockWebSettingsHostApi.setMediaPlaybackRequiresUserGesture(
-    //       any,
-    //       false,
-    //     ));
-    //   });
-    //
-    //   testWidgets('javascriptChannelNames', (WidgetTester tester) async {
-    //     await buildWidget(
-    //       tester,
-    //       creationParams: CreationParams(
-    //         javascriptChannelNames: <String>{'a', 'b'},
-    //       ),
-    //     );
-    //
-    //     verify(mockJavaScriptChannelHostApi.create(any, 'a'));
-    //     verify(mockJavaScriptChannelHostApi.create(any, 'b'));
-    //     verify(mockWebViewHostApi.addJavaScriptChannel(0, any)).called(2);
-    //   });
-    //
-    //   group('WebSettings', () {
-    //     testWidgets('javascriptMode', (WidgetTester tester) async {
-    //       await buildWidget(
-    //         tester,
-    //         creationParams: CreationParams(
-    //           webSettings: WebSettings(
-    //             userAgent: WebSetting<String?>.absent(),
-    //             javascriptMode: JavascriptMode.unrestricted,
-    //           ),
-    //         ),
-    //       );
-    //
-    //       verify(mockWebSettingsHostApi.setJavaScriptEnabled(any, true));
-    //     });
-    //
-    //     testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
-    //       await buildWidget(
-    //         tester,
-    //         creationParams: CreationParams(
-    //           webSettings: WebSettings(
-    //             userAgent: WebSetting<String?>.absent(),
-    //             hasNavigationDelegate: true,
-    //           ),
-    //         ),
-    //       );
-    //
-    //       verify(mockWebViewClientHostApi.create(any, true));
-    //     });
-    //
-    //     testWidgets('debuggingEnabled', (WidgetTester tester) async {
-    //       await buildWidget(
-    //         tester,
-    //         creationParams: CreationParams(
-    //           webSettings: WebSettings(
-    //             userAgent: WebSetting<String?>.absent(),
-    //             debuggingEnabled: true,
-    //           ),
-    //         ),
-    //       );
-    //
-    //       verify(mockWebViewHostApi.setWebContentsDebuggingEnabled(true));
-    //     });
-    //
-    //     testWidgets('userAgent', (WidgetTester tester) async {
-    //       await buildWidget(
-    //         tester,
-    //         creationParams: CreationParams(
-    //           webSettings: WebSettings(
-    //             userAgent: WebSetting<String?>.of('myUserAgent'),
-    //           ),
-    //         ),
-    //       );
-    //
-    //       verify(mockWebSettingsHostApi.setUserAgentString(any, 'myUserAgent'));
-    //     });
-    //
-    //     testWidgets('zoomEnabled', (WidgetTester tester) async {
-    //       await buildWidget(
-    //         tester,
-    //         creationParams: CreationParams(
-    //           webSettings: WebSettings(
-    //             userAgent: WebSetting<String?>.absent(),
-    //             zoomEnabled: false,
-    //           ),
-    //         ),
-    //       );
-    //
-    //       verify(mockWebSettingsHostApi.setSupportZoom(any, false));
-    //     });
-    //   });
-    // });
-    //
-    // group('$AndroidWebViewPlatformController', () {
-    //   testWidgets('loadUrl', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.loadUrl(
-    //       'https://www.google.com',
-    //       <String, String>{'a': 'header'},
-    //     );
-    //
-    //     verify(mockWebViewHostApi.loadUrl(
-    //       any,
-    //       'https://www.google.com',
-    //       <String, String>{'a': 'header'},
-    //     ));
-    //   });
-    //
-    //   testWidgets('currentUrl', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.getUrl(any))
-    //         .thenReturn('https://www.google.com');
-    //     expect(controller.currentUrl(), completion('https://www.google.com'));
-    //   });
-    //
-    //   testWidgets('canGoBack', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.canGoBack(any)).thenReturn(false);
-    //     expect(controller.canGoBack(), completion(false));
-    //   });
-    //
-    //   testWidgets('canGoForward', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.canGoForward(any)).thenReturn(true);
-    //     expect(controller.canGoForward(), completion(true));
-    //   });
-    //
-    //   testWidgets('goBack', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.goBack();
-    //     verify(mockWebViewHostApi.goBack(any));
-    //   });
-    //
-    //   testWidgets('goForward', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.goForward();
-    //     verify(mockWebViewHostApi.goForward(any));
-    //   });
-    //
-    //   testWidgets('reload', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.reload();
-    //     verify(mockWebViewHostApi.reload(any));
-    //   });
-    //
-    //   testWidgets('clearCache', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.clearCache();
-    //     verify(mockWebViewHostApi.clearCache(any, true));
-    //   });
-    //
-    //   testWidgets('evaluateJavascript', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.evaluateJavascript(any, 'runJavaScript'))
-    //         .thenAnswer(
-    //       (_) => Future<String>.value('returnString'),
-    //     );
-    //     expect(
-    //       controller.evaluateJavascript('runJavaScript'),
-    //       completion('returnString'),
-    //     );
-    //   });
-    //
-    //   testWidgets('addJavascriptChannels', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.addJavascriptChannels(<String>{'c', 'd'});
-    //     verify(mockJavaScriptChannelHostApi.create(any, 'c'));
-    //     verify(mockJavaScriptChannelHostApi.create(any, 'd'));
-    //     verify(mockWebViewHostApi.addJavaScriptChannel(0, any)).called(2);
-    //   });
-    //
-    //   testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.addJavascriptChannels(<String>{'c', 'd'});
-    //     await controller.removeJavascriptChannels(<String>{'c', 'd'});
-    //     verify(mockWebViewHostApi.removeJavaScriptChannel(0, any)).called(2);
-    //   });
-    //
-    //   testWidgets('getTitle', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.getTitle(any)).thenReturn('Web Title');
-    //     expect(controller.getTitle(), completion('Web Title'));
-    //   });
-    //
-    //   testWidgets('scrollTo', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.scrollTo(1, 2);
-    //     verify(mockWebViewHostApi.scrollTo(any, 1, 2));
-    //   });
-    //
-    //   testWidgets('scrollBy', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     await controller.scrollBy(3, 4);
-    //     verify(mockWebViewHostApi.scrollBy(any, 3, 4));
-    //   });
-    //
-    //   testWidgets('getScrollX', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.getScrollX(any)).thenReturn(23);
-    //     expect(controller.getScrollX(), completion(23));
-    //   });
-    //
-    //   testWidgets('getScrollY', (WidgetTester tester) async {
-    //     final AndroidWebViewPlatformController controller =
-    //         await buildWidget(tester);
-    //
-    //     when(mockWebViewHostApi.getScrollY(any)).thenReturn(25);
-    //     expect(controller.getScrollY(), completion(25));
-    //   });
-    // });
+    group('CreationParams', () {
+      testWidgets('initialUrl', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(initialUrl: 'https://www.google.com'),
+        );
+        verify(mockWebView.loadUrl(
+          'https://www.google.com',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets('userAgent', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(userAgent: 'MyUserAgent'),
+        );
+
+        verify(mockWebSettings.setUserAgentString('MyUserAgent'));
+      });
+
+      testWidgets('autoMediaPlaybackPolicy true', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            autoMediaPlaybackPolicy:
+                AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
+          ),
+        );
+
+        verify(mockWebSettings.setMediaPlaybackRequiresUserGesture(any));
+      });
+
+      testWidgets('autoMediaPlaybackPolicy false', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
+          ),
+        );
+
+        verify(mockWebSettings.setMediaPlaybackRequiresUserGesture(false));
+      });
+
+      testWidgets('javascriptChannelNames', (WidgetTester tester) async {
+        await buildWidget(
+          tester,
+          creationParams: CreationParams(
+            javascriptChannelNames: <String>{'a', 'b'},
+          ),
+        );
+
+        final List<dynamic> javaScriptChannels =
+            verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
+        expect(javaScriptChannels[0].channelName, 'a');
+        expect(javaScriptChannels[1].channelName, 'b');
+      });
+
+      group('WebSettings', () {
+        testWidgets('javascriptMode', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: WebSetting<String?>.absent(),
+                javascriptMode: JavascriptMode.unrestricted,
+              ),
+            ),
+          );
+
+          verify(mockWebSettings.setJavaScriptEnabled(true));
+        });
+
+        // testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
+        //   await buildWidget(
+        //     tester,
+        //     creationParams: CreationParams(
+        //       webSettings: WebSettings(
+        //         userAgent: WebSetting<String?>.absent(),
+        //         hasNavigationDelegate: true,
+        //       ),
+        //     ),
+        //   );
+        //
+        //   verify(mockWebViewClientHostApi.create(any, true));
+        // });
+
+        // testWidgets('debuggingEnabled', (WidgetTester tester) async {
+        //   await buildWidget(
+        //     tester,
+        //     creationParams: CreationParams(
+        //       webSettings: WebSettings(
+        //         userAgent: WebSetting<String?>.absent(),
+        //         debuggingEnabled: true,
+        //       ),
+        //     ),
+        //   );
+        //
+        //   verify(mockWebSettings.setWebContentsDebuggingEnabled(true));
+        // });
+
+        testWidgets('userAgent', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: WebSetting<String?>.of('myUserAgent'),
+              ),
+            ),
+          );
+
+          verify(mockWebSettings.setUserAgentString('myUserAgent'));
+        });
+
+        testWidgets('zoomEnabled', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: WebSetting<String?>.absent(),
+                zoomEnabled: false,
+              ),
+            ),
+          );
+
+          verify(mockWebSettings.setSupportZoom(false));
+        });
+      });
+    });
+
+    group('$WebViewAndroidPlatformController', () {
+      testWidgets('loadUrl', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.loadUrl(
+          'https://www.google.com',
+          <String, String>{'a': 'header'},
+        );
+
+        verify(mockWebView.loadUrl(
+          'https://www.google.com',
+          <String, String>{'a': 'header'},
+        ));
+      });
+
+      testWidgets('currentUrl', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.getUrl())
+            .thenAnswer((_) => Future<String>.value('https://www.google.com'));
+        expect(controller.currentUrl(), completion('https://www.google.com'));
+      });
+
+      testWidgets('canGoBack', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.canGoBack()).thenAnswer(
+          (_) => Future<bool>.value(false),
+        );
+        expect(controller.canGoBack(), completion(false));
+      });
+
+      testWidgets('canGoForward', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.canGoForward()).thenAnswer(
+          (_) => Future<bool>.value(true),
+        );
+        expect(controller.canGoForward(), completion(true));
+      });
+
+      testWidgets('goBack', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.goBack();
+        verify(mockWebView.goBack());
+      });
+
+      testWidgets('goForward', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.goForward();
+        verify(mockWebView.goForward());
+      });
+
+      testWidgets('reload', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.reload();
+        verify(mockWebView.reload());
+      });
+
+      testWidgets('clearCache', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.clearCache();
+        verify(mockWebView.clearCache(true));
+      });
+
+      testWidgets('evaluateJavascript', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.evaluateJavascript('runJavaScript')).thenAnswer(
+          (_) => Future<String>.value('returnString'),
+        );
+        expect(
+          controller.evaluateJavascript('runJavaScript'),
+          completion('returnString'),
+        );
+      });
+
+      testWidgets('runJavascriptReturningResult', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.evaluateJavascript('runJavaScript')).thenAnswer(
+          (_) => Future<String>.value('returnString'),
+        );
+        expect(
+          controller.runJavascriptReturningResult('runJavaScript'),
+          completion('returnString'),
+        );
+      });
+
+      testWidgets('runJavascript', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.evaluateJavascript('runJavaScript')).thenAnswer(
+          (_) => Future<String>.value('returnString'),
+        );
+        expect(
+          controller.runJavascript('runJavaScript'),
+          completes,
+        );
+      });
+
+      testWidgets('addJavascriptChannels', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.addJavascriptChannels(<String>{'c', 'd'});
+        final List<dynamic> javaScriptChannels =
+            verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
+        expect(javaScriptChannels[0].channelName, 'c');
+        expect(javaScriptChannels[1].channelName, 'd');
+      });
+
+      testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.addJavascriptChannels(<String>{'c', 'd'});
+        await controller.removeJavascriptChannels(<String>{'c', 'd'});
+        final List<dynamic> javaScriptChannels =
+            verify(mockWebView.removeJavaScriptChannel(captureAny)).captured;
+        expect(javaScriptChannels[0].channelName, 'c');
+        expect(javaScriptChannels[1].channelName, 'd');
+      });
+
+      testWidgets('getTitle', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.getTitle())
+            .thenAnswer((_) => Future<String>.value('Web Title'));
+        expect(controller.getTitle(), completion('Web Title'));
+      });
+
+      testWidgets('scrollTo', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.scrollTo(1, 2);
+        verify(mockWebView.scrollTo(1, 2));
+      });
+
+      testWidgets('scrollBy', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        await controller.scrollBy(3, 4);
+        verify(mockWebView.scrollBy(3, 4));
+      });
+
+      testWidgets('getScrollX', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.getScrollX()).thenAnswer((_) => Future<int>.value(23));
+        expect(controller.getScrollX(), completion(23));
+      });
+
+      testWidgets('getScrollY', (WidgetTester tester) async {
+        final WebViewAndroidPlatformController controller =
+            await buildWidget(tester);
+
+        when(mockWebView.getScrollY()).thenAnswer((_) => Future<int>.value(25));
+        expect(controller.getScrollY(), completion(25));
+      });
+    });
   });
 }
