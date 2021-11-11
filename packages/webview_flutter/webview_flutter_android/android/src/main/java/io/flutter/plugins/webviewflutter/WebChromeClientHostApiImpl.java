@@ -11,68 +11,125 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
-import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientFlutterApi;
+import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebChromeClientHostApi;
 
-class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeClientHostApi {
+/**
+ * Host api implementation for {@link WebChromeClient}.
+ *
+ * <p>Handles creating {@link WebChromeClient}s that intercommunicate with a paired Dart object.
+ */
+public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
   private final InstanceManager instanceManager;
   private final WebChromeClientCreator webChromeClientCreator;
-  private final WebChromeClientFlutterApi webChromeClientFlutterApi;
+  private final WebChromeClientFlutterApiImpl flutterApi;
 
-  static class WebChromeClientCreator {
-    WebChromeClient createWebChromeClient(
-        Long instanceId,
-        InstanceManager instanceManager,
-        WebViewClient webViewClient,
-        WebChromeClientFlutterApi webChromeClientFlutterApi) {
-      return new WebChromeClient() {
-        // Verifies that a url opened by `Window.open` has a secure url.
-        @Override
-        public boolean onCreateWindow(
-            final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-          final WebViewClient newWindowWebViewClient =
-              new WebViewClient() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public boolean shouldOverrideUrlLoading(
-                    @NonNull WebView view, @NonNull WebResourceRequest request) {
-                  webViewClient.shouldOverrideUrlLoading(view, request);
-                  return true;
-                }
+  /**
+   * Implementation of {@link WebChromeClient} that passes arguments of callback methods to Dart.
+   */
+  public static class WebChromeClientImpl extends WebChromeClient implements Releasable {
+    @Nullable private WebChromeClientFlutterApiImpl flutterApi;
+    private WebViewClient webViewClient;
 
-                @Override
-                public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                  webViewClient.shouldOverrideUrlLoading(view, url);
-                  return true;
-                }
-              };
+    /**
+     * Creates a {@link WebChromeClient} that passes arguments of callbacks methods to Dart.
+     *
+     * @param flutterApi handles sending messages to Dart
+     * @param webViewClient receives forwarded calls from {@link WebChromeClient#onCreateWindow}
+     */
+    public WebChromeClientImpl(
+        @NonNull WebChromeClientFlutterApiImpl flutterApi, WebViewClient webViewClient) {
+      this.flutterApi = flutterApi;
+      this.webViewClient = webViewClient;
+    }
 
-          final WebView newWebView = new WebView(view.getContext());
-          newWebView.setWebViewClient(newWindowWebViewClient);
+    // Verifies that a url opened by `Window.open` has a secure url.
+    @Override
+    public boolean onCreateWindow(
+        final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+      final WebViewClient newWindowWebViewClient =
+          new WebViewClient() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public boolean shouldOverrideUrlLoading(
+                @NonNull WebView view, @NonNull WebResourceRequest request) {
+              webViewClient.shouldOverrideUrlLoading(view, request);
+              return true;
+            }
 
-          final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-          transport.setWebView(newWebView);
-          resultMsg.sendToTarget();
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+              webViewClient.shouldOverrideUrlLoading(view, url);
+              return true;
+            }
+          };
 
-          return true;
-        }
+      final WebView newWebView = new WebView(view.getContext());
+      newWebView.setWebViewClient(newWindowWebViewClient);
 
-        @Override
-        public void onProgressChanged(WebView view, int progress) {
-          webChromeClientFlutterApi.onProgressChanged(
-              instanceId, instanceManager.getInstanceId(view), (long) progress, reply -> {});
-        }
-      };
+      final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
+      transport.setWebView(newWebView);
+      resultMsg.sendToTarget();
+
+      return true;
+    }
+
+    @Override
+    public void onProgressChanged(WebView view, int progress) {
+      if (flutterApi != null) {
+        flutterApi.onProgressChanged(this, view, (long) progress, reply -> {});
+      }
+    }
+
+    /**
+     * Set the {@link WebViewClient} that calls to {@link WebChromeClient#onCreateWindow} are passed
+     * to.
+     *
+     * @param webViewClient the forwarding {@link WebViewClient}
+     */
+    public void setWebViewClient(WebViewClient webViewClient) {
+      this.webViewClient = webViewClient;
+    }
+
+    @Override
+    public void release() {
+      if (flutterApi != null) {
+        flutterApi.dispose(this, reply -> {});
+      }
+      flutterApi = null;
     }
   }
 
-  WebChromeClientHostApiImpl(
+  /** Handles creating {@link WebChromeClient}s for a {@link WebChromeClientHostApiImpl}. */
+  public static class WebChromeClientCreator {
+    /**
+     * Creates a {@link DownloadListenerHostApiImpl.DownloadListenerImpl}.
+     *
+     * @param flutterApi handles sending messages to Dart
+     * @param webViewClient receives forwarded calls from {@link WebChromeClient#onCreateWindow}
+     * @return the created {@link DownloadListenerHostApiImpl.DownloadListenerImpl}
+     */
+    public WebChromeClientImpl createWebChromeClient(
+        WebChromeClientFlutterApiImpl flutterApi, WebViewClient webViewClient) {
+      return new WebChromeClientImpl(flutterApi, webViewClient);
+    }
+  }
+
+  /**
+   * Creates a host API that handles creating {@link WebChromeClient}s.
+   *
+   * @param instanceManager maintains instances stored to communicate with Dart objects
+   * @param webChromeClientCreator handles creating {@link WebChromeClient}s
+   * @param flutterApi handles sending messages to Dart
+   */
+  public WebChromeClientHostApiImpl(
       InstanceManager instanceManager,
       WebChromeClientCreator webChromeClientCreator,
-      WebChromeClientFlutterApi webChromeClientFlutterApi) {
+      WebChromeClientFlutterApiImpl flutterApi) {
     this.instanceManager = instanceManager;
     this.webChromeClientCreator = webChromeClientCreator;
-    this.webChromeClientFlutterApi = webChromeClientFlutterApi;
+    this.flutterApi = flutterApi;
   }
 
   @Override
@@ -80,13 +137,7 @@ class WebChromeClientHostApiImpl implements GeneratedAndroidWebView.WebChromeCli
     final WebViewClient webViewClient =
         (WebViewClient) instanceManager.getInstance(webViewClientInstanceId);
     final WebChromeClient webChromeClient =
-        webChromeClientCreator.createWebChromeClient(
-            instanceId, instanceManager, webViewClient, webChromeClientFlutterApi);
+        webChromeClientCreator.createWebChromeClient(flutterApi, webViewClient);
     instanceManager.addInstance(webChromeClient, instanceId);
-  }
-
-  @Override
-  public void dispose(Long instanceId) {
-    instanceManager.removeInstance(instanceId);
   }
 }
