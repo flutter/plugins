@@ -10,10 +10,10 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:webview_flutter_android/src/android_webview.dart'
     as android_webview;
-import 'package:webview_flutter_android/webview_widget.dart';
+import 'package:webview_flutter_android/webview_android_widget.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'webview_widget_test.mocks.dart';
+import 'webview_android_widget_test.mocks.dart';
 
 @GenerateMocks([
   android_webview.WebSettings,
@@ -28,7 +28,7 @@ import 'webview_widget_test.mocks.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('$AndroidWebViewWidget', () {
+  group('$WebViewAndroidWidget', () {
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
 
@@ -51,43 +51,38 @@ void main() {
     });
 
     // Builds a AndroidWebViewWidget with default parameters.
-    Future<WebViewAndroidPlatformController> buildWidget(
+    Future<void> buildWidget(
       WidgetTester tester, {
       CreationParams? creationParams,
       bool hasNavigationDelegate = false,
-      bool onProgress = false,
+      bool hasProgressTracking = false,
     }) async {
-      downloadListener = WebViewAndroidDownloadListener(
-        loadUrl: mockWebView.loadUrl,
-      );
-
       webChromeClient = WebViewAndroidWebChromeClient();
 
       controller = WebViewAndroidPlatformController(
         webView: mockWebView,
-        downloadListener: downloadListener,
-        webChromeClient: webChromeClient,
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
               userAgent: WebSetting.absent(),
-              hasNavigationDelegate: false,
+              hasNavigationDelegate: hasNavigationDelegate,
+              hasProgressTracking: hasProgressTracking,
             )),
         callbacksHandler: mockCallbacksHandler,
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
       );
 
       webViewClient = controller.webViewClient;
+      downloadListener = controller.downloadListener;
+      webChromeClient = controller.webChromeClient;
 
-      await tester.pumpWidget(AndroidWebViewWidget(
+      await tester.pumpWidget(WebViewAndroidWidget(
         controller: controller,
         onBuildWidget: () => Container(),
       ));
-
-      return controller;
     }
 
-    testWidgets('$AndroidWebViewWidget', (WidgetTester tester) async {
+    testWidgets('$WebViewAndroidWidget', (WidgetTester tester) async {
       await buildWidget(tester);
 
       verify(mockWebSettings.setDomStorageEnabled(true));
@@ -112,7 +107,7 @@ void main() {
     //     verify(mockWebViewHostApi.create(0, true));
     //   },
     // );
-    //
+
     group('$CreationParams', () {
       testWidgets('initialUrl', (WidgetTester tester) async {
         await buildWidget(
@@ -211,19 +206,20 @@ void main() {
           verify(mockWebSettings.setJavaScriptEnabled(true));
         });
 
-        // testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
-        //   await buildWidget(
-        //     tester,
-        //     creationParams: CreationParams(
-        //       webSettings: WebSettings(
-        //         userAgent: WebSetting<String?>.absent(),
-        //         hasNavigationDelegate: true,
-        //       ),
-        //     ),
-        //   );
-        //
-        //   verify(mockWebViewClientHostApi.create(any, true));
-        // });
+        testWidgets('hasNavigationDelegate', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: WebSetting<String?>.absent(),
+                hasNavigationDelegate: true,
+              ),
+            ),
+          );
+
+          expect(controller.webViewClient.handlesNavigation, isTrue);
+          expect(controller.webViewClient.shouldOverrideUrlLoading, isTrue);
+        });
 
         // testWidgets('debuggingEnabled', (WidgetTester tester) async {
         //   await buildWidget(
@@ -272,8 +268,7 @@ void main() {
 
     group('$WebViewPlatformController', () {
       testWidgets('loadUrl', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.loadUrl(
           'https://www.google.com',
@@ -287,8 +282,7 @@ void main() {
       });
 
       testWidgets('currentUrl', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.getUrl())
             .thenAnswer((_) => Future<String>.value('https://www.google.com'));
@@ -296,8 +290,7 @@ void main() {
       });
 
       testWidgets('canGoBack', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.canGoBack()).thenAnswer(
           (_) => Future<bool>.value(false),
@@ -306,8 +299,7 @@ void main() {
       });
 
       testWidgets('canGoForward', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.canGoForward()).thenAnswer(
           (_) => Future<bool>.value(true),
@@ -316,40 +308,35 @@ void main() {
       });
 
       testWidgets('goBack', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.goBack();
         verify(mockWebView.goBack());
       });
 
       testWidgets('goForward', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.goForward();
         verify(mockWebView.goForward());
       });
 
       testWidgets('reload', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.reload();
         verify(mockWebView.reload());
       });
 
       testWidgets('clearCache', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.clearCache();
         verify(mockWebView.clearCache(true));
       });
 
       testWidgets('evaluateJavascript', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.evaluateJavascript('runJavaScript')).thenAnswer(
           (_) => Future<String>.value('returnString'),
@@ -361,8 +348,7 @@ void main() {
       });
 
       testWidgets('runJavascriptReturningResult', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.evaluateJavascript('runJavaScript')).thenAnswer(
           (_) => Future<String>.value('returnString'),
@@ -374,8 +360,7 @@ void main() {
       });
 
       testWidgets('runJavascript', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.evaluateJavascript('runJavaScript')).thenAnswer(
           (_) => Future<String>.value('returnString'),
@@ -387,8 +372,7 @@ void main() {
       });
 
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.addJavascriptChannels(<String>{'c', 'd'});
         final List<dynamic> javaScriptChannels =
@@ -398,8 +382,7 @@ void main() {
       });
 
       testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.addJavascriptChannels(<String>{'c', 'd'});
         await controller.removeJavascriptChannels(<String>{'c', 'd'});
@@ -410,8 +393,7 @@ void main() {
       });
 
       testWidgets('getTitle', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.getTitle())
             .thenAnswer((_) => Future<String>.value('Web Title'));
@@ -419,32 +401,28 @@ void main() {
       });
 
       testWidgets('scrollTo', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.scrollTo(1, 2);
         verify(mockWebView.scrollTo(1, 2));
       });
 
       testWidgets('scrollBy', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         await controller.scrollBy(3, 4);
         verify(mockWebView.scrollBy(3, 4));
       });
 
       testWidgets('getScrollX', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.getScrollX()).thenAnswer((_) => Future<int>.value(23));
         expect(controller.getScrollX(), completion(23));
       });
 
       testWidgets('getScrollY', (WidgetTester tester) async {
-        final WebViewAndroidPlatformController controller =
-            await buildWidget(tester);
+        await buildWidget(tester);
 
         when(mockWebView.getScrollY()).thenAnswer((_) => Future<int>.value(25));
         expect(controller.getScrollY(), completion(25));
@@ -453,27 +431,127 @@ void main() {
 
     group('$WebViewPlatformCallbacksHandler', () {
       testWidgets('onPageStarted', (WidgetTester tester) async {
-        await buildWidget(
-          tester,
+        await buildWidget(tester);
+        webViewClient.onPageStarted(mockWebView, 'https://google.com');
+        verify(mockCallbacksHandler.onPageStarted('https://google.com'));
+      });
+
+      testWidgets('onPageFinished', (WidgetTester tester) async {
+        await buildWidget(tester);
+        webViewClient.onPageFinished(mockWebView, 'https://google.com');
+        verify(mockCallbacksHandler.onPageFinished('https://google.com'));
+      });
+
+      testWidgets('onWebResourceError from onReceivedError',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+        webViewClient.onReceivedError(
+          mockWebView,
+          android_webview.WebViewClient.errorAuthentication,
+          'description',
+          'https://google.com',
         );
-        //webViewClient.onPageStarted(webView, url)
+
+        final WebResourceError error =
+            verify(mockCallbacksHandler.onWebResourceError(captureAny))
+                .captured
+                .single;
+        expect(error.description, 'description');
+        expect(error.errorCode, -4);
+        expect(error.failingUrl, 'https://google.com');
+        expect(error.domain, isNull);
+        expect(error.errorType, WebResourceErrorType.authentication);
+      });
+
+      testWidgets('onWebResourceError from onReceivedRequestError',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+        webViewClient.onReceivedRequestError(
+          mockWebView,
+          android_webview.WebResourceRequest(
+            url: 'https://google.com',
+            isForMainFrame: true,
+            isRedirect: false,
+            hasGesture: false,
+            method: 'POST',
+            requestHeaders: <String, String>{},
+          ),
+          android_webview.WebResourceError(
+            errorCode: android_webview.WebViewClient.errorUnsafeResource,
+            description: 'description',
+          ),
+        );
+
+        final WebResourceError error =
+            verify(mockCallbacksHandler.onWebResourceError(captureAny))
+                .captured
+                .single;
+        expect(error.description, 'description');
+        expect(error.errorCode, -16);
+        expect(error.failingUrl, 'https://google.com');
+        expect(error.domain, isNull);
+        expect(error.errorType, WebResourceErrorType.unsafeResource);
+      });
+
+      testWidgets('onNavigationRequest from urlLoading',
+          (WidgetTester tester) async {
+        await buildWidget(tester, hasNavigationDelegate: true);
+        when(mockCallbacksHandler.onNavigationRequest(
+          isForMainFrame: argThat(isTrue, named: 'isForMainFrame'),
+          url: 'https://google.com',
+        )).thenReturn(true);
+
+        webViewClient.urlLoading(mockWebView, 'https://google.com');
+        verify(mockCallbacksHandler.onNavigationRequest(
+          url: 'https://google.com',
+          isForMainFrame: true,
+        ));
+        verify(mockWebView.loadUrl('https://google.com', <String, String>{}));
+      });
+
+      testWidgets('onNavigationRequest from requestLoading',
+          (WidgetTester tester) async {
+        await buildWidget(tester, hasNavigationDelegate: true);
+        when(mockCallbacksHandler.onNavigationRequest(
+          isForMainFrame: argThat(isTrue, named: 'isForMainFrame'),
+          url: 'https://google.com',
+        )).thenReturn(true);
+
+        webViewClient.requestLoading(
+          mockWebView,
+          android_webview.WebResourceRequest(
+            url: 'https://google.com',
+            isForMainFrame: true,
+            isRedirect: false,
+            hasGesture: false,
+            method: 'POST',
+            requestHeaders: <String, String>{},
+          ),
+        );
+        verify(mockCallbacksHandler.onNavigationRequest(
+          url: 'https://google.com',
+          isForMainFrame: true,
+        ));
+        verify(mockWebView.loadUrl('https://google.com', <String, String>{}));
+      });
+
+      group('$JavascriptChannelRegistry', () {
+        testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
+          await buildWidget(tester);
+
+          await controller.addJavascriptChannels(<String>{'hello'});
+
+          final WebViewAndroidJavaScriptChannel javaScriptChannel =
+              verify(mockWebView.addJavaScriptChannel(captureAny))
+                  .captured
+                  .single;
+          javaScriptChannel.postMessage('goodbye');
+          verify(mockJavascriptChannelRegistry.onJavascriptChannelMessage(
+            'hello',
+            'goodbye',
+          ));
+        });
       });
     });
   });
 }
-
-// FutureOr<bool> onNavigationRequest(
-//     {required String url, required bool isForMainFrame});
-//
-// /// Invoked by [WebViewPlatformController] when a page has started loading.
-// void onPageStarted(String url);
-//
-// /// Invoked by [WebViewPlatformController] when a page has finished loading.
-// void onPageFinished(String url);
-//
-// /// Invoked by [WebViewPlatformController] when a page is loading.
-// /// /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
-// void onProgress(int progress);
-//
-// /// Report web resource loading error to the host application.
-// void onWebResourceError(WebResourceError error);

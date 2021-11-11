@@ -11,7 +11,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import 'src/android_webview.dart';
 import 'src/instance_manager.dart';
-import 'webview_widget.dart';
+import 'webview_android_widget.dart';
 import 'webview_android.dart';
 
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
@@ -41,7 +41,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
       javascriptChannelRegistry: javascriptChannelRegistry,
     );
 
-    return AndroidWebViewWidget(
+    return WebViewAndroidWidget(
       controller: controller,
       onBuildWidget: () {
         return PlatformViewLink(

@@ -10,7 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
-import 'webview_widget.dart';
+import 'webview_android_widget.dart';
 import 'src/instance_manager.dart';
 import 'src/android_webview.dart';
 
@@ -37,7 +37,7 @@ class AndroidWebView implements WebViewPlatform {
       javascriptChannelRegistry: javascriptChannelRegistry,
     );
 
-    return AndroidWebViewWidget(
+    return WebViewAndroidWidget(
       controller: controller,
       onBuildWidget: () {
         return GestureDetector(

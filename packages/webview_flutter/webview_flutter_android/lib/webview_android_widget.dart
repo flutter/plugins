@@ -11,24 +11,25 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 import 'src/android_webview.dart' as android_webview;
 
 /// Creates a [Widget] with a [android_webview.WebView].
-class AndroidWebViewWidget extends StatefulWidget {
-  /// Constructs a [AndroidWebViewWidget].
-  AndroidWebViewWidget({required this.controller, required this.onBuildWidget});
+class WebViewAndroidWidget extends StatefulWidget {
+  /// Constructs a [WebViewAndroidWidget].
+  WebViewAndroidWidget({required this.controller, required this.onBuildWidget});
 
+  /// Controls the Android WebView platform API.
   final WebViewAndroidPlatformController controller;
 
   /// Callback to build a widget once [android_webview.WebView] has been initialized.
   final Widget Function() onBuildWidget;
 
   @override
-  State<StatefulWidget> createState() => _AndroidWebViewWidgetState();
+  State<StatefulWidget> createState() => _WebViewAndroidWidgetState();
 }
 
-class _AndroidWebViewWidgetState extends State<AndroidWebViewWidget> {
+class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
   @override
   void dispose() {
     super.dispose();
-    widget.controller.release();
+    widget.controller._release();
   }
 
   @override
@@ -42,8 +43,6 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Construct a [WebViewAndroidPlatformController].
   WebViewAndroidPlatformController({
     required this.webView,
-    WebViewAndroidDownloadListener? downloadListener,
-    WebViewAndroidWebChromeClient? webChromeClient,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
@@ -57,10 +56,10 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     webView.settings.setDisplayZoomControls(false);
     webView.settings.setBuiltInZoomControls(true);
 
-    this.downloadListener =
-        downloadListener ?? WebViewAndroidDownloadListener(loadUrl: loadUrl);
-    this.webChromeClient = webChromeClient ?? WebViewAndroidWebChromeClient();
+    this.downloadListener =WebViewAndroidDownloadListener(loadUrl: loadUrl);
+    this.webChromeClient = WebViewAndroidWebChromeClient();
 
+    // Also sets WebViewClient depending on WebSettings.hasNavigationDelegate.
     _setCreationParams(creationParams);
 
     webView.setDownloadListener(this.downloadListener);
@@ -71,6 +70,11 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
       loadUrl(initialUrl, <String, String>{});
     }
   }
+
+  final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
+  <String, WebViewAndroidJavaScriptChannel>{};
+
+  late WebViewAndroidWebViewClient _webViewClient;
 
   /// Initial parameters used to setup the WebView.
   final CreationParams creationParams;
@@ -84,15 +88,13 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
-  final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
-      <String, WebViewAndroidJavaScriptChannel>{};
-
+  /// Receives callbacks when content can not be handled by the rendering engine for [android_webview.WebView], and should be downloaded instead.
   late final WebViewAndroidDownloadListener downloadListener;
 
+  /// Handles JavaScript dialogs, favicons, titles, new windows, and the progress for [android_webview.WebView].
   late final WebViewAndroidWebChromeClient webChromeClient;
 
-  late WebViewAndroidWebViewClient _webViewClient;
-
+  /// Receive various notifications and requests for [android_webview.WebView].
   WebViewAndroidWebViewClient get webViewClient => _webViewClient;
 
   @override
@@ -205,7 +207,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @override
   Future<int> getScrollY() => webView.getScrollY();
 
-  Future<void> release() => webView.release();
+  Future<void> _release() => webView.release();
 
   void _setCreationParams(CreationParams creationParams) {
     final WebSettings? webSettings = creationParams.webSettings;
@@ -296,12 +298,15 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   }
 }
 
+/// Exposes a channel to receive calls from javaScript.
 class WebViewAndroidJavaScriptChannel
     extends android_webview.JavaScriptChannel {
+  /// Creates a [WebViewAndroidJavaScriptChannel].
   WebViewAndroidJavaScriptChannel(
       String channelName, this.javascriptChannelRegistry)
       : super(channelName);
 
+  /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
   @override
@@ -310,14 +315,18 @@ class WebViewAndroidJavaScriptChannel
   }
 }
 
+/// Receives callbacks when content can not be handled by the rendering engine for [WebViewAndroidPlatformController], and should be downloaded instead.
 class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
+  /// Creates a [WebViewAndroidDownloadListener].
   WebViewAndroidDownloadListener({required this.loadUrl});
 
-  final Future<void> Function(String url, Map<String, String>? headers) loadUrl;
   FutureOr<bool> Function({
-    required String url,
-    required bool isForMainFrame,
+  required String url,
+  required bool isForMainFrame,
   })? _onNavigationRequest;
+
+  /// Callback to load a URL when a navigation request is approved.
+  final Future<void> Function(String url, Map<String, String>? headers) loadUrl;
 
   @override
   void onDownloadStart(
@@ -425,6 +434,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     );
   }
 
+  /// Whether this [android_webview.WebViewClient] handles navigation requests.
   bool get handlesNavigation =>
       loadUrl != null && onNavigationRequestCallback != null;
 
@@ -513,6 +523,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
   }
 }
 
+/// Handles JavaScript dialogs, favicons, titles, and the progress for [WebViewAndroidPlatformController].
 class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {
   void Function(int progress)? _onProgress;
 
