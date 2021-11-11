@@ -1,3 +1,7 @@
+## NEXT
+
+* Update Android compileSdkVersion 31.
+
 ## 2.2.1
 
 * Fix `NullPointerException` from a race condition when changing focus. This only affects `WebView`
