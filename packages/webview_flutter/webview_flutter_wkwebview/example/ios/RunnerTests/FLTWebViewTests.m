@@ -5,6 +5,7 @@
 @import Flutter;
 @import XCTest;
 @import webview_flutter_wkwebview;
+@import webview_flutter_wkwebview.Test;
 
 // OCMock library doesn't generate a valid modulemap.
 #import <OCMock/OCMock.h>
@@ -298,6 +299,198 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
             }];
 
   // Verify
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
+- (void)testBuildNSURLRequestReturnsNilForNonDictionaryValue {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  // Run
+  NSURLRequest *request = [controller buildNSURLRequest:@{@"request" : @"Non Dictionary Value"}];
+
+  // Verify
+  XCTAssertNil(request);
+}
+
+- (void)testBuildNSURLRequestReturnsNilForMissingURI {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  // Run
+  NSURLRequest *request = [controller buildNSURLRequest:@{@"request" : @{}}];
+
+  // Verify
+  XCTAssertNil(request);
+}
+
+- (void)testBuildNSURLRequestReturnsNilForInvalidURI {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  // Run
+  NSDictionary *requestData = @{@"uri" : @"invalid uri"};
+  NSURLRequest *request = [controller buildNSURLRequest:@{@"request" : requestData}];
+
+  // Verify
+  XCTAssertNil(request);
+}
+
+- (void)testBuildNSURLRequestBuildsNSMutableURLRequestWithOptionalParameters {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  // Run
+  NSDictionary *requestData = @{
+    @"uri" : @"https://flutter.dev",
+    @"method" : @"POST",
+    @"headers" : @{@"Foo" : @"Bar"},
+    @"body" : [FlutterStandardTypedData
+        typedDataWithBytes:[@"Test Data" dataUsingEncoding:NSUTF8StringEncoding]],
+  };
+  NSURLRequest *request = [controller buildNSURLRequest:@{@"request" : requestData}];
+
+  // Verify
+  XCTAssertNotNil(request);
+  XCTAssertEqualObjects(request.URL.absoluteString, @"https://flutter.dev");
+  XCTAssertEqualObjects(request.HTTPMethod, @"POST");
+  XCTAssertEqualObjects(request.allHTTPHeaderFields, @{@"Foo" : @"Bar"});
+  XCTAssertEqualObjects(request.HTTPBody, [@"Test Data" dataUsingEncoding:NSUTF8StringEncoding]);
+}
+
+- (void)testBuildNSURLRequestBuildsNSMutableURLRequestWithoutOptionalParameters {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+
+  // Run
+  NSDictionary *requestData = @{
+    @"uri" : @"https://flutter.dev",
+  };
+  NSURLRequest *request = [controller buildNSURLRequest:@{@"request" : requestData}];
+
+  // Verify
+  XCTAssertNotNil(request);
+  XCTAssertEqualObjects(request.URL.absoluteString, @"https://flutter.dev");
+  XCTAssertEqualObjects(request.HTTPMethod, @"GET");
+  XCTAssertNil(request.allHTTPHeaderFields);
+  XCTAssertNil(request.HTTPBody);
+}
+
+- (void)testOnLoadUrlReturnsErrorResultForInvalidRequest {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return error result when request cannot be built"];
+
+  // Run
+  FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"loadUrl"
+                                                                    arguments:@{}];
+  [controller onLoadUrl:methodCall
+                 result:^(id _Nullable result) {
+                   XCTAssertTrue([result class] == [FlutterError class]);
+                   [resultExpectation fulfill];
+                 }];
+
+  // Verify
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
+- (void)testOnLoadUrlLoadsRequestWithSuccessResult {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  XCTestExpectation *resultExpectation = [self expectationWithDescription:@"Should return nil"];
+  FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockView;
+
+  // Run
+  FlutterMethodCall *methodCall =
+      [FlutterMethodCall methodCallWithMethodName:@"loadUrl"
+                                        arguments:@{@"url" : @"https://flutter.dev/"}];
+  [controller onLoadUrl:methodCall
+                 result:^(id _Nullable result) {
+                   XCTAssertNil(result);
+                   [resultExpectation fulfill];
+                 }];
+
+  // Verify
+  OCMVerify([mockView loadRequest:[OCMArg any]]);
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
+- (void)testOnLoadRequestReturnsErroResultForInvalidRequest {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return error result when request cannot be built"];
+
+  // Run
+  FlutterMethodCall *methodCall = [FlutterMethodCall methodCallWithMethodName:@"loadRequest"
+                                                                    arguments:@{}];
+  [controller onLoadRequest:methodCall
+                     result:^(id _Nullable result) {
+                       XCTAssertTrue([result class] == [FlutterError class]);
+                       [resultExpectation fulfill];
+                     }];
+
+  // Verify
+  [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
+- (void)testOnLoadRequestLoadsRequestWithSuccessResult {
+  // Setup
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  XCTestExpectation *resultExpectation = [self expectationWithDescription:@"Should return nil"];
+  FLTWKWebView *mockView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockView;
+
+  // Run
+  FlutterMethodCall *methodCall = [FlutterMethodCall
+      methodCallWithMethodName:@"loadRequest"
+                     arguments:@{@"request" : @{@"uri" : @"https://flutter.dev/"}}];
+  [controller onLoadRequest:methodCall
+                     result:^(id _Nullable result) {
+                       XCTAssertNil(result);
+                       [resultExpectation fulfill];
+                     }];
+
+  // Verify
+  OCMVerify([mockView loadRequest:[OCMArg any]]);
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
 }
 

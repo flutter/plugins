@@ -1,4 +1,4 @@
-## NEXT
+## 0.7.2
 
 - Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
 - `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
@@ -15,6 +15,8 @@
   length.
 - Fix `license-check` when run on Windows with line ending conversion enabled.
 - Fixed `pubspec-check` on Windows.
+- Add support for `main` as a primary branch. `master` continues to work for
+  compatibility.
 
 ## 0.7.1
 
