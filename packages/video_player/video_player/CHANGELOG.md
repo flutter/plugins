@@ -1,3 +1,7 @@
+## NEXT
+
+* Update Android compileSdkVersion to 31.
+
 ## 2.2.7
 
 * Fixes a regression where dragging a [VideoProgressIndicator] while playing
