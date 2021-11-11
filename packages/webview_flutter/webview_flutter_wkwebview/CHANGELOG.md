@@ -1,6 +1,10 @@
-## 2.3.0
+## 2.4.0
 
 * Added `limitsNavigationsToAppBoundDomains` functionality.
+
+## 2.3.0
+
+* Implemented new `loadRequest` method from platform interface.
 
 ## 2.2.0
 

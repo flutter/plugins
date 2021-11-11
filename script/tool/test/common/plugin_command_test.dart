@@ -246,11 +246,8 @@ void main() {
       test('all plugins should be tested if there are no changes.', () async {
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -264,11 +261,8 @@ void main() {
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -283,11 +277,8 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -302,11 +293,8 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -322,11 +310,8 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -342,11 +327,8 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -362,11 +344,8 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -382,11 +361,8 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -398,17 +374,14 @@ packages/plugin1/CHANGELOG
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        final List<String> output = await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        final List<String> output = await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(
             output,
             containsAllInOrder(<Matcher>[
               contains(
-                  'Running for all packages that have changed relative to "master"'),
+                  'Running for all packages that have changed relative to "main"'),
             ]));
 
         expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
@@ -424,11 +397,8 @@ packages/plugin1/ios/plugin1.m
         ];
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         createFakePlugin('plugin2', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
@@ -444,11 +414,8 @@ packages/plugin2/ios/plugin2.m
         final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
         final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins,
             unorderedEquals(<String>[plugin1.path, plugin2.path]));
@@ -468,11 +435,8 @@ packages/plugin1/plugin1_web/plugin1_web.dart
             createFakePlugin('plugin1', packagesDir.childDirectory('plugin1'));
         createFakePlugin('plugin2', packagesDir);
         createFakePlugin('plugin3', packagesDir);
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(command.plugins, unorderedEquals(<String>[plugin1.path]));
       });
@@ -491,11 +455,8 @@ packages/plugin1/plugin1/plugin1.dart
             packagesDir.childDirectory('plugin1'));
         final Directory plugin3 = createFakePlugin(
             'plugin1_web', packagesDir.childDirectory('plugin1'));
-        await runCapturingPrint(runner, <String>[
-          'sample',
-          '--base-sha=master',
-          '--run-on-changed-packages'
-        ]);
+        await runCapturingPrint(runner,
+            <String>['sample', '--base-sha=main', '--run-on-changed-packages']);
 
         expect(
             command.plugins,
@@ -518,7 +479,7 @@ packages/plugin3/plugin3.dart
         await runCapturingPrint(runner, <String>[
           'sample',
           '--exclude=plugin2,plugin3',
-          '--base-sha=master',
+          '--base-sha=main',
           '--run-on-changed-packages'
         ]);
 
@@ -546,6 +507,28 @@ packages/plugin3/plugin3.dart
           output,
           containsAllInOrder(<Matcher>[
             contains('--packages-for-branch: running on changed packages'),
+          ]));
+    });
+
+    test('tests all packages on main', () async {
+      processRunner.mockProcessesForExecutable['git-diff'] = <Process>[
+        MockProcess(stdout: 'packages/plugin1/plugin1.dart'),
+      ];
+      processRunner.mockProcessesForExecutable['git-rev-parse'] = <Process>[
+        MockProcess(stdout: 'main'),
+      ];
+      final Directory plugin1 = createFakePlugin('plugin1', packagesDir);
+      final Directory plugin2 = createFakePlugin('plugin2', packagesDir);
+
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['sample', '--packages-for-branch']);
+
+      expect(command.plugins,
+          unorderedEquals(<String>[plugin1.path, plugin2.path]));
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('--packages-for-branch: running on all packages'),
           ]));
     });
 
