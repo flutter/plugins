@@ -242,6 +242,19 @@ final class GoogleMapController
           result.success(null);
           break;
         }
+      case "camera#animateWithDuration":
+        {
+          final CameraUpdate cameraUpdate =
+              Convert.toCameraUpdate(call.argument("cameraUpdate"), density);
+          final Integer duration = call.argument("duration");
+          if (duration == null) {
+            googleMap.animateCamera(cameraUpdate);
+          } else {
+            googleMap.animateCamera(cameraUpdate, duration, null);
+          }
+          result.success(null);
+          break;
+        }
       case "markers#update":
         {
           List<Object> markersToAdd = call.argument("markersToAdd");

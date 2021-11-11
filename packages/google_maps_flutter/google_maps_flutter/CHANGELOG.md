@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Add duration to camera animate
+
 ## 2.1.0
 
 * Add iOS unit and UI integration test targets.

@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showAtX:(CGFloat)x Y:(CGFloat)y;
 - (void)hide;
 - (void)animateWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
+- (void)animateWithDuration:(GMSCameraUpdate *)cameraUpdate duration:(NSNumber *)duration;
 - (void)moveWithCameraUpdate:(GMSCameraUpdate *)cameraUpdate;
 - (nullable GMSCameraPosition *)cameraPosition;
 @end
