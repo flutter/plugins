@@ -1,3 +1,7 @@
+## NEXT
+
+* Update Android compileSdkVersion to 31.
+
 ## 0.1.6
 
 * Require Dart SDK >= 2.14.
