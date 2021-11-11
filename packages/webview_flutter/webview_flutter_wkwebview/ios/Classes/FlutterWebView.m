@@ -206,6 +206,17 @@
   }
 
   NSURL* url = [NSURL fileURLWithPath:[call arguments] isDirectory:NO];
+
+  if (!url) {
+    NSString* errorDetails = [NSString stringWithFormat:@"Initializing NSURL with the supplied "
+                                                        @"'%@' path resulted in a nil value.",
+                                                        [call arguments]];
+    result([FlutterError errorWithCode:@"loadFile_failed"
+                               message:@"Failed parsing file path."
+                               details:errorDetails]);
+    return;
+  }
+
   NSURL* baseUrl = [url URLByDeletingLastPathComponent];
 
   [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
@@ -214,7 +225,7 @@
 
 - (void)onLoadHtmlString:(FlutterMethodCall*)call result:(FlutterResult)result {
   NSDictionary* arguments = [call arguments];
-  if (!arguments || ![arguments isKindOfClass:NSDictionary.class]) {
+  if (![arguments isKindOfClass:NSDictionary.class]) {
     result([FlutterError
         errorWithCode:@"loadHtmlString_failed"
               message:@"Failed parsing arguments."
@@ -603,6 +614,14 @@
   }
 }
 
+/**
+ * Validates if the given `argument` is a non-null non-empty string.
+ *
+ * @param argument The argument that should be validated.
+ * @param errorDetails An optional NSString variable which will contain a detailed error message in
+ * case the supplied argument is not valid.
+ * @return `true` if the given `argument` is a valid non-null, non-empty string; otherwise `false`.
+ */
 + (bool)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
   if (!argument) {
     if (errorDetails) {

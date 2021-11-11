@@ -46,7 +46,11 @@ const String kLocalFileExamplePage = '''
 <body>
 
 <h1>Local demo page</h1>
-<p>This is an example page used to demonstrate how to load a local file or HTML string using the <a href="https://pub.dev/packages/webview_flutter">Flutter webview</a> plugin.</p>
+<p>
+  This is an example page used to demonstrate how to load a local file or HTML 
+  string using the <a href="https://pub.dev/packages/webview_flutter">Flutter 
+  webview</a> plugin.
+</p>
 
 </body>
 </html>
@@ -342,10 +346,6 @@ class _SampleMenu extends StatelessWidget {
   static Future<String> _prepareLocalFile() async {
     final String tmpDir = (await getTemporaryDirectory()).path;
     File indexFile = File('$tmpDir/www/index.html');
-
-    if (await indexFile.exists()) {
-      return indexFile.path;
-    }
 
     await Directory('$tmpDir/www').create(recursive: true);
     await indexFile.writeAsString(kLocalFileExamplePage);
