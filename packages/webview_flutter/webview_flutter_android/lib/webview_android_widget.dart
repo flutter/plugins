@@ -56,7 +56,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     webView.settings.setDisplayZoomControls(false);
     webView.settings.setBuiltInZoomControls(true);
 
-    this.downloadListener =WebViewAndroidDownloadListener(loadUrl: loadUrl);
+    this.downloadListener = WebViewAndroidDownloadListener(loadUrl: loadUrl);
     this.webChromeClient = WebViewAndroidWebChromeClient();
 
     // Also sets WebViewClient depending on WebSettings.hasNavigationDelegate.
@@ -72,7 +72,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   }
 
   final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
-  <String, WebViewAndroidJavaScriptChannel>{};
+      <String, WebViewAndroidJavaScriptChannel>{};
 
   late WebViewAndroidWebViewClient _webViewClient;
 
@@ -316,13 +316,18 @@ class WebViewAndroidJavaScriptChannel
 }
 
 /// Receives callbacks when content can not be handled by the rendering engine for [WebViewAndroidPlatformController], and should be downloaded instead.
+///
+/// When handling navigation requests, this calls [onNavigationRequestCallback]
+/// when a [android_webview.WebView] attempts to navigate to a new page. If
+/// this callback return true, this calls [loadUrl].
 class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
   /// Creates a [WebViewAndroidDownloadListener].
   WebViewAndroidDownloadListener({required this.loadUrl});
 
+  // Changed by WebViewAndroidPlatformController.
   FutureOr<bool> Function({
-  required String url,
-  required bool isForMainFrame,
+    required String url,
+    required bool isForMainFrame,
   })? _onNavigationRequest;
 
   /// Callback to load a URL when a navigation request is approved.
@@ -355,7 +360,13 @@ class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
   }
 }
 
+/// Receives various navigation requests and errors for [WebViewAndroidPlatformController].
+///
+/// When handling navigation requests, this calls [onNavigationRequestCallback]
+/// when a [android_webview.WebView] attempts to navigate to a new page. If
+/// this callback return true, this calls [loadUrl].
 class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
+  /// Creates a [WebViewAndroidWebViewClient] that doesn't handle navigation requests.
   WebViewAndroidWebViewClient({
     required this.onPageStartedCallback,
     required this.onPageFinishedCallback,
@@ -364,6 +375,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
         onNavigationRequestCallback = null,
         super(shouldOverrideUrlLoading: false);
 
+  /// Creates a [WebViewAndroidWebViewClient] that handles navigation requests.
   WebViewAndroidWebViewClient.handlesNavigation({
     required this.onPageStartedCallback,
     required this.onPageFinishedCallback,
@@ -379,17 +391,22 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
         loadUrl = loadUrl,
         super(shouldOverrideUrlLoading: true);
 
+  /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageStarted.
   final void Function(String url) onPageStartedCallback;
 
+  /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageFinished.
   final void Function(String url) onPageFinishedCallback;
 
+  /// Callback when [android_webview.WebViewClient] receives an error callback.
   void Function(WebResourceError error) onWebResourceErrorCallback;
 
+  /// Checks whether a navigation request should be approved or disaproved.
   final FutureOr<bool> Function({
     required String url,
     required bool isForMainFrame,
   })? onNavigationRequestCallback;
 
+  /// Callback when a navigation request is approved.
   final Future<void> Function(String url, Map<String, String>? headers)?
       loadUrl;
 
@@ -525,6 +542,7 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
 /// Handles JavaScript dialogs, favicons, titles, and the progress for [WebViewAndroidPlatformController].
 class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {
+  // Changed by WebViewAndroidPlatformController.
   void Function(int progress)? _onProgress;
 
   @override
