@@ -24,6 +24,7 @@ import 'webview_android_widget_test.mocks.dart';
   WebViewAndroidWebViewClient,
   JavascriptChannelRegistry,
   WebViewPlatformCallbacksHandler,
+  WebViewProxy,
 ])
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ void main() {
   group('$WebViewAndroidWidget', () {
     late MockWebView mockWebView;
     late MockWebSettings mockWebSettings;
+    late MockWebViewProxy mockWebViewProxy;
 
     late MockWebViewPlatformCallbacksHandler mockCallbacksHandler;
     late WebViewAndroidWebViewClient webViewClient;
@@ -46,6 +48,11 @@ void main() {
       mockWebSettings = MockWebSettings();
       when(mockWebView.settings).thenReturn(mockWebSettings);
 
+      mockWebViewProxy = MockWebViewProxy();
+      when(mockWebViewProxy.createWebView(
+        useHybridComposition: anyNamed('useHybridComposition'),
+      )).thenReturn(mockWebView);
+
       mockCallbacksHandler = MockWebViewPlatformCallbacksHandler();
       mockJavascriptChannelRegistry = MockJavascriptChannelRegistry();
     });
@@ -56,11 +63,12 @@ void main() {
       CreationParams? creationParams,
       bool hasNavigationDelegate = false,
       bool hasProgressTracking = false,
+      bool useHybridComposition = false,
     }) async {
       webChromeClient = WebViewAndroidWebChromeClient();
 
       controller = WebViewAndroidPlatformController(
-        webView: mockWebView,
+        useHybridComposition: useHybridComposition,
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
@@ -70,6 +78,7 @@ void main() {
             )),
         callbacksHandler: mockCallbacksHandler,
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
+        webViewProxy: mockWebViewProxy,
       );
 
       webViewClient = controller.webViewClient;
@@ -100,13 +109,13 @@ void main() {
       ]);
     });
 
-    // testWidgets(
-    //   'Create Widget with Hybrid Composition',
-    //   (WidgetTester tester) async {
-    //     await buildWidget(tester, useHybridComposition: true);
-    //     verify(mockWebViewHostApi.create(0, true));
-    //   },
-    // );
+    testWidgets(
+      'Create Widget with Hybrid Composition',
+      (WidgetTester tester) async {
+        await buildWidget(tester, useHybridComposition: true);
+        verify(mockWebViewProxy.createWebView(useHybridComposition: true));
+      },
+    );
 
     group('$CreationParams', () {
       testWidgets('initialUrl', (WidgetTester tester) async {
@@ -221,19 +230,20 @@ void main() {
           expect(controller.webViewClient.shouldOverrideUrlLoading, isTrue);
         });
 
-        // testWidgets('debuggingEnabled', (WidgetTester tester) async {
-        //   await buildWidget(
-        //     tester,
-        //     creationParams: CreationParams(
-        //       webSettings: WebSettings(
-        //         userAgent: WebSetting<String?>.absent(),
-        //         debuggingEnabled: true,
-        //       ),
-        //     ),
-        //   );
-        //
-        //   verify(mockWebSettings.setWebContentsDebuggingEnabled(true));
-        // });
+        testWidgets('debuggingEnabled', (WidgetTester tester) async {
+          await buildWidget(
+            tester,
+            creationParams: CreationParams(
+              webSettings: WebSettings(
+                userAgent: WebSetting<String?>.absent(),
+                debuggingEnabled: true,
+                hasNavigationDelegate: false,
+              ),
+            ),
+          );
+
+          verify(mockWebViewProxy.setWebContentsDebuggingEnabled(true));
+        });
 
         testWidgets('userAgent', (WidgetTester tester) async {
           await buildWidget(

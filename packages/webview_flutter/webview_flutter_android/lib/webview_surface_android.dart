@@ -35,7 +35,7 @@ class SurfaceAndroidWebView extends AndroidWebView {
   }) {
     final WebViewAndroidPlatformController controller =
         WebViewAndroidPlatformController(
-      webView: WebView(useHybridComposition: true),
+      useHybridComposition: true,
       creationParams: creationParams,
       callbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,

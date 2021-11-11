@@ -7,7 +7,6 @@ package io.flutter.plugins.webviewflutter;
 import android.app.Activity;
 import android.os.Handler;
 import android.view.View;
-
 import androidx.annotation.NonNull;
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.embedding.engine.plugins.activity.ActivityAware;
@@ -26,8 +25,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  *
  * <p>Register this in an add to app scenario to gracefully handle activity and context changes.
  *
- * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common}
- * package instead.
+ * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common} package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private FlutterPluginBinding pluginBinding;
@@ -56,18 +54,26 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
    */
   @SuppressWarnings({"unused", "deprecation"})
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    setUp(registrar.messenger(), registrar.platformViewRegistry(), registrar.activity(), registrar.view());
+    setUp(
+        registrar.messenger(),
+        registrar.platformViewRegistry(),
+        registrar.activity(),
+        registrar.view());
     new FlutterCookieManager(registrar.messenger());
   }
 
   private static void setUp(
-      BinaryMessenger binaryMessenger, PlatformViewRegistry viewRegistry, Activity activity, View containerView) {
+      BinaryMessenger binaryMessenger,
+      PlatformViewRegistry viewRegistry,
+      Activity activity,
+      View containerView) {
     InstanceManager instanceManager = new InstanceManager();
     viewRegistry.registerViewFactory(
         "plugins.flutter.io/webview", new FlutterWebViewFactory(instanceManager));
     WebViewHostApi.setup(
         binaryMessenger,
-        new WebViewHostApiImpl(instanceManager, new WebViewHostApiImpl.WebViewProxy(), activity, containerView));
+        new WebViewHostApiImpl(
+            instanceManager, new WebViewHostApiImpl.WebViewProxy(), activity, containerView));
     WebViewClientHostApi.setup(
         binaryMessenger,
         new WebViewClientHostApiImpl(
@@ -121,7 +127,8 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     setUp(
         pluginBinding.getBinaryMessenger(),
         pluginBinding.getPlatformViewRegistry(),
-        activityPluginBinding.getActivity(), null);
+        activityPluginBinding.getActivity(),
+        null);
   }
 
   @Override
@@ -133,7 +140,8 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
     setUp(
         pluginBinding.getBinaryMessenger(),
         pluginBinding.getPlatformViewRegistry(),
-        activityPluginBinding.getActivity(), null);
+        activityPluginBinding.getActivity(),
+        null);
   }
 
   @Override

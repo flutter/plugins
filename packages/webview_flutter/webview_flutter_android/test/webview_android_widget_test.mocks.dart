@@ -28,6 +28,8 @@ class _FakeWebSettings_0 extends _i1.Fake implements _i2.WebSettings {}
 class _FakeJavascriptChannelRegistry_1 extends _i1.Fake
     implements _i3.JavascriptChannelRegistry {}
 
+class _FakeWebView_2 extends _i1.Fake implements _i2.WebView {}
+
 /// A class which mocks [WebSettings].
 ///
 /// See the documentation for Mockito's code generation for more information.
@@ -412,6 +414,30 @@ class MockWebViewPlatformCallbacksHandler extends _i1.Mock
   void onWebResourceError(_i3.WebResourceError? error) =>
       super.noSuchMethod(Invocation.method(#onWebResourceError, [error]),
           returnValueForMissingStub: null);
+  @override
+  String toString() => super.toString();
+}
+
+/// A class which mocks [WebViewProxy].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWebViewProxy extends _i1.Mock implements _i5.WebViewProxy {
+  MockWebViewProxy() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i2.WebView createWebView({bool? useHybridComposition}) =>
+      (super.noSuchMethod(
+          Invocation.method(#createWebView, [],
+              {#useHybridComposition: useHybridComposition}),
+          returnValue: _FakeWebView_2()) as _i2.WebView);
+  @override
+  _i4.Future<void> setWebContentsDebuggingEnabled(bool? enabled) =>
+      (super.noSuchMethod(
+          Invocation.method(#setWebContentsDebuggingEnabled, [enabled]),
+          returnValue: Future<void>.value(),
+          returnValueForMissingStub: Future<void>.value()) as _i4.Future<void>);
   @override
   String toString() => super.toString();
 }

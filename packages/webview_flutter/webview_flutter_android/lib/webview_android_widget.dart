@@ -42,12 +42,17 @@ class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
 class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Construct a [WebViewAndroidPlatformController].
   WebViewAndroidPlatformController({
-    required this.webView,
+    required this.useHybridComposition,
     required this.creationParams,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
+    @visibleForTesting this.webViewProxy = const WebViewProxy(),
   })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
         super(callbacksHandler) {
+    webView = webViewProxy.createWebView(
+      useHybridComposition: useHybridComposition,
+    );
+
     webView.settings.setDomStorageEnabled(true);
     webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
     webView.settings.setSupportMultipleWindows(true);
@@ -79,8 +84,24 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Initial parameters used to setup the WebView.
   final CreationParams creationParams;
 
+  /// Handles constructing [android_webview.WebView]s and calling static methods.
+  ///
+  /// This should only be changed for testing purposes.
+  final WebViewProxy webViewProxy;
+
+  /// Whether the [android_webview.WebView] will be rendered with an [AndroidViewSurface].
+  ///
+  /// This implementation uses hybrid composition to render the
+  /// [WebViewAndroidWidget]. This comes at the cost of some performance on
+  /// Android versions below 10. See
+  /// https://flutter.dev/docs/development/platform-integration/platform-views#performance
+  /// for more information.
+  ///
+  /// Defaults to false.
+  final bool useHybridComposition;
+
   /// Represents the WebView maintained by platform code.
-  final android_webview.WebView webView;
+  late final android_webview.WebView webView;
 
   /// Handles callbacks that are made by [android_webview.WebViewClient], [android_webview.DownloadListener], and [android_webview.WebChromeClient].
   final WebViewPlatformCallbacksHandler callbacksHandler;
@@ -279,7 +300,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   Future<void> _trySetDebuggingEnabled(bool? debuggingEnabled) async {
     if (debuggingEnabled == null) return Future<void>.sync(() => null);
-    return android_webview.WebView.setWebContentsDebuggingEnabled(
+    return webViewProxy.setWebContentsDebuggingEnabled(
       debuggingEnabled,
     );
   }
@@ -550,5 +571,31 @@ class WebViewAndroidWebChromeClient extends android_webview.WebChromeClient {
     if (_onProgress != null) {
       _onProgress!(progress);
     }
+  }
+}
+
+/// Handles constructing [android_webview.WebView]s and calling static methods.
+///
+/// This should only be used for testing purposes.
+@visibleForTesting
+class WebViewProxy {
+  /// Creates a [WebViewProxy].
+  const WebViewProxy();
+
+  /// Constructs a [android_webview.WebView].
+  android_webview.WebView createWebView({required bool useHybridComposition}) {
+    return android_webview.WebView(useHybridComposition: useHybridComposition);
+  }
+
+  /// Enables debugging of web contents (HTML / CSS / JavaScript) loaded into any WebViews of this application.
+  ///
+  /// This flag can be enabled in order to facilitate debugging of web layouts
+  /// and JavaScript code running inside WebViews. Please refer to
+  /// [android_webview.WebView] documentation for the debugging guide. The
+  /// default is false.
+  ///
+  /// See [android_webview.WebView].setWebContentsDebuggingEnabled.
+  Future<void> setWebContentsDebuggingEnabled(bool enabled) {
+    return android_webview.WebView.setWebContentsDebuggingEnabled(true);
   }
 }

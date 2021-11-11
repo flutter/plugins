@@ -31,7 +31,7 @@ class AndroidWebView implements WebViewPlatform {
   }) {
     final WebViewAndroidPlatformController controller =
         WebViewAndroidPlatformController(
-      webView: WebView(useHybridComposition: false),
+      useHybridComposition: false,
       creationParams: creationParams,
       callbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,
