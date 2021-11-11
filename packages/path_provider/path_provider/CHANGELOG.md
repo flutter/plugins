@@ -1,3 +1,30 @@
+## 2.0.7
+
+* Moved Android and iOS implementations to federated packages.
+
+## 2.0.6
+
+* Added support for Background Platform Channels on Android when it is
+  available.
+
+## 2.0.5
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 2.0.4
+
+* Updated Android lint settings.
+* Specify Java 8 for Android build.
+
+## 2.0.3
+
+* Add iOS unit test target.
+* Remove references to the Android V1 embedding.
+
+## 2.0.2
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.

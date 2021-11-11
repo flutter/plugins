@@ -13,14 +13,11 @@ A Flutter plugin to use the camera from your Flutter app.
   s.author           = { 'Flutter Dev Team' => 'flutter-dev@googlegroups.com' }
   s.source           = { :http => 'https://github.com/flutter/plugins/tree/master/packages/camera' }
   s.documentation_url = 'https://pub.dev/packages/camera'
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'Classes/**/*.{h,m}'
   s.public_header_files = 'Classes/**/*.h'
+  s.module_map = 'Classes/CameraPlugin.modulemap'
   s.dependency 'Flutter'
 
-  s.platform = :ios, '8.0'
+  s.platform = :ios, '9.0'
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'VALID_ARCHS[sdk=iphonesimulator*]' => 'x86_64' }
-
-  s.test_spec 'Tests' do |test_spec|
-    test_spec.source_files = 'Tests/**/*'
-  end
 end

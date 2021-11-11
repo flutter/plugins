@@ -25,7 +25,19 @@ For more details, see [Getting started with Google Maps Platform](https://develo
 
 ### Android
 
-Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
+1. Set the `minSdkVersion` in `android/app/build.gradle`:
+
+```groovy
+android {
+    defaultConfig {
+        minSdkVersion 20
+    }
+}
+```
+
+This means that app will only be available for users that run Android SDK 20 or higher.
+
+2. Specify your API key in the application manifest `android/app/src/main/AndroidManifest.xml`:
 
 ```xml
 <manifest ...
@@ -34,9 +46,21 @@ Specify your API key in the application manifest `android/app/src/main/AndroidMa
                android:value="YOUR KEY HERE"/>
 ```
 
+#### Hybrid Composition
+
+To use [Hybrid Composition](https://flutter.dev/docs/development/platform-integration/platform-views)
+to render the `GoogleMap` widget on Android, set `AndroidGoogleMapsFlutter.useAndroidViewSurface` to
+true.
+
+```dart
+if (defaultTargetPlatform == TargetPlatform.android) {
+  AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+}
+```
+
 ### iOS
 
-Specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
+This plugin requires iOS 9.0 or higher. To set up, specify your API key in the application delegate `ios/Runner/AppDelegate.m`:
 
 ```objectivec
 #include "AppDelegate.h"

@@ -1,3 +1,44 @@
+## 5.2.1
+
+ Change the placeholder of the GoogleUserCircleAvatar to a transparent image.
+
+## 5.2.0
+
+* Add `GoogleSignInAccount.serverAuthCode`. Mark `GoogleSignInAuthentication.serverAuthCode` as deprecated.
+
+## 5.1.1
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+
+## 5.1.0
+
+* Add reAuthenticate option to signInSilently to allow re-authentication to be requested
+
+* Updated Android lint settings.
+
+## 5.0.7
+
+* Mark iOS arm64 simulators as unsupported.
+
+## 5.0.6
+
+* Remove references to the Android V1 embedding.
+
+## 5.0.5
+
+* Add iOS unit and UI integration test targets.
+* Add iOS unit test module map.
+* Exclude arm64 simulators in example app.
+
+## 5.0.4
+
+* Migrate maven repo from jcenter to mavenCentral.
+
+## 5.0.3
+
+* Fixed links in `README.md`.
+* Added documentation for usage on the web.
+
 ## 5.0.2
 
 * Fix flutter/flutter#48602 iOS flow shows account selection, if user is signed in to Google on the device.

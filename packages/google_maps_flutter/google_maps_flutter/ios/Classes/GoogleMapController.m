@@ -329,7 +329,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     NSNumber* isCompassEnabled = @(_mapView.settings.compassButton);
     result(isCompassEnabled);
   } else if ([call.method isEqualToString:@"map#isMapToolbarEnabled"]) {
-    NSNumber* isMapToolbarEnabled = [NSNumber numberWithBool:NO];
+    NSNumber* isMapToolbarEnabled = @NO;
     result(isMapToolbarEnabled);
   } else if ([call.method isEqualToString:@"map#getMinMaxZoomLevels"]) {
     NSArray* zoomLevels = @[ @(_mapView.minZoom), @(_mapView.maxZoom) ];
@@ -340,7 +340,7 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
     NSNumber* isZoomGesturesEnabled = @(_mapView.settings.zoomGestures);
     result(isZoomGesturesEnabled);
   } else if ([call.method isEqualToString:@"map#isZoomControlsEnabled"]) {
-    NSNumber* isZoomControlsEnabled = [NSNumber numberWithBool:NO];
+    NSNumber* isZoomControlsEnabled = @NO;
     result(isZoomControlsEnabled);
   } else if ([call.method isEqualToString:@"map#isTiltGesturesEnabled"]) {
     NSNumber* isTiltGesturesEnabled = @(_mapView.settings.tiltGestures);
@@ -507,6 +507,16 @@ static double ToDouble(NSNumber* data) { return [FLTGoogleMapJsonConversions toD
 - (void)mapView:(GMSMapView*)mapView didEndDraggingMarker:(GMSMarker*)marker {
   NSString* markerId = marker.userData[0];
   [_markersController onMarkerDragEnd:markerId coordinate:marker.position];
+}
+
+- (void)mapView:(GMSMapView*)mapView didStartDraggingMarker:(GMSMarker*)marker {
+  NSString* markerId = marker.userData[0];
+  [_markersController onMarkerDragStart:markerId coordinate:marker.position];
+}
+
+- (void)mapView:(GMSMapView*)mapView didDragMarker:(GMSMarker*)marker {
+  NSString* markerId = marker.userData[0];
+  [_markersController onMarkerDrag:markerId coordinate:marker.position];
 }
 
 - (void)mapView:(GMSMapView*)mapView didTapInfoWindowOfMarker:(GMSMarker*)marker {

@@ -1,3 +1,18 @@
+## NEXT
+
+* Remove references to the V1 Android embedding.
+* Updated Android lint settings.
+* Specify Java 8 for Android build.
+* Removed `-Werror` in Android builds.
+
+## 2.0.2
+
+* Update README to point to Plus Plugins version.
+
+##  2.0.1
+
+* Migrate maven repository from jcenter to mavenCentral.
+
 ## 2.0.0
 
 * Migrate to null safety.

@@ -24,9 +24,8 @@ class SharedPreferences {
   static bool _manualDartRegistrationNeeded = true;
 
   static SharedPreferencesStorePlatform get _store {
-    // This is to manually endorse the Linux implementation until automatic
-    // registration of dart plugins is implemented. For details see
-    // https://github.com/flutter/flutter/issues/52267.
+    // TODO(egarciad): Remove once auto registration lands on Flutter stable.
+    // https://github.com/flutter/flutter/issues/81421.
     if (_manualDartRegistrationNeeded) {
       // Only do the initial registration if it hasn't already been overridden
       // with a non-default instance.
@@ -51,7 +50,8 @@ class SharedPreferences {
   /// performance-sensitive blocks.
   static Future<SharedPreferences> getInstance() async {
     if (_completer == null) {
-      final completer = Completer<SharedPreferences>();
+      final Completer<SharedPreferences> completer =
+          Completer<SharedPreferences>();
       try {
         final Map<String, Object> preferencesMap =
             await _getSharedPreferencesMap();
@@ -129,6 +129,13 @@ class SharedPreferences {
       _setValue('Double', key, value);
 
   /// Saves a string [value] to persistent storage in the background.
+  ///
+  /// Note: Due to limitations in Android's SharedPreferences,
+  /// values cannot start with any one of the following:
+  ///
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBhIGxpc3Qu'
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBCaWdJbnRlZ2Vy'
+  /// - 'VGhpcyBpcyB0aGUgcHJlZml4IGZvciBEb3VibGUu'
   Future<bool> setString(String key, String value) =>
       _setValue('String', key, value);
 
@@ -182,7 +189,7 @@ class SharedPreferences {
     assert(fromSystem != null);
     // Strip the flutter. prefix from the returned preferences.
     final Map<String, Object> preferencesMap = <String, Object>{};
-    for (String key in fromSystem.keys) {
+    for (final String key in fromSystem.keys) {
       assert(key.startsWith(_prefix));
       preferencesMap[key.substring(_prefix.length)] = fromSystem[key]!;
     }

@@ -2,6 +2,10 @@ name: video_player_example
 description: Demonstrates how to use the video_player plugin.
 publish_to: none
 
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+  flutter: ">=1.12.13+hotfix.5"
+
 dependencies:
   flutter:
     sdk: flutter
@@ -20,16 +24,14 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  test: any
+  path_provider: ^2.0.6
   pedantic: ^1.10.0
+  test: any
 
 flutter:
   uses-material-design: true
   assets:
-   - assets/flutter-mark-square-64.png
-   - assets/Butterfly-209.mp4
-   - assets/bumble_bee_captions.srt
-
-environment:
-  sdk: ">=2.12.0 <3.0.0"
-  flutter: ">=1.12.13+hotfix.5"
+    - assets/flutter-mark-square-64.png
+    - assets/Butterfly-209.mp4
+    - assets/bumble_bee_captions.srt
+    - assets/bumble_bee_captions.vtt
