@@ -1,3 +1,6 @@
+## NEXT
+* Updated Android compileSdkVersion.
+
 ## 0.1.0+4
 
 * Updated Android lint settings.
