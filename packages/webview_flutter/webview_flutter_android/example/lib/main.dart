@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:webview_flutter_android/webview_surface_android.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'navigation_decision.dart';
+import 'navigation_request.dart';
 import 'web_view.dart';
 
 void main() {
@@ -65,6 +67,23 @@ class _WebViewExampleState extends State<_WebViewExample> {
           initialUrl: 'https://flutter.dev',
           onWebViewCreated: (WebViewController controller) {
             _controller.complete(controller);
+          },
+          onProgress: (int progress) {
+            print("WebView is loading (progress : $progress%)");
+          },
+          navigationDelegate: (NavigationRequest request) {
+            if (request.url.startsWith('https://www.youtube.com/')) {
+              print('blocking navigation to $request}');
+              return NavigationDecision.prevent;
+            }
+            print('allowing navigation to $request');
+            return NavigationDecision.navigate;
+          },
+          onPageStarted: (String url) {
+            print('Page started loading: $url');
+          },
+          onPageFinished: (String url) {
+            print('Page finished loading: $url');
           },
           javascriptChannels: _createJavascriptChannels(context),
           javascriptMode: JavascriptMode.unrestricted,

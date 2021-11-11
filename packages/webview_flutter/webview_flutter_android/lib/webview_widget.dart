@@ -194,8 +194,18 @@ class AndroidWebViewPlatformController extends WebViewPlatformController {
   }
 
   @override
-  Future<String> evaluateJavascript(String javascriptString) async {
-    return await webView.evaluateJavascript(javascriptString) ?? '';
+  Future<String> evaluateJavascript(String javascript) async {
+    return runJavascriptReturningResult(javascript);
+  }
+
+  @override
+  Future<void> runJavascript(String javascript) async {
+    await webView.evaluateJavascript(javascript);
+  }
+
+  @override
+  Future<String> runJavascriptReturningResult(String javascript) async {
+    return await webView.evaluateJavascript(javascript) ?? '';
   }
 
   @override
