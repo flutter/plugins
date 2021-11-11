@@ -10,6 +10,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'webview_widget.dart';
+import 'src/instance_manager.dart';
+
 /// Builds an Android webview.
 ///
 /// This is used as the default implementation for [WebView.platform] on Android. It uses
@@ -25,35 +28,38 @@ class AndroidWebView implements WebViewPlatform {
     WebViewPlatformCreatedCallback? onWebViewPlatformCreated,
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
   }) {
-    assert(webViewPlatformCallbacksHandler != null);
-    return GestureDetector(
-      // We prevent text selection by intercepting the long press event.
-      // This is a temporary stop gap due to issues with text selection on Android:
-      // https://github.com/flutter/flutter/issues/24585 - the text selection
-      // dialog is not responding to touch events.
-      // https://github.com/flutter/flutter/issues/24584 - the text selection
-      // handles are not showing.
-      // TODO(amirh): remove this when the issues above are fixed.
-      onLongPress: () {},
-      excludeFromSemantics: true,
-      child: AndroidView(
-        viewType: 'plugins.flutter.io/webview',
-        onPlatformViewCreated: (int id) {
-          if (onWebViewPlatformCreated == null) {
-            return;
-          }
-          onWebViewPlatformCreated(MethodChannelWebViewPlatform(
-            id,
-            webViewPlatformCallbacksHandler,
-            javascriptChannelRegistry,
-          ));
-        },
-        gestureRecognizers: gestureRecognizers,
-        layoutDirection: Directionality.maybeOf(context) ?? TextDirection.rtl,
-        creationParams:
-            MethodChannelWebViewPlatform.creationParamsToMap(creationParams),
-        creationParamsCodec: const StandardMessageCodec(),
-      ),
+    return AndroidWebViewWidget(
+      creationParams: creationParams,
+      webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler,
+      javascriptChannelRegistry: javascriptChannelRegistry,
+      useHybridComposition: false,
+      onBuildWidget: (AndroidWebViewPlatformController platformController) {
+        return GestureDetector(
+          // We prevent text selection by intercepting the long press event.
+          // This is a temporary stop gap due to issues with text selection on Android:
+          // https://github.com/flutter/flutter/issues/24585 - the text selection
+          // dialog is not responding to touch events.
+          // https://github.com/flutter/flutter/issues/24584 - the text selection
+          // handles are not showing.
+          // TODO(amirh): remove this when the issues above are fixed.
+          onLongPress: () {},
+          excludeFromSemantics: true,
+          child: AndroidView(
+            viewType: 'plugins.flutter.io/webview',
+            onPlatformViewCreated: (int id) {
+              if (onWebViewPlatformCreated != null) {
+                onWebViewPlatformCreated(platformController);
+              }
+            },
+            gestureRecognizers: gestureRecognizers,
+            layoutDirection:
+                Directionality.maybeOf(context) ?? TextDirection.rtl,
+            creationParams: InstanceManager.instance
+                .getInstanceId(platformController.webView),
+            creationParamsCodec: const StandardMessageCodec(),
+          ),
+        );
+      },
     );
   }
 

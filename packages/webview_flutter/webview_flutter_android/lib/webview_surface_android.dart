@@ -9,6 +9,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
+import 'src/instance_manager.dart';
+import 'webview_widget.dart';
 import 'webview_android.dart';
 
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
@@ -30,48 +32,46 @@ class SurfaceAndroidWebView extends AndroidWebView {
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
   }) {
-    assert(webViewPlatformCallbacksHandler != null);
-    return PlatformViewLink(
-      viewType: 'plugins.flutter.io/webview',
-      surfaceFactory: (
-        BuildContext context,
-        PlatformViewController controller,
-      ) {
-        return AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: gestureRecognizers ??
-              const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (PlatformViewCreationParams params) {
-        return PlatformViewsService.initSurfaceAndroidView(
-          id: params.id,
+    return AndroidWebViewWidget(
+      creationParams: creationParams,
+      webViewPlatformCallbacksHandler: webViewPlatformCallbacksHandler,
+      javascriptChannelRegistry: javascriptChannelRegistry,
+      useHybridComposition: true,
+      onBuildWidget: (AndroidWebViewPlatformController platformController) {
+        return PlatformViewLink(
           viewType: 'plugins.flutter.io/webview',
-          // WebView content is not affected by the Android view's layout direction,
-          // we explicitly set it here so that the widget doesn't require an ambient
-          // directionality.
-          layoutDirection: TextDirection.rtl,
-          creationParams: MethodChannelWebViewPlatform.creationParamsToMap(
-            creationParams,
-            usesHybridComposition: true,
-          ),
-          creationParamsCodec: const StandardMessageCodec(),
-        )
-          ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
-          ..addOnPlatformViewCreatedListener((int id) {
-            if (onWebViewPlatformCreated == null) {
-              return;
-            }
-            onWebViewPlatformCreated(
-              MethodChannelWebViewPlatform(
-                id,
-                webViewPlatformCallbacksHandler,
-                javascriptChannelRegistry,
-              ),
+          surfaceFactory: (
+            BuildContext context,
+            PlatformViewController controller,
+          ) {
+            return AndroidViewSurface(
+              controller: controller as AndroidViewController,
+              gestureRecognizers: gestureRecognizers ??
+                  const <Factory<OneSequenceGestureRecognizer>>{},
+              hitTestBehavior: PlatformViewHitTestBehavior.opaque,
             );
-          })
-          ..create();
+          },
+          onCreatePlatformView: (PlatformViewCreationParams params) {
+            return PlatformViewsService.initSurfaceAndroidView(
+              id: params.id,
+              viewType: 'plugins.flutter.io/webview',
+              // WebView content is not affected by the Android view's layout direction,
+              // we explicitly set it here so that the widget doesn't require an ambient
+              // directionality.
+              layoutDirection: TextDirection.rtl,
+              creationParams: InstanceManager.instance
+                  .getInstanceId(platformController.webView),
+              creationParamsCodec: const StandardMessageCodec(),
+            )
+              ..addOnPlatformViewCreatedListener(params.onPlatformViewCreated)
+              ..addOnPlatformViewCreatedListener((int id) {
+                if (onWebViewPlatformCreated != null) {
+                  onWebViewPlatformCreated(platformController);
+                }
+              })
+              ..create();
+          },
+        );
       },
     );
   }
