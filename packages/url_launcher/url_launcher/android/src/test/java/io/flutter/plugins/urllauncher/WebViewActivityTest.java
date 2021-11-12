@@ -12,11 +12,11 @@ import java.util.Map;
 import org.junit.Test;
 
 public class WebViewActivityTest {
-    @Test
-    public void extractHeaders_returnsEmptyMapWhenHeadersBundleNull() {
-        Bundle headersBundle = null;
+  @Test
+  public void extractHeaders_returnsEmptyMapWhenHeadersBundleNull() {
+    Bundle headersBundle = null;
 
-        Map<String, String> expectedExtractedHeaders = Collections.emptyMap();
-        assertEquals(WebViewActivity.extractHeaders(headersBundle), expectedExtractedHeaders);
-    }  
+    Map<String, String> expectedExtractedHeaders = Collections.emptyMap();
+    assertEquals(WebViewActivity.extractHeaders(headersBundle), expectedExtractedHeaders);
+  }
 }
