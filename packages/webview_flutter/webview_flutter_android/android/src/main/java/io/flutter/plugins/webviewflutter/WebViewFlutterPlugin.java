@@ -5,6 +5,7 @@
 package io.flutter.plugins.webviewflutter;
 
 import android.app.Activity;
+import android.content.Context;
 import android.os.Handler;
 import android.view.View;
 import androidx.annotation.NonNull;
@@ -28,9 +29,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common} package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
-  private FlutterPluginBinding pluginBinding;
   private FlutterCookieManager flutterCookieManager;
-
   private WebViewHostApiImpl webViewHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
 
@@ -69,7 +68,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private void setUp(
       BinaryMessenger binaryMessenger,
       PlatformViewRegistry viewRegistry,
-      Activity activity,
+      Context context,
       View containerView) {
     new FlutterCookieManager(binaryMessenger);
 
@@ -80,13 +79,13 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
     webViewHostApi =
         new WebViewHostApiImpl(
-            instanceManager, new WebViewHostApiImpl.WebViewProxy(), activity, containerView);
+            instanceManager, new WebViewHostApiImpl.WebViewProxy(), context, containerView);
     javaScriptChannelHostApi =
         new JavaScriptChannelHostApiImpl(
             instanceManager,
             new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(),
             new JavaScriptChannelFlutterApiImpl(binaryMessenger, instanceManager),
-            new Handler(activity.getMainLooper()));
+            new Handler(context.getMainLooper()));
 
     WebViewHostApi.setup(binaryMessenger, webViewHostApi);
     JavaScriptChannelHostApi.setup(binaryMessenger, javaScriptChannelHostApi);
@@ -116,7 +115,11 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-    this.pluginBinding = binding;
+    setUp(
+        binding.getBinaryMessenger(),
+        binding.getPlatformViewRegistry(),
+        binding.getApplicationContext(),
+        null);
   }
 
   @Override
@@ -131,17 +134,10 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    if (webViewHostApi != null) {
-      final Activity activity = activityPluginBinding.getActivity();
-      webViewHostApi.setContext(activityPluginBinding.getActivity());
-      javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
-    } else {
-      setUp(
-          pluginBinding.getBinaryMessenger(),
-          pluginBinding.getPlatformViewRegistry(),
-          activityPluginBinding.getActivity(),
-          null);
-    }
+
+    final Activity activity = activityPluginBinding.getActivity();
+    webViewHostApi.setContext(activityPluginBinding.getActivity());
+    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
   }
 
   @Override
@@ -153,17 +149,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   @Override
   public void onReattachedToActivityForConfigChanges(
       @NonNull ActivityPluginBinding activityPluginBinding) {
-    if (webViewHostApi != null) {
-      final Activity activity = activityPluginBinding.getActivity();
-      webViewHostApi.setContext(activity);
-      javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
-    } else {
-      setUp(
-          pluginBinding.getBinaryMessenger(),
-          pluginBinding.getPlatformViewRegistry(),
-          activityPluginBinding.getActivity(),
-          null);
-    }
+    final Activity activity = activityPluginBinding.getActivity();
+    webViewHostApi.setContext(activity);
+    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
   }
 
   @Override
