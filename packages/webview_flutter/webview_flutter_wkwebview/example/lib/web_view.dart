@@ -315,6 +315,7 @@ class WebViewController {
   Future<void> loadFile(
     String absoluteFilePath,
   ) {
+    assert(absoluteFilePath.isNotEmpty);
     return _webViewPlatformController.loadFile(absoluteFilePath);
   }
 
@@ -326,6 +327,7 @@ class WebViewController {
     String html, {
     String? baseUrl,
   }) {
+    assert(html.isNotEmpty);
     return _webViewPlatformController.loadHtmlString(
       html,
       baseUrl: baseUrl,

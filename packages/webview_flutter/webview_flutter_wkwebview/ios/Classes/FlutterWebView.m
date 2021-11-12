@@ -615,14 +615,14 @@
 }
 
 /**
- * Validates if the given `argument` is a non-null non-empty string.
+ * Validates if the given `argument` is a non-null, non-empty string.
  *
  * @param argument The argument that should be validated.
  * @param errorDetails An optional NSString variable which will contain a detailed error message in
  * case the supplied argument is not valid.
- * @return `true` if the given `argument` is a valid non-null, non-empty string; otherwise `false`.
+ * @return `YES` if the given `argument` is a valid non-null, non-empty string; otherwise `NO`.
  */
-+ (bool)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
++ (BOOL)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
   if (!argument) {
     if (errorDetails) {
       *errorDetails = @"Argument is nil.";
