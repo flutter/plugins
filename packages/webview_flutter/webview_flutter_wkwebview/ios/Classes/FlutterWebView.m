@@ -140,6 +140,10 @@
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"updateSettings"]) {
     [self onUpdateSettings:call result:result];
+  } else if ([[call method] isEqualToString:@"loadFile"]) {
+    [self onLoadFile:call result:result];
+  } else if ([[call method] isEqualToString:@"loadHtmlString"]) {
+    [self onLoadHtmlString:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
   } else if ([[call method] isEqualToString:@"loadRequest"]) {
@@ -190,6 +194,60 @@
     return;
   }
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
+}
+
+- (void)onLoadFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadFile_failed"
+                               message:@"Failed parsing file path."
+                               details:error]);
+    return;
+  }
+
+  NSURL* url = [NSURL fileURLWithPath:[call arguments] isDirectory:NO];
+
+  if (!url) {
+    NSString* errorDetails = [NSString stringWithFormat:@"Initializing NSURL with the supplied "
+                                                        @"'%@' path resulted in a nil value.",
+                                                        [call arguments]];
+    result([FlutterError errorWithCode:@"loadFile_failed"
+                               message:@"Failed parsing file path."
+                               details:errorDetails]);
+    return;
+  }
+
+  NSURL* baseUrl = [url URLByDeletingLastPathComponent];
+
+  [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
+  result(nil);
+}
+
+- (void)onLoadHtmlString:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary* arguments = [call arguments];
+  if (![arguments isKindOfClass:NSDictionary.class]) {
+    result([FlutterError
+        errorWithCode:@"loadHtmlString_failed"
+              message:@"Failed parsing arguments."
+              details:@"Arguments should be a dictionary containing at least a 'html' element and "
+                      @"optionally a 'baseUrl' argument. For example: `@{ @\"html\": @\"some html "
+                      @"code\", @\"baseUrl\": @\"https://flutter.dev\" }`"]);
+    return;
+  }
+
+  NSString* htmlString = [call arguments][@"html"];
+  NSString* baseUrl =
+      [call arguments][@"baseUrl"] == [NSNull null] ? nil : [call arguments][@"baseUrl"];
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:htmlString withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadHtmlString_failed"
+                               message:@"Failed parsing HTML string argument."
+                               details:error]);
+    return;
+  }
+
+  [_webView loadHTMLString:htmlString baseURL:[NSURL URLWithString:baseUrl]];
+  result(nil);
 }
 
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -554,6 +612,37 @@
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+/**
+ * Validates if the given `argument` is a non-null, non-empty string.
+ *
+ * @param argument The argument that should be validated.
+ * @param errorDetails An optional NSString variable which will contain a detailed error message in
+ * case the supplied argument is not valid.
+ * @return `YES` if the given `argument` is a valid non-null, non-empty string; otherwise `NO`.
+ */
++ (BOOL)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
+  if (!argument) {
+    if (errorDetails) {
+      *errorDetails = @"Argument is nil.";
+    }
+    return NO;
+  }
+  if (![argument isKindOfClass:NSString.class]) {
+    if (errorDetails) {
+      *errorDetails = @"Argument is not of type NSString.";
+    }
+    return NO;
+  }
+  if (![argument length]) {
+    if (errorDetails) {
+      *errorDetails = @"Argument contains an empty string.";
+    }
+    return NO;
+  }
+
+  return YES;
 }
 
 #pragma mark WKUIDelegate
