@@ -1183,6 +1183,72 @@ void main() {
       expect(tileOverlayInfo1, isNull);
     },
   );
+
+  testWidgets(
+    "testAnimateCameraWithDuration",
+    (WidgetTester tester) async {
+      final Completer<GoogleMapController> controllerCompleter =
+          Completer<GoogleMapController>();
+      final Key key = GlobalKey();
+
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: GoogleMap(
+            key: key,
+            initialCameraPosition: _kInitialCameraPosition,
+            onMapCreated: (GoogleMapController controller) {
+              controllerCompleter.complete(controller);
+            },
+          ),
+        ),
+      );
+      final GoogleMapController controller = await controllerCompleter.future;
+
+      await tester.pumpAndSettle();
+      // TODO(cyanglaz): Remove this after we added `mapRendered` callback, and `mapControllerCompleter.complete(controller)` above should happen
+      // in `mapRendered`.
+      // https://github.com/flutter/flutter/issues/54758
+      await Future.delayed(const Duration(seconds: 1));
+
+
+      final initialBounds = await controller.getVisibleRegion();
+      final newCenter = LatLng(40, 80);
+      final animationDuration = const Duration(seconds: 4);
+      final animationCompleter = Completer<void>();
+      Timer(
+        animationDuration,
+        () => animationCompleter.complete(null),
+      );
+
+      await controller.animateCameraWithDuration(
+        CameraUpdate.newLatLng(newCenter),
+        duration: animationDuration,
+      );
+      final halfDuration = animationDuration ~/ 2;
+      await Future.delayed(halfDuration);
+      final bounds1 = await controller.getVisibleRegion();
+      final center1 = LatLng(
+        (bounds1.southwest.latitude + bounds1.northeast.latitude) / 2,
+        (bounds1.southwest.longitude + bounds1.northeast.longitude) / 2,
+      );
+      await animationCompleter.future;
+      final endBounds = await controller.getVisibleRegion();
+      await tester.pumpAndSettle(const Duration(seconds: 3));
+
+      expect(initialBounds.contains(_kInitialMapCenter), isTrue);
+
+      expect(bounds1.contains(_kInitialMapCenter), isFalse);
+      expect(bounds1.contains(newCenter), isFalse);
+      expect(center1.latitude > _kInitialMapCenter.latitude, isTrue);
+      expect(center1.longitude > _kInitialMapCenter.longitude, isTrue);
+      expect(center1.latitude < newCenter.latitude, isTrue);
+      expect(center1.longitude < newCenter.longitude, isTrue);
+
+      expect(endBounds.contains(newCenter), isTrue);
+      expect(endBounds.contains(center1), isFalse);
+    },
+  );
 }
 
 class _DebugTileProvider implements TileProvider {
