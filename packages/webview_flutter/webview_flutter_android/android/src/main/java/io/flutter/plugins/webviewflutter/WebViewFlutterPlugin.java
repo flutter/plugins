@@ -29,6 +29,7 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  * <p>Call {@link #registerWith} to use the stable {@code io.flutter.plugin.common} package instead.
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
+  private FlutterPluginBinding pluginBinding;
   private FlutterCookieManager flutterCookieManager;
   private WebViewHostApiImpl webViewHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
@@ -115,6 +116,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
+    pluginBinding = binding;
     setUp(
         binding.getBinaryMessenger(),
         binding.getPlatformViewRegistry(),
@@ -134,7 +136,6 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-
     final Activity activity = activityPluginBinding.getActivity();
     webViewHostApi.setContext(activityPluginBinding.getActivity());
     javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
@@ -142,8 +143,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
-    webViewHostApi.setContext(null);
-    javaScriptChannelHostApi.setPlatformThreadHandler(null);
+    final Context context = pluginBinding.getApplicationContext();
+    webViewHostApi.setContext(context);
+    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
   }
 
   @Override
@@ -156,7 +158,8 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromActivity() {
-    webViewHostApi.setContext(null);
-    javaScriptChannelHostApi.setPlatformThreadHandler(null);
+    final Context context = pluginBinding.getApplicationContext();
+    webViewHostApi.setContext(context);
+    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
   }
 }
