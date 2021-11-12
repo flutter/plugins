@@ -33,17 +33,12 @@ class SurfaceAndroidWebView extends AndroidWebView {
     Set<Factory<OneSequenceGestureRecognizer>>? gestureRecognizers,
     required WebViewPlatformCallbacksHandler webViewPlatformCallbacksHandler,
   }) {
-    final WebViewAndroidPlatformController controller =
-        WebViewAndroidPlatformController(
+    return WebViewAndroidWidget(
       useHybridComposition: true,
       creationParams: creationParams,
       callbacksHandler: webViewPlatformCallbacksHandler,
       javascriptChannelRegistry: javascriptChannelRegistry,
-    );
-
-    return WebViewAndroidWidget(
-      controller: controller,
-      onBuildWidget: () {
+      onBuildWidget: (WebViewAndroidPlatformController controller) {
         return PlatformViewLink(
           viewType: 'plugins.flutter.io/webview',
           surfaceFactory: (

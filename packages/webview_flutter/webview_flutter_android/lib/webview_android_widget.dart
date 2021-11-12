@@ -13,61 +13,17 @@ import 'src/android_webview.dart' as android_webview;
 /// Creates a [Widget] with a [android_webview.WebView].
 class WebViewAndroidWidget extends StatefulWidget {
   /// Constructs a [WebViewAndroidWidget].
-  WebViewAndroidWidget({required this.controller, required this.onBuildWidget});
-
-  /// Controls the Android WebView platform API.
-  final WebViewAndroidPlatformController controller;
-
-  /// Callback to build a widget once [android_webview.WebView] has been initialized.
-  final Widget Function() onBuildWidget;
-
-  @override
-  State<StatefulWidget> createState() => _WebViewAndroidWidgetState();
-}
-
-class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
-  @override
-  void initState() {
-    super.initState();
-    widget.controller._initialize();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    widget.controller._release();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return widget.onBuildWidget();
-  }
-}
-
-/// Implementation of [WebViewPlatformController] with the Android WebView api.
-class WebViewAndroidPlatformController extends WebViewPlatformController {
-  /// Construct a [WebViewAndroidPlatformController].
-  WebViewAndroidPlatformController({
-    required this.useHybridComposition,
+  WebViewAndroidWidget({
     required this.creationParams,
+    required this.useHybridComposition,
     required this.callbacksHandler,
     required this.javascriptChannelRegistry,
+    required this.onBuildWidget,
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
-  })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
-        super(callbacksHandler);
-
-  final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
-      <String, WebViewAndroidJavaScriptChannel>{};
-
-  late WebViewAndroidWebViewClient _webViewClient;
+  });
 
   /// Initial parameters used to setup the WebView.
   final CreationParams creationParams;
-
-  /// Handles constructing [android_webview.WebView]s and calling static methods.
-  ///
-  /// This should only be changed for testing purposes.
-  final WebViewProxy webViewProxy;
 
   /// Whether the [android_webview.WebView] will be rendered with an [AndroidViewSurface].
   ///
@@ -80,25 +36,63 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Defaults to false.
   final bool useHybridComposition;
 
-  /// Represents the WebView maintained by platform code.
-  late final android_webview.WebView webView;
-
   /// Handles callbacks that are made by [android_webview.WebViewClient], [android_webview.DownloadListener], and [android_webview.WebChromeClient].
   final WebViewPlatformCallbacksHandler callbacksHandler;
 
   /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
   final JavascriptChannelRegistry javascriptChannelRegistry;
 
-  /// Receives callbacks when content can not be handled by the rendering engine for [android_webview.WebView], and should be downloaded instead.
-  late final WebViewAndroidDownloadListener downloadListener;
+  /// Handles constructing [android_webview.WebView]s and calling static methods.
+  ///
+  /// This should only be changed for testing purposes.
+  final WebViewProxy webViewProxy;
 
-  /// Handles JavaScript dialogs, favicons, titles, new windows, and the progress for [android_webview.WebView].
-  late final WebViewAndroidWebChromeClient webChromeClient;
+  /// Callback to build a widget once [android_webview.WebView] has been initialized.
+  final Widget Function(WebViewAndroidPlatformController controller)
+      onBuildWidget;
 
-  /// Receive various notifications and requests for [android_webview.WebView].
-  WebViewAndroidWebViewClient get webViewClient => _webViewClient;
+  @override
+  State<StatefulWidget> createState() => _WebViewAndroidWidgetState();
+}
 
-  void _initialize() {
+class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
+  late final WebViewAndroidPlatformController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = WebViewAndroidPlatformController(
+      useHybridComposition: widget.useHybridComposition,
+      creationParams: widget.creationParams,
+      callbacksHandler: widget.callbacksHandler,
+      javascriptChannelRegistry: widget.javascriptChannelRegistry,
+      webViewProxy: widget.webViewProxy,
+    );
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller._release();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return widget.onBuildWidget(controller);
+  }
+}
+
+/// Implementation of [WebViewPlatformController] with the Android WebView api.
+class WebViewAndroidPlatformController extends WebViewPlatformController {
+  /// Construct a [WebViewAndroidPlatformController].
+  WebViewAndroidPlatformController({
+    required bool useHybridComposition,
+    required CreationParams creationParams,
+    required this.callbacksHandler,
+    required this.javascriptChannelRegistry,
+    @visibleForTesting this.webViewProxy = const WebViewProxy(),
+  })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
+        super(callbacksHandler) {
     webView = webViewProxy.createWebView(
       useHybridComposition: useHybridComposition,
     );
@@ -123,6 +117,37 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
       loadUrl(initialUrl, <String, String>{});
     }
   }
+
+  final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
+      <String, WebViewAndroidJavaScriptChannel>{};
+
+  late WebViewAndroidWebViewClient _webViewClient;
+
+  /// Represents the WebView maintained by platform code.
+  late final android_webview.WebView webView;
+
+  /// Handles callbacks that are made by [android_webview.WebViewClient], [android_webview.DownloadListener], and [android_webview.WebChromeClient].
+  final WebViewPlatformCallbacksHandler callbacksHandler;
+
+  /// Manages named JavaScript channels and forwarding incoming messages on the correct channel.
+  final JavascriptChannelRegistry javascriptChannelRegistry;
+
+  /// Handles constructing [android_webview.WebView]s and calling static methods.
+  ///
+  /// This should only be changed for testing purposes.
+  final WebViewProxy webViewProxy;
+
+  /// Receives callbacks when content can not be handled by the rendering engine for [android_webview.WebView], and should be downloaded instead.
+  @visibleForTesting
+  late final WebViewAndroidDownloadListener downloadListener;
+
+  /// Handles JavaScript dialogs, favicons, titles, new windows, and the progress for [android_webview.WebView].
+  @visibleForTesting
+  late final WebViewAndroidWebChromeClient webChromeClient;
+
+  /// Receive various notifications and requests for [android_webview.WebView].
+  @visibleForTesting
+  WebViewAndroidWebViewClient get webViewClient => _webViewClient;
 
   @override
   Future<void> loadUrl(

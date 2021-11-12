@@ -41,7 +41,7 @@ void main() {
 
     late MockJavascriptChannelRegistry mockJavascriptChannelRegistry;
 
-    late WebViewAndroidPlatformController controller;
+    late WebViewAndroidPlatformController testController;
 
     setUp(() {
       mockWebView = MockWebView();
@@ -65,9 +65,7 @@ void main() {
       bool hasProgressTracking = false,
       bool useHybridComposition = false,
     }) async {
-      webChromeClient = WebViewAndroidWebChromeClient();
-
-      controller = WebViewAndroidPlatformController(
+      await tester.pumpWidget(WebViewAndroidWidget(
         useHybridComposition: useHybridComposition,
         creationParams: creationParams ??
             CreationParams(
@@ -79,16 +77,15 @@ void main() {
         callbacksHandler: mockCallbacksHandler,
         javascriptChannelRegistry: mockJavascriptChannelRegistry,
         webViewProxy: mockWebViewProxy,
-      );
-
-      webViewClient = controller.webViewClient;
-      downloadListener = controller.downloadListener;
-      webChromeClient = controller.webChromeClient;
-
-      await tester.pumpWidget(WebViewAndroidWidget(
-        controller: controller,
-        onBuildWidget: () => Container(),
+        onBuildWidget: (WebViewAndroidPlatformController controller) {
+          testController = controller;
+          return Container();
+        },
       ));
+
+      webViewClient = testController.webViewClient;
+      downloadListener = testController.downloadListener;
+      webChromeClient = testController.webChromeClient;
     }
 
     testWidgets('$WebViewAndroidWidget', (WidgetTester tester) async {
@@ -226,8 +223,8 @@ void main() {
             ),
           );
 
-          expect(controller.webViewClient.handlesNavigation, isTrue);
-          expect(controller.webViewClient.shouldOverrideUrlLoading, isTrue);
+          expect(testController.webViewClient.handlesNavigation, isTrue);
+          expect(testController.webViewClient.shouldOverrideUrlLoading, isTrue);
         });
 
         testWidgets('debuggingEnabled', (WidgetTester tester) async {
@@ -280,7 +277,7 @@ void main() {
       testWidgets('loadUrl', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.loadUrl(
+        await testController.loadUrl(
           'https://www.google.com',
           <String, String>{'a': 'header'},
         );
@@ -296,7 +293,8 @@ void main() {
 
         when(mockWebView.getUrl())
             .thenAnswer((_) => Future<String>.value('https://www.google.com'));
-        expect(controller.currentUrl(), completion('https://www.google.com'));
+        expect(
+            testController.currentUrl(), completion('https://www.google.com'));
       });
 
       testWidgets('canGoBack', (WidgetTester tester) async {
@@ -305,7 +303,7 @@ void main() {
         when(mockWebView.canGoBack()).thenAnswer(
           (_) => Future<bool>.value(false),
         );
-        expect(controller.canGoBack(), completion(false));
+        expect(testController.canGoBack(), completion(false));
       });
 
       testWidgets('canGoForward', (WidgetTester tester) async {
@@ -314,34 +312,34 @@ void main() {
         when(mockWebView.canGoForward()).thenAnswer(
           (_) => Future<bool>.value(true),
         );
-        expect(controller.canGoForward(), completion(true));
+        expect(testController.canGoForward(), completion(true));
       });
 
       testWidgets('goBack', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.goBack();
+        await testController.goBack();
         verify(mockWebView.goBack());
       });
 
       testWidgets('goForward', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.goForward();
+        await testController.goForward();
         verify(mockWebView.goForward());
       });
 
       testWidgets('reload', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.reload();
+        await testController.reload();
         verify(mockWebView.reload());
       });
 
       testWidgets('clearCache', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.clearCache();
+        await testController.clearCache();
         verify(mockWebView.clearCache(true));
       });
 
@@ -352,7 +350,7 @@ void main() {
           (_) => Future<String>.value('returnString'),
         );
         expect(
-          controller.evaluateJavascript('runJavaScript'),
+          testController.evaluateJavascript('runJavaScript'),
           completion('returnString'),
         );
       });
@@ -364,7 +362,7 @@ void main() {
           (_) => Future<String>.value('returnString'),
         );
         expect(
-          controller.runJavascriptReturningResult('runJavaScript'),
+          testController.runJavascriptReturningResult('runJavaScript'),
           completion('returnString'),
         );
       });
@@ -376,7 +374,7 @@ void main() {
           (_) => Future<String>.value('returnString'),
         );
         expect(
-          controller.runJavascript('runJavaScript'),
+          testController.runJavascript('runJavaScript'),
           completes,
         );
       });
@@ -384,7 +382,7 @@ void main() {
       testWidgets('addJavascriptChannels', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.addJavascriptChannels(<String>{'c', 'd'});
+        await testController.addJavascriptChannels(<String>{'c', 'd'});
         final List<dynamic> javaScriptChannels =
             verify(mockWebView.addJavaScriptChannel(captureAny)).captured;
         expect(javaScriptChannels[0].channelName, 'c');
@@ -394,8 +392,8 @@ void main() {
       testWidgets('removeJavascriptChannels', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.addJavascriptChannels(<String>{'c', 'd'});
-        await controller.removeJavascriptChannels(<String>{'c', 'd'});
+        await testController.addJavascriptChannels(<String>{'c', 'd'});
+        await testController.removeJavascriptChannels(<String>{'c', 'd'});
         final List<dynamic> javaScriptChannels =
             verify(mockWebView.removeJavaScriptChannel(captureAny)).captured;
         expect(javaScriptChannels[0].channelName, 'c');
@@ -407,20 +405,20 @@ void main() {
 
         when(mockWebView.getTitle())
             .thenAnswer((_) => Future<String>.value('Web Title'));
-        expect(controller.getTitle(), completion('Web Title'));
+        expect(testController.getTitle(), completion('Web Title'));
       });
 
       testWidgets('scrollTo', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.scrollTo(1, 2);
+        await testController.scrollTo(1, 2);
         verify(mockWebView.scrollTo(1, 2));
       });
 
       testWidgets('scrollBy', (WidgetTester tester) async {
         await buildWidget(tester);
 
-        await controller.scrollBy(3, 4);
+        await testController.scrollBy(3, 4);
         verify(mockWebView.scrollBy(3, 4));
       });
 
@@ -428,14 +426,14 @@ void main() {
         await buildWidget(tester);
 
         when(mockWebView.getScrollX()).thenAnswer((_) => Future<int>.value(23));
-        expect(controller.getScrollX(), completion(23));
+        expect(testController.getScrollX(), completion(23));
       });
 
       testWidgets('getScrollY', (WidgetTester tester) async {
         await buildWidget(tester);
 
         when(mockWebView.getScrollY()).thenAnswer((_) => Future<int>.value(25));
-        expect(controller.getScrollY(), completion(25));
+        expect(testController.getScrollY(), completion(25));
       });
     });
 
@@ -549,7 +547,7 @@ void main() {
         testWidgets('onJavascriptChannelMessage', (WidgetTester tester) async {
           await buildWidget(tester);
 
-          await controller.addJavascriptChannels(<String>{'hello'});
+          await testController.addJavascriptChannels(<String>{'hello'});
 
           final WebViewAndroidJavaScriptChannel javaScriptChannel =
               verify(mockWebView.addJavaScriptChannel(captureAny))
