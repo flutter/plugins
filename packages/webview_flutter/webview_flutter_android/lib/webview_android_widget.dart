@@ -105,9 +105,6 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     webView.settings.setDisplayZoomControls(false);
     webView.settings.setBuiltInZoomControls(true);
 
-    this.downloadListener = WebViewAndroidDownloadListener(loadUrl: loadUrl);
-    this.webChromeClient = WebViewAndroidWebChromeClient();
-
     _setCreationParams(creationParams);
     webView.setDownloadListener(this.downloadListener);
     webView.setWebChromeClient(this.webChromeClient);
@@ -137,13 +134,15 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// This should only be changed for testing purposes.
   final WebViewProxy webViewProxy;
 
-  /// Receives callbacks when content can not be handled by the rendering engine for [android_webview.WebView], and should be downloaded instead.
+  /// Receives callbacks when content should be downloaded instead.
   @visibleForTesting
-  late final WebViewAndroidDownloadListener downloadListener;
+  late final WebViewAndroidDownloadListener downloadListener =
+      WebViewAndroidDownloadListener(loadUrl: loadUrl);
 
   /// Handles JavaScript dialogs, favicons, titles, new windows, and the progress for [android_webview.WebView].
   @visibleForTesting
-  late final WebViewAndroidWebChromeClient webChromeClient;
+  late final WebViewAndroidWebChromeClient webChromeClient =
+      WebViewAndroidWebChromeClient();
 
   /// Receive various notifications and requests for [android_webview.WebView].
   @visibleForTesting
@@ -181,12 +180,16 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @override
   Future<void> updateSettings(WebSettings settings) {
     return Future.wait(<Future<void>>[
-      _trySetHasProgressTracking(settings.hasProgressTracking),
-      _trySetHasNavigationDelegate(settings.hasNavigationDelegate),
-      _trySetJavaScriptMode(settings.javascriptMode),
-      _trySetDebuggingEnabled(settings.debuggingEnabled),
-      _trySetUserAgent(settings.userAgent),
-      _trySetZoomEnabled(settings.zoomEnabled),
+      _setUserAgent(settings.userAgent),
+      if (settings.hasProgressTracking != null)
+        _setHasProgressTracking(settings.hasProgressTracking!),
+      if (settings.hasProgressTracking != null)
+        _setHasNavigationDelegate(settings.hasNavigationDelegate!),
+      if (settings.javascriptMode != null)
+        _setJavaScriptMode(settings.javascriptMode!),
+      if (settings.debuggingEnabled != null)
+        _setDebuggingEnabled(settings.debuggingEnabled!),
+      if (settings.zoomEnabled != null) _setZoomEnabled(settings.zoomEnabled!),
     ]);
   }
 
@@ -285,22 +288,19 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     addJavascriptChannels(creationParams.javascriptChannelNames);
   }
 
-  Future<void> _trySetHasProgressTracking(bool? hasProgressTracking) {
-    if (hasProgressTracking == true) {
+  Future<void> _setHasProgressTracking(
+    bool hasProgressTracking,
+  ) async {
+    if (hasProgressTracking) {
       webChromeClient._onProgress = callbacksHandler.onProgress;
-    } else if (hasProgressTracking == false) {
-      webChromeClient._onProgress = null;
     }
-
-    return Future<void>.sync(() => null);
+    webChromeClient._onProgress = null;
   }
 
-  Future<void> _trySetHasNavigationDelegate(bool? hasNavigationDelegate) {
-    if (hasNavigationDelegate == null) return Future<void>.sync(() => null);
-
-    downloadListener._onNavigationRequest =
-        callbacksHandler.onNavigationRequest;
+  Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
     if (hasNavigationDelegate) {
+      downloadListener._onNavigationRequest =
+          callbacksHandler.onNavigationRequest;
       _webViewClient = WebViewAndroidWebViewClient.handlesNavigation(
         onPageStartedCallback: callbacksHandler.onPageStarted,
         onPageFinishedCallback: callbacksHandler.onPageFinished,
@@ -308,19 +308,18 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         loadUrl: loadUrl,
         onNavigationRequestCallback: callbacksHandler.onNavigationRequest,
       );
-    } else {
-      _webViewClient = WebViewAndroidWebViewClient(
-        onPageStartedCallback: callbacksHandler.onPageStarted,
-        onPageFinishedCallback: callbacksHandler.onPageFinished,
-        onWebResourceErrorCallback: callbacksHandler.onWebResourceError,
-      );
     }
+
+    downloadListener._onNavigationRequest = null;
+    _webViewClient = WebViewAndroidWebViewClient(
+      onPageStartedCallback: callbacksHandler.onPageStarted,
+      onPageFinishedCallback: callbacksHandler.onPageFinished,
+      onWebResourceErrorCallback: callbacksHandler.onWebResourceError,
+    );
     return webView.setWebViewClient(_webViewClient);
   }
 
-  Future<void> _trySetJavaScriptMode(JavascriptMode? mode) async {
-    if (mode == null) return Future<void>.sync(() => null);
-
+  Future<void> _setJavaScriptMode(JavascriptMode mode) {
     switch (mode) {
       case JavascriptMode.disabled:
         return webView.settings.setJavaScriptEnabled(false);
@@ -329,14 +328,11 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     }
   }
 
-  Future<void> _trySetDebuggingEnabled(bool? debuggingEnabled) async {
-    if (debuggingEnabled == null) return Future<void>.sync(() => null);
-    return webViewProxy.setWebContentsDebuggingEnabled(
-      debuggingEnabled,
-    );
+  Future<void> _setDebuggingEnabled(bool debuggingEnabled) {
+    return webViewProxy.setWebContentsDebuggingEnabled(debuggingEnabled);
   }
 
-  Future<void> _trySetUserAgent(WebSetting<String?> userAgent) {
+  Future<void> _setUserAgent(WebSetting<String?> userAgent) {
     if (userAgent.isPresent && userAgent.value != null) {
       return webView.settings.setUserAgentString(userAgent.value!);
     }
@@ -344,8 +340,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     return webView.settings.setUserAgentString('');
   }
 
-  Future<void> _trySetZoomEnabled(bool? zoomEnabled) async {
-    if (zoomEnabled == null) return Future<void>.sync(() => null);
+  Future<void> _setZoomEnabled(bool zoomEnabled) {
     return webView.settings.setSupportZoom(zoomEnabled);
   }
 }
