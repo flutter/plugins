@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 50;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -273,7 +273,7 @@
 			isa = PBXProject;
 			attributes = {
 				DefaultBuildSystemTypeForWorkspace = Original;
-				LastUpgradeCheck = 1030;
+				LastUpgradeCheck = 1300;
 				ORGANIZATIONNAME = "The Flutter Authors";
 				TargetAttributes = {
 					68BDCAE823C3F7CB00D9C032 = {
