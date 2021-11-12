@@ -1,3 +1,7 @@
+## 2.3.1
+
+* Add iOS-specific note to set `JavascriptMode.unrestricted` in order to set `zoomEnabled: false`.
+
 ## 2.3.0
 
 * Add ability to enable/disable zoom functionality.
