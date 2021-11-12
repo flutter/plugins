@@ -27,6 +27,12 @@ class WebViewAndroidWidget extends StatefulWidget {
 
 class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
   @override
+  void initState() {
+    super.initState();
+    widget.controller._initialize();
+  }
+
+  @override
   void dispose() {
     super.dispose();
     widget.controller._release();
@@ -48,33 +54,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     required this.javascriptChannelRegistry,
     @visibleForTesting this.webViewProxy = const WebViewProxy(),
   })  : assert(creationParams.webSettings?.hasNavigationDelegate != null),
-        super(callbacksHandler) {
-    webView = webViewProxy.createWebView(
-      useHybridComposition: useHybridComposition,
-    );
-
-    webView.settings.setDomStorageEnabled(true);
-    webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
-    webView.settings.setSupportMultipleWindows(true);
-    webView.settings.setLoadWithOverviewMode(true);
-    webView.settings.setUseWideViewPort(true);
-    webView.settings.setDisplayZoomControls(false);
-    webView.settings.setBuiltInZoomControls(true);
-
-    this.downloadListener = WebViewAndroidDownloadListener(loadUrl: loadUrl);
-    this.webChromeClient = WebViewAndroidWebChromeClient();
-
-    // Also sets WebViewClient depending on WebSettings.hasNavigationDelegate.
-    _setCreationParams(creationParams);
-
-    webView.setDownloadListener(this.downloadListener);
-    webView.setWebChromeClient(this.webChromeClient);
-
-    final String? initialUrl = creationParams.initialUrl;
-    if (initialUrl != null) {
-      loadUrl(initialUrl, <String, String>{});
-    }
-  }
+        super(callbacksHandler);
 
   final Map<String, WebViewAndroidJavaScriptChannel> _javaScriptChannels =
       <String, WebViewAndroidJavaScriptChannel>{};
@@ -117,6 +97,32 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
 
   /// Receive various notifications and requests for [android_webview.WebView].
   WebViewAndroidWebViewClient get webViewClient => _webViewClient;
+
+  void _initialize() {
+    webView = webViewProxy.createWebView(
+      useHybridComposition: useHybridComposition,
+    );
+
+    webView.settings.setDomStorageEnabled(true);
+    webView.settings.setJavaScriptCanOpenWindowsAutomatically(true);
+    webView.settings.setSupportMultipleWindows(true);
+    webView.settings.setLoadWithOverviewMode(true);
+    webView.settings.setUseWideViewPort(true);
+    webView.settings.setDisplayZoomControls(false);
+    webView.settings.setBuiltInZoomControls(true);
+
+    this.downloadListener = WebViewAndroidDownloadListener(loadUrl: loadUrl);
+    this.webChromeClient = WebViewAndroidWebChromeClient();
+
+    _setCreationParams(creationParams);
+    webView.setDownloadListener(this.downloadListener);
+    webView.setWebChromeClient(this.webChromeClient);
+
+    final String? initialUrl = creationParams.initialUrl;
+    if (initialUrl != null) {
+      loadUrl(initialUrl, <String, String>{});
+    }
+  }
 
   @override
   Future<void> loadUrl(
