@@ -41,7 +41,7 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 @property(readonly, nonatomic) AVPlayerItemVideoOutput* videoOutput;
 @property(readonly, nonatomic) CVDisplayLinkRef displayLink;
 @property(readonly, nonatomic) FLTFrameUpdater* frameUpdater;
-@property(readonly, nonatomic) CVPixelBufferRef _Nullable frame;
+@property(readonly, nonatomic) CVPixelBufferRef _Nullable lastValidFrame;
 @property(nonatomic) FlutterEventChannel* eventChannel;
 @property(nonatomic) FlutterEventSink eventSink;
 @property(nonatomic) CGAffineTransform preferredTransform;
@@ -170,10 +170,12 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   if (!_playerItem || _playerItem.status != AVPlayerItemStatusReadyToPlay || ![_videoOutput hasNewPixelBufferForItemTime:outputItemTime]) {
     return;
   } else {
-    CVBufferRelease(_frame);
-    _frame = [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
-    if (_frame == NULL) {
-      NSLog(@"copyPixelBufferForItemTime returned NULL");
+    CVPixelBufferRef pixelBuffer = [_videoOutput copyPixelBufferForItemTime:outputItemTime itemTimeForDisplay:NULL];
+    if (pixelBuffer != NULL) {
+      @synchronized (self) {
+        CVBufferRelease(_lastValidFrame);
+        _lastValidFrame = pixelBuffer;
+      }
     }
     [_frameUpdater notifyFrameAvailable];
   }
@@ -185,9 +187,7 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
                               CVOptionFlags* CV_NONNULL flagsOut,
                               void* CV_NULLABLE displayLinkContext) {
   __weak FLTVideoPlayer* video_player = (__bridge FLTVideoPlayer*)(displayLinkContext);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [video_player notifyIfFrameAvailable];
-  });
+  [video_player notifyIfFrameAvailable];
   return kCVReturnSuccess;
 }
 
@@ -403,9 +403,7 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
   [_player seekToTime:CMTimeMake(location, 1000)
       toleranceBefore:kCMTimeZero
        toleranceAfter:kCMTimeZero];
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self notifyIfFrameAvailable];
-  });
+  [self notifyIfFrameAvailable];
 }
 
 - (void)setIsLooping:(bool)isLooping {
@@ -441,11 +439,45 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
 }
 
 - (CVPixelBufferRef)copyPixelBuffer {
-  if (_frame == NULL) {
-    NSLog(@"Returning NULL from copyPixelBuffer");
+  // Creates a memcpy of the last valid frame.
+  //
+  // Unlike on iOS, the macOS embedder does show the last frame when
+  // we return NULL from `copyPixelBuffer`.
+
+  if (_lastValidFrame == NULL) {
+    return NULL;
   }
-  CVBufferRetain(_frame);
-  return _frame;
+  
+  @synchronized (self) {
+    CVPixelBufferLockBaseAddress(_lastValidFrame, kCVPixelBufferLock_ReadOnly);
+    int bufferWidth = (int)CVPixelBufferGetWidth(_lastValidFrame);
+    int bufferHeight = (int)CVPixelBufferGetHeight(_lastValidFrame);
+    size_t bytesPerRow = CVPixelBufferGetBytesPerRow(_lastValidFrame);
+    uint8_t *baseAddress = CVPixelBufferGetBaseAddress(_lastValidFrame);
+    
+    if (baseAddress == NULL) {
+      NSLog(@"----> baseadress is NULL");
+      return NULL;
+    }
+    
+    NSDictionary* pixBuffAttributes = @{
+      (id)kCVPixelBufferPixelFormatTypeKey : @(kCVPixelFormatType_32BGRA),
+      (id)kCVPixelBufferIOSurfacePropertiesKey : @{},
+      (id)kCVPixelBufferOpenGLCompatibilityKey : @YES,
+      (id)kCVPixelBufferMetalCompatibilityKey : @YES,
+    };
+
+    CVPixelBufferRef pixelBufferCopy = NULL;
+    CVPixelBufferCreate(kCFAllocatorDefault, bufferWidth, bufferHeight,kCVPixelFormatType_32BGRA,
+                        CFBridgingRetain(pixBuffAttributes), &pixelBufferCopy);
+    CVPixelBufferLockBaseAddress(pixelBufferCopy, 0);
+    uint8_t *copyBaseAddress = CVPixelBufferGetBaseAddress(pixelBufferCopy);
+    memcpy(copyBaseAddress, baseAddress, bufferHeight * bytesPerRow);
+
+    CVPixelBufferUnlockBaseAddress(_lastValidFrame, kCVPixelBufferLock_ReadOnly);
+    CVPixelBufferUnlockBaseAddress(pixelBufferCopy, 0);
+    return pixelBufferCopy;
+  }
 }
 
 - (void)onTextureUnregistered:(NSObject<FlutterTexture>*)texture {
@@ -476,7 +508,7 @@ static CVReturn OnDisplayLink(CVDisplayLinkRef CV_NONNULL displayLink,
 /// so the channel is going to die or is already dead.
 - (void)disposeSansEventChannel {
   _disposed = true;
-  CVBufferRelease(_frame);
+  CVBufferRelease(_lastValidFrame);
   [self stopDisplayLink];
   [[_player currentItem] removeObserver:self forKeyPath:@"status" context:statusContext];
   [[_player currentItem] removeObserver:self
