@@ -6,9 +6,7 @@ package io.flutter.plugins.urllauncher;
 
 import static org.junit.Assert.assertEquals;
 
-import android.os.Bundle;
 import java.util.Collections;
-import java.util.Map;
 import org.junit.Test;
 
 public class WebViewActivityTest {

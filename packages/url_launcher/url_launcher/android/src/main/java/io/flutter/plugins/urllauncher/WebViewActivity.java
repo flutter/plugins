@@ -22,6 +22,7 @@ import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -144,6 +145,7 @@ public class WebViewActivity extends Activity {
     registerReceiver(broadcastReceiver, closeIntentFilter);
   }
 
+  @VisibleForTesting
   public static Map<String, String> extractHeaders(@Nullable Bundle headersBundle) {
     if (headersBundle == null) {
       return Collections.emptyMap();
