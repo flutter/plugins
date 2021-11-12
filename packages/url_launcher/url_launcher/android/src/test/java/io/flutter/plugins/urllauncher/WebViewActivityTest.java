@@ -13,7 +13,7 @@ import org.junit.Test;
 
 public class WebViewActivityTest {
     @Test
-    public void extractHeaders_returnsEmptyMapWithNoBrowserHeaders() {
+    public void extractHeaders_returnsEmptyMapWhenHeadersBundleNull() {
         Bundle headersBundle = null;
 
         Map<String, String> expectedExtractedHeaders = Collections.emptyMap();
