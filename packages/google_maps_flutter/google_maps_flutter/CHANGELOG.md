@@ -1,3 +1,7 @@
+## 2.1.1
+
+* Removed duplicated dependencies from `pubspec.yaml`  by `example/pubspec.yaml`
+
 ## 2.1.0
 
 * Add iOS unit and UI integration test targets.
