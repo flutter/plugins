@@ -1,4 +1,5 @@
 ## NEXT
+
 * Fixed extracting browser headers when they are null error.
 
 ## 6.0.12
