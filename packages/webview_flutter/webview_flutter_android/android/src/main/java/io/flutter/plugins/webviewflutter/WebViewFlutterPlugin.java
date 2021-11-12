@@ -31,6 +31,9 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private FlutterPluginBinding pluginBinding;
   private FlutterCookieManager flutterCookieManager;
 
+  private WebViewHostApiImpl webViewHostApi;
+  private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
+
   /**
    * Add an instance of this to {@link io.flutter.embedding.engine.plugins.PluginRegistry} to
    * register it.
@@ -54,26 +57,39 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
    */
   @SuppressWarnings({"unused", "deprecation"})
   public static void registerWith(io.flutter.plugin.common.PluginRegistry.Registrar registrar) {
-    setUp(
-        registrar.messenger(),
-        registrar.platformViewRegistry(),
-        registrar.activity(),
-        registrar.view());
+    new WebViewFlutterPlugin()
+        .setUp(
+            registrar.messenger(),
+            registrar.platformViewRegistry(),
+            registrar.activity(),
+            registrar.view());
     new FlutterCookieManager(registrar.messenger());
   }
 
-  private static void setUp(
+  private void setUp(
       BinaryMessenger binaryMessenger,
       PlatformViewRegistry viewRegistry,
       Activity activity,
       View containerView) {
+    new FlutterCookieManager(binaryMessenger);
+
     InstanceManager instanceManager = new InstanceManager();
+
     viewRegistry.registerViewFactory(
         "plugins.flutter.io/webview", new FlutterWebViewFactory(instanceManager));
-    WebViewHostApi.setup(
-        binaryMessenger,
+
+    webViewHostApi =
         new WebViewHostApiImpl(
-            instanceManager, new WebViewHostApiImpl.WebViewProxy(), activity, containerView));
+            instanceManager, new WebViewHostApiImpl.WebViewProxy(), activity, containerView);
+    javaScriptChannelHostApi =
+        new JavaScriptChannelHostApiImpl(
+            instanceManager,
+            new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(),
+            new JavaScriptChannelFlutterApiImpl(binaryMessenger, instanceManager),
+            new Handler(activity.getMainLooper()));
+
+    WebViewHostApi.setup(binaryMessenger, webViewHostApi);
+    JavaScriptChannelHostApi.setup(binaryMessenger, javaScriptChannelHostApi);
     WebViewClientHostApi.setup(
         binaryMessenger,
         new WebViewClientHostApiImpl(
@@ -92,24 +108,15 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
             instanceManager,
             new DownloadListenerHostApiImpl.DownloadListenerCreator(),
             new DownloadListenerFlutterApiImpl(binaryMessenger, instanceManager)));
-    JavaScriptChannelHostApi.setup(
-        binaryMessenger,
-        new JavaScriptChannelHostApiImpl(
-            instanceManager,
-            new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(),
-            new JavaScriptChannelFlutterApiImpl(binaryMessenger, instanceManager),
-            new Handler(activity.getMainLooper())));
     WebSettingsHostApi.setup(
         binaryMessenger,
         new WebSettingsHostApiImpl(
             instanceManager, new WebSettingsHostApiImpl.WebSettingsCreator()));
-    new FlutterCookieManager(binaryMessenger);
   }
 
   @Override
-  public void onAttachedToEngine(FlutterPluginBinding binding) {
+  public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
     this.pluginBinding = binding;
-    flutterCookieManager = new FlutterCookieManager(binding.getBinaryMessenger());
   }
 
   @Override
@@ -124,26 +131,44 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    setUp(
-        pluginBinding.getBinaryMessenger(),
-        pluginBinding.getPlatformViewRegistry(),
-        activityPluginBinding.getActivity(),
-        null);
+    if (webViewHostApi != null) {
+      final Activity activity = activityPluginBinding.getActivity();
+      webViewHostApi.setContext(activityPluginBinding.getActivity());
+      javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
+    } else {
+      setUp(
+          pluginBinding.getBinaryMessenger(),
+          pluginBinding.getPlatformViewRegistry(),
+          activityPluginBinding.getActivity(),
+          null);
+    }
   }
 
   @Override
-  public void onDetachedFromActivityForConfigChanges() {}
+  public void onDetachedFromActivityForConfigChanges() {
+    webViewHostApi.setContext(null);
+    javaScriptChannelHostApi.setPlatformThreadHandler(null);
+  }
 
   @Override
   public void onReattachedToActivityForConfigChanges(
       @NonNull ActivityPluginBinding activityPluginBinding) {
-    setUp(
-        pluginBinding.getBinaryMessenger(),
-        pluginBinding.getPlatformViewRegistry(),
-        activityPluginBinding.getActivity(),
-        null);
+    if (webViewHostApi != null) {
+      final Activity activity = activityPluginBinding.getActivity();
+      webViewHostApi.setContext(activity);
+      javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
+    } else {
+      setUp(
+          pluginBinding.getBinaryMessenger(),
+          pluginBinding.getPlatformViewRegistry(),
+          activityPluginBinding.getActivity(),
+          null);
+    }
   }
 
   @Override
-  public void onDetachedFromActivity() {}
+  public void onDetachedFromActivity() {
+    webViewHostApi.setContext(null);
+    javaScriptChannelHostApi.setPlatformThreadHandler(null);
+  }
 }

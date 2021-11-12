@@ -35,9 +35,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   private final InstanceManager instanceManager;
   private final WebViewProxy webViewProxy;
-  private final Context context;
   // Only used with WebView using virtual displays.
   @Nullable private final View containerView;
+
+  private Context context;
 
   /** Handles creating and calling static methods for {@link WebView}s. */
   public static class WebViewProxy {
@@ -315,6 +316,15 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     this.webViewProxy = webViewProxy;
     this.context = context;
     this.containerView = containerView;
+  }
+
+  /**
+   * Sets the context to construct {@link WebView}s.
+   *
+   * @param context the new context.
+   */
+  public void setContext(Context context) {
+    this.context = context;
   }
 
   @Override
