@@ -1,6 +1,6 @@
 ## NEXT
 
-* Removed duplicated dependencies from `pubspec.yaml`  by `example/pubspec.yaml`
+* Removed dependencies from `pubspec.yaml` that are only needed in `example/pubspec.yaml`
 
 ## 2.1.0
 
