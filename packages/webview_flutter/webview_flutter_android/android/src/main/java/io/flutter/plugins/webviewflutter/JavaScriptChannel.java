@@ -44,15 +44,17 @@ public class JavaScriptChannel implements Releasable {
   @SuppressWarnings("unused")
   @JavascriptInterface
   public void postMessage(final String message) {
+    final Runnable postMessageRunnable =
+        () -> {
+          if (flutterApi != null) {
+            flutterApi.postMessage(JavaScriptChannel.this, message, reply -> {});
+          }
+        };
 
-    if (flutterApi != null) {
-      final Runnable postMessageRunnable = () -> flutterApi.postMessage(this, message, reply -> {});
-
-      if (platformThreadHandler.getLooper() == Looper.myLooper()) {
-        postMessageRunnable.run();
-      } else {
-        platformThreadHandler.post(postMessageRunnable);
-      }
+    if (platformThreadHandler.getLooper() == Looper.myLooper()) {
+      postMessageRunnable.run();
+    } else {
+      platformThreadHandler.post(postMessageRunnable);
     }
   }
 
