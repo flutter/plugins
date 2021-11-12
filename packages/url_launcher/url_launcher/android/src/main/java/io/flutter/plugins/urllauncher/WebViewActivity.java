@@ -144,7 +144,7 @@ public class WebViewActivity extends Activity {
     registerReceiver(broadcastReceiver, closeIntentFilter);
   }
 
-  private Map<String, String> extractHeaders(@Nullable Bundle headersBundle) {
+  public static Map<String, String> extractHeaders(@Nullable Bundle headersBundle) {
     if (headersBundle == null) {
       return Collections.emptyMap();
     }
