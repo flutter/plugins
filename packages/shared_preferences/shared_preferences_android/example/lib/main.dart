@@ -4,10 +4,8 @@
 
 // ignore_for_file: public_member_api_docs
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences_platform_interface/shared_preferences_platform_interface.dart';
 
 void main() {
   runApp(MyApp());
@@ -31,15 +29,21 @@ class SharedPreferencesDemo extends StatefulWidget {
 }
 
 class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
-  final Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
+  final SharedPreferencesStorePlatform _prefs =
+      SharedPreferencesStorePlatform.instance;
   late Future<int> _counter;
 
+  // Includes the prefix because this is using the platform interface directly,
+  // but the prefix (which the native code assumes is present) is added by the
+  // app-facing package.
+  static const String _prefKey = 'flutter.counter';
+
   Future<void> _incrementCounter() async {
-    final SharedPreferences prefs = await _prefs;
-    final int counter = (prefs.getInt('counter') ?? 0) + 1;
+    final Map<String, Object> values = await _prefs.getAll();
+    final int counter = ((values[_prefKey] as int?) ?? 0) + 1;
 
     setState(() {
-      _counter = prefs.setInt('counter', counter).then((bool success) {
+      _counter = _prefs.setValue('Int', _prefKey, counter).then((bool success) {
         return counter;
       });
     });
@@ -48,8 +52,8 @@ class SharedPreferencesDemoState extends State<SharedPreferencesDemo> {
   @override
   void initState() {
     super.initState();
-    _counter = _prefs.then((SharedPreferences prefs) {
-      return prefs.getInt('counter') ?? 0;
+    _counter = _prefs.getAll().then((Map<String, Object> values) {
+      return (values[_prefKey] as int?) ?? 0;
     });
   }
 
