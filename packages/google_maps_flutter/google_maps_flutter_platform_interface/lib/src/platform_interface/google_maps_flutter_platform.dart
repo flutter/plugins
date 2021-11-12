@@ -153,6 +153,22 @@ abstract class GoogleMapsFlutterPlatform extends PlatformInterface {
     throw UnimplementedError('animateCamera() has not been implemented.');
   }
 
+  /// Starts an animated change of the map camera position with duration.
+  ///
+  /// The [duration] parameter indicates animation duration of [cameraUpdate].
+  /// If [duration] is null the platform default animation duration will be
+  /// used.
+  ///
+  /// The returned [Future] completes after the change has been started on the
+  /// platform side.
+  Future<void> animateCameraWithDuration(
+    CameraUpdate cameraUpdate, {
+    required int mapId,
+    Duration? duration,
+  }) {
+    return animateCamera(cameraUpdate, mapId: mapId);
+  }
+
   /// Changes the map camera position.
   ///
   /// The returned [Future] completes after the change has been made on the

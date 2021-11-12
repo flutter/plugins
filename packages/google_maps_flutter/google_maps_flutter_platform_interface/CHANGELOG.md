@@ -1,3 +1,7 @@
+## 2.1.4
+
+* Add `animateCameraWithDuration` method
+
 ## 2.1.3
 
 * `LatLng` constructor maintains longitude precision when given within
