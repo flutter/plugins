@@ -73,7 +73,7 @@ class _WebViewAndroidWidgetState extends State<WebViewAndroidWidget> {
   @override
   void dispose() {
     super.dispose();
-    controller._release();
+    controller._dispose();
   }
 
   @override
@@ -178,12 +178,12 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<void> clearCache() => webView.clearCache(true);
 
   @override
-  Future<void> updateSettings(WebSettings settings) {
-    return Future.wait(<Future<void>>[
+  Future<void> updateSettings(WebSettings settings) async {
+    await Future.wait(<Future<void>>[
       _setUserAgent(settings.userAgent),
       if (settings.hasProgressTracking != null)
         _setHasProgressTracking(settings.hasProgressTracking!),
-      if (settings.hasProgressTracking != null)
+      if (settings.hasNavigationDelegate != null)
         _setHasNavigationDelegate(settings.hasNavigationDelegate!),
       if (settings.javascriptMode != null)
         _setJavaScriptMode(settings.javascriptMode!),
@@ -262,7 +262,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @override
   Future<int> getScrollY() => webView.getScrollY();
 
-  Future<void> _release() => webView.release();
+  Future<void> _dispose() => webView.release();
 
   void _setCreationParams(CreationParams creationParams) {
     final WebSettings? webSettings = creationParams.webSettings;
@@ -288,13 +288,12 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     addJavascriptChannels(creationParams.javascriptChannelNames);
   }
 
-  Future<void> _setHasProgressTracking(
-    bool hasProgressTracking,
-  ) async {
+  Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
     if (hasProgressTracking) {
       webChromeClient._onProgress = callbacksHandler.onProgress;
+    } else {
+      webChromeClient._onProgress = null;
     }
-    webChromeClient._onProgress = null;
   }
 
   Future<void> _setHasNavigationDelegate(bool hasNavigationDelegate) {
@@ -308,14 +307,14 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
         loadUrl: loadUrl,
         onNavigationRequestCallback: callbacksHandler.onNavigationRequest,
       );
+    } else {
+      downloadListener._onNavigationRequest = null;
+      _webViewClient = WebViewAndroidWebViewClient(
+        onPageStartedCallback: callbacksHandler.onPageStarted,
+        onPageFinishedCallback: callbacksHandler.onPageFinished,
+        onWebResourceErrorCallback: callbacksHandler.onWebResourceError,
+      );
     }
-
-    downloadListener._onNavigationRequest = null;
-    _webViewClient = WebViewAndroidWebViewClient(
-      onPageStartedCallback: callbacksHandler.onPageStarted,
-      onPageFinishedCallback: callbacksHandler.onPageFinished,
-      onWebResourceErrorCallback: callbacksHandler.onWebResourceError,
-    );
     return webView.setWebViewClient(_webViewClient);
   }
 
