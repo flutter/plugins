@@ -345,9 +345,10 @@ public class WebViewHostApiImpl implements WebViewHostApi {
 
   @Override
   public void dispose(Long instanceId) {
-    final WebView instance = (WebView) instanceManager.removeInstanceWithId(instanceId);
+    final WebView instance = (WebView) instanceManager.getInstance(instanceId);
     if (instance != null) {
       ((Releasable) instance).release();
+      instanceManager.removeInstance(instance);
     }
   }
 
