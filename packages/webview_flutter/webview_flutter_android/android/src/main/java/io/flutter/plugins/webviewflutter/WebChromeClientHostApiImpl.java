@@ -53,13 +53,13 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public boolean shouldOverrideUrlLoading(
-                @NonNull WebView view, @NonNull WebResourceRequest request) {
+                @NonNull WebView chromeWebView, @NonNull WebResourceRequest request) {
               webViewClient.shouldOverrideUrlLoading(view, request);
               return true;
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            public boolean shouldOverrideUrlLoading(WebView chromeWebView, String url) {
               webViewClient.shouldOverrideUrlLoading(view, url);
               return true;
             }
