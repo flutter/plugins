@@ -15,7 +15,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import 'webview_android_widget_test.mocks.dart';
 
-@GenerateMocks([
+@GenerateMocks(<Type>[
   android_webview.WebSettings,
   android_webview.WebView,
   WebViewAndroidDownloadListener,
@@ -70,7 +70,7 @@ void main() {
         creationParams: creationParams ??
             CreationParams(
                 webSettings: WebSettings(
-              userAgent: WebSetting.absent(),
+              userAgent: WebSetting<String?>.absent(),
               hasNavigationDelegate: hasNavigationDelegate,
               hasProgressTracking: hasProgressTracking,
             )),
@@ -99,7 +99,7 @@ void main() {
       verify(mockWebSettings.setDisplayZoomControls(false));
       verify(mockWebSettings.setBuiltInZoomControls(true));
 
-      verifyInOrder([
+      verifyInOrder(<Future<void>>[
         mockWebView.setWebViewClient(webViewClient),
         mockWebView.setDownloadListener(downloadListener),
         mockWebView.setWebChromeClient(webChromeClient),
@@ -121,7 +121,7 @@ void main() {
           creationParams: CreationParams(
             initialUrl: 'https://www.google.com',
             webSettings: WebSettings(
-              userAgent: WebSetting.absent(),
+              userAgent: WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -138,7 +138,7 @@ void main() {
           creationParams: CreationParams(
             userAgent: 'MyUserAgent',
             webSettings: WebSettings(
-              userAgent: WebSetting.absent(),
+              userAgent: WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -154,7 +154,7 @@ void main() {
             autoMediaPlaybackPolicy:
                 AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
             webSettings: WebSettings(
-              userAgent: WebSetting.absent(),
+              userAgent: WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -169,7 +169,7 @@ void main() {
           creationParams: CreationParams(
             autoMediaPlaybackPolicy: AutoMediaPlaybackPolicy.always_allow,
             webSettings: WebSettings(
-              userAgent: WebSetting.absent(),
+              userAgent: WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -184,7 +184,7 @@ void main() {
           creationParams: CreationParams(
             javascriptChannelNames: <String>{'a', 'b'},
             webSettings: WebSettings(
-              userAgent: WebSetting.absent(),
+              userAgent: WebSetting<String?>.absent(),
               hasNavigationDelegate: false,
             ),
           ),
@@ -463,7 +463,7 @@ void main() {
         final WebResourceError error =
             verify(mockCallbacksHandler.onWebResourceError(captureAny))
                 .captured
-                .single;
+                .single as WebResourceError;
         expect(error.description, 'description');
         expect(error.errorCode, -4);
         expect(error.failingUrl, 'https://google.com');
@@ -493,7 +493,7 @@ void main() {
         final WebResourceError error =
             verify(mockCallbacksHandler.onWebResourceError(captureAny))
                 .captured
-                .single;
+                .single as WebResourceError;
         expect(error.description, 'description');
         expect(error.errorCode, -16);
         expect(error.failingUrl, 'https://google.com');
@@ -552,7 +552,7 @@ void main() {
           final WebViewAndroidJavaScriptChannel javaScriptChannel =
               verify(mockWebView.addJavaScriptChannel(captureAny))
                   .captured
-                  .single;
+                  .single as WebViewAndroidJavaScriptChannel;
           javaScriptChannel.postMessage('goodbye');
           verify(mockJavascriptChannelRegistry.onJavascriptChannelMessage(
             'hello',

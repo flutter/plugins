@@ -11,8 +11,8 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 
 import 'src/android_webview.dart';
 import 'src/instance_manager.dart';
-import 'webview_android_widget.dart';
 import 'webview_android.dart';
+import 'webview_android_widget.dart';
 
 /// Android [WebViewPlatform] that uses [AndroidViewSurface] to build the [WebView] widget.
 ///

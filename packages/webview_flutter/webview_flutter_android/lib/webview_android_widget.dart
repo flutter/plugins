@@ -13,7 +13,7 @@ import 'src/android_webview.dart' as android_webview;
 /// Creates a [Widget] with a [android_webview.WebView].
 class WebViewAndroidWidget extends StatefulWidget {
   /// Constructs a [WebViewAndroidWidget].
-  WebViewAndroidWidget({
+  const WebViewAndroidWidget({
     required this.creationParams,
     required this.useHybridComposition,
     required this.callbacksHandler,
@@ -106,8 +106,8 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     webView.settings.setBuiltInZoomControls(true);
 
     _setCreationParams(creationParams);
-    webView.setDownloadListener(this.downloadListener);
-    webView.setWebChromeClient(this.webChromeClient);
+    webView.setDownloadListener(downloadListener);
+    webView.setWebChromeClient(webChromeClient);
 
     final String? initialUrl = creationParams.initialUrl;
     if (initialUrl != null) {
@@ -178,18 +178,18 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   Future<void> clearCache() => webView.clearCache(true);
 
   @override
-  Future<void> updateSettings(WebSettings settings) async {
+  Future<void> updateSettings(WebSettings setting) async {
     await Future.wait(<Future<void>>[
-      _setUserAgent(settings.userAgent),
-      if (settings.hasProgressTracking != null)
-        _setHasProgressTracking(settings.hasProgressTracking!),
-      if (settings.hasNavigationDelegate != null)
-        _setHasNavigationDelegate(settings.hasNavigationDelegate!),
-      if (settings.javascriptMode != null)
-        _setJavaScriptMode(settings.javascriptMode!),
-      if (settings.debuggingEnabled != null)
-        _setDebuggingEnabled(settings.debuggingEnabled!),
-      if (settings.zoomEnabled != null) _setZoomEnabled(settings.zoomEnabled!),
+      _setUserAgent(setting.userAgent),
+      if (setting.hasProgressTracking != null)
+        _setHasProgressTracking(setting.hasProgressTracking!),
+      if (setting.hasNavigationDelegate != null)
+        _setHasNavigationDelegate(setting.hasNavigationDelegate!),
+      if (setting.javascriptMode != null)
+        _setJavaScriptMode(setting.javascriptMode!),
+      if (setting.debuggingEnabled != null)
+        _setDebuggingEnabled(setting.debuggingEnabled!),
+      if (setting.zoomEnabled != null) _setZoomEnabled(setting.zoomEnabled!),
     ]);
   }
 
@@ -387,7 +387,9 @@ class WebViewAndroidDownloadListener extends android_webview.DownloadListener {
     String mimetype,
     int contentLength,
   ) {
-    if (_onNavigationRequest == null) return;
+    if (_onNavigationRequest == null) {
+      return;
+    }
 
     final FutureOr<bool> returnValue = _onNavigationRequest!(
       url: url,
@@ -426,16 +428,9 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     required this.onPageStartedCallback,
     required this.onPageFinishedCallback,
     required this.onWebResourceErrorCallback,
-    required FutureOr<bool> Function({
-      required String url,
-      required bool isForMainFrame,
-    })
-        onNavigationRequestCallback,
-    required Future<void> Function(String url, Map<String, String>? headers)
-        loadUrl,
-  })  : onNavigationRequestCallback = onNavigationRequestCallback,
-        loadUrl = loadUrl,
-        super(shouldOverrideUrlLoading: true);
+    required this.onNavigationRequestCallback,
+    required this.loadUrl,
+  }) : super(shouldOverrideUrlLoading: true);
 
   /// Callback when [android_webview.WebViewClient] receives a callback from [android_webview.WebViewClient].onPageStarted.
   final void Function(String url) onPageStartedCallback;
@@ -544,7 +539,9 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
 
   @override
   void urlLoading(android_webview.WebView webView, String url) {
-    if (!handlesNavigation) return;
+    if (!handlesNavigation) {
+      return;
+    }
 
     final FutureOr<bool> returnValue = onNavigationRequestCallback!(
       url: url,
@@ -567,7 +564,9 @@ class WebViewAndroidWebViewClient extends android_webview.WebViewClient {
     android_webview.WebView webView,
     android_webview.WebResourceRequest request,
   ) {
-    if (!handlesNavigation) return;
+    if (!handlesNavigation) {
+      return;
+    }
 
     final FutureOr<bool> returnValue = onNavigationRequestCallback!(
       url: request.url,

@@ -20,7 +20,7 @@ void main() {
   // implementation instead of the default [AndroidWebView].
   WebView.platform = SurfaceAndroidWebView();
 
-  runApp(MaterialApp(home: _WebViewExample()));
+  runApp(const MaterialApp(home: _WebViewExample()));
 }
 
 const String kNavigationExamplePage = '''
@@ -62,14 +62,14 @@ class _WebViewExampleState extends State<_WebViewExample> {
       ),
       // We're using a Builder here so we have a context that is below the Scaffold
       // to allow calling Scaffold.of(context) so we can show a snackbar.
-      body: Builder(builder: (context) {
+      body: Builder(builder: (BuildContext context) {
         return WebView(
           initialUrl: 'https://flutter.dev',
           onWebViewCreated: (WebViewController controller) {
             _controller.complete(controller);
           },
           onProgress: (int progress) {
-            print("WebView is loading (progress : $progress%)");
+            print('WebView is loading (progress : $progress%)');
           },
           navigationDelegate: (NavigationRequest request) {
             if (request.url.startsWith('https://www.youtube.com/')) {
@@ -138,7 +138,7 @@ enum _MenuOptions {
 }
 
 class _SampleMenu extends StatelessWidget {
-  _SampleMenu(this.controller);
+  const _SampleMenu(this.controller);
 
   final Future<WebViewController> controller;
 
@@ -254,7 +254,7 @@ class _SampleMenu extends StatelessWidget {
     await controller.clearCache();
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
-      content: Text("Cache cleared."),
+      content: Text('Cache cleared.'),
     ));
   }
 
@@ -321,7 +321,7 @@ class _NavigationControls extends StatelessWidget {
                       } else {
                         // ignore: deprecated_member_use
                         Scaffold.of(context).showSnackBar(
-                          const SnackBar(content: Text("No back history item")),
+                          const SnackBar(content: Text('No back history item')),
                         );
                         return;
                       }
@@ -338,7 +338,7 @@ class _NavigationControls extends StatelessWidget {
                         // ignore: deprecated_member_use
                         Scaffold.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text("No forward history item")),
+                              content: Text('No forward history item')),
                         );
                         return;
                       }
@@ -360,4 +360,4 @@ class _NavigationControls extends StatelessWidget {
 }
 
 /// Callback type for handling messages sent from JavaScript running in a web view.
-typedef void JavascriptMessageHandler(JavascriptMessage message);
+typedef JavascriptMessageHandler = void Function(JavascriptMessage message);
