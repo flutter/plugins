@@ -1,4 +1,4 @@
-package dev.flutter.plugins.example;
+package io.flutter.plugins.batteryexample;
 
 import io.flutter.embedding.android.FlutterActivity;
 
