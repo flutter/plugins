@@ -1,3 +1,6 @@
+## NEXT
+* Fix the documentation of getApplicationDocumentsDirectory method ([#93245](https://github.com/flutter/flutter/issues/93245))
+
 ## 2.0.6
 
 * Added support for Background Platform Channels on Android when it is
