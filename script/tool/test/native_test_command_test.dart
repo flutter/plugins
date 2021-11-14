@@ -57,7 +57,7 @@ final Map<String, dynamic> _kDeviceListMap = <String, dynamic>{
 
 const String _fakeCmakeCommand = 'path/to/cmake';
 
-void _createFakeCmakeCache(Directory pluginDir, Platform platform) {
+void _createFakeCMakeCache(Directory pluginDir, Platform platform) {
   final CMakeProject project = CMakeProject(pluginDir.childDirectory('example'),
       platform: platform, buildMode: 'Release');
   final File cache = project.buildDirectory.childFile('CMakeCache.txt');
@@ -888,7 +888,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -927,7 +927,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File releaseTestBinary = childFileWithSubcomponents(
             pluginDirectory,
@@ -988,7 +988,7 @@ void main() {
             platformSupport: <String, PlatformDetails>{
               kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
             });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         Error? commandError;
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -1023,7 +1023,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformLinux: const PlatformDetails(PlatformSupport.inline),
         });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -1627,7 +1627,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);
@@ -1666,7 +1666,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File debugTestBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...debugTestBinaryRelativePath.split('/')]);
@@ -1726,7 +1726,7 @@ void main() {
             platformSupport: <String, PlatformDetails>{
               kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
             });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         Error? commandError;
         final List<String> output = await runCapturingPrint(runner, <String>[
@@ -1761,7 +1761,7 @@ void main() {
         ], platformSupport: <String, PlatformDetails>{
           kPlatformWindows: const PlatformDetails(PlatformSupport.inline),
         });
-        _createFakeCmakeCache(pluginDirectory, mockPlatform);
+        _createFakeCMakeCache(pluginDirectory, mockPlatform);
 
         final File testBinary = childFileWithSubcomponents(pluginDirectory,
             <String>['example', ...testBinaryRelativePath.split('/')]);

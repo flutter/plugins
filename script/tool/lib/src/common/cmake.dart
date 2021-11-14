@@ -8,7 +8,7 @@ import 'package:platform/platform.dart';
 
 import 'process_runner.dart';
 
-const String _cmakeCacheCommandKey = 'CMAKE_COMMAND:INTERNAL';
+const String _cacheCommandKey = 'CMAKE_COMMAND:INTERNAL';
 
 /// A utility class for interacting with CMake projects.
 class CMakeProject {
@@ -19,13 +19,7 @@ class CMakeProject {
     required this.buildMode,
     this.processRunner = const ProcessRunner(),
     this.platform = const LocalPlatform(),
-  }) {
-    // On Linux 'cmake' is expected to be in the path, so doesn't need to
-    // be lookup up and cached (see [getCMakeCommand]).
-    if (platform.isLinux) {
-      _cmakeCommand = 'cmake';
-    }
-  }
+  });
 
   /// The directory of a Flutter project to run Gradle commands in.
   final Directory flutterProject;
@@ -42,7 +36,7 @@ class CMakeProject {
   /// on the build mode since it uses a single-configuration generator.
   final String buildMode;
 
-  String? _cmakeCommand;
+  late final String _cmakeCommand = _determineCmakeCommand();
 
   /// The project's platform directory name.
   String get _platformDirName => platform.isWindows ? 'windows' : 'linux';
@@ -63,34 +57,46 @@ class CMakeProject {
     return buildDir;
   }
 
-  File get _cmakeCacheFile => buildDirectory.childFile('CMakeCache.txt');
+  File get _cacheFile => buildDirectory.childFile('CMakeCache.txt');
 
   /// Returns the CMake command to run build commands for this project.
   ///
   /// Assumes the project has been built at least once, such that the CMake
   /// generation step has run.
-  String getCMakeCommand() {
-    if (_cmakeCommand != null) {
-      return _cmakeCommand!;
+  String getCmakeCommand() {
+    return _cmakeCommand;
+  }
+
+  /// Returns the CMake command to run build commands for this project. This is
+  /// used to initialize _cmakeCommand, and should not be called directly.
+  ///
+  /// Assumes the project has been built at least once, such that the CMake
+  /// generation step has run.
+  String _determineCmakeCommand() {
+    // On Linux 'cmake' is expected to be in the path, so doesn't need to
+    // be lookup up and cached.
+    if (platform.isLinux) {
+      return 'cmake';
     }
-    final File cmakeCache = _cmakeCacheFile;
-    for (String line in cmakeCache.readAsLinesSync()) {
+    final File cacheFile = _cacheFile;
+    String? command;
+    for (String line in cacheFile.readAsLinesSync()) {
       line = line.trim();
-      if (line.startsWith(_cmakeCacheCommandKey)) {
-        _cmakeCommand = line.substring(line.indexOf('=') + 1).trim();
+      if (line.startsWith(_cacheCommandKey)) {
+        command = line.substring(line.indexOf('=') + 1).trim();
         break;
       }
     }
-    if (_cmakeCommand == null) {
-      printError('Unable to find CMake command in ${cmakeCache.path}');
+    if (command == null) {
+      printError('Unable to find CMake command in ${cacheFile.path}');
       throw ToolExit(100);
     }
-    return _cmakeCommand!;
+    return command;
   }
 
   /// Whether or not the project is ready to have CMake commands run on it
   /// (i.e., whether the `flutter` tool has generated the necessary files).
-  bool isConfigured() => _cmakeCacheFile.existsSync();
+  bool isConfigured() => _cacheFile.existsSync();
 
   /// Runs a `cmake` command with the given parameters.
   Future<int> runBuild(
@@ -98,7 +104,7 @@ class CMakeProject {
     List<String> arguments = const <String>[],
   }) {
     return processRunner.runAndStream(
-      getCMakeCommand(),
+      getCmakeCommand(),
       <String>[
         '--build',
         buildDirectory.path,
