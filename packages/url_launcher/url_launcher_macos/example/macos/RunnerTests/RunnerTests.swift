@@ -22,20 +22,6 @@ class StubWorkspace: SystemURLHandler {
 
 class RunnerTests: XCTestCase {
 
-  func testNoHandlerReturnsFlutterMethodNotImplemented() throws {
-    let plugin = UrlLauncherPlugin()
-
-    let call = FlutterMethodCall(
-      methodName: "noHandler",
-      arguments: ["url": "https://flutter.dev"])
-
-    plugin.handle(
-      call,
-      result: { (result: Any?) -> Void in
-        XCTAssertEqual(result as? NSObject, FlutterMethodNotImplemented)
-      })
-  }
-
   func testCanLaunchSuccessReturnsTrue() throws {
     let plugin = UrlLauncherPlugin()
 
@@ -47,6 +33,20 @@ class RunnerTests: XCTestCase {
       call,
       result: { (result: Any?) -> Void in
         XCTAssertEqual(result as? Bool, true)
+      })
+  }
+
+  func testCanLaunchNoAppIsAbleToOpenUrlReturnsFalse() throws {
+    let plugin = UrlLauncherPlugin()
+
+    let call = FlutterMethodCall(
+      methodName: "canLaunch",
+      arguments: ["url": "example://flutter.dev"])
+
+    plugin.handle(
+      call,
+      result: { (result: Any?) -> Void in
+        XCTAssertEqual(result as? Bool, false)
       })
   }
 
@@ -93,12 +93,28 @@ class RunnerTests: XCTestCase {
       })
   }
 
+  func testLaunchNoAppIsAbleToOpenUrlReturnsFalse() throws {
+    let workspace = StubWorkspace()
+    workspace.isSuccessful = false
+    let pluginWithStubWorkspace = UrlLauncherPlugin(workspace)
+
+    let call = FlutterMethodCall(
+      methodName: "launch",
+      arguments: ["url": "example://flutter.dev"])
+
+    pluginWithStubWorkspace.handle(
+      call,
+      result: { (result: Any?) -> Void in
+        XCTAssertEqual(result as? Bool, false)
+      })
+  }
+
   func testLaunchMissingArgumentReturnsFlutterError() throws {
     let workspace = StubWorkspace()
     let pluginWithStubWorkspace = UrlLauncherPlugin(workspace)
 
     let call = FlutterMethodCall(
-      methodName: "canLaunch",
+      methodName: "launch",
       arguments: [])
 
     pluginWithStubWorkspace.handle(
