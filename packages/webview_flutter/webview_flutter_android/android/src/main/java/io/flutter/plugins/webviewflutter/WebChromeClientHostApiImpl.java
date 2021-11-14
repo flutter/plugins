@@ -44,16 +44,27 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
       this.webViewClient = webViewClient;
     }
 
-    // Verifies that a url opened by `Window.open` has a secure url.
     @Override
     public boolean onCreateWindow(
         final WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-      final WebViewClient newWindowWebViewClient =
+      return onCreateWindow(view, resultMsg, new WebView(view.getContext()));
+    }
+
+    /**
+     * Verifies that a url opened by `Window.open` has a secure url.
+     *
+     * @param view
+     * @param resultMsg
+     * @param onCreateWindowWebView
+     * @return
+     */
+    public boolean onCreateWindow(final WebView view, Message resultMsg, @Nullable WebView onCreateWindowWebView) {
+      final WebViewClient windowWebViewClient =
           new WebViewClient() {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public boolean shouldOverrideUrlLoading(
-                @NonNull WebView chromeWebView, @NonNull WebResourceRequest request) {
+                @NonNull WebView windowWebView, @NonNull WebResourceRequest request) {
               if (!webViewClient.shouldOverrideUrlLoading(view, request)) {
                 view.loadUrl(request.getUrl().toString());
               }
@@ -61,19 +72,21 @@ public class WebChromeClientHostApiImpl implements WebChromeClientHostApi {
             }
 
             @Override
-            public boolean shouldOverrideUrlLoading(WebView chromeWebView, String url) {
+            public boolean shouldOverrideUrlLoading(WebView windowWebView, String url) {
               if (!webViewClient.shouldOverrideUrlLoading(view, url)) {
                 view.loadUrl(url);
-              };
+              }
               return true;
             }
           };
 
-      final WebView newWebView = new WebView(view.getContext());
-      newWebView.setWebViewClient(newWindowWebViewClient);
+      if (onCreateWindowWebView == null) {
+        onCreateWindowWebView = new WebView(view.getContext());
+      }
+      onCreateWindowWebView.setWebViewClient(windowWebViewClient);
 
       final WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
-      transport.setWebView(newWebView);
+      transport.setWebView(onCreateWindowWebView);
       resultMsg.sendToTarget();
 
       return true;
