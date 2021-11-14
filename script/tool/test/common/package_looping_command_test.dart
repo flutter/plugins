@@ -288,9 +288,9 @@ void main() {
           output,
           containsAllInOrder(<String>[
             '$_startHeadingColor\n$separator\n|| Running for package_a [@0:00]\n$separator\n$_endColor',
-            '$_startElapsedTimeColor\n[package_a completed in 0:00]$_endColor',
+            '$_startElapsedTimeColor\n[package_a completed in 0m 0s]$_endColor',
             '$_startHeadingColor\n$separator\n|| Running for package_b [@0:00]\n$separator\n$_endColor',
-            '$_startElapsedTimeColor\n[package_b completed in 0:00]$_endColor',
+            '$_startElapsedTimeColor\n[package_b completed in 0m 0s]$_endColor',
           ]));
     });
 
@@ -310,7 +310,7 @@ void main() {
             '$_startHeadingColor[0:00] Running for package_b...$_endColor',
           ]));
       // Short-form output should not include elapsed time.
-      expect(output, isNot(contains('[package_a completed in 0:00]')));
+      expect(output, isNot(contains('[package_a completed in 0m 0s]')));
     });
 
     test('shows the success message when nothing fails', () async {

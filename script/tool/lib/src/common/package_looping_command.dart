@@ -260,7 +260,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
         final Duration elapsedTime = DateTime.now().difference(packageStart);
         _printColorized(
             '\n[${entry.package.displayName} completed in '
-            '${_formatDuration(elapsedTime)}]',
+            '${elapsedTime.inMinutes}m ${elapsedTime.inSeconds % 60}s]',
             Styles.DARK_GRAY);
       }
     }
@@ -308,7 +308,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
 
     if (shouldLogTiming) {
       final Duration relativeTime = DateTime.now().difference(startTime);
-      final String timeString = _formatDuration(relativeTime);
+      final String timeString = _formatDurationAsRelativeTime(relativeTime);
       heading =
           hasLongOutput ? '$heading [@$timeString]' : '[$timeString] $heading';
     }
@@ -430,7 +430,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// Returns a duration [d] formatted as minutes:seconds. Does not use hours,
   /// since time logging is primarily intended for CI, where durations should
   /// always be less than an hour.
-  String _formatDuration(Duration d) {
+  String _formatDurationAsRelativeTime(Duration d) {
     return '${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 }
