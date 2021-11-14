@@ -89,6 +89,201 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
   }
 }
 
+- (void)testLoadFileSucceeds {
+  NSString *testFilePath = @"/assets/file.html";
+  NSURL *url = [NSURL fileURLWithPath:testFilePath isDirectory:NO];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return successful result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile"
+                                                             arguments:testFilePath]
+                    result:^(id _Nullable result) {
+                      XCTAssertNil(result);
+                      [resultExpectation fulfill];
+                    }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:30.0];
+  OCMVerify([mockWebView loadFileURL:url
+             allowingReadAccessToURL:[url URLByDeletingLastPathComponent]]);
+}
+
+- (void)testLoadFileFailsWithInvalidPath {
+  NSArray *resultExpectations = @[
+    [self expectationWithDescription:@"Should return failed result when argument is nil."],
+    [self expectationWithDescription:
+              @"Should return failed result when argument is not of type NSString*."],
+    [self expectationWithDescription:
+              @"Should return failed result when argument is an empty string."],
+  ];
+
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile" arguments:nil]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadFile_failed"
+                                              message:@"Failed parsing file path."
+                                              details:@"Argument is nil."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[0] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile" arguments:@(10)]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadFile_failed"
+                                              message:@"Failed parsing file path."
+                                              details:@"Argument is not of type NSString."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[1] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadFile" arguments:@""]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadFile_failed"
+                                              message:@"Failed parsing file path."
+                                              details:@"Argument contains an empty string."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[2] fulfill];
+                    }];
+
+  [self waitForExpectations:resultExpectations timeout:1.0];
+  OCMReject([mockWebView loadFileURL:[OCMArg any] allowingReadAccessToURL:[OCMArg any]]);
+}
+
+- (void)testLoadFileSucceedsWithBaseUrl {
+  NSURL *baseUrl = [NSURL URLWithString:@"https://flutter.dev"];
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return successful result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                             arguments:@{
+                                                               @"html" : @"some HTML string",
+                                                               @"baseUrl" : @"https://flutter.dev"
+                                                             }]
+                    result:^(id _Nullable result) {
+                      XCTAssertNil(result);
+                      [resultExpectation fulfill];
+                    }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:30.0];
+  OCMVerify([mockWebView loadHTMLString:@"some HTML string" baseURL:baseUrl]);
+}
+
+- (void)testLoadFileSucceedsWithoutBaseUrl {
+  XCTestExpectation *resultExpectation =
+      [self expectationWithDescription:@"Should return successful result over the method channel."];
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  [controller
+      onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                     arguments:@{@"html" : @"some HTML string"}]
+            result:^(id _Nullable result) {
+              XCTAssertNil(result);
+              [resultExpectation fulfill];
+            }];
+
+  [self waitForExpectations:@[ resultExpectation ] timeout:30.0];
+  OCMVerify([mockWebView loadHTMLString:@"some HTML string" baseURL:nil]);
+}
+
+- (void)testLoadHtmlStringFailsWithInvalidArgument {
+  NSArray *resultExpectations = @[
+    [self expectationWithDescription:@"Should return failed result when argument is nil."],
+    [self expectationWithDescription:
+              @"Should return failed result when argument is not of type NSDictionary*."],
+    [self expectationWithDescription:@"Should return failed result when HTML argument is nil."],
+    [self expectationWithDescription:
+              @"Should return failed result when HTML argument is not of type NSString*."],
+    [self expectationWithDescription:
+              @"Should return failed result when HTML argument is an empty string."],
+  ];
+
+  FLTWebViewController *controller =
+      [[FLTWebViewController alloc] initWithFrame:CGRectMake(0, 0, 300, 400)
+                                   viewIdentifier:1
+                                        arguments:nil
+                                  binaryMessenger:self.mockBinaryMessenger];
+  FLTWKWebView *mockWebView = OCMClassMock(FLTWKWebView.class);
+  controller.webView = mockWebView;
+  FlutterError *expected = [FlutterError
+      errorWithCode:@"loadHtmlString_failed"
+            message:@"Failed parsing arguments."
+            details:@"Arguments should be a dictionary containing at least a 'html' element and "
+                    @"optionally a 'baseUrl' argument. For example: `@{ @\"html\": @\"some html "
+                    @"code\", @\"baseUrl\": @\"https://flutter.dev\" }`"];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                             arguments:nil]
+                    result:^(id _Nullable result) {
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[0] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                             arguments:@""]
+                    result:^(id _Nullable result) {
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[1] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                             arguments:@{}]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadHtmlString_failed"
+                                              message:@"Failed parsing HTML string argument."
+                                              details:@"Argument is nil."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[2] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                             arguments:@{
+                                                               @"html" : @(42),
+                                                             }]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadHtmlString_failed"
+                                              message:@"Failed parsing HTML string argument."
+                                              details:@"Argument is not of type NSString."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[3] fulfill];
+                    }];
+  [controller onMethodCall:[FlutterMethodCall methodCallWithMethodName:@"loadHtmlString"
+                                                             arguments:@{
+                                                               @"html" : @"",
+                                                             }]
+                    result:^(id _Nullable result) {
+                      FlutterError *expected =
+                          [FlutterError errorWithCode:@"loadHtmlString_failed"
+                                              message:@"Failed parsing HTML string argument."
+                                              details:@"Argument contains an empty string."];
+                      [FLTWebViewTests assertFlutterError:result withExpected:expected];
+                      [resultExpectations[4] fulfill];
+                    }];
+
+  [self waitForExpectations:resultExpectations timeout:1.0];
+  OCMReject([mockWebView loadHTMLString:[OCMArg any] baseURL:[OCMArg any]]);
+}
+
 - (void)testRunJavascriptFailsForNullString {
   // Setup
   FLTWebViewController *controller =
@@ -300,6 +495,14 @@ static bool feq(CGFloat a, CGFloat b) { return fabs(b - a) < FLT_EPSILON; }
 
   // Verify
   [self waitForExpectationsWithTimeout:30.0 handler:nil];
+}
+
++ (void)assertFlutterError:(id)actual withExpected:(FlutterError *)expected {
+  XCTAssertTrue([actual class] == [FlutterError class]);
+  FlutterError *errorResult = actual;
+  XCTAssertEqualObjects(errorResult.code, expected.code);
+  XCTAssertEqualObjects(errorResult.message, expected.message);
+  XCTAssertEqualObjects(errorResult.details, expected.details);
 }
 
 - (void)testBuildNSURLRequestReturnsNilForNonDictionaryValue {
