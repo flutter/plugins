@@ -281,7 +281,7 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
       case AutoMediaPlaybackPolicy.always_allow:
         webView.settings.setMediaPlaybackRequiresUserGesture(false);
         break;
-      default:
+      case AutoMediaPlaybackPolicy.require_user_action_for_all_media_types:
         webView.settings.setMediaPlaybackRequiresUserGesture(true);
     }
 
