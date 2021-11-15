@@ -59,7 +59,9 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             new Runnable() {
               @Override
               public void run() {
-                shortcutManager.setDynamicShortcuts(shortcuts);
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+                  shortcutManager.setDynamicShortcuts(shortcuts);
+                }
               }
             });
         break;
