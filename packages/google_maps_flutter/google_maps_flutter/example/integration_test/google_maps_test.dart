@@ -1211,7 +1211,6 @@ void main() {
       // https://github.com/flutter/flutter/issues/54758
       await Future.delayed(const Duration(seconds: 1));
 
-
       final initialBounds = await controller.getVisibleRegion();
       final newCenter = LatLng(40, 80);
       final animationDuration = const Duration(seconds: 4);

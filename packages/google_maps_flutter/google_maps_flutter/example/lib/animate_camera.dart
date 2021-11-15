@@ -61,7 +61,7 @@ class AnimateCameraState extends State<AnimateCamera> {
                   const CameraPosition(target: LatLng(0.0, 0.0)),
               gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
                 Factory<OneSequenceGestureRecognizer>(
-                        () => EagerGestureRecognizer()),
+                    () => EagerGestureRecognizer()),
               },
             ),
           ),

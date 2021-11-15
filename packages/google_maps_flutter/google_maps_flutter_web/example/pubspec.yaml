@@ -25,3 +25,9 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
+  
+# TODO: Remove ovveride before merge
+# FOR TESTING ONLY. DO NOT MERGE.
+dependency_overrides: 
+  google_maps_flutter_platform_interface:
+    path: ../../google_maps_flutter_platform_interface
