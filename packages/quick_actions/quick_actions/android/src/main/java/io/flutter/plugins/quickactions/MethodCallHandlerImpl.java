@@ -59,7 +59,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
             new Runnable() {
               @Override
               public void run() {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
                   shortcutManager.setDynamicShortcuts(shortcuts);
                 }
               }
