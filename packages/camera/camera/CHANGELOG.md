@@ -1,3 +1,7 @@
+## 0.9.4+4
+
+* Fixes integration tests.
+
 ## 0.9.4+3
 
 * Change Android compileSdkVersion to 31.

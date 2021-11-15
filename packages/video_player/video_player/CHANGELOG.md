@@ -1,3 +1,7 @@
+## 2.2.8
+
+* Fixes integration tests.
+
 ## 2.2.7
 
 * Fixes a regression where dragging a [VideoProgressIndicator] while playing
