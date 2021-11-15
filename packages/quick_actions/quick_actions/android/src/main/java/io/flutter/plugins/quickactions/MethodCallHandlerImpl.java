@@ -79,7 +79,8 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   @WorkerThread
-  public void requestSetDynamicShortcuts(ShortcutManager shortcutManager, List<ShortcutInfo> shortcuts) {
+  public void requestSetDynamicShortcuts(
+      ShortcutManager shortcutManager, List<ShortcutInfo> shortcuts) {
     shortcutManager.setDynamicShortcuts(shortcuts);
   }
 
