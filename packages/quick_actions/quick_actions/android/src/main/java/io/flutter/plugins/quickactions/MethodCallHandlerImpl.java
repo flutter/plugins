@@ -13,6 +13,7 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import androidx.annotation.WorkerThread;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   @Override
+  @WorkerThread
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
       // We already know that this functionality does not work for anything
