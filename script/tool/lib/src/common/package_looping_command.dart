@@ -170,7 +170,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// messages. DO NOT RELY on someone noticing a warning; instead, use it for
   /// things that might be useful to someone debugging an unexpected result.
   void logWarning(String warningMessage) {
-    print(Colorize(warningMessage)..yellow());
+    _printColorized(warningMessage, Styles.YELLOW);
     if (_currentPackageEntry != null) {
       _packagesWithWarnings.add(_currentPackageEntry!);
     } else {
@@ -219,6 +219,8 @@ abstract class PackageLoopingCommand extends PluginCommand {
     _otherWarningCount = 0;
     _currentPackageEntry = null;
 
+    final DateTime runStart = DateTime.now();
+
     await initializeRun();
 
     final List<PackageEnumerationEntry> targetPackages =
@@ -227,8 +229,9 @@ abstract class PackageLoopingCommand extends PluginCommand {
     final Map<PackageEnumerationEntry, PackageResult> results =
         <PackageEnumerationEntry, PackageResult>{};
     for (final PackageEnumerationEntry entry in targetPackages) {
+      final DateTime packageStart = DateTime.now();
       _currentPackageEntry = entry;
-      _printPackageHeading(entry);
+      _printPackageHeading(entry, startTime: runStart);
 
       // Command implementations should never see excluded packages; they are
       // included at this level only for logging.
@@ -246,11 +249,20 @@ abstract class PackageLoopingCommand extends PluginCommand {
         result = PackageResult.fail(<String>['Unhandled exception']);
       }
       if (result.state == RunState.skipped) {
-        final String message =
-            '${indentation}SKIPPING: ${result.details.first}';
-        captureOutput ? print(message) : print(Colorize(message)..darkGray());
+        _printColorized('${indentation}SKIPPING: ${result.details.first}',
+            Styles.DARK_GRAY);
       }
       results[entry] = result;
+
+      // Only log an elapsed time for long output; for short output, comparing
+      // the relative timestamps of successive entries should be trivial.
+      if (shouldLogTiming && hasLongOutput) {
+        final Duration elapsedTime = DateTime.now().difference(packageStart);
+        _printColorized(
+            '\n[${entry.package.displayName} completed in '
+            '${elapsedTime.inMinutes}m ${elapsedTime.inSeconds % 60}s]',
+            Styles.DARK_GRAY);
+      }
     }
     _currentPackageEntry = null;
 
@@ -287,11 +299,20 @@ abstract class PackageLoopingCommand extends PluginCommand {
   /// Something is always printed to make it easier to distinguish between
   /// a command running for a package and producing no output, and a command
   /// not having been run for a package.
-  void _printPackageHeading(PackageEnumerationEntry entry) {
+  void _printPackageHeading(PackageEnumerationEntry entry,
+      {required DateTime startTime}) {
     final String packageDisplayName = entry.package.displayName;
     String heading = entry.excluded
         ? 'Not running for $packageDisplayName; excluded'
         : 'Running for $packageDisplayName';
+
+    if (shouldLogTiming) {
+      final Duration relativeTime = DateTime.now().difference(startTime);
+      final String timeString = _formatDurationAsRelativeTime(relativeTime);
+      heading =
+          hasLongOutput ? '$heading [@$timeString]' : '[$timeString] $heading';
+    }
+
     if (hasLongOutput) {
       heading = '''
 
@@ -302,13 +323,7 @@ abstract class PackageLoopingCommand extends PluginCommand {
     } else if (!entry.excluded) {
       heading = '$heading...';
     }
-    if (captureOutput) {
-      print(heading);
-    } else {
-      final Colorize colorizeHeading = Colorize(heading);
-      print(
-          entry.excluded ? colorizeHeading.darkGray() : colorizeHeading.cyan());
-    }
+    _printColorized(heading, entry.excluded ? Styles.DARK_GRAY : Styles.CYAN);
   }
 
   /// Prints a summary of packges run, packages skipped, and warnings.
@@ -400,5 +415,22 @@ abstract class PackageLoopingCommand extends PluginCommand {
       }
     }
     _printError(failureListFooter);
+  }
+
+  /// Prints [message] in [color] unless [captureOutput] is set, in which case
+  /// it is printed without color.
+  void _printColorized(String message, Styles color) {
+    if (captureOutput) {
+      print(message);
+    } else {
+      print(Colorize(message)..apply(color));
+    }
+  }
+
+  /// Returns a duration [d] formatted as minutes:seconds. Does not use hours,
+  /// since time logging is primarily intended for CI, where durations should
+  /// always be less than an hour.
+  String _formatDurationAsRelativeTime(Duration d) {
+    return '${d.inMinutes}:${(d.inSeconds % 60).toString().padLeft(2, '0')}';
   }
 }

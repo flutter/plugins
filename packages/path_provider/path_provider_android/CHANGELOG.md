@@ -1,6 +1,10 @@
-## NEXT
+## 2.0.8
 
 * Update Android compileSdkVersion to 31.
+
+## 2.0.7
+
+* Fixes link in README.
 
 ## 2.0.6
 

@@ -76,7 +76,7 @@ abstract class PluginCommand extends Command<void> {
             'If no packages have changed, or if there have been changes that may\n'
             'affect all packages, the command runs on all packages.\n'
             'The packages excluded with $_excludeArg is also excluded even if changed.\n'
-            'See $_kBaseSha if a custom base is needed to determine the diff.\n\n'
+            'See $_baseShaArg if a custom base is needed to determine the diff.\n\n'
             'Cannot be combined with $_packagesArg.\n');
     argParser.addFlag(_packagesForBranchArg,
         help:
@@ -86,20 +86,25 @@ abstract class PluginCommand extends Command<void> {
             'Cannot be combined with $_packagesArg.\n\n'
             'This is intended for use in CI.\n',
         hide: true);
-    argParser.addOption(_kBaseSha,
+    argParser.addOption(_baseShaArg,
         help: 'The base sha used to determine git diff. \n'
             'This is useful when $_runOnChangedPackagesArg is specified.\n'
             'If not specified, merge-base is used as base sha.');
+    argParser.addFlag(_logTimingArg,
+        help: 'Logs timing information.\n\n'
+            'Currently only logs per-package timing for multi-package commands, '
+            'but more information may be added in the future.');
   }
 
-  static const String _pluginsArg = 'plugins';
-  static const String _packagesArg = 'packages';
-  static const String _shardIndexArg = 'shardIndex';
-  static const String _shardCountArg = 'shardCount';
+  static const String _baseShaArg = 'base-sha';
   static const String _excludeArg = 'exclude';
-  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _logTimingArg = 'log-timing';
+  static const String _packagesArg = 'packages';
   static const String _packagesForBranchArg = 'packages-for-branch';
-  static const String _kBaseSha = 'base-sha';
+  static const String _pluginsArg = 'plugins';
+  static const String _runOnChangedPackagesArg = 'run-on-changed-packages';
+  static const String _shardCountArg = 'shardCount';
+  static const String _shardIndexArg = 'shardIndex';
 
   /// The directory containing the plugin packages.
   final Directory packagesDir;
@@ -182,6 +187,11 @@ abstract class PluginCommand extends Command<void> {
   List<String> getStringListArg(String key) {
     return (argResults![key] as List<String>?) ?? <String>[];
   }
+
+  /// If true, commands should log timing information that might be useful in
+  /// analyzing their runtime (e.g., the per-package time for multi-package
+  /// commands).
+  bool get shouldLogTiming => getBoolArg(_logTimingArg);
 
   void _checkSharding() {
     final int? shardIndex = int.tryParse(getStringArg(_shardIndexArg));
@@ -411,11 +421,11 @@ abstract class PluginCommand extends Command<void> {
     return entity is Directory && entity.childFile('pubspec.yaml').existsSync();
   }
 
-  /// Retrieve an instance of [GitVersionFinder] based on `_kBaseSha` and [gitDir].
+  /// Retrieve an instance of [GitVersionFinder] based on `_baseShaArg` and [gitDir].
   ///
   /// Throws tool exit if [gitDir] nor root directory is a git directory.
   Future<GitVersionFinder> retrieveVersionFinder() async {
-    final String baseSha = getStringArg(_kBaseSha);
+    final String baseSha = getStringArg(_baseShaArg);
 
     final GitVersionFinder gitVersionFinder =
         GitVersionFinder(await gitDir, baseSha);

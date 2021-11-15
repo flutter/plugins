@@ -3,9 +3,6 @@ description: Flutter plugin for getting commonly used locations on host platform
 repository: https://github.com/flutter/plugins/tree/master/packages/path_provider/path_provider
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+path_provider%22
 version: 2.0.7
-# Temporarily disable publishing to allow moving Android and iOS
-# implementations.
-publish_to: none
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
@@ -28,11 +25,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  # Temporary path dependencies to allow moving Android and iOS implementations.
-  path_provider_android:
-    path: ../path_provider_android
-  path_provider_ios:
-    path: ../path_provider_ios
+  path_provider_android: ^2.0.6
+  path_provider_ios: ^2.0.6
   path_provider_linux: ^2.0.0
   path_provider_macos: ^2.0.0
   path_provider_platform_interface: ^2.0.0

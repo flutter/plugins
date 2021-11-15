@@ -1,8 +1,11 @@
-## 0.9.4+3
+## 0.9.4+4
 
 * Change Android compileSdkVersion to 31.
 * Remove usages of deprecated Android API `CamcorderProfile`.
 * Update gradle version to 7.0.2 on Android.
+
+## 0.9.4+3
+
 * Fix registerTexture and result being called on background thread on iOS.
 
 ## 0.9.4+2
