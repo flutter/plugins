@@ -62,13 +62,16 @@ class _WebViewExampleState extends State<_WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (context) {
         return WebView(
-          initialUrl: 'https://flutter.dev',
+          initialUrl: 'https://muchet.com',
           onWebViewCreated: (WebViewController controller) {
             _controller.complete(controller);
           },
           javascriptChannels: _createJavascriptChannels(context),
           javascriptMode: JavascriptMode.unrestricted,
           userAgent: 'Custom_User_Agent',
+          onUrlChanged: (url) {
+            print('URL CHANGE $url');
+          },
         );
       }),
       floatingActionButton: favoriteButton(),
