@@ -20,6 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount
     API_AVAILABLE(ios(11.2));
 
+// Converts an array of SKProductDiscount instances into an array of dictionaries.
++ (nonnull NSArray *)getMapArrayFromSKProductDiscounts:
+    (nonnull NSArray<SKProductDiscount *> *)productDiscounts API_AVAILABLE(ios(12.2));
+
 // Converts an instance of SKProductsResponse into a dictionary.
 + (NSDictionary *)getMapFromSKProductsResponse:(SKProductsResponse *)productResponse;
 
@@ -46,6 +50,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
                  andSKPaymentTransaction:(SKPaymentTransaction *)transaction
     API_AVAILABLE(ios(13), macos(10.15), watchos(6.2));
+
+// Creates an instance of the SKPaymentDiscount class based on the supplied dictionary.
++ (nullable SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map
+                                                  withError:(NSString *_Nullable *_Nullable)error
+    API_AVAILABLE(ios(12.2));
 
 @end
 ;
