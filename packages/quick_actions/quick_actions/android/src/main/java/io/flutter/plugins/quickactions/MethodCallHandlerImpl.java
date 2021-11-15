@@ -13,12 +13,14 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Icon;
 import android.os.Build;
-import androidx.annotation.WorkerThread;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   protected static final String EXTRA_ACTION = "some unique action key";
@@ -50,7 +52,16 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "setShortcutItems":
         List<Map<String, String>> serializedShortcuts = call.arguments();
         List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
-        requestSetDynamicShortcuts(shortcutManager, shortcuts);
+        ThreadPoolExecutor executor =
+            new ThreadPoolExecutor(0, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+
+        executor.execute(
+            new Runnable() {
+              @Override
+              public void run() {
+                shortcutManager.setDynamicShortcuts(shortcuts);
+              }
+            });
         break;
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
@@ -76,12 +87,6 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         return;
     }
     result.success(null);
-  }
-
-  @WorkerThread
-  public void requestSetDynamicShortcuts(
-      ShortcutManager shortcutManager, List<ShortcutInfo> shortcuts) {
-    shortcutManager.setDynamicShortcuts(shortcuts);
   }
 
   @TargetApi(Build.VERSION_CODES.N_MR1)
