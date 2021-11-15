@@ -117,7 +117,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
 }
 
 Set<JavascriptChannel> _createJavascriptChannels(BuildContext context) {
-  return {
+  return <JavascriptChannel>{
     JavascriptChannel(
         name: 'Snackbar',
         onMessageReceived: (JavascriptMessage message) {
@@ -210,7 +210,7 @@ class _SampleMenu extends StatelessWidget {
     );
   }
 
-  void _onShowUserAgent(
+  Future<void> _onShowUserAgent(
       WebViewController controller, BuildContext context) async {
     // Send a message with the user agent string to the Snackbar JavaScript channel we registered
     // with the WebView.
@@ -218,7 +218,7 @@ class _SampleMenu extends StatelessWidget {
         'Snackbar.postMessage("User Agent: " + navigator.userAgent);');
   }
 
-  void _onListCookies(
+  Future<void> _onListCookies(
       WebViewController controller, BuildContext context) async {
     final String cookies =
         await controller.runJavascriptReturningResult('document.cookie');
@@ -235,7 +235,8 @@ class _SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onAddToCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onAddToCache(
+      WebViewController controller, BuildContext context) async {
     await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     // ignore: deprecated_member_use
@@ -244,13 +245,15 @@ class _SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onListCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onListCache(
+      WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Snackbar.postMessage(caches))');
   }
 
-  void _onClearCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onClearCache(
+      WebViewController controller, BuildContext context) async {
     await controller.clearCache();
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
@@ -258,7 +261,7 @@ class _SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onClearCookies(
+  Future<void> _onClearCookies(
       WebViewController controller, BuildContext context) async {
     final bool hadCookies = await WebView.platform.clearCookies();
     String message = 'There were cookies. Now, they are gone!';
@@ -271,7 +274,7 @@ class _SampleMenu extends StatelessWidget {
     ));
   }
 
-  void _onNavigationDelegateExample(
+  Future<void> _onNavigationDelegateExample(
       WebViewController controller, BuildContext context) async {
     final String contentBase64 =
         base64Encode(const Utf8Encoder().convert(kNavigationExamplePage));

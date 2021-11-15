@@ -81,23 +81,10 @@ class WebView extends StatefulWidget {
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
 
-  static WebViewPlatform _platform = AndroidWebView();
-
   /// The WebView platform that's used by this WebView.
   ///
   /// The default value is [AndroidWebView].
-  static WebViewPlatform get platform => _platform;
-
-  /// Sets a custom [WebViewPlatform].
-  ///
-  /// This property can be set to use a custom platform implementation for WebViews.
-  ///
-  /// Setting `platform` doesn't affect [WebView]s that were already created.
-  ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
-  static set platform(WebViewPlatform platform) {
-    _platform = platform;
-  }
+  static WebViewPlatform platform = AndroidWebView();
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback? onWebViewCreated;
@@ -581,7 +568,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = WebSetting<String?>.absent();
     bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
