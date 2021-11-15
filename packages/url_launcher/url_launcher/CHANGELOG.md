@@ -1,3 +1,7 @@
+## 6.0.13
+
+* Fixed extracting browser headers when they are null error.
+
 ## 6.0.12
 
 * Fixed an error where 'launch' method of url_launcher would cause an error if the provided URL was not valid by RFC 3986.
