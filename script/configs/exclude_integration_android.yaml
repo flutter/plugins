@@ -2,8 +2,6 @@
 - camera/camera
 - in_app_purchase/in_app_purchase
 - in_app_purchase_android
-- shared_preferences/shared_preferences
-- shared_preferences/shared_preferences_android
 - url_launcher/url_launcher
 - video_player/video_player
 
