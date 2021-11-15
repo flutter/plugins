@@ -1,5 +1,11 @@
+
 ## NEXT
-* Fix the documentation of getApplicationDocumentsDirectory method ([#93245](https://github.com/flutter/flutter/issues/93245))
+
+* Fix the documentation of getApplicationDocumentsDirectory method ([#93245](https://github.com/flutter/flutter/issues/93245)).
+
+## 2.0.7
+
+* Moved Android and iOS implementations to federated packages.
 
 ## 2.0.6
 
