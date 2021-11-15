@@ -1,3 +1,8 @@
+## NEXT
+
+- Added `--log-timing` to add timing information to package headers in looping
+  commands.
+
 ## 0.7.2
 
 - Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
