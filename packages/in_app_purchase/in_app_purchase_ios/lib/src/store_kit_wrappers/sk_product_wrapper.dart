@@ -241,6 +241,7 @@ class SKProductWrapper {
     required this.price,
     this.subscriptionPeriod,
     this.introductoryPrice,
+    this.discounts = const <SKProductDiscountWrapper>[],
   });
 
   /// Constructing an instance from a map from the Objective-C layer.
@@ -295,6 +296,16 @@ class SKProductWrapper {
   /// and their units and duration do not have to be matched.
   final SKProductDiscountWrapper? introductoryPrice;
 
+  /// An array of subscription offers available for the auto-renewable subscription (available on iOS 12.2 and higher).
+  ///
+  /// This property lists all promotional offers set up in App Store Connect. If
+  /// no promotional offers have been set up, this field returns an empty list.
+  /// Each [subscriptionPeriod] of individual discounts are independent of the
+  /// product's [subscriptionPeriod] and their units and duration do not have to
+  /// be matched.
+  @JsonKey(defaultValue: <SKProductDiscountWrapper>[])
+  final List<SKProductDiscountWrapper> discounts;
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) {
@@ -311,7 +322,8 @@ class SKProductWrapper {
         typedOther.subscriptionGroupIdentifier == subscriptionGroupIdentifier &&
         typedOther.price == price &&
         typedOther.subscriptionPeriod == subscriptionPeriod &&
-        typedOther.introductoryPrice == introductoryPrice;
+        typedOther.introductoryPrice == introductoryPrice &&
+        DeepCollectionEquality().equals(typedOther.discounts, discounts);
   }
 
   @override
@@ -323,7 +335,8 @@ class SKProductWrapper {
       this.subscriptionGroupIdentifier,
       this.price,
       this.subscriptionPeriod,
-      this.introductoryPrice);
+      this.introductoryPrice,
+      this.discounts);
 }
 
 /// Object that indicates the locale of the price

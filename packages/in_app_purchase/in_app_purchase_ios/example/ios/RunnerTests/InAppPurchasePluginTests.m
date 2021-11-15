@@ -111,7 +111,7 @@
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStateFailed);
 }
 
-- (void)testAddPaymentSuccessWithMockQueue {
+- (void)testAddPaymentSuccessWithoutPaymentDiscount {
   XCTestExpectation* expectation =
       [self expectationWithDescription:@"result should return success state"];
   FlutterMethodCall* call =
@@ -129,6 +129,9 @@
         SKPaymentTransaction* transaction = transactions[0];
         if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
           transactionForUpdateBlock = transaction;
+          if (@available(iOS 12.2, *)) {
+            XCTAssertNil(transaction.payment.paymentDiscount);
+          }
           [expectation fulfill];
         }
       }
@@ -145,6 +148,93 @@
                          }];
   [self waitForExpectations:@[ expectation ] timeout:5];
   XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
+}
+
+- (void)testAddPaymentSuccessWithPaymentDiscount {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return success state"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandbox" : @YES,
+                                          @"paymentDiscount" : @{
+                                            @"identifier" : @"test_identifier",
+                                            @"keyIdentifier" : @"test_key_identifier",
+                                            @"nonce" : @"4a11a9cc-3bc3-11ec-8d3d-0242ac130003",
+                                            @"signature" : @"test_signature",
+                                            @"timestamp" : @(1635847102),
+                                          }
+                                        }];
+  SKPaymentQueueStub* queue = [SKPaymentQueueStub new];
+  queue.testState = SKPaymentTransactionStatePurchased;
+  __block SKPaymentTransaction* transactionForUpdateBlock;
+  self.plugin.paymentQueueHandler = [[FIAPaymentQueueHandler alloc] initWithQueue:queue
+      transactionsUpdated:^(NSArray<SKPaymentTransaction*>* _Nonnull transactions) {
+        SKPaymentTransaction* transaction = transactions[0];
+        if (transaction.transactionState == SKPaymentTransactionStatePurchased) {
+          transactionForUpdateBlock = transaction;
+          if (@available(iOS 12.2, *)) {
+            SKPaymentDiscount* paymentDiscount = transaction.payment.paymentDiscount;
+            XCTAssertEqual(paymentDiscount.identifier, @"test_identifier");
+            XCTAssertEqual(paymentDiscount.keyIdentifier, @"test_key_identifier");
+            XCTAssertEqualObjects(
+                paymentDiscount.nonce,
+                [[NSUUID alloc] initWithUUIDString:@"4a11a9cc-3bc3-11ec-8d3d-0242ac130003"]);
+            XCTAssertEqual(paymentDiscount.signature, @"test_signature");
+            XCTAssertEqual(paymentDiscount.timestamp, @(1635847102));
+          }
+          [expectation fulfill];
+        }
+      }
+      transactionRemoved:nil
+      restoreTransactionFailed:nil
+      restoreCompletedTransactionsFinished:nil
+      shouldAddStorePayment:^BOOL(SKPayment* _Nonnull payment, SKProduct* _Nonnull product) {
+        return YES;
+      }
+      updatedDownloads:nil];
+  [queue addTransactionObserver:self.plugin.paymentQueueHandler];
+  [self.plugin handleMethodCall:call
+                         result:^(id r){
+                         }];
+  [self waitForExpectations:@[ expectation ] timeout:5];
+  XCTAssertEqual(transactionForUpdateBlock.transactionState, SKPaymentTransactionStatePurchased);
+}
+
+- (void)testAddPaymentFailureWithInvalidPaymentDiscount {
+  XCTestExpectation* expectation =
+      [self expectationWithDescription:@"result should return success state"];
+  FlutterMethodCall* call =
+      [FlutterMethodCall methodCallWithMethodName:@"-[InAppPurchasePlugin addPayment:result:]"
+                                        arguments:@{
+                                          @"productIdentifier" : @"123",
+                                          @"quantity" : @(1),
+                                          @"simulatesAskToBuyInSandbox" : @YES,
+                                          @"paymentDiscount" : @{
+                                            @"keyIdentifier" : @"test_key_identifier",
+                                            @"nonce" : @"4a11a9cc-3bc3-11ec-8d3d-0242ac130003",
+                                            @"signature" : @"test_signature",
+                                            @"timestamp" : @(1635847102),
+                                          }
+                                        }];
+
+  [self.plugin
+      handleMethodCall:call
+                result:^(id r) {
+                  XCTAssertTrue([r isKindOfClass:FlutterError.class]);
+                  FlutterError* result = r;
+                  XCTAssertEqualObjects(result.code, @"storekit_invalid_payment_discount_object");
+                  XCTAssertEqualObjects(result.message,
+                                        @"You have requested a payment and specified a payment "
+                                        @"discount with invalid properties. When specifying a "
+                                        @"payment discount the 'identifier' field is mandatory.");
+                  XCTAssertEqualObjects(result.details, call.arguments);
+                  [expectation fulfill];
+                }];
+
+  [self waitForExpectations:@[ expectation ] timeout:5];
 }
 
 - (void)testAddPaymentWithNullSandboxArgument {
