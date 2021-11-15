@@ -11,9 +11,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
+import android.os.Build;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
+import androidx.webkit.WebViewClientCompat;
 import io.flutter.plugin.common.MethodChannel;
+import io.flutter.plugins.webviewflutter.utils.TestUtils;
 import java.util.HashMap;
+import java.util.Map;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -30,7 +36,7 @@ public class FlutterWebViewClientTest {
   }
 
   @Test
-  public void notify_download_should_notifyOnNavigationRequest_when_navigationDelegate_is_set() {
+  public void notifyDownload_shouldNotifyOnNavigationRequestWhenNavigationDelegateIsSet() {
     final String url = "testurl.com";
 
     FlutterWebViewClient client = new FlutterWebViewClient(mockMethodChannel);
@@ -47,8 +53,7 @@ public class FlutterWebViewClientTest {
   }
 
   @Test
-  public void
-      notify_download_should_not_notifyOnNavigationRequest_when_navigationDelegate_is_not_set() {
+  public void notifyDownload_shouldNotNotifyOnNavigationRequestWhenNavigationDelegateIsNotSet() {
     final String url = "testurl.com";
 
     FlutterWebViewClient client = new FlutterWebViewClient(mockMethodChannel);
@@ -56,5 +61,45 @@ public class FlutterWebViewClientTest {
 
     client.notifyDownload(mockWebView, url);
     verifyNoInteractions(mockMethodChannel);
+  }
+
+  @Test
+  public void WebViewClient_doUpdateVisitedHistory_shouldCallOnUrlChangedEvent() {
+    // Setup
+    FlutterWebViewClient fltClient = new FlutterWebViewClient(mockMethodChannel);
+    WebViewClient client =
+        fltClient.createWebViewClient(
+            false // Force creation of internal WebViewClient.
+            );
+    WebView mockView = mock(WebView.class);
+    Map<String, Object> methodChannelData = new HashMap<>();
+    methodChannelData.put("url", "https://flutter.dev/");
+
+    //Run
+    client.doUpdateVisitedHistory(mockView, "https://flutter.dev/", false);
+
+    // Verify
+    Assert.assertFalse(client instanceof WebViewClientCompat);
+    verify(mockMethodChannel).invokeMethod(eq("onUrlChanged"), eq(methodChannelData));
+  }
+
+  @Test
+  public void WebViewClientCompat_doUpdateVisitedHistory_shouldCallOnUrlChangedEvent() {
+    // Setup
+    FlutterWebViewClient fltClient = new FlutterWebViewClient(mockMethodChannel);
+    // Force creation of internal WebViewClientCompat (< Android N).
+    TestUtils.setFinalStatic(Build.VERSION.class, "SDK_INT", Build.VERSION_CODES.M);
+    WebViewClient client = fltClient.createWebViewClient(true);
+
+    WebView mockView = mock(WebView.class);
+    Map<String, Object> methodChannelData = new HashMap<>();
+    methodChannelData.put("url", "https://flutter.dev/");
+
+    //Run
+    client.doUpdateVisitedHistory(mockView, "https://flutter.dev/", false);
+
+    // Verify
+    Assert.assertTrue(client instanceof WebViewClientCompat);
+    verify(mockMethodChannel).invokeMethod(eq("onUrlChanged"), eq(methodChannelData));
   }
 }

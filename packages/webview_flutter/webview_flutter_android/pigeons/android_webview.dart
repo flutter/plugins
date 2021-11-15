@@ -127,6 +127,8 @@ abstract class WebViewClientFlutterApi {
 
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
 
+  void onUrlChanged(int instanceId, int webViewInstanceId, String url);
+
   void onReceivedRequestError(
     int instanceId,
     int webViewInstanceId,

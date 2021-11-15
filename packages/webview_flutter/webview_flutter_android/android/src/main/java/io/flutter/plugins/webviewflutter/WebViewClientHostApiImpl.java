@@ -92,6 +92,12 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
           }
 
           @Override
+          public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+            webViewClientFlutterApi.onUrlChanged(
+                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+          }
+
+          @Override
           public void onReceivedError(
               WebView view, WebResourceRequest request, WebResourceError error) {
             webViewClientFlutterApi.onReceivedRequestError(
@@ -151,6 +157,12 @@ class WebViewClientHostApiImpl implements GeneratedAndroidWebView.WebViewClientH
           @Override
           public void onPageFinished(WebView view, String url) {
             webViewClientFlutterApi.onPageFinished(
+                instanceId, instanceManager.getInstanceId(view), url, reply -> {});
+          }
+
+          @Override
+          public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+            webViewClientFlutterApi.onUrlChanged(
                 instanceId, instanceManager.getInstanceId(view), url, reply -> {});
           }
 

@@ -525,6 +525,13 @@ abstract class WebViewClient {
   /// reflect the state of the DOM at this point.
   void onPageFinished(WebView webView, String url) {}
 
+  /// Notify the host application that a webview's URL has changed.
+  ///
+  /// Unlike [onPageStarted], [onProgress], and [onPageFinished],
+  /// [onUrlChanged] also fires when navigating without a full page load
+  /// e.g. when using a single page application.
+  void onUrlChanged(WebView webView, String url) {}
+
   /// Report web resource loading error to the host application.
   ///
   /// These errors usually indicate inability to connect to the server. Note

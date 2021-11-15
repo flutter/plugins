@@ -426,6 +426,16 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
   }
 
   @override
+  void onUrlChanged(int instanceId, int webViewInstanceId, String url) {
+    final WebViewClient instance =
+        instanceManager.getInstance(instanceId) as WebViewClient;
+    instance.onUrlChanged(
+      instanceManager.getInstance(webViewInstanceId) as WebView,
+      url,
+    );
+  }
+
+  @override
   void onReceivedError(
     int instanceId,
     int webViewInstanceId,

@@ -151,6 +151,12 @@ class FlutterWebViewClient {
     }
   }
 
+  private void onUrlChanged(WebView view, String url) {
+    Map<String, Object> args = new HashMap<>();
+    args.put("url", url);
+    methodChannel.invokeMethod("onUrlChanged", args);
+  }
+
   private void onWebResourceError(
       final int errorCode, final String description, final String failingUrl) {
     final Map<String, Object> args = new HashMap<>();
@@ -205,6 +211,11 @@ class FlutterWebViewClient {
         FlutterWebViewClient.this.onPageFinished(view, url);
       }
 
+      @Override
+      public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+        FlutterWebViewClient.this.onUrlChanged(view, url);
+      }
+
       @TargetApi(Build.VERSION_CODES.M)
       @Override
       public void onReceivedError(
@@ -250,6 +261,11 @@ class FlutterWebViewClient {
       @Override
       public void onPageFinished(WebView view, String url) {
         FlutterWebViewClient.this.onPageFinished(view, url);
+      }
+
+      @Override
+      public void doUpdateVisitedHistory(WebView view, String url, boolean isReload) {
+        FlutterWebViewClient.this.onUrlChanged(view, url);
       }
 
       // This method is only called when the WebViewFeature.RECEIVE_WEB_RESOURCE_ERROR feature is

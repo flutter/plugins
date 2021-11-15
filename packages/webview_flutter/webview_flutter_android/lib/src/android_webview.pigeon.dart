@@ -1209,6 +1209,7 @@ abstract class WebViewClientFlutterApi {
 
   void onPageStarted(int instanceId, int webViewInstanceId, String url);
   void onPageFinished(int instanceId, int webViewInstanceId, String url);
+  void onUrlChanged(int instanceId, int webViewInstanceId, String url);
   void onReceivedRequestError(int instanceId, int webViewInstanceId,
       WebResourceRequestData request, WebResourceErrorData error);
   void onReceivedError(int instanceId, int webViewInstanceId, int errorCode,
@@ -1261,6 +1262,30 @@ abstract class WebViewClientFlutterApi {
           assert(arg_url != null,
               'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.onPageFinished was null, expected non-null String.');
           api.onPageFinished(arg_instanceId!, arg_webViewInstanceId!, arg_url!);
+          return;
+        });
+      }
+    }
+    {
+      const BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.WebViewClientFlutterApi.onUrlChanged', codec);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+              'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.onUrlChanged was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_instanceId = args[0] as int?;
+          assert(arg_instanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.onUrlChanged was null, expected non-null int.');
+          final int? arg_webViewInstanceId = args[1] as int?;
+          assert(arg_webViewInstanceId != null,
+              'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.onUrlChanged was null, expected non-null int.');
+          final String? arg_url = args[2] as String?;
+          assert(arg_url != null,
+              'Argument for dev.flutter.pigeon.WebViewClientFlutterApi.onUrlChanged was null, expected non-null String.');
+          api.onUrlChanged(arg_instanceId!, arg_webViewInstanceId!, arg_url!);
           return;
         });
       }

@@ -1582,6 +1582,20 @@ public class GeneratedAndroidWebView {
           });
     }
 
+    public void onUrlChanged(
+        Long instanceIdArg, Long webViewInstanceIdArg, String urlArg, Reply<Void> callback) {
+      BasicMessageChannel<Object> channel =
+          new BasicMessageChannel<>(
+              binaryMessenger,
+              "dev.flutter.pigeon.WebViewClientFlutterApi.onUrlChanged",
+              getCodec());
+      channel.send(
+          new ArrayList<Object>(Arrays.asList(instanceIdArg, webViewInstanceIdArg, urlArg)),
+          channelReply -> {
+            callback.reply(null);
+          });
+    }
+
     public void onReceivedRequestError(
         Long instanceIdArg,
         Long webViewInstanceIdArg,
