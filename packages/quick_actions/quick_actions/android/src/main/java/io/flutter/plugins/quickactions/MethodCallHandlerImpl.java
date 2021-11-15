@@ -37,7 +37,6 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
   }
 
   @Override
-  @WorkerThread
   public void onMethodCall(MethodCall call, MethodChannel.Result result) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N_MR1) {
       // We already know that this functionality does not work for anything
@@ -51,7 +50,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "setShortcutItems":
         List<Map<String, String>> serializedShortcuts = call.arguments();
         List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
-        shortcutManager.setDynamicShortcuts(shortcuts);
+        requestSetDynamicShortcuts(shortcutManager, shortcuts);
         break;
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
@@ -77,6 +76,11 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         return;
     }
     result.success(null);
+  }
+
+  @WorkerThread
+  public void requestSetDynamicShortcuts(ShortcutManager shortcutManager, List<ShortcutInfo> shortcuts) {
+    shortcutManager.setDynamicShortcuts(shortcuts);
   }
 
   @TargetApi(Build.VERSION_CODES.N_MR1)
