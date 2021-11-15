@@ -1,6 +1,10 @@
-## 6.0.13
+## 6.0.14
 
 * Fixes integration tests.
+
+## 6.0.13
+
+* Fixed extracting browser headers when they are null error.
 
 ## 6.0.12
 

@@ -32,3 +32,22 @@ Map<String, dynamic> _$SKPaymentWrapperToJson(SKPaymentWrapper instance) =>
       'quantity': instance.quantity,
       'simulatesAskToBuyInSandbox': instance.simulatesAskToBuyInSandbox,
     };
+
+SKPaymentDiscountWrapper _$SKPaymentDiscountWrapperFromJson(Map json) =>
+    SKPaymentDiscountWrapper(
+      identifier: json['identifier'] as String,
+      keyIdentifier: json['keyIdentifier'] as String,
+      nonce: json['nonce'] as String,
+      signature: json['signature'] as String,
+      timestamp: json['timestamp'] as int,
+    );
+
+Map<String, dynamic> _$SKPaymentDiscountWrapperToJson(
+        SKPaymentDiscountWrapper instance) =>
+    <String, dynamic>{
+      'identifier': instance.identifier,
+      'keyIdentifier': instance.keyIdentifier,
+      'nonce': instance.nonce,
+      'signature': instance.signature,
+      'timestamp': instance.timestamp,
+    };
