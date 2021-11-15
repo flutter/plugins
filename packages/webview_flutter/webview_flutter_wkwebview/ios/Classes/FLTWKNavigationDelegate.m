@@ -16,6 +16,19 @@
   return self;
 }
 
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary<NSKeyValueChangeKey, id> *)change
+                       context:(void *)context {
+  if (![keyPath isEqualToString:@"URL"]) {
+    return;
+  }
+  NSURL *newURL = [change objectForKey:NSKeyValueChangeNewKey];
+  if (newURL) {
+    [_methodChannel invokeMethod:@"onUrlChanged" arguments:@{@"url" : newURL.absoluteString}];
+  }
+}
+
 #pragma mark - WKNavigationDelegate conformance
 
 - (void)webView:(WKWebView *)webView didStartProvisionalNavigation:(WKNavigation *)navigation {

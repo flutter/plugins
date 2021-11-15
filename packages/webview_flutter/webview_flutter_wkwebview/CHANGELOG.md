@@ -1,3 +1,7 @@
+## 2.3.0
+
+* Support new `onUrlChanged` event in platform interface.
+
 ## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.

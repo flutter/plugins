@@ -109,6 +109,10 @@
         _webView.scrollView.automaticallyAdjustsScrollIndicatorInsets = NO;
       }
     }
+    [_webView addObserver:_navigationDelegate
+               forKeyPath:@"URL"
+                  options:NSKeyValueObservingOptionNew
+                  context:NULL];
 
     [self applySettings:settings];
     // TODO(amirh): return an error if apply settings failed once it's possible to do so.
