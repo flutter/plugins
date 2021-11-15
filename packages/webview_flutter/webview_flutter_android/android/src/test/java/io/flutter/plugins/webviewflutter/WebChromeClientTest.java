@@ -99,13 +99,19 @@ public class WebChromeClientTest {
     when(mockRequest.getUrl().toString()).thenReturn("https://www.google.com");
 
     // Test when the forwarding WebViewClient is overriding all url loading.
-    when(mockWebViewClient.shouldOverrideUrlLoading(any(), any(WebResourceRequest.class))).thenReturn(true);
-    assertTrue(onCreateWindowWebViewClient.shouldOverrideUrlLoading(mockOnCreateWindowWebView, mockRequest));
+    when(mockWebViewClient.shouldOverrideUrlLoading(any(), any(WebResourceRequest.class)))
+        .thenReturn(true);
+    assertTrue(
+        onCreateWindowWebViewClient.shouldOverrideUrlLoading(
+            mockOnCreateWindowWebView, mockRequest));
     verify(mockWebView, never()).loadUrl(any());
 
     // Test when the forwarding WebViewClient is NOT overriding all url loading.
-    when(mockWebViewClient.shouldOverrideUrlLoading(any(), any(WebResourceRequest.class))).thenReturn(false);
-    assertTrue(onCreateWindowWebViewClient.shouldOverrideUrlLoading(mockOnCreateWindowWebView, mockRequest));
+    when(mockWebViewClient.shouldOverrideUrlLoading(any(), any(WebResourceRequest.class)))
+        .thenReturn(false);
+    assertTrue(
+        onCreateWindowWebViewClient.shouldOverrideUrlLoading(
+            mockOnCreateWindowWebView, mockRequest));
     verify(mockWebView).loadUrl("https://www.google.com");
   }
 }
