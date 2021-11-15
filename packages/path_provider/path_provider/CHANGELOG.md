@@ -1,5 +1,5 @@
 
-## NEXT
+## 2.0.8
 
 * Fix the documentation of getApplicationDocumentsDirectory method ([#93245](https://github.com/flutter/flutter/issues/93245)).
 
