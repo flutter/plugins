@@ -1,6 +1,14 @@
-## 2.3.0
+## 2.5.0
 
 * Support new `onUrlChanged` event in platform interface.
+
+## 2.4.0
+
+* Implemented new `loadFile` and `loadHtmlString` methods from the platform interface.
+
+## 2.3.0
+
+* Implemented new `loadRequest` method from platform interface.
 
 ## 2.2.0
 

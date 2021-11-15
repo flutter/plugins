@@ -5,6 +5,7 @@
 #import "FlutterWebView.h"
 #import "FLTWKNavigationDelegate.h"
 #import "FLTWKProgressionDelegate.h"
+#import "FlutterWebView_Test.h"
 #import "JavaScriptChannelHandler.h"
 
 @implementation FLTWebViewFactory {
@@ -120,7 +121,11 @@
 
     NSString* initialUrl = args[@"initialUrl"];
     if ([initialUrl isKindOfClass:[NSString class]]) {
-      [self loadUrl:initialUrl];
+      NSURL* url = [NSURL URLWithString:initialUrl];
+      if (url) {
+        NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+        [_webView loadRequest:request];
+      }
     }
   }
   return self;
@@ -139,8 +144,14 @@
 - (void)onMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
   if ([[call method] isEqualToString:@"updateSettings"]) {
     [self onUpdateSettings:call result:result];
+  } else if ([[call method] isEqualToString:@"loadFile"]) {
+    [self onLoadFile:call result:result];
+  } else if ([[call method] isEqualToString:@"loadHtmlString"]) {
+    [self onLoadHtmlString:call result:result];
   } else if ([[call method] isEqualToString:@"loadUrl"]) {
     [self onLoadUrl:call result:result];
+  } else if ([[call method] isEqualToString:@"loadRequest"]) {
+    [self onLoadRequest:call result:result];
   } else if ([[call method] isEqualToString:@"canGoBack"]) {
     [self onCanGoBack:call result:result];
   } else if ([[call method] isEqualToString:@"canGoForward"]) {
@@ -189,13 +200,89 @@
   result([FlutterError errorWithCode:@"updateSettings_failed" message:error details:nil]);
 }
 
+- (void)onLoadFile:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:[call arguments] withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadFile_failed"
+                               message:@"Failed parsing file path."
+                               details:error]);
+    return;
+  }
+
+  NSURL* url = [NSURL fileURLWithPath:[call arguments] isDirectory:NO];
+
+  if (!url) {
+    NSString* errorDetails = [NSString stringWithFormat:@"Initializing NSURL with the supplied "
+                                                        @"'%@' path resulted in a nil value.",
+                                                        [call arguments]];
+    result([FlutterError errorWithCode:@"loadFile_failed"
+                               message:@"Failed parsing file path."
+                               details:errorDetails]);
+    return;
+  }
+
+  NSURL* baseUrl = [url URLByDeletingLastPathComponent];
+
+  [_webView loadFileURL:url allowingReadAccessToURL:baseUrl];
+  result(nil);
+}
+
+- (void)onLoadHtmlString:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSDictionary* arguments = [call arguments];
+  if (![arguments isKindOfClass:NSDictionary.class]) {
+    result([FlutterError
+        errorWithCode:@"loadHtmlString_failed"
+              message:@"Failed parsing arguments."
+              details:@"Arguments should be a dictionary containing at least a 'html' element and "
+                      @"optionally a 'baseUrl' argument. For example: `@{ @\"html\": @\"some html "
+                      @"code\", @\"baseUrl\": @\"https://flutter.dev\" }`"]);
+    return;
+  }
+
+  NSString* htmlString = [call arguments][@"html"];
+  NSString* baseUrl =
+      [call arguments][@"baseUrl"] == [NSNull null] ? nil : [call arguments][@"baseUrl"];
+  NSString* error = nil;
+  if (![FLTWebViewController isValidStringArgument:htmlString withErrorMessage:&error]) {
+    result([FlutterError errorWithCode:@"loadHtmlString_failed"
+                               message:@"Failed parsing HTML string argument."
+                               details:error]);
+    return;
+  }
+
+  [_webView loadHTMLString:htmlString baseURL:[NSURL URLWithString:baseUrl]];
+  result(nil);
+}
+
 - (void)onLoadUrl:(FlutterMethodCall*)call result:(FlutterResult)result {
-  if (![self loadRequest:[call arguments]]) {
+  NSMutableDictionary* requestData = [[NSMutableDictionary alloc] init];
+  if (call.arguments[@"url"]) {
+    requestData[@"uri"] = call.arguments[@"url"];
+  }
+  if (call.arguments[@"headers"]) {
+    requestData[@"headers"] = call.arguments[@"headers"];
+  }
+  NSURLRequest* request = [self buildNSURLRequest:@{@"request" : requestData}];
+  if (!request) {
     result([FlutterError
         errorWithCode:@"loadUrl_failed"
               message:@"Failed parsing the URL"
               details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
   } else {
+    [_webView loadRequest:request];
+    result(nil);
+  }
+}
+
+- (void)onLoadRequest:(FlutterMethodCall*)call result:(FlutterResult)result {
+  NSURLRequest* request = [self buildNSURLRequest:[call arguments]];
+  if (!request) {
+    result([FlutterError
+        errorWithCode:@"loadRequest_failed"
+              message:@"Failed parsing the URL"
+              details:[NSString stringWithFormat:@"Request was: '%@'", [call arguments]]]);
+  } else {
+    [_webView loadRequest:request];
     result(nil);
   }
 }
@@ -463,37 +550,47 @@
   }
 }
 
-- (bool)loadRequest:(NSDictionary<NSString*, id>*)request {
-  if (!request) {
-    return false;
+/**
+ * Parses the method call arguments and converts them to an NSURLRequest object.
+ *
+ * @param arguments the method call arguments.
+ *
+ * @return NSURLRequest object.
+ */
+- (NSURLRequest*)buildNSURLRequest:(NSDictionary<NSString*, id>*)arguments {
+  id requestParameters = arguments[@"request"];
+  if (![requestParameters isKindOfClass:[NSDictionary class]]) {
+    return nil;
   }
 
-  NSString* url = request[@"url"];
-  if ([url isKindOfClass:[NSString class]]) {
-    id headers = request[@"headers"];
-    if ([headers isKindOfClass:[NSDictionary class]]) {
-      return [self loadUrl:url withHeaders:headers];
-    } else {
-      return [self loadUrl:url];
-    }
+  NSString* urlString = requestParameters[@"uri"];
+  if (!urlString) {
+    return nil;
   }
 
-  return false;
-}
-
-- (bool)loadUrl:(NSString*)url {
-  return [self loadUrl:url withHeaders:[NSMutableDictionary dictionary]];
-}
-
-- (bool)loadUrl:(NSString*)url withHeaders:(NSDictionary<NSString*, NSString*>*)headers {
-  NSURL* nsUrl = [NSURL URLWithString:url];
-  if (!nsUrl) {
-    return false;
+  NSURL* url = [NSURL URLWithString:urlString];
+  if (!url) {
+    return nil;
   }
-  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:nsUrl];
-  [request setAllHTTPHeaderFields:headers];
-  [_webView loadRequest:request];
-  return true;
+
+  NSMutableURLRequest* request = [NSMutableURLRequest requestWithURL:url];
+
+  NSString* httpMethod = requestParameters[@"method"];
+  if (httpMethod) {
+    [request setHTTPMethod:httpMethod];
+  }
+
+  id httpBody = requestParameters[@"body"];
+  if ([httpBody isKindOfClass:[FlutterStandardTypedData class]]) {
+    [request setHTTPBody:[httpBody data]];
+  }
+
+  id headers = requestParameters[@"headers"];
+  if ([headers isKindOfClass:[NSDictionary class]]) {
+    [request setAllHTTPHeaderFields:headers];
+  }
+
+  return request;
 }
 
 - (void)registerJavaScriptChannels:(NSSet*)channelNames
@@ -519,6 +616,37 @@
   } else {
     NSLog(@"Updating UserAgent is not supported for Flutter WebViews prior to iOS 9.");
   }
+}
+
+/**
+ * Validates if the given `argument` is a non-null, non-empty string.
+ *
+ * @param argument The argument that should be validated.
+ * @param errorDetails An optional NSString variable which will contain a detailed error message in
+ * case the supplied argument is not valid.
+ * @return `YES` if the given `argument` is a valid non-null, non-empty string; otherwise `NO`.
+ */
++ (BOOL)isValidStringArgument:(id)argument withErrorMessage:(NSString**)errorDetails {
+  if (!argument) {
+    if (errorDetails) {
+      *errorDetails = @"Argument is nil.";
+    }
+    return NO;
+  }
+  if (![argument isKindOfClass:NSString.class]) {
+    if (errorDetails) {
+      *errorDetails = @"Argument is not of type NSString.";
+    }
+    return NO;
+  }
+  if (![argument length]) {
+    if (errorDetails) {
+      *errorDetails = @"Argument contains an empty string.";
+    }
+    return NO;
+  }
+
+  return YES;
 }
 
 #pragma mark WKUIDelegate
