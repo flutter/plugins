@@ -92,7 +92,9 @@ void main() {
         await controller.dispose();
       }
     }
-  }, skip: true); // TODO(egarciad): Fix https://github.com/flutter/flutter/issues/93686.
+  },
+      skip:
+          true); // TODO(egarciad): Fix https://github.com/flutter/flutter/issues/93686.
 
   // This tests that the capture is no bigger than the preset, since we have
   // automatic code to fall back to smaller sizes when we need to. Returns
@@ -143,7 +145,9 @@ void main() {
         await controller.dispose();
       }
     }
-  }, skip: true); // TODO(egarciad): Fix https://github.com/flutter/flutter/issues/93686.
+  },
+      skip:
+          true); // TODO(egarciad): Fix https://github.com/flutter/flutter/issues/93686.
 
   testWidgets('Pause and resume video recording', (WidgetTester tester) async {
     final List<CameraDescription> cameras = await availableCameras();
