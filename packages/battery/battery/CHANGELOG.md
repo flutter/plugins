@@ -2,6 +2,7 @@
 
 * Remove references to the Android v1 embedding.
 * Updated Android lint settings.
+* Recreated Android example from current template.
 
 ## 2.0.3
 

@@ -8,6 +8,77 @@ import 'android_webview.dart';
 import 'android_webview.pigeon.dart';
 import 'instance_manager.dart';
 
+/// Converts [WebResourceRequestData] to [WebResourceRequest]
+WebResourceRequest _toWebResourceRequest(WebResourceRequestData data) {
+  return WebResourceRequest(
+    url: data.url!,
+    isForMainFrame: data.isForMainFrame!,
+    isRedirect: data.isRedirect,
+    hasGesture: data.hasGesture!,
+    method: data.method!,
+    requestHeaders:
+        data.requestHeaders?.cast<String, String>() ?? <String, String>{},
+  );
+}
+
+/// Converts [WebResourceErrorData] to [WebResourceError].
+WebResourceError _toWebResourceError(WebResourceErrorData data) {
+  return WebResourceError(
+    errorCode: data.errorCode!,
+    description: data.description!,
+  );
+}
+
+/// Handles initialization of Flutter APIs for Android WebView.
+class AndroidWebViewFlutterApis {
+  /// Creates a [AndroidWebViewFlutterApis].
+  AndroidWebViewFlutterApis({
+    DownloadListenerFlutterApiImpl? downloadListenerFlutterApi,
+    WebViewClientFlutterApiImpl? webViewClientFlutterApi,
+    WebChromeClientFlutterApiImpl? webChromeClientFlutterApi,
+    JavaScriptChannelFlutterApiImpl? javaScriptChannelFlutterApi,
+  }) {
+    this.downloadListenerFlutterApi =
+        downloadListenerFlutterApi ?? DownloadListenerFlutterApiImpl();
+    this.webViewClientFlutterApi =
+        webViewClientFlutterApi ?? WebViewClientFlutterApiImpl();
+    this.webChromeClientFlutterApi =
+        webChromeClientFlutterApi ?? WebChromeClientFlutterApiImpl();
+    this.javaScriptChannelFlutterApi =
+        javaScriptChannelFlutterApi ?? JavaScriptChannelFlutterApiImpl();
+  }
+
+  static bool _haveBeenSetUp = false;
+
+  /// Mutable instance containing all Flutter Apis for Android WebView.
+  ///
+  /// This should only be changed for testing purposes.
+  static AndroidWebViewFlutterApis instance = AndroidWebViewFlutterApis();
+
+  /// Flutter Api for [DownloadListener].
+  late final DownloadListenerFlutterApiImpl downloadListenerFlutterApi;
+
+  /// Flutter Api for [WebViewClient].
+  late final WebViewClientFlutterApiImpl webViewClientFlutterApi;
+
+  /// Flutter Api for [WebChromeClient].
+  late final WebChromeClientFlutterApiImpl webChromeClientFlutterApi;
+
+  /// Flutter Api for [JavaScriptChannel].
+  late final JavaScriptChannelFlutterApiImpl javaScriptChannelFlutterApi;
+
+  /// Ensures all the Flutter APIs have been setup to receive calls from native code.
+  void ensureSetUp() {
+    if (!_haveBeenSetUp) {
+      DownloadListenerFlutterApi.setup(downloadListenerFlutterApi);
+      WebViewClientFlutterApi.setup(webViewClientFlutterApi);
+      WebChromeClientFlutterApi.setup(webChromeClientFlutterApi);
+      JavaScriptChannelFlutterApi.setup(javaScriptChannelFlutterApi);
+      _haveBeenSetUp = true;
+    }
+  }
+}
+
 /// Host api implementation for [WebView].
 class WebViewHostApiImpl extends WebViewHostApi {
   /// Constructs a [WebViewHostApiImpl].
@@ -31,10 +102,11 @@ class WebViewHostApiImpl extends WebViewHostApi {
 
   /// Helper method to convert instances ids to objects.
   Future<void> disposeFromInstance(WebView instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
+    final int? instanceId = instanceManager.getInstanceId(instance);
     if (instanceId != null) {
-      return dispose(instanceId);
+      await dispose(instanceId);
     }
+    instanceManager.removeInstance(instance);
   }
 
   /// Helper method to convert instances ids to objects.
@@ -239,7 +311,7 @@ class WebSettingsHostApiImpl extends WebSettingsHostApi {
     WebSettings instance,
     bool flag,
   ) {
-    return setJavaScriptCanOpenWindowsAutomatically(
+    return setJavaScriptEnabled(
       instanceManager.getInstanceId(instance)!,
       flag,
     );
@@ -337,25 +409,22 @@ class JavaScriptChannelHostApiImpl extends JavaScriptChannelHostApi {
       return create(instanceId, instance.channelName);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(JavaScriptChannel instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [JavaScriptChannel].
 class JavaScriptChannelFlutterApiImpl extends JavaScriptChannelFlutterApi {
   /// Constructs a [JavaScriptChannelFlutterApiImpl].
-  JavaScriptChannelHostApiImpl({InstanceManager? instanceManager}) {
+  JavaScriptChannelFlutterApiImpl({InstanceManager? instanceManager}) {
     this.instanceManager = instanceManager ?? InstanceManager.instance;
   }
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void postMessage(int instanceId, String message) {
@@ -385,14 +454,6 @@ class WebViewClientHostApiImpl extends WebViewClientHostApi {
       return create(instanceId, instance.shouldOverrideUrlLoading);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebViewClient instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [WebViewClient].
@@ -404,6 +465,11 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void onPageFinished(int instanceId, int webViewInstanceId, String url) {
@@ -455,18 +521,8 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
         instanceManager.getInstance(instanceId) as WebViewClient;
     instance.onReceivedRequestError(
       instanceManager.getInstance(webViewInstanceId) as WebView,
-      WebResourceRequest(
-        url: request.url!,
-        isForMainFrame: request.isForMainFrame!,
-        isRedirect: request.isRedirect,
-        hasGesture: request.hasGesture!,
-        method: request.method!,
-        requestHeaders: request.requestHeaders!.cast<String, String>(),
-      ),
-      WebResourceError(
-        errorCode: error.errorCode!,
-        description: error.description!,
-      ),
+      _toWebResourceRequest(request),
+      _toWebResourceError(error),
     );
   }
 
@@ -480,14 +536,7 @@ class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
         instanceManager.getInstance(instanceId) as WebViewClient;
     instance.requestLoading(
       instanceManager.getInstance(webViewInstanceId) as WebView,
-      WebResourceRequest(
-        url: request.url!,
-        isForMainFrame: request.isForMainFrame!,
-        isRedirect: request.isRedirect,
-        hasGesture: request.hasGesture!,
-        method: request.method!,
-        requestHeaders: request.requestHeaders!.cast<String, String>(),
-      ),
+      _toWebResourceRequest(request),
     );
   }
 
@@ -526,14 +575,6 @@ class DownloadListenerHostApiImpl extends DownloadListenerHostApi {
       return create(instanceId);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(DownloadListener instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [DownloadListener].
@@ -545,6 +586,11 @@ class DownloadListenerFlutterApiImpl extends DownloadListenerFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void onDownloadStart(
@@ -590,14 +636,6 @@ class WebChromeClientHostApiImpl extends WebChromeClientHostApi {
       return create(instanceId, instanceManager.getInstanceId(webViewClient)!);
     }
   }
-
-  /// Helper method to convert instances ids to objects.
-  Future<void> disposeFromInstance(WebChromeClient instance) async {
-    final int? instanceId = instanceManager.removeInstance(instance);
-    if (instanceId != null) {
-      return dispose(instanceId);
-    }
-  }
 }
 
 /// Flutter api implementation for [DownloadListener].
@@ -609,6 +647,11 @@ class WebChromeClientFlutterApiImpl extends WebChromeClientFlutterApi {
 
   /// Maintains instances stored to communicate with java objects.
   late final InstanceManager instanceManager;
+
+  @override
+  void dispose(int instanceId) {
+    instanceManager.removeInstance(instanceId);
+  }
 
   @override
   void onProgressChanged(int instanceId, int webViewInstanceId, int progress) {
