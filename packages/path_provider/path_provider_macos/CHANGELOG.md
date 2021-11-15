@@ -1,6 +1,6 @@
 ## 2.0.3
 
-* Fix link in README
+* Fixes link in README.
 
 ## 2.0.2
 
