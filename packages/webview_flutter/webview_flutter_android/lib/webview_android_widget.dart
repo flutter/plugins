@@ -275,16 +275,10 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
       webView.settings.setUserAgentString(userAgent);
     }
 
-    final AutoMediaPlaybackPolicy autoMediaPlaybackPolicy =
-        creationParams.autoMediaPlaybackPolicy;
-    switch (autoMediaPlaybackPolicy) {
-      case AutoMediaPlaybackPolicy.always_allow:
-        webView.settings.setMediaPlaybackRequiresUserGesture(false);
-        break;
-      case AutoMediaPlaybackPolicy.require_user_action_for_all_media_types:
-      default:
-        webView.settings.setMediaPlaybackRequiresUserGesture(true);
-    }
+    webView.settings.setMediaPlaybackRequiresUserGesture(
+      creationParams.autoMediaPlaybackPolicy !=
+          AutoMediaPlaybackPolicy.always_allow,
+    );
 
     addJavascriptChannels(creationParams.javascriptChannelNames);
   }
