@@ -1,3 +1,7 @@
+## 2.0.4
+
+* Update Android compileSdkVersion to 31.
+
 ## 2.0.3
 
 * Remove references to the Android V1 embedding.
