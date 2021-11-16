@@ -11,13 +11,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.provider.Browser;
 import androidx.annotation.Nullable;
 
 /** Launches components for URLs. */
 class UrlLauncher {
+  private static final String TAG = "UrlLauncher";
   private final Context applicationContext;
+
   @Nullable private Activity activity;
+
 
   /**
    * Uses the given {@code applicationContext} for launching intents.
@@ -40,9 +44,14 @@ class UrlLauncher {
     ComponentName componentName =
         launchIntent.resolveActivity(applicationContext.getPackageManager());
 
-    return componentName != null
-        && !"{com.android.fallback/com.android.fallback.Fallback}"
-            .equals(componentName.toShortString());
+    if (componentName == null) {
+      Log.i(TAG, "component name for " + url + " is null");
+      return false;
+    } else {
+      Log.i(TAG, "component name for " + url + " is " + componentName.toShortString());
+      return !"{com.android.fallback/com.android.fallback.Fallback}"
+              .equals(componentName.toShortString());
+    }
   }
 
   /**

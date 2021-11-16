@@ -20,7 +20,7 @@ void main() {
 
     // SMS handling is available by default on most platforms.
     if (kIsWeb || !(Platform.isLinux || Platform.isWindows)) {
-      expect(await canLaunch('sms:5555555555'), true);
+      expect(await canLaunch('sms:+12345678'), true);
     }
 
     // tel: and mailto: links may not be openable on every device. iOS
