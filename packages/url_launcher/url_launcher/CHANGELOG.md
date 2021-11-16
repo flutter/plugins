@@ -1,4 +1,4 @@
-## 6.0.14
+## NEXT
 
 * Update example app Android compileSdkVersion to 31.
 

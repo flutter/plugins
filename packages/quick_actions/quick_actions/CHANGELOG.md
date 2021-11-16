@@ -1,6 +1,7 @@
 ## 0.6.0+8
 
 * Update example app Android compileSdkVersion to 31.
+* Move method call to background thread to fix CI failure.
 
 ## 0.6.0+7
 
