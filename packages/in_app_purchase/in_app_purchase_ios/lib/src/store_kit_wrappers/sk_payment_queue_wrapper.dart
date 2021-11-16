@@ -378,12 +378,14 @@ class SKError {
 @JsonSerializable(createToJson: true)
 class SKPaymentWrapper {
   /// Creates a new [SKPaymentWrapper] with the provided information.
-  const SKPaymentWrapper(
-      {required this.productIdentifier,
-      this.applicationUsername,
-      this.requestData,
-      this.quantity = 1,
-      this.simulatesAskToBuyInSandbox = false});
+  const SKPaymentWrapper({
+    required this.productIdentifier,
+    this.applicationUsername,
+    this.requestData,
+    this.quantity = 1,
+    this.simulatesAskToBuyInSandbox = false,
+    this.paymentDiscount,
+  });
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -450,6 +452,14 @@ class SKPaymentWrapper {
   /// testing.
   final bool simulatesAskToBuyInSandbox;
 
+  /// The details of a discount that should be applied to the payment.
+  ///
+  /// See [Implementing Promotional Offers in Your App](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/implementing_promotional_offers_in_your_app?language=objc)
+  /// for more information on generating keys and creating offers for
+  /// auto-renewable subscriptions. If set to `null` no discount will be
+  /// applied to this payment.
+  final SKPaymentDiscountWrapper? paymentDiscount;
+
   @override
   bool operator ==(Object other) {
     if (identical(other, this)) {
@@ -472,4 +482,104 @@ class SKPaymentWrapper {
 
   @override
   String toString() => _$SKPaymentWrapperToJson(this).toString();
+}
+
+/// Dart wrapper around StoreKit's
+/// [SKPaymentDiscount](https://developer.apple.com/documentation/storekit/skpaymentdiscount?language=objc).
+///
+/// Used to indicate a discount is applicable to a payment. The
+/// [SKPaymentDiscountWrapper] instance should be assigned to the
+/// [SKPaymentWrapper] object to which the discount should be applied.
+/// Discount offers are set up in App Store Connect. See [Implementing Promotional Offers in Your App](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/implementing_promotional_offers_in_your_app?language=objc)
+/// for more information.
+@immutable
+@JsonSerializable(createToJson: true)
+class SKPaymentDiscountWrapper {
+  /// Creates a new [SKPaymentDiscountWrapper] with the provided information.
+  const SKPaymentDiscountWrapper({
+    required this.identifier,
+    required this.keyIdentifier,
+    required this.nonce,
+    required this.signature,
+    required this.timestamp,
+  });
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  factory SKPaymentDiscountWrapper.fromJson(Map<String, dynamic> map) {
+    assert(map != null);
+    return _$SKPaymentDiscountWrapperFromJson(map);
+  }
+
+  /// Creates a Map object describes the payment object.
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'identifier': identifier,
+      'keyIdentifier': keyIdentifier,
+      'nonce': nonce,
+      'signature': signature,
+      'timestamp': timestamp,
+    };
+  }
+
+  /// The identifier of the discount offer.
+  ///
+  /// The identifier must match one of the offers set up in App Store Connect.
+  final String identifier;
+
+  /// A string identifying the key that is used to generate the signature.
+  ///
+  /// Keys are generated and downloaded from App Store Connect. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final String keyIdentifier;
+
+  /// A universal unique identifier (UUID) created together with the signature.
+  ///
+  /// The UUID should be generated on your server when it creates the
+  /// `signature` for the payment discount. The UUID can be used once, a new
+  /// UUID should be created for each payment request. The string representation
+  /// of the UUID must be lowercase. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final String nonce;
+
+  /// A cryptographically signed string representing the to properties of the
+  /// promotional offer.
+  ///
+  /// The signature is string signed with a private key and contains all the
+  /// properties of the promotional offer. To keep you private key secure the
+  /// signature should be created on a server. See [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final String signature;
+
+  /// The date and time the signature was created.
+  ///
+  /// The timestamp should be formatted in Unix epoch time. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final int timestamp;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentDiscountWrapper typedOther =
+        other as SKPaymentDiscountWrapper;
+    return typedOther.identifier == identifier &&
+        typedOther.keyIdentifier == keyIdentifier &&
+        typedOther.nonce == nonce &&
+        typedOther.signature == signature &&
+        typedOther.timestamp == timestamp;
+  }
+
+  @override
+  int get hashCode =>
+      hashValues(identifier, keyIdentifier, nonce, signature, timestamp);
 }
