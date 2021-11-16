@@ -7,8 +7,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:url_launcher/link.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
 
 void main() {
   runApp(MyApp());
@@ -40,11 +39,15 @@ class _MyHomePageState extends State<MyHomePage> {
   String _phone = '';
 
   Future<void> _launchInBrowser(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
+    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(
         url,
-        forceSafariVC: false,
-        forceWebView: false,
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
         headers: <String, String>{'my_header_key': 'my_header_value'},
       );
     } else {
@@ -53,11 +56,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchInWebViewOrVC(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
+    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(
         url,
-        forceSafariVC: true,
-        forceWebView: true,
+        useSafariVC: true,
+        useWebView: true,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: false,
         headers: <String, String>{'my_header_key': 'my_header_value'},
       );
     } else {
@@ -66,12 +73,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchInWebViewWithJavaScript(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
+    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(
         url,
-        forceSafariVC: true,
-        forceWebView: true,
+        useSafariVC: true,
+        useWebView: true,
         enableJavaScript: true,
+        enableDomStorage: false,
+        universalLinksOnly: false,
+        headers: <String, String>{},
       );
     } else {
       throw 'Could not launch $url';
@@ -79,12 +90,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchInWebViewWithDomStorage(String url) async {
-    if (await canLaunch(url)) {
-      await launch(
+    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(
         url,
-        forceSafariVC: true,
-        forceWebView: true,
+        useSafariVC: true,
+        useWebView: true,
+        enableJavaScript: false,
         enableDomStorage: true,
+        universalLinksOnly: false,
+        headers: <String, String>{},
       );
     } else {
       throw 'Could not launch $url';
@@ -92,16 +107,26 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _launchUniversalLinkIos(String url) async {
-    if (await canLaunch(url)) {
-      final bool nativeAppLaunchSucceeded = await launch(
+    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    if (await launcher.canLaunch(url)) {
+      final bool nativeAppLaunchSucceeded = await launcher.launch(
         url,
-        forceSafariVC: false,
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
         universalLinksOnly: true,
+        headers: <String, String>{},
       );
       if (!nativeAppLaunchSucceeded) {
-        await launch(
+        await launcher.launch(
           url,
-          forceSafariVC: true,
+          useSafariVC: true,
+          useWebView: true,
+          enableJavaScript: false,
+          enableDomStorage: false,
+          universalLinksOnly: true,
+          headers: <String, String>{},
         );
       }
     }
@@ -116,8 +141,17 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> _makePhoneCall(String url) async {
-    if (await canLaunch(url)) {
-      await launch(url);
+    UrlLauncherPlatform launcher = UrlLauncherPlatform.instance;
+    if (await launcher.canLaunch(url)) {
+      await launcher.launch(
+        url,
+        useSafariVC: false,
+        useWebView: false,
+        enableJavaScript: false,
+        enableDomStorage: false,
+        universalLinksOnly: true,
+        headers: <String, String>{},
+      );
     } else {
       throw 'Could not launch $url';
     }
@@ -191,23 +225,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   _launched = _launchInWebViewOrVC(toLaunch);
                   Timer(const Duration(seconds: 5), () {
                     print('Closing WebView after 5 seconds...');
-                    closeWebView();
+                    UrlLauncherPlatform.instance.closeWebView();
                   });
                 }),
                 child: const Text('Launch in app + close after 5 seconds'),
-              ),
-              const Padding(padding: EdgeInsets.all(16.0)),
-              Link(
-                uri: Uri.parse(
-                    'https://pub.dev/documentation/url_launcher/latest/link/link-library.html'),
-                target: LinkTarget.blank,
-                builder: (ctx, openLink) {
-                  return TextButton.icon(
-                    onPressed: openLink,
-                    label: Text('Link Widget documentation'),
-                    icon: Icon(Icons.read_more),
-                  );
-                },
               ),
               const Padding(padding: EdgeInsets.all(16.0)),
               FutureBuilder<void>(future: _launched, builder: _launchStatus),
