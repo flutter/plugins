@@ -4,7 +4,7 @@
 * Updated Android lint settings.
 * Specify Java 8 for Android build.
 * Removed `-Werror` in Android builds.
-* Update Android compileSdkVersion to 31.
+* Updated Android compileSdkVersion to 31.
 
 ## 2.0.2
 

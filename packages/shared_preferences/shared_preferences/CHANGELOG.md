@@ -1,7 +1,7 @@
 ## NEXT
 
 * Fixes newly enabled analyzer options.
-* Update Android compileSdkVersion to 31.
+* Updated Android compileSdkVersion to 31.
 
 ## 2.0.8
 

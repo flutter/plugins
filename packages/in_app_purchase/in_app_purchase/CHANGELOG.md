@@ -1,6 +1,6 @@
 ## 1.0.10
 
-* Update Android compileSdkVersion to 31.
+* Updated Android compileSdkVersion to 31.
 
 ## 1.0.9
 
