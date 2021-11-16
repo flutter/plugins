@@ -8,6 +8,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -180,91 +181,30 @@ void main() {
   }, skip: Platform.isAndroid && _skipDueToIssue86757);
 
   testWidgets('resize webview', (WidgetTester tester) async {
-    final String resizeTest = '''
-        <!DOCTYPE html><html>
-        <head><title>Resize test</title>
-          <script type="text/javascript">
-            function onResize() {
-              Resize.postMessage("resize");
-            }
-            function onLoad() {
-              window.onresize = onResize;
-            }
-          </script>
-        </head>
-        <body onload="onLoad();" bgColor="blue">
-        </body>
-        </html>
-      ''';
-    final String resizeTestBase64 =
-        base64Encode(const Utf8Encoder().convert(resizeTest));
-    final Completer<void> resizeCompleter = Completer<void>();
-    final Completer<void> pageStarted = Completer<void>();
-    final Completer<void> pageLoaded = Completer<void>();
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
-    final GlobalKey key = GlobalKey();
+    final Completer<void> initialResizeCompleter = Completer<void>();
+    final Completer<void> buttonTapResizeCompleter = Completer<void>();
+    final Completer<void> onPageFinished = Completer<void>();
 
-    final WebView webView = WebView(
-      key: key,
-      initialUrl: 'data:text/html;charset=utf-8;base64,$resizeTestBase64',
-      onWebViewCreated: (WebViewController controller) {
-        controllerCompleter.complete(controller);
+    bool resizeButtonTapped = false;
+    await tester.pumpWidget(ResizableWebView(
+      onResize: (_) {
+        if (resizeButtonTapped) {
+          buttonTapResizeCompleter.complete();
+        } else {
+          initialResizeCompleter.complete();
+        }
       },
-      javascriptChannels: <JavascriptChannel>{
-        JavascriptChannel(
-          name: 'Resize',
-          onMessageReceived: (JavascriptMessage message) {
-            resizeCompleter.complete(true);
-          },
-        ),
-      },
-      onPageStarted: (String url) {
-        pageStarted.complete(null);
-      },
-      onPageFinished: (String url) {
-        pageLoaded.complete(null);
-      },
-      javascriptMode: JavascriptMode.unrestricted,
-    );
+      onPageFinished: () => onPageFinished.complete(),
+    ));
+    await onPageFinished.future;
+    if (Platform.isAndroid) {
+      await initialResizeCompleter.future;
+    }
 
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              width: 200,
-              height: 200,
-              child: webView,
-            ),
-          ],
-        ),
-      ),
-    );
-
-    await controllerCompleter.future;
-    await pageStarted.future;
-    await pageLoaded.future;
-
-    expect(resizeCompleter.isCompleted, false);
-
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: Column(
-          children: <Widget>[
-            SizedBox(
-              width: 400,
-              height: 400,
-              child: webView,
-            ),
-          ],
-        ),
-      ),
-    );
-
-    await resizeCompleter.future;
+    resizeButtonTapped = true;
+    await tester.tap(find.byKey(const ValueKey('resizeButton')));
+    await tester.pumpAndSettle();
+    expect(buttonTapResizeCompleter.future, completes);
   });
 
   testWidgets('set custom userAgent', (WidgetTester tester) async {
@@ -1495,4 +1435,75 @@ Future<String> _runJavascriptReturningResult(
     return await controller.runJavascriptReturningResult(js);
   }
   return jsonDecode(await controller.runJavascriptReturningResult(js));
+}
+
+class ResizableWebView extends StatefulWidget {
+  ResizableWebView({required this.onResize, required this.onPageFinished});
+
+  final JavascriptMessageHandler onResize;
+  final VoidCallback onPageFinished;
+
+  @override
+  State<StatefulWidget> createState() => ResizableWebViewState();
+}
+
+class ResizableWebViewState extends State<ResizableWebView> {
+  double webViewWidth = 200;
+  double webViewHeight = 200;
+
+  static const String resizePage = '''
+        <!DOCTYPE html><html>
+        <head><title>Resize test</title>
+          <script type="text/javascript">
+            function onResize() {
+              Resize.postMessage("resize");
+            }
+            function onLoad() {
+              window.onresize = onResize;
+            }
+          </script>
+        </head>
+        <body onload="onLoad();" bgColor="blue">
+        </body>
+        </html>
+      ''';
+
+  @override
+  Widget build(BuildContext context) {
+    final String resizeTestBase64 =
+        base64Encode(const Utf8Encoder().convert(resizePage));
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: Column(
+        children: <Widget>[
+          SizedBox(
+            width: webViewWidth,
+            height: webViewHeight,
+            child: WebView(
+              initialUrl:
+                  'data:text/html;charset=utf-8;base64,$resizeTestBase64',
+              javascriptChannels: <JavascriptChannel>{
+                JavascriptChannel(
+                  name: 'Resize',
+                  onMessageReceived: widget.onResize,
+                ),
+              },
+              onPageFinished: (_) => widget.onPageFinished(),
+              javascriptMode: JavascriptMode.unrestricted,
+            ),
+          ),
+          TextButton(
+            key: Key('resizeButton'),
+            onPressed: () {
+              setState(() {
+                webViewWidth += 100.0;
+                webViewHeight += 100.0;
+              });
+            },
+            child: Text('ResizeButton'),
+          ),
+        ],
+      ),
+    );
+  }
 }
