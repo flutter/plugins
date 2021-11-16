@@ -1,6 +1,6 @@
 ## NEXT
 
-* Update Android compileSdkVersion 31.
+* Update example app Android compileSdkVersion to 31.
 
 ## 2.2.1
 
