@@ -80,6 +80,24 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
+  Future<void> loadFile(String absoluteFilePath) async {
+    assert(absoluteFilePath != null);
+    return _channel.invokeMethod<void>('loadFile', absoluteFilePath);
+  }
+
+  @override
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) async {
+    assert(html != null);
+    return _channel.invokeMethod<void>('loadHtmlString', <String, dynamic>{
+      'html': html,
+      'baseUrl': baseUrl,
+    });
+  }
+
+  @override
   Future<void> loadUrl(
     String url,
     Map<String, String>? headers,
@@ -88,6 +106,14 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     return _channel.invokeMethod<void>('loadUrl', <String, dynamic>{
       'url': url,
       'headers': headers,
+    });
+  }
+
+  @override
+  Future<void> loadRequest(WebViewRequest request) async {
+    assert(request != null);
+    return _channel.invokeMethod<void>('loadRequest', <String, dynamic>{
+      'request': request.toJson(),
     });
   }
 
@@ -123,9 +149,21 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
-  Future<String> evaluateJavascript(String javascriptString) {
+  Future<String> evaluateJavascript(String javascript) {
     return _channel
-        .invokeMethod<String>('evaluateJavascript', javascriptString)
+        .invokeMethod<String>('evaluateJavascript', javascript)
+        .then((result) => result!);
+  }
+
+  @override
+  Future<void> runJavascript(String javascript) async {
+    await _channel.invokeMethod<String>('runJavascript', javascript);
+  }
+
+  @override
+  Future<String> runJavascriptReturningResult(String javascript) {
+    return _channel
+        .invokeMethod<String>('runJavascriptReturningResult', javascript)
         .then((result) => result!);
   }
 
@@ -200,6 +238,7 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
     _addIfNonNull(
         'allowsInlineMediaPlayback', settings.allowsInlineMediaPlayback);
     _addSettingIfPresent('userAgent', settings.userAgent);
+    _addIfNonNull('zoomEnabled', settings.zoomEnabled);
     return map;
   }
 

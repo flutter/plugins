@@ -3,7 +3,7 @@ description: Flutter plugin for launching a URL. Supports
   web, phone, SMS, and email schemes.
 repository: https://github.com/flutter/plugins/tree/master/packages/url_launcher/url_launcher
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+url_launcher%22
-version: 6.0.12
+version: 6.0.13
 
 environment:
   sdk: ">=2.14.0 <3.0.0"
