@@ -1,4 +1,4 @@
-## 2.2.8
+## NEXT
 
 * Fixes integration tests.
 
