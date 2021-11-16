@@ -1,4 +1,4 @@
-## NEXT
+## 1.1.8+1
 
 * Update Android compileSdkVersion to 31.
 

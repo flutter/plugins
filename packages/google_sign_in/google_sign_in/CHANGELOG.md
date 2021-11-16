@@ -1,4 +1,5 @@
-## NEXT
+## 5.2.2
+
 * Update Android compileSdkVersion 31.
 
 ## 5.2.1
