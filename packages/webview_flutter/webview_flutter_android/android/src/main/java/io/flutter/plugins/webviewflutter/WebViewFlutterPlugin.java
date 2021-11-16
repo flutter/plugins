@@ -4,7 +4,6 @@
 
 package io.flutter.plugins.webviewflutter;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
@@ -136,29 +135,26 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {
-    final Activity activity = activityPluginBinding.getActivity();
-    webViewHostApi.setContext(activityPluginBinding.getActivity());
-    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
+    updateContext(activityPluginBinding.getActivity());
   }
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
-    final Context context = pluginBinding.getApplicationContext();
-    webViewHostApi.setContext(context);
-    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
+    updateContext(pluginBinding.getApplicationContext());
   }
 
   @Override
   public void onReattachedToActivityForConfigChanges(
       @NonNull ActivityPluginBinding activityPluginBinding) {
-    final Activity activity = activityPluginBinding.getActivity();
-    webViewHostApi.setContext(activity);
-    javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(activity.getMainLooper()));
+    updateContext(activityPluginBinding.getActivity());
   }
 
   @Override
   public void onDetachedFromActivity() {
-    final Context context = pluginBinding.getApplicationContext();
+    updateContext(pluginBinding.getApplicationContext());
+  }
+
+  private void updateContext(Context context) {
     webViewHostApi.setContext(context);
     javaScriptChannelHostApi.setPlatformThreadHandler(new Handler(context.getMainLooper()));
   }

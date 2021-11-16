@@ -1,6 +1,6 @@
 ## 2.3.0
 
-* Replace platform implementation with API built with pigeon.
+* Replaces platform implementation with API built with pigeon.
 
 ## 2.2.1
 
