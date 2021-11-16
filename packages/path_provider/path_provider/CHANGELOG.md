@@ -1,3 +1,7 @@
+## 2.0.8
+
+* Update Android compileSdkVersion to 31.
+
 ## 2.0.7
 
 * Moved Android and iOS implementations to federated packages.
