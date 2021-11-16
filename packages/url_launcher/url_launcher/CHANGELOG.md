@@ -1,3 +1,7 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 6.0.13
 
 * Fixed extracting browser headers when they are null error.
