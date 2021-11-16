@@ -31,7 +31,7 @@ abstract class WebViewPlatformCallbacksHandler {
   ///
   /// Unlike [onPageStarted], [onProgress], and [onPageFinished],
   /// [onUrlChanged] also fires when navigating without a full page load
-  /// e.g. when using a single page application.
+  /// e.g. when navigating within a single page application.
   void onUrlChanged(String url);
 
   /// Report web resource loading error to the host application.
