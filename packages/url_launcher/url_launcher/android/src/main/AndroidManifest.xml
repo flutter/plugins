@@ -5,4 +5,10 @@
       android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
       android:exported="false"/>
   </application>
+  <queries>
+    <intent>
+      <action android:name="android.intent.action.SENDTO" />
+      <data android:scheme="smsto"/>
+    </intent>
+  </queries>
 </manifest>

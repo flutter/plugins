@@ -1,5 +1,6 @@
 ## 6.0.14
 
+* Fixes bug where sending SMS messages on Android 11 didn't work.
 * Fixes integration tests.
 
 ## 6.0.13

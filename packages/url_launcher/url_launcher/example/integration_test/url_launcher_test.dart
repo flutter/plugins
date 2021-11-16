@@ -17,10 +17,11 @@ void main() {
 
     // Generally all devices should have some default browser.
     expect(await canLaunch('http://flutter.dev'), true);
+    expect(await canLaunch('https:///www.google.com/404'), true);
 
     // SMS handling is available by default on most platforms.
     if (kIsWeb || !(Platform.isLinux || Platform.isWindows)) {
-      expect(await canLaunch('sms:+12345678'), true);
+      expect(await canLaunch('sms:+12345678900'), true);
     }
 
     // tel: and mailto: links may not be openable on every device. iOS
