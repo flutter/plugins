@@ -281,8 +281,11 @@ class Camera
           public void onClosed(@NonNull CameraDevice camera) {
             Log.i(TAG, "open | onClosed");
 
+            // It's safe to call cameraDevice.close() after the camera has been closed.
+            // The call below sets cameraDevice to null. Thus, preventing calls to methods
+            // that would otherwise result in IllegalStateException exceptions.
+            close();
             dartMessenger.sendCameraClosingEvent();
-            super.onClosed(camera);
           }
 
           @Override
