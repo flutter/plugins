@@ -1,3 +1,7 @@
+## 2.3.2
+
+* Update Android compileSdkVersion to 31.
+
 ## 2.3.1
 
 * Add iOS-specific note to set `JavascriptMode.unrestricted` in order to set `zoomEnabled: false`.
