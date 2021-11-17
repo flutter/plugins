@@ -337,6 +337,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) CMTime lastAudioSampleTime;
 @property(assign, nonatomic) CMTime videoTimeOffset;
 @property(assign, nonatomic) CMTime audioTimeOffset;
+@property(assign, nonatomic) FourCharCode videoFormat;
 @property(nonatomic) CMMotionManager *motionManager;
 @property AVAssetWriterInputPixelBufferAdaptor *videoAdaptor;
 @end
@@ -345,8 +346,6 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
   dispatch_queue_t _dispatchQueue;
   UIDeviceOrientation _deviceOrientation;
 }
-// Format used for video and image streaming.
-FourCharCode videoFormat = kCVPixelFormatType_32BGRA;
 NSString *const errorMethod = @"error";
 
 - (instancetype)initWithCameraName:(NSString *)cameraName
@@ -371,6 +370,8 @@ NSString *const errorMethod = @"error";
   _focusMode = FocusModeAuto;
   _lockedCaptureOrientation = UIDeviceOrientationUnknown;
   _deviceOrientation = orientation;
+  // Format used for video and image streaming.
+  _videoFormat = kCVPixelFormatType_32BGRA;
 
   NSError *localError = nil;
   _captureVideoInput = [AVCaptureDeviceInput deviceInputWithDevice:_captureDevice
@@ -383,7 +384,7 @@ NSString *const errorMethod = @"error";
 
   _captureVideoOutput = [AVCaptureVideoDataOutput new];
   _captureVideoOutput.videoSettings =
-      @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
+    @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)};
   [_captureVideoOutput setAlwaysDiscardsLateVideoFrames:YES];
   [_captureVideoOutput setSampleBufferDelegate:self queue:dispatch_get_main_queue()];
 
@@ -419,6 +420,11 @@ NSString *const errorMethod = @"error";
 
 - (void)stop {
   [_captureSession stopRunning];
+}
+
+- (void)setVideoFormat:(OSType)videoFormat {
+    _captureVideoOutput.videoSettings =
+        @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
 }
 
 - (void)setDeviceOrientation:(UIDeviceOrientation)orientation {
@@ -655,7 +661,7 @@ NSString *const errorMethod = @"error";
       NSMutableDictionary *imageBuffer = [NSMutableDictionary dictionary];
       imageBuffer[@"width"] = [NSNumber numberWithUnsignedLong:imageWidth];
       imageBuffer[@"height"] = [NSNumber numberWithUnsignedLong:imageHeight];
-      imageBuffer[@"format"] = @(videoFormat);
+      imageBuffer[@"format"] = @(_videoFormat);
       imageBuffer[@"planes"] = planes;
       imageBuffer[@"lensAperture"] = [NSNumber numberWithFloat:[_captureDevice lensAperture]];
       Float64 exposureDuration = CMTimeGetSeconds([_captureDevice exposureDuration]);
@@ -1215,7 +1221,7 @@ NSString *const errorMethod = @"error";
   _videoAdaptor = [AVAssetWriterInputPixelBufferAdaptor
       assetWriterInputPixelBufferAdaptorWithAssetWriterInput:_videoWriterInput
                                  sourcePixelBufferAttributes:@{
-                                   (NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)
+                                   (NSString *)kCVPixelBufferPixelFormatTypeKey : @(_videoFormat)
                                  }];
 
   NSParameterAssert(_videoWriterInput);
@@ -1434,7 +1440,7 @@ NSString *const errorMethod = @"error";
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
     if ([@"initialize" isEqualToString:call.method]) {
       NSString *videoFormatValue = ((NSString *)argsMap[@"imageFormatGroup"]);
-      videoFormat = getVideoFormatFromString(videoFormatValue);
+      [_camera setVideoFormat: getVideoFormatFromString(videoFormatValue)];
 
       __weak CameraPlugin *weakSelf = self;
       _camera.onFrameAvailable = ^{
