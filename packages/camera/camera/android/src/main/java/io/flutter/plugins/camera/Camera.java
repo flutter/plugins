@@ -1120,7 +1120,13 @@ class Camera
       imageStreamReader = null;
     }
     if (mediaRecorder != null) {
-      mediaRecorder.reset();
+      try {
+        mediaRecorder.reset();
+      } catch (IllegalStateException exception) {
+        // Ignore exception.
+        // reset() throws this exception when mNativeContext is 0.
+        // Unfortunately, this isn't public, and it's set from the native side in the Android source code.
+      }
       mediaRecorder.release();
       mediaRecorder = null;
     }
