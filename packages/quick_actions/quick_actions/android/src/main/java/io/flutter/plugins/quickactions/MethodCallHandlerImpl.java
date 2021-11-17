@@ -52,18 +52,20 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
       case "setShortcutItems":
         List<Map<String, String>> serializedShortcuts = call.arguments();
         List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
-        ThreadPoolExecutor executor =
-            new ThreadPoolExecutor(0, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
-        executor.execute(
-            new Runnable() {
-              @Override
-              public void run() {
-                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+          ThreadPoolExecutor executor =
+              new ThreadPoolExecutor(
+                  0, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
+
+          executor.execute(
+              new Runnable() {
+                @Override
+                public void run() {
                   shortcutManager.setDynamicShortcuts(shortcuts);
                 }
-              }
-            });
+              });
+        }
         break;
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();

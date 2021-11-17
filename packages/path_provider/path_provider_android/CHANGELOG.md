@@ -1,7 +1,7 @@
-## NEXT
+## 2.0.8
 
-* Update example app Android compileSdkVersion to 31.
-* Fixed typing build warning.
+* Updates example app Android compileSdkVersion to 31.
+* Fixes typing build warning.
 
 ## 2.0.7
 
