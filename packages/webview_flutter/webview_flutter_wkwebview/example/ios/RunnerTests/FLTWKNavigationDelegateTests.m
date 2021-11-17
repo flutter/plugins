@@ -69,7 +69,7 @@ NSString *const zoomDisablingJavascript =
   [self.navigationDelegate webView:webview didFinishNavigation:navigation];
 }
 
-- (void)testWebViewObserveValueForKeyOPathCallsMethodChannelOnURLChange {
+- (void)testWebViewObserveValueForKeyPathCallsMethodChannelOnURLChange {
   [self.navigationDelegate
       observeValueForKeyPath:@"URL"
                     ofObject:nil
@@ -82,7 +82,7 @@ NSString *const zoomDisablingJavascript =
          arguments:[OCMArg isEqual:@{@"url" : @"https://flutter.dev/"}]]);
 }
 
-- (void)testWebViewObserveValueForKeyOPathReturnsForNonURLChanges {
+- (void)testWebViewObserveValueForKeyPathReturnsForNonURLChanges {
   [self.navigationDelegate
       observeValueForKeyPath:@"IRRELEVANT_PATH"
                     ofObject:nil
@@ -90,6 +90,15 @@ NSString *const zoomDisablingJavascript =
                         NSKeyValueChangeNewKey : [NSURL URLWithString:@"https://flutter.dev/"]
                       }
                      context:nil];
+
+  OCMReject([self.mockMethodChannel invokeMethod:[OCMArg any] arguments:[OCMArg any]]);
+}
+
+- (void)testWebViewObserveValueForKeyPathReturnsForNSNullURLChanges {
+  [self.navigationDelegate observeValueForKeyPath:@"URL"
+                                         ofObject:nil
+                                           change:@{NSKeyValueChangeNewKey : [NSNull null]}
+                                          context:nil];
 
   OCMReject([self.mockMethodChannel invokeMethod:[OCMArg any] arguments:[OCMArg any]]);
 }

@@ -24,7 +24,7 @@
     return;
   }
   NSURL *newURL = [change objectForKey:NSKeyValueChangeNewKey];
-  if (newURL) {
+  if (![newURL isEqual:[NSNull null]]) {
     [_methodChannel invokeMethod:@"onUrlChanged" arguments:@{@"url" : newURL.absoluteString}];
   }
 }
