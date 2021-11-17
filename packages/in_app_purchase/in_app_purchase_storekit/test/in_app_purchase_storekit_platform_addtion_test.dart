@@ -4,7 +4,7 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import 'fakes/fake_ios_platform.dart';
@@ -12,17 +12,18 @@ import 'fakes/fake_ios_platform.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
+  final FakeStoreKitPlatform fakeStoreKitPlatform = FakeStoreKitPlatform();
 
   setUpAll(() {
     SystemChannels.platform
-        .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
+        .setMockMethodCallHandler(fakeStoreKitPlatform.onMethodCall);
   });
 
   group('present code redemption sheet', () {
     test('null', () async {
       expect(
-          await InAppPurchaseIosPlatformAddition().presentCodeRedemptionSheet(),
+          await InAppPurchaseStoreKitPlatformAddition()
+              .presentCodeRedemptionSheet(),
           null);
     });
   });
@@ -30,7 +31,7 @@ void main() {
   group('refresh receipt data', () {
     test('should refresh receipt data', () async {
       PurchaseVerificationData? receiptData =
-          await InAppPurchaseIosPlatformAddition()
+          await InAppPurchaseStoreKitPlatformAddition()
               .refreshPurchaseVerificationData();
       expect(receiptData, isNotNull);
       expect(receiptData!.source, kIAPSource);

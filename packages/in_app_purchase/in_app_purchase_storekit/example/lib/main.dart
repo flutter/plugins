@@ -5,8 +5,8 @@
 import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios_example/example_payment_queue_delegate.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit_example/example_payment_queue_delegate.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'consumable_store.dart';
 
@@ -15,7 +15,7 @@ void main() {
 
   // When using the Android plugin directly it is mandatory to register
   // the plugin as default instance as part of initializing the app.
-  InAppPurchaseIosPlatform.registerPlatform();
+  InAppPurchaseStoreKitPlatform.registerPlatform();
 
   runApp(_MyApp());
 }
@@ -39,11 +39,11 @@ class _MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<_MyApp> {
-  final InAppPurchaseIosPlatform _iapIosPlatform =
-      InAppPurchasePlatform.instance as InAppPurchaseIosPlatform;
-  final InAppPurchaseIosPlatformAddition _iapIosPlatformAddition =
+  final InAppPurchaseStoreKitPlatform _iapStoreKitPlatform =
+      InAppPurchasePlatform.instance as InAppPurchaseStoreKitPlatform;
+  final InAppPurchaseStoreKitPlatformAddition _iapStoreKitPlatformAddition =
       InAppPurchasePlatformAddition.instance
-          as InAppPurchaseIosPlatformAddition;
+          as InAppPurchaseStoreKitPlatformAddition;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
@@ -57,7 +57,7 @@ class _MyAppState extends State<_MyApp> {
   @override
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
-        _iapIosPlatform.purchaseStream;
+        _iapStoreKitPlatform.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
@@ -67,14 +67,14 @@ class _MyAppState extends State<_MyApp> {
     });
 
     // Register the example payment queue delegate
-    _iapIosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
+    _iapStoreKitPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
 
     initStoreInfo();
     super.initState();
   }
 
   Future<void> initStoreInfo() async {
-    final bool isAvailable = await _iapIosPlatform.isAvailable();
+    final bool isAvailable = await _iapStoreKitPlatform.isAvailable();
     if (!isAvailable) {
       setState(() {
         _isAvailable = isAvailable;
@@ -89,7 +89,7 @@ class _MyAppState extends State<_MyApp> {
     }
 
     ProductDetailsResponse productDetailResponse =
-        await _iapIosPlatform.queryProductDetails(_kProductIds.toSet());
+        await _iapStoreKitPlatform.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
         _queryProductError = productDetailResponse.error!.message;
@@ -234,7 +234,7 @@ class _MyAppState extends State<_MyApp> {
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
-        _iapIosPlatform.completePurchase(purchase);
+        _iapStoreKitPlatform.completePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
@@ -251,7 +251,7 @@ class _MyAppState extends State<_MyApp> {
             trailing: previousPurchase != null
                 ? IconButton(
                     onPressed: () {
-                      _iapIosPlatformAddition.showPriceConsentIfNeeded();
+                      _iapStoreKitPlatformAddition.showPriceConsentIfNeeded();
                     },
                     icon: Icon(Icons.upgrade))
                 : TextButton(
@@ -266,11 +266,11 @@ class _MyAppState extends State<_MyApp> {
                         applicationUserName: null,
                       );
                       if (productDetails.id == _kConsumableId) {
-                        _iapIosPlatform.buyConsumable(
+                        _iapStoreKitPlatform.buyConsumable(
                             purchaseParam: purchaseParam,
                             autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
-                        _iapIosPlatform.buyNonConsumable(
+                        _iapStoreKitPlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);
                       }
                     },
@@ -338,7 +338,7 @@ class _MyAppState extends State<_MyApp> {
               backgroundColor: Theme.of(context).primaryColor,
               primary: Colors.white,
             ),
-            onPressed: () => _iapIosPlatform.restorePurchases(),
+            onPressed: () => _iapStoreKitPlatform.restorePurchases(),
           ),
         ],
       ),
@@ -411,7 +411,7 @@ class _MyAppState extends State<_MyApp> {
         }
 
         if (purchaseDetails.pendingCompletePurchase) {
-          await _iapIosPlatform.completePurchase(purchaseDetails);
+          await _iapStoreKitPlatform.completePurchase(purchaseDetails);
         }
       }
     });

@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
 import '../store_kit_wrappers.dart';
 
 /// Contains InApp Purchase features that are only available on iOS.
-class InAppPurchaseIosPlatformAddition extends InAppPurchasePlatformAddition {
+class InAppPurchaseStoreKitPlatformAddition
+    extends InAppPurchasePlatformAddition {
   /// Present Code Redemption Sheet.
   ///
   /// Available on devices running iOS 14 and iPadOS 14 and later.

@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'package:integration_test/integration_test.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Can create InAppPurchaseAndroid instance',
+  testWidgets('Can create InAppPurchaseStoreKit instance',
       (WidgetTester tester) async {
-    InAppPurchaseIosPlatform.registerPlatform();
+    InAppPurchaseStoreKitPlatform.registerPlatform();
     final InAppPurchasePlatform androidPlatform =
         InAppPurchasePlatform.instance;
     expect(androidPlatform, isNotNull);

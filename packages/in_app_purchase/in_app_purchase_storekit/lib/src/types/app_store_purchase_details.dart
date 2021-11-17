@@ -4,7 +4,7 @@
 
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import '../../in_app_purchase_ios.dart';
+import '../../in_app_purchase_storekit.dart';
 import '../../store_kit_wrappers.dart';
 import '../store_kit_wrappers/enum_converters.dart';
 

@@ -4,17 +4,17 @@
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/src/channel.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/src/channel.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final FakeIOSPlatform fakeIOSPlatform = FakeIOSPlatform();
+  final FakeStoreKitPlatform fakeStoreKitPlatform = FakeStoreKitPlatform();
 
   setUpAll(() {
     SystemChannels.platform
-        .setMockMethodCallHandler(fakeIOSPlatform.onMethodCall);
+        .setMockMethodCallHandler(fakeStoreKitPlatform.onMethodCall);
   });
 
   test(
@@ -146,8 +146,8 @@ class TestPaymentQueueDelegate extends SKPaymentQueueDelegateWrapper {
   }
 }
 
-class FakeIOSPlatform {
-  FakeIOSPlatform() {
+class FakeStoreKitPlatform {
+  FakeStoreKitPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 

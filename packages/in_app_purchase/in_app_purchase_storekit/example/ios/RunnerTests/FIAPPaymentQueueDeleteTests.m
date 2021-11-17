@@ -8,7 +8,7 @@
 #import "FIAPaymentQueueHandler.h"
 #import "Stubs.h"
 
-@import in_app_purchase_ios;
+@import in_app_purchase_storekit;
 
 API_AVAILABLE(ios(13.0))
 @interface FIAPPaymentQueueDelegateTests : XCTestCase

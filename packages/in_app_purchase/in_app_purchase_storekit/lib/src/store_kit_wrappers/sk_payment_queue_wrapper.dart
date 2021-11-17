@@ -8,12 +8,12 @@ import 'dart:ui' show hashValues;
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../channel.dart';
-import '../in_app_purchase_ios_platform.dart';
+import '../in_app_purchase_storekit_platform.dart';
 import 'sk_payment_queue_delegate_wrapper.dart';
 import 'sk_payment_transaction_wrappers.dart';
 import 'sk_product_wrapper.dart';
@@ -73,7 +73,7 @@ class SKPaymentQueueWrapper {
   /// start listening to it.
   ///
   /// Call this method when the first listener is subscribed to the
-  /// [InAppPurchaseIosPlatform.purchaseStream].
+  /// [InAppPurchaseStoreKitPlatform.purchaseStream].
   Future startObservingTransactionQueue() => channel
       .invokeMethod<void>('-[SKPaymentQueue startObservingTransactionQueue]');
 
@@ -81,7 +81,7 @@ class SKPaymentQueueWrapper {
   /// stop listening to it.
   ///
   /// Call this when there are no longer any listeners subscribed to the
-  /// [InAppPurchaseIosPlatform.purchaseStream].
+  /// [InAppPurchaseStoreKitPlatform.purchaseStream].
   Future stopObservingTransactionQueue() => channel
       .invokeMethod<void>('-[SKPaymentQueue stopObservingTransactionQueue]');
 

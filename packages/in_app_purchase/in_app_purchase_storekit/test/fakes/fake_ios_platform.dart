@@ -7,14 +7,14 @@ import 'dart:io';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:in_app_purchase_ios/in_app_purchase_ios.dart';
-import 'package:in_app_purchase_ios/src/channel.dart';
-import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
+import 'package:in_app_purchase_storekit/src/channel.dart';
+import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 
 import '../store_kit_wrappers/sk_test_stub_objects.dart';
 
-class FakeIOSPlatform {
-  FakeIOSPlatform() {
+class FakeStoreKitPlatform {
+  FakeStoreKitPlatform() {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 
@@ -151,15 +151,15 @@ class FakeIOSPlatform {
           throw restoreException!;
         }
         if (testRestoredError != null) {
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseStoreKitPlatform.observer
               .restoreCompletedTransactionsFailed(error: testRestoredError!);
           return Future<void>.sync(() {});
         }
         if (!testRestoredTransactionsNull) {
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseStoreKitPlatform.observer
               .updatedTransactions(transactions: transactions);
         }
-        InAppPurchaseIosPlatform.observer
+        InAppPurchaseStoreKitPlatform.observer
             .paymentQueueRestoreCompletedTransactionsFinished();
 
         return Future<void>.sync(() {});
@@ -175,24 +175,24 @@ class FakeIOSPlatform {
       case '-[InAppPurchasePlugin addPayment:result:]':
         String id = call.arguments['productIdentifier'];
         SKPaymentTransactionWrapper transaction = createPendingTransaction(id);
-        InAppPurchaseIosPlatform.observer
+        InAppPurchaseStoreKitPlatform.observer
             .updatedTransactions(transactions: [transaction]);
         sleep(const Duration(milliseconds: 30));
         if (testTransactionFail) {
           SKPaymentTransactionWrapper transaction_failed =
               createFailedTransaction(id);
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseStoreKitPlatform.observer
               .updatedTransactions(transactions: [transaction_failed]);
         } else if (testTransactionCancel > 0) {
           SKPaymentTransactionWrapper transaction_canceled =
               createCanceledTransaction(id, testTransactionCancel);
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseStoreKitPlatform.observer
               .updatedTransactions(transactions: [transaction_canceled]);
         } else {
           SKPaymentTransactionWrapper transaction_finished =
               createPurchasedTransaction(
                   id, transaction.transactionIdentifier ?? '');
-          InAppPurchaseIosPlatform.observer
+          InAppPurchaseStoreKitPlatform.observer
               .updatedTransactions(transactions: [transaction_finished]);
         }
         break;

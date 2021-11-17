@@ -1,4 +1,4 @@
-# in\_app\_purchase\_ios
+# in\_app\_purchase\_storekit
 
 The iOS implementation of [`in_app_purchase`][1].
 
@@ -8,7 +8,7 @@ This package has been [endorsed][2], meaning that you only need to add `in_app_p
 as a dependency in your `pubspec.yaml`. This package will be automatically included in your app
 when you do.
 
-If you wish to use the iOS package only, you can [add  `in_app_purchase_ios` directly][3].
+If you wish to use this package only, you can [add  `in_app_purchase_storekit` directly][3].
 
 ## Contributing
 
@@ -26,4 +26,4 @@ If you would like to contribute to the plugin, check out our
 
 [1]: ../in_app_purchase
 [2]: https://flutter.dev/docs/development/packages-and-plugins/developing-packages#endorsed-federated-plugin
-[3]: https://pub.dev/packages/in_app_purchase_ios/install
+[3]: https://pub.dev/packages/in_app_purchase_storekit/install

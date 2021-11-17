@@ -6,10 +6,10 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:in_app_purchase_ios/src/in_app_purchase_ios_platform_addition.dart';
+import 'package:in_app_purchase_storekit/src/in_app_purchase_storekit_platform_addition.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import '../in_app_purchase_ios.dart';
+import '../in_app_purchase_storekit.dart';
 import '../store_kit_wrappers.dart';
 
 /// [IAPError.code] code for failed purchases.
@@ -22,16 +22,16 @@ const String kIAPSource = 'app_store';
 ///
 /// This translates various `StoreKit` calls and responses into the
 /// generic plugin API.
-class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
+class InAppPurchaseStoreKitPlatform extends InAppPurchasePlatform {
   static late SKPaymentQueueWrapper _skPaymentQueueWrapper;
   static late _TransactionObserver _observer;
 
-  /// Creates an [InAppPurchaseIosPlatform] object.
+  /// Creates an [InAppPurchaseStoreKitPlatform] object.
   ///
   /// This constructor should only be used for testing, for any other purpose
   /// get the connection from the [instance] getter.
   @visibleForTesting
-  InAppPurchaseIosPlatform();
+  InAppPurchaseStoreKitPlatform();
 
   Stream<List<PurchaseDetails>> get purchaseStream =>
       _observer.purchaseUpdatedController.stream;
@@ -42,13 +42,14 @@ class InAppPurchaseIosPlatform extends InAppPurchasePlatform {
 
   /// Registers this class as the default instance of [InAppPurchasePlatform].
   static void registerPlatform() {
-    // Register the [InAppPurchaseIosPlatformAddition] containing iOS
-    // platform-specific functionality.
-    InAppPurchasePlatformAddition.instance = InAppPurchaseIosPlatformAddition();
+    // Register the [InAppPurchaseStoreKitPlatformAddition] containing
+    // StoreKit-specific functionality.
+    InAppPurchasePlatformAddition.instance =
+        InAppPurchaseStoreKitPlatformAddition();
 
     // Register the platform-specific implementation of the idiomatic
     // InAppPurchase API.
-    InAppPurchasePlatform.instance = InAppPurchaseIosPlatform();
+    InAppPurchasePlatform.instance = InAppPurchaseStoreKitPlatform();
 
     _skPaymentQueueWrapper = SKPaymentQueueWrapper();
 
