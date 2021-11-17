@@ -18,7 +18,7 @@ class FakeIOSPlatform {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 
-  // pre-configured store informations
+  // pre-configured store information
   String? receiptData;
   late Set<String> validProductIDs;
   late Map<String, SKProductWrapper> validProducts;
@@ -26,6 +26,7 @@ class FakeIOSPlatform {
   late List<SKPaymentTransactionWrapper> finishedTransactions;
   late bool testRestoredTransactionsNull;
   late bool testTransactionFail;
+  late int testTransactionCancel;
   PlatformException? queryProductException;
   PlatformException? restoreException;
   SKError? testRestoredError;
@@ -40,6 +41,9 @@ class FakeIOSPlatform {
       Map<String, dynamic> productWrapperMap =
           buildProductMap(dummyProductWrapper);
       productWrapperMap['productIdentifier'] = validID;
+      if (validID == '456') {
+        productWrapperMap['priceLocale'] = buildLocaleMap(noSymbolLocale);
+      }
       validProducts[validID] = SKProductWrapper.fromJson(productWrapperMap);
     }
 
@@ -64,6 +68,7 @@ class FakeIOSPlatform {
     finishedTransactions = [];
     testRestoredTransactionsNull = false;
     testTransactionFail = false;
+    testTransactionCancel = -1;
     queryProductException = null;
     restoreException = null;
     testRestoredError = null;
@@ -104,6 +109,20 @@ class FakeIOSPlatform {
         originalTransaction: null);
   }
 
+  SKPaymentTransactionWrapper createCanceledTransaction(
+      String productId, int errorCode) {
+    return SKPaymentTransactionWrapper(
+        transactionIdentifier: '',
+        payment: SKPaymentWrapper(productIdentifier: productId),
+        transactionState: SKPaymentTransactionStateWrapper.failed,
+        transactionTimeStamp: 123123.121,
+        error: SKError(
+            code: errorCode,
+            domain: 'ios_domain',
+            userInfo: {'message': 'an error message'}),
+        originalTransaction: null);
+  }
+
   Future<dynamic> onMethodCall(MethodCall call) {
     switch (call.method) {
       case '-[SKPaymentQueue canMakePayments:]':
@@ -114,7 +133,6 @@ class FakeIOSPlatform {
         }
         List<String> productIDS =
             List.castFrom<dynamic, String>(call.arguments);
-        assert(productIDS is List<String>, 'invalid argument type');
         List<String> invalidFound = [];
         List<SKProductWrapper> products = [];
         for (String productID in productIDS) {
@@ -165,6 +183,11 @@ class FakeIOSPlatform {
               createFailedTransaction(id);
           InAppPurchaseIosPlatform.observer
               .updatedTransactions(transactions: [transaction_failed]);
+        } else if (testTransactionCancel > 0) {
+          SKPaymentTransactionWrapper transaction_canceled =
+              createCanceledTransaction(id, testTransactionCancel);
+          InAppPurchaseIosPlatform.observer
+              .updatedTransactions(transactions: [transaction_canceled]);
         } else {
           SKPaymentTransactionWrapper transaction_finished =
               createPurchasedTransaction(

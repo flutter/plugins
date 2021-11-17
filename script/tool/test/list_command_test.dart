@@ -8,18 +8,22 @@ import 'package:file/memory.dart';
 import 'package:flutter_plugin_tools/src/list_command.dart';
 import 'package:test/test.dart';
 
+import 'mocks.dart';
 import 'util.dart';
 
 void main() {
   group('$ListCommand', () {
     late FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
     late CommandRunner<void> runner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
-      final ListCommand command = ListCommand(packagesDir);
+      final ListCommand command =
+          ListCommand(packagesDir, platform: mockPlatform);
 
       runner = CommandRunner<void>('list_test', 'Test for $ListCommand');
       runner.addCommand(command);
@@ -95,13 +99,16 @@ void main() {
         examples,
         unorderedEquals(<String>[
           '/packages/plugin1/pubspec.yaml',
+          '/packages/plugin1/AUTHORS',
           '/packages/plugin1/CHANGELOG.md',
           '/packages/plugin1/example/pubspec.yaml',
           '/packages/plugin2/pubspec.yaml',
+          '/packages/plugin2/AUTHORS',
           '/packages/plugin2/CHANGELOG.md',
           '/packages/plugin2/example/example1/pubspec.yaml',
           '/packages/plugin2/example/example2/pubspec.yaml',
           '/packages/plugin3/pubspec.yaml',
+          '/packages/plugin3/AUTHORS',
           '/packages/plugin3/CHANGELOG.md',
         ]),
       );
@@ -139,7 +146,7 @@ void main() {
       );
     });
 
-    test('can filter plugins with the --plugins argument', () async {
+    test('can filter plugins with the --packages argument', () async {
       createFakePlugin('plugin1', packagesDir);
 
       // Create a federated plugin by creating a directory under the packages
@@ -157,7 +164,7 @@ void main() {
       createFakePubspec(macLibrary);
 
       List<String> plugins = await runCapturingPrint(
-          runner, <String>['list', '--plugins=plugin1']);
+          runner, <String>['list', '--packages=plugin1']);
       expect(
         plugins,
         unorderedEquals(<String>[
@@ -166,7 +173,7 @@ void main() {
       );
 
       plugins = await runCapturingPrint(
-          runner, <String>['list', '--plugins=my_plugin']);
+          runner, <String>['list', '--packages=my_plugin']);
       expect(
         plugins,
         unorderedEquals(<String>[
@@ -177,7 +184,7 @@ void main() {
       );
 
       plugins = await runCapturingPrint(
-          runner, <String>['list', '--plugins=my_plugin/my_plugin_web']);
+          runner, <String>['list', '--packages=my_plugin/my_plugin_web']);
       expect(
         plugins,
         unorderedEquals(<String>[
@@ -186,7 +193,7 @@ void main() {
       );
 
       plugins = await runCapturingPrint(runner,
-          <String>['list', '--plugins=my_plugin/my_plugin_web,plugin1']);
+          <String>['list', '--packages=my_plugin/my_plugin_web,plugin1']);
       expect(
         plugins,
         unorderedEquals(<String>[

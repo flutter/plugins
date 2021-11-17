@@ -28,6 +28,7 @@ class GoogleSignInAuthentication {
   String? get accessToken => _data.accessToken;
 
   /// Server auth code used to access Google Login
+  @Deprecated('Use the `GoogleSignInAccount.serverAuthCode` property instead')
   String? get serverAuthCode => _data.serverAuthCode;
 
   @override
@@ -44,6 +45,7 @@ class GoogleSignInAccount implements GoogleIdentity {
         email = data.email,
         id = data.id,
         photoUrl = data.photoUrl,
+        serverAuthCode = data.serverAuthCode,
         _idToken = data.idToken {
     assert(id != null);
   }
@@ -67,6 +69,9 @@ class GoogleSignInAccount implements GoogleIdentity {
 
   @override
   final String? photoUrl;
+
+  @override
+  final String? serverAuthCode;
 
   final String? _idToken;
   final GoogleSignIn _googleSignIn;
@@ -97,6 +102,7 @@ class GoogleSignInAccount implements GoogleIdentity {
     if (response.idToken == null) {
       response.idToken = _idToken;
     }
+
     return GoogleSignInAuthentication._(response);
   }
 
@@ -132,11 +138,13 @@ class GoogleSignInAccount implements GoogleIdentity {
         email == otherAccount.email &&
         id == otherAccount.id &&
         photoUrl == otherAccount.photoUrl &&
+        serverAuthCode == otherAccount.serverAuthCode &&
         _idToken == otherAccount._idToken;
   }
 
   @override
-  int get hashCode => hashValues(displayName, email, id, photoUrl, _idToken);
+  int get hashCode =>
+      hashValues(displayName, email, id, photoUrl, _idToken, serverAuthCode);
 
   @override
   String toString() {
@@ -145,6 +153,7 @@ class GoogleSignInAccount implements GoogleIdentity {
       'email': email,
       'id': id,
       'photoUrl': photoUrl,
+      'serverAuthCode': serverAuthCode
     };
     return 'GoogleSignInAccount:$data';
   }
@@ -314,11 +323,13 @@ class GoogleSignIn {
   /// successful sign in or `null` if there is no previously authenticated user.
   /// Use [signIn] method to trigger interactive sign in process.
   ///
-  /// Authentication process is triggered only if there is no currently signed in
+  /// Authentication is triggered if there is no currently signed in
   /// user (that is when `currentUser == null`), otherwise this method returns
   /// a Future which resolves to the same user instance.
   ///
-  /// Re-authentication can be triggered only after [signOut] or [disconnect].
+  /// Re-authentication can be triggered after [signOut] or [disconnect]. It can
+  /// also be triggered by setting [reAuthenticate] to `true` if a new ID token
+  /// is required.
   ///
   /// When [suppressErrors] is set to `false` and an error occurred during sign in
   /// returned Future completes with [PlatformException] whose `code` can be
@@ -327,10 +338,11 @@ class GoogleSignIn {
   /// (when an unknown error occurred).
   Future<GoogleSignInAccount?> signInSilently({
     bool suppressErrors = true,
+    bool reAuthenticate = false,
   }) async {
     try {
       return await _addMethodCall(GoogleSignInPlatform.instance.signInSilently,
-          canSkipCall: true);
+          canSkipCall: !reAuthenticate);
     } catch (_) {
       if (suppressErrors) {
         return null;

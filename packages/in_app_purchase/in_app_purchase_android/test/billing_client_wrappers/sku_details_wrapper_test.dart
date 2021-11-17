@@ -2,21 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'package:in_app_purchase_android/billing_client_wrappers.dart';
 import 'package:in_app_purchase_android/src/types/google_play_product_details.dart';
 import 'package:test/test.dart';
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
-import 'package:in_app_purchase_android/src/billing_client_wrappers/enum_converters.dart';
 
 final SkuDetailsWrapper dummySkuDetails = SkuDetailsWrapper(
   description: 'description',
   freeTrialPeriod: 'freeTrialPeriod',
   introductoryPrice: 'introductoryPrice',
-  introductoryPriceMicros: 'introductoryPriceMicros',
+  introductoryPriceAmountMicros: 990000,
   introductoryPriceCycles: 1,
   introductoryPricePeriod: 'introductoryPricePeriod',
   price: 'price',
   priceAmountMicros: 1000,
   priceCurrencyCode: 'priceCurrencyCode',
+  priceCurrencySymbol: r'$',
   sku: 'sku',
   subscriptionPeriod: 'subscriptionPeriod',
   title: 'title',
@@ -133,12 +133,13 @@ Map<String, dynamic> buildSkuMap(SkuDetailsWrapper original) {
     'description': original.description,
     'freeTrialPeriod': original.freeTrialPeriod,
     'introductoryPrice': original.introductoryPrice,
-    'introductoryPriceMicros': original.introductoryPriceMicros,
+    'introductoryPriceAmountMicros': original.introductoryPriceAmountMicros,
     'introductoryPriceCycles': original.introductoryPriceCycles,
     'introductoryPricePeriod': original.introductoryPricePeriod,
     'price': original.price,
     'priceAmountMicros': original.priceAmountMicros,
     'priceCurrencyCode': original.priceCurrencyCode,
+    'priceCurrencySymbol': original.priceCurrencySymbol,
     'sku': original.sku,
     'subscriptionPeriod': original.subscriptionPeriod,
     'title': original.title,

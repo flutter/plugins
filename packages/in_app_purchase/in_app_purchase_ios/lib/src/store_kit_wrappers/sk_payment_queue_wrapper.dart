@@ -6,12 +6,15 @@ import 'dart:async';
 import 'dart:ui' show hashValues;
 
 import 'package:collection/collection.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:in_app_purchase_ios/store_kit_wrappers.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../channel.dart';
 import '../in_app_purchase_ios_platform.dart';
+import 'sk_payment_queue_delegate_wrapper.dart';
 import 'sk_payment_transaction_wrappers.dart';
 import 'sk_product_wrapper.dart';
 
@@ -40,6 +43,7 @@ class SKPaymentQueueWrapper {
 
   static final SKPaymentQueueWrapper _singleton = SKPaymentQueueWrapper._();
 
+  SKPaymentQueueDelegateWrapper? _paymentQueueDelegate;
   SKTransactionObserverWrapper? _observer;
 
   /// Calls [`-[SKPaymentQueue transactions]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506026-transactions?language=objc)
@@ -62,7 +66,7 @@ class SKPaymentQueueWrapper {
   /// addTransactionObserver:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/1506042-addtransactionobserver?language=objc).
   void setTransactionObserver(SKTransactionObserverWrapper observer) {
     _observer = observer;
-    channel.setMethodCallHandler(_handleObserverCallbacks);
+    channel.setMethodCallHandler(handleObserverCallbacks);
   }
 
   /// Instructs the iOS implementation to register a transaction observer and
@@ -70,18 +74,39 @@ class SKPaymentQueueWrapper {
   ///
   /// Call this method when the first listener is subscribed to the
   /// [InAppPurchaseIosPlatform.purchaseStream].
-  Future startObservingTransactionQueue() async =>
-      await channel.invokeListMethod<void>(
-          '-[SKPaymentQueue startObservingTransactionQueue]');
+  Future startObservingTransactionQueue() => channel
+      .invokeMethod<void>('-[SKPaymentQueue startObservingTransactionQueue]');
 
   /// Instructs the iOS implementation to remove the transaction observer and
   /// stop listening to it.
   ///
   /// Call this when there are no longer any listeners subscribed to the
   /// [InAppPurchaseIosPlatform.purchaseStream].
-  Future stopObservingTransactionQueue() async =>
-      await channel.invokeListMethod<void>(
-          '-[SKPaymentQueue stopObservingTransactionQueue]');
+  Future stopObservingTransactionQueue() => channel
+      .invokeMethod<void>('-[SKPaymentQueue stopObservingTransactionQueue]');
+
+  /// Sets an implementation of the [SKPaymentQueueDelegateWrapper].
+  ///
+  /// The [SKPaymentQueueDelegateWrapper] can be used to inform iOS how to
+  /// finish transactions when the storefront changes or if the price consent
+  /// sheet should be displayed when the price of a subscription has changed. If
+  /// no delegate is registered iOS will fallback to it's default configuration.
+  /// See the documentation on StoreKite's [`-[SKPaymentQueue delegate:]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc).
+  ///
+  /// When set to `null` the payment queue delegate will be removed and the
+  /// default behaviour will apply (see [documentation](https://developer.apple.com/documentation/storekit/skpaymentqueue/3182429-delegate?language=objc)).
+  Future setDelegate(SKPaymentQueueDelegateWrapper? delegate) async {
+    if (delegate == null) {
+      await channel.invokeMethod<void>('-[SKPaymentQueue removeDelegate]');
+      paymentQueueDelegateChannel.setMethodCallHandler(null);
+    } else {
+      await channel.invokeMethod<void>('-[SKPaymentQueue registerDelegate]');
+      paymentQueueDelegateChannel
+          .setMethodCallHandler(handlePaymentQueueDelegateCallbacks);
+    }
+
+    _paymentQueueDelegate = delegate;
+  }
 
   /// Posts a payment to the queue.
   ///
@@ -170,8 +195,25 @@ class SKPaymentQueueWrapper {
         '-[InAppPurchasePlugin presentCodeRedemptionSheet:result:]');
   }
 
-  // Triage a method channel call from the platform and triggers the correct observer method.
-  Future<void> _handleObserverCallbacks(MethodCall call) async {
+  /// Shows the price consent sheet if the user has not yet responded to a
+  /// subscription price change.
+  ///
+  /// Use this function when you have registered a [SKPaymentQueueDelegateWrapper]
+  /// (using the [setDelegate] method) and returned `false` when the
+  /// `SKPaymentQueueDelegateWrapper.shouldShowPriceConsent()` method was called.
+  ///
+  /// See documentation of StoreKit's [`-[SKPaymentQueue showPriceConsentIfNeeded]`](https://developer.apple.com/documentation/storekit/skpaymentqueue/3521327-showpriceconsentifneeded?language=objc).
+  Future<void> showPriceConsentIfNeeded() async {
+    await channel
+        .invokeMethod<void>('-[SKPaymentQueue showPriceConsentIfNeeded]');
+  }
+
+  /// Triage a method channel call from the platform and triggers the correct observer method.
+  ///
+  /// This method is public for testing purposes only and should not be used
+  /// outside this class.
+  @visibleForTesting
+  Future<dynamic> handleObserverCallbacks(MethodCall call) async {
     assert(_observer != null,
         '[in_app_purchase]: (Fatal)The observer has not been set but we received a purchase transaction notification. Please ensure the observer has been set using `setTransactionObserver`. Make sure the observer is added right at the App Launch.');
     final SKTransactionObserverWrapper observer = _observer!;
@@ -194,7 +236,8 @@ class SKPaymentQueueWrapper {
         }
       case 'restoreCompletedTransactionsFailed':
         {
-          SKError error = SKError.fromJson(call.arguments);
+          SKError error =
+              SKError.fromJson(Map<String, dynamic>.from(call.arguments));
           return Future<void>(() {
             observer.restoreCompletedTransactionsFailed(error: error);
           });
@@ -234,6 +277,35 @@ class SKPaymentQueueWrapper {
       return SKPaymentTransactionWrapper.fromJson(
           Map.castFrom<dynamic, dynamic, String, dynamic>(map));
     }).toList();
+  }
+
+  /// Triage a method channel call from the platform and triggers the correct
+  /// payment queue delegate method.
+  ///
+  /// This method is public for testing purposes only and should not be used
+  /// outside this class.
+  @visibleForTesting
+  Future<dynamic> handlePaymentQueueDelegateCallbacks(MethodCall call) async {
+    assert(_paymentQueueDelegate != null,
+        '[in_app_purchase]: (Fatal)The payment queue delegate has not been set but we received a payment queue notification. Please ensure the payment queue has been set using `setDelegate`.');
+
+    final SKPaymentQueueDelegateWrapper delegate = _paymentQueueDelegate!;
+    switch (call.method) {
+      case 'shouldContinueTransaction':
+        final SKPaymentTransactionWrapper transaction =
+            SKPaymentTransactionWrapper.fromJson(call.arguments['transaction']);
+        final SKStorefrontWrapper storefront =
+            SKStorefrontWrapper.fromJson(call.arguments['storefront']);
+        return delegate.shouldContinueTransaction(transaction, storefront);
+      case 'shouldShowPriceConsent':
+        return delegate.shouldShowPriceConsent();
+      default:
+        break;
+    }
+    throw PlatformException(
+        code: 'no_such_callback',
+        message:
+            'Did not recognize the payment queue delegate callback ${call.method}.');
   }
 }
 
@@ -303,15 +375,17 @@ class SKError {
 /// [SKPaymentQueueWrapper.addPayment] directly with a product identifier to
 /// initiate a payment.
 @immutable
-@JsonSerializable()
+@JsonSerializable(createToJson: true)
 class SKPaymentWrapper {
   /// Creates a new [SKPaymentWrapper] with the provided information.
-  const SKPaymentWrapper(
-      {required this.productIdentifier,
-      this.applicationUsername,
-      this.requestData,
-      this.quantity = 1,
-      this.simulatesAskToBuyInSandbox = false});
+  const SKPaymentWrapper({
+    required this.productIdentifier,
+    this.applicationUsername,
+    this.requestData,
+    this.quantity = 1,
+    this.simulatesAskToBuyInSandbox = false,
+    this.paymentDiscount,
+  });
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -376,8 +450,15 @@ class SKPaymentWrapper {
   ///
   /// See https://developer.apple.com/in-app-purchase/ for a guide on Sandbox
   /// testing.
-  @JsonKey(defaultValue: false)
   final bool simulatesAskToBuyInSandbox;
+
+  /// The details of a discount that should be applied to the payment.
+  ///
+  /// See [Implementing Promotional Offers in Your App](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/implementing_promotional_offers_in_your_app?language=objc)
+  /// for more information on generating keys and creating offers for
+  /// auto-renewable subscriptions. If set to `null` no discount will be
+  /// applied to this payment.
+  final SKPaymentDiscountWrapper? paymentDiscount;
 
   @override
   bool operator ==(Object other) {
@@ -401,4 +482,104 @@ class SKPaymentWrapper {
 
   @override
   String toString() => _$SKPaymentWrapperToJson(this).toString();
+}
+
+/// Dart wrapper around StoreKit's
+/// [SKPaymentDiscount](https://developer.apple.com/documentation/storekit/skpaymentdiscount?language=objc).
+///
+/// Used to indicate a discount is applicable to a payment. The
+/// [SKPaymentDiscountWrapper] instance should be assigned to the
+/// [SKPaymentWrapper] object to which the discount should be applied.
+/// Discount offers are set up in App Store Connect. See [Implementing Promotional Offers in Your App](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/implementing_promotional_offers_in_your_app?language=objc)
+/// for more information.
+@immutable
+@JsonSerializable(createToJson: true)
+class SKPaymentDiscountWrapper {
+  /// Creates a new [SKPaymentDiscountWrapper] with the provided information.
+  const SKPaymentDiscountWrapper({
+    required this.identifier,
+    required this.keyIdentifier,
+    required this.nonce,
+    required this.signature,
+    required this.timestamp,
+  });
+
+  /// Constructs an instance of this from a key value map of data.
+  ///
+  /// The map needs to have named string keys with values matching the names and
+  /// types of all of the members on this class.
+  factory SKPaymentDiscountWrapper.fromJson(Map<String, dynamic> map) {
+    assert(map != null);
+    return _$SKPaymentDiscountWrapperFromJson(map);
+  }
+
+  /// Creates a Map object describes the payment object.
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'identifier': identifier,
+      'keyIdentifier': keyIdentifier,
+      'nonce': nonce,
+      'signature': signature,
+      'timestamp': timestamp,
+    };
+  }
+
+  /// The identifier of the discount offer.
+  ///
+  /// The identifier must match one of the offers set up in App Store Connect.
+  final String identifier;
+
+  /// A string identifying the key that is used to generate the signature.
+  ///
+  /// Keys are generated and downloaded from App Store Connect. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final String keyIdentifier;
+
+  /// A universal unique identifier (UUID) created together with the signature.
+  ///
+  /// The UUID should be generated on your server when it creates the
+  /// `signature` for the payment discount. The UUID can be used once, a new
+  /// UUID should be created for each payment request. The string representation
+  /// of the UUID must be lowercase. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final String nonce;
+
+  /// A cryptographically signed string representing the to properties of the
+  /// promotional offer.
+  ///
+  /// The signature is string signed with a private key and contains all the
+  /// properties of the promotional offer. To keep you private key secure the
+  /// signature should be created on a server. See [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final String signature;
+
+  /// The date and time the signature was created.
+  ///
+  /// The timestamp should be formatted in Unix epoch time. See
+  /// [Generating a Signature for Promotional Offers](https://developer.apple.com/documentation/storekit/original_api_for_in-app_purchase/subscriptions_and_offers/generating_a_signature_for_promotional_offers?language=objc)
+  /// for more information.
+  final int timestamp;
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) {
+      return true;
+    }
+    if (other.runtimeType != runtimeType) {
+      return false;
+    }
+    final SKPaymentDiscountWrapper typedOther =
+        other as SKPaymentDiscountWrapper;
+    return typedOther.identifier == identifier &&
+        typedOther.keyIdentifier == keyIdentifier &&
+        typedOther.nonce == nonce &&
+        typedOther.signature == signature &&
+        typedOther.timestamp == timestamp;
+  }
+
+  @override
+  int get hashCode =>
+      hashValues(identifier, keyIdentifier, nonce, signature, timestamp);
 }

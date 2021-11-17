@@ -43,7 +43,9 @@ class MethodChannelSharedPreferencesStore
     final Map<String, Object>? preferences =
         await _kChannel.invokeMapMethod<String, Object>('getAll');
 
-    if (preferences == null) return <String, Object>{};
+    if (preferences == null) {
+      return <String, Object>{};
+    }
     return preferences;
   }
 }

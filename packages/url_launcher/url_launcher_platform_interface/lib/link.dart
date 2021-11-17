@@ -87,9 +87,10 @@ typedef _SendMessage = Function(String, ByteData?, void Function(ByteData?));
 Future<ByteData> pushRouteNameToFramework(Object? _, String routeName) {
   final Completer<ByteData> completer = Completer<ByteData>();
   SystemNavigator.routeInformationUpdated(location: routeName);
-  final _SendMessage sendMessage =
-      WidgetsBinding.instance?.platformDispatcher.onPlatformMessage ??
-          ui.channelBuffers.push;
+  final _SendMessage sendMessage = _ambiguate(WidgetsBinding.instance)
+          ?.platformDispatcher
+          .onPlatformMessage ??
+      ui.channelBuffers.push;
   sendMessage(
     'flutter/navigation',
     _codec.encodeMethodCall(
@@ -102,3 +103,10 @@ Future<ByteData> pushRouteNameToFramework(Object? _, String routeName) {
   );
   return completer.future;
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;
