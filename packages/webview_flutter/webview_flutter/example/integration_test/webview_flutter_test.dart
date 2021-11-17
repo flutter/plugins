@@ -197,10 +197,10 @@ void main() {
       onPageFinished: () => onPageFinished.complete(),
     ));
     await onPageFinished.future;
-    // Wait for a potential call to resize when page is loaded.
+    // Wait for a potential call to resize after page is loaded.
     await initialResizeCompleter.future.timeout(
       const Duration(seconds: 3),
-      onTimeout: null,
+      onTimeout: () => null,
     );
 
     resizeButtonTapped = true;
