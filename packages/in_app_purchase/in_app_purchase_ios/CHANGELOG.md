@@ -1,3 +1,8 @@
+## 0.2.0
+
+* BREAKING CHANGE : Refactor to handle new `PurchaseStatus` named `canceled`. This means developers
+  can distinguish between an error and user cancellation.
+
 ## 0.1.4
 
 * Require Dart SDK >= 2.14.
