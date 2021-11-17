@@ -75,13 +75,11 @@ public final class CameraPlugin implements FlutterPlugin, ActivityAware {
 
   @Override
   public void onDetachedFromActivity() {
-    if (methodCallHandler == null) {
-      // Could be on too low of an SDK to have started listening originally.
-      return;
+    // Could be on too low of an SDK to have started listening originally.
+    if (methodCallHandler != null) {
+      methodCallHandler.stopListening();
+      methodCallHandler = null;
     }
-
-    methodCallHandler.stopListening();
-    methodCallHandler = null;
   }
 
   @Override

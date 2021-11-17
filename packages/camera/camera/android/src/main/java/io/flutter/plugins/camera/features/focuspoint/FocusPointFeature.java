@@ -8,10 +8,12 @@ import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.MeteringRectangle;
 import android.util.Size;
 import androidx.annotation.NonNull;
+import io.flutter.embedding.engine.systemchannels.PlatformChannel;
 import io.flutter.plugins.camera.CameraProperties;
 import io.flutter.plugins.camera.CameraRegionUtils;
 import io.flutter.plugins.camera.features.CameraFeature;
 import io.flutter.plugins.camera.features.Point;
+import io.flutter.plugins.camera.features.sensororientation.SensorOrientationFeature;
 
 /** Focus point controls where in the frame focus will come from. */
 public class FocusPointFeature extends CameraFeature<Point> {
@@ -19,14 +21,17 @@ public class FocusPointFeature extends CameraFeature<Point> {
   private Size cameraBoundaries;
   private Point focusPoint;
   private MeteringRectangle focusRectangle;
+  private final SensorOrientationFeature sensorOrientationFeature;
 
   /**
    * Creates a new instance of the {@link FocusPointFeature}.
    *
    * @param cameraProperties Collection of the characteristics for the current camera device.
    */
-  public FocusPointFeature(CameraProperties cameraProperties) {
+  public FocusPointFeature(
+      CameraProperties cameraProperties, SensorOrientationFeature sensorOrientationFeature) {
     super(cameraProperties);
+    this.sensorOrientationFeature = sensorOrientationFeature;
   }
 
   /**
@@ -80,9 +85,15 @@ public class FocusPointFeature extends CameraFeature<Point> {
     if (this.focusPoint == null) {
       this.focusRectangle = null;
     } else {
+      PlatformChannel.DeviceOrientation orientation =
+          this.sensorOrientationFeature.getLockedCaptureOrientation();
+      if (orientation == null) {
+        orientation =
+            this.sensorOrientationFeature.getDeviceOrientationManager().getLastUIOrientation();
+      }
       this.focusRectangle =
           CameraRegionUtils.convertPointToMeteringRectangle(
-              this.cameraBoundaries, this.focusPoint.x, this.focusPoint.y);
+              this.cameraBoundaries, this.focusPoint.x, this.focusPoint.y, orientation);
     }
   }
 }

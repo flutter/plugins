@@ -33,8 +33,17 @@ final SKPaymentTransactionWrapper dummyTransaction =
   error: dummyError,
 );
 
-final SKPriceLocaleWrapper dummyLocale =
-    SKPriceLocaleWrapper(currencySymbol: '\$', currencyCode: 'USD');
+final SKPriceLocaleWrapper dollarLocale = SKPriceLocaleWrapper(
+  currencySymbol: '\$',
+  currencyCode: 'USD',
+  countryCode: 'US',
+);
+
+final SKPriceLocaleWrapper noSymbolLocale = SKPriceLocaleWrapper(
+  currencySymbol: '',
+  currencyCode: 'EUR',
+  countryCode: 'UK',
+);
 
 final SKProductSubscriptionPeriodWrapper dummySubscription =
     SKProductSubscriptionPeriodWrapper(
@@ -44,7 +53,7 @@ final SKProductSubscriptionPeriodWrapper dummySubscription =
 
 final SKProductDiscountWrapper dummyDiscount = SKProductDiscountWrapper(
   price: '1.0',
-  priceLocale: dummyLocale,
+  priceLocale: dollarLocale,
   numberOfPeriods: 1,
   paymentMode: SKProductDiscountPaymentMode.payUpFront,
   subscriptionPeriod: dummySubscription,
@@ -54,11 +63,12 @@ final SKProductWrapper dummyProductWrapper = SKProductWrapper(
   productIdentifier: 'id',
   localizedTitle: 'title',
   localizedDescription: 'description',
-  priceLocale: dummyLocale,
+  priceLocale: dollarLocale,
   subscriptionGroupIdentifier: 'com.group',
   price: '1.0',
   subscriptionPeriod: dummySubscription,
   introductoryPrice: dummyDiscount,
+  discounts: [dummyDiscount],
 );
 
 final SkProductResponseWrapper dummyProductResponseWrapper =
@@ -70,7 +80,8 @@ final SkProductResponseWrapper dummyProductResponseWrapper =
 Map<String, dynamic> buildLocaleMap(SKPriceLocaleWrapper local) {
   return {
     'currencySymbol': local.currencySymbol,
-    'currencyCode': local.currencyCode
+    'currencyCode': local.currencyCode,
+    'countryCode': local.countryCode,
   };
 }
 
@@ -108,6 +119,7 @@ Map<String, dynamic> buildProductMap(SKProductWrapper product) {
     'subscriptionPeriod':
         buildSubscriptionPeriodMap(product.subscriptionPeriod),
     'introductoryPrice': buildDiscountMap(product.introductoryPrice!),
+    'discounts': [buildDiscountMap(product.introductoryPrice!)],
   };
 }
 

@@ -61,6 +61,14 @@
       [self setValue:map[@"subscriptionGroupIdentifier"] ?: [NSNull null]
               forKey:@"subscriptionGroupIdentifier"];
     }
+    if (@available(iOS 12.2, *)) {
+      NSMutableArray *discounts = [[NSMutableArray alloc] init];
+      for (NSDictionary *discountMap in map[@"discounts"]) {
+        [discounts addObject:[[SKProductDiscountStub alloc] initWithMap:discountMap]];
+      }
+
+      [self setValue:discounts forKey:@"discounts"];
+    }
   }
   return self;
 }
@@ -259,7 +267,19 @@
 
 @implementation FIAPReceiptManagerStub : FIAPReceiptManager
 
-- (NSData *)getReceiptData:(NSURL *)url {
+- (NSData *)getReceiptData:(NSURL *)url error:(NSError **)error {
+  if (self.returnError) {
+    *error = [NSError errorWithDomain:@"test"
+                                 code:1
+                             userInfo:@{
+                               @"name" : @"test",
+                               @"houseNr" : @5,
+                               @"error" : [[NSError alloc] initWithDomain:@"internalTestDomain"
+                                                                     code:99
+                                                                 userInfo:nil]
+                             }];
+    return nil;
+  }
   NSString *originalString = [NSString stringWithFormat:@"test"];
   return [[NSData alloc] initWithBase64EncodedString:originalString options:kNilOptions];
 }
@@ -287,6 +307,20 @@
   } else {
     [self.delegate requestDidFinish:self];
   }
+}
+
+@end
+
+@implementation SKStorefrontStub
+
+- (instancetype)initWithMap:(NSDictionary *)map {
+  self = [super init];
+  if (self) {
+    // Set stub values
+    [self setValue:map[@"countryCode"] forKey:@"countryCode"];
+    [self setValue:map[@"identifier"] forKey:@"identifier"];
+  }
+  return self;
 }
 
 @end

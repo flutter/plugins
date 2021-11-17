@@ -41,6 +41,9 @@ class FakeIOSPlatform {
       Map<String, dynamic> productWrapperMap =
           buildProductMap(dummyProductWrapper);
       productWrapperMap['productIdentifier'] = validID;
+      if (validID == '456') {
+        productWrapperMap['priceLocale'] = buildLocaleMap(noSymbolLocale);
+      }
       validProducts[validID] = SKProductWrapper.fromJson(productWrapperMap);
     }
 
@@ -130,7 +133,6 @@ class FakeIOSPlatform {
         }
         List<String> productIDS =
             List.castFrom<dynamic, String>(call.arguments);
-        assert(productIDS is List<String>, 'invalid argument type');
         List<String> invalidFound = [];
         List<SKProductWrapper> products = [];
         for (String productID in productIDS) {

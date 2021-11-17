@@ -35,6 +35,10 @@
                        ?: [NSNull null]
             forKey:@"introductoryPrice"];
   }
+  if (@available(iOS 12.2, *)) {
+    [map setObject:[FIAObjectTranslator getMapArrayFromSKProductDiscounts:product.discounts]
+            forKey:@"discounts"];
+  }
   if (@available(iOS 12.0, *)) {
     [map setObject:product.subscriptionGroupIdentifier ?: [NSNull null]
             forKey:@"subscriptionGroupIdentifier"];
@@ -47,6 +51,17 @@
     return nil;
   }
   return @{@"numberOfUnits" : @(period.numberOfUnits), @"unit" : @(period.unit)};
+}
+
++ (nonnull NSArray *)getMapArrayFromSKProductDiscounts:
+    (nonnull NSArray<SKProductDiscount *> *)productDiscounts {
+  NSMutableArray *discountsMapArray = [[NSMutableArray alloc] init];
+
+  for (SKProductDiscount *productDiscount in productDiscounts) {
+    [discountsMapArray addObject:[FIAObjectTranslator getMapFromSKProductDiscount:productDiscount]];
+  }
+
+  return discountsMapArray;
 }
 
 + (NSDictionary *)getMapFromSKProductDiscount:(SKProductDiscount *)discount {
@@ -96,9 +111,7 @@
     @"quantity" : @(payment.quantity),
     @"applicationUsername" : payment.applicationUsername ?: [NSNull null]
   }];
-  if (@available(iOS 8.3, *)) {
-    [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
-  }
+  [map setObject:@(payment.simulatesAskToBuyInSandbox) forKey:@"simulatesAskToBuyInSandbox"];
   return map;
 }
 
@@ -111,6 +124,7 @@
           forKey:@"currencySymbol"];
   [map setObject:[locale objectForKey:NSLocaleCurrencyCode] ?: [NSNull null]
           forKey:@"currencyCode"];
+  [map setObject:[locale objectForKey:NSLocaleCountryCode] ?: [NSNull null] forKey:@"countryCode"];
   return map;
 }
 
@@ -124,9 +138,7 @@
   payment.requestData = [utf8String dataUsingEncoding:NSUTF8StringEncoding];
   payment.quantity = [map[@"quantity"] integerValue];
   payment.applicationUsername = map[@"applicationUsername"];
-  if (@available(iOS 8.3, *)) {
-    payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
-  }
+  payment.simulatesAskToBuyInSandbox = [map[@"simulatesAskToBuyInSandbox"] boolValue];
   return payment;
 }
 
@@ -167,6 +179,92 @@
     }
   }
   return @{@"code" : @(error.code), @"domain" : error.domain ?: @"", @"userInfo" : userInfo};
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront {
+  if (!storefront) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"countryCode" : storefront.countryCode,
+    @"identifier" : storefront.identifier
+  }];
+
+  return map;
+}
+
++ (NSDictionary *)getMapFromSKStorefront:(SKStorefront *)storefront
+                 andSKPaymentTransaction:(SKPaymentTransaction *)transaction {
+  if (!storefront || !transaction) {
+    return nil;
+  }
+
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] initWithDictionary:@{
+    @"storefront" : [FIAObjectTranslator getMapFromSKStorefront:storefront],
+    @"transaction" : [FIAObjectTranslator getMapFromSKPaymentTransaction:transaction]
+  }];
+
+  return map;
+}
+
++ (SKPaymentDiscount *)getSKPaymentDiscountFromMap:(NSDictionary *)map
+                                         withError:(NSString **)error {
+  if (!map || map.count <= 0) {
+    return nil;
+  }
+
+  NSString *identifier = map[@"identifier"];
+  NSString *keyIdentifier = map[@"keyIdentifier"];
+  NSString *nonce = map[@"nonce"];
+  NSString *signature = map[@"signature"];
+  NSNumber *timestamp = map[@"timestamp"];
+
+  if (!identifier || ![identifier isKindOfClass:NSString.class] ||
+      [identifier isEqualToString:@""]) {
+    if (error) {
+      *error = @"When specifying a payment discount the 'identifier' field is mandatory.";
+    }
+    return nil;
+  }
+
+  if (!keyIdentifier || ![keyIdentifier isKindOfClass:NSString.class] ||
+      [keyIdentifier isEqualToString:@""]) {
+    if (error) {
+      *error = @"When specifying a payment discount the 'keyIdentifier' field is mandatory.";
+    }
+    return nil;
+  }
+
+  if (!nonce || ![nonce isKindOfClass:NSString.class] || [nonce isEqualToString:@""]) {
+    if (error) {
+      *error = @"When specifying a payment discount the 'nonce' field is mandatory.";
+    }
+    return nil;
+  }
+
+  if (!signature || ![signature isKindOfClass:NSString.class] || [signature isEqualToString:@""]) {
+    if (error) {
+      *error = @"When specifying a payment discount the 'signature' field is mandatory.";
+    }
+    return nil;
+  }
+
+  if (!timestamp || ![timestamp isKindOfClass:NSNumber.class] || [timestamp intValue] <= 0) {
+    if (error) {
+      *error = @"When specifying a payment discount the 'timestamp' field is mandatory.";
+    }
+    return nil;
+  }
+
+  SKPaymentDiscount *discount =
+      [[SKPaymentDiscount alloc] initWithIdentifier:identifier
+                                      keyIdentifier:keyIdentifier
+                                              nonce:[[NSUUID alloc] initWithUUIDString:nonce]
+                                          signature:signature
+                                          timestamp:timestamp];
+
+  return discount;
 }
 
 @end

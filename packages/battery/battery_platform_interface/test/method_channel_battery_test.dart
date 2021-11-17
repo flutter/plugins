@@ -32,13 +32,14 @@ void main() {
           .setMockMethodCallHandler((MethodCall methodCall) async {
         switch (methodCall.method) {
           case 'listen':
-            await ServicesBinding.instance!.defaultBinaryMessenger
+            await _ambiguate(ServicesBinding.instance)!
+                .defaultBinaryMessenger
                 .handlePlatformMessage(
-              methodChannelBattery.eventChannel.name,
-              methodChannelBattery.eventChannel.codec
-                  .encodeSuccessEnvelope('full'),
-              (_) {},
-            );
+                  methodChannelBattery.eventChannel.name,
+                  methodChannelBattery.eventChannel.codec
+                      .encodeSuccessEnvelope('full'),
+                  (_) {},
+                );
             break;
           case 'cancel':
           default:
@@ -61,3 +62,10 @@ void main() {
     });
   });
 }
+
+/// This allows a value of type T or T? to be treated as a value of type T?.
+///
+/// We use this so that APIs that have become non-nullable can still be used
+/// with `!` and `?` on the stable branch.
+// TODO(ianh): Remove this once we roll stable in late 2021.
+T? _ambiguate<T>(T? value) => value;

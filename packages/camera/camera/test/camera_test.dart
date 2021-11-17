@@ -1137,6 +1137,138 @@ void main() {
           .called(4);
     });
 
+    test('pausePreview() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value = cameraController.value
+          .copyWith(deviceOrientation: DeviceOrientation.portraitUp);
+
+      await cameraController.pausePreview();
+
+      verify(CameraPlatform.instance.pausePreview(cameraController.cameraId))
+          .called(1);
+      expect(cameraController.value.isPreviewPaused, equals(true));
+      expect(cameraController.value.previewPauseOrientation,
+          DeviceOrientation.portraitUp);
+    });
+
+    test('pausePreview() does not call $CameraPlatform when already paused',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value =
+          cameraController.value.copyWith(isPreviewPaused: true);
+
+      await cameraController.pausePreview();
+
+      verifyNever(
+          CameraPlatform.instance.pausePreview(cameraController.cameraId));
+      expect(cameraController.value.isPreviewPaused, equals(true));
+    });
+
+    test('pausePreview() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      when(CameraPlatform.instance.pausePreview(cameraController.cameraId))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.pausePreview(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
+    test('resumePreview() calls $CameraPlatform', () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value =
+          cameraController.value.copyWith(isPreviewPaused: true);
+
+      await cameraController.resumePreview();
+
+      verify(CameraPlatform.instance.resumePreview(cameraController.cameraId))
+          .called(1);
+      expect(cameraController.value.isPreviewPaused, equals(false));
+    });
+
+    test('resumePreview() does not call $CameraPlatform when not paused',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value =
+          cameraController.value.copyWith(isPreviewPaused: false);
+
+      await cameraController.resumePreview();
+
+      verifyNever(
+          CameraPlatform.instance.resumePreview(cameraController.cameraId));
+      expect(cameraController.value.isPreviewPaused, equals(false));
+    });
+
+    test('resumePreview() throws $CameraException on $PlatformException',
+        () async {
+      CameraController cameraController = CameraController(
+          CameraDescription(
+              name: 'cam',
+              lensDirection: CameraLensDirection.back,
+              sensorOrientation: 90),
+          ResolutionPreset.max);
+      await cameraController.initialize();
+      cameraController.value =
+          cameraController.value.copyWith(isPreviewPaused: true);
+      when(CameraPlatform.instance.resumePreview(cameraController.cameraId))
+          .thenThrow(
+        PlatformException(
+          code: 'TEST_ERROR',
+          message: 'This is a test error message',
+          details: null,
+        ),
+      );
+
+      expect(
+          cameraController.resumePreview(),
+          throwsA(isA<CameraException>().having(
+            (error) => error.description,
+            'TEST_ERROR',
+            'This is a test error message',
+          )));
+    });
+
     test('lockCaptureOrientation() calls $CameraPlatform', () async {
       CameraController cameraController = CameraController(
           CameraDescription(
@@ -1313,6 +1445,14 @@ class MockCameraPlatform extends Mock
   @override
   Future<void> unlockCaptureOrientation(int? cameraId) async => super
       .noSuchMethod(Invocation.method(#unlockCaptureOrientation, [cameraId]));
+
+  @override
+  Future<void> pausePreview(int? cameraId) async =>
+      super.noSuchMethod(Invocation.method(#pausePreview, [cameraId]));
+
+  @override
+  Future<void> resumePreview(int? cameraId) async =>
+      super.noSuchMethod(Invocation.method(#resumePreview, [cameraId]));
 
   @override
   Future<double> getMaxZoomLevel(int? cameraId) async => super.noSuchMethod(

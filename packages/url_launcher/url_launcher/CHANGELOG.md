@@ -1,3 +1,30 @@
+## 6.0.13
+
+* Fixed extracting browser headers when they are null error.
+
+## 6.0.12
+
+* Fixed an error where 'launch' method of url_launcher would cause an error if the provided URL was not valid by RFC 3986.
+
+## 6.0.11
+
+* Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
+* Updated Android lint settings.
+
+## 6.0.10
+
+* Remove references to the Android v1 embedding.
+
+## 6.0.9
+
+* Silenced warnings that may occur during build when using a very
+  recent version of Flutter relating to null safety.
+
+## 6.0.8
+
+* Adding API level 30 required package visibility configuration to the example's AndroidManifest.xml and README
+* Fix test button check for iOS 15.
+
 ## 6.0.7
 
 * Update the README to describe a workaround to the `Uri` query
