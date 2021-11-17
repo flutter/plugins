@@ -134,13 +134,19 @@ void main() {
       gitShowResponses = <String, String>{
         'main:packages/plugin/pubspec.yaml': 'version: 0.0.1',
       };
-      final Future<List<String>> result = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=main']);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
-      );
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Incorrectly updated version.'),
+          ]));
       expect(gitDirCommands.length, equals(1));
       expect(
           gitDirCommands,
@@ -202,13 +208,19 @@ void main() {
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
       };
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['version-check']);
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
-      );
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Incorrectly updated version.'),
+          ]));
     });
 
     test('denies invalid version without explicit base-sha', () async {
@@ -216,13 +228,19 @@ void main() {
       gitShowResponses = <String, String>{
         'abc123:packages/plugin/pubspec.yaml': 'version: 0.0.1',
       };
-      final Future<List<String>> result =
-          runCapturingPrint(runner, <String>['version-check']);
 
-      await expectLater(
-        result,
-        throwsA(isA<ToolExit>()),
-      );
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Incorrectly updated version.'),
+          ]));
     });
 
     test('allows minor changes to platform interfaces', () async {
@@ -260,12 +278,23 @@ void main() {
         'main:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
       };
-      final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=main']);
-      await expectLater(
-        output,
-        throwsA(isA<ToolExit>()),
-      );
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main'],
+          errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains(
+                '  Breaking changes to platform interfaces are not allowed '
+                'without explicit justification.\n'
+                '  See https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages '
+                'for more information.'),
+          ]));
       expect(gitDirCommands.length, equals(1));
       expect(
           gitDirCommands,
@@ -392,15 +421,14 @@ This is necessary because of X, Y, and Z
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      bool hasError = false;
+      Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
           errorHandler: (Error e) {
-        expect(e, isA<ToolExit>());
-        hasError = true;
+        commandError = e;
       });
-      expect(hasError, isTrue);
 
+      expect(commandError, isA<ToolExit>());
       expect(
         output,
         containsAllInOrder(<Matcher>[
@@ -478,7 +506,7 @@ This is necessary because of X, Y, and Z
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
-      await expectLater(
+      expect(
         output,
         containsAllInOrder(<Matcher>[
           contains('Running for plugin'),
