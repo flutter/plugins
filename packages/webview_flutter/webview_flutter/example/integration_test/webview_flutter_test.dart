@@ -197,9 +197,7 @@ void main() {
       onPageFinished: () => onPageFinished.complete(),
     ));
     await onPageFinished.future;
-    if (Platform.isAndroid) {
-      await initialResizeCompleter.future;
-    }
+    await initialResizeCompleter.future.timeout(const Duration(seconds: 2));
 
     resizeButtonTapped = true;
     await tester.tap(find.byKey(const ValueKey('resizeButton')));

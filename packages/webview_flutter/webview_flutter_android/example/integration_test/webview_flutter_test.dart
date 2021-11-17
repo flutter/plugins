@@ -192,7 +192,6 @@ void main() {
     bool resizeButtonTapped = false;
     await tester.pumpWidget(ResizableWebView(
       onResize: (_) {
-        print(resizeButtonTapped);
         if (resizeButtonTapped) {
           buttonTapResizeCompleter.complete();
         } else {
@@ -202,7 +201,7 @@ void main() {
       onPageFinished: () => onPageFinished.complete(),
     ));
     await onPageFinished.future;
-    await initialResizeCompleter.future;
+    await initialResizeCompleter.future.timeout(const Duration(seconds: 2));
 
     resizeButtonTapped = true;
     await tester.tap(find.byKey(const ValueKey<String>('resizeButton')));
