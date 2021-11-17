@@ -17,6 +17,7 @@ void main() {
   const String kExternalCachePaths = 'externalCachePaths';
   const String kExternalStoragePaths = 'externalStoragePaths';
   const String kDownloadsPath = 'downloadsPath';
+  const String kFlutterAssetsPath = 'flutterAssetsPath';
 
   group('$MethodChannelPathProvider', () {
     late MethodChannelPathProvider methodChannelPathProvider;
@@ -43,6 +44,8 @@ void main() {
             return <String>[kExternalCachePaths];
           case 'getDownloadsDirectory':
             return kDownloadsPath;
+          case 'getFlutterAssetsPath':
+            return kFlutterAssetsPath;
           default:
             return null;
         }
@@ -201,6 +204,16 @@ void main() {
       } catch (e) {
         expect(e, isUnsupportedError);
       }
+    });
+
+    test('getFlutterAssetsPath', () async {
+      final String? path =
+          await methodChannelPathProvider.getFlutterAssetsPath();
+      expect(
+        log,
+        <Matcher>[isMethodCall('getFlutterAssetsPath', arguments: null)],
+      );
+      expect(path, kFlutterAssetsPath);
     });
   });
 }

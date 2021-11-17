@@ -89,4 +89,9 @@ class MethodChannelPathProvider extends PathProviderPlatform {
     }
     return methodChannel.invokeMethod<String>('getDownloadsDirectory');
   }
+
+  @override
+  Future<String?> getFlutterAssetsPath() {
+    return methodChannel.invokeMethod<String>('getFlutterAssetsPath');
+  }
 }

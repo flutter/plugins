@@ -1,3 +1,7 @@
+## 2.1.0
+
+* Added `getFlutterAssetsPath` interface method which when implemented should return the path where Flutter stored the assets registered in the pubspec.yaml file.
+
 ## 2.0.1
 
 * Update platform_plugin_interface version requirement.

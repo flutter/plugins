@@ -96,4 +96,11 @@ abstract class PathProviderPlatform extends PlatformInterface {
   Future<String?> getDownloadsPath() {
     throw UnimplementedError('getDownloadsPath() has not been implemented.');
   }
+
+  /// Path to the directory where the assets registered in the
+  /// pubspec.yaml of a Flutter application are stored.
+  Future<String?> getFlutterAssetsPath() {
+    throw UnimplementedError(
+        'getFlutterAssetsPath() has not been implemented.');
+  }
 }
