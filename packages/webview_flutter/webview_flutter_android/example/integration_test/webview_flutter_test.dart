@@ -201,7 +201,11 @@ void main() {
       onPageFinished: () => onPageFinished.complete(),
     ));
     await onPageFinished.future;
-    await initialResizeCompleter.future.timeout(const Duration(seconds: 2));
+    // Wait for a potential call to resize when page is loaded.
+    await initialResizeCompleter.future.timeout(
+      const Duration(seconds: 3),
+      onTimeout: null,
+    );
 
     resizeButtonTapped = true;
     await tester.tap(find.byKey(const ValueKey<String>('resizeButton')));
