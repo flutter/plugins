@@ -1,12 +1,12 @@
 ## 0.2.0+1
 
-* Fix CHANGELOG for 0.2.0 (added missing information regarding the implementation of promotional offers).
+* Fixes CHANGELOG for 0.2.0 (added missing information regarding the implementation of promotional offers).
 
 ## 0.2.0
 
 * BREAKING CHANGE : Refactor to handle new `PurchaseStatus` named `canceled`. This means developers
   can distinguish between an error and user cancellation;
-* Added support for promotional offers on the store_kit_wrappers Dart API.
+* Adds support for promotional offers on the store_kit_wrappers Dart API.
 
 ## 0.1.4
 
