@@ -96,12 +96,12 @@ public class WebViewClientFlutterApiImpl extends WebViewClientFlutterApi {
 
   /** Passes arguments from {@link WebViewClient#onUrlChanged} to Dart. */
   public void onUrlChanged(
-          WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
+      WebViewClient webViewClient, WebView webView, String urlArg, Reply<Void> callback) {
     onUrlChanged(
-            instanceManager.getInstanceId(webViewClient),
-            instanceManager.getInstanceId(webView),
-            urlArg,
-            callback);
+        instanceManager.getInstanceId(webViewClient),
+        instanceManager.getInstanceId(webView),
+        urlArg,
+        callback);
   }
 
   /**
