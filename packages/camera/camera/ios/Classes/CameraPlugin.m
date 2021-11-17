@@ -423,6 +423,7 @@ NSString *const errorMethod = @"error";
 }
 
 - (void)setVideoFormat:(OSType)videoFormat {
+    _videoFormat = videoFormat;
     _captureVideoOutput.videoSettings =
         @{(NSString *)kCVPixelBufferPixelFormatTypeKey : @(videoFormat)};
 }
