@@ -11,7 +11,7 @@ import 'package:in_app_purchase_storekit/src/store_kit_wrappers/enum_converters.
 import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
 import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 
-import 'fakes/fake_ios_platform.dart';
+import 'fakes/fake_storekit_platform.dart';
 import 'store_kit_wrappers/sk_test_stub_objects.dart';
 
 void main() {
