@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import 'billing_client_wrapper.dart';
-import 'enum_converters.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -32,19 +33,24 @@ class SkuDetailsWrapper {
     required this.description,
     required this.freeTrialPeriod,
     required this.introductoryPrice,
-    required this.introductoryPriceMicros,
+    @Deprecated('Use `introductoryPriceAmountMicros` parameter instead')
+        String introductoryPriceMicros = '',
+    this.introductoryPriceAmountMicros = 0,
     required this.introductoryPriceCycles,
     required this.introductoryPricePeriod,
     required this.price,
     required this.priceAmountMicros,
     required this.priceCurrencyCode,
+    required this.priceCurrencySymbol,
     required this.sku,
     required this.subscriptionPeriod,
     required this.title,
     required this.type,
     required this.originalPrice,
     required this.originalPriceAmountMicros,
-  });
+  }) : _introductoryPriceMicros = introductoryPriceMicros;
+
+  final String _introductoryPriceMicros;
 
   /// Constructs an instance of this from a key value map of data.
   ///
@@ -66,9 +72,18 @@ class SkuDetailsWrapper {
   @JsonKey(defaultValue: '')
   final String introductoryPrice;
 
-  /// [introductoryPrice] in micro-units 990000
-  @JsonKey(defaultValue: '')
-  final String introductoryPriceMicros;
+  /// [introductoryPrice] in micro-units 990000.
+  ///
+  /// Returns 0 if the SKU is not a subscription or doesn't have an introductory
+  /// period.
+  final int introductoryPriceAmountMicros;
+
+  /// String representation of [introductoryPrice] in micro-units 990000
+  @Deprecated('Use `introductoryPriceAmountMicros` instead.')
+  @JsonKey(ignore: true)
+  String get introductoryPriceMicros => _introductoryPriceMicros.isEmpty
+      ? introductoryPriceAmountMicros.toString()
+      : _introductoryPriceMicros;
 
   /// The number of subscription billing periods for which the user will be given the introductory price, such as 3.
   /// Returns 0 if the SKU is not a subscription or doesn't have an introductory period.
@@ -90,6 +105,12 @@ class SkuDetailsWrapper {
   /// [price] ISO 4217 currency code.
   @JsonKey(defaultValue: '')
   final String priceCurrencyCode;
+
+  /// [price] localized currency symbol
+  /// For example, for the US Dollar, the symbol is "$" if the locale
+  /// is the US, while for other locales it may be "US$".
+  @JsonKey(defaultValue: '')
+  final String priceCurrencySymbol;
 
   /// The product ID in Google Play Console.
   @JsonKey(defaultValue: '')
@@ -120,22 +141,21 @@ class SkuDetailsWrapper {
       return false;
     }
 
-    final SkuDetailsWrapper typedOther = other;
-    return typedOther is SkuDetailsWrapper &&
-        typedOther.description == description &&
-        typedOther.freeTrialPeriod == freeTrialPeriod &&
-        typedOther.introductoryPrice == introductoryPrice &&
-        typedOther.introductoryPriceMicros == introductoryPriceMicros &&
-        typedOther.introductoryPriceCycles == introductoryPriceCycles &&
-        typedOther.introductoryPricePeriod == introductoryPricePeriod &&
-        typedOther.price == price &&
-        typedOther.priceAmountMicros == priceAmountMicros &&
-        typedOther.sku == sku &&
-        typedOther.subscriptionPeriod == subscriptionPeriod &&
-        typedOther.title == title &&
-        typedOther.type == type &&
-        typedOther.originalPrice == originalPrice &&
-        typedOther.originalPriceAmountMicros == originalPriceAmountMicros;
+    return other is SkuDetailsWrapper &&
+        other.description == description &&
+        other.freeTrialPeriod == freeTrialPeriod &&
+        other.introductoryPrice == introductoryPrice &&
+        other.introductoryPriceAmountMicros == introductoryPriceAmountMicros &&
+        other.introductoryPriceCycles == introductoryPriceCycles &&
+        other.introductoryPricePeriod == introductoryPricePeriod &&
+        other.price == price &&
+        other.priceAmountMicros == priceAmountMicros &&
+        other.sku == sku &&
+        other.subscriptionPeriod == subscriptionPeriod &&
+        other.title == title &&
+        other.type == type &&
+        other.originalPrice == originalPrice &&
+        other.originalPriceAmountMicros == originalPriceAmountMicros;
   }
 
   @override
@@ -144,7 +164,7 @@ class SkuDetailsWrapper {
         description.hashCode,
         freeTrialPeriod.hashCode,
         introductoryPrice.hashCode,
-        introductoryPriceMicros.hashCode,
+        introductoryPriceAmountMicros.hashCode,
         introductoryPriceCycles.hashCode,
         introductoryPricePeriod.hashCode,
         price.hashCode,
@@ -188,10 +208,9 @@ class SkuDetailsResponseWrapper {
       return false;
     }
 
-    final SkuDetailsResponseWrapper typedOther = other;
-    return typedOther is SkuDetailsResponseWrapper &&
-        typedOther.billingResult == billingResult &&
-        typedOther.skuDetailsList == skuDetailsList;
+    return other is SkuDetailsResponseWrapper &&
+        other.billingResult == billingResult &&
+        other.skuDetailsList == skuDetailsList;
   }
 
   @override
@@ -233,10 +252,9 @@ class BillingResultWrapper {
       return false;
     }
 
-    final BillingResultWrapper typedOther = other;
-    return typedOther is BillingResultWrapper &&
-        typedOther.responseCode == responseCode &&
-        typedOther.debugMessage == debugMessage;
+    return other is BillingResultWrapper &&
+        other.responseCode == responseCode &&
+        other.debugMessage == debugMessage;
   }
 
   @override

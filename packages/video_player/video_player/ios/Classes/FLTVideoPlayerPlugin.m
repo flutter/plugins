@@ -11,11 +11,6 @@
 #error Code Requires ARC.
 #endif
 
-int64_t FLTCMTimeToMillis(CMTime time) {
-  if (time.timescale == 0) return 0;
-  return time.value * 1000 / time.timescale;
-}
-
 @interface FLTFrameUpdater : NSObject
 @property(nonatomic) int64_t textureId;
 @property(nonatomic, weak, readonly) NSObject<FlutterTextureRegistry>* registry;
@@ -57,6 +52,8 @@ int64_t FLTCMTimeToMillis(CMTime time) {
 
 static void* timeRangeContext = &timeRangeContext;
 static void* statusContext = &statusContext;
+static void* presentationSizeContext = &presentationSizeContext;
+static void* durationContext = &durationContext;
 static void* playbackLikelyToKeepUpContext = &playbackLikelyToKeepUpContext;
 static void* playbackBufferEmptyContext = &playbackBufferEmptyContext;
 static void* playbackBufferFullContext = &playbackBufferFullContext;
@@ -76,6 +73,14 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
          forKeyPath:@"status"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
             context:statusContext];
+  [item addObserver:self
+         forKeyPath:@"presentationSize"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:presentationSizeContext];
+  [item addObserver:self
+         forKeyPath:@"duration"
+            options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
+            context:durationContext];
   [item addObserver:self
          forKeyPath:@"playbackLikelyToKeepUp"
             options:NSKeyValueObservingOptionInitial | NSKeyValueObservingOptionNew
@@ -105,6 +110,16 @@ static void* playbackBufferFullContext = &playbackBufferFullContext;
       _eventSink(@{@"event" : @"completed"});
     }
   }
+}
+
+const int64_t TIME_UNSET = -9223372036854775807;
+
+static inline int64_t FLTCMTimeToMillis(CMTime time) {
+  // When CMTIME_IS_INDEFINITE return a value that matches TIME_UNSET from ExoPlayer2 on Android.
+  // Fixes https://github.com/flutter/flutter/issues/48670
+  if (CMTIME_IS_INDEFINITE(time)) return TIME_UNSET;
+  if (time.timescale == 0) return 0;
+  return time.value * 1000 / time.timescale;
 }
 
 static inline CGFloat radiansToDegrees(CGFloat radians) {
@@ -277,9 +292,18 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
         break;
       case AVPlayerItemStatusReadyToPlay:
         [item addOutput:_videoOutput];
-        [self sendInitialized];
+        [self setupEventSinkIfReadyToPlay];
         [self updatePlayingState];
         break;
+    }
+  } else if (context == presentationSizeContext || context == durationContext) {
+    AVPlayerItem* item = (AVPlayerItem*)object;
+    if (item.status == AVPlayerItemStatusReadyToPlay) {
+      // Due to an apparent bug, when the player item is ready, it still may not have determined
+      // its presentation size or duration. When these properties are finally set, re-check if
+      // all required properties and instantiate the event sink if it is not already set up.
+      [self setupEventSinkIfReadyToPlay];
+      [self updatePlayingState];
     }
   } else if (context == playbackLikelyToKeepUpContext) {
     if ([[_player currentItem] isPlaybackLikelyToKeepUp]) {
@@ -311,7 +335,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   _displayLink.paused = !_isPlaying;
 }
 
-- (void)sendInitialized {
+- (void)setupEventSinkIfReadyToPlay {
   if (_eventSink && !_isInitialized) {
     CGSize size = [self.player currentItem].presentationSize;
     CGFloat width = size.width;
@@ -420,7 +444,7 @@ static inline CGFloat radiansToDegrees(CGFloat radians) {
   // This line ensures the 'initialized' event is sent when the event
   // 'AVPlayerItemStatusReadyToPlay' fires before _eventSink is set (this function
   // onListenWithArguments is called)
-  [self sendInitialized];
+  [self setupEventSinkIfReadyToPlay];
   return nil;
 }
 

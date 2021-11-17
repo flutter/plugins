@@ -21,23 +21,29 @@ class CameraPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controller.value.isInitialized
-        ? AspectRatio(
-            aspectRatio: _isLandscape()
-                ? controller.value.aspectRatio
-                : (1 / controller.value.aspectRatio),
-            child: Stack(
-              fit: StackFit.expand,
-              children: [
-                _wrapInRotatedBox(child: controller.buildPreview()),
-                child ?? Container(),
-              ],
-            ),
+        ? ValueListenableBuilder(
+            valueListenable: controller,
+            builder: (context, value, child) {
+              return AspectRatio(
+                aspectRatio: _isLandscape()
+                    ? controller.value.aspectRatio
+                    : (1 / controller.value.aspectRatio),
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    _wrapInRotatedBox(child: controller.buildPreview()),
+                    child ?? Container(),
+                  ],
+                ),
+              );
+            },
+            child: child,
           )
         : Container();
   }
 
   Widget _wrapInRotatedBox({required Widget child}) {
-    if (defaultTargetPlatform != TargetPlatform.android) {
+    if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
       return child;
     }
 
@@ -55,9 +61,9 @@ class CameraPreview extends StatelessWidget {
   int _getQuarterTurns() {
     Map<DeviceOrientation, int> turns = {
       DeviceOrientation.portraitUp: 0,
-      DeviceOrientation.landscapeLeft: 1,
+      DeviceOrientation.landscapeRight: 1,
       DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeRight: 3,
+      DeviceOrientation.landscapeLeft: 3,
     };
     return turns[_getApplicableOrientation()]!;
   }
@@ -65,7 +71,8 @@ class CameraPreview extends StatelessWidget {
   DeviceOrientation _getApplicableOrientation() {
     return controller.value.isRecordingVideo
         ? controller.value.recordingOrientation!
-        : (controller.value.lockedCaptureOrientation ??
+        : (controller.value.previewPauseOrientation ??
+            controller.value.lockedCaptureOrientation ??
             controller.value.deviceOrientation);
   }
 }

@@ -59,7 +59,7 @@ final class GoogleMapController
   private final MethodChannel methodChannel;
   private final GoogleMapOptions options;
   @Nullable private MapView mapView;
-  private GoogleMap googleMap;
+  @Nullable private GoogleMap googleMap;
   private boolean trackCameraPosition = false;
   private boolean myLocationEnabled = false;
   private boolean myLocationButtonEnabled = false;
@@ -467,10 +467,14 @@ final class GoogleMapController
   }
 
   @Override
-  public void onMarkerDragStart(Marker marker) {}
+  public void onMarkerDragStart(Marker marker) {
+    markersController.onMarkerDragStart(marker.getId(), marker.getPosition());
+  }
 
   @Override
-  public void onMarkerDrag(Marker marker) {}
+  public void onMarkerDrag(Marker marker) {
+    markersController.onMarkerDrag(marker.getId(), marker.getPosition());
+  }
 
   @Override
   public void onMarkerDragEnd(Marker marker) {
@@ -508,6 +512,10 @@ final class GoogleMapController
   }
 
   private void setGoogleMapListener(@Nullable GoogleMapListener listener) {
+    if (googleMap == null) {
+      Log.v(TAG, "Controller was disposed before GoogleMap was ready.");
+      return;
+    }
     googleMap.setOnCameraMoveStartedListener(listener);
     googleMap.setOnCameraMoveListener(listener);
     googleMap.setOnCameraIdleListener(listener);

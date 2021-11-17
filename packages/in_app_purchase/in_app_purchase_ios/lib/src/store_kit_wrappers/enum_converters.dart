@@ -23,7 +23,7 @@ class SKTransactionStatusConverter
     if (json == null) {
       return SKPaymentTransactionStateWrapper.unspecified;
     }
-    return _$enumDecode<SKPaymentTransactionStateWrapper, dynamic>(
+    return $enumDecode<SKPaymentTransactionStateWrapper, dynamic>(
         _$SKPaymentTransactionStateWrapperEnumMap
             .cast<SKPaymentTransactionStateWrapper, dynamic>(),
         json);
@@ -64,7 +64,7 @@ class SKSubscriptionPeriodUnitConverter
     if (json == null) {
       return SKSubscriptionPeriodUnit.day;
     }
-    return _$enumDecode<SKSubscriptionPeriodUnit, dynamic>(
+    return $enumDecode<SKSubscriptionPeriodUnit, dynamic>(
         _$SKSubscriptionPeriodUnitEnumMap
             .cast<SKSubscriptionPeriodUnit, dynamic>(),
         json);
@@ -89,7 +89,7 @@ class SKProductDiscountPaymentModeConverter
     if (json == null) {
       return SKProductDiscountPaymentMode.payAsYouGo;
     }
-    return _$enumDecode<SKProductDiscountPaymentMode, dynamic>(
+    return $enumDecode<SKProductDiscountPaymentMode, dynamic>(
         _$SKProductDiscountPaymentModeEnumMap
             .cast<SKProductDiscountPaymentMode, dynamic>(),
         json);
@@ -101,6 +101,7 @@ class SKProductDiscountPaymentModeConverter
 }
 
 // Define a class so we generate serializer helper methods for the enums
+// See https://github.com/google/json_serializable.dart/issues/778
 @JsonSerializable()
 class _SerializedEnums {
   late SKPaymentTransactionStateWrapper response;

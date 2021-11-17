@@ -6,9 +6,11 @@ package io.flutter.plugins.androidintentexample;
 
 import androidx.test.rule.ActivityTestRule;
 import dev.flutter.plugins.integration_test.FlutterTestRunner;
+import io.flutter.plugins.DartIntegrationTest;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 
+@DartIntegrationTest
 @RunWith(FlutterTestRunner.class)
 public class MainActivityTest {
   @Rule public ActivityTestRule<MainActivity> rule = new ActivityTestRule<>(MainActivity.class);

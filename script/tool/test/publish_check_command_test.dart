@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:collection';
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -19,18 +18,23 @@ import 'mocks.dart';
 import 'util.dart';
 
 void main() {
-  group('$PublishCheckProcessRunner tests', () {
+  group('$PublishCheckCommand tests', () {
     FileSystem fileSystem;
+    late MockPlatform mockPlatform;
     late Directory packagesDir;
-    late PublishCheckProcessRunner processRunner;
+    late RecordingProcessRunner processRunner;
     late CommandRunner<void> runner;
 
     setUp(() {
       fileSystem = MemoryFileSystem();
+      mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
-      processRunner = PublishCheckProcessRunner();
-      final PublishCheckCommand publishCheckCommand =
-          PublishCheckCommand(packagesDir, processRunner: processRunner);
+      processRunner = RecordingProcessRunner();
+      final PublishCheckCommand publishCheckCommand = PublishCheckCommand(
+        packagesDir,
+        processRunner: processRunner,
+        platform: mockPlatform,
+      );
 
       runner = CommandRunner<void>(
         'publish_check_command',
@@ -45,13 +49,7 @@ void main() {
       final Directory plugin2Dir =
           createFakePlugin('plugin_tools_test_package_b', packagesDir);
 
-      processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
-      );
-      processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
-      );
-      await runner.run(<String>['publish-check']);
+      await runCapturingPrint(runner, <String>['publish-check']);
 
       expect(
           processRunner.recordedCalls,
@@ -70,16 +68,23 @@ void main() {
     test('fail on negative test', () async {
       createFakePlugin('plugin_tools_test_package_a', packagesDir);
 
-      final MockProcess process = MockProcess();
-      process.stdoutController.close(); // ignore: unawaited_futures
-      process.stderrController.close(); // ignore: unawaited_futures
-      process.exitCodeCompleter.complete(1);
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        MockProcess(exitCode: 1, stdout: 'Some error from pub')
+      ];
 
-      processRunner.processesToReturn.add(process);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
+      expect(commandError, isA<ToolExit>());
       expect(
-        () => runner.run(<String>['publish-check']),
-        throwsA(isA<ToolExit>()),
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Some error from pub'),
+          contains('Unable to publish plugin_tools_test_package_a'),
+        ]),
       );
     });
 
@@ -87,63 +92,113 @@ void main() {
       final Directory dir = createFakePlugin('c', packagesDir);
       await dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
-      final MockProcess process = MockProcess();
-      processRunner.processesToReturn.add(process);
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      expect(() => runner.run(<String>['publish-check']),
-          throwsA(isA<ToolExit>()));
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('No valid pubspec found.'),
+        ]),
+      );
+    });
+
+    test('fails if AUTHORS is missing', () async {
+      final Directory package = createFakePackage('a_package', packagesDir);
+      package.childFile('AUTHORS').delete();
+
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
+
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'No AUTHORS file found. Packages must include an AUTHORS file.'),
+        ]),
+      );
+    });
+
+    test('does not require AUTHORS for third-party', () async {
+      final Directory package = createFakePackage(
+          'a_package',
+          packagesDir.parent
+              .childDirectory('third_party')
+              .childDirectory('packages'));
+      package.childFile('AUTHORS').delete();
+
+      final List<String> output =
+          await runCapturingPrint(runner, <String>['publish-check']);
+
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains('Running for a_package'),
+        ]),
+      );
     });
 
     test('pass on prerelease if --allow-pre-release flag is on', () async {
       createFakePlugin('d', packagesDir);
 
-      const String preReleaseOutput = 'Package has 1 warning.'
-          'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
+      final MockProcess process = MockProcess(
+          exitCode: 1,
+          stdout: 'Package has 1 warning.\n'
+              'Packages with an SDK constraint on a pre-release of the Dart '
+              'SDK should themselves be published as a pre-release version.');
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        process,
+      ];
 
-      final MockProcess process = MockProcess();
-      process.stdoutController.add(preReleaseOutput.codeUnits);
-      process.stdoutController.close(); // ignore: unawaited_futures
-      process.stderrController.close(); // ignore: unawaited_futures
-
-      process.exitCodeCompleter.complete(1);
-
-      processRunner.processesToReturn.add(process);
-
-      expect(runner.run(<String>['publish-check', '--allow-pre-release']),
+      expect(
+          runCapturingPrint(
+              runner, <String>['publish-check', '--allow-pre-release']),
           completes);
     });
 
     test('fail on prerelease if --allow-pre-release flag is off', () async {
       createFakePlugin('d', packagesDir);
 
-      const String preReleaseOutput = 'Package has 1 warning.'
-          'Packages with an SDK constraint on a pre-release of the Dart SDK should themselves be published as a pre-release version.';
+      final MockProcess process = MockProcess(
+          exitCode: 1,
+          stdout: 'Package has 1 warning.\n'
+              'Packages with an SDK constraint on a pre-release of the Dart '
+              'SDK should themselves be published as a pre-release version.');
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        process,
+      ];
 
-      final MockProcess process = MockProcess();
-      process.stdoutController.add(preReleaseOutput.codeUnits);
-      process.stdoutController.close(); // ignore: unawaited_futures
-      process.stderrController.close(); // ignore: unawaited_futures
+      Error? commandError;
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['publish-check'], errorHandler: (Error e) {
+        commandError = e;
+      });
 
-      process.exitCodeCompleter.complete(1);
-
-      processRunner.processesToReturn.add(process);
-
-      expect(runner.run(<String>['publish-check']), throwsA(isA<ToolExit>()));
+      expect(commandError, isA<ToolExit>());
+      expect(
+        output,
+        containsAllInOrder(<Matcher>[
+          contains(
+              'Packages with an SDK constraint on a pre-release of the Dart SDK'),
+          contains('Unable to publish d'),
+        ]),
+      );
     });
 
     test('Success message on stderr is not printed as an error', () async {
       createFakePlugin('d', packagesDir);
 
-      const String publishOutput = 'Package has 0 warnings.';
-
-      final MockProcess process = MockProcess();
-      process.stderrController.add(publishOutput.codeUnits);
-      process.stdoutController.close(); // ignore: unawaited_futures
-      process.stderrController.close(); // ignore: unawaited_futures
-
-      process.exitCodeCompleter.complete(0);
-
-      processRunner.processesToReturn.add(process);
+      processRunner.mockProcessesForExecutable['flutter'] = <io.Process>[
+        MockProcess(stdout: 'Package has 0 warnings.'),
+      ];
 
       final List<String> output =
           await runCapturingPrint(runner, <String>['publish-check']);
@@ -191,22 +246,26 @@ void main() {
       createFakePlugin('no_publish_a', packagesDir, version: '0.1.0');
       createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
-      processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
-      );
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
-      // ignore: use_raw_strings
-      expect(output.first, '''
+      expect(output.first, r'''
 {
   "status": "no-publish",
   "humanMessage": [
-    "Checking that no_publish_a can be published.",
+    "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
     "Package no_publish_a version: 0.1.0 has already be published on pub.",
-    "Checking that no_publish_b can be published.",
+    "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "Package no_publish_b version: 0.2.0 has already be published on pub.",
-    "SUCCESS: All packages passed publish check!"
+    "\n",
+    "------------------------------------------------------------",
+    "Run overview:",
+    "  no_publish_a - ran",
+    "  no_publish_b - ran",
+    "",
+    "Ran for 2 package(s)",
+    "\n",
+    "No issues found!"
   ]
 }''');
     });
@@ -250,23 +309,27 @@ void main() {
       createFakePlugin('no_publish_a', packagesDir, version: '0.1.0');
       createFakePlugin('no_publish_b', packagesDir, version: '0.2.0');
 
-      processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
-      );
-
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine']);
 
-      // ignore: use_raw_strings
-      expect(output.first, '''
+      expect(output.first, r'''
 {
   "status": "needs-publish",
   "humanMessage": [
-    "Checking that no_publish_a can be published.",
+    "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
     "Package no_publish_a version: 0.1.0 has already be published on pub.",
-    "Checking that no_publish_b can be published.",
+    "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
+    "Running pub publish --dry-run:",
     "Package no_publish_b is able to be published.",
-    "SUCCESS: All packages passed publish check!"
+    "\n",
+    "------------------------------------------------------------",
+    "Run overview:",
+    "  no_publish_a - ran",
+    "  no_publish_b - ran",
+    "",
+    "Ran for 2 package(s)",
+    "\n",
+    "No issues found!"
   ]
 }''');
     });
@@ -315,10 +378,6 @@ void main() {
 
       await plugin1Dir.childFile('pubspec.yaml').writeAsString('bad-yaml');
 
-      processRunner.processesToReturn.add(
-        MockProcess()..exitCodeCompleter.complete(0),
-      );
-
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
           runner, <String>['publish-check', '--machine'],
@@ -328,28 +387,28 @@ void main() {
       });
       expect(hasError, isTrue);
 
-      // ignore: use_raw_strings
-      expect(output.first, '''
+      expect(output.first, contains(r'''
 {
   "status": "error",
   "humanMessage": [
-    "Checking that no_publish_a can be published.",
-    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException: line 1, column 1: Not a map\\n  ╷\\n1 │ bad-yaml\\n  │ ^^^^^^^^\\n  ╵}",
-    "no pubspec",
-    "Checking that no_publish_b can be published.",
+    "\n============================================================\n|| Running for no_publish_a\n============================================================\n",
+    "Failed to parse `pubspec.yaml` at /packages/no_publish_a/pubspec.yaml: ParsedYamlException:'''));
+      // This is split into two checks since the details of the YamlException
+      // aren't controlled by this package, so asserting its exact format would
+      // make the test fragile to irrelevant changes in those details.
+      expect(output.first, contains(r'''
+    "No valid pubspec found.",
+    "\n============================================================\n|| Running for no_publish_b\n============================================================\n",
     "url https://pub.dev/packages/no_publish_b.json",
     "no_publish_b.json",
+    "Running pub publish --dry-run:",
     "Package no_publish_b is able to be published.",
-    "ERROR: The following 1 package(s) failed the publishing check:\\nMemoryDirectory: '/packages/no_publish_a'"
+    "\n",
+    "The following packages had errors:",
+    "  no_publish_a",
+    "See above for full details."
   ]
-}''');
+}'''));
     });
   });
-}
-
-class PublishCheckProcessRunner extends RecordingProcessRunner {
-  final Queue<MockProcess> processesToReturn = Queue<MockProcess>();
-
-  @override
-  io.Process get processToReturn => processesToReturn.removeFirst();
 }

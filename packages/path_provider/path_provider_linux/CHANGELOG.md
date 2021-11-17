@@ -1,3 +1,19 @@
+## 2.1.2
+
+* Fixes link in README.
+
+## 2.1.1
+
+* Removed obsolete `pluginClass: none` from pubpsec.
+
+## 2.1.0
+
+* Now `getTemporaryPath` returns the value of the `TMPDIR` environment variable primarily. If `TMPDIR` is not set, `/tmp` is returned.
+
+## 2.0.2
+
+* Updated installation instructions in README.
+
 ## 2.0.1
 
 * Add `implements` to pubspec.yaml.
@@ -34,5 +50,5 @@
 * This updates the readme and pubspec and example to reflect the endorsement of this implementation of `path_provider`
 
 ## 0.0.1
-* The initial implementation of path_provider for Linux
+* The initial implementation of path\_provider for Linux
   * Implements getApplicationSupportPath, getApplicationDocumentsPath, getDownloadsPath, and getTemporaryPath
