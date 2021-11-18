@@ -438,6 +438,13 @@ class CameraController extends ValueNotifier<CameraValue> {
     _imageStreamSubscription =
         cameraEventChannel.receiveBroadcastStream().listen(
       (dynamic imageData) {
+        if (defaultTargetPlatform == TargetPlatform.iOS) {
+          try {
+            _channel.invokeMethod<void>('receivedImageStreamData');
+          } on PlatformException catch (e) {
+            throw CameraException(e.code, e.message);
+          }
+        }
         onAvailable(CameraImage.fromPlatformData(imageData));
       },
     );

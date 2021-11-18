@@ -327,6 +327,7 @@ static ResolutionPreset getResolutionPresetForString(NSString *preset) {
 @property(assign, nonatomic) BOOL audioIsDisconnected;
 @property(assign, nonatomic) BOOL isAudioSetup;
 @property(assign, nonatomic) BOOL isStreamingImages;
+@property(assign, nonatomic) BOOL skipStreamingImages;
 @property(assign, nonatomic) BOOL isPreviewPaused;
 @property(assign, nonatomic) ResolutionPreset resolutionPreset;
 @property(assign, nonatomic) ExposureMode exposureMode;
@@ -604,7 +605,8 @@ NSString *const errorMethod = @"error";
                        arguments:@"sample buffer is not ready. Skipping sample"];
     return;
   }
-  if (_isStreamingImages) {
+  if (_isStreamingImages && !_skipStreamingImages) {
+    _skipStreamingImages = YES;
     if (_imageStreamHandler.eventSink) {
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
@@ -1429,6 +1431,8 @@ NSString *const errorMethod = @"error";
   } else if ([@"stopImageStream" isEqualToString:call.method]) {
     [_camera stopImageStream];
     [result sendSuccess];
+  } else if ([@"receivedImageStreamData" isEqualToString:call.method]) {
+    _camera.skipStreamingImages = NO;
   } else {
     NSDictionary *argsMap = call.arguments;
     NSUInteger cameraId = ((NSNumber *)argsMap[@"cameraId"]).unsignedIntegerValue;
