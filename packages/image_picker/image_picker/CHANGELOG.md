@@ -1,3 +1,7 @@
+## NEXT
+
+* Fix iOS RunnerUITests search paths.
+
 ## 0.8.4+4
 
 * Fix typos in README.md.
