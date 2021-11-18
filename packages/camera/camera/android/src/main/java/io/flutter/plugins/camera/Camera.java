@@ -281,10 +281,8 @@ class Camera
           public void onClosed(@NonNull CameraDevice camera) {
             Log.i(TAG, "open | onClosed");
 
-            // It's safe to call cameraDevice.close() after the camera has been closed.
-            // The call below sets cameraDevice to null. Thus, preventing calls to methods
-            // that would otherwise result in IllegalStateException exceptions.
-            close();
+            // Prevents calls to methods that would otherwise result in IllegalStateException exceptions.
+            cameraDevice = null;
             dartMessenger.sendCameraClosingEvent();
           }
 
@@ -1120,13 +1118,7 @@ class Camera
       imageStreamReader = null;
     }
     if (mediaRecorder != null) {
-      try {
-        mediaRecorder.reset();
-      } catch (IllegalStateException exception) {
-        // Ignore exception.
-        // reset() throws this exception when mNativeContext is 0.
-        // Unfortunately, this isn't public, and it's set from the native side in the Android source code.
-      }
+      mediaRecorder.reset();
       mediaRecorder.release();
       mediaRecorder = null;
     }
