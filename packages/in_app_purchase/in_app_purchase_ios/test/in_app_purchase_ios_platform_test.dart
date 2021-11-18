@@ -75,14 +75,18 @@ void main() {
 
   group('restore purchases', () {
     test('should emit restored transactions on purchase stream', () async {
+      fakeIOSPlatform.transactions
+          .insert(0, fakeIOSPlatform.createRestoredTransaction('foo', 'RT1'));
+      fakeIOSPlatform.transactions
+          .insert(1, fakeIOSPlatform.createRestoredTransaction('foo', 'RT2'));
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
 
       late StreamSubscription subscription;
       subscription = stream.listen((purchaseDetailsList) {
         if (purchaseDetailsList.first.status == PurchaseStatus.restored) {
-          completer.complete(purchaseDetailsList);
           subscription.cancel();
+          completer.complete(purchaseDetailsList);
         }
       });
 
@@ -105,15 +109,38 @@ void main() {
       }
     });
 
-    test('should not block transaction updates', () async {
-      fakeIOSPlatform.transactions
-          .insert(0, fakeIOSPlatform.createPurchasedTransaction('foo', 'bar'));
+    test(
+        'should emit empty transaction list on purchase stream when there is nothing to restore',
+        () async {
+      fakeIOSPlatform.testRestoredTransactionsNull = true;
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
 
       late StreamSubscription subscription;
       subscription = stream.listen((purchaseDetailsList) {
-        if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
+        expect(purchaseDetailsList.isEmpty, true);
+        subscription.cancel();
+        completer.complete();
+      });
+
+      await iapIosPlatform.restorePurchases();
+      await completer.future;
+    });
+
+    test('should not block transaction updates', () async {
+      fakeIOSPlatform.transactions
+          .insert(0, fakeIOSPlatform.createRestoredTransaction('foo', 'RT1'));
+      fakeIOSPlatform.transactions
+          .insert(1, fakeIOSPlatform.createPurchasedTransaction('foo', 'bar'));
+      fakeIOSPlatform.transactions
+          .insert(2, fakeIOSPlatform.createRestoredTransaction('foo', 'RT2'));
+
+      Completer completer = Completer();
+      Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
+
+      late StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        if (purchaseDetailsList[1].status == PurchaseStatus.purchased) {
           completer.complete(purchaseDetailsList);
           subscription.cancel();
         }
@@ -140,8 +167,53 @@ void main() {
       }
     });
 
+    test(
+        'should emit empty transaction if transactions array does not contain a transaction with PurchaseStatus.restored status.',
+        () async {
+      fakeIOSPlatform.transactions
+          .insert(0, fakeIOSPlatform.createPurchasedTransaction('foo', 'bar'));
+      Completer completer = Completer();
+      Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;
+      List<List<PurchaseDetails>> purchaseDetails = [];
+
+      late StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        purchaseDetails.add(purchaseDetailsList);
+
+        if (purchaseDetails.length == 2) {
+          completer.complete(purchaseDetails);
+          subscription.cancel();
+        }
+      });
+      await iapIosPlatform.restorePurchases();
+      final details = await completer.future;
+      expect(details.length, 2);
+      expect(details[0], []);
+      for (int i = 0; i < fakeIOSPlatform.transactions.length; i++) {
+        SKPaymentTransactionWrapper expected = fakeIOSPlatform.transactions[i];
+        PurchaseDetails actual = details[1][i];
+
+        expect(actual.purchaseID, expected.transactionIdentifier);
+        expect(actual.verificationData, isNotNull);
+        expect(
+          actual.status,
+          SKTransactionStatusConverter()
+              .toPurchaseStatus(expected.transactionState, expected.error),
+        );
+        expect(actual.verificationData.localVerificationData,
+            fakeIOSPlatform.receiptData);
+        expect(actual.verificationData.serverVerificationData,
+            fakeIOSPlatform.receiptData);
+        expect(actual.pendingCompletePurchase, true);
+      }
+    });
+
     test('receipt error should populate null to verificationData.data',
         () async {
+      fakeIOSPlatform.transactions
+          .insert(0, fakeIOSPlatform.createRestoredTransaction('foo', 'RT1'));
+      fakeIOSPlatform.transactions
+          .insert(1, fakeIOSPlatform.createRestoredTransaction('foo', 'RT2'));
       fakeIOSPlatform.receiptData = null;
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapIosPlatform.purchaseStream;

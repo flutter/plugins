@@ -158,12 +158,16 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
   Completer? _restoreCompleter;
   late String _receiptData;
 
+  bool _isRestoringTransactions = false;
+  bool _didReceiveRestoredTransactions = false;
+
   _TransactionObserver(this.purchaseUpdatedController);
 
   Future<void> restoreTransactions({
     required SKPaymentQueueWrapper queue,
     String? applicationUserName,
   }) {
+    _isRestoringTransactions = true;
     _restoreCompleter = Completer();
     queue.restoreTransactions(applicationUserName: applicationUserName);
     return _restoreCompleter!.future;
@@ -175,6 +179,12 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
 
   void updatedTransactions(
       {required List<SKPaymentTransactionWrapper> transactions}) async {
+    if (_isRestoringTransactions) {
+      _didReceiveRestoredTransactions = transactions.any((transaction) =>
+          transaction.transactionState ==
+          SKPaymentTransactionStateWrapper.restored);
+    }
+
     String receiptData = await getReceiptData();
     List<PurchaseDetails> purchases = transactions
         .map((SKPaymentTransactionWrapper transaction) =>
@@ -189,11 +199,23 @@ class _TransactionObserver implements SKTransactionObserverWrapper {
 
   /// Triggered when there is an error while restoring transactions.
   void restoreCompletedTransactionsFailed({required SKError error}) {
+    _isRestoringTransactions = false;
     _restoreCompleter!.completeError(error);
+    _didReceiveRestoredTransactions = false;
   }
 
   void paymentQueueRestoreCompletedTransactionsFinished() {
+    _isRestoringTransactions = false;
     _restoreCompleter!.complete();
+
+    // If no restored transactions were received during the restore session
+    // emit an empty list of purchase details to inform listeners that the
+    // restore session finished without any results.
+    if (!_didReceiveRestoredTransactions) {
+      purchaseUpdatedController.add(<PurchaseDetails>[]);
+    }
+
+    _didReceiveRestoredTransactions = false;
   }
 
   bool shouldAddStorePayment(
