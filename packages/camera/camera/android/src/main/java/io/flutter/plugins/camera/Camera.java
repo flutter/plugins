@@ -283,6 +283,7 @@ class Camera
 
             // Prevents calls to methods that would otherwise result in IllegalStateException exceptions.
             cameraDevice = null;
+            closeCaptureSession();
             dartMessenger.sendCameraClosingEvent();
           }
 
