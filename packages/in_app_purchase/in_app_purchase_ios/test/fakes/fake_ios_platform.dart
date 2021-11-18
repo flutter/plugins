@@ -18,7 +18,7 @@ class FakeIOSPlatform {
     channel.setMockMethodCallHandler(onMethodCall);
   }
 
-  // pre-configured store informations
+  // pre-configured store information
   String? receiptData;
   late Set<String> validProductIDs;
   late Map<String, SKProductWrapper> validProducts;
@@ -26,6 +26,7 @@ class FakeIOSPlatform {
   late List<SKPaymentTransactionWrapper> finishedTransactions;
   late bool testRestoredTransactionsNull;
   late bool testTransactionFail;
+  late int testTransactionCancel;
   PlatformException? queryProductException;
   PlatformException? restoreException;
   SKError? testRestoredError;
@@ -67,6 +68,7 @@ class FakeIOSPlatform {
     finishedTransactions = [];
     testRestoredTransactionsNull = false;
     testTransactionFail = false;
+    testTransactionCancel = -1;
     queryProductException = null;
     restoreException = null;
     testRestoredError = null;
@@ -102,6 +104,20 @@ class FakeIOSPlatform {
         transactionTimeStamp: 123123.121,
         error: SKError(
             code: 0,
+            domain: 'ios_domain',
+            userInfo: {'message': 'an error message'}),
+        originalTransaction: null);
+  }
+
+  SKPaymentTransactionWrapper createCanceledTransaction(
+      String productId, int errorCode) {
+    return SKPaymentTransactionWrapper(
+        transactionIdentifier: '',
+        payment: SKPaymentWrapper(productIdentifier: productId),
+        transactionState: SKPaymentTransactionStateWrapper.failed,
+        transactionTimeStamp: 123123.121,
+        error: SKError(
+            code: errorCode,
             domain: 'ios_domain',
             userInfo: {'message': 'an error message'}),
         originalTransaction: null);
@@ -167,6 +183,11 @@ class FakeIOSPlatform {
               createFailedTransaction(id);
           InAppPurchaseIosPlatform.observer
               .updatedTransactions(transactions: [transaction_failed]);
+        } else if (testTransactionCancel > 0) {
+          SKPaymentTransactionWrapper transaction_canceled =
+              createCanceledTransaction(id, testTransactionCancel);
+          InAppPurchaseIosPlatform.observer
+              .updatedTransactions(transactions: [transaction_canceled]);
         } else {
           SKPaymentTransactionWrapper transaction_finished =
               createPurchasedTransaction(
