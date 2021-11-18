@@ -154,6 +154,17 @@ class ExplicitIntentsWidget extends StatelessWidget {
     intent.launch();
   }
 
+  void _openMP4() {
+    final AndroidIntent intent = AndroidIntent(
+      action: 'action_view',
+      data: 'https://stream.voidboost.cc/19edf3fef04ae30757e30374916038e8:2021111914:dnJKSzRqT2xxbkU1OEozUW90aFhVd0Q2WGRFa3kzanBPL3BWU2dyV1IzSkM4NmIway9BNC9JaTJFa09iSWlsY3pIazJFN0EzOHZzNmdncW9Gdmp1M1E9PQ==/4/1/2/6/5/3/c4a3u.mp4',
+      arguments: {'subs': ['https://static.voidboost.com/view/1U36mRD5OHOSgAdakIi9Tw/1637321905/4/1/2/6/5/3/yozfijgc8dra.vtt',
+        'https://static.voidboost.com/view/sFTUEhk09PPIYLAwQKQVjw/1637321905/4/1/2/6/5/3/uv8o3w19gm.vtt']},
+      // arguments: {'subs': []},
+    );
+    intent.launch();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -166,6 +177,11 @@ class ExplicitIntentsWidget extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
+              ElevatedButton(
+                child: const Text(
+                    'Tap here to play mp4 with subtitles'),
+                onPressed: _openMP4,
+              ),
               ElevatedButton(
                 child: const Text(
                     'Tap here to display panorama\nimagery in Google Street View.'),

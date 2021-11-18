@@ -19,6 +19,7 @@ import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -86,6 +87,7 @@ public final class MethodCallHandlerImpl implements MethodCallHandler {
     Bundle arguments = convertArguments(stringMap);
     String packageName = call.argument("package");
     String component = call.argument("componentName");
+
     ComponentName componentName = null;
     if (packageName != null
         && component != null

@@ -15,6 +15,9 @@ import android.text.TextUtils;
 import android.util.Log;
 import androidx.annotation.Nullable;
 
+import java.net.URI;
+import java.util.ArrayList;
+
 /** Forms and launches intents. */
 public final class IntentSender {
   private static final String TAG = "IntentSender";
@@ -152,6 +155,12 @@ public final class IntentSender {
     if (arguments != null) {
       intent.putExtras(arguments);
     }
+    if(arguments.get("subs") != null) {
+      ArrayList subs = (ArrayList) arguments.get("subs");
+      Uri[] subsList = toURIArray(subs);
+      intent.putExtra("subs", subsList);
+
+    }
     if (!TextUtils.isEmpty(packageName)) {
       intent.setPackage(packageName);
       if (componentName != null) {
@@ -164,5 +173,14 @@ public final class IntentSender {
     }
 
     return intent;
+  }
+
+  public static Uri[] toURIArray(ArrayList array) {
+    Uri[] uris = new Uri[array.size()];
+    for (int i = 0; i < array.size(); i++) {
+
+      uris[i] = Uri.parse((String) array.get(i));
+    }
+    return uris;
   }
 }
