@@ -11,7 +11,10 @@ void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   testWidgets('Can create InAppPurchase instance', (WidgetTester tester) async {
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+    if (Platform.isAndroid) {
+      // https://github.com/flutter/flutter/issues/93837
+      InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
+    }
     final InAppPurchase iapInstance = InAppPurchase.instance;
     expect(iapInstance, isNotNull);
   });
