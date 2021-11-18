@@ -366,10 +366,13 @@ class Camera
     // Prepare the callback.
     CameraCaptureSession.StateCallback callback =
         new CameraCaptureSession.StateCallback() {
+          boolean captureSessionClosed = false;
+
           @Override
           public void onConfigured(@NonNull CameraCaptureSession session) {
+            Log.i(TAG, "CameraCaptureSession onConfigured");
             // Camera was already closed.
-            if (cameraDevice == null) {
+            if (cameraDevice == null || captureSessionClosed) {
               dartMessenger.sendCameraErrorEvent("The camera was closed during configuration.");
               return;
             }
@@ -384,7 +387,14 @@ class Camera
 
           @Override
           public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+            Log.i(TAG, "CameraCaptureSession onConfigureFailed");
             dartMessenger.sendCameraErrorEvent("Failed to configure camera session.");
+          }
+
+          @Override
+          public void onClosed(@NonNull CameraCaptureSession session) {
+            Log.i(TAG, "CameraCaptureSession onClosed");
+            captureSessionClosed = true;
           }
         };
 
