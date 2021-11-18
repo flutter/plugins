@@ -1,6 +1,7 @@
 ## 2.0.12
 
 * Suppress unchecked cast warning.
+
 ## 2.0.11
 
 * Add additional marker drag events.
