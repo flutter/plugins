@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io' as io;
 
@@ -51,8 +50,6 @@ void main() {
     late Directory packagesDir;
     late CommandRunner<void> runner;
     late RecordingProcessRunner processRunner;
-    late List<List<String>> gitDirCommands;
-    Map<String, String> gitShowResponses;
     late MockGitDir gitDir;
     // Ignored if mockHttpResponse is set.
     int mockHttpStatus;
@@ -63,27 +60,17 @@ void main() {
       mockPlatform = MockPlatform();
       packagesDir = createPackagesDirectory(fileSystem: fileSystem);
 
-      gitDirCommands = <List<String>>[];
-      gitShowResponses = <String, String>{};
       gitDir = MockGitDir();
       when(gitDir.path).thenReturn(packagesDir.parent.path);
       when(gitDir.runCommand(any, throwOnError: anyNamed('throwOnError')))
           .thenAnswer((Invocation invocation) {
-        gitDirCommands.add(invocation.positionalArguments[0] as List<String>);
-        final MockProcessResult mockProcessResult = MockProcessResult();
-        if (invocation.positionalArguments[0][0] == 'show') {
-          final String? response =
-              gitShowResponses[invocation.positionalArguments[0][1]];
-          if (response == null) {
-            throw const io.ProcessException('git', <String>['show']);
-          }
-          when<String?>(mockProcessResult.stdout as String?)
-              .thenReturn(response);
-        } else if (invocation.positionalArguments[0][0] == 'merge-base') {
-          when<String?>(mockProcessResult.stdout as String?)
-              .thenReturn('abc123');
-        }
-        return Future<io.ProcessResult>.value(mockProcessResult);
+        final List<String> arguments =
+            invocation.positionalArguments[0]! as List<String>;
+        // Route git calls through the process runner, to make mock output
+        // consistent with other processes. Attach the first argument to the
+        // command to make targeting the mock results easier.
+        final String gitCommand = arguments.removeAt(0);
+        return processRunner.run('git-$gitCommand', arguments);
       });
 
       // Default to simulating the plugin never having been published.
@@ -108,9 +95,9 @@ void main() {
 
     test('allows valid version', () async {
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
 
@@ -121,19 +108,19 @@ void main() {
           contains('1.0.0 -> 2.0.0'),
         ]),
       );
-      expect(gitDirCommands.length, equals(1));
       expect(
-          gitDirCommands,
-          containsAll(<Matcher>[
-            equals(<String>['show', 'main:packages/plugin/pubspec.yaml']),
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
     });
 
     test('denies invalid version', () async {
       createFakePlugin('plugin', packagesDir, version: '0.2.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 0.0.1',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 0.0.1'),
+      ];
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main'],
@@ -147,19 +134,22 @@ void main() {
           containsAllInOrder(<Matcher>[
             contains('Incorrectly updated version.'),
           ]));
-      expect(gitDirCommands.length, equals(1));
       expect(
-          gitDirCommands,
-          containsAll(<Matcher>[
-            equals(<String>['show', 'main:packages/plugin/pubspec.yaml']),
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
     });
 
-    test('allows valid version without explicit base-sha', () async {
+    test('uses merge-base without explicit base-sha', () async {
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'abc123:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-merge-base'] = <io.Process>[
+        MockProcess(stdout: 'abc123'),
+      ];
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       final List<String> output =
           await runCapturingPrint(runner, <String>['version-check']);
 
@@ -170,6 +160,14 @@ void main() {
           contains('1.0.0 -> 2.0.0'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall('git-merge-base',
+                <String>['--fork-point', 'FETCH_HEAD', 'HEAD'], null),
+            ProcessCall('git-show',
+                <String>['abc123:packages/plugin/pubspec.yaml'], null),
+          ]));
     });
 
     test('allows valid version for new package.', () async {
@@ -188,11 +186,11 @@ void main() {
 
     test('allows likely reverts.', () async {
       createFakePlugin('plugin', packagesDir, version: '0.6.1');
-      gitShowResponses = <String, String>{
-        'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
-      };
-      final List<String> output =
-          await runCapturingPrint(runner, <String>['version-check']);
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 0.6.2'),
+      ];
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main']);
 
       expect(
         output,
@@ -201,17 +199,24 @@ void main() {
               'This is assumed to be a revert.'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
+          ]));
     });
 
     test('denies lower version that could not be a simple revert', () async {
       createFakePlugin('plugin', packagesDir, version: '0.5.1');
-      gitShowResponses = <String, String>{
-        'abc123:packages/plugin/pubspec.yaml': 'version: 0.6.2',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 0.6.2'),
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check'], errorHandler: (Error e) {
+          runner, <String>['version-check', '--base-sha=main'],
+          errorHandler: (Error e) {
         commandError = e;
       });
 
@@ -221,35 +226,20 @@ void main() {
           containsAllInOrder(<Matcher>[
             contains('Incorrectly updated version.'),
           ]));
-    });
-
-    test('denies invalid version without explicit base-sha', () async {
-      createFakePlugin('plugin', packagesDir, version: '0.2.0');
-      gitShowResponses = <String, String>{
-        'abc123:packages/plugin/pubspec.yaml': 'version: 0.0.1',
-      };
-
-      Error? commandError;
-      final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check'], errorHandler: (Error e) {
-        commandError = e;
-      });
-
-      expect(commandError, isA<ToolExit>());
       expect(
-          output,
-          containsAllInOrder(<Matcher>[
-            contains('Incorrectly updated version.'),
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
     });
 
     test('allows minor changes to platform interfaces', () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '1.1.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
       expect(
@@ -259,14 +249,15 @@ void main() {
           contains('1.0.0 -> 1.1.0'),
         ]),
       );
-      expect(gitDirCommands.length, equals(1));
       expect(
-          gitDirCommands,
-          containsAll(<Matcher>[
-            equals(<String>[
-              'show',
-              'main:packages/plugin_platform_interface/pubspec.yaml'
-            ]),
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show',
+                <String>[
+                  'main:packages/plugin_platform_interface/pubspec.yaml'
+                ],
+                null)
           ]));
     });
 
@@ -274,10 +265,9 @@ void main() {
         () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       Error? commandError;
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main'],
@@ -295,14 +285,15 @@ void main() {
                 '  See https://github.com/flutter/flutter/wiki/Contributing-to-Plugins-and-Packages '
                 'for more information.'),
           ]));
-      expect(gitDirCommands.length, equals(1));
       expect(
-          gitDirCommands,
-          containsAll(<Matcher>[
-            equals(<String>[
-              'show',
-              'main:packages/plugin_platform_interface/pubspec.yaml'
-            ]),
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show',
+                <String>[
+                  'main:packages/plugin_platform_interface/pubspec.yaml'
+                ],
+                null)
           ]));
     });
 
@@ -310,10 +301,9 @@ void main() {
         () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       final File changeDescriptionFile =
           fileSystem.file('change_description.txt');
       changeDescriptionFile.writeAsStringSync('''
@@ -339,16 +329,25 @@ This is necessary because of X, Y, and Z
           contains('Ran for 1 package(s) (1 with warnings)'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show',
+                <String>[
+                  'main:packages/plugin_platform_interface/pubspec.yaml'
+                ],
+                null)
+          ]));
     });
 
     test('throws if a nonexistent change description file is specified',
         () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -366,16 +365,25 @@ This is necessary because of X, Y, and Z
           contains('No such file: a_missing_file.txt'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show',
+                <String>[
+                  'main:packages/plugin_platform_interface/pubspec.yaml'
+                ],
+                null)
+          ]));
     });
 
     test('allows breaking changes to platform interfaces with bypass flag',
         () async {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin_platform_interface/pubspec.yaml':
-            'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
         '--base-sha=main',
@@ -390,6 +398,16 @@ This is necessary because of X, Y, and Z
           contains('Ran for 1 package(s) (1 with warnings)'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show',
+                <String>[
+                  'main:packages/plugin_platform_interface/pubspec.yaml'
+                ],
+                null)
+          ]));
     });
 
     test('Allow empty lines in front of the first version in CHANGELOG',
@@ -500,9 +518,9 @@ This is necessary because of X, Y, and Z
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
 
       final List<String> output = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main']);
@@ -513,6 +531,12 @@ This is necessary because of X, Y, and Z
           contains('Found NEXT; validating next version in the CHANGELOG.'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
+          ]));
     });
 
     test('Fail if NEXT appears after a version', () async {
@@ -562,9 +586,6 @@ This is necessary because of X, Y, and Z
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
@@ -597,9 +618,6 @@ This is necessary because of X, Y, and Z
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
 
       bool hasError = false;
       final List<String> output = await runCapturingPrint(
@@ -632,9 +650,9 @@ This is necessary because of X, Y, and Z
 * Some other changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -654,6 +672,12 @@ This is necessary because of X, Y, and Z
               'section.'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
+          ]));
     });
 
     test('fails gracefully if the version is unparseable', () async {
@@ -665,9 +689,9 @@ This is necessary because of X, Y, and Z
 * Some changes.
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
@@ -684,6 +708,12 @@ This is necessary because of X, Y, and Z
           contains('"Alpha" could not be parsed as a version.'),
         ]),
       );
+      expect(
+          processRunner.recordedCalls,
+          equals(const <ProcessCall>[
+            ProcessCall(
+                'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
+          ]));
     });
 
     test('allows valid against pub', () async {
@@ -697,9 +727,6 @@ This is necessary because of X, Y, and Z
       };
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
       final List<String> output = await runCapturingPrint(runner,
           <String>['version-check', '--base-sha=main', '--against-pub']);
 
@@ -721,9 +748,6 @@ This is necessary because of X, Y, and Z
       };
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
 
       bool hasError = false;
       final List<String> result = await runCapturingPrint(
@@ -751,9 +775,6 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
       mockHttpStatus = 400;
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
       bool hasError = false;
       final List<String> result = await runCapturingPrint(
           runner, <String>['version-check', '--base-sha=main', '--against-pub'],
@@ -780,9 +801,9 @@ ${indentation}HTTP response: null
       mockHttpStatus = 404;
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
-      gitShowResponses = <String, String>{
-        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
-      };
+      processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+        MockProcess(stdout: 'version: 1.0.0'),
+      ];
       final List<String> result = await runCapturingPrint(runner,
           <String>['version-check', '--base-sha=main', '--against-pub']);
 

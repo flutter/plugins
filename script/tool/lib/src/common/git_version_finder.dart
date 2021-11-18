@@ -75,7 +75,7 @@ class GitVersionFinder {
     io.ProcessResult baseShaFromMergeBase = await baseGitDir.runCommand(
         <String>['merge-base', '--fork-point', 'FETCH_HEAD', 'HEAD'],
         throwOnError: false);
-    if (baseShaFromMergeBase.stderr != null ||
+    if ((baseShaFromMergeBase.stderr as String? ?? '').isNotEmpty ||
         baseShaFromMergeBase.stdout == null) {
       baseShaFromMergeBase = await baseGitDir
           .runCommand(<String>['merge-base', 'FETCH_HEAD', 'HEAD']);

@@ -143,6 +143,9 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   final PubVersionFinder _pubVersionFinder;
 
+  late GitVersionFinder _gitVersionFinder;
+  late String _mergeBase;
+
   @override
   final String name = 'version-check';
 
@@ -156,7 +159,10 @@ class VersionCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  Future<void> initializeRun() async {}
+  Future<void> initializeRun() async {
+    _gitVersionFinder = await retrieveVersionFinder();
+    _mergeBase = await _gitVersionFinder.getBaseSha();
+  }
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
@@ -239,10 +245,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   }
 
   /// Returns the version of [package] from git at the base comparison hash.
-  Future<Version?> _getPreviousVersionFromGit(
-    RepositoryPackage package, {
-    required GitVersionFinder gitVersionFinder,
-  }) async {
+  Future<Version?> _getPreviousVersionFromGit(RepositoryPackage package) async {
     final File pubspecFile = package.pubspecFile;
     final String relativePath =
         path.relative(pubspecFile.absolute.path, from: (await gitDir).path);
@@ -250,7 +253,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final String gitPath = path.style == p.Style.windows
         ? p.posix.joinAll(path.split(relativePath))
         : relativePath;
-    return await gitVersionFinder.getPackageVersion(gitPath);
+    return await _gitVersionFinder.getPackageVersion(gitPath,
+        gitRef: _mergeBase);
   }
 
   /// Returns the state of the verison of [package] relative to the comparison
@@ -274,11 +278,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
             '$indentation${pubspec.name}: Current largest version on pub: $previousVersion');
       }
     } else {
-      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-      previousVersionSource = await gitVersionFinder.getBaseSha();
-      previousVersion = await _getPreviousVersionFromGit(package,
-              gitVersionFinder: gitVersionFinder) ??
-          Version.none;
+      previousVersionSource = _mergeBase;
+      previousVersion =
+          await _getPreviousVersionFromGit(package) ?? Version.none;
     }
     if (previousVersion == Version.none) {
       print('${indentation}Unable to find previous version '
