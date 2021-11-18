@@ -86,7 +86,9 @@ class WebView {
   /// Returns null if no page has been loaded.
   Future<String?> getUrl() async {
     final String result = await api.getUrlFromInstance(this);
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -138,7 +140,9 @@ class WebView {
       this,
       javascriptString,
     );
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
@@ -148,7 +152,9 @@ class WebView {
   /// Returns null if no page has been loaded.
   Future<String?> getTitle() async {
     final String result = await api.getTitleFromInstance(this);
-    if (result == _nullStringIdentifier) return null;
+    if (result == _nullStringIdentifier) {
+      return null;
+    }
     return result;
   }
 
