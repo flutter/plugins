@@ -478,6 +478,60 @@ void main() {
       });
     });
 
+    group('scrubbing', () {
+      testWidgets('restarts on release if already playing',
+          (WidgetTester tester) async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        final progressWidget =
+            VideoProgressIndicator(controller, allowScrubbing: true);
+
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: progressWidget,
+        ));
+
+        await controller.play();
+        expect(controller.value.isPlaying, isTrue);
+
+        final Rect progressRect = tester.getRect(find.byWidget(progressWidget));
+        await tester.dragFrom(progressRect.center, Offset(1.0, 0.0));
+        await tester.pumpAndSettle();
+
+        expect(controller.value.position, lessThan(controller.value.duration));
+        expect(controller.value.isPlaying, isTrue);
+
+        await controller.pause();
+      });
+
+      testWidgets('does not restart when dragging to end',
+          (WidgetTester tester) async {
+        final VideoPlayerController controller = VideoPlayerController.network(
+          'https://127.0.0.1',
+        );
+        await controller.initialize();
+        final progressWidget =
+            VideoProgressIndicator(controller, allowScrubbing: true);
+
+        await tester.pumpWidget(Directionality(
+          textDirection: TextDirection.ltr,
+          child: progressWidget,
+        ));
+
+        await controller.play();
+        expect(controller.value.isPlaying, isTrue);
+
+        final Rect progressRect = tester.getRect(find.byWidget(progressWidget));
+        await tester.dragFrom(progressRect.center, progressRect.centerRight);
+        await tester.pumpAndSettle();
+
+        expect(controller.value.position, controller.value.duration);
+        expect(controller.value.isPlaying, isFalse);
+      });
+    });
+
     group('caption', () {
       test('works when seeking', () async {
         final VideoPlayerController controller = VideoPlayerController.network(

@@ -10,3 +10,4 @@ export 'javascript_mode.dart';
 export 'web_resource_error.dart';
 export 'web_resource_error_type.dart';
 export 'web_settings.dart';
+export 'webview_request.dart';

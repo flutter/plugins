@@ -23,6 +23,32 @@ abstract class WebViewPlatformController {
   /// The `handler` parameter must not be null.
   WebViewPlatformController(WebViewPlatformCallbacksHandler handler);
 
+  /// Loads the file located on the specified [absoluteFilePath].
+  ///
+  /// The [absoluteFilePath] parameter should contain the absolute path to the
+  /// file as it is stored on the device. For example:
+  /// `/Users/username/Documents/www/index.html`.
+  ///
+  /// Throws an ArgumentError if the [absoluteFilePath] does not exist.
+  Future<void> loadFile(
+    String absoluteFilePath,
+  ) {
+    throw UnimplementedError(
+        "WebView loadFlutterAsset is not implemented on the current platform");
+  }
+
+  /// Loads the supplied HTML string.
+  ///
+  /// The [baseUrl] parameter is used when resolving relative URLs within the
+  /// HTML string.
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) {
+    throw UnimplementedError(
+        "WebView loadHtmlString is not implemented on the current platform");
+  }
+
   /// Loads the specified URL.
   ///
   /// If `headers` is not null and the URL is an HTTP URL, the key value paris in `headers` will
@@ -37,6 +63,25 @@ abstract class WebViewPlatformController {
   ) {
     throw UnimplementedError(
         "WebView loadUrl is not implemented on the current platform");
+  }
+
+  /// Makes a specific HTTP request ands loads the response in the webview.
+  ///
+  /// [WebViewRequest.method] must be one of the supported HTTP methods
+  /// in [WebViewRequestMethod].
+  ///
+  /// If [WebViewRequest.headers] is not empty, its key-value pairs will be
+  /// added as the headers for the request.
+  ///
+  /// If [WebViewRequest.body] is not null, it will be added as the body
+  /// for the request.
+  ///
+  /// Throws an ArgumentError if [WebViewRequest.uri] has empty scheme.
+  Future<void> loadRequest(
+    WebViewRequest request,
+  ) {
+    throw UnimplementedError(
+        "WebView loadRequest is not implemented on the current platform");
   }
 
   /// Updates the webview settings.

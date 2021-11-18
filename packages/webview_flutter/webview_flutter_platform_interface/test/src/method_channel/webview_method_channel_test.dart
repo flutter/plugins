@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:typed_data';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -11,7 +13,9 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('Tests on `plugin.flutter.io/webview_<channel_id>` channel', () {
+  group(
+      'Tests on `plugin.flutter.io/webview_<channel_id>` channel dart->native',
+      () {
     const int channelId = 1;
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/webview_$channelId');
@@ -55,6 +59,61 @@ void main() {
       log.clear();
     });
 
+    test('loadFile', () async {
+      await webViewPlatform.loadFile(
+        '/folder/asset.html',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadFile',
+            arguments: '/folder/asset.html',
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadHtmlString without base URL', () async {
+      await webViewPlatform.loadHtmlString(
+        'Test HTML string',
+        baseUrl: 'https://flutter.dev',
+      );
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadHtmlString',
+            arguments: <String, String?>{
+              'html': 'Test HTML string',
+              'baseUrl': 'https://flutter.dev',
+            },
+          ),
+        ],
+      );
+    });
+
     test('loadUrl with headers', () async {
       await webViewPlatform.loadUrl(
         'https://test.url',
@@ -95,6 +154,56 @@ void main() {
             arguments: <String, dynamic>{
               'url': 'https://test.url',
               'headers': null,
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {},
+                'body': null,
+              }
+            },
+          ),
+        ],
+      );
+    });
+
+    test('loadRequest with optional parameters', () async {
+      await webViewPlatform.loadRequest(WebViewRequest(
+        uri: Uri.parse('https://test.url'),
+        method: WebViewRequestMethod.get,
+        headers: {'foo': 'bar'},
+        body: Uint8List.fromList('hello world'.codeUnits),
+      ));
+
+      expect(
+        log,
+        <Matcher>[
+          isMethodCall(
+            'loadRequest',
+            arguments: <String, dynamic>{
+              'request': {
+                'uri': 'https://test.url',
+                'method': 'get',
+                'headers': {'foo': 'bar'},
+                'body': 'hello world'.codeUnits,
+              }
             },
           ),
         ],
@@ -444,6 +553,40 @@ void main() {
           ),
         ],
       );
+    });
+  });
+
+  group(
+      'Tests on `plugin.flutter.io/webview_<channel_id>` channel native->dart',
+      () {
+    const int channelId = 1;
+    final WebViewPlatformCallbacksHandler callbacksHandler =
+        MockWebViewPlatformCallbacksHandler();
+    final JavascriptChannelRegistry javascriptChannelRegistry =
+        MockJavascriptChannelRegistry();
+
+    MethodChannelWebViewPlatform(
+      channelId,
+      callbacksHandler,
+      javascriptChannelRegistry,
+    );
+
+    tearDown(() {
+      reset(callbacksHandler);
+    });
+
+    test('onUrlChanged', () async {
+      // Run
+      await ServicesBinding.instance!.defaultBinaryMessenger
+          .handlePlatformMessage(
+        'plugins.flutter.io/webview_$channelId',
+        StandardMethodCodec()
+            .encodeMethodCall(MethodCall('onUrlChanged', {'url': 'Test Url'})),
+        null,
+      );
+
+      // Verify
+      verify(callbacksHandler.onUrlChanged('Test Url'));
     });
   });
 

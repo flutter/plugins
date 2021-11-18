@@ -15,7 +15,7 @@ import 'navigation_request.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
-typedef void WebViewCreatedCallback(WebViewController controller);
+typedef WebViewCreatedCallback = void Function(WebViewController controller);
 
 /// Decides how to handle a specific navigation request.
 ///
@@ -23,20 +23,20 @@ typedef void WebViewCreatedCallback(WebViewController controller);
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef FutureOr<NavigationDecision> NavigationDelegate(
+typedef NavigationDelegate = FutureOr<NavigationDecision> Function(
     NavigationRequest navigation);
 
 /// Signature for when a [WebView] has started loading a page.
-typedef void PageStartedCallback(String url);
+typedef PageStartedCallback = void Function(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
-typedef void PageFinishedCallback(String url);
+typedef PageFinishedCallback = void Function(String url);
 
 /// Signature for when a [WebView] is loading a page.
-typedef void PageLoadingCallback(int progress);
+typedef PageLoadingCallback = void Function(int progress);
 
 /// Signature for when a [WebView] has failed to load a resource.
-typedef void WebResourceErrorCallback(WebResourceError error);
+typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
 /// A web view widget for showing html content.
 ///
@@ -72,6 +72,7 @@ class WebView extends StatefulWidget {
     this.debuggingEnabled = false,
     this.gestureNavigationEnabled = false,
     this.userAgent,
+    this.zoomEnabled = true,
     this.initialMediaPlaybackPolicy =
         AutoMediaPlaybackPolicy.require_user_action_for_all_media_types,
     this.allowsInlineMediaPlayback = false,
@@ -80,23 +81,10 @@ class WebView extends StatefulWidget {
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
 
-  static WebViewPlatform _platform = AndroidWebView();
-
   /// The WebView platform that's used by this WebView.
   ///
   /// The default value is [AndroidWebView].
-  static WebViewPlatform get platform => _platform;
-
-  /// Sets a custom [WebViewPlatform].
-  ///
-  /// This property can be set to use a custom platform implementation for WebViews.
-  ///
-  /// Setting `platform` doesn't affect [WebView]s that were already created.
-  ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
-  static set platform(WebViewPlatform platform) {
-    _platform = platform;
-  }
+  static WebViewPlatform platform = AndroidWebView();
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback? onWebViewCreated;
@@ -115,7 +103,7 @@ class WebView extends StatefulWidget {
   /// The initial URL to load.
   final String? initialUrl;
 
-  /// Whether Javascript execution is enabled.
+  /// Whether JavaScript execution is enabled.
   final JavascriptMode javascriptMode;
 
   /// The set of [JavascriptChannel]s available to JavaScript code running in the web view.
@@ -125,7 +113,7 @@ class WebView extends StatefulWidget {
   /// The JavaScript code can then call `postMessage` on that object to send a message that will be
   /// passed to [JavascriptChannel.onMessageReceived].
   ///
-  /// For example for the following JavascriptChannel:
+  /// For example for the following [JavascriptChannel]:
   ///
   /// ```dart
   /// JavascriptChannel(name: 'Print', onMessageReceived: (JavascriptMessage message) { print(message.message); });
@@ -188,7 +176,7 @@ class WebView extends StatefulWidget {
   /// When [onPageFinished] is invoked on Android, the page being rendered may
   /// not be updated yet.
   ///
-  /// When invoked on iOS or Android, any Javascript code that is embedded
+  /// When invoked on iOS or Android, any JavaScript code that is embedded
   /// directly in the HTML has been loaded and code injected with
   /// [WebViewController.evaluateJavascript] can assume this.
   final PageFinishedCallback? onPageFinished;
@@ -220,6 +208,11 @@ class WebView extends StatefulWidget {
   ///
   /// By default `gestureNavigationEnabled` is false.
   final bool gestureNavigationEnabled;
+
+  /// A Boolean value indicating whether the WebView should support zooming using its on-screen zoom controls and gestures.
+  ///
+  /// By default 'zoomEnabled' is true
+  final bool zoomEnabled;
 
   /// The value used for the HTTP User-Agent: request header.
   ///
@@ -275,7 +268,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated:
           (WebViewPlatformController? webViewPlatformController) {
-        WebViewController controller = WebViewController(
+        final WebViewController controller = WebViewController(
           widget,
           webViewPlatformController!,
           _javascriptChannelRegistry,
@@ -339,6 +332,7 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     }
   }
 
+  @override
   void onWebResourceError(WebResourceError error) {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
@@ -481,31 +475,46 @@ class WebViewController {
     _javascriptChannelRegistry.updateJavascriptChannelsFromSet(newChannels);
   }
 
-  /// Evaluates a JavaScript expression in the context of the current page.
-  ///
-  /// On Android returns the evaluation result as a JSON formatted string.
-  ///
-  /// On iOS depending on the value type the return value would be one of:
-  ///
-  ///  - For primitive JavaScript types: the value string formatted (e.g JavaScript 100 returns '100').
-  ///  - For JavaScript arrays of supported types: a string formatted NSArray(e.g '(1,2,3), note that the string for NSArray is formatted and might contain newlines and extra spaces.').
-  ///  - Other non-primitive types are not supported on iOS and will complete the Future with an error.
-  ///
-  /// The Future completes with an error if a JavaScript error occurred, or on iOS, if the type of the
-  /// evaluated expression is not supported as described above.
-  ///
-  /// When evaluating Javascript in a [WebView], it is best practice to wait for
-  /// the [WebView.onPageFinished] callback. This guarantees all the Javascript
-  /// embedded in the main frame HTML has been loaded.
+  @visibleForTesting
+  // ignore: public_member_api_docs
   Future<String> evaluateJavascript(String javascriptString) {
     if (_settings.javascriptMode == JavascriptMode.disabled) {
       return Future<String>.error(FlutterError(
           'JavaScript mode must be enabled/unrestricted when calling evaluateJavascript.'));
     }
-    // TODO(amirh): remove this on when the invokeMethod update makes it to stable Flutter.
-    // https://github.com/flutter/flutter/issues/26431
-    // ignore: strong_mode_implicit_dynamic_method
     return _webViewPlatformController.evaluateJavascript(javascriptString);
+  }
+
+  /// Runs the given JavaScript in the context of the current page.
+  /// If you are looking for the result, use [runJavascriptReturningResult] instead.
+  /// The Future completes with an error if a JavaScript error occurred.
+  ///
+  /// When running JavaScript in a [WebView], it is best practice to wait for
+  //  the [WebView.onPageFinished] callback. This guarantees all the JavaScript
+  //  embedded in the main frame HTML has been loaded.
+  Future<void> runJavascript(String javaScriptString) {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      return Future<void>.error(FlutterError(
+          'Javascript mode must be enabled/unrestricted when calling runJavascript.'));
+    }
+    return _webViewPlatformController.runJavascript(javaScriptString);
+  }
+
+  /// Runs the given JavaScript in the context of the current page, and returns the result.
+  ///
+  /// Returns the evaluation result as a JSON formatted string.
+  /// The Future completes with an error if a JavaScript error occurred.
+  ///
+  /// When evaluating JavaScript in a [WebView], it is best practice to wait for
+  /// the [WebView.onPageFinished] callback. This guarantees all the JavaScript
+  /// embedded in the main frame HTML has been loaded.
+  Future<String> runJavascriptReturningResult(String javaScriptString) {
+    if (_settings.javascriptMode == JavascriptMode.disabled) {
+      return Future<String>.error(FlutterError(
+          'Javascript mode must be enabled/unrestricted when calling runJavascriptReturningResult.'));
+    }
+    return _webViewPlatformController
+        .runJavascriptReturningResult(javaScriptString);
   }
 
   /// Returns the title of the currently loaded page.
@@ -553,12 +562,14 @@ class WebViewController {
     assert(newValue.hasNavigationDelegate != null);
     assert(newValue.debuggingEnabled != null);
     assert(newValue.userAgent != null);
+    assert(newValue.zoomEnabled != null);
 
     JavascriptMode? javascriptMode;
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = WebSetting<String?>.absent();
+    bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
@@ -574,6 +585,9 @@ class WebViewController {
     if (currentValue.userAgent != newValue.userAgent) {
       userAgent = newValue.userAgent;
     }
+    if (currentValue.zoomEnabled != newValue.zoomEnabled) {
+      zoomEnabled = newValue.zoomEnabled;
+    }
 
     return WebSettings(
       javascriptMode: javascriptMode,
@@ -581,6 +595,7 @@ class WebViewController {
       hasProgressTracking: hasProgressTracking,
       debuggingEnabled: debuggingEnabled,
       userAgent: userAgent,
+      zoomEnabled: zoomEnabled,
     );
   }
 
@@ -613,5 +628,6 @@ WebSettings _webSettingsFromWidget(WebView widget) {
     gestureNavigationEnabled: widget.gestureNavigationEnabled,
     allowsInlineMediaPlayback: widget.allowsInlineMediaPlayback,
     userAgent: WebSetting<String?>.of(widget.userAgent),
+    zoomEnabled: widget.zoomEnabled,
   );
 }

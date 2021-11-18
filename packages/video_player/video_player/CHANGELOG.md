@@ -1,3 +1,12 @@
+## 2.2.7
+
+* Fixes a regression where dragging a [VideoProgressIndicator] while playing
+  would restart playback from the start of the video.
+
+## 2.2.6
+
+* Initialize player when size and duration become available on iOS
+
 ## 2.2.5
 
 * Support to closed caption WebVTT format added.

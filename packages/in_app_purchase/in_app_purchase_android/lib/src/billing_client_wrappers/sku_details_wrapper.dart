@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import 'dart:ui' show hashValues;
+
 import 'package:flutter/foundation.dart';
 import 'package:json_annotation/json_annotation.dart';
+
 import 'billing_client_wrapper.dart';
-import 'enum_converters.dart';
 
 // WARNING: Changes to `@JsonSerializable` classes need to be reflected in the
 // below generated file. Run `flutter packages pub run build_runner watch` to
@@ -75,7 +76,6 @@ class SkuDetailsWrapper {
   ///
   /// Returns 0 if the SKU is not a subscription or doesn't have an introductory
   /// period.
-  @JsonKey(name: 'introductoryPriceAmountMicros', defaultValue: 0)
   final int introductoryPriceAmountMicros;
 
   /// String representation of [introductoryPrice] in micro-units 990000

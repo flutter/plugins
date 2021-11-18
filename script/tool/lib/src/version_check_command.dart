@@ -262,7 +262,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     // This method isn't called unless `version` is non-null.
     final Version currentVersion = pubspec.version!;
     Version? previousVersion;
+    String previousVersionSource;
     if (getBoolArg(_againstPubFlag)) {
+      previousVersionSource = 'pub';
       previousVersion = await _fetchPreviousVersionFromPub(pubspec.name);
       if (previousVersion == null) {
         return _CurrentVersionState.unknown;
@@ -273,6 +275,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
       }
     } else {
       final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
+      previousVersionSource = await gitVersionFinder.getBaseSha();
       previousVersion = await _getPreviousVersionFromGit(package,
               gitVersionFinder: gitVersionFinder) ??
           Version.none;
@@ -310,9 +313,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     if (allowedNextVersions.containsKey(currentVersion)) {
       print('$indentation$previousVersion -> $currentVersion');
     } else {
-      final String source = (getBoolArg(_againstPubFlag)) ? 'pub' : 'master';
       printError('${indentation}Incorrectly updated version.\n'
-          '${indentation}HEAD: $currentVersion, $source: $previousVersion.\n'
+          '${indentation}HEAD: $currentVersion, $previousVersionSource: $previousVersion.\n'
           '${indentation}Allowed versions: $allowedNextVersions');
       return _CurrentVersionState.invalidChange;
     }

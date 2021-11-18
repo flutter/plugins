@@ -23,14 +23,15 @@ class SKTransactionStatusConverter
     if (json == null) {
       return SKPaymentTransactionStateWrapper.unspecified;
     }
-    return _$enumDecode<SKPaymentTransactionStateWrapper, dynamic>(
+    return $enumDecode<SKPaymentTransactionStateWrapper, dynamic>(
         _$SKPaymentTransactionStateWrapperEnumMap
             .cast<SKPaymentTransactionStateWrapper, dynamic>(),
         json);
   }
 
   /// Converts an [SKPaymentTransactionStateWrapper] to a [PurchaseStatus].
-  PurchaseStatus toPurchaseStatus(SKPaymentTransactionStateWrapper object) {
+  PurchaseStatus toPurchaseStatus(
+      SKPaymentTransactionStateWrapper object, SKError? error) {
     switch (object) {
       case SKPaymentTransactionStateWrapper.purchasing:
       case SKPaymentTransactionStateWrapper.deferred:
@@ -40,6 +41,14 @@ class SKTransactionStatusConverter
       case SKPaymentTransactionStateWrapper.restored:
         return PurchaseStatus.restored;
       case SKPaymentTransactionStateWrapper.failed:
+        // According to the Apple documentation the error code "2" indicates
+        // the user cancelled the payment (SKErrorPaymentCancelled) and error
+        // code "15" indicates the cancellation of the overlay (SKErrorOverlayCancelled).
+        // An overview of all error codes can be found at: https://developer.apple.com/documentation/storekit/skerrorcode?language=objc
+        if (error != null && (error.code == 2 || error.code == 15)) {
+          return PurchaseStatus.canceled;
+        }
+        return PurchaseStatus.error;
       case SKPaymentTransactionStateWrapper.unspecified:
         return PurchaseStatus.error;
     }
@@ -64,7 +73,7 @@ class SKSubscriptionPeriodUnitConverter
     if (json == null) {
       return SKSubscriptionPeriodUnit.day;
     }
-    return _$enumDecode<SKSubscriptionPeriodUnit, dynamic>(
+    return $enumDecode<SKSubscriptionPeriodUnit, dynamic>(
         _$SKSubscriptionPeriodUnitEnumMap
             .cast<SKSubscriptionPeriodUnit, dynamic>(),
         json);
@@ -89,7 +98,7 @@ class SKProductDiscountPaymentModeConverter
     if (json == null) {
       return SKProductDiscountPaymentMode.payAsYouGo;
     }
-    return _$enumDecode<SKProductDiscountPaymentMode, dynamic>(
+    return $enumDecode<SKProductDiscountPaymentMode, dynamic>(
         _$SKProductDiscountPaymentModeEnumMap
             .cast<SKProductDiscountPaymentMode, dynamic>(),
         json);

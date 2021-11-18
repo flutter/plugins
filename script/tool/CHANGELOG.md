@@ -1,5 +1,12 @@
 ## NEXT
 
+- `native-test` now builds unit tests before running them on Windows and Linux,
+  matching the behavior of other platforms.
+- Added `--log-timing` to add timing information to package headers in looping
+  commands.
+
+## 0.7.2
+
 - Update Firebase Testlab deprecated test device. (Pixel 4 API 29 -> Pixel 5 API 30).
 - `native-test --android`, `--ios`, and `--macos` now fail plugins that don't
   have unit tests, rather than skipping them.
@@ -13,6 +20,10 @@
 - `license-check` now validates Kotlin files.
 - `pubspec-check` now checks that the description is of the pub-recommended
   length.
+- Fix `license-check` when run on Windows with line ending conversion enabled.
+- Fixed `pubspec-check` on Windows.
+- Add support for `main` as a primary branch. `master` continues to work for
+  compatibility.
 
 ## 0.7.1
 

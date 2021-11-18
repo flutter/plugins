@@ -24,8 +24,9 @@ dev_dependencies:
     sdk: flutter
   integration_test:
     sdk: flutter
-  test: any
+  path_provider: ^2.0.6
   pedantic: ^1.10.0
+  test: any
 
 flutter:
   uses-material-design: true
