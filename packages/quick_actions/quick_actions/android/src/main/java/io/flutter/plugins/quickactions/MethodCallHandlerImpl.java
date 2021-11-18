@@ -13,11 +13,14 @@ import android.content.pm.ShortcutManager;
 import android.content.res.Resources;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Looper;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executor;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,19 +57,32 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
+          Executor uiThreadExecutor = new UiThreadExecutor();
           ThreadPoolExecutor executor =
               new ThreadPoolExecutor(
                   0, 1, 1, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>());
 
           executor.execute(
-              new Runnable() {
-                @Override
-                public void run() {
+              () -> {
+                boolean dynamicShortcutsSet = false;
+                try {
                   shortcutManager.setDynamicShortcuts(shortcuts);
+                  dynamicShortcutsSet = true;
+                } catch (Exception e) {
+                  result.error(
+                      "quick_action_setshortcutitems_failure",
+                      "Exception thrown when setting dynamic shortcuts",
+                      null);
                 }
+
+                final boolean didSucceed = dynamicShortcutsSet;
+                uiThreadExecutor.execute(
+                    () -> {
+                      if (didSucceed) result.success(null);
+                    });
               });
         }
-        break;
+        return;
       case "clearShortcutItems":
         shortcutManager.removeAllDynamicShortcuts();
         break;
@@ -142,5 +158,14 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         .putExtra(EXTRA_ACTION, type)
         .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+  }
+
+  private static class UiThreadExecutor implements Executor {
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    @Override
+    public void execute(Runnable command) {
+      handler.post(command);
+    }
   }
 }
