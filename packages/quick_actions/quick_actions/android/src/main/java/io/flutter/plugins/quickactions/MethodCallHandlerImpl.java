@@ -73,14 +73,18 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
                 }
 
                 final boolean didSucceed = dynamicShortcutsSet;
+
+                // TODO(camsim99): Move re-dispatch below to background thread when Flutter 2.8+ is stable.
                 uiThreadExecutor.execute(
                     () -> {
-                      if (didSucceed) result.success(null);
-                      else
+                      if (didSucceed) {
+                        result.success(null);
+                      } else {
                         result.error(
                             "quick_action_setshortcutitems_failure",
                             "Exception thrown when setting dynamic shortcuts",
                             null);
+                      }
                     });
               });
         }
