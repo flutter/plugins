@@ -1,6 +1,6 @@
 ## 2.1.1
 
-* Suppress unchecked cast warning.
+* Suppresses unchecked cast warning.
 
 ## 2.1.0
 
