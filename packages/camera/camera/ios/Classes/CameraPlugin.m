@@ -605,9 +605,9 @@ NSString *const errorMethod = @"error";
                        arguments:@"sample buffer is not ready. Skipping sample"];
     return;
   }
-  if (_isStreamingImages && !_skipStreamingImages) {
-    _skipStreamingImages = YES;
-    if (_imageStreamHandler.eventSink) {
+  if (_isStreamingImages) {
+    if (_imageStreamHandler.eventSink && !_skipStreamingImages) {
+      _skipStreamingImages = YES;
       CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer);
       CVPixelBufferLockBaseAddress(pixelBuffer, kCVPixelBufferLock_ReadOnly);
 
@@ -1122,6 +1122,7 @@ NSString *const errorMethod = @"error";
     [eventChannel setStreamHandler:_imageStreamHandler];
 
     _isStreamingImages = YES;
+    _skipStreamingImages = NO;
   } else {
     [_methodChannel invokeMethod:errorMethod
                        arguments:@"Images from camera are already streaming!"];
