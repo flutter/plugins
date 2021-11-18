@@ -24,15 +24,8 @@ abstract class WebViewPlatformCallbacksHandler {
   void onPageFinished(String url);
 
   /// Invoked by [WebViewPlatformController] when a page is loading.
-  /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
+  /// /// Only works when [WebSettings.hasProgressTracking] is set to `true`.
   void onProgress(int progress);
-
-  /// Invoked by [WebViewPlatformController] when the webview's URL has changed.
-  ///
-  /// Unlike [onPageStarted], [onProgress], and [onPageFinished],
-  /// [onUrlChanged] also fires when navigating without a full page load
-  /// e.g. when navigating within a single page application.
-  void onUrlChanged(String url);
 
   /// Report web resource loading error to the host application.
   void onWebResourceError(WebResourceError error);
