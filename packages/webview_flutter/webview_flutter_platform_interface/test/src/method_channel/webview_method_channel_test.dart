@@ -13,9 +13,7 @@ import 'package:webview_flutter_platform_interface/webview_flutter_platform_inte
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group(
-      'Tests on `plugin.flutter.io/webview_<channel_id>` channel dart->native',
-      () {
+  group('Tests on `plugin.flutter.io/webview_<channel_id>` channel', () {
     const int channelId = 1;
     const MethodChannel channel =
         MethodChannel('plugins.flutter.io/webview_$channelId');
@@ -553,40 +551,6 @@ void main() {
           ),
         ],
       );
-    });
-  });
-
-  group(
-      'Tests on `plugin.flutter.io/webview_<channel_id>` channel native->dart',
-      () {
-    const int channelId = 1;
-    final WebViewPlatformCallbacksHandler callbacksHandler =
-        MockWebViewPlatformCallbacksHandler();
-    final JavascriptChannelRegistry javascriptChannelRegistry =
-        MockJavascriptChannelRegistry();
-
-    MethodChannelWebViewPlatform(
-      channelId,
-      callbacksHandler,
-      javascriptChannelRegistry,
-    );
-
-    tearDown(() {
-      reset(callbacksHandler);
-    });
-
-    test('onUrlChanged', () async {
-      // Run
-      await ServicesBinding.instance!.defaultBinaryMessenger
-          .handlePlatformMessage(
-        'plugins.flutter.io/webview_$channelId',
-        StandardMethodCodec()
-            .encodeMethodCall(MethodCall('onUrlChanged', {'url': 'Test Url'})),
-        null,
-      );
-
-      // Verify
-      verify(callbacksHandler.onUrlChanged('Test Url'));
     });
   });
 
