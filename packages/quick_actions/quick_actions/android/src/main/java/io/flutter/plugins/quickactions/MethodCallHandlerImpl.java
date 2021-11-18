@@ -69,16 +69,18 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
                   shortcutManager.setDynamicShortcuts(shortcuts);
                   dynamicShortcutsSet = true;
                 } catch (Exception e) {
-                  result.error(
-                      "quick_action_setshortcutitems_failure",
-                      "Exception thrown when setting dynamic shortcuts",
-                      null);
+                  // Leave dynamicShortcutsSet as false
                 }
 
                 final boolean didSucceed = dynamicShortcutsSet;
                 uiThreadExecutor.execute(
                     () -> {
                       if (didSucceed) result.success(null);
+                      else
+                        result.error(
+                            "quick_action_setshortcutitems_failure",
+                            "Exception thrown when setting dynamic shortcuts",
+                            null);
                     });
               });
         }
