@@ -56,7 +56,7 @@ class MethodCallHandlerImpl implements MethodChannel.MethodCallHandler {
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N_MR1) {
           List<Map<String, String>> serializedShortcuts = call.arguments();
           List<ShortcutInfo> shortcuts = deserializeShortcuts(serializedShortcuts);
-          
+
           Executor uiThreadExecutor = new UiThreadExecutor();
           ThreadPoolExecutor executor =
               new ThreadPoolExecutor(
