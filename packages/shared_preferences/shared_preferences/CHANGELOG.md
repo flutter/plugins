@@ -3,6 +3,8 @@
 * Fixes newly enabled analyzer options.
 * Updates example app Android compileSdkVersion to 31.
 
+* Moved Android and iOS implementations to federated packages.
+
 ## 2.0.8
 
 * Update minimum Flutter SDK to 2.5 and iOS deployment target to 9.0.
