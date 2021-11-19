@@ -42,7 +42,6 @@ void main() {
         value: buildBillingResultMap(expectedBillingResult));
     stubPlatform.addResponse(name: endConnectionCall, value: null);
 
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
     InAppPurchaseAndroidPlatform.registerPlatform();
     iapAndroidPlatform =
         InAppPurchasePlatform.instance as InAppPurchaseAndroidPlatform;

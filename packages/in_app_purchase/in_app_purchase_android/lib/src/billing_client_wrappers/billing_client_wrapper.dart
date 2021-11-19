@@ -53,8 +53,6 @@ typedef void PurchasesUpdatedListener(PurchasesResultWrapper purchasesResult);
 /// some minor changes to account for language differences. Callbacks have been
 /// converted to futures where appropriate.
 class BillingClient {
-  bool _enablePendingPurchases = false;
-
   /// Creates a billing client.
   BillingClient(PurchasesUpdatedListener onPurchasesUpdated) {
     channel.setMethodCallHandler(callHandler);
@@ -82,14 +80,19 @@ class BillingClient {
 
   /// Enable the [BillingClientWrapper] to handle pending purchases.
   ///
+  /// **Deprecation warning:** it is no longer required to call
+  /// [enablePendingPurchases] when initializing your application.
+  ///
   /// Play requires that you call this method when initializing your application.
   /// It is to acknowledge your application has been updated to support pending purchases.
   /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
   /// for more details.
   ///
   /// Failure to call this method before any other method in the [startConnection] will throw an exception.
+  @Deprecated(
+      'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
   void enablePendingPurchases() {
-    _enablePendingPurchases = true;
+    // No-op, until it is time to completely remove this method from the API.
   }
 
   /// Calls
@@ -105,8 +108,6 @@ class BillingClient {
   Future<BillingResultWrapper> startConnection(
       {required OnBillingServiceDisconnected
           onBillingServiceDisconnected}) async {
-    assert(_enablePendingPurchases,
-        'enablePendingPurchases() must be called before calling startConnection');
     List<Function> disconnectCallbacks =
         _callbacks[_kOnBillingServiceDisconnected] ??= [];
     disconnectCallbacks.add(onBillingServiceDisconnected);
@@ -115,7 +116,6 @@ class BillingClient {
                 "BillingClient#startConnection(BillingClientStateListener)",
                 <String, dynamic>{
               'handle': disconnectCallbacks.length - 1,
-              'enablePendingPurchases': _enablePendingPurchases
             })) ??
         <String, dynamic>{});
   }
