@@ -122,7 +122,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
             'checks.');
     argParser.addFlag(_checkForMissingChanges,
         help: 'Validates that changes to packages include CHANGELOG and '
-            'version changes unless they fall into an establish exemption.\n\n'
+            'version changes unless they meet an established exemption.\n\n'
             'If used with --$_changeDescriptionFile, this is should only be '
             'used in pre-submit CI checks, to  prevent the possibility of '
             'post-submit breakage if an override justification is not '
