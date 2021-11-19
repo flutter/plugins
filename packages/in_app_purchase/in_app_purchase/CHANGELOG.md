@@ -1,3 +1,11 @@
+## NEXT
+
+* **BREAKING CHANGES**:
+  * Renames `in_app_purchase_ios` to `in_app_purchase_storekit`.
+  * Renames `InAppPurchaseIosPlatform` to `InAppPurchaseStoreKitPlatform`.
+  * Renames `InAppPurchaseIosPlatformAddition` to
+    `InAppPurchaseStoreKitPlatformAddition`.
+
 ## 1.0.9
 
 * Handle purchases with `PurchaseStatus.restored` correctly in the example App.
