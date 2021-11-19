@@ -78,14 +78,18 @@ void main() {
 
   group('restore purchases', () {
     test('should emit restored transactions on purchase stream', () async {
+      fakeStoreKitPlatform.transactions.insert(
+          0, fakeStoreKitPlatform.createRestoredTransaction('foo', 'RT1'));
+      fakeStoreKitPlatform.transactions.insert(
+          1, fakeStoreKitPlatform.createRestoredTransaction('foo', 'RT2'));
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
 
       late StreamSubscription subscription;
       subscription = stream.listen((purchaseDetailsList) {
         if (purchaseDetailsList.first.status == PurchaseStatus.restored) {
-          completer.complete(purchaseDetailsList);
           subscription.cancel();
+          completer.complete(purchaseDetailsList);
         }
       });
 
@@ -109,15 +113,37 @@ void main() {
       }
     });
 
-    test('should not block transaction updates', () async {
-      fakeStoreKitPlatform.transactions.insert(
-          0, fakeStoreKitPlatform.createPurchasedTransaction('foo', 'bar'));
+    test(
+        'should emit empty transaction list on purchase stream when there is nothing to restore',
+        () async {
+      fakeStoreKitPlatform.testRestoredTransactionsNull = true;
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
 
       late StreamSubscription subscription;
       subscription = stream.listen((purchaseDetailsList) {
-        if (purchaseDetailsList.first.status == PurchaseStatus.purchased) {
+        expect(purchaseDetailsList.isEmpty, true);
+        subscription.cancel();
+        completer.complete();
+      });
+
+      await iapStoreKitPlatform.restorePurchases();
+      await completer.future;
+    });
+
+    test('should not block transaction updates', () async {
+      fakeStoreKitPlatform.transactions.insert(
+          0, fakeStoreKitPlatform.createRestoredTransaction('foo', 'RT1'));
+      fakeStoreKitPlatform.transactions.insert(
+          1, fakeStoreKitPlatform.createPurchasedTransaction('foo', 'bar'));
+      fakeStoreKitPlatform.transactions.insert(
+          2, fakeStoreKitPlatform.createRestoredTransaction('foo', 'RT2'));
+      Completer completer = Completer();
+      Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
+
+      late StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        if (purchaseDetailsList[1].status == PurchaseStatus.purchased) {
           completer.complete(purchaseDetailsList);
           subscription.cancel();
         }
@@ -145,8 +171,54 @@ void main() {
       }
     });
 
+    test(
+        'should emit empty transaction if transactions array does not contain a transaction with PurchaseStatus.restored status.',
+        () async {
+      fakeStoreKitPlatform.transactions.insert(
+          0, fakeStoreKitPlatform.createPurchasedTransaction('foo', 'bar'));
+      Completer completer = Completer();
+      Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
+      List<List<PurchaseDetails>> purchaseDetails = [];
+
+      late StreamSubscription subscription;
+      subscription = stream.listen((purchaseDetailsList) {
+        purchaseDetails.add(purchaseDetailsList);
+
+        if (purchaseDetails.length == 2) {
+          completer.complete(purchaseDetails);
+          subscription.cancel();
+        }
+      });
+      await iapStoreKitPlatform.restorePurchases();
+      final details = await completer.future;
+      expect(details.length, 2);
+      expect(details[0], []);
+      for (int i = 0; i < fakeStoreKitPlatform.transactions.length; i++) {
+        SKPaymentTransactionWrapper expected =
+            fakeStoreKitPlatform.transactions[i];
+        PurchaseDetails actual = details[1][i];
+
+        expect(actual.purchaseID, expected.transactionIdentifier);
+        expect(actual.verificationData, isNotNull);
+        expect(
+          actual.status,
+          SKTransactionStatusConverter()
+              .toPurchaseStatus(expected.transactionState, expected.error),
+        );
+        expect(actual.verificationData.localVerificationData,
+            fakeStoreKitPlatform.receiptData);
+        expect(actual.verificationData.serverVerificationData,
+            fakeStoreKitPlatform.receiptData);
+        expect(actual.pendingCompletePurchase, true);
+      }
+    });
+
     test('receipt error should populate null to verificationData.data',
         () async {
+      fakeStoreKitPlatform.transactions.insert(
+          0, fakeStoreKitPlatform.createRestoredTransaction('foo', 'RT1'));
+      fakeStoreKitPlatform.transactions.insert(
+          1, fakeStoreKitPlatform.createRestoredTransaction('foo', 'RT2'));
       fakeStoreKitPlatform.receiptData = null;
       Completer completer = Completer();
       Stream<List<PurchaseDetails>> stream = iapStoreKitPlatform.purchaseStream;
