@@ -4,24 +4,18 @@
 
 import 'dart:async';
 import 'dart:io';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
-import 'package:in_app_purchase_android/billing_client_wrappers.dart';
-import 'package:in_app_purchase_android/in_app_purchase_android.dart';
 import 'package:in_app_purchase_storekit/in_app_purchase_storekit.dart';
-import 'package:in_app_purchase_storekit/store_kit_wrappers.dart';
+import 'package:in_app_purchase_storekit_example/example_payment_queue_delegate.dart';
+import 'package:in_app_purchase_platform_interface/in_app_purchase_platform_interface.dart';
 import 'consumable_store.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
 
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    // For play billing library 2.0 on Android, it is mandatory to call
-    // [enablePendingPurchases](https://developer.android.com/reference/com/android/billingclient/api/BillingClient.Builder.html#enablependingpurchases)
-    // as part of initializing the app.
-    InAppPurchaseAndroidPlatformAddition.enablePendingPurchases();
-  }
+  // When using the Android plugin directly it is mandatory to register
+  // the plugin as default instance as part of initializing the app.
+  InAppPurchaseStoreKitPlatform.registerPlatform();
 
   runApp(_MyApp());
 }
@@ -45,7 +39,11 @@ class _MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<_MyApp> {
-  final InAppPurchase _inAppPurchase = InAppPurchase.instance;
+  final InAppPurchaseStoreKitPlatform _iapStoreKitPlatform =
+      InAppPurchasePlatform.instance as InAppPurchaseStoreKitPlatform;
+  final InAppPurchaseStoreKitPlatformAddition _iapStoreKitPlatformAddition =
+      InAppPurchasePlatformAddition.instance
+          as InAppPurchaseStoreKitPlatformAddition;
   late StreamSubscription<List<PurchaseDetails>> _subscription;
   List<String> _notFoundIds = [];
   List<ProductDetails> _products = [];
@@ -59,7 +57,7 @@ class _MyAppState extends State<_MyApp> {
   @override
   void initState() {
     final Stream<List<PurchaseDetails>> purchaseUpdated =
-        _inAppPurchase.purchaseStream;
+        _iapStoreKitPlatform.purchaseStream;
     _subscription = purchaseUpdated.listen((purchaseDetailsList) {
       _listenToPurchaseUpdated(purchaseDetailsList);
     }, onDone: () {
@@ -67,12 +65,16 @@ class _MyAppState extends State<_MyApp> {
     }, onError: (error) {
       // handle error here.
     });
+
+    // Register the example payment queue delegate
+    _iapStoreKitPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
+
     initStoreInfo();
     super.initState();
   }
 
   Future<void> initStoreInfo() async {
-    final bool isAvailable = await _inAppPurchase.isAvailable();
+    final bool isAvailable = await _iapStoreKitPlatform.isAvailable();
     if (!isAvailable) {
       setState(() {
         _isAvailable = isAvailable;
@@ -86,14 +88,8 @@ class _MyAppState extends State<_MyApp> {
       return;
     }
 
-    if (Platform.isIOS) {
-      var iosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
-      await iosPlatformAddition.setDelegate(ExamplePaymentQueueDelegate());
-    }
-
     ProductDetailsResponse productDetailResponse =
-        await _inAppPurchase.queryProductDetails(_kProductIds.toSet());
+        await _iapStoreKitPlatform.queryProductDetails(_kProductIds.toSet());
     if (productDetailResponse.error != null) {
       setState(() {
         _queryProductError = productDetailResponse.error!.message;
@@ -135,11 +131,6 @@ class _MyAppState extends State<_MyApp> {
 
   @override
   void dispose() {
-    if (Platform.isIOS) {
-      var iosPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
-      iosPlatformAddition.setDelegate(null);
-    }
     _subscription.cancel();
     super.dispose();
   }
@@ -243,7 +234,7 @@ class _MyAppState extends State<_MyApp> {
     Map<String, PurchaseDetails> purchases =
         Map.fromEntries(_purchases.map((PurchaseDetails purchase) {
       if (purchase.pendingCompletePurchase) {
-        _inAppPurchase.completePurchase(purchase);
+        _iapStoreKitPlatform.completePurchase(purchase);
       }
       return MapEntry<String, PurchaseDetails>(purchase.productID, purchase);
     }));
@@ -259,7 +250,9 @@ class _MyAppState extends State<_MyApp> {
             ),
             trailing: previousPurchase != null
                 ? IconButton(
-                    onPressed: () => confirmPriceChange(context),
+                    onPressed: () {
+                      _iapStoreKitPlatformAddition.showPriceConsentIfNeeded();
+                    },
                     icon: Icon(Icons.upgrade))
                 : TextButton(
                     child: Text(productDetails.price),
@@ -268,39 +261,16 @@ class _MyAppState extends State<_MyApp> {
                       primary: Colors.white,
                     ),
                     onPressed: () {
-                      late PurchaseParam purchaseParam;
-
-                      if (Platform.isAndroid) {
-                        // NOTE: If you are making a subscription purchase/upgrade/downgrade, we recommend you to
-                        // verify the latest status of you your subscription by using server side receipt validation
-                        // and update the UI accordingly. The subscription purchase status shown
-                        // inside the app may not be accurate.
-                        final oldSubscription =
-                            _getOldSubscription(productDetails, purchases);
-
-                        purchaseParam = GooglePlayPurchaseParam(
-                            productDetails: productDetails,
-                            applicationUserName: null,
-                            changeSubscriptionParam: (oldSubscription != null)
-                                ? ChangeSubscriptionParam(
-                                    oldPurchaseDetails: oldSubscription,
-                                    prorationMode: ProrationMode
-                                        .immediateWithTimeProration,
-                                  )
-                                : null);
-                      } else {
-                        purchaseParam = PurchaseParam(
-                          productDetails: productDetails,
-                          applicationUserName: null,
-                        );
-                      }
-
+                      PurchaseParam purchaseParam = PurchaseParam(
+                        productDetails: productDetails,
+                        applicationUserName: null,
+                      );
                       if (productDetails.id == _kConsumableId) {
-                        _inAppPurchase.buyConsumable(
+                        _iapStoreKitPlatform.buyConsumable(
                             purchaseParam: purchaseParam,
                             autoConsume: _kAutoConsume || Platform.isIOS);
                       } else {
-                        _inAppPurchase.buyNonConsumable(
+                        _iapStoreKitPlatform.buyNonConsumable(
                             purchaseParam: purchaseParam);
                       }
                     },
@@ -368,7 +338,7 @@ class _MyAppState extends State<_MyApp> {
               backgroundColor: Theme.of(context).primaryColor,
               primary: Colors.white,
             ),
-            onPressed: () => _inAppPurchase.restorePurchases(),
+            onPressed: () => _iapStoreKitPlatform.restorePurchases(),
           ),
         ],
       ),
@@ -439,87 +409,11 @@ class _MyAppState extends State<_MyApp> {
             return;
           }
         }
-        if (Platform.isAndroid) {
-          if (!_kAutoConsume && purchaseDetails.productID == _kConsumableId) {
-            final InAppPurchaseAndroidPlatformAddition androidAddition =
-                _inAppPurchase.getPlatformAddition<
-                    InAppPurchaseAndroidPlatformAddition>();
-            await androidAddition.consumePurchase(purchaseDetails);
-          }
-        }
+
         if (purchaseDetails.pendingCompletePurchase) {
-          await _inAppPurchase.completePurchase(purchaseDetails);
+          await _iapStoreKitPlatform.completePurchase(purchaseDetails);
         }
       }
     });
-  }
-
-  Future<void> confirmPriceChange(BuildContext context) async {
-    if (Platform.isAndroid) {
-      final InAppPurchaseAndroidPlatformAddition androidAddition =
-          _inAppPurchase
-              .getPlatformAddition<InAppPurchaseAndroidPlatformAddition>();
-      var priceChangeConfirmationResult =
-          await androidAddition.launchPriceChangeConfirmationFlow(
-        sku: 'purchaseId',
-      );
-      if (priceChangeConfirmationResult.responseCode == BillingResponse.ok) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Price change accepted'),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(
-            priceChangeConfirmationResult.debugMessage ??
-                "Price change failed with code ${priceChangeConfirmationResult.responseCode}",
-          ),
-        ));
-      }
-    }
-    if (Platform.isIOS) {
-      var iapStoreKitPlatformAddition = _inAppPurchase
-          .getPlatformAddition<InAppPurchaseStoreKitPlatformAddition>();
-      await iapStoreKitPlatformAddition.showPriceConsentIfNeeded();
-    }
-  }
-
-  GooglePlayPurchaseDetails? _getOldSubscription(
-      ProductDetails productDetails, Map<String, PurchaseDetails> purchases) {
-    // This is just to demonstrate a subscription upgrade or downgrade.
-    // This method assumes that you have only 2 subscriptions under a group, 'subscription_silver' & 'subscription_gold'.
-    // The 'subscription_silver' subscription can be upgraded to 'subscription_gold' and
-    // the 'subscription_gold' subscription can be downgraded to 'subscription_silver'.
-    // Please remember to replace the logic of finding the old subscription Id as per your app.
-    // The old subscription is only required on Android since Apple handles this internally
-    // by using the subscription group feature in iTunesConnect.
-    GooglePlayPurchaseDetails? oldSubscription;
-    if (productDetails.id == _kSilverSubscriptionId &&
-        purchases[_kGoldSubscriptionId] != null) {
-      oldSubscription =
-          purchases[_kGoldSubscriptionId] as GooglePlayPurchaseDetails;
-    } else if (productDetails.id == _kGoldSubscriptionId &&
-        purchases[_kSilverSubscriptionId] != null) {
-      oldSubscription =
-          purchases[_kSilverSubscriptionId] as GooglePlayPurchaseDetails;
-    }
-    return oldSubscription;
-  }
-}
-
-/// Example implementation of the
-/// [`SKPaymentQueueDelegate`](https://developer.apple.com/documentation/storekit/skpaymentqueuedelegate?language=objc).
-///
-/// The payment queue delegate can be implementated to provide information
-/// needed to complete transactions.
-class ExamplePaymentQueueDelegate implements SKPaymentQueueDelegateWrapper {
-  @override
-  bool shouldContinueTransaction(
-      SKPaymentTransactionWrapper transaction, SKStorefrontWrapper storefront) {
-    return true;
-  }
-
-  @override
-  bool shouldShowPriceConsent() {
-    return false;
   }
 }
