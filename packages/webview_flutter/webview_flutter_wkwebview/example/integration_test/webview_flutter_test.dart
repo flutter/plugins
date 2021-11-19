@@ -28,10 +28,6 @@ void main() {
   const String primaryUrl = 'https://flutter.dev/';
   const String secondaryUrl = 'https://www.google.com/robots.txt';
 
-  // Set to `false` to include all flaky tests in the test run. See also https://github.com/flutter/flutter/issues/86757.
-  const bool _skipDueToIssue86757 = false;
-
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('initialUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -50,9 +46,8 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, primaryUrl);
-  }, skip: _skipDueToIssue86757);
+  });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets('loadUrl', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
@@ -72,7 +67,7 @@ void main() {
     await controller.loadUrl(secondaryUrl);
     final String? currentUrl = await controller.currentUrl();
     expect(currentUrl, secondaryUrl);
-  }, skip: _skipDueToIssue86757);
+  });
 
   testWidgets('evaluateJavascript', (WidgetTester tester) async {
     final Completer<WebViewController> controllerCompleter =
@@ -1106,7 +1101,6 @@ void main() {
     expect(currentUrl, primaryUrl);
   });
 
-  // TODO(bparrishMines): skipped due to https://github.com/flutter/flutter/issues/86757.
   testWidgets(
     'can open new window and go back',
     (WidgetTester tester) async {
@@ -1144,7 +1138,8 @@ void main() {
       await pageLoaded.future;
       expect(controller.currentUrl(), completion(primaryUrl));
     },
-    skip: _skipDueToIssue86757,
+    // Flaky; see https://github.com/flutter/flutter/issues/90976
+    skip: true,
   );
 }
 
