@@ -74,6 +74,7 @@ class TileProviderController implements TileProvider {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void success(Object data) {
       result = (Map<String, ?>) data;
       countDownLatch.countDown();
