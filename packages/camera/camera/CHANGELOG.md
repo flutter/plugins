@@ -1,6 +1,6 @@
 ##  0.9.4+5
 
-* Fixes bug when calling method after the camera was closed resulted in a Java `IllegalStateException` exception.
+* Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
 * Fixes integration tests.
 
 ## 0.9.4+4

@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.flutter.plugins.sharedpreferencesexample"> 
+    package="io.flutter.plugins.sharedpreferencesexample">
    <application
         android:label="example"
         android:icon="@mipmap/ic_launcher">
