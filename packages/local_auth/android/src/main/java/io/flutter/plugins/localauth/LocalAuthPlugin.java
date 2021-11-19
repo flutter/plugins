@@ -356,7 +356,7 @@ public class LocalAuthPlugin implements MethodCallHandler, FlutterPlugin, Activi
   }
 
   @VisibleForTesting
-  /*package*/ final Activity getActivity() {
+  final Activity getActivity() {
     return activity;
   }
 }
