@@ -48,20 +48,6 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows win32-platform_tests main
-    bringup: true
-    recipe: plugins/plugins
-    timeout: 30
-    properties:
-      add_recipes_cq: "true"
-      target_file: windows_build_and_platform_tests.yaml
-      channel: main
-      dependencies: >
-        [
-          {"dependency": "vs_build"}
-        ]
-    scheduler: luci
-
   - name: Windows win32-platform_tests stable
     recipe: plugins/plugins
     timeout: 30
@@ -87,20 +73,6 @@ targets:
         ]
     scheduler: luci
 
-  - name: Windows windows-build_all_plugins main
-    bringup: true
-    recipe: plugins/plugins
-    timeout: 30
-    properties:
-      add_recipes_cq: "true"
-      target_file: build_all_plugins.yaml
-      channel: main
-      dependencies: >
-        [
-          {"dependency": "vs_build"}
-        ]
-    scheduler: luci
-
   - name: Windows windows-build_all_plugins stable
     recipe: plugins/plugins
     timeout: 30
@@ -120,20 +92,6 @@ targets:
     properties:
       add_recipes_cq: "true"
       target_file: uwp_build_and_platform_tests.yaml
-      dependencies: >
-        [
-          {"dependency": "vs_build"}
-        ]
-    scheduler: luci
-
-  - name: Windows uwp-platform_tests main
-    bringup: true
-    recipe: plugins/plugins
-    timeout: 30
-    properties:
-      add_recipes_cq: "true"
-      target_file: uwp_build_and_platform_tests.yaml
-      channel: main
       dependencies: >
         [
           {"dependency": "vs_build"}
