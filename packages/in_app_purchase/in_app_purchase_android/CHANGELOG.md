@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
 ## 0.2.0
 
 * BREAKING CHANGE : Refactor to handle new `PurchaseStatus` named `canceled`. This means developers
