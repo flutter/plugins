@@ -82,13 +82,6 @@ class BillingClient {
   ///
   /// **Deprecation warning:** it is no longer required to call
   /// [enablePendingPurchases] when initializing your application.
-  ///
-  /// Play requires that you call this method when initializing your application.
-  /// It is to acknowledge your application has been updated to support pending purchases.
-  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
-  /// for more details.
-  ///
-  /// Failure to call this method before any other method in the [startConnection] will throw an exception.
   @Deprecated(
       'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
   void enablePendingPurchases() {

@@ -33,12 +33,6 @@ class InAppPurchaseAndroidPlatformAddition
   ///
   /// **Deprecation warning:** it is no longer required to call
   /// [enablePendingPurchases] when initializing your application.
-  ///
-  /// This method is required to be called when initialize the application.
-  /// It is to acknowledge your application has been updated to support pending purchases.
-  /// See [Support pending transactions](https://developer.android.com/google/play/billing/billing_library_overview#pending)
-  /// for more details.
-  /// Failure to call this method before access [instance] will throw an exception.
   @Deprecated(
       'The requirement to call `enablePendingPurchases()` has become obsolete since Google Play no longer accepts app submissions that don\'t support pending purchases.')
   static void enablePendingPurchases() {
