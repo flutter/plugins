@@ -110,7 +110,7 @@ void main() {
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
@@ -136,7 +136,7 @@ void main() {
           ]));
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
@@ -145,6 +145,7 @@ void main() {
     test('uses merge-base without explicit base-sha', () async {
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       processRunner.mockProcessesForExecutable['git-merge-base'] = <io.Process>[
+        MockProcess(stdout: 'abc123'),
         MockProcess(stdout: 'abc123'),
       ];
       processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
@@ -162,7 +163,7 @@ void main() {
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall('git-merge-base',
                 <String>['--fork-point', 'FETCH_HEAD', 'HEAD'], null),
             ProcessCall('git-show',
@@ -201,7 +202,7 @@ void main() {
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
@@ -228,7 +229,7 @@ void main() {
           ]));
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show', <String>['main:packages/plugin/pubspec.yaml'], null)
           ]));
@@ -251,7 +252,7 @@ void main() {
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show',
                 <String>[
@@ -287,7 +288,7 @@ void main() {
           ]));
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show',
                 <String>[
@@ -331,7 +332,7 @@ This is necessary because of X, Y, and Z
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show',
                 <String>[
@@ -367,7 +368,7 @@ This is necessary because of X, Y, and Z
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show',
                 <String>[
@@ -400,7 +401,7 @@ This is necessary because of X, Y, and Z
       );
       expect(
           processRunner.recordedCalls,
-          equals(const <ProcessCall>[
+          containsAllInOrder(const <ProcessCall>[
             ProcessCall(
                 'git-show',
                 <String>[
