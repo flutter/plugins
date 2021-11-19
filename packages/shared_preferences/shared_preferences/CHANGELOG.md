@@ -1,6 +1,8 @@
 ## NEXT
 
 * Fixes newly enabled analyzer options.
+* Updates example app Android compileSdkVersion to 31.
+
 * Moved Android and iOS implementations to federated packages.
 
 ## 2.0.8

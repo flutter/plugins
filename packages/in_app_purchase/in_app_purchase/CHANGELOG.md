@@ -1,6 +1,13 @@
 ## NEXT
 
 * Fixes integration tests.
+* Updates example app Android compileSdkVersion to 31.
+
+* **BREAKING CHANGES**:
+  * Renames `in_app_purchase_ios` to `in_app_purchase_storekit`.
+  * Renames `InAppPurchaseIosPlatform` to `InAppPurchaseStoreKitPlatform`.
+  * Renames `InAppPurchaseIosPlatformAddition` to
+    `InAppPurchaseStoreKitPlatformAddition`.
 
 ## 1.0.9
 

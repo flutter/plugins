@@ -1,5 +1,6 @@
 ## NEXT
 
+* Updates example app Android compileSdkVersion to 31.
 * Fix iOS RunnerUITests search paths.
 
 ## 0.8.4+4
