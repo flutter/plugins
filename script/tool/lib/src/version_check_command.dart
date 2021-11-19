@@ -166,6 +166,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   late GitVersionFinder _gitVersionFinder;
   late String _mergeBase;
+  late List<String> _changedFiles;
 
   late final String _changeDescription = _loadChangeDescription();
 
@@ -185,6 +186,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
   Future<void> initializeRun() async {
     _gitVersionFinder = await retrieveVersionFinder();
     _mergeBase = await _gitVersionFinder.getBaseSha();
+    _changedFiles = await _gitVersionFinder.getChangedFiles();
   }
 
   @override
@@ -528,13 +530,15 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
         packagesDir.fileSystem.directory((await gitDir).path);
     final String relativePackagePath =
         getRelativePosixPath(package.directory, from: gitRoot) + '/';
+    bool hasChanges = false;
     bool needsVersionChange = false;
     bool hasChangelogChange = false;
-    for (final String path in await _gitVersionFinder.getChangedFiles()) {
+    for (final String path in _changedFiles) {
       // Only consider files within the package.
       if (!path.startsWith(relativePackagePath)) {
         continue;
       }
+      hasChanges = true;
 
       final List<String> components = p.posix.split(path);
       final bool isChangelog = components.last == 'CHANGELOG.md';
@@ -556,6 +560,10 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
           !components.contains('lint-baseline.xml')) {
         needsVersionChange = true;
       }
+    }
+
+    if (!hasChanges) {
+      return null;
     }
 
     if (needsVersionChange) {

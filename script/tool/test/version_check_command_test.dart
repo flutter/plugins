@@ -713,6 +713,33 @@ This is necessary because of X, Y, and Z
             errorHandler: errorHandler);
       }
 
+      test('passes for unchanged packages', () async {
+        final Directory pluginDirectory =
+            createFakePlugin('plugin', packagesDir, version: '1.0.0');
+
+        const String changelog = '''
+## 1.0.0
+* Some changes.
+''';
+        createFakeCHANGELOG(pluginDirectory, changelog);
+        processRunner.mockProcessesForExecutable['git-show'] = <io.Process>[
+          MockProcess(stdout: 'version: 1.0.0'),
+        ];
+        processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
+          MockProcess(stdout: ''),
+        ];
+
+        final List<String> output =
+            await _runWithMissingChangeDetection(<String>[]);
+
+        expect(
+          output,
+          containsAllInOrder(<Matcher>[
+            contains('Running for plugin'),
+          ]),
+        );
+      });
+
       test(
           'fails if a version change is missing from a change that does not '
           'pass the exemption check', () async {
@@ -795,7 +822,6 @@ packages/plugin/pubspec.yaml
         ];
         processRunner.mockProcessesForExecutable['git-diff'] = <io.Process>[
           MockProcess(stdout: '''
-packages/plugin/CHANGELOG.md
 packages/plugin_a/lib/plugin.dart
 tool/plugin/lib/plugin.dart
 '''),
