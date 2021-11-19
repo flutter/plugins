@@ -1,4 +1,4 @@
-## NEXT
+## 2.0.9
 
 * Fixes newly enabled analyzer options.
 * Updates example app Android compileSdkVersion to 31.
