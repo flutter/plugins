@@ -2,7 +2,7 @@
 
 * Remove references to the Android v1 embedding.
 * Updated Android lint settings.
-* Update Android compileSdkVersion to 30.
+* Updates example app Android compileSdkVersion to 31.
 
 ## 2.0.2
 

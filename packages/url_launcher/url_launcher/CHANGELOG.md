@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
 ## 6.0.13
 
 * Fixed extracting browser headers when they are null error.
