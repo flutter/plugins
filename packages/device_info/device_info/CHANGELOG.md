@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
 ## 2.0.3
 
 * Remove references to the Android V1 embedding.
