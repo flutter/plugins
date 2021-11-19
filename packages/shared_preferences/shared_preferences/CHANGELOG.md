@@ -1,4 +1,4 @@
-## NEXT
+## 2.0.9
 
 * Fixes newly enabled analyzer options.
 * Moved Android and iOS implementations to federated packages.
