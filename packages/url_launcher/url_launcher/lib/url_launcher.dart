@@ -122,12 +122,11 @@ Future<bool> launch(
 /// Checks whether the specified URL can be handled by some app installed on the
 /// device.
 ///
-/// On Android (from API 30), [canLaunch] will return `false` when the required
-/// visibility configuration is not provided in the AndroidManifest.xml file.
-/// For more information see the
-/// [Package visibility filtering on Android](https://developer.android.com/training/basics/intents/package-visibility)
-/// article in the Android documentation or the url_launcher example app's
-/// [AndroidManifest.xml's queries element](https://github.com/flutter/plugins/blob/master/packages/url_launcher/url_launcher/example/android/app/src/main/AndroidManifest.xml).
+/// On some systems, such as recent versions of Android and iOS, this will
+/// always return false unless the application has been configuration to allow
+/// querying the system for launch support. See
+/// [the README](https://pub.dev/packages/url_launcher#configuration) for
+/// details.
 Future<bool> canLaunch(String urlString) async {
   return await UrlLauncherPlatform.instance.canLaunch(urlString);
 }

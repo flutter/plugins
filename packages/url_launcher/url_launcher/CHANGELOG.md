@@ -1,3 +1,10 @@
+## 6.0.14
+
+* Updates README:
+  * Improves organization.
+  * Clarifies how `canLaunch` should be used.
+* Updates example application to demonstrate intended use of `canLaunch`.
+
 ## 6.0.13
 
 * Fixed extracting browser headers when they are null error.
