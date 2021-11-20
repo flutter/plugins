@@ -164,9 +164,9 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   final PubVersionFinder _pubVersionFinder;
 
-  late GitVersionFinder _gitVersionFinder;
-  late String _mergeBase;
-  late List<String> _changedFiles;
+  late final GitVersionFinder _gitVersionFinder;
+  late final String _mergeBase;
+  late final List<String> _changedFiles;
 
   late final String _changeDescription = _loadChangeDescription();
 
