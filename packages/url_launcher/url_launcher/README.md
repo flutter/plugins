@@ -6,23 +6,8 @@ A Flutter plugin for launching a URL. Supports
 iOS, Android, web, Windows, macOS, and Linux.
 
 ## Usage
+
 To use this plugin, add `url_launcher` as a [dependency in your pubspec.yaml file](https://flutter.dev/platform-plugins/).
-
-## Installation
-
-### iOS
-Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
-
-Example:
-```
-<key>LSApplicationQueriesSchemes</key>
-<array>
-  <string>https</string>
-  <string>http</string>
-</array>
-```
-
-See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
 
 ### Example
 
@@ -30,7 +15,7 @@ See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/u
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-const _url = 'https://flutter.dev';
+const String _url = 'https://flutter.dev';
 
 void main() => runApp(
       const MaterialApp(
@@ -45,9 +30,28 @@ void main() => runApp(
       ),
     );
 
-void _launchURL() async =>
-    await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
+void _launchURL() async {
+  if (!await launch(_url)) throw 'Could not launch $_url';
+}
 ```
+
+See the example app for more complex examples.
+
+## Configuration
+
+### iOS
+Add any URL schemes passed to `canLaunch` as `LSApplicationQueriesSchemes` entries in your Info.plist file.
+
+Example:
+```
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>https</string>
+  <string>http</string>
+</array>
+```
+
+See [`-[UIApplication canOpenURL:]`](https://developer.apple.com/documentation/uikit/uiapplication/1622952-canopenurl) for more details.
 
 ### Android
 
@@ -138,20 +142,20 @@ than `Uri`'s `queryParameters` constructor argument, due to
 encodes query parameters. Using `queryParameters` will result in spaces being
 converted to `+` in many cases.
 
-## Handling missing URL receivers
+### Handling missing URL receivers
 
 A particular mobile device may not be able to receive all supported URL schemes.
 For example, a tablet may not have a cellular radio and thus no support for
 launching a URL using the `sms` scheme, or a device may not have an email app
-and thus no support for launching a URL using the `email` scheme.
+and thus no support for launching a URL using the `mailto` scheme.
 
 We recommend checking which URL schemes are supported using the
 [`canLaunch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunch.html)
-method prior to calling `launch`. If the `canLaunch` method returns false, as a
+in most cases. If the `canLaunch` method returns false, as a
 best practice we suggest adjusting the application UI so that the unsupported
-URL is never triggered; for example, if the `email` scheme is not supported, a
-UI button that would have sent email can be changed to redirect the user to a
-web page using a URL following the `http` scheme.
+URL is never triggered; for example, if the `mailto` scheme is not supported, a
+UI button that would have sent feedback email could be changed to instead open
+a web-based feedback form using an `https` URL.
 
 ## Browser vs In-app Handling
 By default, Android opens up a browser when handling URLs. You can pass

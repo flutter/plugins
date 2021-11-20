@@ -1,3 +1,10 @@
+## 6.0.15
+
+* Updates README:
+  * Improves organization.
+  * Clarifies how `canLaunch` should be used.
+* Updates example application to demonstrate intended use of `canLaunch`.
+
 ## 6.0.14
 
 * Updates readme to indicate that sending SMS messages on Android 11 requires to add a query to AndroidManifest.xml.
