@@ -297,12 +297,6 @@ public class MainActivityTest {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -334,12 +328,6 @@ public class MainActivityTest {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -376,12 +364,6 @@ public class MainActivityTest {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -424,12 +406,6 @@ public class MainActivityTest {
           'firebase-test-lab',
           '--device',
           'model=redfin,version=30',
-          '--device',
-          'model=seoul,version=26',
-          '--test-run-id',
-          'testRunId',
-          '--build-id',
-          'buildId',
         ],
         errorHandler: (Error e) {
           commandError = e;
@@ -458,12 +434,6 @@ public class MainActivityTest {
         'firebase-test-lab',
         '--device',
         'model=redfin,version=30',
-        '--device',
-        'model=seoul,version=26',
-        '--test-run-id',
-        'testRunId',
-        '--build-id',
-        'buildId',
       ]);
 
       expect(
@@ -496,8 +466,6 @@ public class MainActivityTest {
         'firebase-test-lab',
         '--device',
         'model=redfin,version=30',
-        '--device',
-        'model=seoul,version=26',
         '--test-run-id',
         'testRunId',
         '--build-id',
@@ -540,7 +508,7 @@ public class MainActivityTest {
               '/packages/plugin/example/android'),
           ProcessCall(
               'gcloud',
-              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30 --device model=seoul,version=26'
+              'firebase test android run --type instrumentation --app build/app/outputs/apk/debug/app-debug.apk --test build/app/outputs/apk/androidTest/debug/app-debug-androidTest.apk --timeout 7m --results-bucket=gs://flutter_firebase_testlab --results-dir=plugins_android_test/plugin/buildId/testRunId/0/ --device model=redfin,version=30'
                   .split(' '),
               '/packages/plugin/example'),
         ]),
