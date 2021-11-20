@@ -1,5 +1,7 @@
-## NEXT
+## 6.0.14
 
+* Updates readme to indicate that sending SMS messages on Android 11 requires to add a query to AndroidManifest.xml.
+* Fixes integration tests.
 * Updates example app Android compileSdkVersion to 31.
 
 ## 6.0.13
