@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
 ## 2.0.7
 
 * Moved Android and iOS implementations to federated packages.

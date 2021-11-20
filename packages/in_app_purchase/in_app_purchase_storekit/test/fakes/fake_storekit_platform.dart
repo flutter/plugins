@@ -47,24 +47,6 @@ class FakeStoreKitPlatform {
       validProducts[validID] = SKProductWrapper.fromJson(productWrapperMap);
     }
 
-    SKPaymentTransactionWrapper tran1 = SKPaymentTransactionWrapper(
-      transactionIdentifier: '123',
-      payment: dummyPayment,
-      originalTransaction: dummyTransaction,
-      transactionTimeStamp: 123123123.022,
-      transactionState: SKPaymentTransactionStateWrapper.restored,
-      error: null,
-    );
-    SKPaymentTransactionWrapper tran2 = SKPaymentTransactionWrapper(
-      transactionIdentifier: '1234',
-      payment: dummyPayment,
-      originalTransaction: dummyTransaction,
-      transactionTimeStamp: 123123123.022,
-      transactionState: SKPaymentTransactionStateWrapper.restored,
-      error: null,
-    );
-
-    transactions.addAll([tran1, tran2]);
     finishedTransactions = [];
     testRestoredTransactionsNull = false;
     testTransactionFail = false;
@@ -120,6 +102,17 @@ class FakeStoreKitPlatform {
             code: errorCode,
             domain: 'ios_domain',
             userInfo: {'message': 'an error message'}),
+        originalTransaction: null);
+  }
+
+  SKPaymentTransactionWrapper createRestoredTransaction(
+      String productId, String transactionId) {
+    return SKPaymentTransactionWrapper(
+        payment: SKPaymentWrapper(productIdentifier: productId),
+        transactionState: SKPaymentTransactionStateWrapper.restored,
+        transactionTimeStamp: 123123.121,
+        transactionIdentifier: transactionId,
+        error: null,
         originalTransaction: null);
   }
 
