@@ -72,7 +72,12 @@ for examples of other queries.
     <action android:name="android.intent.action.DIAL" />
     <data android:scheme="tel" />
   </intent>
-  <!-- If your app emails -->
+  <!-- If your sends SMS messages -->
+  <intent>
+    <action android:name="android.intent.action.SENDTO" />
+    <data android:scheme="smsto" />
+  </intent>
+  <!-- If your app sends emails -->
   <intent>
     <action android:name="android.intent.action.SEND" />
     <data android:mimeType="*/*" />
