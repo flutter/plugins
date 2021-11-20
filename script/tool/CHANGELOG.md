@@ -4,6 +4,7 @@
   matching the behavior of other platforms.
 - Added `--log-timing` to add timing information to package headers in looping
   commands.
+- Ensures that `firebase-test-lab` runs include an `integration_test` runner.
 
 ## 0.7.2
 
