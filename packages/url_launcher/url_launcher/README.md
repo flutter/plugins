@@ -145,7 +145,8 @@ launching a URL using the `sms` scheme, or a device may not have an email app
 and thus no support for launching a URL using the `mailto` scheme.
 
 We recommend checking which URL schemes are supported using the
-[`canLaunch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunch.html) in most cases. If the `canLaunch` method returns false, as a
+[`canLaunch`](https://pub.dev/documentation/url_launcher/latest/url_launcher/canLaunch.html)
+in most cases. If the `canLaunch` method returns false, as a
 best practice we suggest adjusting the application UI so that the unsupported
 URL is never triggered; for example, if the `mailto` scheme is not supported, a
 UI button that would have sent feedback email could be changed to instead open
