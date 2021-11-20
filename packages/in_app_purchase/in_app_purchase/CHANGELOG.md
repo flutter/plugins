@@ -1,5 +1,6 @@
 ## NEXT
 
+* Fixes integration tests.
 * Updates example app Android compileSdkVersion to 31.
 
 * **BREAKING CHANGES**:
