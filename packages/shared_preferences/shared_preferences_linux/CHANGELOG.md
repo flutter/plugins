@@ -1,5 +1,6 @@
-## NEXT
+## 2.0.3
 
+* Removed obsolete `pluginClass: none` from pubpsec.
 * Fixes newly enabled analyzer options.
 
 ## 2.0.2

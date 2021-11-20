@@ -1,6 +1,8 @@
 ## 2.2.8
 
 * iOS: Update texture on `seekTo`.
+* Fixes integration tests.
+* Updates example app Android compileSdkVersion to 31.
 
 ## 2.2.7
 
