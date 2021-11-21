@@ -208,18 +208,32 @@ task:
         # only run unit tests.
         # Must come after build-examples.
         - ./script/tool_runner.sh native-test --android --no-integration --exclude script/configs/exclude_native_unit_android.yaml
-      firebase_test_lab_script:
+      #firebase_test_lab_script:
         # Unsetting CIRRUS_CHANGE_MESSAGE and CIRRUS_COMMIT_MESSAGE as they
         # might include non-ASCII characters which makes Gradle crash.
         # TODO(stuartmorgan): See https://github.com/flutter/flutter/issues/24935
-        - export CIRRUS_CHANGE_MESSAGE=""
-        - export CIRRUS_COMMIT_MESSAGE=""
-        - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
-        -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
-        -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
-        - else
-        -   echo "This user does not have permission to run Firebase Test Lab tests."
-        - fi
+      #  - export CIRRUS_CHANGE_MESSAGE=""
+      #  - export CIRRUS_COMMIT_MESSAGE=""
+      #  - if [[ -n "$GCLOUD_FIREBASE_TESTLAB_KEY" ]]; then
+      #  -   echo $GCLOUD_FIREBASE_TESTLAB_KEY > ${HOME}/gcloud-service-key.json
+      #  -   ./script/tool_runner.sh firebase-test-lab --device model=redfin,version=30 --device model=starqlteue,version=26 --exclude=script/configs/exclude_integration_android.yaml
+      #  - else
+      #  -   echo "This user does not have permission to run Firebase Test Lab tests."
+      #  - fi
+      create_device_script:
+        echo no | avdmanager create avd --force
+            -n test
+            -k "system-images;android-30;default;armeabi-v7a"
+      start_emulator_background_script:
+        $ANDROID_HOME/emulator/emulator
+            -avd test
+            -no-audio
+            -no-window
+      wait_for_emulator_script:
+        - adb wait-for-device
+        - adb shell input keyevent 82
+      drive_script:
+        - ./script/tool_runner.sh drive-examples --android --exclude=script/configs/exclude_integration_android.yaml
       # Upload the full lint results to Cirrus to display in the results UI.
       always:
         android-lint_artifacts:
