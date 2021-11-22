@@ -4,6 +4,7 @@
 * Updated Android lint settings.
 * Specify Java 8 for Android build.
 * Removed `-Werror` in Android builds.
+* Updates example app Android compileSdkVersion to 31.
 
 ## 3.0.6
 

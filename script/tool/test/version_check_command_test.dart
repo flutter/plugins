@@ -22,15 +22,15 @@ import 'mocks.dart';
 import 'util.dart';
 
 void testAllowedVersion(
-  String masterVersion,
+  String mainVersion,
   String headVersion, {
   bool allowed = true,
   NextVersionType? nextVersionType,
 }) {
-  final Version master = Version.parse(masterVersion);
+  final Version main = Version.parse(mainVersion);
   final Version head = Version.parse(headVersion);
   final Map<Version, NextVersionType> allowedVersions =
-      getAllowedNextVersions(master, newVersion: head);
+      getAllowedNextVersions(main, newVersion: head);
   if (allowed) {
     expect(allowedVersions, contains(head));
     if (nextVersionType != null) {
@@ -109,10 +109,10 @@ void main() {
     test('allows valid version', () async {
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
 
       expect(
         output,
@@ -125,17 +125,17 @@ void main() {
       expect(
           gitDirCommands,
           containsAll(<Matcher>[
-            equals(<String>['show', 'master:packages/plugin/pubspec.yaml']),
+            equals(<String>['show', 'main:packages/plugin/pubspec.yaml']),
           ]));
     });
 
     test('denies invalid version', () async {
       createFakePlugin('plugin', packagesDir, version: '0.2.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 0.0.1',
+        'main:packages/plugin/pubspec.yaml': 'version: 0.0.1',
       };
       final Future<List<String>> result = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
 
       await expectLater(
         result,
@@ -145,7 +145,7 @@ void main() {
       expect(
           gitDirCommands,
           containsAll(<Matcher>[
-            equals(<String>['show', 'master:packages/plugin/pubspec.yaml']),
+            equals(<String>['show', 'main:packages/plugin/pubspec.yaml']),
           ]));
     });
 
@@ -229,11 +229,11 @@ void main() {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '1.1.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin_platform_interface/pubspec.yaml':
+        'main:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
       };
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
       expect(
         output,
         containsAllInOrder(<Matcher>[
@@ -247,7 +247,7 @@ void main() {
           containsAll(<Matcher>[
             equals(<String>[
               'show',
-              'master:packages/plugin_platform_interface/pubspec.yaml'
+              'main:packages/plugin_platform_interface/pubspec.yaml'
             ]),
           ]));
     });
@@ -257,11 +257,11 @@ void main() {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin_platform_interface/pubspec.yaml':
+        'main:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
       };
       final Future<List<String>> output = runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
       await expectLater(
         output,
         throwsA(isA<ToolExit>()),
@@ -272,7 +272,7 @@ void main() {
           containsAll(<Matcher>[
             equals(<String>[
               'show',
-              'master:packages/plugin_platform_interface/pubspec.yaml'
+              'main:packages/plugin_platform_interface/pubspec.yaml'
             ]),
           ]));
     });
@@ -282,7 +282,7 @@ void main() {
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin_platform_interface/pubspec.yaml':
+        'main:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
       };
       final File changeDescriptionFile =
@@ -297,7 +297,7 @@ This is necessary because of X, Y, and Z
 ## Another section''');
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
-        '--base-sha=master',
+        '--base-sha=main',
         '--change-description-file=${changeDescriptionFile.path}'
       ]);
 
@@ -317,14 +317,14 @@ This is necessary because of X, Y, and Z
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin_platform_interface/pubspec.yaml':
+        'main:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
       };
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
-        '--base-sha=master',
+        '--base-sha=main',
         '--change-description-file=a_missing_file.txt'
       ], errorHandler: (Error e) {
         commandError = e;
@@ -344,12 +344,12 @@ This is necessary because of X, Y, and Z
       createFakePlugin('plugin_platform_interface', packagesDir,
           version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin_platform_interface/pubspec.yaml':
+        'main:packages/plugin_platform_interface/pubspec.yaml':
             'version: 1.0.0',
       };
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
-        '--base-sha=master',
+        '--base-sha=main',
         '--ignore-platform-interface-breaks'
       ]);
 
@@ -375,7 +375,7 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
       expect(
         output,
         containsAllInOrder(<Matcher>[
@@ -393,11 +393,9 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       bool hasError = false;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -422,7 +420,7 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
       expect(
         output,
         containsAllInOrder(<Matcher>[
@@ -445,11 +443,9 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       bool hasError = false;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -477,11 +473,11 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
 
       final List<String> output = await runCapturingPrint(
-          runner, <String>['version-check', '--base-sha=master']);
+          runner, <String>['version-check', '--base-sha=main']);
       await expectLater(
         output,
         containsAllInOrder(<Matcher>[
@@ -506,11 +502,9 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       bool hasError = false;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -541,15 +535,13 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
 
       bool hasError = false;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -578,15 +570,13 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
 
       bool hasError = false;
-      final List<String> output = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> output = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -615,13 +605,13 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
-        '--base-sha=master',
+        '--base-sha=main',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -648,13 +638,13 @@ This is necessary because of X, Y, and Z
 ''';
       createFakeCHANGELOG(pluginDirectory, changelog);
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
 
       Error? commandError;
       final List<String> output = await runCapturingPrint(runner, <String>[
         'version-check',
-        '--base-sha=master',
+        '--base-sha=main',
       ], errorHandler: (Error e) {
         commandError = e;
       });
@@ -680,10 +670,10 @@ This is necessary because of X, Y, and Z
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
       final List<String> output = await runCapturingPrint(runner,
-          <String>['version-check', '--base-sha=master', '--against-pub']);
+          <String>['version-check', '--base-sha=main', '--against-pub']);
 
       expect(
         output,
@@ -704,15 +694,13 @@ This is necessary because of X, Y, and Z
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
 
       bool hasError = false;
-      final List<String> result = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> result = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -736,14 +724,12 @@ ${indentation}Allowed versions: {1.0.0: NextVersionType.BREAKING_MAJOR, 0.1.0: N
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
       bool hasError = false;
-      final List<String> result = await runCapturingPrint(runner, <String>[
-        'version-check',
-        '--base-sha=master',
-        '--against-pub'
-      ], errorHandler: (Error e) {
+      final List<String> result = await runCapturingPrint(
+          runner, <String>['version-check', '--base-sha=main', '--against-pub'],
+          errorHandler: (Error e) {
         expect(e, isA<ToolExit>());
         hasError = true;
       });
@@ -767,10 +753,10 @@ ${indentation}HTTP response: null
 
       createFakePlugin('plugin', packagesDir, version: '2.0.0');
       gitShowResponses = <String, String>{
-        'master:packages/plugin/pubspec.yaml': 'version: 1.0.0',
+        'main:packages/plugin/pubspec.yaml': 'version: 1.0.0',
       };
       final List<String> result = await runCapturingPrint(runner,
-          <String>['version-check', '--base-sha=master', '--against-pub']);
+          <String>['version-check', '--base-sha=main', '--against-pub']);
 
       expect(
         result,

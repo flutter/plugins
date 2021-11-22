@@ -1,3 +1,20 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
+## 2.3.1
+
+* Add iOS-specific note to set `JavascriptMode.unrestricted` in order to set `zoomEnabled: false`.
+
+## 2.3.0
+
+* Add ability to enable/disable zoom functionality.
+
+## 2.2.0
+
+* Added `runJavascript` and `runJavascriptForResult` to supersede `evaluateJavascript`.
+* Deprecated `evaluateJavascript`.
+
 ## 2.1.2
 
 * Fix typos in the README.

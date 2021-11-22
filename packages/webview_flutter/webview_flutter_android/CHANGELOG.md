@@ -1,3 +1,16 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
+## 2.3.0
+
+* Replaces platform implementation with API built with pigeon.
+
+## 2.2.1
+
+* Fix `NullPointerException` from a race condition when changing focus. This only affects `WebView`
+when it is created without Hybrid Composition.
+
 ## 2.2.0
 
 * Implemented new `runJavascript` and `runJavascriptReturningResult` methods in platform interface.
