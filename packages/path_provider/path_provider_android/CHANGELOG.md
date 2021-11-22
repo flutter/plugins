@@ -1,3 +1,8 @@
+## 2.0.8
+
+* Updates example app Android compileSdkVersion to 31.
+* Fixes typing build warning.
+
 ## 2.0.7
 
 * Fixes link in README.

@@ -85,6 +85,8 @@
 
 'platform-ios':
   - packages/*/*_ios/**/*
+  - packages/*/*_storekit/**/*
+  - packages/*/*_wkwebview/**/*
   - packages/**/ios/**/*
 
 'platform-linux':
