@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
 ## 5.2.1
 
  Change the placeholder of the GoogleUserCircleAvatar to a transparent image.

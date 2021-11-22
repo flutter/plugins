@@ -1,3 +1,7 @@
+## NEXT
+
+* Updates example app Android compileSdkVersion to 31.
+
 ## 2.3.0
 
 * Replaces platform implementation with API built with pigeon.
