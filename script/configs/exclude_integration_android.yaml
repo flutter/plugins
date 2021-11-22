@@ -5,10 +5,6 @@
 - sensors
 - share
 - wifi_info_flutter/wifi_info_flutter
-# Deprecated; broke in the update to targetSdkVersion 31,
-# and no plan to fix it since it is not expected to
-# receive any future changes.
-- android_alarm_manager
 
 # No integration tests to run:
 - espresso
