@@ -15,7 +15,7 @@ import 'navigation_request.dart';
 
 /// Optional callback invoked when a web view is first created. [controller] is
 /// the [WebViewController] for the created web view.
-typedef void WebViewCreatedCallback(WebViewController controller);
+typedef WebViewCreatedCallback = void Function(WebViewController controller);
 
 /// Decides how to handle a specific navigation request.
 ///
@@ -23,20 +23,20 @@ typedef void WebViewCreatedCallback(WebViewController controller);
 /// `navigation` should be handled.
 ///
 /// See also: [WebView.navigationDelegate].
-typedef FutureOr<NavigationDecision> NavigationDelegate(
+typedef NavigationDelegate = FutureOr<NavigationDecision> Function(
     NavigationRequest navigation);
 
 /// Signature for when a [WebView] has started loading a page.
-typedef void PageStartedCallback(String url);
+typedef PageStartedCallback = void Function(String url);
 
 /// Signature for when a [WebView] has finished loading a page.
-typedef void PageFinishedCallback(String url);
+typedef PageFinishedCallback = void Function(String url);
 
 /// Signature for when a [WebView] is loading a page.
-typedef void PageLoadingCallback(int progress);
+typedef PageLoadingCallback = void Function(int progress);
 
 /// Signature for when a [WebView] has failed to load a resource.
-typedef void WebResourceErrorCallback(WebResourceError error);
+typedef WebResourceErrorCallback = void Function(WebResourceError error);
 
 /// A web view widget for showing html content.
 ///
@@ -81,23 +81,10 @@ class WebView extends StatefulWidget {
         assert(allowsInlineMediaPlayback != null),
         super(key: key);
 
-  static WebViewPlatform _platform = AndroidWebView();
-
   /// The WebView platform that's used by this WebView.
   ///
   /// The default value is [AndroidWebView].
-  static WebViewPlatform get platform => _platform;
-
-  /// Sets a custom [WebViewPlatform].
-  ///
-  /// This property can be set to use a custom platform implementation for WebViews.
-  ///
-  /// Setting `platform` doesn't affect [WebView]s that were already created.
-  ///
-  /// The default value is [AndroidWebView] on Android and [CupertinoWebView] on iOS.
-  static set platform(WebViewPlatform platform) {
-    _platform = platform;
-  }
+  static WebViewPlatform platform = AndroidWebView();
 
   /// If not null invoked once the web view is created.
   final WebViewCreatedCallback? onWebViewCreated;
@@ -281,7 +268,7 @@ class _WebViewState extends State<WebView> {
       context: context,
       onWebViewPlatformCreated:
           (WebViewPlatformController? webViewPlatformController) {
-        WebViewController controller = WebViewController(
+        final WebViewController controller = WebViewController(
           widget,
           webViewPlatformController!,
           _javascriptChannelRegistry,
@@ -345,6 +332,7 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
     }
   }
 
+  @override
   void onWebResourceError(WebResourceError error) {
     if (_webView.onWebResourceError != null) {
       _webView.onWebResourceError!(error);
@@ -580,7 +568,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = WebSetting.absent();
+    WebSetting<String?> userAgent = WebSetting<String?>.absent();
     bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;

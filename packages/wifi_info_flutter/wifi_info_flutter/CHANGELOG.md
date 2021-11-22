@@ -2,6 +2,7 @@
 
 * Updated Android lint settings.
 * Updated package description.
+* Updates example app Android compileSdkVersion to 31.
 
 ## 2.0.2
 
