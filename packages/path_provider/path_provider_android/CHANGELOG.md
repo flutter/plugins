@@ -1,7 +1,3 @@
-## NEXT
-
-* Updates Android compileSdkVersion to 31.
-
 ## 2.0.8
 
 * Updates example app Android compileSdkVersion to 31.
