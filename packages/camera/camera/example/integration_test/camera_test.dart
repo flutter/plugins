@@ -268,6 +268,6 @@ void main() {
       await controller.stopImageStream();
       await controller.dispose();
     },
-    skip: Platform.isAndroid,
+    skip: !Platform.isIOS,
   );
 }
