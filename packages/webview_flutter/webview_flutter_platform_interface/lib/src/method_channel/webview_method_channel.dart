@@ -80,6 +80,24 @@ class MethodChannelWebViewPlatform implements WebViewPlatformController {
   }
 
   @override
+  Future<void> loadFile(String absoluteFilePath) async {
+    assert(absoluteFilePath != null);
+    return _channel.invokeMethod<void>('loadFile', absoluteFilePath);
+  }
+
+  @override
+  Future<void> loadHtmlString(
+    String html, {
+    String? baseUrl,
+  }) async {
+    assert(html != null);
+    return _channel.invokeMethod<void>('loadHtmlString', <String, dynamic>{
+      'html': html,
+      'baseUrl': baseUrl,
+    });
+  }
+
+  @override
   Future<void> loadUrl(
     String url,
     Map<String, String>? headers,

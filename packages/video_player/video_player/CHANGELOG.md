@@ -1,3 +1,13 @@
+## NEXT
+
+* Fixes integration tests.
+* Updates example app Android compileSdkVersion to 31.
+
+## 2.2.7
+
+* Fixes a regression where dragging a [VideoProgressIndicator] while playing
+  would restart playback from the start of the video.
+
 ## 2.2.6
 
 * Initialize player when size and duration become available on iOS

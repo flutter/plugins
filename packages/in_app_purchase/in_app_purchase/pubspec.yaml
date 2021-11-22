@@ -3,6 +3,8 @@ description: A Flutter plugin for in-app purchases. Exposes APIs for making in-a
 repository: https://github.com/flutter/plugins/tree/master/packages/in_app_purchase/in_app_purchase
 issue_tracker: https://github.com/flutter/flutter/issues?q=is%3Aissue+is%3Aopen+label%3A%22p%3A+in_app_purchase%22
 version: 1.0.9
+# Temporarily disable publishing until in_app_purchase_storekit is published.
+publish_to: none
 
 environment:
   sdk: ">=2.12.0 <3.0.0"
@@ -14,14 +16,16 @@ flutter:
       android:
         default_package: in_app_purchase_android
       ios:
-        default_package: in_app_purchase_ios
+        default_package: in_app_purchase_storekit
 
 dependencies:
   flutter:
     sdk: flutter
   in_app_purchase_platform_interface: ^1.0.0
   in_app_purchase_android: ^0.1.5
-  in_app_purchase_ios: ^0.1.3+5
+  # Temporary path-based dependency to allow for renaming.
+  in_app_purchase_storekit:
+    path: ../in_app_purchase_storekit
 
 dev_dependencies:
   flutter_driver:

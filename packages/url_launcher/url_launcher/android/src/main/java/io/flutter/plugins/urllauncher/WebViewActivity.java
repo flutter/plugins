@@ -20,7 +20,10 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -142,7 +145,11 @@ public class WebViewActivity extends Activity {
     registerReceiver(broadcastReceiver, closeIntentFilter);
   }
 
-  private Map<String, String> extractHeaders(Bundle headersBundle) {
+  @VisibleForTesting
+  public static Map<String, String> extractHeaders(@Nullable Bundle headersBundle) {
+    if (headersBundle == null) {
+      return Collections.emptyMap();
+    }
     final Map<String, String> headersMap = new HashMap<>();
     for (String key : headersBundle.keySet()) {
       final String value = headersBundle.getString(key);
