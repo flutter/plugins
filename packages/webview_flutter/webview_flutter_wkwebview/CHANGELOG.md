@@ -1,3 +1,7 @@
+## NEXT
+
+* Integration test fixes.
+
 ## 2.4.0
 
 * Implemented new `loadFile` and `loadHtmlString` methods from the platform interface.
