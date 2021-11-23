@@ -120,6 +120,14 @@ class VersionCheckCommand extends PackageLoopingCommand {
             '(e.g., PR description or commit message).\n\n'
             'If supplied, this is used to allow overrides to some version '
             'checks.');
+    argParser.addFlag(_checkForMissingChanges,
+        help: 'Validates that changes to packages include CHANGELOG and '
+            'version changes unless they meet an established exemption.\n\n'
+            'If used with --$_changeDescriptionFile, this is should only be '
+            'used in pre-submit CI checks, to  prevent the possibility of '
+            'post-submit breakage if an override justification is not '
+            'transferred into the commit message.',
+        hide: true);
     argParser.addFlag(_ignorePlatformInterfaceBreaks,
         help: 'Bypasses the check that platform interfaces do not contain '
             'breaking changes.\n\n'
@@ -133,6 +141,7 @@ class VersionCheckCommand extends PackageLoopingCommand {
 
   static const String _againstPubFlag = 'against-pub';
   static const String _changeDescriptionFile = 'change-description-file';
+  static const String _checkForMissingChanges = 'check-for-missing-changes';
   static const String _ignorePlatformInterfaceBreaks =
       'ignore-platform-interface-breaks';
 
@@ -141,7 +150,25 @@ class VersionCheckCommand extends PackageLoopingCommand {
   static const String _breakingChangeJustificationMarker =
       '## Breaking change justification';
 
+  /// The string that must be at the start of a line in [_changeDescriptionFile]
+  /// to allow skipping a version change for a PR that would normally require
+  /// one.
+  static const String _missingVersionChangeJustificationMarker =
+      'No version change:';
+
+  /// The string that must be at the start of a line in [_changeDescriptionFile]
+  /// to allow skipping a CHANGELOG change for a PR that would normally require
+  /// one.
+  static const String _missingChangelogChangeJustificationMarker =
+      'No CHANGELOG change:';
+
   final PubVersionFinder _pubVersionFinder;
+
+  late final GitVersionFinder _gitVersionFinder;
+  late final String _mergeBase;
+  late final List<String> _changedFiles;
+
+  late final String _changeDescription = _loadChangeDescription();
 
   @override
   final String name = 'version-check';
@@ -156,7 +183,11 @@ class VersionCheckCommand extends PackageLoopingCommand {
   bool get hasLongOutput => false;
 
   @override
-  Future<void> initializeRun() async {}
+  Future<void> initializeRun() async {
+    _gitVersionFinder = await retrieveVersionFinder();
+    _mergeBase = await _gitVersionFinder.getBaseSha();
+    _changedFiles = await _gitVersionFinder.getChangedFiles();
+  }
 
   @override
   Future<PackageResult> runForPackage(RepositoryPackage package) async {
@@ -206,6 +237,17 @@ class VersionCheckCommand extends PackageLoopingCommand {
       errors.add('CHANGELOG.md failed validation.');
     }
 
+    // If there are no other issues, make sure that there isn't a missing
+    // change to the version and/or CHANGELOG.
+    if (getBoolArg(_checkForMissingChanges) &&
+        !versionChanged &&
+        errors.isEmpty) {
+      final String? error = await _checkForMissingChangeError(package);
+      if (error != null) {
+        errors.add(error);
+      }
+    }
+
     return errors.isEmpty
         ? PackageResult.success()
         : PackageResult.fail(errors);
@@ -239,10 +281,7 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
   }
 
   /// Returns the version of [package] from git at the base comparison hash.
-  Future<Version?> _getPreviousVersionFromGit(
-    RepositoryPackage package, {
-    required GitVersionFinder gitVersionFinder,
-  }) async {
+  Future<Version?> _getPreviousVersionFromGit(RepositoryPackage package) async {
     final File pubspecFile = package.pubspecFile;
     final String relativePath =
         path.relative(pubspecFile.absolute.path, from: (await gitDir).path);
@@ -250,7 +289,8 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
     final String gitPath = path.style == p.Style.windows
         ? p.posix.joinAll(path.split(relativePath))
         : relativePath;
-    return await gitVersionFinder.getPackageVersion(gitPath);
+    return await _gitVersionFinder.getPackageVersion(gitPath,
+        gitRef: _mergeBase);
   }
 
   /// Returns the state of the verison of [package] relative to the comparison
@@ -274,11 +314,9 @@ ${indentation}HTTP response: ${pubVersionFinderResponse.httpResponse.body}
             '$indentation${pubspec.name}: Current largest version on pub: $previousVersion');
       }
     } else {
-      final GitVersionFinder gitVersionFinder = await retrieveVersionFinder();
-      previousVersionSource = await gitVersionFinder.getBaseSha();
-      previousVersion = await _getPreviousVersionFromGit(package,
-              gitVersionFinder: gitVersionFinder) ??
-          Version.none;
+      previousVersionSource = _mergeBase;
+      previousVersion =
+          await _getPreviousVersionFromGit(package) ?? Version.none;
     }
     if (previousVersion == Version.none) {
       print('${indentation}Unable to find previous version '
@@ -462,9 +500,11 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
     return false;
   }
 
+  String _getChangeDescription() => _changeDescription;
+
   /// Returns the contents of the file pointed to by [_changeDescriptionFile],
   /// or an empty string if that flag is not provided.
-  String _getChangeDescription() {
+  String _loadChangeDescription() {
     final String path = getStringArg(_changeDescriptionFile);
     if (path.isEmpty) {
       return '';
@@ -475,5 +515,92 @@ ${indentation}The first version listed in CHANGELOG.md is $fromChangeLog.
       throw ToolExit(_exitMissingChangeDescriptionFile);
     }
     return file.readAsStringSync();
+  }
+
+  /// Returns an error string if the changes to this package should have
+  /// resulted in a version change, or shoud have resulted in a CHANGELOG change
+  /// but didn't.
+  ///
+  /// This should only be called if the version did not change.
+  Future<String?> _checkForMissingChangeError(RepositoryPackage package) async {
+    // Find the relative path to the current package, as it would appear at the
+    // beginning of a path reported by getChangedFiles() (which always uses
+    // Posix paths).
+    final Directory gitRoot =
+        packagesDir.fileSystem.directory((await gitDir).path);
+    final String relativePackagePath =
+        getRelativePosixPath(package.directory, from: gitRoot) + '/';
+    bool hasChanges = false;
+    bool needsVersionChange = false;
+    bool hasChangelogChange = false;
+    for (final String path in _changedFiles) {
+      // Only consider files within the package.
+      if (!path.startsWith(relativePackagePath)) {
+        continue;
+      }
+      hasChanges = true;
+
+      final List<String> components = p.posix.split(path);
+      final bool isChangelog = components.last == 'CHANGELOG.md';
+      if (isChangelog) {
+        hasChangelogChange = true;
+      }
+
+      if (!needsVersionChange &&
+          !isChangelog &&
+          // The example's main.dart is shown on pub.dev, but for anything else
+          // in the example publishing has no purpose.
+          !(components.contains('example') && components.last != 'main.dart') &&
+          // Changes to tests don't need to be published.
+          !components.contains('test') &&
+          !components.contains('androidTest') &&
+          !components.contains('RunnerTests') &&
+          !components.contains('RunnerUITests') &&
+          // Ignoring lints doesn't affect clients.
+          !components.contains('lint-baseline.xml')) {
+        needsVersionChange = true;
+      }
+    }
+
+    if (!hasChanges) {
+      return null;
+    }
+
+    if (needsVersionChange) {
+      if (_getChangeDescription().split('\n').any((String line) =>
+          line.startsWith(_missingVersionChangeJustificationMarker))) {
+        logWarning('Ignoring lack of version change due to '
+            '"$_missingVersionChangeJustificationMarker" in the '
+            'change description.');
+      } else {
+        printError(
+            'No version change found, but the change to this package could '
+            'not be verified to be exempt from version changes according to '
+            'repository policy. If this is a false positive, please '
+            'add a line starting with\n'
+            '$_missingVersionChangeJustificationMarker\n'
+            'to your PR description with an explanation of why it is exempt.');
+        return 'Missing version change';
+      }
+    }
+
+    if (!hasChangelogChange) {
+      if (_getChangeDescription().split('\n').any((String line) =>
+          line.startsWith(_missingChangelogChangeJustificationMarker))) {
+        logWarning('Ignoring lack of CHANGELOG update due to '
+            '"$_missingChangelogChangeJustificationMarker" in the '
+            'change description.');
+      } else {
+        printError(
+            'No CHANGELOG change found. If this PR needs an exemption from'
+            'the standard policy of listing all changes in the CHANGELOG, '
+            'please add a line starting with\n'
+            '$_missingChangelogChangeJustificationMarker\n'
+            'to your PR description with an explanation of why.');
+        return 'Missing CHANGELOG change';
+      }
+    }
+
+    return null;
   }
 }
