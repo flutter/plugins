@@ -207,11 +207,15 @@
       errorCode = authError.code == LAErrorPasscodeNotSet ? @"PasscodeNotSet" : @"NotEnrolled";
       break;
     case LAErrorTouchIDLockout:
-      [self alertMessage:arguments[@"lockOut"]
-               firstButton:arguments[@"okButton"]
-             flutterResult:result
-          additionalButton:nil];
-      return;
+      if ([arguments[@"useErrorDialogs"] boolValue]) {
+        [self alertMessage:arguments[@"lockOut"]
+                 firstButton:arguments[@"okButton"]
+               flutterResult:result
+            additionalButton:nil];
+        return;
+      }
+      errorCode = @"LockedOut";
+      break;
   }
   result([FlutterError errorWithCode:errorCode
                              message:authError.localizedDescription
