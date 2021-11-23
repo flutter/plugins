@@ -739,6 +739,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           initialUrl: testUrl,
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
