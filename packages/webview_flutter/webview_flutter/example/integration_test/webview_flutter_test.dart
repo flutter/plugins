@@ -748,26 +748,20 @@ void main() {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
 
-    final testUrl = 'data:text/html;charset=utf-8;base64,$getTitleTestBase64';
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          initialUrl: testUrl,
+          initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
           onPageStarted: (String url) {
-            // Ensure that this update is for the test page, in case any other
-            // URL (e.g., about:blank) fires earlier notifications.
-            if (url == testUrl) {
-              pageStarted.complete(null);
-            }
+            pageStarted.complete(null);
           },
           onPageFinished: (String url) {
-            if (url == testUrl) {
-              pageLoaded.complete(null);
-            }
+            pageLoaded.complete(null);
           },
         ),
       ),
@@ -776,6 +770,12 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     await pageStarted.future;
     await pageLoaded.future;
+
+    // On at least iOS, it does not appear to be guaranteed that the native
+    // code has the title when the page load completes. Execute some JavaScript
+    // before checking the title to ensure that the page has been fully parsed
+    // and processed.
+    await controller.runJavascript('1;');
 
     final String? title = await controller.getTitle();
     expect(title, 'Some title');
