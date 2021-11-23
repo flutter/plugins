@@ -717,8 +717,10 @@ void main() {
     });
   });
 
-  testWidgets('getTitle', (WidgetTester tester) async {
-    final String getTitleTest = '''
+  testWidgets(
+    'getTitle',
+    (WidgetTester tester) async {
+      final String getTitleTest = '''
         <!DOCTYPE html><html>
         <head><title>Some title</title>
         </head>
@@ -726,38 +728,42 @@ void main() {
         </body>
         </html>
       ''';
-    final String getTitleTestBase64 =
-        base64Encode(const Utf8Encoder().convert(getTitleTest));
-    final Completer<void> pageStarted = Completer<void>();
-    final Completer<void> pageLoaded = Completer<void>();
-    final Completer<WebViewController> controllerCompleter =
-        Completer<WebViewController>();
+      final String getTitleTestBase64 =
+          base64Encode(const Utf8Encoder().convert(getTitleTest));
+      final Completer<void> pageStarted = Completer<void>();
+      final Completer<void> pageLoaded = Completer<void>();
+      final Completer<WebViewController> controllerCompleter =
+          Completer<WebViewController>();
 
-    await tester.pumpWidget(
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child: WebView(
-          initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
-          onWebViewCreated: (WebViewController controller) {
-            controllerCompleter.complete(controller);
-          },
-          onPageStarted: (String url) {
-            pageStarted.complete(null);
-          },
-          onPageFinished: (String url) {
-            pageLoaded.complete(null);
-          },
+      await tester.pumpWidget(
+        Directionality(
+          textDirection: TextDirection.ltr,
+          child: WebView(
+            initialUrl:
+                'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+            onWebViewCreated: (WebViewController controller) {
+              controllerCompleter.complete(controller);
+            },
+            onPageStarted: (String url) {
+              pageStarted.complete(null);
+            },
+            onPageFinished: (String url) {
+              pageLoaded.complete(null);
+            },
+          ),
         ),
-      ),
-    );
+      );
 
-    final WebViewController controller = await controllerCompleter.future;
-    await pageStarted.future;
-    await pageLoaded.future;
+      final WebViewController controller = await controllerCompleter.future;
+      await pageStarted.future;
+      await pageLoaded.future;
 
-    final String? title = await controller.getTitle();
-    expect(title, 'Some title');
-  });
+      final String? title = await controller.getTitle();
+      expect(title, 'Some title');
+    },
+    // Flaky; see https://github.com/flutter/flutter/issues/94117
+    skip: true,
+  );
 
   group('Programmatic Scroll', () {
     testWidgets('setAndGetScrollPosition', (WidgetTester tester) async {
