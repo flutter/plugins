@@ -743,6 +743,8 @@ void main() {
             controllerCompleter.complete(controller);
           },
           onPageStarted: (String url) {
+            // Ensure that this update is for the test page, in case any other
+            // URL (e.g., about:blank) fires earlier notifications.
             if (url == testUrl) {
               pageStarted.complete(null);
             }

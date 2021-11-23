@@ -748,7 +748,6 @@ void main() {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
 
-
     final testUrl = 'data:text/html;charset=utf-8;base64,$getTitleTestBase64';
     await tester.pumpWidget(
       Directionality(
@@ -759,6 +758,8 @@ void main() {
             controllerCompleter.complete(controller);
           },
           onPageStarted: (String url) {
+            // Ensure that this update is for the test page, in case any other
+            // URL (e.g., about:blank) fires earlier notifications.
             if (url == testUrl) {
               pageStarted.complete(null);
             }
