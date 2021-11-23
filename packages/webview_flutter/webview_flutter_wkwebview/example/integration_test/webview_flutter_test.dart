@@ -733,27 +733,20 @@ void main() {
     final Completer<WebViewController> controllerCompleter =
         Completer<WebViewController>();
 
-    final testUrl = 'data:text/html;charset=utf-8;base64,$getTitleTestBase64';
     await tester.pumpWidget(
       Directionality(
         textDirection: TextDirection.ltr,
         child: WebView(
-          initialUrl: testUrl,
+          initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
           javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
           onPageStarted: (String url) {
-            // Ensure that this update is for the test page, in case any other
-            // URL (e.g., about:blank) fires earlier notifications.
-            if (url == testUrl) {
-              pageStarted.complete(null);
-            }
+            pageStarted.complete(null);
           },
           onPageFinished: (String url) {
-            if (url == testUrl) {
-              pageLoaded.complete(null);
-            }
+            pageLoaded.complete(null);
           },
         ),
       ),
