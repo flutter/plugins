@@ -1,3 +1,7 @@
+## NEXT
+
+* Moves Android and iOS implementations to federated packages.
+
 ## 6.0.15
 
 * Updates README:
