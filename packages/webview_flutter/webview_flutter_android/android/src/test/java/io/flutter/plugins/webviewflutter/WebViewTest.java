@@ -157,6 +157,18 @@ public class WebViewTest {
   }
 
   @Test
+  public void loadData() {
+    testHostApiImpl.loadData(0L, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64");
+    verify(mockWebView).loadData("VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64");
+  }
+
+  @Test
+  public void loadDataWithBaseUrl() {
+    testHostApiImpl.loadDataWithBaseUrl(0L, "https://flutter.dev", "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64", "about:blank");
+    verify(mockWebView).loadDataWithBaseURL("https://flutter.dev", "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64", "about:blank");
+  }
+
+  @Test
   public void loadUrl() {
     testHostApiImpl.loadUrl(0L, "https://www.google.com", new HashMap<>());
     verify(mockWebView).loadUrl("https://www.google.com", new HashMap<>());
