@@ -1,6 +1,6 @@
 ## 2.3.1
 
-* Added explanation on how to generate the pigeon communication layer and mockito mock objects.
+* Adds explanation on how to generate the pigeon communication layer and mockito mock objects.
 * Updates compileSdkVersion to 31.
 
 ## 2.3.0
