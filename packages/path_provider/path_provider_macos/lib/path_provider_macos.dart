@@ -11,7 +11,7 @@ class PathProviderMacOS extends PathProviderPlatform {
   /// The method channel used to interact with the native platform.
   @visibleForTesting
   MethodChannel methodChannel =
-      const MethodChannel('plugins.flutter.io/path_provider');
+      const MethodChannel('plugins.flutter.io/path_provider_macos');
 
   /// Registers this class as the default instance of [PathProviderPlatform]
   static void registerWith() {
@@ -40,12 +40,12 @@ class PathProviderMacOS extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getExternalStoragePath() {
+  Future<String?> getExternalStoragePath() async {
     throw UnsupportedError('getExternalStoragePath is not supported on macOS');
   }
 
   @override
-  Future<List<String>?> getExternalCachePaths() {
+  Future<List<String>?> getExternalCachePaths() async {
     throw UnsupportedError('getExternalCachePaths is not supported on macOS');
   }
 

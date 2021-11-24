@@ -8,7 +8,7 @@ import Foundation
 public class PathProviderPlugin: NSObject, FlutterPlugin {
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(
-      name: "plugins.flutter.io/path_provider",
+      name: "plugins.flutter.io/path_provider_macos",
       binaryMessenger: registrar.messenger)
     let instance = PathProviderPlugin()
     registrar.addMethodCallDelegate(instance, channel: channel)
