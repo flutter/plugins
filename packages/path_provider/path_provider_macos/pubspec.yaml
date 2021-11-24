@@ -14,10 +14,12 @@ flutter:
     platforms:
       macos:
         pluginClass: PathProviderPlugin
+        dartPluginClass: PathProviderMacOS
 
 dependencies:
   flutter:
     sdk: flutter
+  path_provider_platform_interface: ^2.0.1
 
 dev_dependencies:
   pedantic: ^1.10.0
