@@ -2,6 +2,7 @@
 
 * Fixes bug where calling a method after the camera was closed resulted in a Java `IllegalStateException` exception.
 * Fixes integration tests.
+* Fixes ImageStream ImageFormatGroup is Ignored on iOS.
 
 ## 0.9.4+4
 
