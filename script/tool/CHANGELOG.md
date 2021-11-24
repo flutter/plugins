@@ -1,9 +1,12 @@
-## NEXT
+## 0.7.3
 
 - `native-test` now builds unit tests before running them on Windows and Linux,
   matching the behavior of other platforms.
-- Added `--log-timing` to add timing information to package headers in looping
+- Adds `--log-timing` to add timing information to package headers in looping
   commands.
+- Adds a `--check-for-missing-changes` flag to `version-check` that requires
+  version updates (except for recognized exemptions) and CHANGELOG changes when
+  modifying packages, unless the PR description explains why it's not needed.
 
 ## 0.7.2
 

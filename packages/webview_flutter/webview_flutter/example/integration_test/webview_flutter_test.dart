@@ -753,6 +753,7 @@ void main() {
         textDirection: TextDirection.ltr,
         child: WebView(
           initialUrl: 'data:text/html;charset=utf-8;base64,$getTitleTestBase64',
+          javascriptMode: JavascriptMode.unrestricted,
           onWebViewCreated: (WebViewController controller) {
             controllerCompleter.complete(controller);
           },
@@ -769,6 +770,12 @@ void main() {
     final WebViewController controller = await controllerCompleter.future;
     await pageStarted.future;
     await pageLoaded.future;
+
+    // On at least iOS, it does not appear to be guaranteed that the native
+    // code has the title when the page load completes. Execute some JavaScript
+    // before checking the title to ensure that the page has been fully parsed
+    // and processed.
+    await controller.runJavascript('1;');
 
     final String? title = await controller.getTitle();
     expect(title, 'Some title');
