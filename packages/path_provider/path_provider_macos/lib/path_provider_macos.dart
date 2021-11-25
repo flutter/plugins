@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:meta/meta.dart';
 import 'package:path_provider_platform_interface/path_provider_platform_interface.dart';
@@ -24,8 +26,15 @@ class PathProviderMacOS extends PathProviderPlatform {
   }
 
   @override
-  Future<String?> getApplicationSupportPath() {
-    return methodChannel.invokeMethod<String>('getApplicationSupportDirectory');
+  Future<String?> getApplicationSupportPath() async {
+    final String? path = await methodChannel
+        .invokeMethod<String>('getApplicationSupportDirectory');
+    if (path != null) {
+      // Ensure the directory exists before returning it, for consistency with
+      // other platforms.
+      await Directory(path).create(recursive: true);
+    }
+    return path;
   }
 
   @override

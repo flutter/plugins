@@ -25,16 +25,6 @@ public class PathProviderPlugin: NSObject, FlutterPlugin {
       if let basePath = path {
         let basePathURL = URL.init(fileURLWithPath: basePath)
         path = basePathURL.appendingPathComponent(Bundle.main.bundleIdentifier!).path
-        do {
-          try FileManager.default.createDirectory(atPath: path!, withIntermediateDirectories: true)
-        } catch {
-          result(
-            FlutterError(
-              code: "directory_creation_failure",
-              message: error.localizedDescription,
-              details: "\(error)"))
-          return
-        }
       }
       result(path)
     case "getLibraryDirectory":

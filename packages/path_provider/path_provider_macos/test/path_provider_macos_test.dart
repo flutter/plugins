@@ -2,39 +2,59 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'dart:io';
+
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:path/path.dart' as p;
 import 'package:path_provider_macos/path_provider_macos.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  const String kTemporaryPath = 'temporaryPath';
-  const String kApplicationSupportPath = 'applicationSupportPath';
-  const String kLibraryPath = 'libraryPath';
-  const String kApplicationDocumentsPath = 'applicationDocumentsPath';
-  const String kDownloadsPath = 'downloadsPath';
 
   group('PathProviderMacOS', () {
     late PathProviderMacOS pathProvider;
-    final List<MethodCall> log = <MethodCall>[];
+    late List<MethodCall> log;
+    // These unit tests use the actual filesystem, since an injectable
+    // filesystem would add a runtime dependency to the package, so everything
+    // is contained to a temporary directory.
+    late Directory testRoot;
+
+    late String temporaryPath;
+    late String applicationSupportPath;
+    late String libraryPath;
+    late String applicationDocumentsPath;
+    late String downloadsPath;
 
     setUp(() async {
       pathProvider = PathProviderMacOS();
+
+      testRoot = Directory.systemTemp.createTempSync();
+      final String basePath = testRoot.path;
+      temporaryPath = p.join(basePath, 'temporary', 'path');
+      applicationSupportPath =
+          p.join(basePath, 'application', 'support', 'path');
+      libraryPath = p.join(basePath, 'library', 'path');
+      applicationDocumentsPath =
+          p.join(basePath, 'application', 'documents', 'path');
+      downloadsPath = p.join(basePath, 'downloads', 'path');
+
+      log = <MethodCall>[];
       TestDefaultBinaryMessengerBinding.instance!.defaultBinaryMessenger
           .setMockMethodCallHandler(pathProvider.methodChannel,
               (MethodCall methodCall) async {
         log.add(methodCall);
         switch (methodCall.method) {
           case 'getTemporaryDirectory':
-            return kTemporaryPath;
+            return temporaryPath;
           case 'getApplicationSupportDirectory':
-            return kApplicationSupportPath;
+            return applicationSupportPath;
           case 'getLibraryDirectory':
-            return kLibraryPath;
+            return libraryPath;
           case 'getApplicationDocumentsDirectory':
-            return kApplicationDocumentsPath;
+            return applicationDocumentsPath;
           case 'getDownloadsDirectory':
-            return kDownloadsPath;
+            return downloadsPath;
           default:
             return null;
         }
@@ -42,7 +62,7 @@ void main() {
     });
 
     tearDown(() {
-      log.clear();
+      testRoot.deleteSync(recursive: true);
     });
 
     test('getTemporaryPath', () async {
@@ -51,7 +71,7 @@ void main() {
         log,
         <Matcher>[isMethodCall('getTemporaryDirectory', arguments: null)],
       );
-      expect(path, kTemporaryPath);
+      expect(path, temporaryPath);
     });
 
     test('getApplicationSupportPath', () async {
@@ -62,7 +82,13 @@ void main() {
           isMethodCall('getApplicationSupportDirectory', arguments: null)
         ],
       );
-      expect(path, kApplicationSupportPath);
+      expect(path, applicationSupportPath);
+    });
+
+    test('getApplicationSupportPath creates the directory if necessary',
+        () async {
+      final String? path = await pathProvider.getApplicationSupportPath();
+      expect(Directory(path!).existsSync(), isTrue);
     });
 
     test('getLibraryPath', () async {
@@ -71,7 +97,7 @@ void main() {
         log,
         <Matcher>[isMethodCall('getLibraryDirectory', arguments: null)],
       );
-      expect(path, kLibraryPath);
+      expect(path, libraryPath);
     });
 
     test('getApplicationDocumentsPath', () async {
@@ -82,7 +108,7 @@ void main() {
           isMethodCall('getApplicationDocumentsDirectory', arguments: null)
         ],
       );
-      expect(path, kApplicationDocumentsPath);
+      expect(path, applicationDocumentsPath);
     });
 
     test('getDownloadsPath', () async {
@@ -91,7 +117,7 @@ void main() {
         log,
         <Matcher>[isMethodCall('getDownloadsDirectory', arguments: null)],
       );
-      expect(result, kDownloadsPath);
+      expect(result, downloadsPath);
     });
 
     test('getExternalCachePaths throws', () async {
