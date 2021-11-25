@@ -845,8 +845,7 @@ void main() {
   });
 
   group('NavigationDelegate', () {
-    const String blankPage =
-        '<!DOCTYPE html><head></head><body></body></html>;';
+    const String blankPage = '<!DOCTYPE html><head></head><body></body></html>';
     final String blankPageEncoded = 'data:text/html;charset=utf-8;base64,' +
         base64Encode(const Utf8Encoder().convert(blankPage));
 
