@@ -281,8 +281,10 @@ class Camera
           public void onClosed(@NonNull CameraDevice camera) {
             Log.i(TAG, "open | onClosed");
 
+            // Prevents calls to methods that would otherwise result in IllegalStateException exceptions.
+            cameraDevice = null;
+            closeCaptureSession();
             dartMessenger.sendCameraClosingEvent();
-            super.onClosed(camera);
           }
 
           @Override
@@ -364,10 +366,13 @@ class Camera
     // Prepare the callback.
     CameraCaptureSession.StateCallback callback =
         new CameraCaptureSession.StateCallback() {
+          boolean captureSessionClosed = false;
+
           @Override
           public void onConfigured(@NonNull CameraCaptureSession session) {
+            Log.i(TAG, "CameraCaptureSession onConfigured");
             // Camera was already closed.
-            if (cameraDevice == null) {
+            if (cameraDevice == null || captureSessionClosed) {
               dartMessenger.sendCameraErrorEvent("The camera was closed during configuration.");
               return;
             }
@@ -382,7 +387,14 @@ class Camera
 
           @Override
           public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
+            Log.i(TAG, "CameraCaptureSession onConfigureFailed");
             dartMessenger.sendCameraErrorEvent("Failed to configure camera session.");
+          }
+
+          @Override
+          public void onClosed(@NonNull CameraCaptureSession session) {
+            Log.i(TAG, "CameraCaptureSession onClosed");
+            captureSessionClosed = true;
           }
         };
 
@@ -427,10 +439,12 @@ class Camera
   // Send a repeating request to refresh  capture session.
   private void refreshPreviewCaptureSession(
       @Nullable Runnable onSuccessCallback, @NonNull ErrorCallback onErrorCallback) {
+    Log.i(TAG, "refreshPreviewCaptureSession");
+
     if (captureSession == null) {
       Log.i(
           TAG,
-          "[refreshPreviewCaptureSession] captureSession not yet initialized, "
+          "refreshPreviewCaptureSession: captureSession not yet initialized, "
               + "skipping preview capture session refresh.");
       return;
     }
@@ -445,6 +459,8 @@ class Camera
         onSuccessCallback.run();
       }
 
+    } catch (IllegalStateException e) {
+      onErrorCallback.onError("cameraAccess", "Camera is closed: " + e.getMessage());
     } catch (CameraAccessException e) {
       onErrorCallback.onError("cameraAccess", e.getMessage());
     }
