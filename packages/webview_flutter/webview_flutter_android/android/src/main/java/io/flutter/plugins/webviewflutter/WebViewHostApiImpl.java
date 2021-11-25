@@ -355,13 +355,25 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   @Override
   public void loadData(Long instanceId, String data, String mimeType, String encoding) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.loadData(data, mimeType, encoding);
+    webView.loadData(
+        data, parseNullStringIdentifier(mimeType), parseNullStringIdentifier(encoding));
   }
 
   @Override
-  public void loadDataWithBaseUrl(Long instanceId, String baseUrl, String data, String mimeType, String encoding, String historyUrl) {
+  public void loadDataWithBaseUrl(
+      Long instanceId,
+      String baseUrl,
+      String data,
+      String mimeType,
+      String encoding,
+      String historyUrl) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
-    webView.loadDataWithBaseURL(baseUrl, data, mimeType, encoding, historyUrl);
+    webView.loadDataWithBaseURL(
+        parseNullStringIdentifier(baseUrl),
+        data,
+        parseNullStringIdentifier(mimeType),
+        parseNullStringIdentifier(encoding),
+        parseNullStringIdentifier(historyUrl));
   }
 
   @Override
@@ -488,5 +500,13 @@ public class WebViewHostApiImpl implements WebViewHostApi {
   public void setWebChromeClient(Long instanceId, Long clientInstanceId) {
     final WebView webView = (WebView) instanceManager.getInstance(instanceId);
     webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
+  }
+
+  private static String parseNullStringIdentifier(String value) {
+    if (value.equals(nullStringIdentifier)) {
+      return null;
+    }
+
+    return value;
   }
 }

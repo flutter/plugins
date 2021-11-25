@@ -58,6 +58,57 @@ void main() {
         verify(mockPlatformHostApi.setWebContentsDebuggingEnabled(true));
       });
 
+      test('loadData', () {
+        webView.loadData('hello', 'text/plain', 'base64');
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          'text/plain',
+          'base64',
+        ));
+      });
+
+      test('loadData with null values', () {
+        webView.loadData('hello', null, null);
+        verify(mockPlatformHostApi.loadData(
+          webViewInstanceId,
+          'hello',
+          '<null-value>',
+          '<null-value>',
+        ));
+      });
+
+      test('loadDataWithBaseUrl', () {
+        webView.loadDataWithBaseUrl(
+          'https://base.url',
+          'hello',
+          'text/plain',
+          'base64',
+          'https://history.url',
+        );
+
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          'https://base.url',
+          'hello',
+          'text/plain',
+          'base64',
+          'https://history.url',
+        ));
+      });
+
+      test('loadDataWithBaseUrl with null values', () {
+        webView.loadDataWithBaseUrl(null, 'hello', null, null, null);
+        verify(mockPlatformHostApi.loadDataWithBaseUrl(
+          webViewInstanceId,
+          '<null-value>',
+          'hello',
+          '<null-value>',
+          '<null-value>',
+          '<null-value>',
+        ));
+      });
+
       test('loadUrl', () {
         webView.loadUrl('hello', <String, String>{'a': 'header'});
         verify(mockPlatformHostApi.loadUrl(

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 
@@ -147,6 +148,26 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   /// Receive various notifications and requests for [android_webview.WebView].
   @visibleForTesting
   WebViewAndroidWebViewClient get webViewClient => _webViewClient;
+
+  @override
+  Future<void> loadHtmlString(String html, {String? baseUrl}) {
+    return webView.loadDataWithBaseUrl(
+      baseUrl,
+      base64.encode(utf8.encode(html)),
+      'text/html',
+      'base64',
+      null,
+    );
+  }
+
+  @override
+  Future<void> loadFile(String absoluteFilePath) {
+    String url = absoluteFilePath.startsWith('file://')
+        ? absoluteFilePath
+        : 'file://$absoluteFilePath';
+
+    return webView.loadUrl(url, <String, String>{});
+  }
 
   @override
   Future<void> loadUrl(

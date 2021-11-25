@@ -158,14 +158,48 @@ public class WebViewTest {
 
   @Test
   public void loadData() {
-    testHostApiImpl.loadData(0L, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64");
-    verify(mockWebView).loadData("VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64");
+    testHostApiImpl.loadData(
+        0L, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64");
+    verify(mockWebView)
+        .loadData("VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64");
+  }
+
+  @Test
+  public void loadDataWithNullValues() {
+    testHostApiImpl.loadData(
+        0L, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "<null-value>", "<null-value>");
+    verify(mockWebView).loadData("VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", null, null);
   }
 
   @Test
   public void loadDataWithBaseUrl() {
-    testHostApiImpl.loadDataWithBaseUrl(0L, "https://flutter.dev", "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64", "about:blank");
-    verify(mockWebView).loadDataWithBaseURL("https://flutter.dev", "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", "text/plain", "base64", "about:blank");
+    testHostApiImpl.loadDataWithBaseUrl(
+        0L,
+        "https://flutter.dev",
+        "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==",
+        "text/plain",
+        "base64",
+        "about:blank");
+    verify(mockWebView)
+        .loadDataWithBaseURL(
+            "https://flutter.dev",
+            "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==",
+            "text/plain",
+            "base64",
+            "about:blank");
+  }
+
+  @Test
+  public void loadDataWithBaseUrlAndNullValues() {
+    testHostApiImpl.loadDataWithBaseUrl(
+        0L,
+        "<null-value>",
+        "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==",
+        "<null-value>",
+        "<null-value>",
+        "<null-value>");
+    verify(mockWebView)
+        .loadDataWithBaseURL(null, "VGhpcyBkYXRhIGlzIGJhc2U2NCBlbmNvZGVkLg==", null, null, null);
   }
 
   @Test

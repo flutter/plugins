@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -274,6 +275,63 @@ void main() {
     });
 
     group('$WebViewPlatformController', () {
+      testWidgets('loadFile without "file://" prefix',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String filePath = '/path/to/file.html';
+        await testController.loadFile(filePath);
+
+        verify(mockWebView.loadUrl(
+          'file://$filePath',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets('loadFile with "file://" prefix',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        await testController.loadFile('file:///path/to/file.html');
+
+        verify(mockWebView.loadUrl(
+          'file:///path/to/file.html',
+          <String, String>{},
+        ));
+      });
+
+      testWidgets('loadHtmlString without base URL',
+          (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String htmlString = '<html><body>Test data.</body></html>';
+        await testController.loadHtmlString(htmlString);
+
+        verify(mockWebView.loadDataWithBaseUrl(
+            null,
+            base64.encode(utf8.encode(htmlString)),
+            'text/html',
+            'base64',
+            null));
+      });
+
+      testWidgets('loadHtmlString with base URL', (WidgetTester tester) async {
+        await buildWidget(tester);
+
+        const String htmlString = '<html><body>Test data.</body></html>';
+        await testController.loadHtmlString(
+          htmlString,
+          baseUrl: 'https://flutter.dev',
+        );
+
+        verify(mockWebView.loadDataWithBaseUrl(
+            'https://flutter.dev',
+            base64.encode(utf8.encode(htmlString)),
+            'text/html',
+            'base64',
+            null));
+      });
+
       testWidgets('loadUrl', (WidgetTester tester) async {
         await buildWidget(tester);
 
