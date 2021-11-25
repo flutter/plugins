@@ -1,3 +1,7 @@
+## 2.4.0
+
+* Adds support for Android's `WebView.loadData` and `WebView.loadDataWithBaseUrl` methods and implements the `loadFile` and `loadHtmlString` methods from the platform interface.
+
 ## 2.3.1
 
 * Adds explanation on how to generate the pigeon communication layer and mockito mock objects.

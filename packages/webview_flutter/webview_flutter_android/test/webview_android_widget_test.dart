@@ -308,11 +308,12 @@ void main() {
         await testController.loadHtmlString(htmlString);
 
         verify(mockWebView.loadDataWithBaseUrl(
-            null,
-            base64.encode(utf8.encode(htmlString)),
-            'text/html',
-            'base64',
-            null));
+          null,
+          htmlString,
+          'text/html',
+          null,
+          null,
+        ));
       });
 
       testWidgets('loadHtmlString with base URL', (WidgetTester tester) async {
@@ -325,11 +326,12 @@ void main() {
         );
 
         verify(mockWebView.loadDataWithBaseUrl(
-            'https://flutter.dev',
-            base64.encode(utf8.encode(htmlString)),
-            'text/html',
-            'base64',
-            null));
+          'https://flutter.dev',
+          htmlString,
+          'text/html',
+          null,
+          null,
+        ));
       });
 
       testWidgets('loadUrl', (WidgetTester tester) async {
