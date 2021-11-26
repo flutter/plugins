@@ -1,3 +1,8 @@
+## NEXT
+
+* Migrates from `analysis_options_legacy.yaml` to `analysis_options.yaml`.
+* Integration test fixes.
+
 ## 2.4.0
 
 * Implemented new `loadFile` and `loadHtmlString` methods from the platform interface.

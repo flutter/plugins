@@ -1,3 +1,7 @@
+## NEXT
+
+- Ensures that `firebase-test-lab` runs include an `integration_test` runner.
+
 ## 0.7.3
 
 - `native-test` now builds unit tests before running them on Windows and Linux,
