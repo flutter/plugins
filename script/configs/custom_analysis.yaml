@@ -22,7 +22,7 @@
 - in_app_purchase
 - ios_platform_images
 - local_auth
-- quick_actions
+- quick_actions/quick_actions
 - url_launcher
 - video_player
 - webview_flutter
