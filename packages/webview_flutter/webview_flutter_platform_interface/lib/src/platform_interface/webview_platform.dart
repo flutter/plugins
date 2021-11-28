@@ -61,6 +61,6 @@ abstract class WebViewPlatform {
   /// Returns true if cookies were present before clearing, else false.
   Future<bool> clearCookies() {
     throw UnimplementedError(
-        "WebView clearCookies is not implemented on the current platform");
+        'WebView clearCookies is not implemented on the current platform');
   }
 }
