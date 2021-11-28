@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:url_launcher/link.dart';
 import 'package:url_launcher/src/link.dart';
 import 'package:url_launcher_platform_interface/url_launcher_platform_interface.dart';
@@ -118,7 +118,7 @@ void main() {
       ));
 
       bool frameworkCalled = false;
-      Future<ByteData> Function(Object?, String) originalPushFunction =
+      final Future<ByteData> Function(Object?, String) originalPushFunction =
           pushRouteToFrameworkFunction;
       pushRouteToFrameworkFunction = (Object? _, String __) {
         frameworkCalled = true;
