@@ -568,6 +568,8 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
+    // TODO(mvanbeusekom): Cleanup and convert to const constructor when platform_interface is fixed (see https://github.com/flutter/flutter/issues/94311)
+    // ignore: prefer_const_constructors
     WebSetting<String?> userAgent = WebSetting<String?>.absent();
     bool? zoomEnabled;
     if (currentValue.javascriptMode != newValue.javascriptMode) {
