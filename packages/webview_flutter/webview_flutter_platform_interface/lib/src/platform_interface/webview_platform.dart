@@ -6,7 +6,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 import 'package:webview_flutter_platform_interface/src/platform_interface/javascript_channel_registry.dart';
-import 'package:webview_flutter_platform_interface/src/types/webview_cookie.dart';
 
 import '../types/types.dart';
 import 'webview_platform_callbacks_handler.dart';
