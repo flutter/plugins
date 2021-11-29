@@ -42,7 +42,8 @@ class LinkTarget {
   ///
   /// iOS, on the other hand, defaults to [self] for web URLs, and [blank] for
   /// non-web URLs.
-  static const LinkTarget defaultTarget = LinkTarget._(debugLabel: 'defaultTarget');
+  static const LinkTarget defaultTarget =
+      LinkTarget._(debugLabel: 'defaultTarget');
 
   /// On the web, this opens the link in the same tab where the flutter app is
   /// running.
