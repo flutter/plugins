@@ -547,7 +547,7 @@ class WebViewController {
     bool? hasNavigationDelegate;
     bool? hasProgressTracking;
     bool? debuggingEnabled;
-    WebSetting<String?> userAgent = const WebSetting<String?>.absent();
+    WebSetting<String?> userAgent = WebSetting<String?>.absent();
     if (currentValue.javascriptMode != newValue.javascriptMode) {
       javascriptMode = newValue.javascriptMode;
     }
