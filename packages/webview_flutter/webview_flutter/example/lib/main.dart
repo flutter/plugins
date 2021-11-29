@@ -234,7 +234,8 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  Future<void> _onAddToCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onAddToCache(
+      WebViewController controller, BuildContext context) async {
     await controller.runJavascript(
         'caches.open("test_caches_entry"); localStorage["test_localStorage"] = "dummy_entry";');
     // ignore: deprecated_member_use
@@ -243,13 +244,15 @@ class SampleMenu extends StatelessWidget {
     ));
   }
 
-  Future<void> _onListCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onListCache(
+      WebViewController controller, BuildContext context) async {
     await controller.runJavascript('caches.keys()'
         '.then((cacheKeys) => JSON.stringify({"cacheKeys" : cacheKeys, "localStorage" : localStorage}))'
         '.then((caches) => Toaster.postMessage(caches))');
   }
 
-  Future<void> _onClearCache(WebViewController controller, BuildContext context) async {
+  Future<void> _onClearCache(
+      WebViewController controller, BuildContext context) async {
     await controller.clearCache();
     // ignore: deprecated_member_use
     Scaffold.of(context).showSnackBar(const SnackBar(
