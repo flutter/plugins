@@ -307,11 +307,8 @@ void main() {
         await testController.loadHtmlString(htmlString);
 
         verify(mockWebView.loadDataWithBaseUrl(
-          null,
-          htmlString,
-          'text/html',
-          null,
-          null,
+          data: htmlString,
+          mimeType: 'text/html',
         ));
       });
 
@@ -325,11 +322,9 @@ void main() {
         );
 
         verify(mockWebView.loadDataWithBaseUrl(
-          'https://flutter.dev',
-          htmlString,
-          'text/html',
-          null,
-          null,
+          baseUrl: 'https://flutter.dev',
+          data: htmlString,
+          mimeType: 'text/html',
         ));
       });
 
