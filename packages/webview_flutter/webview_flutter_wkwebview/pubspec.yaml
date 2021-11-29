@@ -18,6 +18,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
+# TODO (BeMacized): Update dependency when platform interface has been updated and published.
   webview_flutter_platform_interface:
     path: ../webview_flutter_platform_interface
 
