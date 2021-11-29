@@ -59,7 +59,11 @@ void main() {
       });
 
       test('loadData', () {
-        webView.loadData('hello', 'text/plain', 'base64');
+        webView.loadData(
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+        );
         verify(mockPlatformHostApi.loadData(
           webViewInstanceId,
           'hello',
@@ -69,7 +73,7 @@ void main() {
       });
 
       test('loadData with null values', () {
-        webView.loadData('hello', null, null);
+        webView.loadData(data: 'hello', mimeType: null, encoding: null);
         verify(mockPlatformHostApi.loadData(
           webViewInstanceId,
           'hello',
@@ -80,11 +84,11 @@ void main() {
 
       test('loadDataWithBaseUrl', () {
         webView.loadDataWithBaseUrl(
-          'https://base.url',
-          'hello',
-          'text/plain',
-          'base64',
-          'https://history.url',
+          baseUrl: 'https://base.url',
+          data: 'hello',
+          mimeType: 'text/plain',
+          encoding: 'base64',
+          historyUrl: 'https://history.url',
         );
 
         verify(mockPlatformHostApi.loadDataWithBaseUrl(
@@ -98,7 +102,7 @@ void main() {
       });
 
       test('loadDataWithBaseUrl with null values', () {
-        webView.loadDataWithBaseUrl(null, 'hello', null, null, null);
+        webView.loadDataWithBaseUrl(data: 'hello');
         verify(mockPlatformHostApi.loadDataWithBaseUrl(
           webViewInstanceId,
           '<null-value>',

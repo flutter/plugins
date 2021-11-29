@@ -502,6 +502,7 @@ public class WebViewHostApiImpl implements WebViewHostApi {
     webView.setWebChromeClient((WebChromeClient) instanceManager.getInstance(clientInstanceId));
   }
 
+  @Nullable
   private static String parseNullStringIdentifier(String value) {
     if (value.equals(nullStringIdentifier)) {
       return null;

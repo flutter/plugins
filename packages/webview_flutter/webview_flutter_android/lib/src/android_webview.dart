@@ -90,7 +90,11 @@ class WebView {
   /// The [mimeType] parameter specifies the format of the data. If WebView
   /// can't handle the specified MIME type, it will download the data. If
   /// `null`, defaults to 'text/html'.
-  Future<void> loadData(String data, String? mimeType, String? encoding) {
+  Future<void> loadData({
+    required String data,
+    String? mimeType,
+    String? encoding,
+  }) {
     return api.loadDataFromInstance(
       this,
       data,
@@ -99,12 +103,12 @@ class WebView {
     );
   }
 
-  /// Loads the given data into this WebView, using baseUrl as the base URL for
-  /// the content.
+  /// Loads the given data into this WebView.
   ///
-  /// The base URL is used both to resolve relative URLs and when applying
-  /// JavaScript's same origin policy. The [historyUrl] is used for the history
-  /// entry.
+  /// The [baseUrl] is used as base URL for the content. It is used  both to
+  /// resolve relative URLs and when applying JavaScript's same origin policy.
+  ///
+  /// The [historyUrl] is used for the history entry.
   ///
   /// The [mimeType] parameter specifies the format of the data. If WebView
   /// can't handle the specified MIME type, it will download the data. If
@@ -134,13 +138,13 @@ class WebView {
   /// malicious content can also create frames with a null origin. If you need
   /// to identify the main frame's origin in a trustworthy way, you should use a
   /// valid HTTP or HTTPS base URL to set the origin.
-  Future<void> loadDataWithBaseUrl(
+  Future<void> loadDataWithBaseUrl({
     String? baseUrl,
-    String data,
+    required String data,
     String? mimeType,
     String? encoding,
     String? historyUrl,
-  ) {
+  }) {
     return api.loadDataWithBaseUrlFromInstance(
       this,
       baseUrl ?? _nullStringIdentifier,

@@ -151,11 +151,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
   @override
   Future<void> loadHtmlString(String html, {String? baseUrl}) {
     return webView.loadDataWithBaseUrl(
-      baseUrl,
-      html,
-      'text/html',
-      null,
-      null,
+      baseUrl: baseUrl,
+      data: html,
+      mimeType: 'text/html',
     );
   }
 
