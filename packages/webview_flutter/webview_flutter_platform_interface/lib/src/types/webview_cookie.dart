@@ -6,6 +6,13 @@
 ///
 /// The `autoMediaPlaybackPolicy` parameter must not be null.
 class WebViewCookie {
+  /// Construct a new [WebViewCookie].
+  const WebViewCookie(
+      {required this.name,
+      required this.value,
+      required this.domain,
+      this.path = '/'});
+
   /// The name of the cookie.
   ///
   /// Its value should match "cookie-name" in RFC6265bis:
@@ -30,15 +37,13 @@ class WebViewCookie {
   /// https://datatracker.ietf.org/doc/html/draft-ietf-httpbis-rfc6265bis-02#section-4.1.1
   final String path;
 
-  /// Construct a new [WebViewCookie].
-  const WebViewCookie(
-      {required this.name,
-      required this.value,
-      required this.domain,
-      this.path = '/'});
-
   /// Serialize a [WebViewCookie] to a Map<String, String>.
   Map<String, String> toJson() {
-    return {'name': name, 'value': value, 'domain': domain, 'path': path};
+    return <String, String>{
+      'name': name,
+      'value': value,
+      'domain': domain,
+      'path': path
+    };
   }
 }
