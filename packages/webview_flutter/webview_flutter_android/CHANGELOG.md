@@ -1,6 +1,7 @@
-## NEXT
+## 2.4.0
 
 * Updates compileSdkVersion to 31.
+* Implemented new cookie manager for setting cookies and providing initial cookies.
 
 ## 2.3.0
 

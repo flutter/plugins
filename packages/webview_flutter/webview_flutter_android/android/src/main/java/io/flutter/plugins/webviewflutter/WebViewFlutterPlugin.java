@@ -29,8 +29,8 @@ import io.flutter.plugins.webviewflutter.GeneratedAndroidWebView.WebViewHostApi;
  */
 public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   private FlutterPluginBinding pluginBinding;
-  private FlutterCookieManager flutterCookieManager;
   private WebViewHostApiImpl webViewHostApi;
+  private CookieManagerHostApiImpl cookieManagerHostApi;
   private JavaScriptChannelHostApiImpl javaScriptChannelHostApi;
 
   /**
@@ -62,7 +62,6 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
             registrar.platformViewRegistry(),
             registrar.activity(),
             registrar.view());
-    new FlutterCookieManager(registrar.messenger());
   }
 
   private void setUp(
@@ -70,7 +69,6 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
       PlatformViewRegistry viewRegistry,
       Context context,
       View containerView) {
-    new FlutterCookieManager(binaryMessenger);
 
     InstanceManager instanceManager = new InstanceManager();
 
@@ -86,6 +84,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
             new JavaScriptChannelHostApiImpl.JavaScriptChannelCreator(),
             new JavaScriptChannelFlutterApiImpl(binaryMessenger, instanceManager),
             new Handler(context.getMainLooper()));
+    cookieManagerHostApi = new CookieManagerHostApiImpl();
 
     WebViewHostApi.setup(binaryMessenger, webViewHostApi);
     JavaScriptChannelHostApi.setup(binaryMessenger, javaScriptChannelHostApi);
@@ -111,6 +110,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
         binaryMessenger,
         new WebSettingsHostApiImpl(
             instanceManager, new WebSettingsHostApiImpl.WebSettingsCreator()));
+    GeneratedAndroidWebView.CookieManagerHostApi.setup(binaryMessenger, cookieManagerHostApi);
   }
 
   @Override
@@ -124,14 +124,7 @@ public class WebViewFlutterPlugin implements FlutterPlugin, ActivityAware {
   }
 
   @Override
-  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
-    if (flutterCookieManager == null) {
-      return;
-    }
-
-    flutterCookieManager.dispose();
-    flutterCookieManager = null;
-  }
+  public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {}
 
   @Override
   public void onAttachedToActivity(@NonNull ActivityPluginBinding activityPluginBinding) {

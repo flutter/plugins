@@ -5,7 +5,7 @@
 import 'dart:async';
 
 import 'package:flutter/widgets.dart';
-
+import 'package:webview_flutter_android/webview_android_cookie_manager.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 import 'src/android_webview.dart' as android_webview;
@@ -281,6 +281,9 @@ class WebViewAndroidPlatformController extends WebViewPlatformController {
     );
 
     addJavascriptChannels(creationParams.javascriptChannelNames);
+
+    creationParams.cookies
+        .forEach(WebViewAndroidCookieManager.instance.setCookie);
   }
 
   Future<void> _setHasProgressTracking(bool hasProgressTracking) async {
