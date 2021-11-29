@@ -5,15 +5,7 @@
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
 
 /// Handles all cookie operations for the current platform.
-class WebViewIOSCookieManager extends WebViewCookieManagerPlatform {
-  WebViewIOSCookieManager._();
-
-  static WebViewIOSCookieManager? _instance;
-
-  /// Obtain a singleton instance for [WebViewiOSCookieManager].
-  static WebViewIOSCookieManager get instance =>
-      _instance ??= WebViewIOSCookieManager._();
-
+class WKWebViewCookieManager extends WebViewCookieManagerPlatform {
   @override
   Future<bool> clearCookies() => MethodChannelWebViewPlatform.clearCookies();
 

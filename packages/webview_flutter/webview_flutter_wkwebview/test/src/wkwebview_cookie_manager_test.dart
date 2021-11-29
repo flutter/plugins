@@ -5,7 +5,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart';
-import 'package:webview_flutter_wkwebview/src/webview_ios_cookie_manager.dart';
+import 'package:webview_flutter_wkwebview/src/wkwebview_cookie_manager.dart';
 
 main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -31,7 +31,7 @@ main() {
 
   test('clearCookies should call `clearCookies` on the method channel',
       () async {
-    await WebViewIOSCookieManager.instance.clearCookies();
+    await WKWebViewCookieManager().clearCookies();
     expect(
       log,
       <Matcher>[
@@ -44,8 +44,9 @@ main() {
   });
 
   test('setCookie should call `setCookie` on the method channel', () async {
-    await WebViewIOSCookieManager.instance.setCookie(
-        WebViewCookie(name: 'foo', value: 'bar', domain: 'flutter.dev'));
+    await WKWebViewCookieManager().setCookie(
+      const WebViewCookie(name: 'foo', value: 'bar', domain: 'flutter.dev'),
+    );
     expect(
       log,
       <Matcher>[

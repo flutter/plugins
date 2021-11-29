@@ -658,29 +658,18 @@ class _PlatformCallbacksHandler implements WebViewPlatformCallbacksHandler {
   }
 }
 
+/// App-facing cookie manager that exposes the correct platform implementation.
 class WebViewCookieManager extends WebViewCookieManagerPlatform {
-  static WebViewCookieManager? _instance;
-
-  static WebViewCookieManager get instance =>
-      _instance ??= WebViewCookieManager._();
-
   WebViewCookieManager._();
 
-  @override
-  Future<bool> clearCookies() async {
-    if (Platform.isIOS) {
-      return WebViewIOSCookieManager.instance.clearCookies();
+  /// Returns an instance of the cookie manager for the current platform.
+  static WebViewCookieManagerPlatform get instance {
+    if (WebViewCookieManagerPlatform.instance == null && Platform.isIOS) {
+      WebViewCookieManagerPlatform.instance = WKWebViewCookieManager();
     } else {
-      return super.clearCookies();
+      throw AssertionError(
+          'This platform is currently unsupported for webview_flutter_wkwebview.');
     }
-  }
-
-  @override
-  Future<void> setCookie(WebViewCookie cookie) {
-    if (Platform.isIOS) {
-      return WebViewIOSCookieManager.instance.setCookie(cookie);
-    } else {
-      return super.setCookie(cookie);
-    }
+    return WebViewCookieManagerPlatform.instance!;
   }
 }

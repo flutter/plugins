@@ -87,7 +87,7 @@ class _WebViewExampleState extends State<_WebViewExample> {
       // to allow calling Scaffold.of(context) so we can show a snackbar.
       body: Builder(builder: (context) {
         return WebView(
-          initialUrl: 'https://httpbin.org/anything',
+          initialUrl: 'https://flutter.dev/',
           onWebViewCreated: (WebViewController controller) {
             _controller.complete(controller);
           },
@@ -151,6 +151,7 @@ enum _MenuOptions {
   loadLocalFile,
   loadHtmlString,
   doPostRequest,
+  setCookie,
 }
 
 class _SampleMenu extends StatelessWidget {
@@ -197,6 +198,9 @@ class _SampleMenu extends StatelessWidget {
               case _MenuOptions.doPostRequest:
                 _onDoPostRequest(controller.data!, context);
                 break;
+              case _MenuOptions.setCookie:
+                _onSetCookie(controller.data!, context);
+                break;
             }
           },
           itemBuilder: (BuildContext context) => <PopupMenuItem<_MenuOptions>>[
@@ -240,6 +244,10 @@ class _SampleMenu extends StatelessWidget {
             const PopupMenuItem<_MenuOptions>(
               value: _MenuOptions.doPostRequest,
               child: Text('Post Request'),
+            ),
+            const PopupMenuItem<_MenuOptions>(
+              value: _MenuOptions.setCookie,
+              child: Text('Set Cookie'),
             ),
           ],
         );
@@ -332,6 +340,14 @@ class _SampleMenu extends StatelessWidget {
       body: Uint8List.fromList('Test Body'.codeUnits),
     );
     await controller.loadRequest(request);
+  }
+
+  void _onSetCookie(WebViewController controller, BuildContext context) async {
+    await WebViewCookieManager.instance.setCookie(
+      const WebViewCookie(
+          name: 'foo', value: 'bar', domain: 'httpbin.org', path: '/anything'),
+    );
+    await controller.loadUrl('https://httpbin.org/anything');
   }
 
   Widget _getCookieList(String cookies) {
