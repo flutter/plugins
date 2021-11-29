@@ -122,7 +122,7 @@ void main() {
           pushRouteToFrameworkFunction;
       pushRouteToFrameworkFunction = (Object? _, String __) {
         frameworkCalled = true;
-        return Future.value(ByteData(0));
+        return Future<ByteData>.value(ByteData(0));
       };
 
       await followLink!();

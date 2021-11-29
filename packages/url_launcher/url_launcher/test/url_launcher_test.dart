@@ -239,7 +239,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())!
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.iOS;
       binding.renderView.automaticSystemUiAdjustment = true;
@@ -268,7 +268,7 @@ void main() {
         ..setResponse(true);
 
       final TestWidgetsFlutterBinding binding =
-          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())
+          _anonymize(TestWidgetsFlutterBinding.ensureInitialized())!
               as TestWidgetsFlutterBinding;
       debugDefaultTargetPlatformOverride = TargetPlatform.android;
       expect(binding.renderView.automaticSystemUiAdjustment, true);
